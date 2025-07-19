@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 
 import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
+import 'package:trydos/features/story/data/models/delete_story_model.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../../../core/error/failures.dart';
@@ -57,5 +58,12 @@ class StoryRepositoryImpl extends StoryRepository
   Future<Either<Failure, bool>> increaseViewers(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => storyDataSource.increaseViewers(params));
+  }
+
+  @override
+  Future<Either<Failure, DeleteStoryModel>> deleteStory(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => storyDataSource.deleteStory(params));
   }
 }

@@ -1,6 +1,10 @@
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
+// ignore_for_file: constant_identifier_names
+
 abstract class LocaleKeys {
+  static const information_securely = 'information_securely';
+  static const alert = 'alert';
   static const typing = 'typing';
   static const recording = 'recording';
   static const sending_file = 'sending_file';
@@ -10,6 +14,13 @@ abstract class LocaleKeys {
   static const camera = 'camera';
   static const choose_photo_or_video_from_gallery_or_camera =
       'choose_photo_or_video_from_gallery_or_camera';
+  static const image_preview = 'image_preview';
+  static const image_preview_instructions = 'image_preview_instructions';
+  static const crop_image = 'crop_image';
+  static const select_image_part = 'select_image_part';
+  static const send = 'send';
+  static const other = 'other';
+  static const cancel_preview = 'cancel_preview';
   static const welcome_page_description = 'welcome_page_description';
   static const why_we_know_you_label = 'why_we_know_you_label';
   static const i_have_account = 'i_have_account';
@@ -208,6 +219,11 @@ abstract class LocaleKeys {
   static const notify_me = 'notify_me';
   static const do_you_want_to_notify_You_when_your_choose_available =
       'do_you_want_to_notify_You_when_your_choose_available';
+  static const cancel_order_hours_back_money = 'cancel_order_hours_back_money';
+  static const cancel_product_hours_back_money =
+      'cancel_product_hours_back_money';
+  static const coupon_link_not_allowed = 'coupon_link_not_allowed';
+  static const video_length_limit = 'video_length_limit';
   static const your_request_faild = 'your_request_faild';
   static const continues = 'continues';
   static const more = 'more';
@@ -233,7 +249,6 @@ abstract class LocaleKeys {
       'notify_me_when_quantity_is_available';
   static const we_will_inform_you_when_a = 'we_will_inform_you_when_a';
   static const quantity_is_available = 'quantity_is_available';
-  static const send = 'send';
   static const add = 'add';
   static const bag = 'bag';
   static const comment_about_this_product = 'comment_about_this_product';
@@ -596,7 +611,6 @@ abstract class LocaleKeys {
   static const change_qty = 'change_qty';
   static const change_from = 'change_from';
   static const qty = 'qty';
-  static const other = 'other';
   static const change_terms = 'change_terms';
   static const cancel_this_order = 'cancel_this_order';
   static const about_cancel_product = 'about_cancel_product';
@@ -610,4 +624,7 @@ abstract class LocaleKeys {
   static const download_timeout = 'download_timeout';
   static const retry_download = 'retry_download';
   static const image_not_available = 'image_not_available';
+  static const luck = 'luck';
+  static const add_to_bag_within = 'add_to_bag_within';
+  static const seconds = 'seconds';
 }

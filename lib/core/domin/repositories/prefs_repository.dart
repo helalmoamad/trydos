@@ -72,6 +72,9 @@ abstract class PrefsRepository {
       String key, String value);
   Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory);
   Future<bool> setIsFoundDataCashed(bool isFoundDataCashed);
+  Future<bool> setRedeemDateForProduct(String productId, String seconds);
+  DateTime? getRedeemDateForProduct(String productId);
+  Future<bool> removeRedeemDateForAnyProductFinished();
   Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(String key);
   String? getPrefechOfProductsForEachBoutiqueInHomePage(String key);
   Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(

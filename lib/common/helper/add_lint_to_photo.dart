@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:trydos/common/helper/camera_screen_story.dart';
+import 'package:trydos/common/helper/show_message.dart';
 
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 
@@ -33,6 +34,7 @@ class AddLinkToStory extends StatefulWidget {
 
 class _AddLinkToStory extends State<AddLinkToStory> {
   late StoryBloc storyBloc;
+  String? link;
 
   @override
   void initState() {
@@ -66,6 +68,7 @@ class _AddLinkToStory extends State<AddLinkToStory> {
             padding: const EdgeInsets.all(10),
             child: AppTextField(
               onChange: (val) {
+                link = val;
                 storyBloc.add(SetStoryLinkEvent(val));
               },
               textInputAction: TextInputAction.done,
@@ -88,6 +91,10 @@ class _AddLinkToStory extends State<AddLinkToStory> {
             height: 70,
             child: InkWell(
                 onTap: () {
+                  if (link?.contains("coupon") ?? false) {
+                    showWarningMessage(context, "Coupon link is not allowed");
+                    return;
+                  }
                   widget.onChooseFileFromGalleryAction.call(widget.assetEntity);
                   Navigator.of(context).pop();
                 },

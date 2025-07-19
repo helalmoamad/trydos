@@ -54,6 +54,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final int? qtyForproductWithoutVariant;
   final String boutiqueIcon;
   final String currentColorName;
+  final String currentColorOption;
   final String productSlugForTopic;
   final String productDescription;
   final String currentColornum;
@@ -63,8 +64,11 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final int countOfPieces;
   final bool? isGetFullProductDetails;
   final bool? fromListingPage;
-  final String initPrice;
-  final String initOfferPrice;
+  final double initPrice;
+  final double initOfferPrice;
+  final bool isRedeem;
+  final double redeemPrice;
+  final double redeemVariantPrice;
   final bool collectedAfterOrdering;
 
   final String maxAllowedToAddCart;
@@ -75,11 +79,15 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      required this.redeemVariantPrice,
+      required this.redeemPrice,
+      required this.isRedeem,
       this.currentSelectedColorAfterChangeVariant,
       this.tapIndexToAddProductToCart,
       required this.productIdForCashData,
       required this.isGetFullProductDetails,
       required this.collectedAfterOrdering,
+      required this.currentColorOption,
       required this.panelController,
       required this.addToBagButtonShapeNotifier,
       required this.currentActiveTab,
@@ -494,8 +502,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             widget.currentColor] ==
                                         0 &&
                                     !widget.collectedAfterOrdering) {
-                                  print(
-                                      "D${colorsForEachProduct[widget.currentColor]}DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
                                   Future.delayed(
                                       Duration(milliseconds: 300),
                                       () => colorIsNotAvailableNotifier.value =
@@ -817,19 +823,45 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                 current
                                                     .getCurrencyForCountryModel ||
                                             previous.currentColorSizeForCart?[
-                                                    "size"] !=
+                                                    "choiceOption"] !=
                                                 current.currentColorSizeForCart?[
-                                                    "size"] ||
+                                                    "choiceOption"] ||
                                             previous.currentSelectedColorForEveryProduct !=
                                                 current
                                                     .currentSelectedColorForEveryProduct,
                                         builder: (context, state) {
                                           return ProductDetailsSheetHeader(
+                                            redeemVariantPrice: widget
+                                                    .redeemVariantPrice *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!,
+                                            isRedeem: widget.isRedeem,
+                                            redeemPrice: widget.redeemPrice *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!,
                                             currentActiveTab:
                                                 widget.currentActiveTab,
-                                            initOfferPrice:
-                                                widget.initOfferPrice,
-                                            initPrice: widget.initPrice,
+                                            initOfferPrice: (widget
+                                                        .initOfferPrice *
+                                                    state
+                                                        .getCurrencyForCountryModel!
+                                                        .data!
+                                                        .currency!
+                                                        .exchangeRate!)
+                                                .toString(),
+                                            initPrice: (widget.initPrice *
+                                                    state
+                                                        .getCurrencyForCountryModel!
+                                                        .data!
+                                                        .currency!
+                                                        .exchangeRate!)
+                                                .toString(),
                                             shippingCost: widget
                                                     .productItem.shippingCost ??
                                                 0,
@@ -906,16 +938,16 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             BlocBuilder<HomeBloc, HomeState>(
                                                 buildWhen: (p, c) =>
                                                     p.currentColorSizeForCart?[
-                                                        "size"] !=
+                                                        "choiceOption"] !=
                                                     c.currentColorSizeForCart?[
-                                                        "size"],
+                                                        "choiceOption"],
                                                 builder: (context, state) {
                                                   return ProductDetailsSheetShareContent(
                                                       currentSize: state
                                                                   .currentColorSizeForCart !=
                                                               null
                                                           ? state.currentColorSizeForCart![
-                                                                  "size"] ??
+                                                                  "choiceOption"] ??
                                                               ""
                                                           : "",
                                                       currentColor: widget
@@ -957,11 +989,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                         widget.productItem.slug
                                                             .toString()] ||
                                                 p.currentColorSizeForCart?[
-                                                        "size"] !=
+                                                        "choiceOption"] !=
                                                     c.currentColorSizeForCart?[
-                                                        "size"],
+                                                        "choiceOption"],
                                             builder: (context, state) {
                                               return SelectSizeContent(
+                                                choiceOptions: widget
+                                                    .productItem.choiceOptions,
                                                 fromListingPage:
                                                     widget.fromListingPage ??
                                                         false,
@@ -994,7 +1028,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                         ?.length ??
                                                                     0) ~/
                                                                 2]
-                                                        .name
+                                                        .option
                                                         .toString(),
                                                 selectedColor: widget
                                                         .productItem
@@ -1049,12 +1083,19 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     return channelIds.isEmpty
                         ? BlocBuilder<HomeBloc, HomeState>(
                             buildWhen: (p, c) =>
-                                p.currentColorSizeForCart?["size"] !=
-                                c.currentColorSizeForCart?["size"],
+                                p.currentColorSizeForCart?["choiceOption"] !=
+                                c.currentColorSizeForCart?["choiceOption"],
                             builder: (context, state) {
                               return ProductDetailsSheetBottomBar(
+                                  isRedeem: widget.isRedeem,
+                                  redeemVariantPrice: widget.redeemVariantPrice,
+                                  colorOption: widget.currentColorOption,
                                   isGetFullProductDetails:
                                       widget.isGetFullProductDetails ?? false,
+                                  choiceOption: state.currentColorSizeForCart != null
+                                      ? state.currentColorSizeForCart!["choiceOption"] ??
+                                          ""
+                                      : "",
                                   productNotAvailableNotifier:
                                       widget.productNotAvailableNotifier,
                                   products: widget.productItem,
@@ -1302,10 +1343,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     // );
                                   },
                                   currentActiveTab: widget.currentActiveTab,
-                                  sizeIsNotAvailableNotifier:
-                                      sizeIsNotAvailableNotifier,
-                                  addToBagButtonShapeNotifier:
-                                      widget.addToBagButtonShapeNotifier);
+                                  sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
+                                  addToBagButtonShapeNotifier: widget.addToBagButtonShapeNotifier);
                             })
                         : ShareButton(
                             onTap: () {

@@ -303,8 +303,8 @@ void main() async {
   // 🎯 إعدادات بسيطة فقط - دع Flutter يدير الذاكرة!
   // _applySimpleScrollOptimizations();
 
-  debugPrint('✅ إزالة كل التدخلات الضارة - اعتماد كامل على Flutter');
-  debugPrint('🎯 إعدادات بسيطة: 50MB image cache، بدون مراقبة أو تنظيف قسري');
+  // debugPrint('✅ إزالة كل التدخلات الضارة - اعتماد كامل على Flutter');
+  //debugPrint('🎯 إعدادات بسيطة: 50MB image cache، بدون مراقبة أو تنظيف قسري');
 
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
@@ -320,8 +320,8 @@ void main() async {
 
   GetIt.I<PrefsRepository>().removeMainCategoryHasPerfechedWhenOpenApp(false);
 
-  GetIt.I<PrefsRepository>().removeBoutiqueHasPerfechedWhenOpenApp(false);
-  GetIt.I<PrefsRepository>().removeFiveFilterHasPerfechedWhenOpenApp();
+  //GetIt.I<PrefsRepository>().removeBoutiqueHasPerfechedWhenOpenApp(false);
+  //GetIt.I<PrefsRepository>().removeFiveFilterHasPerfechedWhenOpenApp();
   //await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
 
@@ -335,6 +335,7 @@ void main() async {
   FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
+  //GetIt.I<PrefsRepository>().removeRedeemDateForAnyProductFinished();
 
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());

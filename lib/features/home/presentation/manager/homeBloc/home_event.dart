@@ -448,11 +448,15 @@ class AddItemToCartEvent extends HomeEvent {
   final int? quantity;
   final int? countOfPieces;
   final String? boutiqueIcon;
-  final String? choice_1;
+  final String? choiceOption;
   final int? boutiqueId;
+  final String colorOption;
   final String colorName;
+  final String sizeName;
   final String? maxAllowed;
   final bool finishAddAllTheItems;
+  final bool isRedeem;
+  final double redeemVariantPrice;
   final Products products;
   final String productSlugForTopic;
 
@@ -461,13 +465,17 @@ class AddItemToCartEvent extends HomeEvent {
       this.boutiqueIcon,
       this.finishAddAllTheItems = true,
       this.boutiqueId,
+      required this.isRedeem,
+      required this.redeemVariantPrice,
+      required this.colorName,
+      required this.sizeName,
       required this.maxAllowed,
       required this.image,
       required this.productSlugForTopic,
       required this.countOfPieces,
-      required this.colorName,
+      required this.colorOption,
       this.color,
-      this.choice_1,
+      this.choiceOption,
       required this.products});
 
   @override
@@ -482,10 +490,14 @@ class AddMultiItemsToCartEvent extends HomeEvent {
   final int? boutiqueId;
   final String? maxAllowed;
   final Products products;
+  final bool isRedeem;
+  final double redeemVariantPrice;
 
   AddMultiItemsToCartEvent({
     this.id,
     this.boutiqueIcon,
+    required this.isRedeem,
+    required this.redeemVariantPrice,
     required this.maxAllowed,
     required this.productSlugForTopic,
     this.boutiqueId,
@@ -498,13 +510,15 @@ class AddMultiItemsToCartEvent extends HomeEvent {
 
 class AddCurrentColorSizeEvent extends HomeEvent {
   final String? choice_1;
+  final String? choiceOption;
 
   AddCurrentColorSizeEvent({
     this.choice_1,
+    this.choiceOption,
   });
 
   @override
-  List<Object?> get props => [choice_1];
+  List<Object?> get props => [choice_1, choiceOption];
 }
 
 class AddProductItemForCartEvent extends HomeEvent {
@@ -552,7 +566,7 @@ class UpdateItemInCartEvent extends HomeEvent {
   final String currentSize;
   final String productId;
   final bool fishAddAllTheItems;
-  final String colorName;
+  final String colorOption;
   final String image;
   final String boutiqueId;
   final String? productName;
@@ -562,7 +576,7 @@ class UpdateItemInCartEvent extends HomeEvent {
 
   UpdateItemInCartEvent({
     required this.totalQuantity,
-    required this.colorName,
+    required this.colorOption,
     required this.newQuantity,
     this.fishAddAllTheItems = true,
     required this.cartId,

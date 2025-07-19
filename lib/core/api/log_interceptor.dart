@@ -112,6 +112,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       //       showInRelease: true,
       //       timeShowing: Toast.LENGTH_LONG);
       // }
+
       if (err.requestOptions.path.contains("stories/upload_story") ||
           err.requestOptions.path.contains("/djooohujg/upload")) {
         GetIt.I<StoryBloc>().add(ChangeStatusUploadToFailureEvent());

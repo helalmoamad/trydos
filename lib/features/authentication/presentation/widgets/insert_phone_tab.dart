@@ -202,8 +202,11 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                     return PhoneFormField(
                       onFieldSubmitted: (val) {
                         if (display) {
-                          Future.delayed(Duration(milliseconds: 300),
-                              () => FocusScope.of(context).unfocus());
+                          Future.delayed(Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              FocusScope.of(context).unfocus();
+                            }
+                          });
                           widget.moveToNextStep
                               .call('${form.controllers[0].text}');
                           //////////////////////////
@@ -310,8 +313,11 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                         WidgetsKeys.loginConfirmPhoneButtonKey)
                                     : null,
                                 onTap: () {
-                                  Future.delayed(Duration(seconds: 1),
-                                      () => FocusScope.of(context).unfocus());
+                                  Future.delayed(Duration(seconds: 1), () {
+                                    if (mounted) {
+                                      FocusScope.of(context).unfocus();
+                                    }
+                                  });
                                   widget.moveToNextStep
                                       .call('${form.controllers[0].text}');
                                   //////////////////////////

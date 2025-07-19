@@ -137,9 +137,11 @@ class Products {
   final bool? shippingCostMultiplyWithQuantity;
   final double? shippingCost;
   final List<Variation>? variation;
+  final bool? isRedeem;
+  final double? redeemPrice;
   final List<ChoiceOption>? choiceOptions;
   final bool? countryIsRestricted;
-
+  final bool? hasRedeemDiscount;
   final bool? hasDiscount;
   final bool? hasTax;
   final String? deliveryAt;
@@ -177,7 +179,10 @@ class Products {
     this.thumbnail,
     this.maxAllowedQty,
     this.images,
+    this.isRedeem,
+    this.redeemPrice,
     this.categories,
+    this.hasRedeemDiscount,
     this.category,
     this.collectedAfterOrdering,
     this.brand,
@@ -236,6 +241,8 @@ class Products {
     String? name,
     String? slug,
     String? shareLink,
+    bool? isRedeem,
+    double? redeemPrice,
     String? details,
     Thumbnail? thumbnail,
     List<Thumbnail>? images,
@@ -246,6 +253,7 @@ class Products {
     List<SyncColorImage>? syncColorImages,
     double? price,
     bool? shippingCostMultiplyWithQuantity,
+    bool? hasRedeemDiscount,
     double? shippingCost,
     String? priceFormatted,
     double? offerPrice,
@@ -296,10 +304,13 @@ class Products {
         productId: productId ?? this.productId,
         boutiqueId: boutiqueId ?? this.boutiqueId,
         name: name ?? this.name,
+        isRedeem: isRedeem ?? this.isRedeem,
+        redeemPrice: redeemPrice ?? this.redeemPrice,
         slug: slug ?? this.slug,
         shareLink: shareLink ?? this.shareLink,
         details: details ?? this.details,
         thumbnail: thumbnail ?? this.thumbnail,
+        hasRedeemDiscount: hasRedeemDiscount ?? this.hasRedeemDiscount,
         images: images ?? this.images,
         categories: categories ?? this.categories,
         category: category ?? this.category,
@@ -365,8 +376,11 @@ class Products {
       name: json["name"],
       slug: json["slug"],
       shareLink: json["share_link"],
+      isRedeem: json["is_redeem"],
+      redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
       details: json["details"],
       countryIsRestricted: json["is_country_restricted"],
+      hasRedeemDiscount: json["has_redeem_discount"],
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
       shippingCost: double.tryParse(json["shipping_cost"].toString()),
@@ -454,8 +468,12 @@ class Products {
         "product_id": productId,
         "boutique_id": boutiqueId.toString(),
         "name": name,
+        "is_redeem": isRedeem,
+        "redeem_price": redeemPrice,
         "slug": slug,
         "share_link": shareLink,
+        "has_redeem_discount": hasRedeemDiscount,
+
         "details": details,
         "thumbnail": thumbnail?.toJson(),
         "images": images == null
@@ -622,28 +640,37 @@ class Thumbnail {
 class Color {
   final String? name;
   final String? color;
+  final String? option;
 
   Color({
     this.name,
+    this.option,
     this.color,
   });
 
   Color copyWith({
     String? name,
     String? color,
+    String? option,
   }) =>
       Color(
         name: name ?? this.name,
+        option: option ?? this.option,
         color: color ?? this.color,
       );
 
-  factory Color.fromJson(Map<String, dynamic> json) => Color(
-        name: json["name"],
-        color: json["color"],
-      );
+  factory Color.fromJson(Map<String, dynamic> json) {
+    print("12-----------------------------${json["option"]}");
+    return Color(
+      name: json["name"],
+      color: json["color"],
+      option: json["option"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "name": name,
+        "option": option,
         "color": color,
       };
 }
@@ -681,26 +708,30 @@ class SyncColorImage {
   final String? colorName;
   final List<Thumbnail>? images;
   final bool? colorTrend;
-
+  final String? colorOption;
   SyncColorImage({
     this.colorName,
     this.images,
+    this.colorOption,
     this.colorTrend,
   });
 
   SyncColorImage copyWith({
     String? colorName,
+    String? colorOption,
     List<Thumbnail>? images,
     bool? colorTrend,
   }) =>
       SyncColorImage(
         colorName: colorName ?? this.colorName,
+        colorOption: colorOption ?? this.colorOption,
         images: images ?? this.images,
         colorTrend: colorTrend ?? this.colorTrend,
       );
 
   factory SyncColorImage.fromJson(Map<String, dynamic> json) => SyncColorImage(
         colorName: json["color_name"],
+        colorOption: json["color_option"],
         images: json["images"] == null
             ? []
             : List<Thumbnail>.from(
@@ -710,6 +741,7 @@ class SyncColorImage {
 
   Map<String, dynamic> toJson() => {
         "color_name": colorName,
+        "color_option": colorOption,
         "images": images == null
             ? []
             : List<dynamic>.from(images!.map((x) => x.toJson())),

@@ -129,6 +129,8 @@ class OrderListModel {
   final bool? showReturnRequest;
   final bool? editReturnRequest;
   final bool? orderCanExchange;
+  final bool? canUpdateAddress;
+  final bool? canCanceleOrder;
   final List<OrderListDetailModel>? details;
 
   OrderListModel({
@@ -154,6 +156,8 @@ class OrderListModel {
     this.verificationCode,
     this.orderNote,
     this.sellerId,
+    this.canUpdateAddress,
+    this.canCanceleOrder,
     this.createdAt,
     this.orderCanReturn,
     this.orderHasReturnRequest,
@@ -194,11 +198,15 @@ class OrderListModel {
     bool? showReturnRequest,
     bool? editReturnRequest,
     bool? orderCanExchange,
+    bool? canUpdateAddress,
+    bool? canCanceleOrder,
     List<OrderListDetailModel>? details,
   }) =>
       OrderListModel(
         id: id ?? this.id,
         customerId: customerId ?? this.customerId,
+        canUpdateAddress: canUpdateAddress ?? this.canUpdateAddress,
+        canCanceleOrder: canCanceleOrder ?? this.canCanceleOrder,
         paymentStatus: paymentStatus ?? this.paymentStatus,
         orderStatus: orderStatus ?? this.orderStatus,
         orderGroupStatus: orderGroupStatus ?? this.orderGroupStatus,
@@ -267,6 +275,8 @@ class OrderListModel {
         couponCode: json["coupon_code"],
         shippingMethodId: json["shipping_method_id"],
         orderGroupId: json["order_group_id"],
+        canUpdateAddress: json["can_update_address"],
+        canCanceleOrder: json["can_cancele_order"],
         verificationCode: json["verification_code"],
         orderNote: json["order_note"],
         sellerId: json["seller_id"],
@@ -296,6 +306,8 @@ class OrderListModel {
         "discount_amount": discountAmount,
         "shipping_cost": shippingCost,
         "shipping_address": shippingAddress,
+        "can_update_address": canUpdateAddress,
+        "can_cancele_order": canCanceleOrder,
         "shipping_address_data": shippingAddressData?.toJson(),
         "billing_address": billingAddress,
         "billing_address_data": billingAddressData,

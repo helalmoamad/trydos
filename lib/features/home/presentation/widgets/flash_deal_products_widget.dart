@@ -33,11 +33,13 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 class FlashDealProductsWidget extends StatelessWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final ValueNotifier<bool> productIsFlashDeal;
+  final ValueNotifier<bool> finishRedeem;
 
   const FlashDealProductsWidget({
     Key? key,
     required this.tapIndexToAddProductToCart,
     required this.productIsFlashDeal,
+    required this.finishRedeem,
   }) : super(key: key);
 
   @override
@@ -95,7 +97,7 @@ class FlashDealProductsWidget extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(bottom: 5),
                       width: 1.sw,
-                      height: 320,
+                      height: 315,
                       child: ListView.separated(
                           itemBuilder: (context, index) {
                             // التحقق من صحة الفهرس
@@ -150,6 +152,7 @@ class FlashDealProductsWidget extends StatelessWidget {
       child: Stack(
         children: [
           ProductItem(
+            finishRedeem: finishRedeem,
             fromFlashDeal: true,
             fromHomePage: true,
             imageSource: 'flash_deal_products_widget',
@@ -166,7 +169,7 @@ class FlashDealProductsWidget extends StatelessWidget {
                 color: Color.fromRGBO(0, 0, 0, 0.4),
                 borderRadius: BorderRadius.all(Radius.circular(12))),
             width: 200,
-            height: 320,
+            height: 300,
           ),
           Positioned(
             top: 100,
@@ -198,7 +201,9 @@ class FlashDealProductsWidget extends StatelessWidget {
           GetIt.I<HomeBloc>().add(
               ChangeStatusOFGetProductsDetailsToSuccessEvent(
                   isStatusInitaial: true));
-
+          GetIt.I<HomeBloc>().add(AddCurrentSelectedColorEvent(
+              currentSelectedColor: 0,
+              productSlug: products[index].slug.toString()));
           Future.delayed(
               Duration(milliseconds: 300),
               () => Navigator.of(context).push(
@@ -214,6 +219,7 @@ class FlashDealProductsWidget extends StatelessWidget {
       },
       child: ProductItem(
         fromFlashDeal: true,
+        finishRedeem: finishRedeem,
         fromHomePage: true,
         imageSource: 'flash_deal_products_widget',
         productIsFlashDeal: productIsFlashDeal,

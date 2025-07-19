@@ -26,6 +26,9 @@ import '../../../domain/use_cases/get_orders_by_cart_group_usecase.dart';
 import '../../../domain/use_cases/get_orders_by_order_group_usecase.dart';
 import '../../../domain/use_cases/get_orders_usecase.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
+import '../../../domain/use_cases/cancel_order_item_usecase.dart';
+import '../../../domain/use_cases/cancel_order_usecase.dart';
+import '../../../domain/use_cases/change_order_address_usecase.dart';
 import '../../../domain/use_cases/set_customer_address_default_usecase.dart';
 import '../../../domain/use_cases/update_customer_address_usecase.dart';
 import '../../widgets/cart_section/payment_method.dart';
@@ -35,6 +38,9 @@ import 'order_state.dart';
 @LazySingleton()
 class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final PlaceOrderUsecase placeOrderUsecase;
+  final CancelOrderItemUsecase cancelOrderItemUsecase;
+  final CancelOrderUsecase cancelOrderUsecase;
+  final ChangeOrderAddressUsecase changeOrderAddressUsecase;
   final GetOrdersByOrderGroupIDUsecase getOrdersByOrderGroupIDUsecase;
   final GetOrdersByCartGroupIDUsecase getOrdersByCartGroupIDUsecase;
   final GetCustomerWalletUseCase getCustomerWalletUseCase;
@@ -51,6 +57,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
   OrderBloc(
     this.placeOrderUsecase,
+    this.cancelOrderItemUsecase,
+    this.cancelOrderUsecase,
+    this.changeOrderAddressUsecase,
     this.getOrdersByOrderGroupIDUsecase,
     this.getOrdersByCartGroupIDUsecase,
     this.getProvincesByIsoUseCase,
@@ -123,6 +132,15 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
     on<ApplyCouponEvent>(
       _onApplyCouponEvent,
+    );
+    on<CancelOrderItemEvent>(
+      _onCancelOrderItemEvent,
+    );
+    on<CancelOrderEvent>(
+      _onCancelOrderEvent,
+    );
+    on<ChangeOrderAddressEvent>(
+      _onChangeOrderAddressEvent,
     );
   }
 
@@ -200,7 +218,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     emit(
       state.copyWith(
         getOrdersByOrderGroupIDModel: null,
-        getOrdersByOrderGroupIDStatus: GetOrdersByOrderGroupIDStatus.loading,
+        getOrdersByOrderGroupIDStatus: event.firstOpenPage
+            ? GetOrdersByOrderGroupIDStatus.init
+            : GetOrdersByOrderGroupIDStatus.loading,
       ),
     );
 
@@ -1037,6 +1057,183 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
   }
 
+  FutureOr<void> _onCancelOrderItemEvent(
+    CancelOrderItemEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        cancelOrderItemStatus: CancelOrderItemStatus.loading,
+      ),
+    );
+
+    final response = await cancelOrderItemUsecase(
+      event.cancelOrderItemParams,
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('CancelOrderItemEvent')) {
+          add(
+            CancelOrderItemEvent(
+                cancelOrderItemParams: event.cancelOrderItemParams),
+          );
+          isFailedTheFirstTime.add('CancelOrderItemEvent');
+        }
+        emit(
+          state.copyWith(
+            cancelOrderItemStatus: CancelOrderItemStatus.failure,
+          ),
+        );
+        // إظهار رسالة الفشل من الباك إند
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.red,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+      },
+      (r) async {
+        isFailedTheFirstTime.remove('CancelOrderItemEvent');
+
+        debugPrint('CancelOrderItemStatus success');
+
+        // إظهار رسالة النجاح من الباك إند
+        showMessage(
+          r.message ?? 'تم إلغاء العنصر بنجاح',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+
+        ////////////////////////////////////////////
+        emit(
+          state.copyWith(
+            cancelOrderItemStatus: CancelOrderItemStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onCancelOrderEvent(
+    CancelOrderEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        cancelOrderStatus: CancelOrderStatus.loading,
+      ),
+    );
+
+    final response = await cancelOrderUsecase(
+      event.cancelOrderParams,
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('CancelOrderEvent')) {
+          add(
+            CancelOrderEvent(cancelOrderParams: event.cancelOrderParams),
+          );
+          isFailedTheFirstTime.add('CancelOrderEvent');
+        }
+        emit(
+          state.copyWith(
+            cancelOrderStatus: CancelOrderStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        isFailedTheFirstTime.remove('CancelOrderEvent');
+
+        debugPrint('CancelOrderStatus success');
+
+        // إظهار رسالة النجاح من الباك إند
+        showMessage(
+          r.message ?? 'تم إلغاء الطلب بنجاح',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+
+        ////////////////////////////////////////////
+        emit(
+          state.copyWith(
+            cancelOrderStatus: CancelOrderStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onChangeOrderAddressEvent(
+    ChangeOrderAddressEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        changeOrderAddressStatus: ChangeOrderAddressStatus.loading,
+      ),
+    );
+
+    final response = await changeOrderAddressUsecase(
+      event.changeOrderAddressParams,
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('ChangeOrderAddressEvent')) {
+          add(
+            ChangeOrderAddressEvent(
+                changeOrderAddressParams: event.changeOrderAddressParams),
+          );
+          isFailedTheFirstTime.add('ChangeOrderAddressEvent');
+        }
+        emit(
+          state.copyWith(
+            changeOrderAddressStatus: ChangeOrderAddressStatus.failure,
+          ),
+        );
+        // إظهار رسالة الفشل من الباك إند
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.red,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+      },
+      (r) async {
+        isFailedTheFirstTime.remove('ChangeOrderAddressEvent');
+
+        debugPrint('ChangeOrderAddressStatus success');
+
+        // إظهار رسالة النجاح من الباك إند
+        showMessage(
+          r.message ?? 'تم تغيير العنوان بنجاح',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+
+        ////////////////////////////////////////////
+        emit(
+          state.copyWith(
+            changeOrderAddressStatus: ChangeOrderAddressStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
   //////////////////////////////////////////////////////////
 
   @override
@@ -1051,6 +1248,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           placeOrderStatus: PlaceOrderStatus.init,
           getOrdersModel: {},
           applyCouponStatus: ApplyCouponStatus.init,
+          cancelOrderItemStatus: CancelOrderItemStatus.init,
+          cancelOrderStatus: CancelOrderStatus.init,
         )
         .toJson();
   }

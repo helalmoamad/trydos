@@ -13,6 +13,7 @@ import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
 import '../models/upload_story_response_model.dart';
+import '../models/delete_story_model.dart';
 import '../../data/models/get_stories_model.dart';
 
 @injectable
@@ -122,5 +123,18 @@ class StoriesDataSource {
     );
     // uploadStory.call();
     return addStoryToOurServer();
+  }
+
+  Future<DeleteStoryModel> deleteStory(Map<String, dynamic> params) {
+    PostClient<DeleteStoryModel> deleteStory = PostClient<DeleteStoryModel>(
+      requestPrams: RequestConfig<DeleteStoryModel>(
+        endpoint: StoriesEndPoints.deleteStoryEP,
+        data: params,
+        response: ResponseValue<DeleteStoryModel>(
+            fromJson: (response) => DeleteStoryModel.fromJson(response)),
+      ),
+      serverName: ServerName.stories,
+    );
+    return deleteStory();
   }
 }

@@ -38,6 +38,9 @@ import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_story_for_product_model.dart';
 import '../../data/models/get_user_notifications_model.dart';
 import '../../data/models/place_order_model.dart';
+import '../../data/models/cancel_order_item_model.dart';
+import '../../data/models/cancel_order_model.dart';
+import '../../data/models/change_order_address_model.dart';
 
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
@@ -176,4 +179,13 @@ abstract class HomeRepository {
 
   Future<Either<Failure, OrderModel>> getOrders(
       {required Map<String, dynamic> params});
+
+  Future<Either<Failure, CancelOrderItemModel>> cancelOrderItem(
+      Map<String, dynamic> params);
+
+  Future<Either<Failure, CancelOrderModel>> cancelOrder(
+      Map<String, dynamic> params);
+
+  Future<Either<Failure, ChangeOrderAddressModel>> changeOrderAddress(
+      Map<String, dynamic> params);
 }

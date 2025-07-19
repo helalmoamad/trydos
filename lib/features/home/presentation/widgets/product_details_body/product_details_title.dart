@@ -22,20 +22,18 @@ import 'package:get_it/get_it.dart';
 
 class ProductDetailsTitle extends StatelessWidget {
   final Brand.Brand? brand;
-  final String flashDealTime;
+
   final String productName;
   final String productId;
   final String thumbnail;
   final String colorName;
   final double orginalWidth;
-  final List<String> lableNames;
+
   final double orginalHeight;
   ProductDetailsTitle(
       {super.key,
       this.brand,
       required this.productName,
-      required this.flashDealTime,
-      required this.lableNames,
       required this.thumbnail,
       required this.productId,
       required this.orginalHeight,
@@ -86,131 +84,6 @@ class ProductDetailsTitle extends StatelessWidget {
                               : SizedBox.shrink()
                           : SizedBox.shrink()
                       : SizedBox.shrink(),
-                  flashDealTime == ""
-                      ? SizedBox.shrink()
-                      : Container(
-                          margin: EdgeInsets.symmetric(vertical: 2),
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          height: 50,
-                          width: 105,
-                          constraints: BoxConstraints(maxWidth: 150),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color.fromARGB(234, 255, 65, 40),
-                                  Color.fromARGB(255, 255, 119, 40)
-                                ]),
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SvgPicture.asset(
-                                    AppAssets.flashDealSvg,
-                                    height: 16,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    "${LocaleKeys.flash_deal.tr()}",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.bodyMedium?.rr
-                                        .copyWith(
-                                      color: Colors.white,
-                                      letterSpacing: 0.18,
-                                      fontSize: 14,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(width: 2),
-                              FlashDealCountdownTimerWidget(
-                                endDateString: flashDealTime,
-                              )
-                            ],
-                          ),
-                        ),
-                  lableNames.length == 0
-                      ? SizedBox.shrink()
-                      : Container(
-                          width: 120,
-                          height: 70,
-                          child: Column(
-                            children: [
-                              ...List.generate(
-                                  (lableNames.length) > 2
-                                      ? 2
-                                      : (lableNames.length),
-                                  (index) => Container(
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 2),
-                                        alignment: Alignment.center,
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 5),
-                                        height: 30,
-                                        constraints:
-                                            BoxConstraints(maxWidth: 120),
-                                        decoration: BoxDecoration(
-                                          gradient: ((index % 2) == 0)
-                                              ? LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: [
-                                                      Color.fromARGB(
-                                                          255, 255, 119, 40),
-                                                      Color.fromARGB(
-                                                          162, 255, 119, 40)
-                                                    ])
-                                              : LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: [
-                                                      Color.fromARGB(
-                                                          255, 79, 40, 255),
-                                                      Color.fromARGB(
-                                                          106, 79, 40, 255)
-                                                    ]),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(12)),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            SvgPicture.asset(
-                                              AppAssets.lableSvg,
-                                              height: 16,
-                                              color: Colors.white,
-                                            ),
-                                            SizedBox(
-                                              width: 2,
-                                            ),
-                                            Text(
-                                              lableNames[index],
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: context
-                                                  .textTheme.bodyMedium?.rr
-                                                  .copyWith(
-                                                color: Colors.white,
-                                                letterSpacing: 0.18,
-                                                fontSize: 14,
-                                                height: 1.3,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ))
-                            ],
-                          ),
-                        ),
                   state.getAndAddCountViewOfProductStatus[productId] == null ||
                           state.cachedProductWithoutRelatedProductsModel[
                                   productId] ==

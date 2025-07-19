@@ -39,6 +39,7 @@ import '../../../app/my_text_widget.dart';
 import '../utils/firebase_presence.dart';
 import 'chat_widgets/no_image_widget.dart';
 import 'chat_widgets/voice_waves_in_recording.dart';
+import 'chat_image_preview_widget.dart';
 
 class ChatInputField extends StatefulWidget {
   const ChatInputField({
@@ -68,6 +69,43 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
     const Duration(microseconds: 1),
     () {},
   );
+
+  // متغيرات إدارة معاينة الصورة
+  bool _showImagePreview = false;
+  File? _imageToPreview;
+
+  // دوال معالجة معاينة الصورة
+  void _showImagePreviewScreen(File image) {
+    if (mounted) {
+      // إخفاء لوحة المفاتيح أولاً
+      FocusScope.of(context).unfocus();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _imageToPreview = image;
+            _showImagePreview = true;
+          });
+        }
+      });
+    }
+  }
+
+  void _hideImagePreview() {
+    if (mounted) {
+      setState(() {
+        _showImagePreview = false;
+        _imageToPreview = null;
+      });
+
+      // إعادة التركيز على حقل النص بعد إغلاق المعاينة
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          FocusScope.of(context).requestFocus(FocusNode());
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -116,113 +154,51 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
 
         return SafeArea(
           child: Container(
-            // Add bottom padding to account for keyboard
+            // Add bottom padding to account for keyboard (إلا عند عرض المعاينة)
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
+              bottom: _showImagePreview
+                  ? 0
+                  : MediaQuery.of(context).viewInsets.bottom,
             ),
             child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            state.thereIsReply
-                ? Container(
-                    height: 103,
-                    width: 1.sw,
-                    padding: const EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(
-                        color: state.replyOnMe
-                            ? const Color(0xffF1FDE3)
-                            : const Color(0xffD5F6E6),
-                        boxShadow: [
-                          BoxShadow(
-                              offset: const Offset(0, 2),
-                              color: Color.fromARGB(41, 255, 255, 255),
+              alignment: Alignment.bottomCenter,
+              children: [
+                // شاشة معاينة الصورة
+                if (_showImagePreview && _imageToPreview != null)
+                  ChatImagePreviewWidget(
+                    imageFile: _imageToPreview!,
+                    onSend: (File file) {
+                      widget.onSendFile.call(file, 'image');
+                      _hideImagePreview();
+                    },
+                    onCancel: _hideImagePreview,
+                  ),
+                state.thereIsReply
+                    ? Container(
+                        height: 103,
+                        width: 1.sw,
+                        padding: const EdgeInsets.only(top: 10),
+                        decoration: BoxDecoration(
+                            color: state.replyOnMe
+                                ? const Color(0xffF1FDE3)
+                                : const Color(0xffD5F6E6),
+                            boxShadow: [
+                              BoxShadow(
+                                  offset: const Offset(0, 2),
+                                  color: Color.fromARGB(41, 255, 255, 255)
+                                      .withValues(),
 //                              colorScheme.black.withOpacity(0.16)
-                              blurRadius: 10)
-                        ]),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: state.replyType == 'text'
-                          ? Row(
-                              key: TestVariables.kTestMode
-                                  ? Key(WidgetsKeys.replayTextKey)
-                                  : null,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                20.horizontalSpace,
-                                SvgPicture.asset(
-                                  AppAssets.replyOnMessageSvg,
-                                  width: 20.w,
-                                  height: 20,
-                                ),
-                                15.horizontalSpace,
-                                InkWell(
-                                  focusColor: Colors.transparent,
-                                  splashColor: Colors.transparent,
-                                  onTap: () {
-                                    BlocProvider.of<AppBloc>(context).add(
-                                            RefreshChatInputField(
-                                                false, '', false,
-                                            messageId: null,
-                                            message: null,
-                                            senderParentMessageId: null,
-                                            imageUrl: null,
-                                            time: null));
-                                  },
-                                  child: SvgPicture.asset(
-                                    AppAssets.closeSvg,
-                                    width: 15.w,
-                                    height: 15,
-                                  ),
-                                ),
-                                20.horizontalSpace,
-                                Expanded(
-                                  child: MyTextWidget(
-                                    state.message.toString(),
-                                        style: textTheme.titleMedium?.lr
-                                            .copyWith(
-                                        color: colorScheme.grey200,
-                                        height: 1.66),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                10.horizontalSpace,
-                                widget.senderUserImage != null
-                                    ? MyCachedNetworkImage(
-                                        imageUrl: (widget.senderUserImage
-                                                    .toString()
-                                                    .contains("cloudinary")
-                                                ? ""
-                                                : "${dotenv.env['Images_Url']}") +
-                                            widget.senderUserImage!,
-                                        imageFit: BoxFit.cover,
-                                        progressIndicatorBuilderWidget:
-                                            TrydosLoader(),
-                                        radius: 8,
-                                        width: 30.sp,
-                                        height: 30.sp)
-                                    : NoImageWidget(
-                                        width: 30.sp,
-                                        height: 30.sp,
-                                        textStyle: context
-                                            .textTheme.titleMedium?.br
-                                            .copyWith(
-                                                    color:
-                                                        const Color(0xff6638FF),
-                                                letterSpacing: 0.18,
-                                                height: 1.33),
-                                        radius: 8,
-                                        name: widget.senderName),
-                                20.horizontalSpace,
-                              ],
-                            )
-                          : state.replyType == 'image'
+                                  blurRadius: 10)
+                            ]),
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: state.replyType == 'text'
                               ? Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                  key: TestVariables.kTestMode
+                                      ? Key(WidgetsKeys.replayTextKey)
+                                      : null,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     20.horizontalSpace,
                                     SvgPicture.asset(
@@ -235,9 +211,14 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () {
-                                            BlocProvider.of<AppBloc>(context)
-                                                .add(RefreshChatInputField(
-                                                false, '', false));
+                                        BlocProvider.of<AppBloc>(context).add(
+                                            RefreshChatInputField(
+                                                false, '', false,
+                                                messageId: null,
+                                                message: null,
+                                                senderParentMessageId: null,
+                                                imageUrl: null,
+                                                time: null));
                                       },
                                       child: SvgPicture.asset(
                                         AppAssets.closeSvg,
@@ -246,63 +227,23 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                        state.imageUrl
-                                                    ?.contains('cloudinary') ??
-                                            false
-                                        ? MyCachedNetworkImage(
-                                            height: 40.sp,
-                                            width: 40.sp,
-                                            progressIndicatorBuilderWidget:
-                                                TrydosLoader(),
-                                            imageFit: BoxFit.cover,
-                                            imageUrl: state.imageUrl!,
-                                          )
-                                        : Container(
-                                            width: 40.sp,
-                                            height: 40.sp,
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: FileImage(
-                                                    File(state.imageUrl!)),
-                                                fit: BoxFit.cover,
-                                              ),
-                                              borderRadius:
-                                                      BorderRadius.circular(
-                                                          12.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                      color: Color.fromARGB(
-                                                          1, 0, 0, 0)
-//                                                  context
-//                                                      .colorScheme.black
-//                                                      .withOpacity(0.05)
-
-                                                  ,
-                                                      offset:
-                                                          const Offset(0, 3),
-                                                  blurRadius: 6,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                    10.horizontalSpace,
-                                    MyTextWidget(
-                                      LocaleKeys.photo.tr(),
-                                          style: textTheme.titleMedium?.lr
-                                              .copyWith(
-                                          color: colorScheme.grey200,
-                                          height: 1.66),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                    Expanded(
+                                      child: MyTextWidget(
+                                        state.message.toString(),
+                                        style: textTheme.titleMedium?.lr
+                                            .copyWith(
+                                                color: colorScheme.grey200,
+                                                height: 1.66),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    const Spacer(),
+                                    10.horizontalSpace,
                                     widget.senderUserImage != null
                                         ? MyCachedNetworkImage(
-                                                imageUrl: (widget
-                                                            .senderUserImage
+                                            imageUrl: (widget.senderUserImage
                                                         .toString()
-                                                            .contains(
-                                                                "cloudinary")
+                                                        .contains("cloudinary")
                                                     ? ""
                                                     : "${dotenv.env['Images_Url']}") +
                                                 widget.senderUserImage!,
@@ -318,8 +259,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             textStyle: context
                                                 .textTheme.titleMedium?.br
                                                 .copyWith(
-                                                        color: const Color(
-                                                            0xff6638FF),
+                                                    color:
+                                                        const Color(0xff6638FF),
                                                     letterSpacing: 0.18,
                                                     height: 1.33),
                                             radius: 8,
@@ -327,7 +268,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     20.horizontalSpace,
                                   ],
                                 )
-                              : state.replyType == 'file'
+                              : state.replyType == 'image'
                                   ? Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -345,8 +286,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           focusColor: Colors.transparent,
                                           splashColor: Colors.transparent,
                                           onTap: () {
-                                                BlocProvider.of<AppBloc>(
-                                                        context)
+                                            BlocProvider.of<AppBloc>(context)
                                                 .add(RefreshChatInputField(
                                                     false, '', false));
                                           },
@@ -357,24 +297,54 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           ),
                                         ),
                                         20.horizontalSpace,
-                                        SvgPicture.asset(
-                                          AppAssets.documentSvg,
-                                          width: 25,
-                                          height: 25,
-                                        ),
+                                        state.imageUrl
+                                                    ?.contains('cloudinary') ??
+                                                false
+                                            ? MyCachedNetworkImage(
+                                                height: 40.sp,
+                                                width: 40.sp,
+                                                progressIndicatorBuilderWidget:
+                                                    TrydosLoader(),
+                                                imageFit: BoxFit.cover,
+                                                imageUrl: state.imageUrl!,
+                                              )
+                                            : Container(
+                                                width: 40.sp,
+                                                height: 40.sp,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: FileImage(
+                                                        File(state.imageUrl!)),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Color.fromARGB(
+                                                          1, 0, 0, 0)
+//                                                  context
+//                                                      .colorScheme.black
+//                                                      .withOpacity(0.05)
+
+                                                      ,
+                                                      offset:
+                                                          const Offset(0, 3),
+                                                      blurRadius: 6,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                         10.horizontalSpace,
-                                        SizedBox(
-                                          width: 200.w,
-                                          child: MyTextWidget(
-                                            state.message.toString(),
-                                            style: textTheme.titleMedium?.lr
-                                                .copyWith(
-                                                        color:
-                                                            colorScheme.grey200,
-                                                    height: 1.66),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                        MyTextWidget(
+                                          LocaleKeys.photo.tr(),
+                                          style: textTheme.titleMedium?.lr
+                                              .copyWith(
+                                                  color: colorScheme.grey200,
+                                                  height: 1.66),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         const Spacer(),
                                         widget.senderUserImage != null
@@ -396,8 +366,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             : NoImageWidget(
                                                 width: 30.sp,
                                                 height: 30.sp,
-                                                    textStyle: context.textTheme
-                                                        .titleMedium?.br
+                                                textStyle: context
+                                                    .textTheme.titleMedium?.br
                                                     .copyWith(
                                                         color: const Color(
                                                             0xff6638FF),
@@ -408,7 +378,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         20.horizontalSpace,
                                       ],
                                     )
-                                  : state.replyType == 'video'
+                                  : state.replyType == 'file'
                                       ? Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
@@ -423,18 +393,13 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             15.horizontalSpace,
                                             InkWell(
-                                                  focusColor:
-                                                      Colors.transparent,
-                                                  splashColor:
-                                                      Colors.transparent,
+                                              focusColor: Colors.transparent,
+                                              splashColor: Colors.transparent,
                                               onTap: () {
                                                 BlocProvider.of<AppBloc>(
                                                         context)
-                                                        .add(
-                                                            RefreshChatInputField(
-                                                                false,
-                                                                '',
-                                                                false));
+                                                    .add(RefreshChatInputField(
+                                                        false, '', false));
                                               },
                                               child: SvgPicture.asset(
                                                 AppAssets.closeSvg,
@@ -444,7 +409,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             20.horizontalSpace,
                                             SvgPicture.asset(
-                                              AppAssets.lastMessageVideoSvg,
+                                              AppAssets.documentSvg,
                                               width: 25,
                                               height: 25,
                                             ),
@@ -453,15 +418,13 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               width: 200.w,
                                               child: MyTextWidget(
                                                 state.message.toString(),
-                                                    style: textTheme
-                                                        .titleMedium?.lr
+                                                style: textTheme.titleMedium?.lr
                                                     .copyWith(
-                                                            color: colorScheme
-                                                                .grey200,
+                                                        color:
+                                                            colorScheme.grey200,
                                                         height: 1.66),
                                                 maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
                                             const Spacer(),
@@ -474,10 +437,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                                     "cloudinary")
                                                             ? ""
                                                             : "${dotenv.env['Images_Url']}") +
-                                                            widget
-                                                                .senderUserImage!,
+                                                        widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
-                                                    withImageShadow: true,
                                                     progressIndicatorBuilderWidget:
                                                         TrydosLoader(),
                                                     radius: 8,
@@ -486,439 +447,541 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 : NoImageWidget(
                                                     width: 30.sp,
                                                     height: 30.sp,
-                                                        textStyle: context
-                                                            .textTheme
-                                                            .titleMedium
-                                                            ?.br
+                                                    textStyle: context.textTheme
+                                                        .titleMedium?.br
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff6638FF),
-                                                                letterSpacing:
-                                                                    0.18,
+                                                            letterSpacing: 0.18,
                                                             height: 1.33),
                                                     radius: 8,
-                                                        name:
-                                                            widget.senderName),
+                                                    name: widget.senderName),
                                             20.horizontalSpace,
                                           ],
                                         )
-                                      : Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            20.horizontalSpace,
-                                            SvgPicture.asset(
-                                              AppAssets.replyOnMessageSvg,
-                                              width: 20.w,
-                                              height: 20,
-                                            ),
-                                            15.horizontalSpace,
-                                            InkWell(
+                                      : state.replyType == 'video'
+                                          ? Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                20.horizontalSpace,
+                                                SvgPicture.asset(
+                                                  AppAssets.replyOnMessageSvg,
+                                                  width: 20.w,
+                                                  height: 20,
+                                                ),
+                                                15.horizontalSpace,
+                                                InkWell(
                                                   focusColor:
                                                       Colors.transparent,
                                                   splashColor:
                                                       Colors.transparent,
-                                              onTap: () {
-                                                BlocProvider.of<AppBloc>(
-                                                        context)
+                                                  onTap: () {
+                                                    BlocProvider.of<AppBloc>(
+                                                            context)
                                                         .add(
                                                             RefreshChatInputField(
                                                                 false,
                                                                 '',
                                                                 false));
-                                              },
-                                              child: SvgPicture.asset(
-                                                AppAssets.closeSvg,
-                                                width: 15.w,
-                                                height: 15,
-                                              ),
-                                            ),
-                                            20.horizontalSpace,
-                                            SvgPicture.asset(
-                                              AppAssets.voicePlayedSvg,
-                                              width: 40.sp,
-                                              height: 40.sp,
-                                            ),
-                                            10.horizontalSpace,
-                                            MyTextWidget(
-                                              LocaleKeys.voice.tr(),
-                                                  style: textTheme
-                                                      .titleMedium?.lr
-                                                  .copyWith(
-                                                          color: colorScheme
-                                                              .grey200,
-                                                      height: 1.66),
-                                              maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                            ),
-                                            const Spacer(),
-                                            widget.senderUserImage != null
-                                                ? MyCachedNetworkImage(
-                                                    imageUrl: (widget
-                                                                .senderUserImage
-                                                                .toString()
-                                                                .contains(
-                                                                    "cloudinary")
-                                                            ? widget
-                                                                .senderUserImage!
-                                                            : "${dotenv.env['Images_Url']}") +
+                                                  },
+                                                  child: SvgPicture.asset(
+                                                    AppAssets.closeSvg,
+                                                    width: 15.w,
+                                                    height: 15,
+                                                  ),
+                                                ),
+                                                20.horizontalSpace,
+                                                SvgPicture.asset(
+                                                  AppAssets.lastMessageVideoSvg,
+                                                  width: 25,
+                                                  height: 25,
+                                                ),
+                                                10.horizontalSpace,
+                                                SizedBox(
+                                                  width: 200.w,
+                                                  child: MyTextWidget(
+                                                    state.message.toString(),
+                                                    style: textTheme
+                                                        .titleMedium?.lr
+                                                        .copyWith(
+                                                            color: colorScheme
+                                                                .grey200,
+                                                            height: 1.66),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                const Spacer(),
+                                                widget.senderUserImage != null
+                                                    ? MyCachedNetworkImage(
+                                                        imageUrl: (widget
+                                                                    .senderUserImage
+                                                                    .toString()
+                                                                    .contains(
+                                                                        "cloudinary")
+                                                                ? ""
+                                                                : "${dotenv.env['Images_Url']}") +
                                                             widget
                                                                 .senderUserImage!,
-                                                    imageFit: BoxFit.cover,
-                                                    radius: 8,
-                                                    progressIndicatorBuilderWidget:
-                                                        TrydosLoader(),
-                                                    width: 30.sp,
-                                                    height: 30.sp)
-                                                : NoImageWidget(
-                                                    width: 30.sp,
-                                                    height: 30.sp,
+                                                        imageFit: BoxFit.cover,
+                                                        withImageShadow: true,
+                                                        progressIndicatorBuilderWidget:
+                                                            TrydosLoader(),
+                                                        radius: 8,
+                                                        width: 30.sp,
+                                                        height: 30.sp)
+                                                    : NoImageWidget(
+                                                        width: 30.sp,
+                                                        height: 30.sp,
                                                         textStyle: context
                                                             .textTheme
                                                             .titleMedium
                                                             ?.br
-                                                        .copyWith(
-                                                            color: const Color(
-                                                                0xff6638FF),
+                                                            .copyWith(
+                                                                color: const Color(
+                                                                    0xff6638FF),
                                                                 letterSpacing:
                                                                     0.18,
-                                                            height: 1.33),
-                                                    radius: 8,
+                                                                height: 1.33),
+                                                        radius: 8,
                                                         name:
                                                             widget.senderName),
-                                            20.horizontalSpace,
-                                          ],
+                                                20.horizontalSpace,
+                                              ],
+                                            )
+                                          : Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                20.horizontalSpace,
+                                                SvgPicture.asset(
+                                                  AppAssets.replyOnMessageSvg,
+                                                  width: 20.w,
+                                                  height: 20,
+                                                ),
+                                                15.horizontalSpace,
+                                                InkWell(
+                                                  focusColor:
+                                                      Colors.transparent,
+                                                  splashColor:
+                                                      Colors.transparent,
+                                                  onTap: () {
+                                                    BlocProvider.of<AppBloc>(
+                                                            context)
+                                                        .add(
+                                                            RefreshChatInputField(
+                                                                false,
+                                                                '',
+                                                                false));
+                                                  },
+                                                  child: SvgPicture.asset(
+                                                    AppAssets.closeSvg,
+                                                    width: 15.w,
+                                                    height: 15,
+                                                  ),
+                                                ),
+                                                20.horizontalSpace,
+                                                SvgPicture.asset(
+                                                  AppAssets.voicePlayedSvg,
+                                                  width: 40.sp,
+                                                  height: 40.sp,
+                                                ),
+                                                10.horizontalSpace,
+                                                MyTextWidget(
+                                                  LocaleKeys.voice.tr(),
+                                                  style: textTheme
+                                                      .titleMedium?.lr
+                                                      .copyWith(
+                                                          color: colorScheme
+                                                              .grey200,
+                                                          height: 1.66),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const Spacer(),
+                                                widget.senderUserImage != null
+                                                    ? MyCachedNetworkImage(
+                                                        imageUrl: (widget
+                                                                    .senderUserImage
+                                                                    .toString()
+                                                                    .contains(
+                                                                        "cloudinary")
+                                                                ? widget
+                                                                    .senderUserImage!
+                                                                : "${dotenv.env['Images_Url']}") +
+                                                            widget
+                                                                .senderUserImage!,
+                                                        imageFit: BoxFit.cover,
+                                                        radius: 8,
+                                                        progressIndicatorBuilderWidget:
+                                                            TrydosLoader(),
+                                                        width: 30.sp,
+                                                        height: 30.sp)
+                                                    : NoImageWidget(
+                                                        width: 30.sp,
+                                                        height: 30.sp,
+                                                        textStyle: context
+                                                            .textTheme
+                                                            .titleMedium
+                                                            ?.br
+                                                            .copyWith(
+                                                                color: const Color(
+                                                                    0xff6638FF),
+                                                                letterSpacing:
+                                                                    0.18,
+                                                                height: 1.33),
+                                                        radius: 8,
+                                                        name:
+                                                            widget.senderName),
+                                                20.horizontalSpace,
+                                              ],
+                                            ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                ValueListenableBuilder<bool>(
+                    valueListenable: thereTextNotifier,
+                    builder: (context, thereText, _) {
+                      return ValueListenableBuilder<bool>(
+                          valueListenable: recordingNotifier,
+                          builder: (context, recording, _) {
+                            return Container(
+                              height: 50,
+                              width: 1.sw,
+                              color: const Color(0xffF6F6F6),
+                              child: recording
+                                  ? Row(
+                                      children: [
+                                        10.horizontalSpace,
+                                        SvgPicture.asset(
+                                          AppAssets.recordingVoiceSvg,
+                                          width: 43.w,
+                                          height: 40,
                                         ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            ValueListenableBuilder<bool>(
-                valueListenable: thereTextNotifier,
-                builder: (context, thereText, _) {
-                  return ValueListenableBuilder<bool>(
-                      valueListenable: recordingNotifier,
-                      builder: (context, recording, _) {
-                        return Container(
-                          height: 50,
-                          width: 1.sw,
-                          color: const Color(0xffF6F6F6),
-                          child: recording
-                              ? Row(
-                                  children: [
-                                    10.horizontalSpace,
-                                    SvgPicture.asset(
-                                      AppAssets.recordingVoiceSvg,
-                                      width: 43.w,
-                                      height: 40,
-                                    ),
-                                    32.horizontalSpace,
-                                    StreamBuilder<RecordingDisposition>(
-                                        stream: recorder.onProgress,
-                                        builder: (context, snapShot) {
-                                          final duration = snapShot.hasData
-                                              ? snapShot.data!.duration
-                                              : Duration.zero;
-                                          final String minutes = duration
-                                              .inMinutes
-                                              .remainder(60)
-                                              .toString();
-                                          final String seconds =
+                                        32.horizontalSpace,
+                                        StreamBuilder<RecordingDisposition>(
+                                            stream: recorder.onProgress,
+                                            builder: (context, snapShot) {
+                                              final duration = snapShot.hasData
+                                                  ? snapShot.data!.duration
+                                                  : Duration.zero;
+                                              final String minutes = duration
+                                                  .inMinutes
+                                                  .remainder(60)
+                                                  .toString();
+                                              final String seconds =
                                                   HelperFunctions.twoDigits(
                                                       duration.inSeconds
-                                                  .remainder(60));
+                                                          .remainder(60));
 
-                                          return MyTextWidget(
-                                              '$minutes:$seconds',
+                                              return MyTextWidget(
+                                                  '$minutes:$seconds',
                                                   style: textTheme
                                                       .bodyMedium?.rr
-                                                  .copyWith(
+                                                      .copyWith(
                                                     color:
                                                         const Color(0xff404040),
-                                                letterSpacing: 0.18,
-                                                height: 1.11,
-                                              ));
-                                        }),
-                                    const Spacer(),
-                                    const VoiceWavesInRecording(),
-                                    20.horizontalSpace,
-                                    InkWell(
-                                      focusColor: Colors.transparent,
-                                      splashColor: Colors.transparent,
-                                      onTap: () async {
-                                        if (!recorderReady) {
-                                          final bool isInitialized =
-                                              await initializeRecorder();
-                                          if (!isInitialized) return;
-                                        }
-                                        recordingNotifier.value = false;
-                                            FirebasePresence
-                                                .deleteUserTransaction(
-                                          channelId: widget.channelId,
-                                        );
-                                            final String path = (await recorder
-                                                .stopRecorder())!;
-                                            recorder.deleteRecord(
-                                                fileName: path);
-                                      },
-                                      child: MyTextWidget(
-                                          LocaleKeys.cansel.tr(),
-                                          style: textTheme.titleLarge?.rr
-                                              .copyWith(
-                                                  letterSpacing: 0.14,
-                                                      height:
-                                                          1.4285714285714286,
-                                                      color: const Color(
-                                                          0xff404040))),
-                                    ),
-                                    const Spacer(),
-                                    InkWell(
-                                      focusColor: Colors.transparent,
-                                      splashColor: Colors.transparent,
-                                      onTap: () async {
-                                        final path =
-                                            await recorder.stopRecorder();
-                                        final audioFile = File(path!);
-                                            FirebasePresence
-                                                .deleteUserTransaction(
-                                          channelId: widget.channelId,
-                                        );
-                                            widget.onSendFile(
-                                                audioFile, 'voice');
-                                        recordingNotifier.value = false;
-                                      },
-                                      child: Padding(
-                                        padding: HWEdgeInsets.all(10.0),
-                                        child: SvgPicture.asset(
-                                          AppAssets.messageReadArrowSvg,
-                                          width: 20.w,
-                                          height: 20,
-                                        ),
-                                      ),
-                                    ),
-                                    14.horizontalSpace,
-                                  ],
-                                )
-                              : Row(
-                                  children: [
-                                    13.horizontalSpace,
-                                    InkWell(
-                                      focusColor: Colors.transparent,
-                                      splashColor: Colors.transparent,
-                                      onTap: () async {
-                                            FirebasePresence
-                                                .sendUserTransaction(
-                                          channelId: widget.channelId,
-                                          description:
-                                              LocaleKeys.sending_file.tr(),
-                                        );
-                                        File? file = await HelperFunctions
-                                            .pickDocumentFile();
-                                            FirebasePresence
-                                                .deleteUserTransaction(
-                                          channelId: widget.channelId,
-                                        );
-                                        if (file != null) {
-                                          widget.onSendFile(file, 'file');
-                                        }
-                                      },
-                                      child: SvgPicture.asset(
-                                        AppAssets.addStickersSvg,
-                                        width: 43.w,
-                                        height: 40,
-                                      ),
-                                    ),
-                                    5.horizontalSpace,
-                                    Expanded(
-                                      child: Padding(
-                                        padding: HWEdgeInsets.symmetric(
-                                            vertical: 7.0),
-                                        child: AppTextField(
-                                          key: TestVariables.kTestMode
-                                              ? Key(
-                                                  WidgetsKeys
-                                                      .sendMessageTextFieldKey,
-                                                )
-                                              : null,
-                                          controller: form.controllers[0],
-                                          onChange: (text) {
-                                            _typingTimer.cancel();
-                                            try {
-                                              FirebasePresence
-                                                  .sendUserTransaction(
-                                                channelId: widget.channelId,
-                                                description:
-                                                    LocaleKeys.typing.tr(),
-                                              );
-                                              // pusherChatService
-                                              //     .sendActivityEvent(
-                                              //         widget.channelId,
-                                              //         'Typing...');
-                                            } catch (e) {
-                                              debugPrint(e.toString());
+                                                    letterSpacing: 0.18,
+                                                    height: 1.11,
+                                                  ));
+                                            }),
+                                        const Spacer(),
+                                        const VoiceWavesInRecording(),
+                                        20.horizontalSpace,
+                                        InkWell(
+                                          focusColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
+                                          onTap: () async {
+                                            if (!recorderReady) {
+                                              final bool isInitialized =
+                                                  await initializeRecorder();
+                                              if (!isInitialized) return;
                                             }
-                                            _typingTimer = Timer(
-                                                    const Duration(seconds: 1),
-                                                    () {
-                                              FirebasePresence
-                                                  .deleteUserTransaction(
-                                                channelId: widget.channelId,
-                                              );
-                                            });
-                                          },
-                                          contentPadding:
-                                              HWEdgeInsets.symmetric(
-                                                  horizontal: 12)
-                                                ..copyWith(right: 0),
-                                        ),
-                                      ),
-                                    ),
-                                    5.horizontalSpace,
-                                    if (!thereText) ...{
-                                      InkWell(
-                                        focusColor: Colors.transparent,
-                                        splashColor: Colors.transparent,
-                                        onTap: () async {
-                                              FirebasePresence
-                                                  .sendUserTransaction(
-                                            channelId: widget.channelId,
-                                                description: LocaleKeys
-                                                    .sending_file
-                                                    .tr(),
-                                          );
-                                          showDialog(
-                                              context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                return GalleryAndCameraDialogWidget(
-                                                    onChooseFileFromGalleryAction:
-                                                        (AssetEntity?
-                                                            assetEntity) async {
-                                                  if (assetEntity != null) {
-                                                    File file =
-                                                        (await assetEntity
-                                                            .originFile)!;
-                                                    String mimeStr =
-                                                        lookupMimeType(file
-                                                                .absolute
-                                                                .path) ??
-                                                            '';
-                                                    var fileType =
-                                                        mimeStr.split('/');
-                                                        log(fileType
-                                                            .toString());
-                                                    if (fileType[0] ==
-                                                        'image') {
-                                                      widget.onSendFile
-                                                              .call(file,
-                                                                  'image');
-                                                    } else {
-                                                      widget.onSendFile
-                                                              .call(file,
-                                                                  'video');
-                                                    }
-                                                  }
-                                                }, onChooseFileFromCameraAction:
-                                                        (File? file) {
-                                                  if (file != null) {
-                                                    String mimeStr =
-                                                        lookupMimeType(file
-                                                                .absolute
-                                                                .path) ??
-                                                            '';
-                                                    var fileType =
-                                                        mimeStr.split('/');
-                                                        log(fileType
-                                                            .toString());
-                                                    if (fileType[0] ==
-                                                        'image') {
-                                                      widget.onSendFile
-                                                              .call(file,
-                                                                  'image');
-                                                    } else {
-                                                      widget.onSendFile
-                                                              .call(file,
-                                                                  'video');
-                                                    }
-                                                  }
-                                                });
-                                              }).then((value) {
+                                            recordingNotifier.value = false;
                                             FirebasePresence
                                                 .deleteUserTransaction(
                                               channelId: widget.channelId,
                                             );
-                                          });
-                                        },
-                                        child: SvgPicture.asset(
-                                          AppAssets.takePictureSvg,
-                                          width: 50.w,
-                                          height: 40,
+                                            final String path = (await recorder
+                                                .stopRecorder())!;
+                                            recorder.deleteRecord(
+                                                fileName: path);
+                                          },
+                                          child: MyTextWidget(
+                                              LocaleKeys.cansel.tr(),
+                                              style: textTheme.titleLarge?.rr
+                                                  .copyWith(
+                                                      letterSpacing: 0.14,
+                                                      height:
+                                                          1.4285714285714286,
+                                                      color: const Color(
+                                                          0xff404040))),
                                         ),
-                                      ),
-                                      10.horizontalSpace,
-                                      InkWell(
-                                        focusColor: Colors.transparent,
-                                        splashColor: Colors.transparent,
-                                        onTap: () async {
-                                          if (!recorderReady) {
-                                            bool isInitialized =
-                                                await initializeRecorder();
-                                            if (!isInitialized) return;
-                                          }
-                                          if (recorder.isRecording) {
-                                            return;
-                                          }
+                                        const Spacer(),
+                                        InkWell(
+                                          focusColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
+                                          onTap: () async {
+                                            final path =
+                                                await recorder.stopRecorder();
+                                            final audioFile = File(path!);
+                                            FirebasePresence
+                                                .deleteUserTransaction(
+                                              channelId: widget.channelId,
+                                            );
+                                            widget.onSendFile(
+                                                audioFile, 'voice');
+                                            recordingNotifier.value = false;
+                                          },
+                                          child: Padding(
+                                            padding: HWEdgeInsets.all(10.0),
+                                            child: SvgPicture.asset(
+                                              AppAssets.messageReadArrowSvg,
+                                              width: 20.w,
+                                              height: 20,
+                                            ),
+                                          ),
+                                        ),
+                                        14.horizontalSpace,
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        13.horizontalSpace,
+                                        InkWell(
+                                          focusColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
+                                          onTap: () async {
+                                            FirebasePresence
+                                                .sendUserTransaction(
+                                              channelId: widget.channelId,
+                                              description:
+                                                  LocaleKeys.sending_file.tr(),
+                                            );
+                                            File? file = await HelperFunctions
+                                                .pickDocumentFile();
+                                            FirebasePresence
+                                                .deleteUserTransaction(
+                                              channelId: widget.channelId,
+                                            );
+                                            if (file != null) {
+                                              widget.onSendFile(file, 'file');
+                                            }
+                                          },
+                                          child: SvgPicture.asset(
+                                            AppAssets.addStickersSvg,
+                                            width: 43.w,
+                                            height: 40,
+                                          ),
+                                        ),
+                                        5.horizontalSpace,
+                                        Expanded(
+                                          child: Padding(
+                                            padding: HWEdgeInsets.symmetric(
+                                                vertical: 7.0),
+                                            child: AppTextField(
+                                              key: TestVariables.kTestMode
+                                                  ? Key(
+                                                      WidgetsKeys
+                                                          .sendMessageTextFieldKey,
+                                                    )
+                                                  : null,
+                                              controller: form.controllers[0],
+                                              enabled:
+                                                  !_showImagePreview, // تعطيل الحقل عند عرض المعاينة
+                                              onChange: (text) {
+                                                _typingTimer.cancel();
+                                                try {
+                                                  FirebasePresence
+                                                      .sendUserTransaction(
+                                                    channelId: widget.channelId,
+                                                    description:
+                                                        LocaleKeys.typing.tr(),
+                                                  );
+                                                  // pusherChatService
+                                                  //     .sendActivityEvent(
+                                                  //         widget.channelId,
+                                                  //         'Typing...');
+                                                } catch (e) {
+                                                  debugPrint(e.toString());
+                                                }
+                                                _typingTimer = Timer(
+                                                    const Duration(seconds: 1),
+                                                    () {
+                                                  FirebasePresence
+                                                      .deleteUserTransaction(
+                                                    channelId: widget.channelId,
+                                                  );
+                                                });
+                                              },
+                                              contentPadding:
+                                                  HWEdgeInsets.symmetric(
+                                                      horizontal: 12)
+                                                    ..copyWith(right: 0),
+                                            ),
+                                          ),
+                                        ),
+                                        5.horizontalSpace,
+                                        if (!thereText) ...{
+                                          InkWell(
+                                            focusColor: Colors.transparent,
+                                            splashColor: Colors.transparent,
+                                            onTap: () async {
                                               FirebasePresence
                                                   .sendUserTransaction(
-                                            channelId: widget.channelId,
-                                            description:
-                                                LocaleKeys.recording.tr(),
-                                          );
-                                          await recorder.startRecorder(
-                                            toFile:
-                                                'audio${const Uuid().v4()}.aac',
-                                          );
-                                          recordingNotifier.value = true;
-                                        },
-                                        child: SvgPicture.asset(
-                                          AppAssets.recordVoiceSvg,
-                                          width: 70.w,
-                                          height: 40,
-                                        ),
-                                      ),
-                                    } else ...{
-                                      InkWell(
-                                        key: TestVariables.kTestMode
-                                            ? Key(
-                                                WidgetsKeys
-                                                    .sendMessageInChatButtonKey,
-                                              )
-                                            : null,
-                                        focusColor: Colors.transparent,
-                                        splashColor: Colors.transparent,
-                                        onTap: () {
-                                          String message =
-                                              form.controllers[0].text;
-                                          form.controllers[0].text = '';
+                                                channelId: widget.channelId,
+                                                description: LocaleKeys
+                                                    .sending_file
+                                                    .tr(),
+                                              );
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return GalleryAndCameraDialogWidget(
+                                                        fromChat: true,
+                                                        onChooseFileFromGalleryAction:
+                                                            (AssetEntity?
+                                                                assetEntity) async {
+                                                          if (assetEntity !=
+                                                              null) {
+                                                            File file =
+                                                                (await assetEntity
+                                                                    .originFile)!;
+                                                            String mimeStr =
+                                                                lookupMimeType(file
+                                                                        .absolute
+                                                                        .path) ??
+                                                                    '';
+                                                            var fileType =
+                                                                mimeStr
+                                                                    .split('/');
+                                                            log(fileType
+                                                                .toString());
+                                                            if (fileType[0] ==
+                                                                'image') {
+                                                              widget.onSendFile
+                                                                  .call(file,
+                                                                      'image');
+                                                            } else {
+                                                              widget.onSendFile
+                                                                  .call(file,
+                                                                      'video');
+                                                            }
+                                                          }
+                                                        },
+                                                        onChooseFileFromCameraAction:
+                                                            (File? file) {
+                                                          if (file != null) {
+                                                            String mimeStr =
+                                                                lookupMimeType(file
+                                                                        .absolute
+                                                                        .path) ??
+                                                                    '';
+                                                            var fileType =
+                                                                mimeStr
+                                                                    .split('/');
+                                                            log(fileType
+                                                                .toString());
+                                                            if (fileType[0] ==
+                                                                'image') {
+                                                              widget.onSendFile
+                                                                  .call(file,
+                                                                      'image');
+                                                            } else {
+                                                              widget.onSendFile
+                                                                  .call(file,
+                                                                      'video');
+                                                            }
+                                                          }
+                                                        },
+                                                        onImagePreviewAction:
+                                                            (File image) {
+                                                          _showImagePreviewScreen(
+                                                              image);
+                                                        });
+                                                  }).then((value) {
+                                                FirebasePresence
+                                                    .deleteUserTransaction(
+                                                  channelId: widget.channelId,
+                                                );
+                                              });
+                                            },
+                                            child: SvgPicture.asset(
+                                              AppAssets.takePictureSvg,
+                                              width: 50.w,
+                                              height: 40,
+                                            ),
+                                          ),
+                                          10.horizontalSpace,
+                                          InkWell(
+                                            focusColor: Colors.transparent,
+                                            splashColor: Colors.transparent,
+                                            onTap: () async {
+                                              if (!recorderReady) {
+                                                bool isInitialized =
+                                                    await initializeRecorder();
+                                                if (!isInitialized) return;
+                                              }
+                                              if (recorder.isRecording) {
+                                                return;
+                                              }
+                                              FirebasePresence
+                                                  .sendUserTransaction(
+                                                channelId: widget.channelId,
+                                                description:
+                                                    LocaleKeys.recording.tr(),
+                                              );
+                                              await recorder.startRecorder(
+                                                toFile:
+                                                    'audio${const Uuid().v4()}.aac',
+                                              );
+                                              recordingNotifier.value = true;
+                                            },
+                                            child: SvgPicture.asset(
+                                              AppAssets.recordVoiceSvg,
+                                              width: 70.w,
+                                              height: 40,
+                                            ),
+                                          ),
+                                        } else ...{
+                                          InkWell(
+                                            key: TestVariables.kTestMode
+                                                ? Key(
+                                                    WidgetsKeys
+                                                        .sendMessageInChatButtonKey,
+                                                  )
+                                                : null,
+                                            focusColor: Colors.transparent,
+                                            splashColor: Colors.transparent,
+                                            onTap: () {
+                                              String message =
+                                                  form.controllers[0].text;
+                                              form.controllers[0].text = '';
                                               widget.onSendMessage
                                                   .call(message);
+                                            },
+                                            child: SvgPicture.asset(
+                                              AppAssets.sendMessageSvg,
+                                              width: 58.w,
+                                              height: 40,
+                                            ),
+                                          ),
                                         },
-                                        child: SvgPicture.asset(
-                                          AppAssets.sendMessageSvg,
-                                          width: 58.w,
-                                          height: 40,
-                                        ),
-                                      ),
-                                    },
-                                    5.horizontalSpace,
-                                  ],
-                                ),
-                        );
-                      });
-                })
-          ],
+                                        5.horizontalSpace,
+                                      ],
+                                    ),
+                            );
+                          });
+                    })
+              ],
             ),
           ),
         );

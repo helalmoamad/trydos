@@ -60,9 +60,14 @@ abstract class HandlingExceptionRequest {
       return const Left(
         ServerFailure("Unauth ", statusCode: 401),
       );
-    } on ServerException {
+    } on ServerException catch (e) {
       // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);
       prettyPrinterError("***|| ServerException ||*** ");
+      if (e.hashCode == 422) {
+        // مرر رسالة الباك الحقيقية
+        return Left(ServerFailure(e.message ?? "ServerException",
+            message: e.message, statusCode: 422));
+      }
       return const Left(
         ServerFailure("ServerException", statusCode: 400),
       );

@@ -136,8 +136,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ScrollController scrollController = ScrollController();
   final ScrollController scrollControllerFilter = ScrollController();
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
-  // final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
-  //   ValueNotifier(Tuple2(-1, -1));
+  final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
+      ValueNotifier(Tuple2(-1, -1));
   Timer? debounce;
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
@@ -157,6 +157,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   SpeechToText _speechToText = SpeechToText();
 
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
+  final ValueNotifier<bool> finishRedeem = ValueNotifier(false);
   Timer? searchDebounce;
   bool itExpendForFirst = true;
   String key = '';
@@ -173,6 +174,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       debounce!.cancel();
     }
     debounce = Timer(Duration(milliseconds: firstOpenPage ? 600 : 300), () {
+      if (setThisEnabledNotifier.value.item1 != -1) {
+        setThisEnabledNotifier.value = Tuple2(-1, -1);
+      }
       boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
       if ((scrollController.offset >= 50) &&
@@ -193,9 +197,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       // else if(filterPageExpanded.value){
       //   scrollController.jumpTo(80);
       // }
-      /*if (setThisEnabledNotifier.value.item1 != -1) {
-        setThisEnabledNotifier.value = Tuple2(-1, -1);
-      }*/
+
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.6)) {
         if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
@@ -606,62 +608,71 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         return const SizedBox.shrink();
                       }
                     }),
-                body: BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                    buildWhen: (p, c) =>
-                        p.isExpandedForListingPage !=
-                        c.isExpandedForListingPage,
-                    builder: (context, homeState) {
-                      return BlocBuilder<CategoryBloc, CategoryState>(
-                        buildWhen: (p, c) => ((p.sendRequestToGeminiStatus !=
-                                    c.sendRequestToGeminiStatus ||
-                                p.theReplyFromGemini != c.theReplyFromGemini) &&
-                            c.fromSearchForSearchWithGemini == false),
-                        builder: (context, state) {
-                          if ((state.theReplyFromGemini ?? "") != "" &&
-                              state.fromSearchForSearchWithGemini == false) {
-                            String searchText = state.theReplyFromGemini!;
+                body: ValueListenableBuilder<Tuple2<int, int>>(
+                    valueListenable: setThisEnabledNotifier,
+                    builder: (context, slidingMode, _) {
+                      return BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                          buildWhen: (p, c) =>
+                              p.isExpandedForListingPage !=
+                              c.isExpandedForListingPage,
+                          builder: (context, homeState) {
+                            return BlocBuilder<CategoryBloc, CategoryState>(
+                              buildWhen: (p, c) =>
+                                  ((p.sendRequestToGeminiStatus !=
+                                              c.sendRequestToGeminiStatus ||
+                                          p.theReplyFromGemini !=
+                                              c.theReplyFromGemini) &&
+                                      c.fromSearchForSearchWithGemini == false),
+                              builder: (context, state) {
+                                if ((state.theReplyFromGemini ?? "") != "" &&
+                                    state.fromSearchForSearchWithGemini ==
+                                        false) {
+                                  String searchText = state.theReplyFromGemini!;
 
-                            controller.text = state.theReplyFromGemini ?? "";
-                            Filter filters =
-                                BlocProvider.of<BoutiqueBloc>(context)
-                                        .state
-                                        .choosedFiltersByUser['search']
-                                        ?.filters ??
-                                    Filter();
-                            BlocProvider.of<BoutiqueBloc>(context).add(
-                                ChangeSelectedFiltersEvent(
-                                    requestToUpdateFilters: false,
+                                  controller.text =
+                                      state.theReplyFromGemini ?? "";
+                                  Filter filters =
+                                      BlocProvider.of<BoutiqueBloc>(context)
+                                              .state
+                                              .choosedFiltersByUser['search']
+                                              ?.filters ??
+                                          Filter();
+                                  BlocProvider.of<BoutiqueBloc>(context).add(
+                                      ChangeSelectedFiltersEvent(
+                                          requestToUpdateFilters: false,
+                                          boutiqueSlug: widget.boutiqueSlug,
+                                          category: widget.category,
+                                          fromHomePageSearch: widget.fromSearch,
+                                          filtersChoosedByUser:
+                                              GetProductFiltersModel(
+                                                  filters: filters
+                                                      .copyWithSaveOtherField(
+                                            prices: filters.prices,
+                                            searchText: searchText,
+                                          ))));
+                                  BlocProvider.of<BoutiqueBloc>(context)
+                                      .add(ChangeAppliedFiltersEvent(
                                     boutiqueSlug: widget.boutiqueSlug,
                                     category: widget.category,
-                                    fromHomePageSearch: widget.fromSearch,
-                                    filtersChoosedByUser:
+                                    filtersAppliedByUser:
                                         GetProductFiltersModel(
                                             filters:
                                                 filters.copyWithSaveOtherField(
                                       prices: filters.prices,
                                       searchText: searchText,
-                                    ))));
-                            BlocProvider.of<BoutiqueBloc>(context)
-                                .add(ChangeAppliedFiltersEvent(
-                              boutiqueSlug: widget.boutiqueSlug,
-                              category: widget.category,
-                              filtersAppliedByUser: GetProductFiltersModel(
-                                  filters: filters.copyWithSaveOtherField(
-                                prices: filters.prices,
-                                searchText: searchText,
-                              )),
-                            ));
+                                    )),
+                                  ));
 
-                            BlocProvider.of<BoutiqueBloc>(context).add(
-                                GetProductsWithFiltersEvent(
-                                    offset: 1,
-                                    boutiqueSlug: widget.boutiqueSlug,
-                                    category: widget.category,
-                                    resetChoosedFilters: false,
-                                    fromSearch: widget.fromSearch,
-                                    searchText: searchText));
-                          }
-                          /*   if (!(homeState.isExpandedForListingPage ?? false) &&
+                                  BlocProvider.of<BoutiqueBloc>(context).add(
+                                      GetProductsWithFiltersEvent(
+                                          offset: 1,
+                                          boutiqueSlug: widget.boutiqueSlug,
+                                          category: widget.category,
+                                          resetChoosedFilters: false,
+                                          fromSearch: widget.fromSearch,
+                                          searchText: searchText));
+                                }
+                                /*   if (!(homeState.isExpandedForListingPage ?? false) &&
                               !itExpendForFirst) {
                             /*    homeBloc.add(GetProductsWithFiltersEvent(
                               cashedOrginalBoutique: fromSearch ?? false,
@@ -673,384 +684,253 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   : null,
                               offset: 1));*/
                           }*/
-                          isExpanded =
-                              homeState.isExpandedForListingPage ?? false;
+                                isExpanded =
+                                    homeState.isExpandedForListingPage ?? false;
 
-                          return SafeArea(
-                              child: CustomScrollView(
-                                  /*scrollBehavior:
+                                return SafeArea(
+                                    child: CustomScrollView(
+                                        /*scrollBehavior:
                                       const ScrollBehavior().copyWith(
                                     overscroll: false,
                                   ),*/
-                                  // منع overscroll للحماية من crashes
-                                  cacheExtent: 0, // قيمة محسنة لمنع التعليق
-                                  key: TestVariables.kTestMode
-                                      ? Key(WidgetsKeys.productListingScrollKey)
-                                      : null,
-                                  controller: scrollController,
-                                  physics: homeState.getProductFiltersModel[key]
-                                                  ?.filters?.totalSize ==
-                                              0 &&
-                                          isExpanded
-                                      ? NeverScrollableScrollPhysics()
-                                      : const ClampingScrollPhysics(
-                                          parent:
-                                              AlwaysScrollableScrollPhysics()),
-                                  slivers: [
-                                // 🛡️ حماية من تجاوز شريط الحالة
-                                SliverSafeArea(
-                                  top: true,
-                                  bottom: false,
-                                  sliver: SliverToBoxAdapter(
-                                    child: SizedBox(height: 0), // placeholder
-                                  ),
-                                ),
-                                ValueListenableBuilder<int>(
-                                    valueListenable: tapIndexToAddProductToCart,
-                                    builder: (context, tapIndex, _) {
-                                      return SliverAppBar(
-                                          pinned: true,
-                                          backgroundColor: colorScheme.white,
-                                          automaticallyImplyLeading: false,
-                                          flexibleSpace:
-                                              ValueListenableBuilder<bool>(
-                                                  valueListenable:
-                                                      searchVisible,
-                                                  builder:
-                                                      (context, searchOpen, _) {
-                                                    return Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              right: 5,
-                                                              left: 5),
-                                                      child: tapIndex != -1
-                                                          ? TrydosAppBar(
-                                                              appBarParams:
-                                                                  AppBarParams(
-                                                                      scrolledUnderElevation:
-                                                                          0,
-                                                                      backIconColor:
-                                                                          Colors
-                                                                              .black,
-                                                                      action: [
-                                                                        LanguageService.rtl
-                                                                            ? Spacer()
-                                                                            : SizedBox.shrink(),
-                                                                        Padding(
-                                                                          padding: const EdgeInsetsDirectional
-                                                                              .only(
-                                                                              end: 10.0),
-                                                                          child: BlocBuilder<
-                                                                              HomeBloc,
-                                                                              HomeState>(
-                                                                            buildWhen: (previous, current) =>
-                                                                                previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus ||
-                                                                                previous.updateItemInCartStatus != current.updateItemInCartStatus ||
-                                                                                previous.addItemInCartStatus != current.addItemInCartStatus ||
-                                                                                previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
-                                                                                previous.getCartItemsStatus != current.getCartItemsStatus,
-                                                                            builder:
-                                                                                (context, state) {
-                                                                              int qtyItemsInCart = state.cartCollection?.length ?? 0;
-                                                                              /* state.cartCollection?.forEach(
+                                        // منع overscroll للحماية من crashes
+                                        cacheExtent:
+                                            0, // قيمة محسنة لمنع التعليق
+                                        key: TestVariables.kTestMode
+                                            ? Key(WidgetsKeys
+                                                .productListingScrollKey)
+                                            : null,
+                                        controller: scrollController,
+                                        physics: homeState
+                                                        .getProductFiltersModel[
+                                                            key]
+                                                        ?.filters
+                                                        ?.totalSize ==
+                                                    0 &&
+                                                isExpanded
+                                            ? NeverScrollableScrollPhysics()
+                                            : const ClampingScrollPhysics(
+                                                parent:
+                                                    AlwaysScrollableScrollPhysics()),
+                                        slivers: [
+                                      // 🛡️ حماية من تجاوز شريط الحالة
+                                      SliverSafeArea(
+                                        top: true,
+                                        bottom: false,
+                                        sliver: SliverToBoxAdapter(
+                                          child: SizedBox(
+                                              height: 0), // placeholder
+                                        ),
+                                      ),
+                                      ValueListenableBuilder<int>(
+                                          valueListenable:
+                                              tapIndexToAddProductToCart,
+                                          builder: (context, tapIndex, _) {
+                                            return SliverAppBar(
+                                                pinned: true,
+                                                backgroundColor:
+                                                    colorScheme.white,
+                                                automaticallyImplyLeading:
+                                                    false,
+                                                flexibleSpace:
+                                                    ValueListenableBuilder<
+                                                            bool>(
+                                                        valueListenable:
+                                                            searchVisible,
+                                                        builder: (context,
+                                                            searchOpen, _) {
+                                                          return Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    right: 5,
+                                                                    left: 5),
+                                                            child: tapIndex !=
+                                                                    -1
+                                                                ? TrydosAppBar(
+                                                                    appBarParams: AppBarParams(
+                                                                        scrolledUnderElevation: 0,
+                                                                        backIconColor: Colors.black,
+                                                                        action: [
+                                                                          LanguageService.rtl
+                                                                              ? Spacer()
+                                                                              : SizedBox.shrink(),
+                                                                          Padding(
+                                                                            padding:
+                                                                                const EdgeInsetsDirectional.only(end: 10.0),
+                                                                            child:
+                                                                                BlocBuilder<HomeBloc, HomeState>(
+                                                                              buildWhen: (previous, current) => previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus || previous.updateItemInCartStatus != current.updateItemInCartStatus || previous.addItemInCartStatus != current.addItemInCartStatus || previous.deleteItemInCartStatus != current.deleteItemInCartStatus || previous.getCartItemsStatus != current.getCartItemsStatus,
+                                                                              builder: (context, state) {
+                                                                                int qtyItemsInCart = state.cartCollection?.length ?? 0;
+                                                                                /* state.cartCollection?.forEach(
                                                                             (element) {
                                                                               qtyItemsInCart = qtyItemsInCart + (element.quantity ?? 0);
                                                                             },
                                                                           );*/
 
-                                                                              return Container(
-                                                                                alignment: Alignment.center,
-                                                                                height: 40,
-                                                                                width: LanguageService.languageCode != "ar" ? 40 : 50,
-                                                                                child: InkWell(
-                                                                                    onTap: () {
-                                                                                      Navigator.of(context).push(
-                                                                                        MaterialPageRoute(
-                                                                                          builder: (context) => CartPage(
-                                                                                            fromeFilters: true,
+                                                                                return Container(
+                                                                                  alignment: Alignment.center,
+                                                                                  height: 40,
+                                                                                  width: LanguageService.languageCode != "ar" ? 40 : 50,
+                                                                                  child: InkWell(
+                                                                                      onTap: () {
+                                                                                        Navigator.of(context).push(
+                                                                                          MaterialPageRoute(
+                                                                                            builder: (context) => CartPage(
+                                                                                              fromeFilters: true,
+                                                                                            ),
                                                                                           ),
-                                                                                        ),
-                                                                                      );
-                                                                                      //////////////////////////////
-                                                                                      /* FirebaseAnalyticsService.logEventForSession(
+                                                                                        );
+                                                                                        //////////////////////////////
+                                                                                        /* FirebaseAnalyticsService.logEventForSession(
                                                                                         eventName: AnalyticsEventsConst.buttonClicked,
                                                                                         executedEventName: AnalyticsExecutedEventNameConst.showShoppingBagButton,
                                                                                       );*/
-                                                                                    },
-                                                                                    child: Stack(children: [
-                                                                                      Positioned(
-                                                                                        child: SvgPicture.asset(AppAssets.bagsSvg),
-                                                                                        right: LanguageService.languageCode != "ar" ? 0 : null,
-                                                                                        left: LanguageService.languageCode == "ar" ? 0 : null,
-                                                                                        bottom: 5,
-                                                                                      ),
-                                                                                      Positioned(
-                                                                                        child: Container(
-                                                                                          width: (qtyItemsInCart > 0) ? 15 : 0,
-                                                                                          alignment: Alignment.center,
-                                                                                          height: (qtyItemsInCart > 0) ? 15 : 0,
-                                                                                          decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(20)),
-                                                                                          child: MyTextWidget(
-                                                                                            (qtyItemsInCart > 0) ? "${qtyItemsInCart}" : "",
-                                                                                            maxLines: 1,
-                                                                                            style: textTheme.titleSmall?.ra.copyWith(fontSize: 12, color: Colors.white, letterSpacing: 0.28),
-                                                                                          ),
+                                                                                      },
+                                                                                      child: Stack(children: [
+                                                                                        Positioned(
+                                                                                          child: SvgPicture.asset(AppAssets.bagsSvg),
+                                                                                          right: LanguageService.languageCode != "ar" ? 0 : null,
+                                                                                          left: LanguageService.languageCode == "ar" ? 0 : null,
+                                                                                          bottom: 5,
                                                                                         ),
-                                                                                        top: 0,
-                                                                                        left: LanguageService.languageCode != "ar" ? 5 : null,
-                                                                                        right: LanguageService.languageCode != "en"
-                                                                                            ? (qtyItemsInCart.toString().length > 1)
-                                                                                                ? 0
-                                                                                                : 10
-                                                                                            : null,
-                                                                                      )
-                                                                                    ])),
-                                                                              );
-                                                                            },
+                                                                                        Positioned(
+                                                                                          child: Container(
+                                                                                            width: (qtyItemsInCart > 0) ? 15 : 0,
+                                                                                            alignment: Alignment.center,
+                                                                                            height: (qtyItemsInCart > 0) ? 15 : 0,
+                                                                                            decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(20)),
+                                                                                            child: MyTextWidget(
+                                                                                              (qtyItemsInCart > 0) ? "${qtyItemsInCart}" : "",
+                                                                                              maxLines: 1,
+                                                                                              style: textTheme.titleSmall?.ra.copyWith(fontSize: 12, color: Colors.white, letterSpacing: 0.28),
+                                                                                            ),
+                                                                                          ),
+                                                                                          top: 0,
+                                                                                          left: LanguageService.languageCode != "ar" ? 5 : null,
+                                                                                          right: LanguageService.languageCode != "en"
+                                                                                              ? (qtyItemsInCart.toString().length > 1)
+                                                                                                  ? 0
+                                                                                                  : 10
+                                                                                              : null,
+                                                                                        )
+                                                                                      ])),
+                                                                                );
+                                                                              },
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      ],
-                                                                      withShadow:
-                                                                          false),
-                                                            )
-                                                          : TrydosAppBar(
-                                                              appBarParams:
-                                                                  AppBarParams(
-                                                                      onBack:
-                                                                          () {
-                                                                        prefsRepository
-                                                                            .setTagsInUrlToFilter([]);
-                                                                        FocusScope.of(context)
-                                                                            .unfocus();
-                                                                        try {
-                                                                          if (panelControllerForCart
-                                                                              .isPanelOpen) {
-                                                                            panelControllerForCart.close();
-                                                                            return;
+                                                                        ],
+                                                                        withShadow: false),
+                                                                  )
+                                                                : TrydosAppBar(
+                                                                    appBarParams: AppBarParams(
+                                                                        onBack: () {
+                                                                          prefsRepository
+                                                                              .setTagsInUrlToFilter([]);
+                                                                          FocusScope.of(context)
+                                                                              .unfocus();
+                                                                          try {
+                                                                            if (panelControllerForCart.isPanelOpen) {
+                                                                              panelControllerForCart.close();
+                                                                              return;
+                                                                            }
+                                                                          } catch (e) {}
+                                                                          if (widget
+                                                                              .fromBackground) {
+                                                                            context.go(GRouter.config.kRootRoute);
                                                                           }
-                                                                        } catch (e) {}
-                                                                        if (widget
-                                                                            .fromBackground) {
-                                                                          context.go(GRouter
-                                                                              .config
-                                                                              .kRootRoute);
-                                                                        }
-                                                                        categoryBloc.add(ReplyFromGeminiEvent(
-                                                                            fromSearch:
-                                                                                false,
-                                                                            sendRequestToGeminiStatus:
-                                                                                SendRequestToGeminiStatus.success,
-                                                                            theReplyFromGemini: ""));
-                                                                        if (widget
-                                                                            .fromSearch) {
-                                                                          widget
-                                                                              .controllerFormSearchPage
-                                                                              ?.text = controller.text;
-                                                                          boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                          categoryBloc.add(ReplyFromGeminiEvent(
+                                                                              fromSearch: false,
+                                                                              sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+                                                                              theReplyFromGemini: ""));
+                                                                          if (widget
+                                                                              .fromSearch) {
+                                                                            widget.controllerFormSearchPage?.text =
+                                                                                controller.text;
+                                                                            boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                                boutiqueSlug: widget.boutiqueSlug,
+                                                                                category: widget.category,
+                                                                                filtersAppliedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
+                                                                                resetAppliedFilters: false));
+                                                                            boutiqueBloc.add(ChangeSelectedFiltersEvent(
+                                                                              fromHomePageSearch: widget.fromSearch,
                                                                               boutiqueSlug: widget.boutiqueSlug,
                                                                               category: widget.category,
-                                                                              filtersAppliedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
-                                                                              resetAppliedFilters: false));
-                                                                          boutiqueBloc
-                                                                              .add(ChangeSelectedFiltersEvent(
-                                                                            fromHomePageSearch:
-                                                                                widget.fromSearch,
-                                                                            boutiqueSlug:
-                                                                                widget.boutiqueSlug,
-                                                                            category:
-                                                                                widget.category,
-                                                                            filtersChoosedByUser:
-                                                                                GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
-                                                                          ));
-                                                                        }
-                                                                      },
-                                                                      backgroundColor:
-                                                                          colorScheme
-                                                                              .white,
-                                                                      scrolledUnderElevation:
-                                                                          0,
-                                                                      backIconColor:
-                                                                          Colors
-                                                                              .black,
-                                                                      hasLeading:
-                                                                          !isExpanded &&
-                                                                              !searchOpen,
-                                                                      action: [
-                                                                        Spacer(),
-                                                                        ValueListenableBuilder<
-                                                                                bool>(
-                                                                            valueListenable:
-                                                                                displayBoutiqueIconInAppBar,
+                                                                              filtersChoosedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
+                                                                            ));
+                                                                          }
+                                                                        },
+                                                                        backgroundColor: colorScheme.white,
+                                                                        scrolledUnderElevation: 0,
+                                                                        backIconColor: Colors.black,
+                                                                        hasLeading: !isExpanded && !searchOpen,
+                                                                        action: [
+                                                                          Spacer(),
+                                                                          ValueListenableBuilder<bool>(
+                                                                              valueListenable: displayBoutiqueIconInAppBar,
+                                                                              child: Padding(
+                                                                                padding: EdgeInsetsDirectional.only(start: 30.w),
+                                                                                child: widget.boutiqueIcon != null
+                                                                                    ? SvgNetworkWidget(
+                                                                                        svgUrl: widget.boutiqueIcon ?? "",
+                                                                                        height: 20,
+                                                                                      )
+                                                                                    : SizedBox.shrink(),
+                                                                              ),
+                                                                              builder: (context, display, child) {
+                                                                                return display ? child! : SizedBox.shrink();
+                                                                              }),
+                                                                          Padding(
+                                                                            padding:
+                                                                                EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
                                                                             child:
-                                                                                Padding(
-                                                                              padding: EdgeInsetsDirectional.only(start: 30.w),
-                                                                              child: widget.boutiqueIcon != null
-                                                                                  ? SvgNetworkWidget(
-                                                                                      svgUrl: widget.boutiqueIcon ?? "",
-                                                                                      height: 20,
-                                                                                    )
-                                                                                  : SizedBox.shrink(),
-                                                                            ),
-                                                                            builder: (context,
-                                                                                display,
-                                                                                child) {
-                                                                              return display ? child! : SizedBox.shrink();
-                                                                            }),
-                                                                        Padding(
-                                                                          padding:
-                                                                              EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
-                                                                          child:
-                                                                              AnimatedSearchBar(
-                                                                            key: TestVariables.kTestMode
-                                                                                ? Key(WidgetsKeys.productListingSearchInputKey)
-                                                                                : null,
-                                                                            autoFocus:
-                                                                                false,
-                                                                            width: isExpanded
-                                                                                ? (1.sw - 90)
-                                                                                : (1.sw - 120),
-                                                                            height:
-                                                                                40,
-                                                                            onClickClose:
-                                                                                () {
-                                                                              boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
+                                                                                AnimatedSearchBar(
+                                                                              key: TestVariables.kTestMode ? Key(WidgetsKeys.productListingSearchInputKey) : null,
+                                                                              autoFocus: false,
+                                                                              width: isExpanded ? (1.sw - 90) : (1.sw - 120),
+                                                                              height: 40,
+                                                                              onClickClose: () {
+                                                                                boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
 
-                                                                              if (!isExpanded && controller.text.isNotEmpty) {
-                                                                                Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-                                                                                boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
-                                                                                boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                  offset: 1,
-                                                                                  searchText: null,
-                                                                                  fromSearch: fromSearch,
-                                                                                  category: widget.category,
-                                                                                  boutiqueSlug: widget.boutiqueSlug,
-                                                                                ));
-                                                                              }
-                                                                              if (isExpanded && controller.text.isNotEmpty) {
-                                                                                Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
-                                                                                boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
-                                                                              }
+                                                                                if (!isExpanded && controller.text.isNotEmpty) {
+                                                                                  Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                    offset: 1,
+                                                                                    searchText: null,
+                                                                                    fromSearch: fromSearch,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                }
+                                                                                if (isExpanded && controller.text.isNotEmpty) {
+                                                                                  Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                }
 
-                                                                              resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                              FocusScope.of(context).unfocus();
+                                                                                resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                FocusScope.of(context).unfocus();
 
-                                                                              searchVisible.value = false;
+                                                                                searchVisible.value = false;
 
-                                                                              controller.clear();
-                                                                              appBloc.add(HideBottomNavigationBar(false));
-                                                                              ///////////////////////////
-                                                                              /* FirebaseAnalyticsService.logEventForSession(
+                                                                                controller.clear();
+                                                                                appBloc.add(HideBottomNavigationBar(false));
+                                                                                ///////////////////////////
+                                                                                /* FirebaseAnalyticsService.logEventForSession(
                                                                                 eventName: AnalyticsEventsConst.buttonClicked,
                                                                                 executedEventName: AnalyticsExecutedEventNameConst.resetCloseIconButton,
                                                                               );*/
-                                                                              return false;
-                                                                            },
-                                                                            textController:
-                                                                                controller,
-                                                                            focusNode:
-                                                                                focusNode,
-                                                                            onSuffixTap:
-                                                                                () {
-                                                                              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                                                                                searchVisible.value = true;
-                                                                              });
-                                                                            },
-                                                                            suffixWidget:
-                                                                                Center(
-                                                                              child: SvgPicture.asset(
-                                                                                AppAssets.searchOutlinedSvg,
-                                                                                height: 20,
-                                                                                width: 20,
-                                                                                color: Color(0xff388CFF),
-                                                                              ),
-                                                                            ),
-                                                                            prefixWidget:
-                                                                                Padding(
-                                                                              padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
-                                                                              child: Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                children: [
-                                                                                  InkWell(
-                                                                                    onTap: () async {
-                                                                                      SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
-                                                                                      /////////////////////////////
-                                                                                      /*  FirebaseAnalyticsService.logEventForSession(
-                                                                                        eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                        executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                      );*/
-                                                                                    },
-                                                                                    child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
-                                                                                        ? TrydosLoader(
-                                                                                            size: 18,
-                                                                                          )
-                                                                                        : SvgPicture.asset(
-                                                                                            AppAssets.realCameraSvg,
-                                                                                            height: 20,
-                                                                                            width: 20,
-                                                                                          ),
-                                                                                  ),
-                                                                                  ValueListenableBuilder<bool>(
-                                                                                    valueListenable: isRecordeForSearchWithMic,
-                                                                                    builder: (context, recordeForSearchWithMic, _) {
-                                                                                      return InkWell(
-                                                                                        onTap: () async {
-                                                                                          final status = await Permission.microphone.request();
-                                                                                          if (status != PermissionStatus.granted) {
-                                                                                            return;
-                                                                                          }
-                                                                                          if (_speechToText.isNotListening) {
-                                                                                            _startListening();
-                                                                                            /////////////////////////////
-                                                                                            /*  FirebaseAnalyticsService.logEventForSession(
-                                                                                              eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                              executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                            );*/
-                                                                                          } else {
-                                                                                            _stopListening();
-                                                                                          }
-                                                                                        },
-                                                                                        child: Container(
-                                                                                          width: 20,
-                                                                                          child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
-                                                                                        ),
-                                                                                      );
-                                                                                    },
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                            animationDurationInMilli:
-                                                                                400,
-                                                                            searchDecoration:
-                                                                                InputDecoration(
-                                                                              border: OutlineInputBorder(
-                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                              ),
-                                                                              focusedBorder: OutlineInputBorder(
-                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                              ),
-                                                                              enabledBorder: OutlineInputBorder(
-                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                              ),
-                                                                              disabledBorder: OutlineInputBorder(
-                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                              ),
-                                                                              errorBorder: OutlineInputBorder(
-                                                                                borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                              ),
-                                                                              focusedErrorBorder: OutlineInputBorder(
-                                                                                borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                              ),
-                                                                              filled: true,
-                                                                              fillColor: focusNode.hasFocus ? colorScheme.white : Color(0xffF8F8F8),
-                                                                              prefixIcon: Padding(
-                                                                                padding: const EdgeInsets.only(top: 12, bottom: 12),
+                                                                                return false;
+                                                                              },
+                                                                              textController: controller,
+                                                                              focusNode: focusNode,
+                                                                              onSuffixTap: () {
+                                                                                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                                                                  searchVisible.value = true;
+                                                                                });
+                                                                              },
+                                                                              suffixWidget: Center(
                                                                                 child: SvgPicture.asset(
                                                                                   AppAssets.searchOutlinedSvg,
                                                                                   height: 20,
@@ -1058,7 +938,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   color: Color(0xff388CFF),
                                                                                 ),
                                                                               ),
-                                                                              suffixIcon: Padding(
+                                                                              prefixWidget: Padding(
                                                                                 padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
                                                                                 child: Row(
                                                                                   mainAxisSize: MainAxisSize.min,
@@ -1067,10 +947,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       onTap: () async {
                                                                                         SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
                                                                                         /////////////////////////////
-                                                                                        /*   FirebaseAnalyticsService.logEventForSession(
-                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                          executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                        );*/
+                                                                                        /*  FirebaseAnalyticsService.logEventForSession(
+                                                                                        eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                        executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                      );*/
                                                                                       },
                                                                                       child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
                                                                                           ? TrydosLoader(
@@ -1081,9 +961,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               height: 20,
                                                                                               width: 20,
                                                                                             ),
-                                                                                    ),
-                                                                                    SizedBox(
-                                                                                      width: 20,
                                                                                     ),
                                                                                     ValueListenableBuilder<bool>(
                                                                                       valueListenable: isRecordeForSearchWithMic,
@@ -1097,10 +974,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                             if (_speechToText.isNotListening) {
                                                                                               _startListening();
                                                                                               /////////////////////////////
-                                                                                              /*FirebaseAnalyticsService.logEventForSession(
-                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                              );*/
+                                                                                              /*  FirebaseAnalyticsService.logEventForSession(
+                                                                                              eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                              executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                            );*/
                                                                                             } else {
                                                                                               _stopListening();
                                                                                             }
@@ -1115,475 +992,548 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   ],
                                                                                 ),
                                                                               ),
-                                                                              //context.colorScheme.white,
-                                                                              contentPadding: HWEdgeInsetsDirectional.only(start: 20, end: 10, bottom: 12, top: 12),
-                                                                              hintText: '${LocaleKeys.search.tr()}',
-                                                                              hintStyle: context.textTheme.bodyMedium?.lq.copyWith(color: Color(0xffC4C2C2)),
-                                                                              labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
-                                                                            ),
-                                                                            onChanged:
-                                                                                (String text) {
-                                                                              if (searchDebounce?.isActive ?? false) {
-                                                                                searchDebounce!.cancel();
-                                                                              }
-                                                                              searchDebounce = Timer(Duration(seconds: 1), () {
-                                                                                String searchText = text;
+                                                                              animationDurationInMilli: 400,
+                                                                              searchDecoration: InputDecoration(
+                                                                                border: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                disabledBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                errorBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                focusedErrorBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                filled: true,
+                                                                                fillColor: focusNode.hasFocus ? colorScheme.white : Color(0xffF8F8F8),
+                                                                                prefixIcon: Padding(
+                                                                                  padding: const EdgeInsets.only(top: 12, bottom: 12),
+                                                                                  child: SvgPicture.asset(
+                                                                                    AppAssets.searchOutlinedSvg,
+                                                                                    height: 20,
+                                                                                    width: 20,
+                                                                                    color: Color(0xff388CFF),
+                                                                                  ),
+                                                                                ),
+                                                                                suffixIcon: Padding(
+                                                                                  padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
+                                                                                  child: Row(
+                                                                                    mainAxisSize: MainAxisSize.min,
+                                                                                    children: [
+                                                                                      InkWell(
+                                                                                        onTap: () async {
+                                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
+                                                                                          /////////////////////////////
+                                                                                          /*   FirebaseAnalyticsService.logEventForSession(
+                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                          executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                        );*/
+                                                                                        },
+                                                                                        child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
+                                                                                            ? TrydosLoader(
+                                                                                                size: 18,
+                                                                                              )
+                                                                                            : SvgPicture.asset(
+                                                                                                AppAssets.realCameraSvg,
+                                                                                                height: 20,
+                                                                                                width: 20,
+                                                                                              ),
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width: 20,
+                                                                                      ),
+                                                                                      ValueListenableBuilder<bool>(
+                                                                                        valueListenable: isRecordeForSearchWithMic,
+                                                                                        builder: (context, recordeForSearchWithMic, _) {
+                                                                                          return InkWell(
+                                                                                            onTap: () async {
+                                                                                              final status = await Permission.microphone.request();
+                                                                                              if (status != PermissionStatus.granted) {
+                                                                                                return;
+                                                                                              }
+                                                                                              if (_speechToText.isNotListening) {
+                                                                                                _startListening();
+                                                                                                /////////////////////////////
+                                                                                                /*FirebaseAnalyticsService.logEventForSession(
+                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                              );*/
+                                                                                              } else {
+                                                                                                _stopListening();
+                                                                                              }
+                                                                                            },
+                                                                                            child: Container(
+                                                                                              width: 20,
+                                                                                              child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
+                                                                                            ),
+                                                                                          );
+                                                                                        },
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                                //context.colorScheme.white,
+                                                                                contentPadding: HWEdgeInsetsDirectional.only(start: 20, end: 10, bottom: 12, top: 12),
+                                                                                hintText: '${LocaleKeys.search.tr()}',
+                                                                                hintStyle: context.textTheme.bodyMedium?.lq.copyWith(color: Color(0xffC4C2C2)),
+                                                                                labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
+                                                                              ),
+                                                                              onChanged: (String text) {
+                                                                                if (searchDebounce?.isActive ?? false) {
+                                                                                  searchDebounce!.cancel();
+                                                                                }
+                                                                                searchDebounce = Timer(Duration(seconds: 1), () {
+                                                                                  String searchText = text;
 
-                                                                                if (isExpanded) {
-                                                                                  Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                  if (isExpanded) {
+                                                                                    Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                    if (text.length > 2) {
+                                                                                      resetSearchAfterSearchingWhileRemoveSearch = true;
+                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: searchText))));
+                                                                                    }
+                                                                                    if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                      resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                    }
+                                                                                    return;
+                                                                                  }
                                                                                   if (text.length > 2) {
+                                                                                    FirebaseAnalyticsService.logEventForSession(
+                                                                                      eventName: AnalyticsEventsConst.search,
+                                                                                      executedEventName: "search",
+                                                                                      extraParams: {
+                                                                                        'search_keyword': text,
+                                                                                        'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                                                                                      },
+                                                                                    );
+
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = true;
-                                                                                    boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: searchText))));
+                                                                                    Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+
+                                                                                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                                      category: widget.category,
+                                                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                                                      filtersAppliedByUser: GetProductFiltersModel(
+                                                                                          filters: filters.copyWithSaveOtherField(
+                                                                                        prices: filters.prices,
+                                                                                        searchText: searchText,
+                                                                                      )),
+                                                                                    ));
+
+                                                                                    boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                      offset: 1,
+                                                                                      searchText: searchText,
+                                                                                      fromSearch: fromSearch,
+                                                                                      category: widget.category,
+                                                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                                                    ));
                                                                                   }
                                                                                   if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                    boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
-                                                                                  }
-                                                                                  return;
-                                                                                }
-                                                                                if (text.length > 2) {
-                                                                                  FirebaseAnalyticsService.logEventForSession(
-                                                                                    eventName: AnalyticsEventsConst.search,
-                                                                                    executedEventName: "search",
-                                                                                    extraParams: {
-                                                                                      'search_keyword': text,
-                                                                                      'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
-                                                                                    },
-                                                                                  );
+                                                                                    Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
 
-                                                                                  resetSearchAfterSearchingWhileRemoveSearch = true;
-                                                                                  Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-
-                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                                                                    category: widget.category,
-                                                                                    boutiqueSlug: widget.boutiqueSlug,
-                                                                                    filtersAppliedByUser: GetProductFiltersModel(
-                                                                                        filters: filters.copyWithSaveOtherField(
-                                                                                      prices: filters.prices,
-                                                                                      searchText: searchText,
-                                                                                    )),
-                                                                                  ));
-
-                                                                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                    offset: 1,
-                                                                                    searchText: searchText,
-                                                                                    fromSearch: fromSearch,
-                                                                                    category: widget.category,
-                                                                                    boutiqueSlug: widget.boutiqueSlug,
-                                                                                  ));
-                                                                                }
-                                                                                if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
-                                                                                  boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
-                                                                                  resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                  Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-
-                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                                                                    category: widget.category,
-                                                                                    boutiqueSlug: widget.boutiqueSlug,
-                                                                                    filtersAppliedByUser: GetProductFiltersModel(
-                                                                                        filters: filters.copyWithSaveOtherField(
-                                                                                      prices: filters.prices,
+                                                                                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                                      category: widget.category,
+                                                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                                                      filtersAppliedByUser: GetProductFiltersModel(
+                                                                                          filters: filters.copyWithSaveOtherField(
+                                                                                        prices: filters.prices,
+                                                                                        searchText: null,
+                                                                                      )),
+                                                                                    ));
+                                                                                    boutiqueBloc.add(GetFiltersEvent(
+                                                                                      fromHomePageSearch: widget.fromSearch,
                                                                                       searchText: null,
-                                                                                    )),
-                                                                                  ));
-                                                                                  boutiqueBloc.add(GetFiltersEvent(
-                                                                                    fromHomePageSearch: widget.fromSearch,
-                                                                                    searchText: null,
-                                                                                    category: widget.category,
-                                                                                    boutiqueSlug: widget.boutiqueSlug,
-                                                                                  ));
-                                                                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                    offset: 1,
-                                                                                    searchText: null,
-                                                                                    fromSearch: fromSearch,
-                                                                                    category: widget.category,
-                                                                                    boutiqueSlug: widget.boutiqueSlug,
-                                                                                  ));
-                                                                                }
-                                                                              });
-                                                                            },
-                                                                          ),
-                                                                        ),
-                                                                        AnimatedSize(
-                                                                          curve:
-                                                                              Curves.easeOut,
-                                                                          duration:
-                                                                              Duration(milliseconds: 400),
-                                                                          reverseDuration:
-                                                                              Duration(milliseconds: 400),
-                                                                          child:
-                                                                              Row(
-                                                                            children: [
-                                                                              isExpanded
-                                                                                  ? SizedBox.shrink()
-                                                                                  : Padding(
-                                                                                      padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
-                                                                                      child: SvgPicture.asset(AppAssets.sortingSvg, width: 20, height: 20),
-                                                                                    ),
-                                                                              BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                                                                                buildWhen: (p, c) {
-                                                                                  return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] != c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] || p.getProductFiltersStatus[key] != c.getProductFiltersStatus[key] || p.isExpandedForListingPage != c.isExpandedForListingPage || p.cashedOrginalBoutique != c.cashedOrginalBoutique);
-                                                                                },
-                                                                                builder: (context, state) {
-                                                                                  isExpanded = state.isExpandedForListingPage ?? false;
-                                                                                  if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) == 1) {
-                                                                                    return SizedBox.shrink();
+                                                                                      category: widget.category,
+                                                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                                                    ));
+                                                                                    boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                      offset: 1,
+                                                                                      searchText: null,
+                                                                                      fromSearch: fromSearch,
+                                                                                      category: widget.category,
+                                                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                                                    ));
                                                                                   }
-                                                                                  return Padding(
-                                                                                      padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
-                                                                                      child: InkWell(
-                                                                                        key: TestVariables.kTestMode ? Key(WidgetsKeys.filterIconKey) : null,
-                                                                                        onTap: () {
-                                                                                          if (!isExpanded) {
-                                                                                            prefAppliedFilters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
-                                                                                            boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
-                                                                                            boutiqueBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
+                                                                                });
+                                                                              },
+                                                                            ),
+                                                                          ),
+                                                                          AnimatedSize(
+                                                                            curve:
+                                                                                Curves.easeOut,
+                                                                            duration:
+                                                                                Duration(milliseconds: 400),
+                                                                            reverseDuration:
+                                                                                Duration(milliseconds: 400),
+                                                                            child:
+                                                                                Row(
+                                                                              children: [
+                                                                                isExpanded
+                                                                                    ? SizedBox.shrink()
+                                                                                    : Padding(
+                                                                                        padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                                        child: SvgPicture.asset(AppAssets.sortingSvg, width: 20, height: 20),
+                                                                                      ),
+                                                                                BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                                                                                  buildWhen: (p, c) {
+                                                                                    return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] != c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] || p.getProductFiltersStatus[key] != c.getProductFiltersStatus[key] || p.isExpandedForListingPage != c.isExpandedForListingPage || p.cashedOrginalBoutique != c.cashedOrginalBoutique);
+                                                                                  },
+                                                                                  builder: (context, state) {
+                                                                                    isExpanded = state.isExpandedForListingPage ?? false;
+                                                                                    if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) == 1) {
+                                                                                      return SizedBox.shrink();
+                                                                                    }
+                                                                                    return Padding(
+                                                                                        padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                                        child: InkWell(
+                                                                                          key: TestVariables.kTestMode ? Key(WidgetsKeys.filterIconKey) : null,
+                                                                                          onTap: () {
+                                                                                            if (!isExpanded) {
+                                                                                              prefAppliedFilters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
+                                                                                              boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
+                                                                                              boutiqueBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
 
-                                                                                            boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                                              boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
 
-                                                                                            resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                            // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                                                            // homeBloc
-                                                                                            //     .add(
-                                                                                            //     AddIsExpandedForLidtingPageEvent(
-                                                                                            //         isExpandedForLidting: true));
-                                                                                            /////////////////////////////////////////
-                                                                                            /*FirebaseAnalyticsService.logEventForSession(
+                                                                                              resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                              // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                                              // homeBloc
+                                                                                              //     .add(
+                                                                                              //     AddIsExpandedForLidtingPageEvent(
+                                                                                              //         isExpandedForLidting: true));
+                                                                                              /////////////////////////////////////////
+                                                                                              /*FirebaseAnalyticsService.logEventForSession(
                                                                                               eventName: AnalyticsEventsConst.buttonClicked,
                                                                                               executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
                                                                                             );*/
-                                                                                            /////////////////////////////////////////
-                                                                                            /* FirebaseAnalyticsService.logScreen(
+                                                                                              /////////////////////////////////////////
+                                                                                              /* FirebaseAnalyticsService.logScreen(
                                                                                               screen: AnalyticsScreensConst.productListingFilterScreen,
                                                                                             );*/
-                                                                                          }
-                                                                                        },
-                                                                                        child: SvgPicture.asset(
-                                                                                          AppAssets.filtersSvg,
-                                                                                          width: 20,
-                                                                                          height: 20,
-                                                                                          color: isExpanded ? Color(0xffFF5F61) : null,
-                                                                                        ),
-                                                                                      ));
-                                                                                },
-                                                                              ),
-                                                                              InkWell(
-                                                                                  onTap: () {
-                                                                                    if (isExpanded) {
-                                                                                      prefAppliedFilters = boutiqueBloc.state.prefAppliedFilterForExtendFilter;
-                                                                                      controller.text = prefAppliedFilters?.searchText ?? "";
+                                                                                            }
+                                                                                          },
+                                                                                          child: SvgPicture.asset(
+                                                                                            AppAssets.filtersSvg,
+                                                                                            width: 20,
+                                                                                            height: 20,
+                                                                                            color: isExpanded ? Color(0xffFF5F61) : null,
+                                                                                          ),
+                                                                                        ));
+                                                                                  },
+                                                                                ),
+                                                                                InkWell(
+                                                                                    onTap: () {
+                                                                                      if (isExpanded) {
+                                                                                        prefAppliedFilters = boutiqueBloc.state.prefAppliedFilterForExtendFilter;
+                                                                                        controller.text = prefAppliedFilters?.searchText ?? "";
 
-                                                                                      // homeBloc.add(GetProductFiltersEvent(
-                                                                                      //     fromHomePageSearch: widget
-                                                                                      //         .fromSearch,
-                                                                                      //     cashedOrginalBoutique:
-                                                                                      //         false,
-                                                                                      //     boutiqueSlug:
-                                                                                      //         widget.boutiqueSlug,
-                                                                                      //     category: widget.category,
-                                                                                      //     searchText: widget.searchText,
-                                                                                      //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                                      boutiqueBloc.add(
-                                                                                        ChangeAppliedFiltersEvent(
-                                                                                          boutiqueSlug: widget.boutiqueSlug,
-                                                                                          isExpandedForListing: false,
-                                                                                          category: widget.category,
-                                                                                          filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters),
-                                                                                        ),
-                                                                                      );
-                                                                                      //////////////////////////////////
-                                                                                      /* FirebaseAnalyticsService.logEventForSession(
+                                                                                        // homeBloc.add(GetProductFiltersEvent(
+                                                                                        //     fromHomePageSearch: widget
+                                                                                        //         .fromSearch,
+                                                                                        //     cashedOrginalBoutique:
+                                                                                        //         false,
+                                                                                        //     boutiqueSlug:
+                                                                                        //         widget.boutiqueSlug,
+                                                                                        //     category: widget.category,
+                                                                                        //     searchText: widget.searchText,
+                                                                                        //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                                        boutiqueBloc.add(
+                                                                                          ChangeAppliedFiltersEvent(
+                                                                                            boutiqueSlug: widget.boutiqueSlug,
+                                                                                            isExpandedForListing: false,
+                                                                                            category: widget.category,
+                                                                                            filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters),
+                                                                                          ),
+                                                                                        );
+                                                                                        //////////////////////////////////
+                                                                                        /* FirebaseAnalyticsService.logEventForSession(
                                                                                         eventName: AnalyticsEventsConst.buttonClicked,
                                                                                         executedEventName: AnalyticsExecutedEventNameConst.filterCloseIconButton,
                                                                                       );*/
-                                                                                    }
-                                                                                    // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                                                    // homeBloc.add(
-                                                                                    //     AddIsExpandedForLidtingPageEvent(
-                                                                                    //         isExpandedForLidting:
-                                                                                    //         false));
+                                                                                      }
+                                                                                      // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                                      // homeBloc.add(
+                                                                                      //     AddIsExpandedForLidtingPageEvent(
+                                                                                      //         isExpandedForLidting:
+                                                                                      //         false));
 
-                                                                                    resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                  },
-                                                                                  child: SizedBox(
-                                                                                    height: 30,
-                                                                                    child: Row(children: [
-                                                                                      SizedBox(
-                                                                                          width: searchOpen
-                                                                                              ? 0
-                                                                                              : !isExpanded
-                                                                                                  ? 10.0
-                                                                                                  : 12.5),
-                                                                                      !isExpanded
-                                                                                          ? SvgPicture.asset(
-                                                                                              AppAssets.shareSvg,
-                                                                                              width: 20,
-                                                                                              height: 20,
-                                                                                              color: Color(0xff3C3C3C),
-                                                                                            )
-                                                                                          : SvgPicture.asset(
-                                                                                              key: TestVariables.kTestMode ? Key(WidgetsKeys.closeFilterPageKey) : null,
-                                                                                              AppAssets.closeSvg,
-                                                                                              width: 15,
-                                                                                              height: 15,
-                                                                                              color: Color(0xffFF5F61),
-                                                                                            ),
-                                                                                      SizedBox(width: !isExpanded ? 10.0 : 12.5)
-                                                                                    ]),
-                                                                                  )),
-                                                                            ],
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                      withShadow:
-                                                                          false),
-                                                            ),
-                                                    );
-                                                  }));
-                                    }),
-                                ValueListenableBuilder<bool>(
-                                    valueListenable: searchVisible,
-                                    builder: (context, searchOpen, _) {
-                                      return !fromSearch!
-                                          ? ValueListenableBuilder<double>(
-                                              valueListenable:
-                                                  htmlDescriptionHeight,
-                                              builder:
-                                                  (context, htmlHeight, child) {
-                                                return isExpanded
-                                                    ? SliverToBoxAdapter()
-                                                    : SliverAppBar(
-                                                        pinned: false,
-                                                        collapsedHeight:
-                                                            180 + htmlHeight,
-                                                        backgroundColor:
-                                                            colorScheme.white,
-                                                        automaticallyImplyLeading:
-                                                            false,
-                                                        flexibleSpace: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Center(
-                                                                child: Column(
-                                                                    children: [
-                                                                      Row(
-                                                                        mainAxisSize:
-                                                                            MainAxisSize.min,
-                                                                        children: [
-                                                                          widget.boutiqueIcon != null
-                                                                              ? SvgNetworkWidget(
-                                                                                  svgUrl: widget.boutiqueIcon ?? "",
-                                                                                  height: 20,
-                                                                                )
-                                                                              : SizedBox.shrink(),
-                                                                          SizedBox(
-                                                                            width:
-                                                                                8,
-                                                                          ),
-                                                                          SvgPicture
-                                                                              .asset(
-                                                                            AppAssets.verifiedBadgeSvg,
-                                                                            height:
-                                                                                15,
-                                                                            width:
-                                                                                15,
-                                                                          ),
-                                                                          SizedBox(
-                                                                            width:
-                                                                                8,
-                                                                          ),
-                                                                          SvgPicture
-                                                                              .asset(
-                                                                            AppAssets.starBadgeSvg,
-                                                                            height:
-                                                                                15,
-                                                                            width:
-                                                                                15,
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            5,
-                                                                      ),
-                                                                      Text(
-                                                                        widget.boutiqueName ??
-                                                                            '',
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                                                                            color: const Color(
-                                                                                0xff505050),
-                                                                            letterSpacing:
-                                                                                0.18,
-                                                                            fontSize:
-                                                                                12,
-                                                                            height:
-                                                                                1),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            5,
-                                                                      ),
-                                                                      widget.withSlidingImages
-                                                                          ? Container(
-                                                                              height: 128,
-                                                                              //color: Colors.red,
-                                                                              child: CarouselSlider.builder(
-                                                                                  itemCount: widget.banner!.length,
-                                                                                  itemBuilder: (context, index, _) {
-                                                                                    // 🔧 إضافة lazy loading للصور
-                                                                                    bool isVisible = index <= 2; // عرض أول 3 صور فقط
-
-                                                                                    return Padding(
-                                                                                      padding: EdgeInsets.only(
-                                                                                        right: 10,
-                                                                                        left: 10,
-                                                                                      ),
-                                                                                      child: Container(
-                                                                                        height: 128,
-                                                                                        width: 1.sw,
-                                                                                        decoration: BoxDecoration(
-                                                                                          borderRadius: BorderRadius.circular(15.0),
-                                                                                          border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                          boxShadow: [
-                                                                                            BoxShadow(
-                                                                                              color: const Color(0x33000000),
-                                                                                              offset: Offset(0, 3),
-                                                                                              blurRadius: 10,
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                        child: (widget.banner![index].filePath != null && isVisible) // 🔧 شرط الرؤية
-                                                                                            ? ClipRRect(
-                                                                                                borderRadius: BorderRadius.circular(15),
-                                                                                                child: MyCachedNetworkImage(
-                                                                                                  imageUrl: widget.banner![index].filePath!,
-                                                                                                  imageFit: BoxFit.cover,
-                                                                                                  width: 1.sw,
-                                                                                                  height: 128,
-                                                                                                ))
-                                                                                            : Container(
-                                                                                                // 🔧 placeholder للصور غير المرئية
-                                                                                                decoration: BoxDecoration(
-                                                                                                  color: Colors.grey[200],
-                                                                                                  borderRadius: BorderRadius.circular(15),
-                                                                                                ),
-                                                                                                child: Center(
-                                                                                                  child: Icon(Icons.image, color: Colors.grey[400], size: 40),
-                                                                                                ),
+                                                                                      resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                    },
+                                                                                    child: SizedBox(
+                                                                                      height: 30,
+                                                                                      child: Row(children: [
+                                                                                        SizedBox(
+                                                                                            width: searchOpen
+                                                                                                ? 0
+                                                                                                : !isExpanded
+                                                                                                    ? 10.0
+                                                                                                    : 12.5),
+                                                                                        !isExpanded
+                                                                                            ? SvgPicture.asset(
+                                                                                                AppAssets.shareSvg,
+                                                                                                width: 20,
+                                                                                                height: 20,
+                                                                                                color: Color(0xff3C3C3C),
+                                                                                              )
+                                                                                            : SvgPicture.asset(
+                                                                                                key: TestVariables.kTestMode ? Key(WidgetsKeys.closeFilterPageKey) : null,
+                                                                                                AppAssets.closeSvg,
+                                                                                                width: 15,
+                                                                                                height: 15,
+                                                                                                color: Color(0xffFF5F61),
                                                                                               ),
-                                                                                      ),
-                                                                                    );
-                                                                                  },
-                                                                                  options: CarouselOptions(
-                                                                                    autoPlay: false, // 🔧 إيقاف التشغيل التلقائي لتوفير الأداء
-                                                                                    autoPlayInterval: Duration(seconds: 30), // 🔧 زيادة المدة لتقليل التحديثات
-                                                                                    autoPlayAnimationDuration: Duration(milliseconds: 300), // 🔧 تقليل مدة الحركة
-                                                                                    initialPage: 0,
+                                                                                        SizedBox(width: !isExpanded ? 10.0 : 12.5)
+                                                                                      ]),
+                                                                                    )),
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                        withShadow: false),
+                                                                  ),
+                                                          );
+                                                        }));
+                                          }),
+                                      ValueListenableBuilder<bool>(
+                                          valueListenable: searchVisible,
+                                          builder: (context, searchOpen, _) {
+                                            return !fromSearch!
+                                                ? ValueListenableBuilder<
+                                                        double>(
+                                                    valueListenable:
+                                                        htmlDescriptionHeight,
+                                                    builder: (context,
+                                                        htmlHeight, child) {
+                                                      return isExpanded
+                                                          ? SliverToBoxAdapter()
+                                                          : SliverAppBar(
+                                                              pinned: false,
+                                                              collapsedHeight:
+                                                                  180 +
+                                                                      htmlHeight,
+                                                              backgroundColor:
+                                                                  colorScheme
+                                                                      .white,
+                                                              automaticallyImplyLeading:
+                                                                  false,
+                                                              flexibleSpace: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Center(
+                                                                      child: Column(
+                                                                          children: [
+                                                                            Row(
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              children: [
+                                                                                widget.boutiqueIcon != null
+                                                                                    ? SvgNetworkWidget(
+                                                                                        svgUrl: widget.boutiqueIcon ?? "",
+                                                                                        height: 20,
+                                                                                      )
+                                                                                    : SizedBox.shrink(),
+                                                                                SizedBox(
+                                                                                  width: 8,
+                                                                                ),
+                                                                                SvgPicture.asset(
+                                                                                  AppAssets.verifiedBadgeSvg,
+                                                                                  height: 15,
+                                                                                  width: 15,
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  width: 8,
+                                                                                ),
+                                                                                SvgPicture.asset(
+                                                                                  AppAssets.starBadgeSvg,
+                                                                                  height: 15,
+                                                                                  width: 15,
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            SizedBox(
+                                                                              height: 5,
+                                                                            ),
+                                                                            Text(
+                                                                              widget.boutiqueName ?? '',
+                                                                              textAlign: TextAlign.center,
+                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 1),
+                                                                            ),
+                                                                            SizedBox(
+                                                                              height: 5,
+                                                                            ),
+                                                                            widget.withSlidingImages
+                                                                                ? Container(
                                                                                     height: 128,
-                                                                                    enableInfiniteScroll: false,
-                                                                                    viewportFraction: 1.0, // 🔧 تغيير لـ 1.0 لتقليل الرسم الإضافي
-                                                                                    pauseAutoPlayOnTouch: true, // 🔧 إيقاف عند اللمس
-                                                                                    pauseAutoPlayOnManualNavigate: true, // 🔧 إيقاف عند التنقل اليدوي
-                                                                                    pauseAutoPlayInFiniteScroll: true, // 🔧 إيقاف في نهاية القائمة
-                                                                                  )))
-                                                                          : Padding(
-                                                                              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                                                              child: Stack(
-                                                                                children: [
-                                                                                  Container(
-                                                                                    height: 135,
-                                                                                    width: 1.sw,
-                                                                                    decoration: BoxDecoration(
-                                                                                      borderRadius: BorderRadius.circular(15.0),
-                                                                                      border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                      boxShadow: [
-                                                                                        BoxShadow(
-                                                                                          color: const Color(0x33000000),
-                                                                                          offset: Offset(0, 3),
-                                                                                          blurRadius: 10,
+                                                                                    //color: Colors.red,
+                                                                                    child: CarouselSlider.builder(
+                                                                                        itemCount: widget.banner!.length,
+                                                                                        itemBuilder: (context, index, _) {
+                                                                                          // 🔧 إضافة lazy loading للصور
+                                                                                          bool isVisible = index <= 2; // عرض أول 3 صور فقط
+
+                                                                                          return Padding(
+                                                                                            padding: EdgeInsets.only(
+                                                                                              right: 10,
+                                                                                              left: 10,
+                                                                                            ),
+                                                                                            child: Container(
+                                                                                              height: 128,
+                                                                                              width: 1.sw,
+                                                                                              decoration: BoxDecoration(
+                                                                                                borderRadius: BorderRadius.circular(15.0),
+                                                                                                border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
+                                                                                                boxShadow: [
+                                                                                                  BoxShadow(
+                                                                                                    color: const Color(0x33000000),
+                                                                                                    offset: Offset(0, 3),
+                                                                                                    blurRadius: 10,
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                              child: (widget.banner![index].filePath != null && isVisible) // 🔧 شرط الرؤية
+                                                                                                  ? ClipRRect(
+                                                                                                      borderRadius: BorderRadius.circular(15),
+                                                                                                      child: MyCachedNetworkImage(
+                                                                                                        imageUrl: widget.banner![index].filePath!,
+                                                                                                        imageFit: BoxFit.cover,
+                                                                                                        width: 1.sw,
+                                                                                                        height: 128,
+                                                                                                      ))
+                                                                                                  : Container(
+                                                                                                      // 🔧 placeholder للصور غير المرئية
+                                                                                                      decoration: BoxDecoration(
+                                                                                                        color: Colors.grey[200],
+                                                                                                        borderRadius: BorderRadius.circular(15),
+                                                                                                      ),
+                                                                                                      child: Center(
+                                                                                                        child: Icon(Icons.image, color: Colors.grey[400], size: 40),
+                                                                                                      ),
+                                                                                                    ),
+                                                                                            ),
+                                                                                          );
+                                                                                        },
+                                                                                        options: CarouselOptions(
+                                                                                          autoPlay: false, // 🔧 إيقاف التشغيل التلقائي لتوفير الأداء
+                                                                                          autoPlayInterval: Duration(seconds: 30), // 🔧 زيادة المدة لتقليل التحديثات
+                                                                                          autoPlayAnimationDuration: Duration(milliseconds: 300), // 🔧 تقليل مدة الحركة
+                                                                                          initialPage: 0,
+                                                                                          height: 128,
+                                                                                          enableInfiniteScroll: false,
+                                                                                          viewportFraction: 1.0, // 🔧 تغيير لـ 1.0 لتقليل الرسم الإضافي
+                                                                                          pauseAutoPlayOnTouch: true, // 🔧 إيقاف عند اللمس
+                                                                                          pauseAutoPlayOnManualNavigate: true, // 🔧 إيقاف عند التنقل اليدوي
+                                                                                          pauseAutoPlayInFiniteScroll: true, // 🔧 إيقاف في نهاية القائمة
+                                                                                        )))
+                                                                                : Padding(
+                                                                                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                                                                    child: Stack(
+                                                                                      children: [
+                                                                                        Container(
+                                                                                          height: 135,
+                                                                                          width: 1.sw,
+                                                                                          decoration: BoxDecoration(
+                                                                                            borderRadius: BorderRadius.circular(15.0),
+                                                                                            border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
+                                                                                            boxShadow: [
+                                                                                              BoxShadow(
+                                                                                                color: const Color(0x33000000),
+                                                                                                offset: Offset(0, 3),
+                                                                                                blurRadius: 10,
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                          child: ClipRRect(
+                                                                                              borderRadius: BorderRadius.circular(15),
+                                                                                              child: MyCachedNetworkImage(
+                                                                                                imageUrl: widget.boutiqueFirstBanner!,
+                                                                                                imageFit: BoxFit.cover,
+                                                                                                width: 1.sw,
+                                                                                                height: 130,
+                                                                                              )),
+                                                                                        ),
+                                                                                        Container(
+                                                                                          height: htmlHeight == 0 ? 0 : 128,
+                                                                                          width: 1.sw,
+                                                                                          decoration: BoxDecoration(
+                                                                                            borderRadius: BorderRadius.circular(15.0),
+                                                                                            boxShadow: [
+                                                                                              BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
+                                                                                            ],
+                                                                                          ),
                                                                                         ),
                                                                                       ],
                                                                                     ),
-                                                                                    child: ClipRRect(
-                                                                                        borderRadius: BorderRadius.circular(15),
-                                                                                        child: MyCachedNetworkImage(
-                                                                                          imageUrl: widget.boutiqueFirstBanner!,
-                                                                                          imageFit: BoxFit.cover,
-                                                                                          width: 1.sw,
-                                                                                          height: 130,
-                                                                                        )),
                                                                                   ),
-                                                                                  Container(
-                                                                                    height: htmlHeight == 0 ? 0 : 128,
-                                                                                    width: 1.sw,
-                                                                                    decoration: BoxDecoration(
-                                                                                      borderRadius: BorderRadius.circular(15.0),
-                                                                                      boxShadow: [
-                                                                                        BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                    ]),
-                                                              )
-                                                            ]),
-                                                      );
-                                              })
-                                          : SliverToBoxAdapter();
-                                    }),
-                                ValueListenableBuilder<bool>(
-                                    valueListenable: searchVisible,
-                                    builder: (context, searchOpen, _) {
-                                      return BlocBuilder<BoutiqueBloc,
-                                          BoutiqueState>(
-                                        buildWhen: (p, c) {
-                                          return p
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              'withoutFilter' +
-                                                              '${(widget.category ?? '')}']
-                                                      ?.paginationStatus !=
-                                                  c
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              'withoutFilter' +
-                                                              '${(widget.category ?? '')}']
-                                                      ?.paginationStatus ||
-                                              p.isExpandedForListingPage !=
-                                                  c.isExpandedForListingPage ||
-                                              p.appliedFiltersByUser[key] !=
-                                                  c.appliedFiltersByUser[key] ||
-                                              p.getProductFiltersStatus[key] !=
-                                                  c.getProductFiltersStatus[
-                                                      key] ||
-                                              p
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              '${(widget.category ?? '')}']
-                                                      ?.paginationStatus !=
-                                                  c
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              '${(widget.category ?? '')}']
-                                                      ?.paginationStatus ||
-                                              p.cashedOrginalBoutique !=
-                                                  c.cashedOrginalBoutique;
-                                        },
-                                        builder: (context, state) {
-                                          //  String? currentAppliedFilterSllug =
-                                          //     "null";
-                                          isExpanded =
-                                              state.isExpandedForListingPage ??
-                                                  false;
-                                          //bool isOneProductForPrefetch = false;
+                                                                          ]),
+                                                                    )
+                                                                  ]),
+                                                            );
+                                                    })
+                                                : SliverToBoxAdapter();
+                                          }),
+                                      ValueListenableBuilder<bool>(
+                                          valueListenable: searchVisible,
+                                          builder: (context, searchOpen, _) {
+                                            return BlocBuilder<BoutiqueBloc,
+                                                BoutiqueState>(
+                                              buildWhen: (p, c) {
+                                                return p
+                                                            .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                'withoutFilter' +
+                                                                '${(widget.category ?? '')}']
+                                                            ?.paginationStatus !=
+                                                        c
+                                                            .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                'withoutFilter' +
+                                                                '${(widget.category ?? '')}']
+                                                            ?.paginationStatus ||
+                                                    p.isExpandedForListingPage !=
+                                                        c
+                                                            .isExpandedForListingPage ||
+                                                    p.appliedFiltersByUser[key] !=
+                                                        c.appliedFiltersByUser[
+                                                            key] ||
+                                                    p.getProductFiltersStatus[key] !=
+                                                        c.getProductFiltersStatus[
+                                                            key] ||
+                                                    p
+                                                            .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                '${(widget.category ?? '')}']
+                                                            ?.paginationStatus !=
+                                                        c
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                '${widget.boutiqueSlug}' +
+                                                                    '${(widget.category ?? '')}']
+                                                            ?.paginationStatus ||
+                                                    p.cashedOrginalBoutique !=
+                                                        c.cashedOrginalBoutique;
+                                              },
+                                              builder: (context, state) {
+                                                //  String? currentAppliedFilterSllug =
+                                                //     "null";
+                                                isExpanded = state
+                                                        .isExpandedForListingPage ??
+                                                    false;
+                                                //bool isOneProductForPrefetch = false;
 
-                                          /*  if ((appliedFiltersByUser?.filters
+                                                /*  if ((appliedFiltersByUser?.filters
                                                       ?.categories?.length ??
                                                   0) >
                                               0) {
@@ -1649,7 +1599,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           } else {
                                             currentAppliedFilterSllug = "null";
                                           }*/
-                                          /* if (!isExpanded &&
+                                                /* if (!isExpanded &&
                                                   (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
                                                       3 &&
                                                   ((appliedFiltersByUser?.filters?.categories?.length ?? 0) +
@@ -1706,135 +1656,146 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             }
                                           }*/
 
-                                          return SliverAppBar(
-                                              pinned: !isExpanded,
-                                              surfaceTintColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  colorScheme.white,
-                                              automaticallyImplyLeading: false,
-                                              titleSpacing: 0,
-                                              toolbarHeight: isExpanded
-                                                  ? 860
-                                                  : (((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length == 1 &&
-                                                              state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                                  PaginationStatus
-                                                                      .success))) ||
-                                                          (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length == 1 &&
-                                                              state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                                  PaginationStatus
-                                                                      .success)
-                                                      ? 35
-                                                      : state
-                                                              .cashedOrginalBoutique
-                                                          ? 115
-                                                          : 145,
-                                              flexibleSpace: StackedFiltersList(
-                                                  expandingFiltersStack:
-                                                      expandingFiltersStack,
-                                                  key: TestVariables.kTestMode
-                                                      ? Key(WidgetsKeys
-                                                          .productListFilterKey)
-                                                      : null,
-                                                  textController: controller,
-                                                  hideTitle: false,
-                                                  fromSearch: fromSearch!,
-                                                  searchText: controller.text.length > 2
-                                                      ? controller.text
-                                                      : null,
-                                                  filterPageExpanded:
-                                                      state.isExpandedForListingPage ??
-                                                          false,
-                                                  closeFilterPage: () {
-                                                    boutiqueBloc.add(
-                                                        AddIsExpandedForLidtingPageEvent(
-                                                            isExpandedForLidting:
-                                                                false));
-                                                    ;
-                                                  },
-                                                  displayAppliedFiltersOnly:
-                                                      (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 &&
-                                                          state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                              PaginationStatus.success,
-                                                  category: widget.category,
-                                                  boutiqueSlug: widget.boutiqueSlug,
-                                                  controller: isExpanded ? scrollControllerFilter : null,
-                                                  onMoveToAnotherFiltersSection: (title) {
-                                                    timerForDisplayFilterSectionTitle
-                                                        ?.cancel();
-                                                    showTitleForFilterList
-                                                        .value = title;
-                                                    timerForDisplayFilterSectionTitle =
-                                                        Timer(
-                                                            Duration(
-                                                                seconds: 3),
-                                                            () {
-                                                      showTitleForFilterList
-                                                          .value = null;
-                                                    });
-                                                  }));
-                                        },
-                                      );
-                                    }),
-                                isExpanded
-                                    ? SliverToBoxAdapter()
-                                    : BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                                        buildWhen: (p, c) {
-                                          bool rebuild = p
-                                                      .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                          'withoutFilter' +
-                                                          '${(widget.category ?? '')}']
-                                                      ?.paginationStatus !=
-                                                  c
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              'withoutFilter' +
-                                                              '${(widget.category ?? '')}']
-                                                      ?.paginationStatus ||
-                                              p.isExpandedForListingPage !=
-                                                  c.isExpandedForListingPage ||
-                                              p.appliedFiltersByUser[key] !=
-                                                  c.appliedFiltersByUser[key] ||
-                                              p.isGettingProductListingWithPaginationForAppearProduct !=
-                                                  c
-                                                      .isGettingProductListingWithPaginationForAppearProduct ||
-                                              p.isGettingProductListingWithPagination !=
-                                                  c
-                                                      .isGettingProductListingWithPagination ||
-                                              p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus !=
-                                                  c
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              '${(widget.category ?? '')}']
-                                                      ?.paginationStatus ||
-                                              p.cashedOrginalBoutique != c.cashedOrginalBoutique;
+                                                return SliverAppBar(
+                                                    pinned: !isExpanded,
+                                                    surfaceTintColor:
+                                                        Colors.transparent,
+                                                    backgroundColor:
+                                                        colorScheme.white,
+                                                    automaticallyImplyLeading:
+                                                        false,
+                                                    titleSpacing: 0,
+                                                    toolbarHeight: isExpanded
+                                                        ? 860
+                                                        : (((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length == 1 && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success))) ||
+                                                                (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length == 1 &&
+                                                                    state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
+                                                                        PaginationStatus
+                                                                            .success)
+                                                            ? 35
+                                                            : state
+                                                                    .cashedOrginalBoutique
+                                                                ? 115
+                                                                : 145,
+                                                    flexibleSpace:
+                                                        StackedFiltersList(
+                                                            expandingFiltersStack:
+                                                                expandingFiltersStack,
+                                                            key: TestVariables
+                                                                    .kTestMode
+                                                                ? Key(WidgetsKeys
+                                                                    .productListFilterKey)
+                                                                : null,
+                                                            textController:
+                                                                controller,
+                                                            hideTitle: false,
+                                                            fromSearch:
+                                                                fromSearch!,
+                                                            searchText:
+                                                                controller.text.length > 2
+                                                                    ? controller
+                                                                        .text
+                                                                    : null,
+                                                            filterPageExpanded:
+                                                                state.isExpandedForListingPage ??
+                                                                    false,
+                                                            closeFilterPage:
+                                                                () {
+                                                              boutiqueBloc.add(
+                                                                  AddIsExpandedForLidtingPageEvent(
+                                                                      isExpandedForLidting:
+                                                                          false));
+                                                              ;
+                                                            },
+                                                            displayAppliedFiltersOnly:
+                                                                (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 &&
+                                                                    state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
+                                                                        PaginationStatus.success,
+                                                            category: widget.category,
+                                                            boutiqueSlug: widget.boutiqueSlug,
+                                                            controller: isExpanded ? scrollControllerFilter : null,
+                                                            onMoveToAnotherFiltersSection: (title) {
+                                                              timerForDisplayFilterSectionTitle
+                                                                  ?.cancel();
+                                                              showTitleForFilterList
+                                                                      .value =
+                                                                  title;
+                                                              timerForDisplayFilterSectionTitle =
+                                                                  Timer(
+                                                                      Duration(
+                                                                          seconds:
+                                                                              3),
+                                                                      () {
+                                                                showTitleForFilterList
+                                                                        .value =
+                                                                    null;
+                                                              });
+                                                            }));
+                                              },
+                                            );
+                                          }),
+                                      isExpanded
+                                          ? SliverToBoxAdapter()
+                                          : BlocBuilder<BoutiqueBloc,
+                                              BoutiqueState>(
+                                              buildWhen: (p, c) {
+                                                bool rebuild = p
+                                                            .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                'withoutFilter' +
+                                                                '${(widget.category ?? '')}']
+                                                            ?.paginationStatus !=
+                                                        c
+                                                            .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                'withoutFilter' +
+                                                                '${(widget.category ?? '')}']
+                                                            ?.paginationStatus ||
+                                                    p.isExpandedForListingPage !=
+                                                        c
+                                                            .isExpandedForListingPage ||
+                                                    p.appliedFiltersByUser[key] !=
+                                                        c.appliedFiltersByUser[
+                                                            key] ||
+                                                    p.isGettingProductListingWithPaginationForAppearProduct !=
+                                                        c
+                                                            .isGettingProductListingWithPaginationForAppearProduct ||
+                                                    p.isGettingProductListingWithPagination !=
+                                                        c
+                                                            .isGettingProductListingWithPagination ||
+                                                    p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus !=
+                                                        c
+                                                            .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                '${(widget.category ?? '')}']
+                                                            ?.paginationStatus ||
+                                                    p.cashedOrginalBoutique !=
+                                                        c.cashedOrginalBoutique;
 
-                                          if (rebuild) {
-                                            gridViewKeyForRendering =
-                                                UniqueKey();
-                                          }
-                                          return rebuild;
-                                          // ||
-                                          // (!widget.fromSearch &&
-                                          //     p
-                                          //             .getProductListingPaginationWithoutFiltersModel[
-                                          //                 key]
-                                          //             ?.paginationStatus !=
-                                          //         c
-                                          //             .getProductListingPaginationWithoutFiltersModel[
-                                          //                 key]
-                                          //             ?.paginationStatus);
-                                        },
-                                        builder: (context, state) {
-                                          isExpanded =
-                                              state.isExpandedForListingPage ??
-                                                  false;
-                                          GetProductFiltersModel?
-                                              appliedFiltersByUser =
-                                              state.appliedFiltersByUser[key];
-                                          // String? currentAppliedFilterSllug =
-                                          //     "null";
-                                          /* if (!isExpanded &&
+                                                if (rebuild) {
+                                                  gridViewKeyForRendering =
+                                                      UniqueKey();
+                                                }
+                                                return rebuild;
+                                                // ||
+                                                // (!widget.fromSearch &&
+                                                //     p
+                                                //             .getProductListingPaginationWithoutFiltersModel[
+                                                //                 key]
+                                                //             ?.paginationStatus !=
+                                                //         c
+                                                //             .getProductListingPaginationWithoutFiltersModel[
+                                                //                 key]
+                                                //             ?.paginationStatus);
+                                              },
+                                              builder: (context, state) {
+                                                isExpanded = state
+                                                        .isExpandedForListingPage ??
+                                                    false;
+                                                GetProductFiltersModel?
+                                                    appliedFiltersByUser =
+                                                    state.appliedFiltersByUser[
+                                                        key];
+                                                // String? currentAppliedFilterSllug =
+                                                //     "null";
+                                                /* if (!isExpanded &&
                                                   !state
                                                       .isGettingProductListingWithPaginationForAppearProduct &&
                                                   (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
@@ -1908,7 +1869,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   "null";
                                             }
                                           }*/
-                                          /* if ((!isExpanded &&
+                                                /* if ((!isExpanded &&
                                               !state
                                                   .isGettingProductListingWithPaginationForAppearProduct &&
                                               (widget.fromSearch &&
@@ -1960,7 +1921,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         true));
                                           }*/
 
-                                          /* if (state.getProductListingWithFiltersPaginationWithPrefetchModels[
+                                                /* if (state.getProductListingWithFiltersPaginationWithPrefetchModels[
                                                       "${widget.boutiqueSlug}" +
                                                           "${currentAppliedFilterSllug}" +
                                                           "${widget.category ?? ""}"] !=
@@ -2097,299 +2058,305 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             );
                                           }*/
 
-                                          if (((state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  'withoutFilter' +
-                                                                  '${(widget.category ?? '')}']
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .loading) &&
-                                                  state
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              'withoutFilter' +
-                                                              '${(widget.category ?? '')}']!
-                                                      .items
-                                                      .isNullOrEmpty &&
-                                                  state
-                                                      .cashedOrginalBoutique) ||
-                                              (state.getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  'withoutFilter' +
-                                                                  '${(widget.category ?? '')}'] ==
-                                                          PaginationModel
-                                                              .init() &&
-                                                      state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  'withoutFilter' +
-                                                                  '${(widget.category ?? '')}']!
-                                                          .items
-                                                          .isNullOrEmpty) &&
-                                                  !state
-                                                      .isGettingProductListingWithPagination) {
-                                            return ProductListingLoading();
-                                          }
-                                          if ((state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                  '${(widget.category ?? '')}']
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .failure &&
-                                                  state
+                                                if (((state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        'withoutFilter' +
+                                                                        '${(widget.category ?? '')}']
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading) &&
+                                                        state
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                '${widget.boutiqueSlug}' +
+                                                                    'withoutFilter' +
+                                                                    '${(widget.category ?? '')}']!
+                                                            .items
+                                                            .isNullOrEmpty &&
+                                                        state
+                                                            .cashedOrginalBoutique) ||
+                                                    (state.getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        'withoutFilter' +
+                                                                        '${(widget.category ?? '')}'] ==
+                                                                PaginationModel
+                                                                    .init() &&
+                                                            state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        'withoutFilter' +
+                                                                        '${(widget.category ?? '')}']!
+                                                                .items
+                                                                .isNullOrEmpty) &&
+                                                        !state
+                                                            .isGettingProductListingWithPagination) {
+                                                  return ProductListingLoading();
+                                                }
+                                                if ((state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                        '${(widget.category ?? '')}']
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .failure &&
+                                                        state
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                '${widget.boutiqueSlug}' +
+                                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                    '${(widget.category ?? '')}']!
+                                                            .items
+                                                            .isNullOrEmpty) ||
+                                                    (state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${(widget.category ?? '')}']
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .failure &&
+                                                        !state
+                                                            .cashedOrginalBoutique)) {
+                                                  return SliverToBoxAdapter(
+                                                    child: Center(
+                                                      child: MyTextWidget(
+                                                        "${LocaleKeys.no_internet_connected.tr()}",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 18),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                                // String key = (widget
+                                                //             .boutiqueSlug ??
+                                                //         '') +
+                                                //     (widget.category ??
+                                                //         '');
+                                                if ((state.getProductListingWithFiltersPaginationModels[
+                                                                '${widget.boutiqueSlug}' +
+                                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                    '${(widget.category ?? '')}'] ==
+                                                            null ||
+                                                        state
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                '${widget.boutiqueSlug}' +
+                                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                    '${(widget.category ?? '')}']!
+                                                            .items
+                                                            .isNullOrEmpty) &&
+                                                    state
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                '${widget.boutiqueSlug}' +
+                                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                                        '${(widget.category ?? '')}']
+                                                            ?.paginationStatus ==
+                                                        PaginationStatus
+                                                            .success) {
+                                                  return SliverToBoxAdapter(
+                                                    child: Center(
+                                                      child: MyTextWidget(
+                                                        "${LocaleKeys.no_products_found.tr()}",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 18),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                                if ((((state.getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                        '${(widget.category ?? '')}'] ==
+                                                                null ||
+                                                            state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                        '${(widget.category ?? '')}']!
+                                                                .items
+                                                                .isNullOrEmpty) &&
+                                                        state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                                            '${(widget.category ?? '')}']
+                                                                ?.paginationStatus !=
+                                                            PaginationStatus
+                                                                .success)) ||
+                                                    (state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${(widget.category ?? '')}']
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading &&
+                                                        !state
+                                                            .cashedOrginalBoutique) ||
+                                                    (state
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${(widget.category ?? '')}']
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading) &&
+                                                        !state
+                                                            .isGettingProductListingWithPagination) {
+                                                  print("DDDDDDDDDDDDDDDDDDDDDDDDD${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                      '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                      '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                      '${(widget.category ?? '')}']?.paginationStatus}");
+                                                  return ProductListingLoading(
+                                                    key: TestVariables.kTestMode
+                                                        ? Key(WidgetsKeys
+                                                            .boutiqueProductListingLoadingKey)
+                                                        : null,
+                                                  );
+                                                }
+
+                                                products = [];
+
+                                                if (state.getProductListingWithFiltersPaginationModels[
+                                                        '${widget.boutiqueSlug}' +
+                                                            '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                            '${(widget.category ?? '')}'] !=
+                                                    null) {
+                                                  products = state
                                                       .getProductListingWithFiltersPaginationModels[
                                                           '${widget.boutiqueSlug}' +
                                                               '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                               '${(widget.category ?? '')}']!
-                                                      .items
-                                                      .isNullOrEmpty) ||
-                                              (state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${(widget.category ?? '')}']
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .failure &&
-                                                  !state
-                                                      .cashedOrginalBoutique)) {
-                                            return SliverToBoxAdapter(
-                                              child: Center(
-                                                child: MyTextWidget(
-                                                  "${LocaleKeys.no_internet_connected.tr()}",
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 18),
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          // String key = (widget
-                                          //             .boutiqueSlug ??
-                                          //         '') +
-                                          //     (widget.category ??
-                                          //         '');
-                                          if ((state.getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                              '${(widget.category ?? '')}'] ==
-                                                      null ||
-                                                  state
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                              '${(widget.category ?? '')}']!
-                                                      .items
-                                                      .isNullOrEmpty) &&
-                                              state
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                                  '${(widget.category ?? '')}']
-                                                      ?.paginationStatus ==
-                                                  PaginationStatus.success) {
-                                            return SliverToBoxAdapter(
-                                              child: Center(
-                                                child: MyTextWidget(
-                                                  "${LocaleKeys.no_products_found.tr()}",
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 18),
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          if ((((state.getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                  '${(widget.category ?? '')}'] ==
-                                                          null ||
-                                                      state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                  '${(widget.category ?? '')}']!
-                                                          .items
-                                                          .isNullOrEmpty) &&
-                                                  state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                                      '${(widget.category ?? '')}']
-                                                          ?.paginationStatus !=
-                                                      PaginationStatus
-                                                          .success)) ||
-                                              (state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${(widget.category ?? '')}']
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .loading &&
-                                                  !state
-                                                      .cashedOrginalBoutique) ||
-                                              (state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${(widget.category ?? '')}']
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .loading) &&
-                                                  !state
-                                                      .isGettingProductListingWithPagination) {
-                                            print("DDDDDDDDDDDDDDDDDDDDDDDDD${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                '${(widget.category ?? '')}']?.paginationStatus}");
-                                            return ProductListingLoading(
-                                              key: TestVariables.kTestMode
-                                                  ? Key(WidgetsKeys
-                                                      .boutiqueProductListingLoadingKey)
-                                                  : null,
-                                            );
-                                          }
+                                                      .items;
+                                                  if (products.isEmpty) {
+                                                    return SliverToBoxAdapter(
+                                                      child: Center(
+                                                        child: MyTextWidget(
+                                                          "${LocaleKeys.no_products_found.tr()}",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 18),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                }
 
-                                          products = [];
+                                                //                                                     else if(!widget.fromSearch){
+                                                //                                                       if ((((state
+                                                //                                                                       .getProductListingPaginationWithoutFiltersModel[
+                                                //                                                                           key]
+                                                //                                                                       ?.items
+                                                //                                                                       .isNullOrEmpty ??
+                                                //                                                                   true)) ||
+                                                //                                                               (state.getProductListingPaginationWithoutFiltersModel[
+                                                //                                                                       key] ==
+                                                //                                                                   null)) &&
+                                                //                                                           state.getProductListingWithFiltersPaginationModels
+                                                //                                                                   ?.paginationStatus ==
+                                                //                                                               PaginationStatus
+                                                //                                                                   .loading) {
+                                                // return ProductListingLoading();
+                                                // }
+                                                // products = state
+                                                //     .getProductListingPaginationWithoutFiltersModel[
+                                                // key]
+                                                //     ?.items ??
+                                                // [];
+                                                //
+                                                //
+                                                //
+                                                //                                       }
 
-                                          if (state.getProductListingWithFiltersPaginationModels[
-                                                  '${widget.boutiqueSlug}' +
-                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                      '${(widget.category ?? '')}'] !=
-                                              null) {
-                                            products = state
-                                                .getProductListingWithFiltersPaginationModels[
-                                                    '${widget.boutiqueSlug}' +
-                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                        '${(widget.category ?? '')}']!
-                                                .items;
-                                            if (products.isEmpty) {
-                                              return SliverToBoxAdapter(
-                                                child: Center(
-                                                  child: MyTextWidget(
-                                                    "${LocaleKeys.no_products_found.tr()}",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 18),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }
-
-                                          //                                                     else if(!widget.fromSearch){
-                                          //                                                       if ((((state
-                                          //                                                                       .getProductListingPaginationWithoutFiltersModel[
-                                          //                                                                           key]
-                                          //                                                                       ?.items
-                                          //                                                                       .isNullOrEmpty ??
-                                          //                                                                   true)) ||
-                                          //                                                               (state.getProductListingPaginationWithoutFiltersModel[
-                                          //                                                                       key] ==
-                                          //                                                                   null)) &&
-                                          //                                                           state.getProductListingWithFiltersPaginationModels
-                                          //                                                                   ?.paginationStatus ==
-                                          //                                                               PaginationStatus
-                                          //                                                                   .loading) {
-                                          // return ProductListingLoading();
-                                          // }
-                                          // products = state
-                                          //     .getProductListingPaginationWithoutFiltersModel[
-                                          // key]
-                                          //     ?.items ??
-                                          // [];
-                                          //
-                                          //
-                                          //
-                                          //                                       }
-
-                                          return SliverPadding(
-                                            key: TestVariables.kTestMode
-                                                ? Key(
-                                                    WidgetsKeys.productsListKey)
-                                                : gridViewKeyForRendering,
-                                            padding:
-                                                const EdgeInsets.only(top: 10),
-                                            sliver: SliverGrid(
-                                              gridDelegate:
-                                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 200.w / 350,
-                                                crossAxisSpacing: 10,
-                                                mainAxisSpacing: 15,
-                                              ),
-                                              delegate:
-                                                  SliverChildBuilderDelegate(
-                                                addSemanticIndexes: false,
-                                                addAutomaticKeepAlives: false,
-                                                addRepaintBoundaries: false,
-                                                childCount: products.length,
-                                                (BuildContext context,
-                                                    int index) {
-                                                  return InkWell(
-                                                    onTap: () {
-                                                      Future.delayed(
-                                                        Duration(
-                                                            milliseconds: 100),
-                                                      ).then(
-                                                        (value) {
-                                                          FirebaseAnalyticsService
-                                                              .logEventForSession(
-                                                            executedEventName:
-                                                                "viewItem",
-                                                            eventName:
-                                                                AnalyticsEventsConst
-                                                                    .viewItem,
-                                                            extraParams: {
-                                                              'item_id': products[
-                                                                      index]
-                                                                  .productId
-                                                                  .toString(),
-                                                              'item_name':
-                                                                  products[
-                                                                          index]
-                                                                      .name
-                                                                      .toString(),
-                                                              'price': products[
-                                                                      index]
-                                                                  .price
-                                                                  .toString(),
-                                                              'brand': products[
-                                                                      index]
-                                                                  .brand!
-                                                                  .name
-                                                                  .toString(),
-                                                              'category': products[
-                                                                      index]
-                                                                  .categories!
-                                                                  .map(
-                                                                    (e) => e.id
+                                                return SliverPadding(
+                                                  key: TestVariables.kTestMode
+                                                      ? Key(WidgetsKeys
+                                                          .productsListKey)
+                                                      : gridViewKeyForRendering,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10),
+                                                  sliver: SliverGrid(
+                                                    gridDelegate:
+                                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 2,
+                                                      childAspectRatio:
+                                                          200.w / 350,
+                                                      crossAxisSpacing: 10,
+                                                      mainAxisSpacing: 15,
+                                                    ),
+                                                    delegate:
+                                                        SliverChildBuilderDelegate(
+                                                      addSemanticIndexes: false,
+                                                      addAutomaticKeepAlives:
+                                                          false,
+                                                      addRepaintBoundaries:
+                                                          false,
+                                                      childCount:
+                                                          products.length,
+                                                      (BuildContext context,
+                                                          int index) {
+                                                        return InkWell(
+                                                          onTap: () {
+                                                            Future.delayed(
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      100),
+                                                            ).then(
+                                                              (value) {
+                                                                FirebaseAnalyticsService
+                                                                    .logEventForSession(
+                                                                  executedEventName:
+                                                                      "viewItem",
+                                                                  eventName:
+                                                                      AnalyticsEventsConst
+                                                                          .viewItem,
+                                                                  extraParams: {
+                                                                    'item_id': products[
+                                                                            index]
+                                                                        .productId
                                                                         .toString(),
-                                                                  )
-                                                                  .toList()
-                                                                  .toString(),
-                                                              'count_likes':
-                                                                  products[
-                                                                          index]
-                                                                      .countOfLikes
-                                                                      .toString(),
-                                                              'review_count':
-                                                                  products[
-                                                                          index]
-                                                                      .reviewsCount
-                                                                      .toString(),
-                                                              'interaction_type':
-                                                                  'view',
-                                                              'screen_name':
-                                                                  GlobalScreenConst
-                                                                      .PRODUCT_SCREEN,
-                                                            },
-                                                          );
-                                                        },
-                                                      );
-                                                      ////////////////////////////
-                                                      /* FirebaseAnalyticsService
+                                                                    'item_name':
+                                                                        products[index]
+                                                                            .name
+                                                                            .toString(),
+                                                                    'price': products[
+                                                                            index]
+                                                                        .price
+                                                                        .toString(),
+                                                                    'brand': products[
+                                                                            index]
+                                                                        .brand!
+                                                                        .name
+                                                                        .toString(),
+                                                                    'category': products[
+                                                                            index]
+                                                                        .categories!
+                                                                        .map(
+                                                                          (e) => e
+                                                                              .id
+                                                                              .toString(),
+                                                                        )
+                                                                        .toList()
+                                                                        .toString(),
+                                                                    'count_likes': products[
+                                                                            index]
+                                                                        .countOfLikes
+                                                                        .toString(),
+                                                                    'review_count': products[
+                                                                            index]
+                                                                        .reviewsCount
+                                                                        .toString(),
+                                                                    'interaction_type':
+                                                                        'view',
+                                                                    'screen_name':
+                                                                        GlobalScreenConst
+                                                                            .PRODUCT_SCREEN,
+                                                                  },
+                                                                );
+                                                              },
+                                                            );
+                                                            ////////////////////////////
+                                                            /* FirebaseAnalyticsService
                                                           .logEventForSession(
                                                         eventName:
                                                             AnalyticsEventsConst
@@ -2399,69 +2366,77 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 .chooseProductButton,
                                                       );*/
 
-                                                      // pushOverscrollRoute(
-                                                      //     context: context,
-                                                      //     transitionDuration : Duration(milliseconds : 250),
-                                                      //     reverseTransitionDuration : Duration(milliseconds : 400),
-                                                      //     child: ProductDetailsPage(
-                                                      //       productItem: state
-                                                      //           .getProductListingWithoutFiltersModel!
-                                                      //           .data!
-                                                      //           .products![index]
-                                                      //     ),
-                                                      //     workNormally: true,
-                                                      //     withRoundedCorners: true,
-                                                      //     isArabicLanguage: LanguageService.rtl,
-                                                      //     dragToPopDirection: DragToPopDirection.toBottom,
-                                                      //     scrollToPopOption: ScrollToPopOption.start,
-                                                      //     fullscreenDialog: true);
-                                                      homeBloc.add(
-                                                          ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                                                              isStatusInitaial:
-                                                                  true));
+                                                            // pushOverscrollRoute(
+                                                            //     context: context,
+                                                            //     transitionDuration : Duration(milliseconds : 250),
+                                                            //     reverseTransitionDuration : Duration(milliseconds : 400),
+                                                            //     child: ProductDetailsPage(
+                                                            //       productItem: state
+                                                            //           .getProductListingWithoutFiltersModel!
+                                                            //           .data!
+                                                            //           .products![index]
+                                                            //     ),
+                                                            //     workNormally: true,
+                                                            //     withRoundedCorners: true,
+                                                            //     isArabicLanguage: LanguageService.rtl,
+                                                            //     dragToPopDirection: DragToPopDirection.toBottom,
+                                                            //     scrollToPopOption: ScrollToPopOption.start,
+                                                            //     fullscreenDialog: true);
+                                                            /* homeBloc.add(AddCurrentSelectedColorEvent(
+                                                                currentSelectedColor:
+                                                                    0,
+                                                                productSlug: products[
+                                                                        index]
+                                                                    .slug
+                                                                    .toString()));*/
+                                                            homeBloc.add(
+                                                                ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                                    isStatusInitaial:
+                                                                        true));
 
-                                                      Future.delayed(
-                                                          Duration(
-                                                              milliseconds:
-                                                                  300),
-                                                          () => Navigator.of(context).push(
-                                                              MaterialPageRoute(
-                                                                  builder: (ctx) =>
-                                                                      ProductDetailsPage(
-                                                                        productItem:
-                                                                            products[index],
-                                                                      ))));
-                                                    },
-                                                    child: _productItem(
-                                                      index: index,
+                                                            Future.delayed(
+                                                                Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                                () => Navigator.of(
+                                                                        context)
+                                                                    .push(MaterialPageRoute(
+                                                                        builder: (ctx) => ProductDetailsPage(
+                                                                              productItem: products[index],
+                                                                            ))));
+                                                          },
+                                                          child: _productItem(
+                                                              index: index,
+                                                              slidingMode:
+                                                                  slidingMode),
+                                                        );
+                                                      },
                                                     ),
-                                                  );
-                                                },
-                                              ),
+                                                  ),
+                                                );
+                                              },
                                             ),
-                                          );
-                                        },
-                                      ),
-                                BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                                    buildWhen: (previous, current) =>
-                                        previous
-                                            .isGettingProductListingWithPagination !=
-                                        current
-                                            .isGettingProductListingWithPagination,
-                                    builder: (context, state) {
-                                      if (state
-                                          .isGettingProductListingWithPagination) {
-                                        return SliverToBoxAdapter(
-                                          child: Center(
-                                            child: TrydosLoader(),
-                                          ),
-                                        );
-                                      }
-                                      return SliverToBoxAdapter();
-                                    })
-                              ]));
-                        },
-                      );
+                                      BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                                          buildWhen: (previous, current) =>
+                                              previous
+                                                  .isGettingProductListingWithPagination !=
+                                              current
+                                                  .isGettingProductListingWithPagination,
+                                          builder: (context, state) {
+                                            if (state
+                                                .isGettingProductListingWithPagination) {
+                                              return SliverToBoxAdapter(
+                                                child: Center(
+                                                  child: TrydosLoader(),
+                                                ),
+                                              );
+                                            }
+                                            return SliverToBoxAdapter();
+                                          })
+                                    ]));
+                              },
+                            );
+                          });
                     }),
               ),
               Positioned(
@@ -2577,17 +2552,31 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               previous.cartCollection !=
                                                   current.cartCollection,
                                           builder: (context, state) {
-                                            List<String> syncColorNames = [];
+                                            /* List<String> syncColorNames = [];
                                             List<
                                                     productListingModel
                                                     .SyncColorImage>
                                                 syncColorImagesFromListing =
                                                 products[tapIndex]
                                                         .syncColorImages ??
-                                                    [];
+                                                    [];*/
                                             List<productListingModel.Color>?
-                                                colorsFromListing =
-                                                products[tapIndex].colors ?? [];
+                                                productColors = [];
+                                            if (state
+                                                    .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                    .success) {
+                                              productColors = state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .colors;
+                                            }
+                                            //  List<productListingModel.Color>?
+                                            //   colorsFromListing =
+                                            products[tapIndex].colors ?? [];
                                             currentSelectedColor =
                                                 state.currentSelectedColorForEveryProduct[
                                                         products[tapIndex]
@@ -2597,23 +2586,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 ?.length ??
                                                             0) ~/
                                                         2;
-                                            String currentSelectedColorName =
-                                                ((products[tapIndex]
-                                                                .colors
-                                                                ?.length ??
-                                                            0) >
+                                            String currentSelectedColorOption =
+                                                ((productColors?.length ?? 0) >
                                                         0)
-                                                    ? products[tapIndex]
-                                                            .colors![
+                                                    ? productColors![
                                                                 currentSelectedColor]
-                                                            .name ??
+                                                            .option ??
                                                         ""
                                                     : "";
 
                                             String currentVariantType =
-                                                "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
-                                                    "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
-                                                    "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
+                                                "${currentSelectedColorOption != "" ? currentSelectedColorOption : ""}" +
+                                                    "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["choiceOption"] != "") && (currentSelectedColorOption != "") ? "-" : ""}" +
+                                                    "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["choiceOption"] != "") ? "${state.currentColorSizeForCart?["choiceOption"]}" : ""}";
 
                                             product.Variation?
                                                 currentVariation = state
@@ -2633,7 +2618,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               },
                                             );
 
-                                            if (state
+                                            /*if (state
                                                     .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                 GetProductDetailWithoutSimilarRelatedProductsStatus
                                                     .success) {
@@ -2660,7 +2645,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ?.forEach(
                                                 (element) {
                                                   if (!syncColorNames.contains(
-                                                      element.colorName)) {
+                                                      element.colorOption)) {
                                                     syncColorImagesFromListing
                                                         .add(element);
                                                   }
@@ -2677,13 +2662,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ?.forEach(
                                                 (element) {
                                                   if (!(syncColorNames.contains(
-                                                      element.name))) {
+                                                      element.option))) {
                                                     colorsFromListing
                                                         .add(element);
                                                   }
                                                 },
                                               );
-                                            }
+                                            }*/
 
                                             String productId =
                                                 products[tapIndex]
@@ -2782,13 +2767,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               }
                                             });
                                             homeBloc.add(AddSizesForColorsEvent(
-                                                currentColorName:
-                                                    !products[tapIndex]
-                                                            .colors
-                                                            .isNullOrEmpty
-                                                        ? products[tapIndex].colors![currentSelectedColor].name ??
-                                                            ""
-                                                        : "",
+                                                currentColorName: !(productColors
+                                                        .isNullOrEmpty)
+                                                    ? productColors![currentSelectedColor]
+                                                            .option ??
+                                                        ""
+                                                    : "",
                                                 variation: state.cachedProductWithoutRelatedProductsModel[
                                                             products[tapIndex]
                                                                 .productId
@@ -2837,7 +2821,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       : true)) {
                                                 homeBloc.add(
                                                     AddCurrentColorSizeEvent(
-                                                        choice_1: null));
+                                                        choice_1: null,
+                                                        choiceOption: null));
                                               } else if (!(state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                           productId] !=
@@ -2881,10 +2866,38 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 2]
                                                             .name ??
                                                         "";
+                                                String sizeOptionSelect = (state
+                                                                .cachedProductWithoutRelatedProductsModel[
+                                                                    productId]!
+                                                                .product!
+                                                                .choiceOptions
+                                                                ?.length ??
+                                                            0) ==
+                                                        0
+                                                    ? ""
+                                                    : state
+                                                            .cachedProductWithoutRelatedProductsModel[
+                                                                productId]!
+                                                            .product!
+                                                            .choiceOptions![0]
+                                                            .options?[(state
+                                                                        .cachedProductWithoutRelatedProductsModel[
+                                                                            productId]!
+                                                                        .product
+                                                                        ?.choiceOptions?[
+                                                                            0]
+                                                                        .options
+                                                                        ?.length ??
+                                                                    0) ~/
+                                                                2]
+                                                            .option ??
+                                                        "";
 
                                                 homeBloc.add(
                                                     AddCurrentColorSizeEvent(
-                                                        choice_1: sizeSelect));
+                                                        choice_1: sizeSelect,
+                                                        choiceOption:
+                                                            sizeOptionSelect));
                                               }
                                               homeBloc.add(
                                                   IsChangedVariationWhenQtyZeroEvent(
@@ -2972,25 +2985,93 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       size: 25,
                                                     ),
                                                   )
-                                                : ProductDetailsBottomSheet(
-                                                    initOfferPrice: (products[
-                                                                    tapIndex]
-                                                                .offerPrice ??
-                                                            0)
-                                                        .toString(),
-                                                    initPrice:
-                                                        (products[tapIndex]
+                                                : ValueListenableBuilder<bool>(
+                                                    valueListenable:
+                                                        finishRedeem,
+                                                    builder: (context,
+                                                        _finishRedeem, _) {
+                                                      return ProductDetailsBottomSheet(
+                                                        redeemVariantPrice: (currentVariation
+                                                                    ?.redeemPrice !=
+                                                                null)
+                                                            ? currentVariation
+                                                                    ?.redeemPrice ??
+                                                                0
+                                                            : state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                            tapIndex]
+                                                                        .productId
+                                                                        .toString()]
+                                                                    ?.product
+                                                                    ?.redeemPrice ??
+                                                                0,
+                                                        isRedeem: prefsRepository
+                                                                    .getRedeemDateForProduct(products[
+                                                                            tapIndex]
+                                                                        .productId
+                                                                        .toString())
+                                                                    ?.isAfter(DateTime
+                                                                            .now()
+                                                                        .add(Duration(
+                                                                            seconds:
+                                                                                1))) ==
+                                                                true &&
+                                                            state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                            tapIndex]
+                                                                        .productId
+                                                                        .toString()]
+                                                                    ?.product
+                                                                    ?.isRedeem ==
+                                                                true,
+                                                        redeemPrice: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                        tapIndex]
+                                                                    .productId
+                                                                    .toString()] !=
+                                                                null
+                                                            ? state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product !=
+                                                                    null
+                                                                ? state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product!
+                                                                        .redeemPrice ??
+                                                                    0
+                                                                : 0
+                                                            : 0,
+                                                        initOfferPrice:
+                                                            (products[tapIndex]
+                                                                    .offerPrice ??
+                                                                0),
+                                                        currentColorOption: productColors
+                                                                .isNullOrEmpty
+                                                            ? ''
+                                                            : productColors?[
+                                                                        currentSelectedColor]
+                                                                    .option ??
+                                                                products[
+                                                                        tapIndex]
+                                                                    .colors![
+                                                                        currentSelectedColor]
+                                                                    .option ??
+                                                                "",
+                                                        initPrice:
+                                                            (products[tapIndex]
                                                                     .price ??
-                                                                0)
-                                                            .toString(),
-                                                    isGetFullProductDetails:
-                                                        false,
-                                                    productNotAvailableNotifier:
-                                                        productNotAvailableNotifier,
-                                                    currentActiveTab:
-                                                        currentActiveTab,
-                                                    qtyForproductWithoutVariant:
-                                                        state
+                                                                0),
+                                                        isGetFullProductDetails:
+                                                            false,
+                                                        productNotAvailableNotifier:
+                                                            productNotAvailableNotifier,
+                                                        currentActiveTab:
+                                                            currentActiveTab,
+                                                        qtyForproductWithoutVariant: state
                                                             .cachedProductWithoutRelatedProductsModel[
                                                                 products[
                                                                         tapIndex]
@@ -2998,197 +3079,247 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     .toString()]
                                                             ?.product
                                                             ?.availableQuantity,
-                                                    collectedAfterOrdering: state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                products[
+                                                        collectedAfterOrdering: state
+                                                                .cachedProductWithoutRelatedProductsModel[products[
                                                                         tapIndex]
                                                                     .productId
                                                                     .toString()]
-                                                            ?.product
-                                                            ?.collectedAfterOrdering ==
-                                                        1,
-                                                    tapIndexToAddProductToCart:
-                                                        tapIndexToAddProductToCart,
-                                                    fromListingPage: true,
-                                                    productIdForCashData:
-                                                        products[tapIndex]
-                                                            .productId
-                                                            .toString(),
-                                                    panelController:
-                                                        panelControllerForCart,
-                                                    productSlugForTopic: state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                products[
+                                                                ?.product
+                                                                ?.collectedAfterOrdering ==
+                                                            1,
+                                                        tapIndexToAddProductToCart:
+                                                            tapIndexToAddProductToCart,
+                                                        fromListingPage: true,
+                                                        productIdForCashData:
+                                                            products[tapIndex]
+                                                                .productId
+                                                                .toString(),
+                                                        panelController:
+                                                            panelControllerForCart,
+                                                        productSlugForTopic: state
+                                                                .cachedProductWithoutRelatedProductsModel[products[
                                                                         tapIndex]
                                                                     .productId
                                                                     .toString()]
-                                                            ?.product
-                                                            ?.slug ??
-                                                        "",
-                                                    productDescription: HtmlParser
-                                                            .parseHTML(products[
-                                                                        tapIndex]
-                                                                    .details ??
-                                                                "")
-                                                        .text,
-                                                    countOfPieces: state
-                                                                    .cachedProductWithoutRelatedProductsModel[
-                                                                products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                            null
-                                                        ? state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                    .product !=
-                                                                null
-                                                            ? state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                    .product!
-                                                                    .countOfPieces ??
-                                                                0
-                                                            : 0
-                                                        : 0,
-                                                    addToBagButtonShapeNotifier:
-                                                        addToBagButtonShapeNotifier,
-                                                    currentColornum: products[
-                                                                tapIndex]
-                                                            .colors
-                                                            .isNullOrEmpty
-                                                        ? ''
-                                                        : products[tapIndex]
-                                                                .colors![
-                                                                    currentSelectedColor]
-                                                                .color ??
+                                                                ?.product
+                                                                ?.slug ??
                                                             "",
-                                                    boutiqueIcon: state
-                                                                    .cachedProductWithoutRelatedProductsModel[
-                                                                products[tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                            null
-                                                        ? state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                    .product !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product!
-                                                                        .boutique !=
-                                                                    null
-                                                                ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon !=
-                                                                        null
-                                                                    ? state
-                                                                            .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
-                                                                            .product!
-                                                                            .boutique!
-                                                                            .icon!
-                                                                            .filePath ??
-                                                                        ""
-                                                                    : ""
-                                                                : ""
-                                                            : ""
-                                                        : "",
-                                                    boutiqueId: state
-                                                                    .cachedProductWithoutRelatedProductsModel[
-                                                                products[
+                                                        productDescription:
+                                                            HtmlParser.parseHTML(
+                                                                    products[tapIndex]
+                                                                            .details ??
+                                                                        "")
+                                                                .text,
+                                                        countOfPieces: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
                                                                         tapIndex]
                                                                     .productId
                                                                     .toString()] !=
-                                                            null
-                                                        ? state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                    .product !=
                                                                 null
                                                             ? state
                                                                         .cachedProductWithoutRelatedProductsModel[products[tapIndex]
                                                                             .productId
                                                                             .toString()]!
-                                                                        .product!
-                                                                        .boutique !=
+                                                                        .product !=
                                                                     null
                                                                 ? state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                    .product!
-                                                                    .boutique!
-                                                                    .id!
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product!
+                                                                        .countOfPieces ??
+                                                                    0
                                                                 : 0
-                                                            : 0
-                                                        : 0,
-                                                    currentColorName: products[
-                                                                tapIndex]
-                                                            .colors
-                                                            .isNullOrEmpty
-                                                        ? ''
-                                                        : products[tapIndex]
-                                                                .colors![
-                                                                    currentSelectedColor]
-                                                                .name ??
-                                                            "",
-                                                    productItem: products[tapIndex].copyWith(
-                                                        price: currentVariation?.price != null
-                                                            ? currentVariation
-                                                                ?.price
-                                                            : state
-                                                                .cachedProductWithoutRelatedProductsModel[
-                                                                    products[tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                .product
-                                                                ?.price,
-                                                        offerPrice: currentVariation?.offerPrice != null
-                                                            ? currentVariation
-                                                                ?.offerPrice
-                                                            : state
-                                                                .cachedProductWithoutRelatedProductsModel[
-                                                                    products[tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                .product
-                                                                ?.offerPrice,
-                                                        priceFormatted: currentVariation
-                                                                    ?.priceFormated !=
+                                                            : 0,
+                                                        addToBagButtonShapeNotifier:
+                                                            addToBagButtonShapeNotifier,
+                                                        currentColornum: productColors
+                                                                .isNullOrEmpty
+                                                            ? ''
+                                                            : productColors?[
+                                                                        currentSelectedColor]
+                                                                    .color ??
+                                                                "",
+                                                        boutiqueIcon: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                        tapIndex]
+                                                                    .productId
+                                                                    .toString()] !=
                                                                 null
-                                                            ? currentVariation
-                                                                ?.priceFormated
-                                                            : state
-                                                                .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
-                                                                .product
-                                                                ?.priceFormatted,
-                                                        offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.offerPriceFormatted,
-                                                        availableQuantity: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null ? 0 : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.availableQuantity,
-                                                        choiceOptions: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.choiceOptions,
-                                                        colors: colorsFromListing,
-                                                        images: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.images,
-                                                        syncColorImages: syncColorImagesFromListing),
-                                                    currentColor:
-                                                        currentSelectedColor,
-                                                    maxAllowedToAddCart: state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                products[
+                                                            ? state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product !=
+                                                                    null
+                                                                ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique !=
+                                                                        null
+                                                                    ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon !=
+                                                                            null
+                                                                        ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon!.filePath ??
+                                                                            ""
+                                                                        : ""
+                                                                    : ""
+                                                                : ""
+                                                            : "",
+                                                        boutiqueId: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                        tapIndex]
+                                                                    .productId
+                                                                    .toString()] !=
+                                                                null
+                                                            ? state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product !=
+                                                                    null
+                                                                ? state
+                                                                            .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                                .productId
+                                                                                .toString()]!
+                                                                            .product!
+                                                                            .boutique !=
+                                                                        null
+                                                                    ? state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product!
+                                                                        .boutique!
+                                                                        .id!
+                                                                    : 0
+                                                                : 0
+                                                            : 0,
+                                                        currentColorName: productColors
+                                                                .isNullOrEmpty
+                                                            ? ''
+                                                            : productColors?[
+                                                                        currentSelectedColor]
+                                                                    .name ??
+                                                                "",
+                                                        productItem:
+                                                            products[tapIndex]
+                                                                .copyWith(
+                                                          price: currentVariation
+                                                                      ?.price !=
+                                                                  null
+                                                              ? currentVariation
+                                                                  ?.price
+                                                              : state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .product
+                                                                  ?.price,
+                                                          offerPrice: currentVariation
+                                                                      ?.offerPrice !=
+                                                                  null
+                                                              ? currentVariation
+                                                                  ?.offerPrice
+                                                              : state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .product
+                                                                  ?.offerPrice,
+                                                          priceFormatted: currentVariation
+                                                                      ?.priceFormated !=
+                                                                  null
+                                                              ? currentVariation
+                                                                  ?.priceFormated
+                                                              : state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .product
+                                                                  ?.priceFormatted,
+                                                          offerPriceFormatted: currentVariation
+                                                                      ?.offerPriceFormated !=
+                                                                  null
+                                                              ? currentVariation
+                                                                  ?.offerPriceFormated
+                                                              : state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .product
+                                                                  ?.offerPriceFormatted,
+                                                          availableQuantity: state
+                                                                      .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()] ==
+                                                                  null
+                                                              ? 0
+                                                              : state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .product
+                                                                  ?.availableQuantity,
+                                                          choiceOptions: state
+                                                                      .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()] ==
+                                                                  null
+                                                              ? []
+                                                              : state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .product
+                                                                  ?.choiceOptions,
+                                                          colors: state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.colors,
+                                                          images: state
+                                                                      .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()] ==
+                                                                  null
+                                                              ? []
+                                                              : state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .product
+                                                                  ?.images,
+                                                          syncColorImages: state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.syncColorImages,
+                                                        ),
+                                                        currentColor:
+                                                            currentSelectedColor,
+                                                        maxAllowedToAddCart: state
+                                                                .cachedProductWithoutRelatedProductsModel[products[
                                                                         tapIndex]
                                                                     .productId
                                                                     .toString()]
-                                                            ?.product
-                                                            ?.maxAllowedQty ??
-                                                        "0",
-                                                  );
+                                                                ?.product
+                                                                ?.maxAllowedQty ??
+                                                            "0",
+                                                      );
+                                                    });
                                           }),
                                     ));
                         });
@@ -3271,7 +3402,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               },
               child: _productItem(
                 index: index,
-                //slidingMode: slidingMode,
+                slidingMode: slidingMode,
               ),
             );
           },
@@ -3361,7 +3492,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
             isChangedvariationWhenQtyZero: true)));
   }*/
   Widget _productItem({
-    // required Tuple2<int, int> slidingMode,
+    required Tuple2<int, int> slidingMode,
     required int index,
   }) {
     return /*!displayImageColors && !widget.fromSearch
@@ -3381,17 +3512,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
               },
             ))*/
         ProductItem(
-      // displayImageColors: true,
+      finishRedeem: finishRedeem,
+      displayImageColors: true,
+      fromHomePage: false,
       tapIndexToAddProductToCart: tapIndexToAddProductToCart,
       key: TestVariables.kTestMode
           ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
           : null,
-      // slidingModeItem: slidingMode,
+      slidingModeItem: slidingMode,
       productItem: products[index],
       itemIndex: index,
-      //  setThisEnabled: (int index, int slideMode) {
-      //   setThisEnabledNotifier.value = Tuple2(index, slideMode);
-      //},
+      setThisEnabled: (int index, int slideMode) {
+        setThisEnabledNotifier.value = Tuple2(index, slideMode);
+      },
     );
   }
 }

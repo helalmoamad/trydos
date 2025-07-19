@@ -23,6 +23,7 @@ import 'package:trydos/features/story/domain/useCases/get_width_and_height_useca
 import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
+import 'package:trydos/features/story/domain/useCases/delete_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -49,6 +50,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final AddStoryToOurServerUseCase addStoryToOurServerUseCase;
   final IncreaseViewersUseCase increaseViewersUseCase;
+  final DeleteStoryUseCase deleteStoryUseCase;
 
   StoryBloc(
       this.uploadFileCloudinaryUseCase,
@@ -56,7 +58,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       this.getWidthAndHeightUseCase,
       this.uploadStoryUseCase,
       this.increaseViewersUseCase,
-      this.addStoryToOurServerUseCase)
+      this.addStoryToOurServerUseCase,
+      this.deleteStoryUseCase)
       : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
     on<SetStoryLinkEvent>(_setStoryLinkEvent);
@@ -65,6 +68,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     on<ChangeStatusUploadToFailureEvent>(
       _onChangeStatusUploadToFailureEvent,
     );
+    on<DeleteStoryEvent>(_onDeleteStoryEvent);
 
     on<UpdateNameForUserInCollectionIfExistEvent>(
         _onUpdateNameForUserInCollectionIfExistEvent);
@@ -405,9 +409,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           state.storiesCollections.first.stories = currentUserStories;
         }
       }, (collection) {
-        print(
-            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW11111111111111111111111ssssssssssssssssssss");
-
         state.storiesCollections.insert(0, collection);
       });
       // if (GetIt.I<PrefsRepository>().myStoriesId ==
@@ -446,6 +447,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         selectedVideoStatus: SelectedVideoStatus.init,
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.init,
         uploadStoryStatus: UploadStoryStatus.init,
+        deleteStoryStatus: DeleteStoryStatus.init,
         currentStoryToMakeItViewedInEachCollection: []).toJson();
   }
 
@@ -504,5 +506,103 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       i++;
       return e;
     }).toList()));
+  }
+
+  FutureOr<void> _onDeleteStoryEvent(
+      DeleteStoryEvent event, Emitter<StoryState> emit) async {
+    emit(state.copyWith(deleteStoryStatus: DeleteStoryStatus.loading));
+
+    final response =
+        await deleteStoryUseCase(DeleteStoryParams(storyId: event.storyId));
+
+    response.fold((l) {
+      emit(state.copyWith(deleteStoryStatus: DeleteStoryStatus.failure));
+      showMessage(l.message, hasError: true, showInRelease: true);
+    }, (deleteStoryModel) {
+      // حذف الستوري من collection المستخدم الحالي فقط
+      List<CollectionStoryModel> updatedCollections = state.storiesCollections
+          .map((collection) {
+            // إذا كان هذا collection المستخدم الحالي
+            if (collection.stories?.isNotEmpty == true &&
+                collection.stories!.first.userId ==
+                    GetIt.I<PrefsRepository>().myStoriesId) {
+              // حذف الستوري المطلوب من المجموعة
+              List<Story> updatedStories = collection.stories!
+                  .where((story) => story.id.toString() != event.storyId)
+                  .toList();
+
+              // إذا لم يتبق ستوريز، لا تعيد المجموعة
+              if (updatedStories.isEmpty) {
+                return null;
+              }
+
+              // أعد المجموعة مع الستوريز المحدثة
+              return collection.copyWith(stories: updatedStories);
+            }
+
+            // إذا لم يكن collection المستخدم، أبقيه كما هو
+            return collection;
+          })
+          .where((collection) => collection != null)
+          .cast<CollectionStoryModel>()
+          .toList();
+
+      // تحديث المؤشرات بعد الحذف
+      Map<int, int?> updatedCurrentStoryInEachCollection =
+          Map.from(state.currentStoryInEachCollection);
+      int? newSelectedCollection = state.selectedCollection;
+
+      // البحث عن collection المستخدم في القائمة المحدثة
+      int userCollectionIndex = -1;
+      for (int i = 0; i < updatedCollections.length; i++) {
+        if (updatedCollections[i].stories?.isNotEmpty == true &&
+            updatedCollections[i].stories!.first.userId ==
+                GetIt.I<PrefsRepository>().myStoriesId) {
+          userCollectionIndex = i;
+          break;
+        }
+      }
+
+      // إذا لم يجد collection المستخدم (تم حذفه بالكامل)
+      if (userCollectionIndex == -1) {
+        // إذا كان هناك مجموعات أخرى، انتقل لأول مجموعة
+        if (updatedCollections.isNotEmpty) {
+          newSelectedCollection = 0;
+          updatedCurrentStoryInEachCollection[0] =
+              0; // أول ستوري في المجموعة الأولى
+        } else {
+          // لا توجد مجموعات، العودة للصفحة الرئيسية
+          newSelectedCollection = null;
+          updatedCurrentStoryInEachCollection.clear();
+
+          showMessage("تم حذف جميع الستوريز، العودة للصفحة الرئيسية",
+              showInRelease: true);
+        }
+      } else {
+        // collection المستخدم موجود، تحديث المؤشر
+        if (updatedCurrentStoryInEachCollection[userCollectionIndex] != null) {
+          int currentStoryIndex =
+              updatedCurrentStoryInEachCollection[userCollectionIndex]!;
+          int totalStories =
+              updatedCollections[userCollectionIndex].stories!.length;
+
+          // إذا كان المؤشر أكبر من عدد الستوريز المتبقية
+          if (currentStoryIndex >= totalStories) {
+            updatedCurrentStoryInEachCollection[userCollectionIndex] =
+                totalStories - 1;
+          }
+        }
+      }
+
+      emit(state.copyWith(
+        storiesCollections: updatedCollections,
+        currentStoryInEachCollection: updatedCurrentStoryInEachCollection,
+        selectedCollection: newSelectedCollection,
+        deleteStoryStatus: DeleteStoryStatus.success,
+      ));
+
+      showMessage(deleteStoryModel.data?.message ?? "تم حذف الستوري بنجاح",
+          showInRelease: true);
+    });
   }
 }

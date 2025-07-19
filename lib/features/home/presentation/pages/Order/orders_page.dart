@@ -58,7 +58,7 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
-
+    orderBloc.add(GetCustomerAddressesEvent());
     if (widget.fromNotification ?? false) {
       orderBloc.add(
         GetOrdersEvent(getWithPagination: false, status: ""),
@@ -372,13 +372,15 @@ class _OrdersPageState extends State<OrdersPage> {
                   text2: '',
                   svgIcon1: AppAssets.preparingBagSvg,
                   svgIcon2: AppAssets.orderInvoice2Svg,
-                  secondInfoSvgIcon:
-                      item[0].orderGroupStatus?.label == 'Shipped'
-                          ? AppAssets.shippedBlackSvg
-                          : item[0].orderGroupStatus?.label == 'Delivered'
-                              ? AppAssets.deliveredBlackSvg
-                              : item[0].orderGroupStatus?.label == 'Pending'
-                                  ? AppAssets.pendeingBlackCheck
+                  secondInfoSvgIcon: item[0].orderGroupStatus?.value ==
+                          'shipped'
+                      ? AppAssets.shippedBlackSvg
+                      : item[0].orderGroupStatus?.value == 'delivered'
+                          ? AppAssets.deliveredBlackSvg
+                          : item[0].orderGroupStatus?.value == 'pending'
+                              ? AppAssets.pendeingBlackCheck
+                              : item[0].orderGroupStatus?.value == 'canceled'
+                                  ? AppAssets.orderCanselSvg
                                   : AppAssets.orderPreparingSvg,
                   amount: orderAmount.toStringAsFixed(
                       state.startingSetting?.decimalPointSettings ?? 0),

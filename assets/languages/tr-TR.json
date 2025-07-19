@@ -9,6 +9,12 @@
   "gallery": "galeri",
   "camera": "kamera",
   "choose_photo_or_video_from_gallery_or_camera": "galeriden veya kameradan fotoğraf veya video seçin",
+  "image_preview": "Resim Önizleme",
+  "image_preview_instructions": "Resim Önizleme - Gönder, kırp veya iptal et",
+  "crop_image": "Resmi Kırp",
+  "select_image_part": "Resmin gerekli kısmını seçin",
+  "send": "Gönder",
+  "cancel_preview": "Önizlemeyi İptal Et",
   "welcome_page_description": "Uygulamanın Tüm Avantajlarından Yararlanmak İçin Lütfen Hızlı ve Kolay Adımlarla ve Sadece Bir Kereliğine Bize Katılın",
   "why_we_know_you_label": "Sizi Neden Tanıyoruz?",
   "i_have_account": "Zaten Hesabım Var",
@@ -192,6 +198,10 @@
   "not_now": "Şimdi Değil",
   "notify_me": "Bana Bildir",
   "do_you_want_to_notify_You_when_your_choose_available": "Seçiminiz mevcut olduğunda size bildirim gönderilmesini ister misiniz?",
+  "cancel_order_hours_back_money": "Bu Siparişi {hours} Saat İçinde İptal Edin ve Paranızı Geri Alın",
+  "cancel_product_hours_back_money": "Bu Ürünü {hours} Saat İçinde İptal Edin ve Paranızı Geri Alın",
+  "coupon_link_not_allowed": "Kupon bağlantısına izin verilmiyor",
+  "video_length_limit": "Video süresi 59 saniyeden uzun olmamalıdır",
   "your_request_faild": "isteğiniz başarısız oldu",
   "continues": "devam et",
   "more": "Daha Fazla",
@@ -539,5 +549,8 @@
   "image_load_failed": "Resim yükleme başarısız",
   "download_timeout": "İndirme zaman aşımı",
   "retry_download": "İndirmeyi yeniden dene",
-  "image_not_available": "Resim mevcut değil"
+  "image_not_available": "Resim mevcut değil",
+  "luck": "Bol şans!"
+  ,"add_to_bag_within": "Şu sürede sepete ekle"
+  ,"seconds": "saniye"
 }

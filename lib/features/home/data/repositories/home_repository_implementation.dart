@@ -38,6 +38,9 @@ import 'package:trydos/features/home/data/models/main_categories_response_model.
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/place_order_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
+import 'package:trydos/features/home/data/models/cancel_order_item_model.dart';
+import 'package:trydos/features/home/data/models/cancel_order_model.dart';
+import 'package:trydos/features/home/data/models/change_order_address_model.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
@@ -501,6 +504,30 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getOrders(params: params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, CancelOrderItemModel>> cancelOrderItem(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.cancelOrderItem(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, CancelOrderModel>> cancelOrder(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.cancelOrder(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ChangeOrderAddressModel>> changeOrderAddress(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.changeOrderAddress(params),
     );
   }
 }

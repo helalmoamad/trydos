@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../data/models/apply_coupon_model.dart';
+import '../../../data/models/cancel_order_item_model.dart';
 import '../../../data/models/customer_wallet_model.dart';
 import '../../../data/models/get_address_by_coordinates_model.dart';
 import '../../../data/models/get_address_by_text_model.dart';
@@ -36,6 +37,12 @@ enum GetAddressByTextStatus { init, loading, success, failure }
 
 enum ApplyCouponStatus { init, loading, success, failure }
 
+enum CancelOrderItemStatus { init, loading, success, failure }
+
+enum CancelOrderStatus { init, loading, success, failure }
+
+enum ChangeOrderAddressStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class OrderState extends Equatable {
@@ -63,9 +70,12 @@ class OrderState extends Equatable {
     this.getAddressByCoordinatesModel,
     this.getAddressByTextStatus = GetAddressByTextStatus.init,
     this.applyCouponStatus = ApplyCouponStatus.init,
+    this.applyCouponModel,
+    this.cancelOrderItemStatus = CancelOrderItemStatus.init,
+    this.cancelOrderStatus = CancelOrderStatus.init,
+    this.changeOrderAddressStatus = ChangeOrderAddressStatus.init,
     this.resultSearch = const [],
     this.provincesByIso = const [],
-    this.applyCouponModel,
   });
 
   final OrdersGroupModel? placeOrderModel;
@@ -95,6 +105,9 @@ class OrderState extends Equatable {
   final String? currentOrederStatus;
   final ApplyCouponStatus? applyCouponStatus;
   final ApplyCouponModel? applyCouponModel;
+  final CancelOrderItemStatus? cancelOrderItemStatus;
+  final CancelOrderStatus? cancelOrderStatus;
+  final ChangeOrderAddressStatus? changeOrderAddressStatus;
 
   @override
   List<Object?> get props => [
@@ -124,6 +137,9 @@ class OrderState extends Equatable {
         resultSearch,
         applyCouponStatus,
         applyCouponModel,
+        cancelOrderItemStatus,
+        cancelOrderStatus,
+        changeOrderAddressStatus,
       ];
 
   OrderState copyWith({
@@ -153,6 +169,9 @@ class OrderState extends Equatable {
     List<String>? provincesByIso,
     final ApplyCouponStatus? applyCouponStatus,
     final ApplyCouponModel? applyCouponModel,
+    final CancelOrderItemStatus? cancelOrderItemStatus,
+    final CancelOrderStatus? cancelOrderStatus,
+    final ChangeOrderAddressStatus? changeOrderAddressStatus,
   }) {
     return OrderState(
       placeOrderModel: placeOrderModel ?? this.placeOrderModel,
@@ -197,6 +216,11 @@ class OrderState extends Equatable {
       resultSearch: resultSearch ?? this.resultSearch,
       applyCouponStatus: applyCouponStatus ?? this.applyCouponStatus,
       applyCouponModel: applyCouponModel ?? this.applyCouponModel,
+      cancelOrderItemStatus:
+          cancelOrderItemStatus ?? this.cancelOrderItemStatus,
+      cancelOrderStatus: cancelOrderStatus ?? this.cancelOrderStatus,
+      changeOrderAddressStatus:
+          changeOrderAddressStatus ?? this.changeOrderAddressStatus,
     );
   }
 

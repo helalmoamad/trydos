@@ -78,319 +78,436 @@ showMessage(
 
 showSuccessMessage(BuildContext context, String message,
     {String? actionText, VoidCallback? onActionPressed}) {
-  showDialog(
-    context: context,
-    barrierDismissible: true,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext dialogContext) {
-      Timer(Duration(seconds: 3), () {
-        if (Navigator.of(dialogContext).canPop()) {
-          Navigator.of(dialogContext).pop();
-        }
-      });
+  // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
+  OverlayState? overlayState = Overlay.of(context);
 
-      return Align(
-        alignment: Alignment.topCenter,
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 8,
-            left: 16,
-            right: 16,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: Stack(
-              children: [
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(top: 12.h),
-                  padding: EdgeInsets.all(16.w),
+  if (overlayState == null) {
+    // إذا لم نتمكن من الحصول على Overlay، استخدم Dialog كبديل
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext dialogContext) {
+        Timer(Duration(seconds: 3), () {
+          try {
+            if (Navigator.of(dialogContext).canPop()) {
+              Navigator.of(dialogContext).pop();
+            }
+          } catch (e) {
+            // تجاهل الأخطاء
+          }
+        });
+
+        return _buildSuccessWidget(context, message, () {
+          try {
+            if (Navigator.of(dialogContext).canPop()) {
+              Navigator.of(dialogContext).pop();
+            }
+          } catch (e) {
+            // تجاهل الأخطاء
+          }
+        });
+      },
+    );
+    return;
+  }
+
+  late OverlayEntry overlayEntry;
+
+  overlayEntry = OverlayEntry(
+    builder: (context) => _buildSuccessWidget(context, message, () {
+      overlayEntry.remove();
+    }),
+  );
+
+  overlayState.insert(overlayEntry);
+
+  // إغلاق تلقائي بعد 3 ثوانٍ
+  Timer(Duration(seconds: 3), () {
+    try {
+      overlayEntry.remove();
+    } catch (e) {
+      // تجاهل الأخطاء إذا كان الـ overlay محذوف بالفعل
+    }
+  });
+}
+
+Widget _buildSuccessWidget(
+    BuildContext context, String message, VoidCallback onClose) {
+  return Align(
+    alignment: Alignment.topCenter,
+    child: Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top +
+            10, // إضافة padding للـ status bar
+        left: 16,
+        right: 16,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(top: 8.h), // تقليل margin
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE2FFF1),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: const Color(0xFF2CDD92), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  MyTextWidget(
+                    _getLocalizedTitle(context),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  MyTextWidget(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF666666),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: _isRTL(context) ? null : 0,
+              left: _isRTL(context) ? 0 : null,
+              child: GestureDetector(
+                onTap: onClose,
+                child: Container(
+                  padding: EdgeInsets.all(6.w),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2FFF1),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border:
-                        Border.all(color: const Color(0xFF2CDD92), width: 1),
+                    color: Colors.white,
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      MyTextWidget(
-                        _getLocalizedTitle(context),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      MyTextWidget(
-                        message,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF666666),
-                        ),
-                      ),
-                    ],
+                  child: Icon(
+                    Icons.close,
+                    color: const Color(0xFF666666),
+                    size: 18.sp,
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  right: _isRTL(context) ? null : 0,
-                  left: _isRTL(context) ? 0 : null,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (Navigator.of(dialogContext).canPop()) {
-                        Navigator.of(dialogContext).pop();
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(6.w),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        color: const Color(0xFF666666),
-                        size: 18.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-      );
-    },
+      ),
+    ),
   );
 }
 
 showErrorMessage(BuildContext context, String message,
     {String? actionText, VoidCallback? onActionPressed}) {
-  showDialog(
-    context: context,
-    barrierDismissible: true,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext dialogContext) {
-      Timer(Duration(seconds: 3), () {
-        if (Navigator.of(dialogContext).canPop()) {
-          Navigator.of(dialogContext).pop();
-        }
-      });
+  // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
+  OverlayState? overlayState = Overlay.of(context);
 
-      return Align(
-        alignment: Alignment.topCenter,
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 8,
-            left: 16,
-            right: 16,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: Stack(
-              children: [
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(top: 12.h),
-                  padding: EdgeInsets.all(16.w),
+  if (overlayState == null) {
+    // إذا لم نتمكن من الحصول على Overlay، استخدم Dialog كبديل
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext dialogContext) {
+        Timer(Duration(seconds: 3), () {
+          try {
+            if (Navigator.of(dialogContext).canPop()) {
+              Navigator.of(dialogContext).pop();
+            }
+          } catch (e) {
+            // تجاهل الأخطاء
+          }
+        });
+
+        return _buildErrorWidget(context, message, () {
+          try {
+            if (Navigator.of(dialogContext).canPop()) {
+              Navigator.of(dialogContext).pop();
+            }
+          } catch (e) {
+            // تجاهل الأخطاء
+          }
+        });
+      },
+    );
+    return;
+  }
+
+  late OverlayEntry overlayEntry;
+
+  overlayEntry = OverlayEntry(
+    builder: (context) => _buildErrorWidget(context, message, () {
+      overlayEntry.remove();
+    }),
+  );
+
+  overlayState.insert(overlayEntry);
+
+  // إغلاق تلقائي بعد 3 ثوانٍ
+  Timer(Duration(seconds: 3), () {
+    try {
+      overlayEntry.remove();
+    } catch (e) {
+      // تجاهل الأخطاء إذا كان الـ overlay محذوف بالفعل
+    }
+  });
+}
+
+Widget _buildErrorWidget(
+    BuildContext context, String message, VoidCallback onClose) {
+  return Align(
+    alignment: Alignment.topCenter,
+    child: Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top +
+            10, // إضافة padding للـ status bar
+        left: 16,
+        right: 16,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(top: 8.h), // تقليل margin
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFEDE2),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: const Color(0xFF402CDD), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  MyTextWidget(
+                    _getLocalizedTitle(context),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  MyTextWidget(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF666666),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: _isRTL(context) ? null : 0,
+              left: _isRTL(context) ? 0 : null,
+              child: GestureDetector(
+                onTap: onClose,
+                child: Container(
+                  padding: EdgeInsets.all(6.w),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFEDE2),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border:
-                        Border.all(color: const Color(0xFF402CDD), width: 1),
+                    color: Colors.white,
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      MyTextWidget(
-                        _getLocalizedTitle(context),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      MyTextWidget(
-                        message,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF666666),
-                        ),
-                      ),
-                    ],
+                  child: Icon(
+                    Icons.close,
+                    color: const Color(0xFF666666),
+                    size: 18.sp,
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  right: _isRTL(context) ? null : 0,
-                  left: _isRTL(context) ? 0 : null,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (Navigator.of(dialogContext).canPop()) {
-                        Navigator.of(dialogContext).pop();
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(6.w),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        color: const Color(0xFF666666),
-                        size: 18.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-      );
-    },
+      ),
+    ),
   );
 }
 
 showWarningMessage(BuildContext context, String message,
     {String? actionText, VoidCallback? onActionPressed}) {
-  showDialog(
-    context: context,
-    barrierDismissible: true,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext dialogContext) {
-      Timer(Duration(seconds: 3), () {
-        if (Navigator.of(dialogContext).canPop()) {
-          Navigator.of(dialogContext).pop();
-        }
-      });
+  // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
+  OverlayState? overlayState = Overlay.of(context);
 
-      return Align(
-        alignment: Alignment.topCenter,
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 8,
-            left: 16,
-            right: 16,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: Stack(
-              children: [
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(top: 12.h),
-                  padding: EdgeInsets.all(16.w),
+  if (overlayState == null) {
+    // إذا لم نتمكن من الحصول على Overlay، استخدم Dialog كبديل
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext dialogContext) {
+        Timer(Duration(seconds: 3), () {
+          try {
+            if (Navigator.of(dialogContext).canPop()) {
+              Navigator.of(dialogContext).pop();
+            }
+          } catch (e) {
+            // تجاهل الأخطاء
+          }
+        });
+
+        return _buildWarningWidget(context, message, () {
+          try {
+            if (Navigator.of(dialogContext).canPop()) {
+              Navigator.of(dialogContext).pop();
+            }
+          } catch (e) {
+            // تجاهل الأخطاء
+          }
+        });
+      },
+    );
+    return;
+  }
+
+  late OverlayEntry overlayEntry;
+
+  overlayEntry = OverlayEntry(
+    builder: (context) => _buildWarningWidget(context, message, () {
+      overlayEntry.remove();
+    }),
+  );
+
+  overlayState.insert(overlayEntry);
+
+  // إغلاق تلقائي بعد 3 ثوانٍ
+  Timer(Duration(seconds: 3), () {
+    try {
+      overlayEntry.remove();
+    } catch (e) {
+      // تجاهل الأخطاء إذا كان الـ overlay محذوف بالفعل
+    }
+  });
+}
+
+Widget _buildWarningWidget(
+    BuildContext context, String message, VoidCallback onClose) {
+  return Align(
+    alignment: Alignment.topCenter,
+    child: Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top +
+            10, // إضافة padding للـ status bar
+        left: 16,
+        right: 16,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(top: 8.h), // تقليل margin
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFEDE2),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: const Color(0xFF402CDD), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  MyTextWidget(
+                    _getLocalizedTitle(context),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  MyTextWidget(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF666666),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: _isRTL(context) ? null : 0,
+              left: _isRTL(context) ? 0 : null,
+              child: GestureDetector(
+                onTap: onClose,
+                child: Container(
+                  padding: EdgeInsets.all(6.w),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFEDE2),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border:
-                        Border.all(color: const Color(0xFF402CDD), width: 1),
+                    color: Colors.white,
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      MyTextWidget(
-                        _getLocalizedTitle(context),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      MyTextWidget(
-                        message,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF666666),
-                        ),
-                      ),
-                    ],
+                  child: Icon(
+                    Icons.close,
+                    color: const Color(0xFF666666),
+                    size: 18.sp,
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  right: _isRTL(context) ? null : 0,
-                  left: _isRTL(context) ? 0 : null,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (Navigator.of(dialogContext).canPop()) {
-                        Navigator.of(dialogContext).pop();
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(6.w),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        color: const Color(0xFF666666),
-                        size: 18.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-      );
-    },
+      ),
+    ),
   );
 }
 
@@ -432,88 +549,94 @@ void _showCustomToast(BuildContext context, String message,
   late OverlayEntry overlayEntry;
 
   overlayEntry = OverlayEntry(
-    builder: (context) => Positioned(
-      top: 8,
-      left: 16,
-      right: 16,
-      child: Material(
-        color: Colors.transparent,
-        child: Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              margin: EdgeInsets.only(top: 12.h),
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: isSuccess
-                    ? const Color(0xFFE2FFF1)
-                    : const Color(0xFFFFEDE2),
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(
-                    color: isSuccess
-                        ? const Color(0xFF2CDD92)
-                        : const Color(0xFF402CDD),
-                    width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  MyTextWidget(
-                    _getLocalizedTitle(context),
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A1A),
+    builder: (context) => Align(
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top +
+              10, // إضافة padding للـ status bar
+          left: 16,
+          right: 16,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: Stack(
+            children: [
+              Container(
+                width: double.infinity,
+                margin: EdgeInsets.only(top: 8.h), // تقليل margin
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: isSuccess
+                      ? const Color(0xFFE2FFF1)
+                      : const Color(0xFFFFEDE2),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(
+                      color: isSuccess
+                          ? const Color(0xFF2CDD92)
+                          : const Color(0xFF402CDD),
+                      width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-                  MyTextWidget(
-                    message,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xFF666666),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 0,
-              right: _isRTL(context) ? null : 0,
-              left: _isRTL(context) ? 0 : null,
-              child: GestureDetector(
-                onTap: () => overlayEntry.remove(),
-                child: Container(
-                  padding: EdgeInsets.all(6.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    MyTextWidget(
+                      _getLocalizedTitle(context),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
                       ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.close,
-                    color: const Color(0xFF666666),
-                    size: 18.sp,
+                    ),
+                    SizedBox(height: 4.h),
+                    MyTextWidget(
+                      message,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF666666),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: _isRTL(context) ? null : 0,
+                left: _isRTL(context) ? 0 : null,
+                child: GestureDetector(
+                  onTap: () => overlayEntry.remove(),
+                  child: Container(
+                    padding: EdgeInsets.all(6.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: const Color(0xFF666666),
+                      size: 18.sp,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ),
@@ -546,93 +669,97 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
         alignment: Alignment.topCenter,
         child: Padding(
           padding: EdgeInsets.only(
-            top: 8,
+            top: MediaQuery.of(context).padding.top +
+                10, // إضافة padding للـ status bar
             left: 16,
             right: 16,
           ),
           child: Material(
             color: Colors.transparent,
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: isSuccess
-                    ? const Color(0xFFE2FFF1)
-                    : const Color(0xFFFFEDE2),
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(
+            child: Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(top: 8.h), // تقليل margin
+                  padding: EdgeInsets.all(16.w),
+                  decoration: BoxDecoration(
                     color: isSuccess
-                        ? const Color(0xFF2CDD92)
-                        : const Color(0xFF402CDD),
-                    width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                        ? const Color(0xFFE2FFF1)
+                        : const Color(0xFFFFEDE2),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                        color: isSuccess
+                            ? const Color(0xFF2CDD92)
+                            : const Color(0xFF402CDD),
+                        width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 12.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MyTextWidget(
-                          _getLocalizedTitle(context),
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A1A1A),
-                          ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      MyTextWidget(
+                        _getLocalizedTitle(context),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF1A1A1A),
                         ),
-                        SizedBox(height: 4.h),
-                        MyTextWidget(
-                          message,
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF666666),
-                          ),
+                      ),
+                      SizedBox(height: 4.h),
+                      MyTextWidget(
+                        message,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF666666),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    top: 0,
-                    right: _isRTL(context) ? null : 0,
-                    left: _isRTL(context) ? 0 : null,
-                    child: GestureDetector(
-                      onTap: () {
+                ),
+                Positioned(
+                  top: 0,
+                  right: _isRTL(context) ? null : 0,
+                  left: _isRTL(context) ? 0 : null,
+                  child: GestureDetector(
+                    onTap: () {
+                      try {
                         if (Navigator.of(dialogContext).canPop()) {
                           Navigator.of(dialogContext).pop();
                         }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(6.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          color: const Color(0xFF666666),
-                          size: 18.sp,
-                        ),
+                      } catch (e) {
+                        // تجاهل الأخطاء
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(6.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        color: const Color(0xFF666666),
+                        size: 18.sp,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

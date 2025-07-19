@@ -9,6 +9,12 @@
   "gallery": "gallery",
   "camera": "camera",
   "choose_photo_or_video_from_gallery_or_camera": "choose  photo or video from gallery or camera",
+  "image_preview": "Image Preview",
+  "image_preview_instructions": "Image Preview - Press send, crop, or cancel",
+  "crop_image": "Crop Image",
+  "select_image_part": "Select the required part of the image",
+  "send": "Send",
+  "cancel_preview": "Cancel Preview",
   "welcome_page_description": "To Take Advantage Of All The Advantages Of The Application, Please Join Us In Quick And Easy Steps And For Just One Time",
   "why_we_know_you_label": "Why We Know You ?",
   "i_have_account": "I Have Already Account",
@@ -192,6 +198,10 @@
   "not_now": "Not Now",
   "notify_me": "Notify Me",
   "do_you_want_to_notify_You_when_your_choose_available": "Do you want to notify You when your choose available ?",
+  "cancel_order_hours_back_money": "Cancel This Order In {hours} Hours And Back Your Money",
+  "cancel_product_hours_back_money": "Cancel This Product In {hours} Hours And Back Your Money",
+  "coupon_link_not_allowed": "Coupon link is not allowed",
+  "video_length_limit": "Video length must not be longer than 59 seconds",
   "your_request_faild": "your request faild",
   "continues": "continue",
   "more": "More",
@@ -539,5 +549,8 @@
   "image_load_failed": "Image loading failed",
   "download_timeout": "Download timeout",
   "retry_download": "Retry download",
-  "image_not_available": "Image not available"
+  "image_not_available": "Image not available",
+  "luck": "Good luck!"
+  ,"add_to_bag_within": "Add to bag within"
+  ,"seconds": "seconds"
 }

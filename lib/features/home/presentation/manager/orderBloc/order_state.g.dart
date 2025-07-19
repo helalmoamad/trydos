@@ -63,6 +63,7 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               json['getCustomerAddressStatus']) ??
           GetCustomerAddressesStatus.init,
       currentAddressChoosed: (json['currentAddressChoosed'] as num?)?.toInt(),
+      currentOrederStatus: json['currentOrederStatus'] as String?,
       listOfAddressInfoClassToSave:
           (json['listOfAddressInfoClassToSave'] as List<dynamic>?)
                   ?.map((e) =>
@@ -96,6 +97,20 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
       applyCouponStatus: $enumDecodeNullable(
               _$ApplyCouponStatusEnumMap, json['applyCouponStatus']) ??
           ApplyCouponStatus.init,
+      applyCouponModel: json['applyCouponModel'] == null
+          ? null
+          : ApplyCouponModel.fromJson(
+              json['applyCouponModel'] as Map<String, dynamic>),
+      cancelOrderItemStatus: $enumDecodeNullable(
+              _$CancelOrderItemStatusEnumMap, json['cancelOrderItemStatus']) ??
+          CancelOrderItemStatus.init,
+      cancelOrderStatus: $enumDecodeNullable(
+              _$CancelOrderStatusEnumMap, json['cancelOrderStatus']) ??
+          CancelOrderStatus.init,
+      changeOrderAddressStatus: $enumDecodeNullable(
+              _$ChangeOrderAddressStatusEnumMap,
+              json['changeOrderAddressStatus']) ??
+          ChangeOrderAddressStatus.init,
       resultSearch: (json['resultSearch'] as List<dynamic>?)
               ?.map((e) => ResultSearch.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -104,10 +119,6 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      applyCouponModel: json['applyCouponModel'] == null
-          ? null
-          : ApplyCouponModel.fromJson(
-              json['applyCouponModel'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
@@ -155,9 +166,16 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
       'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
       'provincesByIso': instance.provincesByIso,
       'orderTotalSize': instance.orderTotalSize,
+      'currentOrederStatus': instance.currentOrederStatus,
       'applyCouponStatus':
           _$ApplyCouponStatusEnumMap[instance.applyCouponStatus],
       'applyCouponModel': instance.applyCouponModel?.toJson(),
+      'cancelOrderItemStatus':
+          _$CancelOrderItemStatusEnumMap[instance.cancelOrderItemStatus],
+      'cancelOrderStatus':
+          _$CancelOrderStatusEnumMap[instance.cancelOrderStatus],
+      'changeOrderAddressStatus':
+          _$ChangeOrderAddressStatusEnumMap[instance.changeOrderAddressStatus],
     };
 
 const _$PlaceOrderStatusEnumMap = {
@@ -243,4 +261,25 @@ const _$ApplyCouponStatusEnumMap = {
   ApplyCouponStatus.loading: 'loading',
   ApplyCouponStatus.success: 'success',
   ApplyCouponStatus.failure: 'failure',
+};
+
+const _$CancelOrderItemStatusEnumMap = {
+  CancelOrderItemStatus.init: 'init',
+  CancelOrderItemStatus.loading: 'loading',
+  CancelOrderItemStatus.success: 'success',
+  CancelOrderItemStatus.failure: 'failure',
+};
+
+const _$CancelOrderStatusEnumMap = {
+  CancelOrderStatus.init: 'init',
+  CancelOrderStatus.loading: 'loading',
+  CancelOrderStatus.success: 'success',
+  CancelOrderStatus.failure: 'failure',
+};
+
+const _$ChangeOrderAddressStatusEnumMap = {
+  ChangeOrderAddressStatus.init: 'init',
+  ChangeOrderAddressStatus.loading: 'loading',
+  ChangeOrderAddressStatus.success: 'success',
+  ChangeOrderAddressStatus.failure: 'failure',
 };

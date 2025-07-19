@@ -4,8 +4,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/base_page.dart';
+import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -648,7 +650,55 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           .storiesCollections[
                                               widget.collectionIndex]
                                           .name!),
-                            )
+                            ),
+                            Spacer(),
+                            state
+                                        .storiesCollections[
+                                            widget.collectionIndex]
+                                        .stories![
+                                            state.currentStoryInEachCollection[
+                                                widget.collectionIndex]!]
+                                        .userId !=
+                                    prefsRepository.myStoriesId
+                                ? SizedBox.shrink()
+                                : Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (state.deleteStoryStatus ==
+                                            DeleteStoryStatus.loading) {
+                                          return;
+                                        }
+                                        widget.animatedController.stop();
+                                        widget.animatedController.reset();
+                                        GetIt.I<StoryBloc>().add(DeleteStoryEvent(
+                                            storyId: state
+                                                .storiesCollections[
+                                                    widget.collectionIndex]
+                                                .stories![state
+                                                        .currentStoryInEachCollection[
+                                                    widget.collectionIndex]!]
+                                                .id
+                                                .toString()));
+                                      },
+                                      child: BlocBuilder<StoryBloc, StoryState>(
+                                        buildWhen: (previous, current) =>
+                                            previous.deleteStoryStatus !=
+                                            current.deleteStoryStatus,
+                                        builder: (context, state) {
+                                          return state.deleteStoryStatus ==
+                                                  DeleteStoryStatus.loading
+                                              ? TrydosLoader(
+                                                  size: 30,
+                                                  color: Colors.white,
+                                                )
+                                              : SvgPicture.asset(
+                                                  AppAssets.removeIconSvg,
+                                                  width: 30,
+                                                );
+                                        },
+                                      ),
+                                    ))
                           ]),
                           Container(
                             width: 200,

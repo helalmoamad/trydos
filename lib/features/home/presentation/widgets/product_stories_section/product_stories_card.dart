@@ -111,7 +111,8 @@ class ProductStoriesCard extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   return ProductStoryVideoItem(
                                     videoUrl: state.storiesForProduct![index]
-                                        .fullVideoPath,
+                                            .fullVideoPath ??
+                                        "",
                                   );
                                 },
                                 separatorBuilder: (context, index) {

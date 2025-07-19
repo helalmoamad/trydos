@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
@@ -21,6 +22,9 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
+import 'package:trydos/features/home/domain/use_cases/cancel_order_item_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/cancel_order_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/change_order_address_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart'
     show OrderBloc;
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
@@ -83,6 +87,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   bool allOrder = false;
   late OrderBloc orderBloc;
   late HomeBloc homeBloc;
+  int firstAddressChoosed = 0;
   OrderListModel? order;
   @override
   void initState() {
@@ -90,6 +95,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
     sizeIndexTap.value = 3;
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    indexTapAddress.value = orderBloc.state.listOfAddressInfoClassToSave
+            ?.indexWhere(
+                (element) => element.id == order?.shippingAddressData?.id) ??
+        -1;
+    firstAddressChoosed = indexTapAddress.value;
     // TODO: implement initState
     super.initState();
   }
@@ -102,11 +112,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
       setState(() {
         _isLoading = true; // بدء التحميل
       });
-      GetIt.I<OrderBloc>().add(
-        GetOrdersEvent(
-          status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
-          getWithPagination: false,
-        ),
+      orderBloc.add(
+        GetOrdersByOrderGroupIDEvent(
+            orderGroupId: widget.order.orderGroupId ?? ""),
       );
 
       // 🚀 إزالة التأخير المصطنع - دع البيانات تحدد سرعة التحميل!
@@ -140,571 +148,643 @@ class _OrderDetails2 extends State<OrderDetails2> {
         }
         return true;
       },
-      child: BlocBuilder<OrderBloc, OrderState>(
-          buildWhen: (p, c) =>
-              p.getOrdersModel?[widget.currentStatus]?.paginationStatus !=
-                  c.getOrdersModel?[widget.currentStatus]?.paginationStatus ||
+      child: BlocListener<OrderBloc, OrderState>(
+          listenWhen: (p, c) =>
               p.getOrdersByOrderGroupIDStatus !=
-                  c.getOrdersByOrderGroupIDStatus,
-          builder: (context, state) {
-            if (state.getOrdersModel?[widget.currentStatus]?.paginationStatus ==
-                PaginationStatus.success) {
-              List<List<OrderListModel>> items =
-                  state.getOrdersModel?[widget.currentStatus]?.items ?? [];
-              order = (items.firstWhere((element) =>
-                  element[0].orderGroupId ==
-                  widget.order.orderGroupId))[widget.indexPackage];
+              c.getOrdersByOrderGroupIDStatus,
+          listener: (context, state) {
+            if (state.getOrdersByOrderGroupIDStatus ==
+                GetOrdersByOrderGroupIDStatus.success) {
+              if (order?.orderGroupId ==
+                  state.getOrdersByOrderGroupIDModel
+                      ?.orders?[widget.indexPackage].orderGroupId) {
+                orderBloc.add(GetOrdersEvent(
+                    status: widget.currentStatus ?? '',
+                    getWithPagination: false));
+                order = state
+                    .getOrdersByOrderGroupIDModel?.orders?[widget.indexPackage];
+                indexTapAddress.value = orderBloc
+                        .state.listOfAddressInfoClassToSave
+                        ?.indexWhere((element) =>
+                            element.id == order!.shippingAddressData?.id) ??
+                    -1;
+                firstAddressChoosed = indexTapAddress.value;
+              }
             }
-            return Container(
-              color: const Color(0xffFFFFFF),
-              child: Material(
-                child: Stack(
-                  children: [
-                    Scaffold(
-                      backgroundColor: const Color(0xffF8F8F8),
-                      resizeToAvoidBottomInset: true,
-                      appBar: TrydosAppBar(
-                        appBarParams: AppBarParams(
-                          backgroundColor: const Color(0xffFFFFFF),
-                          scrolledUnderElevation: 0,
-                          backIconColor: Colors.black,
-                          withShadow: false,
-                          action: [
-                            Spacer(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
+          },
+          child: BlocBuilder<OrderBloc, OrderState>(
+              buildWhen: (p, c) =>
+                  p.getOrdersByOrderGroupIDStatus !=
+                  c.getOrdersByOrderGroupIDStatus,
+              builder: (context, state) {
+                return Container(
+                  color: const Color(0xffFFFFFF),
+                  child: Material(
+                    child: Stack(
+                      children: [
+                        Scaffold(
+                          backgroundColor: const Color(0xffF8F8F8),
+                          resizeToAvoidBottomInset: true,
+                          appBar: TrydosAppBar(
+                            appBarParams: AppBarParams(
+                              backgroundColor: const Color(0xffFFFFFF),
+                              scrolledUnderElevation: 0,
+                              backIconColor: Colors.black,
+                              withShadow: false,
+                              action: [
+                                Spacer(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 12,
+                                    ),
+                                    SvgPicture.asset(
+                                      AppAssets.bagsSvg,
+                                      width: 23,
+                                    ),
+                                    ///////////////////////////
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    ///////////////////////////
+                                    Text(
+                                      LocaleKeys.order_details.tr(),
+                                      style: context.textTheme.bodyMedium?.mq
+                                          .copyWith(
+                                        color: const Color(0xff1D1D1D),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                    ///////////////////////////
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    ///////////////////////////
+                                  ],
+                                ),
+                                Spacer(),
+                                ////////////
+                                InkWell(
+                                  onTap: () {
+                                    if (state
+                                            .getOrdersModel?[
+                                                widget.currentStatus]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.loading) {
+                                      return;
+                                    }
+                                    allOrder = true;
+                                    optionModifyPanel.value = "All_Order";
+                                    showPanel.value = true;
+                                    panelController.open();
+                                    showShadowForPanel.value = true;
+                                  },
+                                  child: Container(
+                                    width: 40,
+                                    height: 20,
+                                    child:
+                                        state.getOrdersByOrderGroupIDStatus ==
+                                                GetOrdersByOrderGroupIDStatus
+                                                    .loading
+                                            ? TrydosLoader(
+                                                size: 16,
+                                              )
+                                            : SvgPicture.asset(
+                                                AppAssets.orderMenuSvg,
+                                                width: 20,
+                                              ),
+                                  ),
+                                ),
+                                ///////////////////////////
                                 SizedBox(
                                   width: 12,
                                 ),
-                                SvgPicture.asset(
-                                  AppAssets.bagsSvg,
-                                  width: 23,
-                                ),
-                                ///////////////////////////
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                ///////////////////////////
-                                Text(
-                                  LocaleKeys.order_details.tr(),
-                                  style:
-                                      context.textTheme.bodyMedium?.mq.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  ),
-                                ),
-                                ///////////////////////////
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                ///////////////////////////
                               ],
                             ),
-                            Spacer(),
-                            ////////////
-                            InkWell(
-                              onTap: () {
-                                allOrder = true;
-                                optionModifyPanel.value = "All_Order";
-                                showPanel.value = true;
-                                panelController.open();
-                                showShadowForPanel.value = true;
-                              },
-                              child: Container(
-                                width: 40,
-                                height: 20,
-                                child: SvgPicture.asset(
-                                  AppAssets.orderMenuSvg,
-                                  width: 20,
-                                ),
+                          ),
+                          body: Column(
+                            children: [
+                              SizedBox(
+                                height: 11.h,
                               ),
-                            ),
-                            ///////////////////////////
-                            SizedBox(
-                              width: 12,
-                            ),
-                          ],
-                        ),
-                      ),
-                      body: Column(
-                        children: [
-                          SizedBox(
-                            height: 11.h,
-                          ),
-                          ///////////////////
-                          buildFirstSection(
-                              context, order!.details!.length.toString()),
-                          ///////////////////
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          ///////////////////
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 255, 255, 255),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                child: SingleChildScrollView(
-                                  child: RefreshIndicator(
-                                    backgroundColor: Colors.white,
-                                    color: Colors.black,
-                                    onRefresh: _refreshData,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          height: 10,
-                                          width: 60,
-                                          color: Colors.black,
-                                        ),
-                                        ///////////////////
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        ///////////////////
-                                        BlocBuilder<HomeBloc, HomeState>(
-                                          buildWhen: (previous, current) => (previous
-                                                  .getCurrencyForCountryModel !=
-                                              current
-                                                  .getCurrencyForCountryModel),
-                                          builder: (context, state) {
-                                            String currencySymbol = state
-                                                    .getCurrencyForCountryModel!
-                                                    .data!
-                                                    .currency!
-                                                    .symbol ??
-                                                "";
-                                            String orderAmount = (order!
-                                                        .orderAmount! *
-                                                    state
+                              ///////////////////
+                              buildFirstSection(
+                                  context, order!.details!.length.toString()),
+                              ///////////////////
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                              ///////////////////
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 10),
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                    child: RefreshIndicator(
+                                      backgroundColor: Colors.white,
+                                      color: Colors.black,
+                                      onRefresh: _refreshData,
+                                      child: SingleChildScrollView(
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              height: 10,
+                                              width: 60,
+                                              color: Colors.black,
+                                            ),
+                                            ///////////////////
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            ///////////////////
+                                            BlocBuilder<HomeBloc, HomeState>(
+                                              buildWhen: (previous, current) =>
+                                                  (previous
+                                                          .getCurrencyForCountryModel !=
+                                                      current
+                                                          .getCurrencyForCountryModel),
+                                              builder: (context, state) {
+                                                String currencySymbol = state
                                                         .getCurrencyForCountryModel!
                                                         .data!
                                                         .currency!
-                                                        .exchangeRate!)
-                                                .toStringAsFixed(state
-                                                        .startingSetting
-                                                        ?.decimalPointSettings ??
-                                                    0);
+                                                        .symbol ??
+                                                    "";
+                                                String orderAmount = (order!
+                                                            .orderAmount! *
+                                                        state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .exchangeRate!)
+                                                    .toStringAsFixed(state
+                                                            .startingSetting
+                                                            ?.decimalPointSettings ??
+                                                        0);
 
-                                            return RichText(
-                                              overflow: TextOverflow.ellipsis,
-                                              text: TextSpan(
-                                                style: context
-                                                    .textTheme.bodyMedium?.rq
-                                                    .copyWith(
-                                                  color:
-                                                      const Color(0xff505050),
-                                                  letterSpacing: 0.18,
-                                                  fontSize: 12,
-                                                  height: 1.3,
-                                                ),
-                                                children: [
-                                                  TextSpan(
-                                                      text:
-                                                          '${LocaleKeys.buying.tr()} '),
-                                                  /////////////////////////
-                                                  TextSpan(
-                                                    text:
-                                                        '${order!.details?.length ?? 0}',
-                                                    style: context.textTheme
-                                                        .bodyMedium?.bq
-                                                        .copyWith(
-                                                      color: const Color(
-                                                          0xff1D1D1D),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 12,
-                                                      height: 1.3,
-                                                    ),
-                                                  ),
-                                                  /////////////////////////
-                                                  TextSpan(
-                                                      text:
-                                                          ' ${LocaleKeys.item.tr()} . '),
-                                                  /////////////////////////
-                                                  TextSpan(
-                                                    text: '${orderAmount}',
-                                                    style: context.textTheme
-                                                        .bodyMedium?.bq
-                                                        .copyWith(
-                                                      color: const Color(
-                                                          0xff1D1D1D),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 12,
-                                                      height: 1.3,
-                                                    ),
-                                                  ),
-                                                  /////////////////////////
-                                                  TextSpan(
-                                                      text: ' $currencySymbol'),
-                                                  /////////////////////////
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        ///////////////////
-                                        SizedBox(
-                                          height: 5.h,
-                                        ),
-                                        ///////////////////
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    AppAssets.orderAddressSvg,
-                                                    width: 20,
-                                                  ),
-                                                  ///////////////////
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  ///////////////////
-                                                  Text(
-                                                    LocaleKeys
-                                                        .expected_delivery_date
-                                                        .tr(),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                return RichText(
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  text: TextSpan(
                                                     style: context.textTheme
                                                         .bodyMedium?.rq
                                                         .copyWith(
                                                       color: const Color(
-                                                          0xff8D8D8D),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 10,
-                                                      height: 1.3,
-                                                    ),
-                                                  ),
-                                                  ///////////////////
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  ///////////////////
-                                                  Text(
-                                                    'Monday 2.Jun | 3 Work Days',
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: context.textTheme
-                                                        .bodyMedium?.rq
-                                                        .copyWith(
-                                                      color: const Color(
-                                                          0xff1D1D1D),
+                                                          0xff505050),
                                                       letterSpacing: 0.18,
                                                       fontSize: 12,
                                                       height: 1.3,
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            /////////////
-                                            Expanded(
-                                              child: Container(
-                                                color: Colors.white,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .end,
-                                                      children: [
-                                                        order!.orderGroupStatus
-                                                                    ?.label ==
-                                                                'Pending'
-                                                            ? SvgPicture.asset(
-                                                                AppAssets
-                                                                    .pendingBagSvg,
-                                                                width: 20,
-                                                              )
-                                                            : SvgPicture.asset(
-                                                                AppAssets
-                                                                    .pendingBagSvg,
-                                                                width: 15,
-                                                              ),
-                                                        ////////////////////
-                                                        const SizedBox(
-                                                          width: 3,
+                                                    children: [
+                                                      TextSpan(
+                                                          text:
+                                                              '${LocaleKeys.buying.tr()} '),
+                                                      /////////////////////////
+                                                      TextSpan(
+                                                        text:
+                                                            '${order!.details?.length ?? 0}',
+                                                        style: context.textTheme
+                                                            .bodyMedium?.bq
+                                                            .copyWith(
+                                                          color: const Color(
+                                                              0xff1D1D1D),
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 12,
+                                                          height: 1.3,
                                                         ),
-                                                        ///////////////////
-                                                        order!.orderGroupStatus
-                                                                    ?.label ==
-                                                                'Pending'
-                                                            ? SvgPicture.asset(
-                                                                AppAssets
-                                                                    .whiteBagSvg,
-                                                                width: 15,
-                                                              )
-                                                            : order!.orderGroupStatus
-                                                                        ?.label ==
-                                                                    'Preparing'
-                                                                ? SvgPicture
-                                                                    .asset(
-                                                                    AppAssets
-                                                                        .preparingBagSvg,
-                                                                    width: 20,
+                                                      ),
+                                                      /////////////////////////
+                                                      TextSpan(
+                                                          text:
+                                                              ' ${LocaleKeys.item.tr()} . '),
+                                                      /////////////////////////
+                                                      TextSpan(
+                                                        text: '${orderAmount}',
+                                                        style: context.textTheme
+                                                            .bodyMedium?.bq
+                                                            .copyWith(
+                                                          color: const Color(
+                                                              0xff1D1D1D),
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 12,
+                                                          height: 1.3,
+                                                        ),
+                                                      ),
+                                                      /////////////////////////
+                                                      TextSpan(
+                                                          text:
+                                                              ' $currencySymbol'),
+                                                      /////////////////////////
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            ///////////////////
+                                            SizedBox(
+                                              height: 5.h,
+                                            ),
+                                            ///////////////////
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        AppAssets
+                                                            .orderAddressSvg,
+                                                        width: 20,
+                                                      ),
+                                                      ///////////////////
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      ///////////////////
+                                                      Text(
+                                                        LocaleKeys
+                                                            .expected_delivery_date
+                                                            .tr(),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: context.textTheme
+                                                            .bodyMedium?.rq
+                                                            .copyWith(
+                                                          color: const Color(
+                                                              0xff8D8D8D),
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 10,
+                                                          height: 1.3,
+                                                        ),
+                                                      ),
+                                                      ///////////////////
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      ///////////////////
+                                                      Text(
+                                                        'Monday 2.Jun | 3 Work Days',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: context.textTheme
+                                                            .bodyMedium?.rq
+                                                            .copyWith(
+                                                          color: const Color(
+                                                              0xff1D1D1D),
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 12,
+                                                          height: 1.3,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                /////////////
+                                                Expanded(
+                                                  child: state.getOrdersByOrderGroupIDStatus ==
+                                                          GetOrdersByOrderGroupIDStatus
+                                                              .loading
+                                                      ? TrydosLoader(
+                                                          size: 16,
+                                                        )
+                                                      : Container(
+                                                          color: Colors.white,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  order!.orderGroupStatus
+                                                                              ?.value ==
+                                                                          'canceled'
+                                                                      ? SvgPicture
+                                                                          .asset(
+                                                                          AppAssets
+                                                                              .whiteBagSvg,
+                                                                          width:
+                                                                              15,
+                                                                        )
+                                                                      : order!.orderGroupStatus?.value ==
+                                                                              'pending'
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.pendingBagSvg,
+                                                                              width: 20,
+                                                                            )
+                                                                          : SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.pendingBagSvg,
+                                                                              width: 15,
+                                                                            ),
+                                                                  ////////////////////
+                                                                  const SizedBox(
+                                                                    width: 3,
+                                                                  ),
+                                                                  ///////////////////
+                                                                  order!.orderGroupStatus
+                                                                              ?.value ==
+                                                                          'canceled'
+                                                                      ? SvgPicture
+                                                                          .asset(
+                                                                          AppAssets
+                                                                              .whiteBagSvg,
+                                                                          width:
+                                                                              15,
+                                                                        )
+                                                                      : order!.orderGroupStatus?.value ==
+                                                                              'pending'
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.whiteBagSvg,
+                                                                              width: 15,
+                                                                            )
+                                                                          : order!.orderGroupStatus?.value == 'preparing'
+                                                                              ? SvgPicture.asset(
+                                                                                  AppAssets.preparingBagSvg,
+                                                                                  width: 20,
+                                                                                )
+                                                                              : SvgPicture.asset(
+                                                                                  AppAssets.preparingBagSvg,
+                                                                                  width: 15,
+                                                                                ),
+                                                                  ////////////////////
+                                                                  const SizedBox(
+                                                                    width: 3,
+                                                                  ),
+                                                                  ///////////////////
+                                                                  order!.orderGroupStatus
+                                                                              ?.value ==
+                                                                          'canceled'
+                                                                      ? SvgPicture
+                                                                          .asset(
+                                                                          AppAssets
+                                                                              .whiteBagSvg,
+                                                                          width:
+                                                                              15,
+                                                                        )
+                                                                      : order!.orderGroupStatus?.value ==
+                                                                              'pending'
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.whiteBagSvg,
+                                                                              width: 15,
+                                                                            )
+                                                                          : order!.orderGroupStatus?.value == 'preparing'
+                                                                              ? SvgPicture.asset(
+                                                                                  AppAssets.whiteBagSvg,
+                                                                                  width: 15,
+                                                                                )
+                                                                              : order!.orderGroupStatus?.value == 'shipped'
+                                                                                  ? SvgPicture.asset(
+                                                                                      AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                                                                      width: 20,
+                                                                                    )
+                                                                                  : SvgPicture.asset(
+                                                                                      AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                                                                      width: 15,
+                                                                                    ),
+                                                                  ////////////////////
+                                                                  const SizedBox(
+                                                                    width: 3,
+                                                                  ),
+                                                                  ///////////////////
+                                                                  order!.orderGroupStatus
+                                                                              ?.value ==
+                                                                          'canceled'
+                                                                      ? SvgPicture
+                                                                          .asset(
+                                                                          AppAssets
+                                                                              .whiteBagSvg,
+                                                                          width:
+                                                                              15,
+                                                                        )
+                                                                      : order!.orderGroupStatus?.value ==
+                                                                              'pending'
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.whiteBagSvg,
+                                                                              width: 15,
+                                                                            )
+                                                                          : order!.orderGroupStatus?.value == 'preparing'
+                                                                              ? SvgPicture.asset(
+                                                                                  AppAssets.whiteBagSvg,
+                                                                                  width: 15,
+                                                                                )
+                                                                              : order!.orderGroupStatus?.value == 'shipped'
+                                                                                  ? SvgPicture.asset(
+                                                                                      AppAssets.whiteBagSvg,
+                                                                                      width: 15,
+                                                                                    )
+                                                                                  : order!.orderGroupStatus?.value == 'delivered'
+                                                                                      ? SvgPicture.asset(
+                                                                                          AppAssets.delivered_bagSvg,
+                                                                                          width: 20,
+                                                                                        )
+                                                                                      : SvgPicture.asset(
+                                                                                          AppAssets.delivered_bagSvg,
+                                                                                          width: 15,
+                                                                                        ),
+                                                                  ///////////////////////
+                                                                ],
+                                                              ),
+                                                              ///////////////////
+                                                              SizedBox(
+                                                                height: 5,
+                                                              ),
+                                                              ///////////////////
+                                                              Row(
+                                                                children: [
+                                                                  Spacer(),
+                                                                  Text(
+                                                                    LocaleKeys
+                                                                        .order_status
+                                                                        .tr(),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: context
+                                                                        .textTheme
+                                                                        .bodyMedium
+                                                                        ?.rq
+                                                                        .copyWith(
+                                                                      color: const Color(
+                                                                          0xff8D8D8D),
+                                                                      letterSpacing:
+                                                                          0.18,
+                                                                      fontSize:
+                                                                          10,
+                                                                      height:
+                                                                          1.3,
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 12,
                                                                   )
-                                                                : SvgPicture
-                                                                    .asset(
-                                                                    AppAssets
-                                                                        .preparingBagSvg,
+                                                                ],
+                                                              ),
+                                                              ///////////////////
+                                                              SizedBox(
+                                                                height: 5,
+                                                              ),
+                                                              ///////////////////
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  Text(
+                                                                    order!.orderGroupStatus
+                                                                            ?.label ??
+                                                                        '',
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: context
+                                                                        .textTheme
+                                                                        .bodyMedium
+                                                                        ?.rq
+                                                                        .copyWith(
+                                                                      color: const Color(
+                                                                          0xff1D1D1D),
+                                                                      letterSpacing:
+                                                                          0.18,
+                                                                      fontSize:
+                                                                          12,
+                                                                      height:
+                                                                          1.3,
+                                                                    ),
+                                                                  ),
+                                                                  ///////////////////
+                                                                  SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                  ///////////////////
+                                                                  SvgPicture
+                                                                      .asset(
+                                                                    order!.orderGroupStatus?.value ==
+                                                                            'canceled'
+                                                                        ? AppAssets
+                                                                            .orderCanselSvg
+                                                                        : order!.orderGroupStatus?.value ==
+                                                                                'shipped'
+                                                                            ? AppAssets.shippedBlackSvg
+                                                                            : order!.orderStatus?.value == 'delivered'
+                                                                                ? AppAssets.deliveredBlackSvg
+                                                                                : order!.orderStatus?.value == 'pending'
+                                                                                    ? AppAssets.pendeingBlackCheck
+                                                                                    : AppAssets.orderPreparingSvg,
                                                                     width: 15,
                                                                   ),
-                                                        ////////////////////
-                                                        const SizedBox(
-                                                          width: 3,
-                                                        ),
-                                                        ///////////////////
-                                                        order!.orderGroupStatus
-                                                                    ?.label ==
-                                                                'Pending'
-                                                            ? SvgPicture.asset(
-                                                                AppAssets
-                                                                    .whiteBagSvg,
-                                                                width: 15,
-                                                              )
-                                                            : order!.orderGroupStatus
-                                                                        ?.label ==
-                                                                    'Preparing'
-                                                                ? SvgPicture
-                                                                    .asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!.orderGroupStatus
-                                                                            ?.label ==
-                                                                        'Shipped'
-                                                                    ? SvgPicture
-                                                                        .asset(
-                                                                        AppAssets
-                                                                            .shippedAndOutOfDeliveryBagSvg,
-                                                                        width:
-                                                                            20,
-                                                                      )
-                                                                    : SvgPicture
-                                                                        .asset(
-                                                                        AppAssets
-                                                                            .shippedAndOutOfDeliveryBagSvg,
-                                                                        width:
-                                                                            15,
-                                                                      ),
-                                                        ////////////////////
-                                                        const SizedBox(
-                                                          width: 3,
-                                                        ),
-                                                        ///////////////////
-                                                        order!.orderGroupStatus
-                                                                    ?.label ==
-                                                                'Pending'
-                                                            ? SvgPicture.asset(
-                                                                AppAssets
-                                                                    .whiteBagSvg,
-                                                                width: 15,
-                                                              )
-                                                            : order!.orderGroupStatus
-                                                                        ?.label ==
-                                                                    'Preparing'
-                                                                ? SvgPicture
-                                                                    .asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!.orderGroupStatus
-                                                                            ?.label ==
-                                                                        'Shipped'
-                                                                    ? SvgPicture
-                                                                        .asset(
-                                                                        AppAssets
-                                                                            .whiteBagSvg,
-                                                                        width:
-                                                                            15,
-                                                                      )
-                                                                    : order!.orderGroupStatus?.label ==
-                                                                            'Delivered'
-                                                                        ? SvgPicture
-                                                                            .asset(
-                                                                            AppAssets.delivered_bagSvg,
-                                                                            width:
-                                                                                20,
-                                                                          )
-                                                                        : SvgPicture
-                                                                            .asset(
-                                                                            AppAssets.delivered_bagSvg,
-                                                                            width:
-                                                                                15,
-                                                                          ),
-                                                        ///////////////////////
-                                                      ],
-                                                    ),
-                                                    ///////////////////
-                                                    SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    ///////////////////
-                                                    Row(
-                                                      children: [
-                                                        Spacer(),
-                                                        Text(
-                                                          LocaleKeys
-                                                              .order_status
-                                                              .tr(),
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.rq
-                                                              .copyWith(
-                                                            color: const Color(
-                                                                0xff8D8D8D),
-                                                            letterSpacing: 0.18,
-                                                            fontSize: 10,
-                                                            height: 1.3,
+                                                                ],
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
-                                                        SizedBox(
-                                                          width: 12,
-                                                        )
-                                                      ],
-                                                    ),
-                                                    ///////////////////
-                                                    SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    ///////////////////
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        Text(
-                                                          order!.orderGroupStatus
-                                                                  ?.label ??
-                                                              '',
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.rq
-                                                              .copyWith(
-                                                            color: const Color(
-                                                                0xff1D1D1D),
-                                                            letterSpacing: 0.18,
-                                                            fontSize: 12,
-                                                            height: 1.3,
-                                                          ),
-                                                        ),
-                                                        ///////////////////
-                                                        SizedBox(
-                                                          width: 10,
-                                                        ),
-                                                        ///////////////////
-                                                        SvgPicture.asset(
-                                                          AppAssets
-                                                              .orderPreparingSvg,
-                                                          width: 15,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        ///////////////////
-                                        SizedBox(
-                                          height: 12,
-                                        ),
-                                        ///////////////////
-                                        Container(
-                                          width: double.infinity,
-                                          height: 1,
-                                          color: const Color(0xffC4C2C2),
-                                        ),
-                                        ///////////////////
-                                        SizedBox(
-                                          height: 12,
-                                        ),
-                                        ///////////////////
-                                        ListView.separated(
-                                          itemCount:
-                                              order!.details?.length ?? 0,
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            return productWidget(
-                                                order!.details![index], index);
-                                          },
-                                          separatorBuilder: (context, index) {
-                                            return Container(
+                                                )
+                                              ],
+                                            ),
+                                            ///////////////////
+                                            SizedBox(
+                                              height: 12,
+                                            ),
+                                            ///////////////////
+                                            Container(
                                               width: double.infinity,
                                               height: 1,
                                               color: const Color(0xffC4C2C2),
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 10,
-                                                vertical: 12,
-                                              ),
-                                            );
-                                          },
+                                            ),
+                                            ///////////////////
+                                            SizedBox(
+                                              height: 12,
+                                            ),
+                                            ///////////////////
+                                            ListView.separated(
+                                              itemCount:
+                                                  order!.details?.length ?? 0,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemBuilder: (context, index) {
+                                                return productWidget(
+                                                    order!.details![index],
+                                                    index);
+                                              },
+                                              separatorBuilder:
+                                                  (context, index) {
+                                                return Container(
+                                                  width: double.infinity,
+                                                  height: 1,
+                                                  color:
+                                                      const Color(0xffC4C2C2),
+                                                  margin: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 12,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                              )
+                            ],
+                          ),
+                        ),
+                        shadowForPanel(),
+                        panelWidget(),
+                        ValueListenableBuilder<int>(
+                            valueListenable: indexTapAddress,
+                            builder: (context, _indexTap, _) {
+                              return shadowForChangeAddressContent(_indexTap);
+                            }),
+                        ValueListenableBuilder<int>(
+                            valueListenable: indexTap,
+                            builder: (context, _indexTap, _) {
+                              return shadowForChangeOrderVariant(_indexTap);
+                            }),
+                        ValueListenableBuilder<int>(
+                            valueListenable: indexTap,
+                            builder: (context, _indexTap, _) {
+                              return shadowForCanselOrRutuenOrder(
+                                  _indexTap,
+                                  optionModifyPanel.value ==
+                                      "Return_This_Product");
+                            })
+                      ],
                     ),
-                    shadowForPanel(),
-                    panelWidget(),
-                    ValueListenableBuilder<int>(
-                        valueListenable: indexTapAddress,
-                        builder: (context, _indexTap, _) {
-                          return shadowForChangeAddressContent(_indexTap);
-                        }),
-                    ValueListenableBuilder<int>(
-                        valueListenable: indexTap,
-                        builder: (context, _indexTap, _) {
-                          return shadowForChangeOrderVariant(_indexTap);
-                        }),
-                    ValueListenableBuilder<int>(
-                        valueListenable: indexTap,
-                        builder: (context, _indexTap, _) {
-                          return shadowForCanselOrRutuenOrder(_indexTap,
-                              optionModifyPanel.value == "Return_This_Product");
-                        })
-                  ],
-                ),
-              ),
-            );
-          }),
+                  ),
+                );
+              })),
     );
   }
 
@@ -825,7 +905,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       width: 5,
                     ),
                     SvgPicture.asset(
-                      AppAssets.orderPreparingSvg,
+                      order!.orderGroupStatus?.value == 'canceled'
+                          ? AppAssets.orderCanselSvg
+                          : order!.orderGroupStatus?.value == 'shipped'
+                              ? AppAssets.shippedBlackSvg
+                              : order!.orderStatus?.value == 'delivered'
+                                  ? AppAssets.deliveredBlackSvg
+                                  : order!.orderStatus?.value == 'pending'
+                                      ? AppAssets.pendeingBlackCheck
+                                      : AppAssets.orderPreparingSvg,
                       height: 15.h,
                     ),
                     Spacer(),
@@ -953,18 +1041,20 @@ class _OrderDetails2 extends State<OrderDetails2> {
         SizedBox(
           height: 30.h,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: optionOfModify(
-              onTap: () {
-                optionModifyPanel.value = "Change_Address";
-              },
-              svg: AppAssets.orderChangeAddressSvg,
-              image2: "",
-              tiltle: "${LocaleKeys.change_delivery_address.tr()}",
-              body:
-                  "${LocaleKeys.you_can_change_delivery_address_delivery_note.tr()}"),
-        ),
+        order?.canUpdateAddress ?? false
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: optionOfModify(
+                    onTap: () {
+                      optionModifyPanel.value = "Change_Address";
+                    },
+                    svg: AppAssets.orderChangeAddressSvg,
+                    image2: "",
+                    tiltle: "${LocaleKeys.change_delivery_address.tr()}",
+                    body:
+                        "${LocaleKeys.you_can_change_delivery_address_delivery_note.tr()}"),
+              )
+            : SizedBox.shrink(),
         SizedBox(
           height: 8,
         ),
@@ -982,17 +1072,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
         SizedBox(
           height: 8,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: optionOfModify(
-              onTap: () {
-                optionModifyPanel.value = "Cancel_This_Product";
-              },
-              svg: AppAssets.orderCanselSvg,
-              image2: "",
-              tiltle: "${LocaleKeys.cancel_this_product.tr()}",
-              body: "Cancel This Product In 3 Hours And Back Your Money"),
-        ),
+        (order?.canCanceleOrder ?? false)
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: optionOfModify(
+                    onTap: () {
+                      optionModifyPanel.value = "Cancel";
+                    },
+                    svg: AppAssets.orderCanselSvg,
+                    image2: "",
+                    tiltle: "${LocaleKeys.cancel_this_order.tr()}",
+                    body: allOrder
+                        ? LocaleKeys.cancel_order_hours_back_money
+                            .tr(args: ['3'])
+                        : LocaleKeys.cancel_product_hours_back_money
+                            .tr(args: ['3'])),
+              )
+            : SizedBox.shrink(),
       ],
     );
   }
@@ -1266,63 +1362,92 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               height: 5,
                             ),
                             ///////////////////
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: RichText(
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    text: TextSpan(
-                                      style: context.textTheme.bodyMedium?.rq
-                                          .copyWith(
-                                        color: const Color(0xff8D8D8D),
-                                        letterSpacing: 0.18,
-                                        fontSize: 10,
-                                        height: 1.3,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text:
-                                              '${LocaleKeys.item_status.tr()}: ',
-                                        ),
-                                        ////////////////////////////
-                                        TextSpan(
-                                          text: order!.orderStatus?.label ?? "",
-                                          style: context
-                                              .textTheme.bodyMedium?.mq
-                                              .copyWith(
-                                            color: const Color(0xff505050),
-                                            letterSpacing: 0.18,
-                                            fontSize: 10,
-                                            height: 1.3,
+                            BlocBuilder<OrderBloc, OrderState>(
+                                buildWhen: (p, c) =>
+                                    p.getOrdersModel?[widget.currentStatus]
+                                            ?.paginationStatus !=
+                                        c.getOrdersModel?[widget.currentStatus]
+                                            ?.paginationStatus ||
+                                    p.getOrdersByOrderGroupIDStatus !=
+                                        c.getOrdersByOrderGroupIDStatus,
+                                builder: (context, state) => state
+                                            .getOrdersByOrderGroupIDStatus ==
+                                        GetOrdersByOrderGroupIDStatus.loading
+                                    ? TrydosLoader(
+                                        size: 16,
+                                      )
+                                    : Row(
+                                        children: [
+                                          Flexible(
+                                            child: RichText(
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              text: TextSpan(
+                                                style: context
+                                                    .textTheme.bodyMedium?.rq
+                                                    .copyWith(
+                                                  color:
+                                                      const Color(0xff8D8D8D),
+                                                  letterSpacing: 0.18,
+                                                  fontSize: 10,
+                                                  height: 1.3,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                    text:
+                                                        '${LocaleKeys.item_status.tr()}: ',
+                                                  ),
+                                                  ////////////////////////////
+                                                  TextSpan(
+                                                    text: order!.orderStatus
+                                                            ?.label ??
+                                                        "",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.mq
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xff505050),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 10,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                ///////////////////
+                                          ///////////////////
 
-                                ///
-                                ///
-                                ///
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                ///////////////////
-                                SvgPicture.asset(
-                                  order!.orderStatus?.label == 'Shipped'
-                                      ? AppAssets.shippedBlackSvg
-                                      : order!.orderStatus?.label == 'Delivered'
-                                          ? AppAssets.deliveredBlackSvg
-                                          : order!.orderStatus?.label ==
-                                                  'Pending'
-                                              ? AppAssets.pendeingBlackCheck
-                                              : AppAssets.orderPreparingSvg,
-                                  width: 15,
-                                ),
-                              ],
-                            ),
+                                          ///
+                                          ///
+                                          ///
+                                          SizedBox(
+                                            width: 12,
+                                          ),
+                                          ///////////////////
+                                          SvgPicture.asset(
+                                            order!.orderStatus?.value ==
+                                                    'canceled'
+                                                ? AppAssets.orderCanselSvg
+                                                : order!.orderStatus?.value ==
+                                                        'shipped'
+                                                    ? AppAssets.shippedBlackSvg
+                                                    : order!.orderStatus
+                                                                ?.value ==
+                                                            'delivered'
+                                                        ? AppAssets
+                                                            .deliveredBlackSvg
+                                                        : order!.orderStatus
+                                                                    ?.value ==
+                                                                'pending'
+                                                            ? AppAssets
+                                                                .pendeingBlackCheck
+                                                            : AppAssets
+                                                                .orderPreparingSvg,
+                                            width: 15,
+                                          ),
+                                        ],
+                                      )),
 
                             const SizedBox(
                               height: 5,
@@ -1355,7 +1480,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                               ],
                             ),*/
-                            Row(
+                            /* Row(
                               children: [
                                 Text(
                                   'Canseled',
@@ -1381,7 +1506,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   width: 15,
                                 ),
                               ],
-                            ),
+                            ),*/
                             ////////////////////
                             const Spacer(),
                             ////////////////////
@@ -2758,47 +2883,196 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       SizedBox(
                         height: 30.h,
                       ),
-                      InkWell(
-                        onTap: () {
-                          if (agreeToPolicies.value == false) {
-                            return;
-                          }
-                          agreeToPolicies.value = false;
-                          panelController.close();
-                          showPanel.value = false;
-                          optionModifyPanel.value = null;
-                          enableChangeAddress.value = false;
-                          showShadowForPanel.value = false;
-                          showShadowForCanselOrder.value = false;
-                          optionCanselOrReturn.value = [];
-                          showShadowForChangeAddress.value = false;
-                          shadowForChangeVariant.value = false;
-                        },
-                        child: ValueListenableBuilder<bool>(
-                            valueListenable: agreeToPolicies,
-                            builder: (context, _agreeToPolicies, _) {
-                              return Container(
-                                margin: EdgeInsets.symmetric(horizontal: 24),
-                                alignment: Alignment.center,
-                                width: 1.sw,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    color: agreeToPolicies.value == true
-                                        ? const Color(0xff3066CC)
-                                        : const Color(0xffC4C2C2),
-                                    border: agreeToPolicies.value == true
-                                        ? Border.all(
-                                            color: const Color(0xffF8F8F8),
-                                          )
-                                        : Border.all(
-                                            color: const Color(0xffC4C2C2),
-                                          ),
-                                    borderRadius: BorderRadius.circular(15)),
+                      BlocListener<OrderBloc, OrderState>(
+                          listenWhen: (previous, current) =>
+                              previous.cancelOrderStatus !=
+                                  current.cancelOrderStatus ||
+                              previous.cancelOrderItemStatus !=
+                                  current.cancelOrderItemStatus,
+                          listener: (context, state) {
+                            if (state.cancelOrderStatus ==
+                                    CancelOrderStatus.success ||
+                                state.cancelOrderItemStatus ==
+                                    CancelOrderItemStatus.success) {
+                              orderBloc.add(
+                                GetOrdersByOrderGroupIDEvent(
+                                    orderGroupId:
+                                        widget.order.orderGroupId ?? ""),
+                              );
+                              agreeToPolicies.value = false;
+                              panelController.close();
+                              showPanel.value = false;
+                              optionModifyPanel.value = null;
+                              enableChangeAddress.value = false;
+                              showShadowForPanel.value = false;
+                              showShadowForCanselOrder.value = false;
+                              optionCanselOrReturn.value = [];
+                              showShadowForChangeAddress.value = false;
+                              shadowForChangeVariant.value = false;
+                            }
+                          },
+                          child: BlocBuilder<OrderBloc, OrderState>(
+                              buildWhen: (previous, current) =>
+                                  previous.cancelOrderStatus !=
+                                      current.cancelOrderStatus ||
+                                  previous.cancelOrderItemStatus !=
+                                      current.cancelOrderItemStatus,
+                              builder: (context, state) {
+                                return state.cancelOrderStatus ==
+                                            CancelOrderStatus.loading ||
+                                        state.cancelOrderItemStatus ==
+                                            CancelOrderItemStatus.loading
+                                    ? Shimmer.fromColors(
+                                        baseColor: Colors.grey[500]!,
+                                        highlightColor: Colors.grey[300]!,
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 24),
+                                          alignment: Alignment.center,
+                                          width: 1.sw,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              color:
+                                                  agreeToPolicies.value == true
+                                                      ? const Color(0xff3066CC)
+                                                      : const Color(0xffC4C2C2),
+                                              border:
+                                                  agreeToPolicies.value == true
+                                                      ? Border.all(
+                                                          color: const Color(
+                                                              0xffF8F8F8),
+                                                        )
+                                                      : Border.all(
+                                                          color: const Color(
+                                                              0xffC4C2C2),
+                                                        ),
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
+                                        ))
+                                    : InkWell(
+                                        onTap: () {
+                                          if (agreeToPolicies.value == false) {
+                                            return;
+                                          }
+                                          if (!isReturn) {
+                                            if (allOrder) {
+                                              orderBloc.add(CancelOrderEvent(
+                                                cancelOrderParams:
+                                                    CancelOrderParams(
+                                                  orderId: order!.id.toString(),
+                                                ),
+                                              ));
+                                            } else {
+                                              orderBloc
+                                                  .add(CancelOrderItemEvent(
+                                                cancelOrderItemParams:
+                                                    CancelOrderItemParams(
+                                                        orderId: order!.id
+                                                            .toString(),
+                                                        detailId: order!
+                                                                .details?[
+                                                                    indexTap
+                                                                        .value]
+                                                                .id
+                                                                .toString() ??
+                                                            "",
+                                                        qty: (order!
+                                                                .details?[
+                                                                    indexTap
+                                                                        .value]
+                                                                .qty!
+                                                                .round())
+                                                            .toString()),
+                                              ));
+                                            }
+                                          }
+                                        },
+                                        child: ValueListenableBuilder<bool>(
+                                            valueListenable: agreeToPolicies,
+                                            builder:
+                                                (context, _agreeToPolicies, _) {
+                                              return Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 24),
+                                                alignment: Alignment.center,
+                                                width: 1.sw,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                    color:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? const Color(
+                                                                0xff3066CC)
+                                                            : const Color(
+                                                                0xffC4C2C2),
+                                                    border:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? Border.all(
+                                                                color: const Color(
+                                                                    0xffF8F8F8),
+                                                              )
+                                                            : Border.all(
+                                                                color: const Color(
+                                                                    0xffC4C2C2),
+                                                              ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15)),
+                                                child: Text(
+                                                  LocaleKeys.i_agree_cancel
+                                                      .tr(),
+                                                  textAlign: TextAlign.center,
+                                                  style: context
+                                                      .textTheme.bodyMedium?.br
+                                                      .copyWith(
+                                                    color: Colors.white,
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 16,
+                                                    height: 1.3,
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                      );
+                              })),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Container(
+                        width: 200,
+                        height: 40,
+                        child: BlocBuilder<OrderBloc, OrderState>(
+                            buildWhen: (previous, current) =>
+                                previous.cancelOrderStatus !=
+                                    current.cancelOrderStatus ||
+                                previous.cancelOrderItemStatus !=
+                                    current.cancelOrderItemStatus,
+                            builder: (context, state) {
+                              return InkWell(
+                                onTap: () {
+                                  if (state.cancelOrderStatus ==
+                                          CancelOrderStatus.loading ||
+                                      state.cancelOrderItemStatus ==
+                                          CancelOrderItemStatus.loading) {
+                                    return;
+                                  }
+                                  agreeToPolicies.value = false;
+                                  panelController.close();
+                                  showPanel.value = false;
+                                  optionModifyPanel.value = null;
+                                  enableChangeAddress.value = false;
+                                  showShadowForPanel.value = false;
+                                  showShadowForChangeAddress.value = false;
+                                  showShadowForCanselOrder.value = false;
+                                  optionCanselOrReturn.value = [];
+                                  shadowForChangeVariant.value = false;
+                                },
                                 child: Text(
-                                  LocaleKeys.i_agree_cancel.tr(),
+                                  LocaleKeys.i_disagree.tr(),
                                   textAlign: TextAlign.center,
                                   style:
-                                      context.textTheme.bodyMedium?.br.copyWith(
+                                      context.textTheme.bodyMedium?.rr.copyWith(
                                     color: Colors.white,
                                     letterSpacing: 0.18,
                                     fontSize: 16,
@@ -2807,37 +3081,6 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                               );
                             }),
-                      ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                      Container(
-                        width: 200,
-                        height: 40,
-                        child: InkWell(
-                          onTap: () {
-                            agreeToPolicies.value = false;
-                            panelController.close();
-                            showPanel.value = false;
-                            optionModifyPanel.value = null;
-                            enableChangeAddress.value = false;
-                            showShadowForPanel.value = false;
-                            showShadowForChangeAddress.value = false;
-                            showShadowForCanselOrder.value = false;
-                            optionCanselOrReturn.value = [];
-                            shadowForChangeVariant.value = false;
-                          },
-                          child: Text(
-                            LocaleKeys.i_disagree.tr(),
-                            textAlign: TextAlign.center,
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: Colors.white,
-                              letterSpacing: 0.18,
-                              fontSize: 16,
-                              height: 1.3,
-                            ),
-                          ),
-                        ),
                       ),
                       SizedBox(
                         height: 10.h,
@@ -3272,9 +3515,38 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             child: addressInfoWithContactInfoCart(
                               isChange: true,
-                              customerAddressesInfo:
-                                  state.listOfAddressInfoClassToSave![
-                                      state.currentAddressChoosed ?? 0],
+                              customerAddressesInfo: CustomerAddressesInfo(
+                                address:
+                                    order!.shippingAddressData?.address ?? '',
+                                addressDetail:
+                                    order!.shippingAddressData?.addressDetail ??
+                                        '',
+                                contactInfo: ContactInfo(
+                                  alternativePhone: order!.shippingAddressData
+                                          ?.alternativePhone ??
+                                      '',
+                                  name: order!.shippingAddressData
+                                          ?.contactPersonName ??
+                                      '',
+                                  phone:
+                                      order!.shippingAddressData?.phone ?? '',
+                                ),
+                                id: order!.shippingAddressData?.id,
+                                regionDetails: RegionDetails(
+                                  building:
+                                      order!.shippingAddressData?.building ??
+                                          '',
+                                  city: order!.shippingAddressData?.city ?? '',
+                                  country:
+                                      order!.shippingAddressData?.country ?? '',
+                                  province:
+                                      order!.shippingAddressData?.province ??
+                                          '',
+                                  street:
+                                      order!.shippingAddressData?.street ?? '',
+                                  town: order!.shippingAddressData?.town ?? '',
+                                ),
+                              ),
                               context: context,
                               index: 0,
                               indexTap: 1,
@@ -3423,92 +3695,186 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           SizedBox(
                             height: 10.h,
                           ),
-                          InkWell(
-                            onTap: () {
-                              if (agreeToPolicies.value == false) {
-                                return;
-                              }
-                              agreeToPolicies.value = false;
-                              panelController.close();
-                              showPanel.value = false;
-                              optionModifyPanel.value = null;
-                              showShadowForCanselOrder.value = false;
-                              enableChangeAddress.value = false;
-                              optionCanselOrReturn.value = [];
-                              showShadowForPanel.value = false;
-                              showShadowForChangeAddress.value = false;
-                              shadowForChangeVariant.value = false;
-                            },
-                            child: ValueListenableBuilder<bool>(
-                                valueListenable: agreeToPolicies,
-                                builder: (context, _agreeToPolicies, _) {
-                                  return Container(
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 24),
-                                    alignment: Alignment.center,
-                                    width: 1.sw,
-                                    height: 50.h,
-                                    decoration: BoxDecoration(
-                                        color: agreeToPolicies.value == true
-                                            ? Colors.white
-                                            : const Color(0xffC4C2C2),
-                                        border: agreeToPolicies.value == false
-                                            ? null
-                                            : Border.all(
-                                                color: const Color(0xff402CDD),
-                                              ),
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
+                          BlocListener<OrderBloc, OrderState>(
+                              listenWhen: (previous, current) =>
+                                  previous.changeOrderAddressStatus !=
+                                  current.changeOrderAddressStatus,
+                              listener: (context, state) {
+                                if (state.changeOrderAddressStatus ==
+                                    ChangeOrderAddressStatus.success) {
+                                  orderBloc.add(
+                                    GetOrdersByOrderGroupIDEvent(
+                                        orderGroupId:
+                                            order!.orderGroupId ?? ""),
+                                  );
+                                  agreeToPolicies.value = false;
+                                  panelController.close();
+                                  showPanel.value = false;
+                                  optionModifyPanel.value = null;
+                                  showShadowForCanselOrder.value = false;
+                                  enableChangeAddress.value = false;
+                                  optionCanselOrReturn.value = [];
+                                  showShadowForPanel.value = false;
+                                  showShadowForChangeAddress.value = false;
+                                  shadowForChangeVariant.value = false;
+                                }
+                              },
+                              child: BlocBuilder<OrderBloc, OrderState>(
+                                  buildWhen: (previous, current) =>
+                                      previous.changeOrderAddressStatus !=
+                                      current.changeOrderAddressStatus,
+                                  builder: (context, state) {
+                                    return state.changeOrderAddressStatus ==
+                                            ChangeOrderAddressStatus.loading
+                                        ? Shimmer.fromColors(
+                                            baseColor: Colors.grey[500]!,
+                                            highlightColor: Colors.grey[300]!,
+                                            child: Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 24),
+                                              alignment: Alignment.center,
+                                              width: 1.sw,
+                                              height: 50,
+                                              decoration: BoxDecoration(
+                                                  color: agreeToPolicies
+                                                              .value ==
+                                                          true
+                                                      ? const Color(0xff3066CC)
+                                                      : const Color(0xffC4C2C2),
+                                                  border:
+                                                      agreeToPolicies.value ==
+                                                              true
+                                                          ? Border.all(
+                                                              color: const Color(
+                                                                  0xffF8F8F8),
+                                                            )
+                                                          : Border.all(
+                                                              color: const Color(
+                                                                  0xffC4C2C2),
+                                                            ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                            ))
+                                        : InkWell(
+                                            onTap: () {
+                                              if (agreeToPolicies.value ==
+                                                  false) {
+                                                return;
+                                              }
+                                              orderBloc
+                                                  .add(ChangeOrderAddressEvent(
+                                                changeOrderAddressParams:
+                                                    ChangeOrderAddressParams(
+                                                  orderGroupId:
+                                                      order!.orderGroupId ?? "",
+                                                  newShippingAddressId: state
+                                                          .listOfAddressInfoClassToSave?[
+                                                              indexTapAddress
+                                                                  .value]
+                                                          .id
+                                                          .toString() ??
+                                                      '',
+                                                ),
+                                              ));
+                                            },
+                                            child: ValueListenableBuilder<bool>(
+                                                valueListenable:
+                                                    agreeToPolicies,
+                                                builder: (context,
+                                                    _agreeToPolicies, _) {
+                                                  return Container(
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 24),
+                                                    alignment: Alignment.center,
+                                                    width: 1.sw,
+                                                    height: 50.h,
+                                                    decoration: BoxDecoration(
+                                                        color: agreeToPolicies
+                                                                    .value ==
+                                                                true
+                                                            ? Colors.white
+                                                            : const Color(
+                                                                0xffC4C2C2),
+                                                        border: agreeToPolicies
+                                                                    .value ==
+                                                                false
+                                                            ? null
+                                                            : Border.all(
+                                                                color: const Color(
+                                                                    0xff402CDD),
+                                                              ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15)),
+                                                    child: Text(
+                                                      LocaleKeys.i_agree_change
+                                                          .tr(),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: context.textTheme
+                                                          .bodyMedium?.br
+                                                          .copyWith(
+                                                        color: agreeToPolicies
+                                                                    .value ==
+                                                                true
+                                                            ? const Color(
+                                                                0xff402CDD)
+                                                            : Colors.white,
+                                                        letterSpacing: 0.18,
+                                                        fontSize: 16,
+                                                        height: 1.3,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }),
+                                          );
+                                  })),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          BlocBuilder<OrderBloc, OrderState>(
+                              buildWhen: (previous, current) =>
+                                  previous.changeOrderAddressStatus !=
+                                  current.changeOrderAddressStatus,
+                              builder: (context, state) {
+                                return Container(
+                                  width: 200,
+                                  height: 40.h,
+                                  child: InkWell(
+                                    onTap: () {
+                                      if (state.changeOrderAddressStatus ==
+                                          ChangeOrderAddressStatus.loading) {
+                                        return;
+                                      }
+                                      agreeToPolicies.value = false;
+                                      panelController.close();
+                                      showPanel.value = false;
+                                      optionModifyPanel.value = null;
+                                      optionCanselOrReturn.value = [];
+                                      enableChangeAddress.value = false;
+                                      showShadowForPanel.value = false;
+                                      showShadowForChangeAddress.value = false;
+                                      shadowForChangeVariant.value = false;
+                                      showShadowForCanselOrder.value = false;
+                                    },
                                     child: Text(
-                                      LocaleKeys.i_agree_change.tr(),
+                                      LocaleKeys.i_disagree.tr(),
                                       textAlign: TextAlign.center,
-                                      style: context.textTheme.bodyMedium?.br
+                                      style: context.textTheme.bodyMedium?.rr
                                           .copyWith(
-                                        color: agreeToPolicies.value == true
-                                            ? const Color(0xff402CDD)
-                                            : Colors.white,
+                                        color: Colors.white,
+                                        decorationColor: Colors.white,
+                                        decoration: TextDecoration.underline,
                                         letterSpacing: 0.18,
                                         fontSize: 16,
                                         height: 1.3,
                                       ),
                                     ),
-                                  );
-                                }),
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Container(
-                            width: 200,
-                            height: 40.h,
-                            child: InkWell(
-                              onTap: () {
-                                agreeToPolicies.value = false;
-                                panelController.close();
-                                showPanel.value = false;
-                                optionModifyPanel.value = null;
-                                optionCanselOrReturn.value = [];
-                                enableChangeAddress.value = false;
-                                showShadowForPanel.value = false;
-                                showShadowForChangeAddress.value = false;
-                                shadowForChangeVariant.value = false;
-                                showShadowForCanselOrder.value = false;
-                              },
-                              child: Text(
-                                LocaleKeys.i_disagree.tr(),
-                                textAlign: TextAlign.center,
-                                style:
-                                    context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: Colors.white,
-                                  decorationColor: Colors.white,
-                                  decoration: TextDecoration.underline,
-                                  letterSpacing: 0.18,
-                                  fontSize: 16,
-                                  height: 1.3,
-                                ),
-                              ),
-                            ),
-                          ),
+                                  ),
+                                );
+                              }),
                           SizedBox(
                             height: 10.h,
                           )
@@ -3574,351 +3940,413 @@ class _OrderDetails2 extends State<OrderDetails2> {
   }
 
   Widget panelAddressContent(ScrollController sc) {
-    return BlocBuilder<OrderBloc, OrderState>(
-      buildWhen: (previous, current) =>
-          previous.getCustomerAddressStatus !=
-              current.getCustomerAddressStatus ||
-          previous.editAddressToOrderStatus !=
-              current.editAddressToOrderStatus ||
-          previous.setCustomerAddressDefaultStatus !=
-              current.setCustomerAddressDefaultStatus ||
-          previous.addAddressToOrderStatus != current.addAddressToOrderStatus ||
-          previous.removeAddressToOrderStatus !=
-              current.removeAddressToOrderStatus,
-      builder: (context, state) {
-        return ValueListenableBuilder<int>(
-          valueListenable: indexTapAddress,
-          builder: (context, _indexTap, _) {
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Container(
-                    width: 40,
-                    height: 2,
-                    decoration: BoxDecoration(
-                        color: Color(0xffC4C2C2),
-                        border: Border.all(color: Color(0xffC4C2C2)),
-                        borderRadius: BorderRadius.all(Radius.circular(2))),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Container(
-                    width: 1.sw,
-                    height: 200.h,
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: Color(0xffF8F8F8),
-                        border: Border.all(color: Color(0xffF8F8F8)),
-                        borderRadius: BorderRadius.all(Radius.circular(15))),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        Container(
-                          width: 1.sw,
-                          height: 16.h,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 10,
-                              ),
-                              SvgPicture.asset(
-                                AppAssets.orderClockSvg,
-                                height: 15.h,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                HelperFunctions.orderFormatDate(
-                                  DateTime.tryParse(order!.createdAt ?? '') ??
-                                      DateTime.now(),
-                                ),
-                                style:
-                                    context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              ),
-                              Spacer(),
-                              SvgPicture.asset(
-                                AppAssets.orderBag1Svg,
-                                height: 15.h,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                order!.orderGroupId ?? "",
-                                style:
-                                    context.textTheme.bodyMedium?.mr.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        Container(
-                          width: 1.sw,
-                          height: 16.h,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 10,
-                              ),
-                              SvgPicture.asset(
-                                AppAssets.preparingBagSvg,
-                                height: 15.h,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                order!.orderGroupStatus?.label ?? "",
-                                style:
-                                    context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              SvgPicture.asset(
-                                AppAssets.orderPreparingSvg,
-                                height: 15.h,
-                              ),
-                              Spacer(),
-                              SvgPicture.asset(
-                                AppAssets.orderInvoice2Svg,
-                                height: 15.h,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                (order!.details?.length ?? "").toString(),
-                                style:
-                                    context.textTheme.bodyMedium?.br.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                LocaleKeys.item.tr(),
-                                style:
-                                    context.textTheme.bodyMedium?.mr.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                (order!.orderAmount! *
-                                        homeBloc
-                                            .state
-                                            .getCurrencyForCountryModel!
-                                            .data!
-                                            .currency!
-                                            .exchangeRate!)
-                                    .toStringAsFixed(homeBloc
-                                            .state
-                                            .startingSetting
-                                            ?.decimalPointSettings ??
-                                        0),
-                                style:
-                                    context.textTheme.bodyMedium?.br.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                homeBloc.state.getCurrencyForCountryModel!.data!
-                                    .currency!.symbol!,
-                                style:
-                                    context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        Container(
-                          height: 125.h,
-                          width: 1.sw,
-                          padding: EdgeInsets.only(
-                              left:
-                                  LanguageService.languageCode == "ar" ? 0 : 10,
-                              right: LanguageService.languageCode != "ar"
-                                  ? 0
-                                  : 10),
-                          child: ListView.builder(
-                            itemCount: order!.details?.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                height: 125.h,
-                                width: 92,
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15))),
-                                child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
-                                  child: MyCachedNetworkImage(
-                                      imageUrl:
-                                          order!.details?[index].image ?? "",
-                                      width: 92,
-                                      imageFit: BoxFit.contain,
-                                      height: 125.h),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  SvgPicture.asset(
-                    AppAssets.orderChangeAddressSvg,
-                    height: 30.h,
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  Text(
-                    LocaleKeys.change_delivery_address.tr(),
-                    style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.3,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Text(
-                    LocaleKeys.you_can_change_delivery_address_delivery_note
-                        .tr(),
-                    style: context.textTheme.bodyMedium?.rr.copyWith(
-                      color: const Color(0xff8D8D8D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.3,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Container(
-                    width: 1.sw,
-                    height: 0.5,
-                    margin: EdgeInsets.symmetric(horizontal: 24),
-                    decoration: BoxDecoration(
-                        color: Color(0xffC4C2C2),
-                        border: Border.all(color: Color(0xffC4C2C2)),
-                        borderRadius: BorderRadius.all(Radius.circular(2))),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: addressWidgets(context, state, _indexTap, sc),
-                  ),
-                  Spacer(),
-                  ValueListenableBuilder<bool>(
-                      valueListenable: enableChangeAddress,
-                      builder: (context, _enableChangeAddress, _) {
-                        return InkWell(
-                          onTap: () {
-                            if (_enableChangeAddress) {
-                              showShadowForChangeAddress.value = true;
-                            }
-                          },
-                          child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 24),
+    return BlocListener<OrderBloc, OrderState>(
+        listenWhen: (previous, current) =>
+            previous.getCustomerAddressStatus !=
+            current.getCustomerAddressStatus,
+        listener: (context, state) {
+          if (state.getCustomerAddressStatus ==
+              GetCustomerAddressesStatus.success) {
+            indexTapAddress.value = orderBloc.state.listOfAddressInfoClassToSave
+                    ?.indexWhere((element) =>
+                        element.id == order!.shippingAddressData?.id) ??
+                -1;
+            firstAddressChoosed = indexTapAddress.value;
+            if (indexTapAddress.value != firstAddressChoosed ||
+                (state.listOfAddressInfoClassToSave![indexTapAddress.value].address != order!.shippingAddressData?.address ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].addressDetail !=
+                        order!.shippingAddressData?.addressDetail ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].contactInfo?.name !=
+                        order!.shippingAddressData?.contactPersonName ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].contactInfo?.phone !=
+                        order!.shippingAddressData?.phone ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].regionDetails?.country !=
+                        order!.shippingAddressData?.country ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].regionDetails?.city !=
+                        order!.shippingAddressData?.city ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].regionDetails?.province !=
+                        order!.shippingAddressData?.province ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].regionDetails?.street !=
+                        order!.shippingAddressData?.street ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].regionDetails?.building !=
+                        order!.shippingAddressData?.building ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].regionDetails?.town !=
+                        order!.shippingAddressData?.town ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].location?.latitude !=
+                        order!.shippingAddressData?.latitude ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].location?.longitude !=
+                        order!.shippingAddressData?.longitude ||
+                    state.listOfAddressInfoClassToSave![indexTapAddress.value].contactInfo?.alternativePhone !=
+                        order!.shippingAddressData?.alternativePhone)) {
+              enableChangeAddress.value = true;
+            } else {
+              enableChangeAddress.value = false;
+            }
+          }
+        },
+        child: BlocBuilder<OrderBloc, OrderState>(
+          buildWhen: (previous, current) =>
+              previous.getCustomerAddressStatus !=
+                  current.getCustomerAddressStatus ||
+              previous.editAddressToOrderStatus !=
+                  current.editAddressToOrderStatus ||
+              previous.setCustomerAddressDefaultStatus !=
+                  current.setCustomerAddressDefaultStatus ||
+              previous.addAddressToOrderStatus !=
+                  current.addAddressToOrderStatus ||
+              previous.removeAddressToOrderStatus !=
+                  current.removeAddressToOrderStatus,
+          builder: (context, state) {
+            return ValueListenableBuilder<int>(
+              valueListenable: indexTapAddress,
+              builder: (context, _indexTap, _) {
+                return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Container(
+                        width: 40,
+                        height: 2,
+                        decoration: BoxDecoration(
+                            color: Color(0xffC4C2C2),
+                            border: Border.all(color: Color(0xffC4C2C2)),
+                            borderRadius: BorderRadius.all(Radius.circular(2))),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Container(
+                        width: 1.sw,
+                        height: 200.h,
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xffF8F8F8),
+                            border: Border.all(color: Color(0xffF8F8F8)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            Container(
                               width: 1.sw,
-                              height: 53,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: _enableChangeAddress
-                                    ? const Color(0xff402CDD)
-                                    : const Color(0xffD3D3D3),
+                              height: 16.h,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  SvgPicture.asset(
+                                    AppAssets.orderClockSvg,
+                                    height: 15.h,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    HelperFunctions.orderFormatDate(
+                                      DateTime.tryParse(
+                                              order!.createdAt ?? '') ??
+                                          DateTime.now(),
+                                    ),
+                                    style: context.textTheme.bodyMedium?.rr
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  SvgPicture.asset(
+                                    AppAssets.orderBag1Svg,
+                                    height: 15.h,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    order!.orderGroupId ?? "",
+                                    style: context.textTheme.bodyMedium?.mr
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
                               ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                "${LocaleKeys.change_request.tr()} ",
-                                style: context.textTheme.bodyMedium?.mr
-                                    .copyWith(
-                                        color: const Color(0xffFFFFFF),
-                                        letterSpacing: 0.18,
-                                        fontSize: 16,
-                                        height: 1.33),
-                              )),
-                        );
-                      }),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                ]);
+                            ),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            Container(
+                              width: 1.sw,
+                              height: 16.h,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  SvgPicture.asset(
+                                    AppAssets.preparingBagSvg,
+                                    height: 15.h,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    order!.orderGroupStatus?.label ?? "",
+                                    style: context.textTheme.bodyMedium?.rr
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  SvgPicture.asset(
+                                    order!.orderGroupStatus?.value == 'canceled'
+                                        ? AppAssets.orderCanselSvg
+                                        : order!.orderGroupStatus?.value ==
+                                                'shipped'
+                                            ? AppAssets.shippedBlackSvg
+                                            : order!.orderStatus?.value ==
+                                                    'delivered'
+                                                ? AppAssets.deliveredBlackSvg
+                                                : order!.orderStatus?.value ==
+                                                        'pending'
+                                                    ? AppAssets
+                                                        .pendeingBlackCheck
+                                                    : AppAssets
+                                                        .orderPreparingSvg,
+                                    height: 15.h,
+                                  ),
+                                  Spacer(),
+                                  SvgPicture.asset(
+                                    AppAssets.orderInvoice2Svg,
+                                    height: 15.h,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    (order!.details?.length ?? "").toString(),
+                                    style: context.textTheme.bodyMedium?.br
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    LocaleKeys.item.tr(),
+                                    style: context.textTheme.bodyMedium?.mr
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    (order!.orderAmount! *
+                                            homeBloc
+                                                .state
+                                                .getCurrencyForCountryModel!
+                                                .data!
+                                                .currency!
+                                                .exchangeRate!)
+                                        .toStringAsFixed(homeBloc
+                                                .state
+                                                .startingSetting
+                                                ?.decimalPointSettings ??
+                                            0),
+                                    style: context.textTheme.bodyMedium?.br
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    homeBloc.state.getCurrencyForCountryModel!
+                                        .data!.currency!.symbol!,
+                                    style: context.textTheme.bodyMedium?.rr
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            Container(
+                              height: 125.h,
+                              width: 1.sw,
+                              padding: EdgeInsets.only(
+                                  left: LanguageService.languageCode == "ar"
+                                      ? 0
+                                      : 10,
+                                  right: LanguageService.languageCode != "ar"
+                                      ? 0
+                                      : 10),
+                              child: ListView.builder(
+                                itemCount: order!.details?.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    height: 125.h,
+                                    width: 92,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15))),
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(15)),
+                                      child: MyCachedNetworkImage(
+                                          imageUrl:
+                                              order!.details?[index].image ??
+                                                  "",
+                                          width: 92,
+                                          imageFit: BoxFit.contain,
+                                          height: 125.h),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      SvgPicture.asset(
+                        AppAssets.orderChangeAddressSvg,
+                        height: 30.h,
+                      ),
+                      SizedBox(
+                        height: 15.h,
+                      ),
+                      Text(
+                        LocaleKeys.change_delivery_address.tr(),
+                        style: context.textTheme.bodyMedium?.mr.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        LocaleKeys.you_can_change_delivery_address_delivery_note
+                            .tr(),
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: const Color(0xff8D8D8D),
+                          letterSpacing: 0.18,
+                          fontSize: 12,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Container(
+                        width: 1.sw,
+                        height: 0.5,
+                        margin: EdgeInsets.symmetric(horizontal: 24),
+                        decoration: BoxDecoration(
+                            color: Color(0xffC4C2C2),
+                            border: Border.all(color: Color(0xffC4C2C2)),
+                            borderRadius: BorderRadius.all(Radius.circular(2))),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: addressWidgets(context, state, _indexTap, sc),
+                      ),
+                      Spacer(),
+                      ValueListenableBuilder<bool>(
+                          valueListenable: enableChangeAddress,
+                          builder: (context, _enableChangeAddress, _) {
+                            return InkWell(
+                              onTap: () {
+                                if (_enableChangeAddress) {
+                                  showShadowForChangeAddress.value = true;
+                                }
+                              },
+                              child: Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 24),
+                                  width: 1.sw,
+                                  height: 53,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: _enableChangeAddress
+                                        ? const Color(0xff402CDD)
+                                        : const Color(0xffD3D3D3),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "${LocaleKeys.change_request.tr()} ",
+                                    style: context.textTheme.bodyMedium?.mr
+                                        .copyWith(
+                                            color: const Color(0xffFFFFFF),
+                                            letterSpacing: 0.18,
+                                            fontSize: 16,
+                                            height: 1.33),
+                                  )),
+                            );
+                          }),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                    ]);
+              },
+            );
           },
-        );
-      },
-    );
+        ));
   }
 
   /* Widget panelVariantContent(ScrollController sc) {
@@ -4472,109 +4900,163 @@ class _OrderDetails2 extends State<OrderDetails2> {
             SizedBox(
               height: 20.h,
             ),
-            Text(
-              "${LocaleKeys.your_address_list.tr()} ",
-              style: context.textTheme.bodyMedium?.mr.copyWith(
-                  color: const Color(0xff1D1D1D),
-                  letterSpacing: 0.18,
-                  fontSize: 12,
-                  height: 1.33),
-            ),
+            state.getCustomerAddressStatus ==
+                        GetCustomerAddressesStatus.loading ||
+                    state.addAddressToOrderStatus ==
+                        AddAddressToOrderStatus.loading ||
+                    state.removeAddressToOrderStatus ==
+                        RemoveAddressToOrderStatus.loading ||
+                    state.editAddressToOrderStatus ==
+                        EditAddressToOrderStatus.loading
+                ? TrydosLoader(
+                    size: 16,
+                  )
+                : Text(
+                    "${LocaleKeys.your_address_list.tr()} ",
+                    style: context.textTheme.bodyMedium?.mr.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 12,
+                        height: 1.33),
+                  ),
             SizedBox(
               height: 10.h,
             ),
-            Container(
-              height: 295.h,
-              width: 1.sw,
-              child: ListView.separated(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                itemBuilder: (context, index) => index ==
-                        state.listOfAddressInfoClassToSave!.length
-                    ? InkWell(
-                        onTap: () {
-                          // panelController.close();
-                          HelperFunctions.slidingNavigation(
-                              context, AddShippingAdress());
-                        },
-                        child: Container(
-                          height: 40,
-                          width: 1.sw,
-                          decoration: BoxDecoration(
-                              color: Color(0xffE8FFED),
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Color(0xffC4C2C2))),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Stack(
-                                  alignment: Alignment.center,
+            state.getCustomerAddressStatus ==
+                        GetCustomerAddressesStatus.loading ||
+                    state.addAddressToOrderStatus ==
+                        AddAddressToOrderStatus.loading ||
+                    state.removeAddressToOrderStatus ==
+                        RemoveAddressToOrderStatus.loading ||
+                    state.editAddressToOrderStatus ==
+                        EditAddressToOrderStatus.loading
+                ? SizedBox.shrink()
+                : Container(
+                    height: 295.h,
+                    width: 1.sw,
+                    child: ListView.separated(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      itemBuilder: (context, index) => index ==
+                              state.listOfAddressInfoClassToSave!.length
+                          ? InkWell(
+                              onTap: () {
+                                // panelController.close();
+                                HelperFunctions.slidingNavigation(
+                                    context, AddShippingAdress());
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                    color: Color(0xffE8FFED),
+                                    borderRadius: BorderRadius.circular(15),
+                                    border:
+                                        Border.all(color: Color(0xffC4C2C2))),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    SvgPicture.asset(
-                                      AppAssets.addShippingAddressSvg,
-                                    ),
-                                    Positioned(
-                                      top: 2,
-                                      child: SvgPicture.asset(
-                                        AppAssets.addShippingAddressWhiteSvg,
+                                    Center(
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.addShippingAddressSvg,
+                                          ),
+                                          Positioned(
+                                            top: 2,
+                                            child: SvgPicture.asset(
+                                              AppAssets
+                                                  .addShippingAddressWhiteSvg,
+                                            ),
+                                          ),
+                                        ],
                                       ),
+                                    ),
+                                    SizedBox(
+                                      width: 3,
+                                    ),
+                                    Text(
+                                      "${LocaleKeys.add_new_shipping_address.tr()} ",
+                                      style: context.textTheme.bodyMedium?.mr
+                                          .copyWith(
+                                              color: const Color(0xff1D1D1D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 12,
+                                              height: 1.33),
                                     ),
                                   ],
                                 ),
                               ),
-                              SizedBox(
-                                width: 3,
-                              ),
-                              Text(
-                                "${LocaleKeys.add_new_shipping_address.tr()} ",
-                                style: context.textTheme.bodyMedium?.mr
-                                    .copyWith(
-                                        color: const Color(0xff1D1D1D),
-                                        letterSpacing: 0.18,
-                                        fontSize: 12,
-                                        height: 1.33),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : InkWell(
-                        onTap: () {
-                          if (index != state.currentAddressChoosed) {
-                            enableChangeAddress.value = true;
-                          } else {
-                            enableChangeAddress.value = false;
-                          }
-                          indexTapAddress.value = index;
-                        },
-                        child: addressInfoWithContactInfoCart(
-                          isChange: false,
-                          customerAddressesInfo:
-                              state.listOfAddressInfoClassToSave![index],
-                          context: context,
-                          index: index,
-                          indexTap: _indexTap,
-                          onTapDelete: () {},
-                          onTapEdit: () {
-                            //   panelController.close();
-                            HelperFunctions.slidingNavigation(
-                              context,
-                              AddShippingAdress(
-                                addressInfoClassToEdid:
+                            )
+                          : InkWell(
+                              onTap: () {
+                                if (index != firstAddressChoosed ||
+                                    (state.listOfAddressInfoClassToSave![index].address != order!.shippingAddressData?.address ||
+                                        state.listOfAddressInfoClassToSave![index].addressDetail !=
+                                            order!.shippingAddressData
+                                                ?.addressDetail ||
+                                        state.listOfAddressInfoClassToSave![index].contactInfo?.name !=
+                                            order!.shippingAddressData
+                                                ?.contactPersonName ||
+                                        state.listOfAddressInfoClassToSave![index].contactInfo?.phone !=
+                                            order!.shippingAddressData?.phone ||
+                                        state.listOfAddressInfoClassToSave![index].regionDetails?.country !=
+                                            order!
+                                                .shippingAddressData?.country ||
+                                        state.listOfAddressInfoClassToSave![index].regionDetails?.city !=
+                                            order!.shippingAddressData?.city ||
+                                        state.listOfAddressInfoClassToSave![index].regionDetails?.province !=
+                                            order!.shippingAddressData
+                                                ?.province ||
+                                        state.listOfAddressInfoClassToSave![index].regionDetails?.street !=
+                                            order!
+                                                .shippingAddressData?.street ||
+                                        state.listOfAddressInfoClassToSave![index].regionDetails?.building !=
+                                            order!.shippingAddressData
+                                                ?.building ||
+                                        state.listOfAddressInfoClassToSave![index].regionDetails?.town !=
+                                            order!.shippingAddressData?.town ||
+                                        state.listOfAddressInfoClassToSave![index].location?.latitude !=
+                                            order!.shippingAddressData
+                                                ?.latitude ||
+                                        state.listOfAddressInfoClassToSave![index]
+                                                .location?.longitude !=
+                                            order!.shippingAddressData?.longitude ||
+                                        state.listOfAddressInfoClassToSave![index].contactInfo?.alternativePhone != order!.shippingAddressData?.alternativePhone)) {
+                                  enableChangeAddress.value = true;
+                                } else {
+                                  enableChangeAddress.value = false;
+                                }
+                                indexTapAddress.value = index;
+                              },
+                              child: addressInfoWithContactInfoCart(
+                                isChange: false,
+                                customerAddressesInfo:
                                     state.listOfAddressInfoClassToSave![index],
-                                fromEdid: true,
+                                context: context,
+                                index: index,
+                                indexTap: _indexTap,
+                                onTapDelete: () {},
+                                onTapEdit: () {
+                                  //   panelController.close();
+                                  HelperFunctions.slidingNavigation(
+                                    context,
+                                    AddShippingAdress(
+                                      addressInfoClassToEdid: state
+                                          .listOfAddressInfoClassToSave![index],
+                                      fromEdid: true,
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 10,
                       ),
-                separatorBuilder: (context, index) => SizedBox(
-                  height: 10,
-                ),
-                itemCount: state.listOfAddressInfoClassToSave!.length + 1,
-                controller: sc,
-              ),
-            ),
+                      itemCount: state.listOfAddressInfoClassToSave!.length + 1,
+                      controller: sc,
+                    ),
+                  ),
           ],
         ));
   }
@@ -4879,9 +5361,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
       return optionsForAllOrder();
     }
     if (_option == "Change_Address") {
+      if (orderBloc.state.getCustomerAddressStatus !=
+          GetCustomerAddressesStatus.success) {
+        orderBloc.add(GetCustomerAddressesEvent());
+      }
       return panelAddressContent(sc);
     }
-    if (_option == "Cancel_This_Product") {
+    if (_option == "Cancel") {
       return panelCanelContent(sc);
     }
     if (_option == "Return_This_Product") {
@@ -4973,7 +5459,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               SizedBox(
                 height: 5,
               ),
-              Padding(
+              /* Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
                     onTap: () {
@@ -4987,7 +5473,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ),
               SizedBox(
                 height: 5,
-              ),
+              ),*/
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
@@ -5000,17 +5486,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     body:
                         "${LocaleKeys.delivery_time_delivery_man_delivery_car.tr()}"),
               ),
-              /*    Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: optionOfModify(
-                    onTap: () {
-                      optionModifyPanel.value = "Cancel_This_Product";
-                    },
-                    svg: AppAssets.orderCanselSvg,
-                    image2: "",
-                    tiltle: "${LocaleKeys.cancel_this_product.tr()}",
-                    body: "Cancel This Product In 3 Hours And Back Your Money"),
-              ),*/
+              SizedBox(
+                height: 5,
+              ),
+              (order?.canCanceleOrder ?? false)
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: optionOfModify(
+                          onTap: () {
+                            optionModifyPanel.value = "Cancel";
+                          },
+                          svg: AppAssets.orderCanselSvg,
+                          image2: "",
+                          tiltle: "${LocaleKeys.cancel_this_product.tr()}",
+                          body: LocaleKeys.cancel_product_hours_back_money
+                              .tr(args: ['3'])),
+                    )
+                  : SizedBox.shrink(),
               SizedBox(
                 height: 5,
               ),
@@ -5026,6 +5518,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     body:
                         "${LocaleKeys.you_can_change_delivery_address_delivery_note.tr()}"),
               ),*/
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
@@ -5158,7 +5651,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               width: 5,
                             ),
                             SvgPicture.asset(
-                              AppAssets.orderPreparingSvg,
+                              order!.orderGroupStatus?.value == 'canceled'
+                                  ? AppAssets.orderCanselSvg
+                                  : order!.orderGroupStatus?.value == 'shipped'
+                                      ? AppAssets.shippedBlackSvg
+                                      : order!.orderStatus?.value == 'delivered'
+                                          ? AppAssets.deliveredBlackSvg
+                                          : order!.orderStatus?.value ==
+                                                  'pending'
+                                              ? AppAssets.pendeingBlackCheck
+                                              : AppAssets.orderPreparingSvg,
                               height: 15.h,
                             ),
                             Spacer(),
@@ -6564,7 +7066,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 : const Color(0xffD3D3D3),
                             borderRadius: BorderRadius.circular(20)),
                         child: Text(
-                          LocaleKeys.cancel_request.tr(),
+                          allOrder
+                              ? LocaleKeys.cancel_order.tr()
+                              : LocaleKeys.cancel_this_product.tr(),
                           style: context.textTheme.bodyMedium?.mr.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,

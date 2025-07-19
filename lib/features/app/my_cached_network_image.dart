@@ -7,15 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset_shadow;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:file/file.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/trydos_shimmer_loading.dart';
-import 'package:trydos/features/app/smart_cache_manager.dart';
+
 import 'package:trydos/features/app/home_page_image_protector.dart';
-import 'package:trydos/features/app/memory_management_helper.dart';
+
 import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
 // Simplified without complex managers
 
@@ -88,6 +85,16 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
   void dispose() {
     _isDisposed = true;
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(MyCachedNetworkImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imageUrl != widget.imageUrl) {
+      setState(() {
+        currentUrl = widget.imageUrl;
+      });
+    }
   }
 
   @override
@@ -170,7 +177,10 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           // 🔧 إصلاح: إعادة تفعيل memory cache للأداء الأفضل
           memCacheHeight: widget.height.ceil(),
 
-          placeholder: (context, url) => _buildSimpleShimmer(),
+          placeholder: (context, url) {
+            widget.callWhenLoadingImage?.call();
+            return _buildSimpleShimmer();
+          },
           memCacheWidth: widget.width.ceil(),
 
           // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
@@ -269,6 +279,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
 
   /// 📱 Shimmer ثابت مع أبعاد صحيحة
   Widget _buildSimpleShimmer() {
+    widget.callWhenLoadingImage?.call();
     return ClipRRect(
       borderRadius: BorderRadius.circular(widget.radius),
       child: Container(
@@ -379,6 +390,5 @@ String addSuitableWidthAndHeightToImage({
     }
   }
 
-  print('🔧 Fixed image URL: $url');
   return url;
 }

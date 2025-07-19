@@ -14,6 +14,8 @@ enum UploadStoryStatus { init, loading, success, failure }
 
 enum UploadStoryCloudinaryStatus { init, loading, success, failure }
 
+enum DeleteStoryStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @EntryConverter.instance
 class StoryState {
@@ -21,6 +23,7 @@ class StoryState {
   UploadStoryCloudinaryStatus uploadStoryCloudinaryStatus;
   GetStoriesStatus getStoriesStatus;
   SelectedVideoStatus selectedVideoStatus;
+  DeleteStoryStatus deleteStoryStatus;
   List<CollectionStoryModel> storiesCollections;
   int currentPage;
   int storyOffset;
@@ -36,6 +39,7 @@ class StoryState {
       this.uploadStoryStatus = UploadStoryStatus.init,
       this.selectedVideoStatus = SelectedVideoStatus.init,
       this.getStoriesStatus = GetStoriesStatus.init,
+      this.deleteStoryStatus = DeleteStoryStatus.init,
       this.storiesCollections = const [],
       this.currentStoryToMakeItViewedInEachCollection = const [],
       this.currentPage = 0,
@@ -50,6 +54,7 @@ class StoryState {
       {UploadStoryCloudinaryStatus? uploadStoryCloudinaryStatus,
       UploadStoryStatus? uploadStoryStatus,
       SelectedVideoStatus? selectedVideoStatus,
+      DeleteStoryStatus? deleteStoryStatus,
       List<Tuple2<String, String>>? currentStoryToMakeItViewedInEachCollection,
       GetStoriesStatus? getStoriesStatus,
       List<CollectionStoryModel>? storiesCollections,
@@ -80,7 +85,8 @@ class StoryState {
                 this.getStoryWithPagintionStatusLoading,
         currentStoryInEachCollection:
             currentStoryInEachCollection ?? this.currentStoryInEachCollection,
-        selectedCollection: selectedCollection ?? this.selectedCollection);
+        selectedCollection: selectedCollection ?? this.selectedCollection,
+        deleteStoryStatus: deleteStoryStatus ?? this.deleteStoryStatus);
   }
 
   factory StoryState.fromJson(Map<String, dynamic> data) =>

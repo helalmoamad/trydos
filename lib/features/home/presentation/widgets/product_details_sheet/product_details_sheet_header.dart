@@ -25,7 +25,10 @@ class ProductDetailsSheetHeader extends StatefulWidget {
   final String priceSymbol;
   final int decimalPoint;
   final ValueNotifier<int> currentActiveTab;
+  final bool isRedeem;
+  final double redeemPrice;
   final String initPrice;
+  final double redeemVariantPrice;
   final String initOfferPrice;
   final double shippingCost;
   const ProductDetailsSheetHeader({
@@ -37,6 +40,9 @@ class ProductDetailsSheetHeader extends StatefulWidget {
     required this.price,
     required this.initOfferPrice,
     required this.initPrice,
+    required this.redeemVariantPrice,
+    required this.isRedeem,
+    required this.redeemPrice,
     required this.decimalPoint,
     required this.priceSymbol,
   });
@@ -155,7 +161,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                               //  .toStringAsFixed(widget.decimalPoint),
                               style: textTheme.headlineMedium?.rq.copyWith(
                                 color: Color(0xffC4C2C2),
-                                fontSize: 24.sp,
+                                fontSize: 20.sp,
                                 decoration: TextDecoration.lineThrough,
                                 height: 0,
                               ),
@@ -170,7 +176,10 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                       : widget.initOfferPrice)),
                               //      .toStringAsFixed(widget.decimalPoint),
                               style: textTheme.headlineMedium?.bq.copyWith(
-                                fontSize: 24.sp,
+                                fontSize: 20.sp,
+                                decoration: widget.isRedeem
+                                    ? TextDecoration.lineThrough
+                                    : null,
                                 color: Color(0xff505050),
                                 height: 0,
                               ),
@@ -178,17 +187,47 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                             SizedBox(
                               width: 4,
                             ),
-                            MyTextWidget(
-                              widget.priceSymbol,
-                              style: textTheme.titleMedium?.rq.copyWith(
-                                fontSize: 18.sp,
-                                color: Color(0xffC4C2C2),
-                                height: 0,
-                              ),
-                            ),
+                            widget.isRedeem
+                                ? SizedBox.shrink()
+                                : MyTextWidget(
+                                    widget.priceSymbol,
+                                    style: textTheme.titleMedium?.rq.copyWith(
+                                      fontSize: 16.sp,
+                                      color: Color(0xffC4C2C2),
+                                      height: 0,
+                                    ),
+                                  ),
                             SizedBox(
                               width: 5,
                             ),
+                            widget.isRedeem
+                                ? MyTextWidget(
+                                    HelperFunctions.formatNumber(
+                                        number: currentTab == 3
+                                            ? widget.redeemVariantPrice
+                                            : widget.redeemPrice),
+                                    //      .toStringAsFixed(widget.decimalPoint),
+                                    style:
+                                        textTheme.headlineMedium?.bq.copyWith(
+                                      fontSize: 20.sp,
+                                      color: Colors.deepOrangeAccent,
+                                      height: 0,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            widget.isRedeem
+                                ? MyTextWidget(
+                                    widget.priceSymbol,
+                                    style: textTheme.titleMedium?.rq.copyWith(
+                                      fontSize: 16.sp,
+                                      color: Colors.deepOrangeAccent,
+                                      height: 0,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
                             /*    ValueListenableBuilder<int>(
                               valueListenable: widget.addToBagButtonShapeNotifier,
                               builder: (context, itemCount, _) {

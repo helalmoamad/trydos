@@ -618,7 +618,7 @@ class _CameraScreenState extends State<CameraScreen>
     File videoFile = File(rawVideo!.path);
     Navigator.pop(context, !lengthMoreThan60 ? videoFile : null);
     if (lengthMoreThan60) {
-      showMessage('Video length must not be longer than 59 seconds',
+      showMessage(LocaleKeys.video_length_limit.tr(),
           hasError: true, showInRelease: true);
     }
   }

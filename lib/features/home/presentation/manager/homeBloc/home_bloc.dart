@@ -1183,6 +1183,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddSizesForColorsEvent(
       AddSizesForColorsEvent event, Emitter<HomeState> emit) async {
+    print(
+        "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentColorName}");
     List<String> sizes = [];
     List<int> sizesQuantities = [];
     List<String> colors = [];
@@ -1286,6 +1288,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
     }, (r) {
+      if (r.product?.isRedeem == true) {
+        GetIt.I<PrefsRepository>()
+            .setRedeemDateForProduct(r.product!.id.toString(), "22");
+      }
       if ((event.fromListingPage ?? false) == false) {
         Future.delayed(Duration(seconds: 2), () {
           add(GetAndAddCountViewOfProductEvent(
@@ -1436,10 +1442,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             element.id.toString(): {
               "size": element.variations.isNullOrEmpty
                   ? ""
-                  : "${element.variations?[0].size ?? ""}",
+                  : "${element.variations?[0].sizeOption ?? ""}",
               "color": element.variations.isNullOrEmpty
                   ? ""
-                  : "${element.variations?[0].color ?? ""}"
+                  : "${element.variations?[0].colorOption ?? ""}"
             }
           }));
       emit(state.copyWith(currentQuantityForCart: {}));
@@ -1451,11 +1457,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             productId: element.productId.toString(),
             currentSize: element.variations.isNullOrEmpty
                 ? ""
-                : element.variations?[0].size ?? "",
+                : element.variations?[0].sizeOption ?? "",
             cartId: element.id ?? 0,
             colorName: element.variations.isNullOrEmpty
                 ? ""
-                : element.variations?[0].color ?? ""));
+                : element.variations?[0].colorOption ?? ""));
 
         if (addImagesToProductIdForCart[element.productId.toString()] == null) {
           addImagesToProductIdForCart[element.productId.toString()] = {};
@@ -1602,11 +1608,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               productId: element.productId.toString(),
               currentSize: element.variations.isNullOrEmpty
                   ? ""
-                  : element.variations?[0].size ?? "",
+                  : element.variations?[0].sizeOption ?? "",
               cartId: element.id ?? 0,
               colorName: element.variations.isNullOrEmpty
                   ? ""
-                  : element.variations?[0].color ?? ""));
+                  : element.variations?[0].colorOption ?? ""));
           if (addImagesToProductIdForCart[element.productId.toString()] ==
               null) {
             addImagesToProductIdForCart[element.productId.toString()] = {};
@@ -1774,9 +1780,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onAddCurrentSizeColorEvent(
       AddCurrentColorSizeEvent event, Emitter<HomeState> emit) async {
     Map<String, String> sizeColor;
-
+    print("1234567890-${event.choice_1} - ${event.choiceOption}");
     sizeColor = {
       "size": event.choice_1 ?? "",
+      "choiceOption": event.choiceOption ?? "",
     };
     emit(state.copyWith(currentColorSizeForCart: sizeColor));
   }
@@ -1785,12 +1792,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     AddItemToCartEvent event,
     Emitter<HomeState> emit,
   ) async {
-    String currentSize = event.choice_1!;
+    String currentSize = event.choiceOption!;
     Map<String, List<int>> currentQuantity =
         Map.of(state.currentQuantityForCart ?? {});
 
     String key = "${event.products.productId.toString()}" +
-        "${event.colorName}" +
+        "${event.colorOption}" +
         "${currentSize}";
 
     if (event.quantity == 0) {
@@ -1818,7 +1825,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             image: event.image,
             currentSize: currentSize,
             maxAllowed: (double.tryParse(event.maxAllowed ?? "0") ?? 0),
-            colorName: event.colorName,
+            colorOption: event.colorOption,
             productId: event.products.productId.toString(),
             totalQuantity: quantity,
             cartId: currentQuantity[key]![1].toString(),
@@ -1852,8 +1859,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               : "",
           originalWidth: "50"),
     );
-    VariationCart variation =
-        VariationCart(color: event.colorName, size: event.choice_1);
+    VariationCart variation = VariationCart(
+        color: event.colorName,
+        colorOption: event.colorOption,
+        size: event.sizeName,
+        sizeOption: event.choiceOption);
     String currentUuid = const Uuid().v4();
     BoutiquesCart boutiquesCart = BoutiquesCart(
         icon: IconCart(filePath: event.boutiqueIcon), id: event.boutiqueId);
@@ -1862,7 +1872,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       countOfPieces: event.countOfPieces,
       image: event.image,
       boutique: boutiquesCart,
-      offerPrice: event.products.offerPrice,
+      isRedeem: event.isRedeem,
+      offerPrice:
+          event.isRedeem ? event.redeemVariantPrice : event.products.offerPrice,
       name: event.products.name,
       price: event.products.price,
       quantity: event.quantity,
@@ -1878,17 +1890,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           .copyWith(cartCollection: {"${event.boutiqueId.toString()}": []}));
     }*/
 
-    cartCollection.add(cart);
+    cartCollection.insert(0, cart);
 
     oldCart.OldCart? PreOldCart = oldCartCollection.firstWhere(
       (element) =>
           element.image == event.image &&
           (element.variations!.isNotEmpty
-              ? ((element.variations?[0].color ?? '') ==
-                  (variation.color ?? ''))
+              ? ((element.variations?[0].colorOption ?? '') ==
+                  (variation.colorOption ?? ''))
               : true) &&
           (element.variations!.isNotEmpty
-              ? ((element.variations?[0].size ?? '') == (variation.size ?? ''))
+              ? ((element.variations?[0].sizeOption ?? '') ==
+                  (variation.sizeOption ?? ''))
               : true),
       orElse: () => oldCart.OldCart(id: -1),
     );
@@ -1896,11 +1909,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (element) =>
           element.image == event.image &&
           (element.variations!.isNotEmpty
-              ? ((element.variations?[0].color ?? "") ==
-                  (variation.color ?? ""))
+              ? ((element.variations?[0].colorOption ?? "") ==
+                  (variation.colorOption ?? ""))
               : true) &&
           (element.variations!.isNotEmpty
-              ? ((element.variations?[0].size ?? "") == (variation.size ?? ''))
+              ? ((element.variations?[0].sizeOption ?? "") ==
+                  (variation.sizeOption ?? ''))
               : true),
     );
     emit(state.copyWith(
@@ -1911,7 +1925,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     final response = await addItemToCartUseCase(
       AddITemToCartParams(
         image: event.image.split("/").last,
-        choice_1: event.choice_1,
+        choice_1: event.choiceOption,
+        isRedeem: event.isRedeem,
         color: event.color,
         id: event.products.productId.toString(),
         quantity: event.quantity,
@@ -1925,13 +1940,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             Duration(seconds: 5),
             () {
               add(AddItemToCartEvent(
+                  isRedeem: event.isRedeem,
+                  redeemVariantPrice: event.redeemVariantPrice,
+                  colorName: event.colorName,
+                  sizeName: event.sizeName,
                   finishAddAllTheItems: event.finishAddAllTheItems,
                   countOfPieces: event.countOfPieces,
-                  colorName: event.colorName,
+                  colorOption: event.colorOption,
                   productSlugForTopic: event.productSlugForTopic,
                   image: event.image,
                   products: event.products,
-                  choice_1: event.choice_1,
+                  choiceOption: event.choiceOption,
                   maxAllowed: event.maxAllowed,
                   color: event.color,
                   quantity: event.quantity));
@@ -1941,13 +1960,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
         } else {
           add(AddItemToCartEvent(
+              isRedeem: event.isRedeem,
+              redeemVariantPrice: event.redeemVariantPrice,
+              colorName: event.colorName,
+              sizeName: event.sizeName,
               finishAddAllTheItems: event.finishAddAllTheItems,
               countOfPieces: event.countOfPieces,
-              colorName: event.colorName,
+              colorOption: event.colorOption,
               productSlugForTopic: event.productSlugForTopic,
               image: event.image,
               products: event.products,
-              choice_1: event.choice_1,
+              choiceOption: event.choiceOption,
               maxAllowed: event.maxAllowed,
               color: event.color,
               quantity: event.quantity));
@@ -2006,7 +2029,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       int index = listVariation.indexWhere((element) =>
           element.type ==
-          "${event.colorName}${(event.colorName != "" && event.choice_1 != "") ? "-" : ""}${event.choice_1}");
+          "${event.colorOption}${(event.colorOption != "" && event.choiceOption != "") ? "-" : ""}${event.choiceOption}");
       isFailedTheFirstTime.remove('AddCartItemEvent');
       add(UpdateListOfItemForAddToCartEvent(
           imageForAddToCart: ImageForAddToCart(),
@@ -2078,8 +2101,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                                                     NotificationType(id: -1))
                                             .id ??
                                         -1,
-                                    event.choice_1 ?? "",
-                                    event.colorName,
+                                    event.choiceOption ?? "",
+                                    event.colorOption,
                                     true));
                                 Navigator.of(context).pop();
                               }),
@@ -2128,8 +2151,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             Map.of(state.addVariationToCartId ?? {});
         addVariationToCartId.addAll({
           r.data!.idCart.toString(): {
-            "size": "${event.choice_1 ?? ""}",
-            "color": "${event.colorName}"
+            "size": "${event.choiceOption ?? ""}",
+            "color": "${event.colorOption}"
           }
         });
         Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
@@ -2159,7 +2182,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
         add(AddQuantityForCartEvent(
             currentSize: currentSize,
-            colorName: event.colorName,
+            colorName: event.colorOption,
             cartId: r.data!.idCart!,
             quantity: event.quantity!,
             productId: event.products.productId.toString()));
@@ -2168,7 +2191,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
 
         cart = cart.copyWith(id: r.data!.idCart!);
-        cartCollection.add(cart);
+        cartCollection.insert(0, cart);
 
         emit(state.copyWith(
             addItemInCartStatus: AddItemInCartStatus.success,
@@ -2530,7 +2553,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       add(RemoveItemFormCartEvent(
           image: event.image,
           currentSize: event.currentSize,
-          colorName: event.colorName,
+          colorName: event.colorOption,
           itemId: event.cartId,
           boutiqueId: event.boutiqueId,
           productId: event.productId));
@@ -2611,7 +2634,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       int index = listVariation.indexWhere((element) =>
           element.type ==
-          "${event.colorName}${event.colorName != "" ? "-" : ""}${event.currentSize}");
+          "${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}");
 
       if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
         if (index != -1 && event.totalQuantity == 1) {
@@ -2678,7 +2701,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                                             .id ??
                                         -1,
                                     event.currentSize,
-                                    event.colorName,
+                                    event.colorOption,
                                     true));
                                 Navigator.of(context).pop();
                               }),
@@ -2749,7 +2772,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         add(AddQuantityForCartEvent(
             currentSize: event.currentSize,
-            colorName: event.colorName,
+            colorName: event.colorOption,
             cartId: int.tryParse(event.cartId)!,
             quantity: event.totalQuantity,
             productId: event.productId));
@@ -2786,7 +2809,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     'item_name': event.productName.toString(),
                     'price': event.productPrice.toString(),
                     'quantity': event.totalQuantity.toString(),
-                    'item_variant': '${event.colorName}-${event.currentSize}',
+                    'item_variant': '${event.colorOption}-${event.currentSize}',
                   }
                 ].toString(),
               },
@@ -3021,17 +3044,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     listitemForAddToCart.removeWhere((element) => element.quantity == 0);
     for (var i = 0; i < listitemForAddToCart.length; i++) {
       add(AddItemToCartEvent(
+          isRedeem: event.isRedeem,
+          redeemVariantPrice: event.redeemVariantPrice,
           finishAddAllTheItems: i == listitemForAddToCart.length - 1,
           countOfPieces: listitemForAddToCart[i].countOfPieces,
           image: listitemForAddToCart[i].images!,
           productSlugForTopic: event.productSlugForTopic,
           color: listitemForAddToCart[i].colorNum,
-          colorName: listitemForAddToCart[i].colorName!,
+          colorOption: listitemForAddToCart[i].colorOption!,
           products: event.products,
           maxAllowed: event.maxAllowed,
           boutiqueIcon: event.boutiqueIcon,
           boutiqueId: event.boutiqueId,
-          choice_1: listitemForAddToCart[i].size,
+          choiceOption: listitemForAddToCart[i].choiceOption,
+          colorName: listitemForAddToCart[i].colorName!,
+          sizeName: listitemForAddToCart[i].choiceName!,
           quantity: listitemForAddToCart[i].quantity));
       /////////////////////////////////
       Future.delayed(
@@ -3057,7 +3084,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   'count_likes': event.products.countOfLikes.toString(),
                   'review_count': event.products.reviewsCount.toString(),
                   'item_variant':
-                      '${listitemForAddToCart[i].colorName}-${listitemForAddToCart[i].size}',
+                      '${listitemForAddToCart[i].colorOption}-${listitemForAddToCart[i].choiceOption}',
                 }
               ].toString(),
             },
@@ -3099,12 +3126,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     ImageForAddToCart imageForAddToCart = ImageForAddToCart(
         colorNum: event.imageForAddToCart.colorNum,
-        colorName: event.imageForAddToCart.colorName,
+        colorOption: event.imageForAddToCart.colorOption,
         quantity: event.imageForAddToCart.quantity,
         countOfPieces: event.imageForAddToCart.countOfPieces,
         images: event.imageForAddToCart.images,
-        size: state.currentColorSizeForCart != null
+        colorName: event.imageForAddToCart.colorName,
+        choiceName: state.currentColorSizeForCart != null
             ? state.currentColorSizeForCart!["size"]
+            : "",
+        choiceOption: state.currentColorSizeForCart != null
+            ? state.currentColorSizeForCart!["choiceOption"]
             : "");
 
     List<ImageForAddToCart>? listitemForAddToCart =
@@ -3120,22 +3151,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ImageForAddToCart element = listitemForAddToCart[i];
 
         if (element.images == imageForAddToCart.images &&
-            element.colorName == imageForAddToCart.colorName &&
-            element.size == imageForAddToCart.size) {
+            element.colorOption == imageForAddToCart.colorOption &&
+            element.choiceOption == imageForAddToCart.choiceOption) {
           element.quantity = element.quantity! + 1;
           newImageToAddToCart = ImageForAddToCart(
               countOfPieces: element.countOfPieces,
               isDuplicate: true,
               quantity: 0,
-              size: element.size,
+              choiceOption: element.choiceOption,
+              colorOption: element.colorOption,
               colorName: element.colorName,
+              choiceName: element.choiceName,
               images: element.images);
           break;
         } else {
           if (!listitemForAddToCart.any((element) =>
               (element.images == imageForAddToCart.images &&
-                  element.colorName == imageForAddToCart.colorName &&
-                  element.size == imageForAddToCart.size))) {
+                  element.colorOption == imageForAddToCart.colorOption &&
+                  element.choiceOption == imageForAddToCart.choiceOption))) {
             newImageToAddToCart = imageForAddToCart;
           }
         }
@@ -3154,15 +3187,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         if (itemLast.isDuplicate == true) {
           listitemForAddToCart = listitemForAddToCart.map((e) {
             if (e.quantity! > 0 &&
-                e.colorName == itemLast.colorName &&
-                e.size == itemLast.size &&
+                e.colorOption == itemLast.colorOption &&
+                e.choiceOption == itemLast.choiceOption &&
                 e.images == itemLast.images) {
               return ImageForAddToCart(
                   countOfPieces: e.countOfPieces,
+                  colorOption: itemLast.colorOption,
                   colorName: itemLast.colorName,
+                  choiceName: itemLast.choiceName,
                   images: e.images,
                   quantity: e.quantity! - 1,
-                  size: itemLast.size);
+                  choiceOption: itemLast.choiceOption);
             }
             return e;
           }).toList();
@@ -3404,7 +3439,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (event.currentColorName != null) {
         int index = -1;
         index = r.productItem!.colors!.indexWhere(
-          (element) => element.name == event.currentColorName,
+          (element) => element.option == event.currentColorName,
         );
         if (index != -1) {
           add(AddCurrentSelectedColorEvent(
@@ -3433,6 +3468,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         r.productItem!.productId.toString():
             r.getProductDetailWithoutRelatedProductsModel!
       });
+      if (r.productItem!.isRedeem == true) {
+        GetIt.I<PrefsRepository>()
+            .setRedeemDateForProduct(r.productItem!.productId.toString(), "22");
+      }
       emit(state.copyWith(
         productStatus: productStatus,
         cachedProductWithoutRelatedProductsModel: cachedData,

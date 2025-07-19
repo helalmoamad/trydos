@@ -264,10 +264,10 @@ class _CartPageState extends State<CartPage> {
                           "image": element.image ?? "",
                           "size": element.variations?.isNullOrEmpty ?? false
                               ? ""
-                              : element.variations?[0].size ?? "",
+                              : element.variations?[0].sizeOption ?? "",
                           "color": element.variations?.isNullOrEmpty ?? false
                               ? ""
-                              : element.variations?[0].color ?? ""
+                              : element.variations?[0].colorOption ?? ""
                         },
                       );
                     }

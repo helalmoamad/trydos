@@ -940,6 +940,49 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setIsFoundDataCashed(bool isFoundDataCashed) {
     return _preferences.setBool(PrefsKey.foundDataCashed, isFoundDataCashed);
   }
+
+  @override
+  Future<bool> setRedeemDateForProduct(String productId, String seconds) {
+    Map<String, dynamic> map =
+        _preferences.getString(PrefsKey.redeemDateForProducts) != null
+            ? convert.jsonDecode(
+                _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}')
+            : {};
+    if (!map.containsKey(productId)) {
+      map.addAll({
+        productId:
+            (DateTime.now().add(Duration(seconds: int.tryParse(seconds) ?? 0)))
+                .toString()
+      });
+    }
+    print(map);
+
+    return _preferences.setString(
+        PrefsKey.redeemDateForProducts, convert.jsonEncode(map));
+  }
+
+  @override
+  DateTime? getRedeemDateForProduct(String productId) {
+    Map<String, dynamic> map = convert.jsonDecode(
+        _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
+    return map[productId] != null ? DateTime.tryParse(map[productId]!) : null;
+  }
+
+  @override
+  Future<bool> removeRedeemDateForAnyProductFinished() {
+    Map<String, dynamic> map = convert.jsonDecode(
+        _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
+    Map<String, dynamic> afterRemove = convert.jsonDecode(
+        _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
+    map.forEach((key, value) {
+      if (DateTime.parse(value).isBefore(DateTime.now())) {
+        afterRemove.remove(key);
+      }
+    });
+    return _preferences.setString(
+        PrefsKey.redeemDateForProducts, convert.jsonEncode(afterRemove));
+  }
+
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

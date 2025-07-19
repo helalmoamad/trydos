@@ -9,6 +9,12 @@
   "gallery": "المعرض",
   "camera": "الكاميرا",
   "choose_photo_or_video_from_gallery_or_camera": "اختر صورة او فيديو من المعرض او الكاميرا",
+  "image_preview": "معاينة الصورة",
+  "image_preview_instructions": "معاينة الصورة - اضغط إرسال أو قص أو إلغاء",
+  "crop_image": "قص الصورة",
+  "select_image_part": "اختر الجزء المطلوب من الصورة",
+  "send": "إرسال",
+  "cancel_preview": "إلغاء المعاينة",
   "welcome_page_description": "للاستفادة من جميع مزايا التطبيق، يرجى الانضمام إلينا بخطوات سريعة وسهلة ولمرة واحدة فقط",
   "why_we_know_you_label": "لماذا نعرفك ؟",
   "i_have_account": "لدي حساب مسبقا",
@@ -65,7 +71,7 @@
   "registered_with_us": "للتسجيل معنا",
   "enter_your_number": "ادخل رقم هاتفك",
   "logged_in_successfully": "تم تسجيل الدخول بنجاح!",
-  "try_direct_online_shopping": "حاول التسوق المباشر عبر الإنترنت",
+  "try_direct_online_shopping": "حاول التسوق المباشر عبر الإنترنيت",
   "hello": "مرحباً",
   "enjoy_with_our_services": "استمتع بخدماتنا",
   "sorry_this_number_is_not_registered_with_us": "عذراً، هذا الرقم غير مسجل لدينا!",
@@ -192,6 +198,10 @@
   "not_now": "ليس الان",
   "notify_me": "أعلمني",
   "do_you_want_to_notify_You_when_your_choose_available": "هل تربد ان نعلمك حين توفر اختيارك ؟",
+  "cancel_order_hours_back_money": "إلغاء هذا الطلب خلال {hours} ساعات واسترداد أموالك",
+  "cancel_product_hours_back_money": "إلغاء هذا المنتج خلال {hours} ساعات واسترداد أموالك",
+  "coupon_link_not_allowed": "رابط الكوبون غير مسموح به",
+  "video_length_limit": "يجب ألا تزيد مدة الفيديو عن 59 ثانية",
   "your_request_faild": "طلبك لم ينجح",
   "continues": "المتابعة",
   "more": "المزيد",
@@ -540,5 +550,8 @@
   "image_load_failed": "فشل في تحميل الصورة",
   "download_timeout": "انتهت مهلة التحميل",
   "retry_download": "إعادة المحاولة",
-  "image_not_available": "الصورة غير متوفرة"
+  "image_not_available": "الصورة غير متوفرة",
+  "luck": "حظًا سعيدًا!"
+  ,"add_to_bag_within": "أضف إلى السلة خلال"
+  ,"seconds": "ثوانٍ"
 }

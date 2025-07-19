@@ -230,6 +230,7 @@ class Cart {
   final int? qtyLeft;
   final int? timeLeftInMinutes;
   final dynamic flashDealDetails;
+  final bool? isRedeem;
   final dynamic flashDealMaxAllowedQuantity;
   final DateTime? createdAt;
 
@@ -242,6 +243,7 @@ class Cart {
     this.choices,
     this.variations,
     this.variant,
+    this.isRedeem,
     this.availableQuantity,
     this.maxAllowedQty,
     this.vendorName,
@@ -284,6 +286,7 @@ class Cart {
     bool? isCountryRestricted,
     bool? isActive,
     String? maxAllowedQty,
+    bool? isRedeem,
     String? vendorName,
     int? quantity,
     double? discount,
@@ -315,6 +318,7 @@ class Cart {
         cartGroupId: cartGroupId ?? this.cartGroupId,
         productId: productId ?? this.productId,
         choices: choices ?? this.choices,
+        isRedeem: isRedeem ?? this.isRedeem,
         variations: variations ?? this.variations,
         variant: variant ?? this.variant,
         availableQuantity: availableQuantity ?? this.availableQuantity,
@@ -354,6 +358,7 @@ class Cart {
         customerId: json["customer_id"],
         cartGroupId: json["cart_group_id"],
         productId: json["product_id"],
+        isRedeem: json["is_redeem"],
         choices: json["choices"] == null
             ? []
             : List<Choice>.from(
@@ -411,6 +416,7 @@ class Cart {
         "variant": variant,
         "available_quantity": availableQuantity,
         "max_allowed_qty": maxAllowedQty,
+        "is_redeem": isRedeem,
         "vendor_name": vendorName,
         "quantity": quantity,
         "discount": discount,
@@ -632,30 +638,42 @@ class Shop {
 }
 
 class VariationCart {
+  final String? sizeOption;
+  final String? colorOption;
   final String? size;
   final String? color;
 
   VariationCart({
+    this.sizeOption,
+    this.colorOption,
     this.size,
     this.color,
   });
 
   VariationCart copyWith({
+    String? sizeOption,
+    String? colorOption,
     String? size,
     String? color,
   }) =>
       VariationCart(
+        sizeOption: sizeOption ?? this.sizeOption,
+        colorOption: colorOption ?? this.colorOption,
         size: size ?? this.size,
         color: color ?? this.color,
       );
 
   factory VariationCart.fromJson(Map<String, dynamic> json) => VariationCart(
-        size: json["Size"],
+        sizeOption: json["size_options"],
+        colorOption: json["color_options"],
+        size: json["size"],
         color: json["color"],
       );
 
   Map<String, dynamic> toJson() => {
-        "Size": size,
+        "size_options": sizeOption,
+        "color_options": colorOption,
+        "size": size,
         "color": color,
       };
 }

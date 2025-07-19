@@ -116,7 +116,8 @@ class _StoriesListState extends State<StoriesList> {
                       current.uploadStoryCloudinaryStatus ||
                   previous.getStoryWithPagintionStatusLoading !=
                       current.getStoryWithPagintionStatusLoading ||
-                  previous.getStoriesStatus != current.getStoriesStatus,
+                  previous.getStoriesStatus != current.getStoriesStatus ||
+                  previous.deleteStoryStatus != current.deleteStoryStatus,
               builder: (context, state) {
                 print(
                     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${prefsRepository.myProfilePhoto == ""}");

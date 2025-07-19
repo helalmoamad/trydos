@@ -83,12 +83,16 @@ class Product {
   final bool? countryIsRestricted;
   final List<Thumbnail>? images;
   final List<SyncColorImage>? syncColorImages;
+  final bool? isRedeem;
+  final double? redeemPrice;
   final List<Color>? colors;
   Product({
     this.id,
     this.description,
     this.descriptors,
     this.isActive,
+    this.isRedeem,
+    this.redeemPrice,
     this.collectedAfterOrdering,
     this.countOfPieces,
     this.colors,
@@ -125,6 +129,8 @@ class Product {
   Product copyWith(
           {int? id,
           dynamic description,
+          bool? isRedeem,
+          double? redeemPrice,
           dynamic model,
           dynamic features,
           String? slug,
@@ -182,6 +188,8 @@ class Product {
         deliveryAt: deliveryAt ?? this.deliveryAt,
         shippingDays: shippingDays ?? this.shippingDays,
         colors: colors ?? this.colors,
+        isRedeem: isRedeem ?? this.isRedeem,
+        redeemPrice: redeemPrice ?? this.redeemPrice,
         syncColorImages: syncColorImages ?? this.syncColorImages,
         images: images ?? this.images,
         availableQuantity: availableQuantity ?? this.availableQuantity,
@@ -254,6 +262,8 @@ class Product {
           : List<ChoiceOption>.from(
               json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
       hasDiscount: json["has_discount"],
+      isRedeem: json["is_redeem"],
+      redeemPrice: json["redeem_price"].toDouble(),
       deliveryAt: json["delivery_at"],
       isLiked: json["is_liked"],
       countOfLikes: json["count_of_likes"],
@@ -278,6 +288,8 @@ class Product {
         "description": description,
         "is_active": isActive,
         "boutique": boutique?.toJson(),
+        "is_redeem": isRedeem,
+        "redeem_price": redeemPrice,
         "variation": variation == null
             ? []
             : List<dynamic>.from(variation!.map((x) => x.toJson())),
@@ -596,6 +608,7 @@ class Variation {
   final double? price;
   final String? priceFormated;
   final double? offerPrice;
+  final double? redeemPrice;
   final String? offerPriceFormated;
   final String? sku;
   final double? qty;
@@ -604,6 +617,7 @@ class Variation {
     required this.variantNotifyForUser,
     this.type,
     this.price,
+    this.redeemPrice,
     this.priceFormated,
     this.offerPrice,
     this.offerPriceFormated,
@@ -619,12 +633,14 @@ class Variation {
     double? offerPrice,
     String? offerPriceFormated,
     String? sku,
+    double? redeemPrice,
     double? qty,
   }) =>
       Variation(
         variantNotifyForUser: variantNotifyForUser ?? this.variantNotifyForUser,
         type: type ?? this.type,
         price: price ?? this.price,
+        redeemPrice: redeemPrice ?? this.redeemPrice,
         priceFormated: priceFormated ?? this.priceFormated,
         offerPrice: offerPrice ?? this.offerPrice,
         offerPriceFormated: offerPriceFormated ?? this.offerPriceFormated,
@@ -638,6 +654,7 @@ class Variation {
         price: json["price"]?.toDouble(),
         priceFormated: json["price_formated"],
         offerPrice: json["offer_price"]?.toDouble(),
+        redeemPrice: json["redeem_price"]?.toDouble(),
         offerPriceFormated: json["offer_price_formated"],
         sku: json["sku"],
         qty: double.tryParse(json["qty"].toString()),
@@ -648,6 +665,7 @@ class Variation {
         "type": type,
         "price": price,
         "price_formated": priceFormated,
+        "redeem_price": redeemPrice,
         "offer_price": offerPrice,
         "offer_price_formated": offerPriceFormated,
         "sku": sku,

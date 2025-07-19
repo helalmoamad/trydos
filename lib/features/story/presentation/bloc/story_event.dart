@@ -116,3 +116,11 @@ class UpdateNameForUserInCollectionIfExistEvent extends StoryEvent {
   @override
   List<Object?> get props => [name];
 }
+
+class DeleteStoryEvent extends StoryEvent {
+  final String storyId;
+  const DeleteStoryEvent({required this.storyId});
+
+  @override
+  List<Object?> get props => [storyId];
+}

@@ -26,6 +26,9 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../data/models/get_product_detail_without_related_products_model.dart'
+    show ChoiceOption;
+
 class SelectSizeContent extends StatefulWidget {
   SelectSizeContent({
     super.key,
@@ -33,6 +36,7 @@ class SelectSizeContent extends StatefulWidget {
     this.selectedColor,
     this.selectedColorName,
     required this.productId,
+    required this.choiceOptions,
     required this.requestToNotifyMeFormFirstSize,
     required this.collectedAfterOrdering,
     required this.colorIsNotAvailableNotifier,
@@ -43,6 +47,7 @@ class SelectSizeContent extends StatefulWidget {
 
   final ScrollController scrollController;
   final Color? selectedColor;
+  final List<ChoiceOption>? choiceOptions;
   final String? selectedColorName;
   final String productId;
   final bool collectedAfterOrdering;
@@ -74,7 +79,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
         !(widget.fromListingPage)) {
       currentIndexInSizes =
           ValueNotifier(homeBloc.state.sizesForEachColor!.indexWhere(
-        (element) => element == homeBloc.state.currentColorSizeForCart?["size"],
+        (element) =>
+            element == homeBloc.state.currentColorSizeForCart?["choiceOption"],
       ));
       if (currentIndexInSizes.value == -1) {
         currentIndexInSizes.value = 0;
@@ -121,8 +127,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
       buildWhen: (previous, current) =>
           previous.changeSizesForEveryProduct !=
               current.changeSizesForEveryProduct ||
-          previous.currentColorSizeForCart?["size"] !=
-              current.currentColorSizeForCart?["size"],
+          previous.currentColorSizeForCart?["choiceOption"] !=
+              current.currentColorSizeForCart?["choiceOption"],
       builder: (context, state) {
         sizes = state.sizesForEachColor ?? [];
         sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
@@ -339,7 +345,12 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   onPageChanged: (index, reason) {
                                     currentIndexInSizes.value = index;
                                     homeBloc.add(AddCurrentColorSizeEvent(
-                                        choice_1: sizes[index]));
+                                        choice_1: widget
+                                            .choiceOptions?[0].options
+                                            ?.firstWhere((element) =>
+                                                element.option == sizes[index])
+                                            .name,
+                                        choiceOption: sizes[index]));
                                     HapticFeedback.lightImpact();
                                     if (sizesQuantities[index] == 0 &&
                                         !widget.collectedAfterOrdering) {
@@ -408,7 +419,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         MyTextWidget(
-                          '${sizes[currentIndex]} ',
+                          '${widget.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes[currentIndex]).name ?? ""} ',
                           style: textTheme.titleMedium?.bq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),

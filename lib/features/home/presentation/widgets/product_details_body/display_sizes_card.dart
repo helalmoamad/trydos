@@ -59,7 +59,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
   List<String>? sizes;
 
   late final Gallery3DController? gallery3dControllerForCircles;
-
+  late HomeBloc homeBloc;
   final ValueNotifier<int> displayMode = ValueNotifier(0);
   final ValueNotifier<int> currentSelectedSizeIndex = ValueNotifier(0);
 
@@ -136,16 +136,38 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
 
   @override
   void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     sizes = [];
     if (widget.variation != null) {
       widget.variation!.forEach((element) {
-        if ((widget.productItem.colors.isNullOrEmpty ||
+        print(
+            "12-----------------------------#############${element.type!.split("-")[0]}....${widget.productItem.colors?[widget.currentColorForProduct].option}");
+
+        if ((homeBloc
+                    .state
+                    .cachedProductWithoutRelatedProductsModel[
+                        widget.productItem.productId.toString()]!
+                    .product!
+                    .colors
+                    .isNullOrEmpty ||
                 element.type!.split("-")[0] ==
-                    widget.productItem.colors?[widget.currentColorForProduct]
-                        .name) &&
+                    homeBloc
+                        .state
+                        .cachedProductWithoutRelatedProductsModel[
+                            widget.productItem.productId.toString()]!
+                        .product!
+                        .colors?[widget.currentColorForProduct]
+                        .option) &&
             element.qty != null) {
-          sizes!.add(element.type!
-              .split("-")[widget.productItem.colors.isNullOrEmpty ? 0 : 1]);
+          sizes!.add(element.type!.split("-")[homeBloc
+                  .state
+                  .cachedProductWithoutRelatedProductsModel[
+                      widget.productItem.productId.toString()]!
+                  .product!
+                  .colors
+                  .isNullOrEmpty
+              ? 0
+              : 1]);
         }
       });
     }
@@ -153,7 +175,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
         size ==
         BlocProvider.of<HomeBloc>(context)
             .state
-            .currentColorSizeForCart?['size']);
+            .currentColorSizeForCart?['choiceOption']);
 
     sizes = [
       ...sizes ?? [],
@@ -161,7 +183,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
     ];
 
     print(
-        "12-----------------------------${sizes}--------------4${BlocProvider.of<HomeBloc>(context).state.currentColorSizeForCart?['size']}");
+        "12-----------------------------+++++++++++++++++++++++++++++${sizes}--------------4${BlocProvider.of<HomeBloc>(context).state.currentColorSizeForCart?['choiceOption']}");
     widget.scrollController.addListener(changingModeListener);
     gallery3dControllerForCircles = sizes.isNullOrEmpty || sizes!.length < 3
         ? null
@@ -217,11 +239,11 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
     };
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (p, c) =>
-          p.currentColorSizeForCart?['size'] !=
-          c.currentColorSizeForCart?['size'],
+          p.currentColorSizeForCart?['choiceOption'] !=
+          c.currentColorSizeForCart?['choiceOption'],
       listener: (context, state) {
-        currentSelectedSizeIndex.value = sizes?.indexWhere(
-                (size) => size == state.currentColorSizeForCart?['size']) ??
+        currentSelectedSizeIndex.value = sizes?.indexWhere((size) =>
+                size == state.currentColorSizeForCart?['choiceOption']) ??
             currentSelectedSizeIndex.value;
       },
       child: BlocBuilder<HomeBloc, HomeState>(
@@ -422,7 +444,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                               sizes!.length ~/ 2,
                                                                               (index) => GestureDetector(
                                                                                       child: SizeItemWidget(
-                                                                                    sizeName: sizes![index],
+                                                                                    sizeName: widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes![index]).name ?? "",
                                                                                     width: 40 - index * 5,
                                                                                     height: 40 - index * 5,
                                                                                     index: index,
@@ -489,7 +511,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                                 return Visibility(
                                                                                     visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (sizes!.length ~/ 2) && index < (sizes!.length ~/ 2)) || (gallery3dControllerForCircles?.currentIndex ?? 0) >= (sizes!.length ~/ 2),
                                                                                     child: SizeItemWidget(
-                                                                                      sizeName: sizes![index],
+                                                                                      sizeName: widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes![index]).name ?? "",
                                                                                       width: 40,
                                                                                       height: 40,
                                                                                       index: index,
@@ -570,11 +592,19 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                     currentSelectedSizeIndex
                                                                             .value =
                                                                         index;
-                                                                    BlocProvider.of<HomeBloc>(
-                                                                            context)
-                                                                        .add(AddCurrentColorSizeEvent(
-                                                                            choice_1:
-                                                                                sizes?[index]));
+                                                                    BlocProvider.of<HomeBloc>(context).add(AddCurrentColorSizeEvent(
+                                                                        choice_1: widget
+                                                                            .productItem
+                                                                            .choiceOptions?[
+                                                                                0]
+                                                                            .options
+                                                                            ?.firstWhere((element) =>
+                                                                                element.option ==
+                                                                                sizes?[
+                                                                                    index])
+                                                                            .name,
+                                                                        choiceOption:
+                                                                            sizes?[index]));
                                                                     HapticFeedback
                                                                         .lightImpact();
                                                                     //////////////////////////////
@@ -630,7 +660,8 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                       alignment: Alignment.topCenter,
                                                                       child: SizeItemWidget(
                                                                         sizeName:
-                                                                            sizes![index],
+                                                                            widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes![index]).name ??
+                                                                                "",
                                                                         width: mode ==
                                                                                 1
                                                                             ? 70
@@ -701,7 +732,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                       width: 5,
                                                     ),
                                                     MyTextWidget(
-                                                      '${sizes?[currentSelectedSizeIndex.value]}',
+                                                      '${widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes?[currentSelectedSizeIndex.value]).name}',
                                                       style: textTheme
                                                           .titleMedium?.bq
                                                           .copyWith(

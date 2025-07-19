@@ -63,6 +63,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.colorName,
       required this.colorNum,
       required this.size,
+      required this.colorOption,
       required this.productSlug,
       required this.countOfPieces,
       required this.colorIsNotAvailableNotifier,
@@ -70,6 +71,9 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.qtyForproductWithoutVariant,
       required this.collectedAfterOrder,
       required this.products,
+      required this.isRedeem,
+      required this.redeemVariantPrice,
+      required this.choiceOption,
       required this.isGetFullProductDetails,
       required this.sizeIsNotAvailableNotifier,
       required this.productNotAvailableNotifier,
@@ -83,6 +87,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final PanelController panelController;
   final String imageUrl;
   final int countOfPieces;
+
   final bool collectedAfterOrder;
   final bool isGetFullProductDetails;
   final product.Products products;
@@ -90,8 +95,12 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final String productIdForCashproducts;
   final String productIdForRequestApi;
   final String productSlug;
+  final String colorOption;
   final String colorName;
+  final String choiceOption;
+  final bool isRedeem;
   final String colorNum;
+  final double redeemVariantPrice;
   final String size;
   final ValueNotifier<int> currentActiveTab;
 
@@ -239,6 +248,8 @@ class _ProductDetailsSheetBottomBarState
                                                       colorNum: widget.colorNum,
                                                       quantity: 1,
                                                       images: widget.imageUrl,
+                                                      colorOption:
+                                                          widget.colorOption,
                                                       colorName:
                                                           widget.colorName,
                                                     );
@@ -339,7 +350,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                     return;
                                                                                   }
                                                                                   if (details.localPosition.dx <= 92.w) {
-                                                                                    homeBloc.add(UpdateItemInCartEvent(newQuantity: -1, maxAllowed: 0, currentSize: state.addVariationToCartId?[cartIds.last]?["size"] ?? "", colorName: state.addVariationToCartId?[cartIds.last]?["color"] ?? "", productId: widget.productIdForRequestApi, totalQuantity: (state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.length ?? 0) - 1, image: state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.last ?? "", cartId: cartIds.last, boutiqueId: ""));
+                                                                                    homeBloc.add(UpdateItemInCartEvent(newQuantity: -1, maxAllowed: 0, currentSize: state.addVariationToCartId?[cartIds.last]?["size"] ?? "", colorOption: state.addVariationToCartId?[cartIds.last]?["color"] ?? "", productId: widget.productIdForRequestApi, totalQuantity: (state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.length ?? 0) - 1, image: state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.last ?? "", cartId: cartIds.last, boutiqueId: ""));
                                                                                     return;
                                                                                   }
                                                                                   animationController.forward();
@@ -348,6 +359,8 @@ class _ProductDetailsSheetBottomBarState
                                                                                   homeBloc.add(UpdateListOfItemForAddToCartEvent(productId: widget.productIdForRequestApi, imageForAddToCart: imageForAddToCart, operation: "+"));
                                                                                   homeBloc.add(
                                                                                     AddMultiItemsToCartEvent(
+                                                                                      isRedeem: widget.isRedeem,
+                                                                                      redeemVariantPrice: widget.redeemVariantPrice,
                                                                                       maxAllowed: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ?? "0",
                                                                                       boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
                                                                                           ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
@@ -418,6 +431,8 @@ class _ProductDetailsSheetBottomBarState
                                                                                   homeBloc.add(UpdateListOfItemForAddToCartEvent(productId: widget.productIdForRequestApi, imageForAddToCart: imageForAddToCart, operation: "+"));
                                                                                   homeBloc.add(
                                                                                     AddMultiItemsToCartEvent(
+                                                                                      isRedeem: widget.isRedeem,
+                                                                                      redeemVariantPrice: widget.redeemVariantPrice,
                                                                                       maxAllowed: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ?? "0",
                                                                                       boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
                                                                                           ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
@@ -469,7 +484,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                               duration: const Duration(milliseconds: 300),
                                                                                               curve: Curves.fastLinearToSlowEaseIn,
                                                                                               decoration: BoxDecoration(
-                                                                                                  border: Border.all(color: Colors.blue),
+                                                                                                  border: Border.all(color: widget.isRedeem ? Colors.deepOrangeAccent : Colors.blue),
                                                                                                   borderRadius: BorderRadius.circular(20),
                                                                                                   color: state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading
                                                                                                       ? const Color(0xffF8F8F8)
@@ -606,7 +621,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                 child: Container(
                                                                                                   width: 55,
                                                                                                   height: 55,
-                                                                                                  decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(20), color: colorScheme.white),
+                                                                                                  decoration: BoxDecoration(border: Border.all(color: widget.isRedeem ? Colors.deepOrangeAccent : Colors.blue), borderRadius: BorderRadius.circular(20), color: colorScheme.white),
                                                                                                 ),
                                                                                               ),
                                                                                               Positioned(
@@ -628,7 +643,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                               child: Container(
                                                                                                 width: 55,
                                                                                                 height: 55,
-                                                                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.blue), color: colorScheme.white),
+                                                                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: widget.isRedeem ? Colors.deepOrangeAccent : Colors.blue), color: colorScheme.white),
                                                                                               ),
                                                                                             ),
                                                                                             SvgPicture.asset(
@@ -876,9 +891,11 @@ class ImageForAddToCart {
   final String? colorName;
   final String? images;
   int? quantity;
-  final String? size;
+  final String? choiceName;
   final int? countOfPieces;
   final String? colorNum;
+  final String? choiceOption;
+  final String? colorOption;
   bool isDuplicate;
 
   ImageForAddToCart({
@@ -886,9 +903,11 @@ class ImageForAddToCart {
     this.colorNum,
     this.countOfPieces,
     this.images,
+    this.colorOption,
+    this.choiceOption,
     this.quantity,
     this.isDuplicate = false,
-    this.size,
+    this.choiceName,
   });
 
   ImageForAddToCart copyWith(
@@ -897,22 +916,28 @@ class ImageForAddToCart {
           int? quantity,
           final String? size,
           final int? countOfPieces,
+          final String? choiceOption,
+          final String? colorOption,
           final String? colorNum,
           bool? isDuplicate}) =>
       ImageForAddToCart(
-          colorName: colorName ?? this.colorNum,
+          colorName: colorName ?? this.colorName,
           images: images ?? this.images,
+          choiceOption: choiceOption ?? this.choiceOption,
+          colorOption: colorOption ?? this.colorOption,
           quantity: quantity ?? this.quantity,
           countOfPieces: countOfPieces ?? this.countOfPieces,
-          size: size ?? this.size,
-          colorNum: colorName ?? this.colorName);
+          choiceName: size ?? this.choiceName,
+          colorNum: colorNum ?? this.colorNum);
 
   factory ImageForAddToCart.fromJson(Map<String, dynamic> json) =>
       ImageForAddToCart(
         colorName: json["colorName"],
         images: json["images"],
-        size: json["size"],
+        choiceName: json["size"],
+        colorOption: json["colorOption"],
         quantity: json["quantity"],
+        choiceOption: json["choiceOption"],
         countOfPieces: json["count_of_pieces"],
         colorNum: json["colorNum"]?.toDouble(),
       );
@@ -920,7 +945,9 @@ class ImageForAddToCart {
   Map<String, dynamic> toJson() => {
         "colorName": colorName,
         "images": images,
-        "size": size,
+        "size": choiceName,
+        "colorOption": colorOption,
+        "choiceOption": choiceOption,
         "quantity": quantity,
         "count_of_pieces": countOfPieces,
         "colorNum": colorNum,

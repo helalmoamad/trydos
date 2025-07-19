@@ -24,6 +24,7 @@ abstract class StoriesEndPoints {
   static final addStoryToOurServerEP = 'add_story'.storiesScope();
   static String increaseViewersEP(String storyId) =>
       'increase_viewers'.storiesScope() + '/$storyId';
+  static final deleteStoryEP = 'delete_story'.storiesScope();
 }
 
 abstract class StoriesUrls {

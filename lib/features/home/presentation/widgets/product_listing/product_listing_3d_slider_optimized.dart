@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
+import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -25,12 +30,14 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
     // required this.setThisEnabled,
     // required this.slidingModeItem,
     required this.itemIndex,
-    this.fromHomePage = false,
     this.imageSource,
     required this.tapIndexToAddProductToCart,
+    required this.visibleRedeem,
     required this.productItem,
     this.productIsFlashDeal,
     this.fromFlashDeal,
+    this.fromHomePage = false,
+    required this.finishRedeem,
     // جديد: افتراضي false
     //required this.displayImageColors,
     //  required this.currentChosenColor,
@@ -39,8 +46,10 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
   // final Tuple2<int, int> slidingModeItem;
   // final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
+  final ValueNotifier<bool> finishRedeem;
   final int itemIndex;
   //final bool displayImageColors;
+  final ValueNotifier<bool> visibleRedeem;
   final bool fromHomePage;
   final String? imageSource;
   final bool? fromFlashDeal;
@@ -74,13 +83,13 @@ class _ProductListing3DSliderOptimizedState
   /// 🎯 بطاقة منتج بسيطة - أداء ممتاز
   Widget _buildSimpleProductCard() {
     return Container(
-      height: widget.fromHomePage ? 350 : 400,
+      height: 350,
       width: 200,
       child: Column(
         children: [
           // 🖼️ صورة المنتج
           Container(
-            height: widget.fromHomePage ? 250 : 300,
+            height: 230,
             width: 200,
             child: _buildSingleImage(),
           ),
@@ -121,7 +130,7 @@ class _ProductListing3DSliderOptimizedState
   Widget _buildSingleImage() {
     // الحصول على أول صورة متاحة
     String? imageUrl;
-    double imageHeight = 250;
+    double imageHeight = 200;
     double imageWidth = 200;
 
     // محاولة الحصول على الصورة من syncColorImages أولاً
@@ -148,14 +157,14 @@ class _ProductListing3DSliderOptimizedState
 
     return Container(
       width: 200,
-      height: widget.fromHomePage ? 250 : 300,
+      height: 200,
       child: (imageUrl != null
           ? ProductListingImageWidget(
               orginalHeight: imageHeight,
               orginalWidth: imageWidth,
               width: 200,
               imageUrl: imageUrl,
-              height: widget.fromHomePage ? 250 : 300,
+              height: 200,
               circleShape: false,
               innerShadowYOffset: 3,
             )
@@ -190,11 +199,66 @@ class _ProductListing3DSliderOptimizedState
             ),
           ),
         ),
+        _buildRedeemSection(),
         const SizedBox(height: 5),
         // Price Section
         _buildPriceSection(),
       ],
     );
+  }
+
+  Widget _buildRedeemSection() {
+    return ValueListenableBuilder<bool>(
+        valueListenable: widget.visibleRedeem,
+        builder: (context, _visibleRedeem, _) {
+          return GetIt.I<PrefsRepository>()
+                          .getRedeemDateForProduct(
+                              widget.productItem.productId.toString())
+                          ?.isAfter(DateTime.now().add(Duration(seconds: 1))) ==
+                      true &&
+                  widget.productItem.hasRedeemDiscount == true
+              ? Container(
+                  margin: EdgeInsets.only(left: 1, right: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.deepOrangeAccent),
+                    color: Color(0xffFDFDEF),
+                  ),
+                  height: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: 3,
+                      ),
+                      SvgPicture.asset(AppAssets.alarmClockSvg),
+                      Text(LocaleKeys.luck.tr(),
+                          style: context.textTheme.bodyMedium?.ba.copyWith(
+                            fontSize: 11,
+                            color: const Color.fromARGB(255, 250, 71, 16),
+                          )),
+                      Text(" ${LocaleKeys.add_to_bag_within.tr()} ",
+                          style: context.textTheme.bodyMedium?.ra.copyWith(
+                            fontSize: 10,
+                            color: const Color.fromARGB(255, 250, 71, 16),
+                          )),
+                      SecondsCountdown(
+                        finishRedeem: widget.finishRedeem,
+                        visibleRedeem: widget.visibleRedeem,
+                        endTime: GetIt.I<PrefsRepository>()
+                                .getRedeemDateForProduct(
+                                    widget.productItem.productId.toString()) ??
+                            DateTime.now(),
+                      ),
+                      Text(" ${LocaleKeys.seconds.tr()} ",
+                          style: context.textTheme.bodyMedium?.ra.copyWith(
+                            fontSize: 10,
+                            color: const Color.fromARGB(255, 230, 67, 18),
+                          )),
+                    ].reversed.toList(),
+                  ),
+                )
+              : SizedBox.shrink();
+        });
   }
 
   /// 🏷️ Brand Icon
@@ -280,39 +344,105 @@ class _ProductListing3DSliderOptimizedState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Price Row
-                  Flexible(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        MyTextWidget(
-                          HelperFunctions.formatNumber(
-                              number: price * exchangeRate),
-                          style:
-                              Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: const Color(0xff3c3c3c),
-                                    decoration: TextDecoration.lineThrough,
-                                    height: 1.0,
+                  ValueListenableBuilder<bool>(
+                      valueListenable: widget.visibleRedeem,
+                      builder: (context, _visibleRedeem, _) {
+                        bool isRedeem = GetIt.I<PrefsRepository>()
+                                    .getRedeemDateForProduct(
+                                        widget.productItem.productId.toString())
+                                    ?.isAfter(DateTime.now()
+                                        .add(Duration(seconds: 1))) ==
+                                true &&
+                            widget.productItem.hasRedeemDiscount == true;
+                        double redeemPrice =
+                            widget.productItem.redeemPrice ?? 0;
+                        return Flexible(
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            MyTextWidget(
+                              HelperFunctions.formatNumber(
+                                  number: (price * exchangeRate))
+                              /* .toStringAsFixed(state.startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
+                                            .toString()*/
+                              ,
+                              style: textTheme.titleMedium?.lq.copyWith(
+                                fontSize: 11.sp,
+                                color: Color(0xff3c3c3c),
+                                decoration: TextDecoration.lineThrough,
+                                height: 0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            MyTextWidget(
+                              HelperFunctions.formatNumber(
+                                  number: (offerPrice * exchangeRate))
+                              /*.toStringAsFixed(state.startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
+                                            .toString()*/
+                              ,
+                              style: textTheme.titleMedium?.bq.copyWith(
+                                fontSize: 11.sp,
+                                decoration: isRedeem
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color: Color(0xff3c3c3c),
+                                height: 0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            isRedeem
+                                ? SizedBox.shrink()
+                                : MyTextWidget(
+                                    state.getCurrencyForCountryModel == null
+                                        ? ""
+                                        : state.getCurrencyForCountryModel!
+                                                .data!.currency!.symbol ??
+                                            "",
+                                    style: TextStyle(
+                                      fontSize: 11.sp,
+                                    ),
                                   ),
-                        ),
-                        const SizedBox(width: 2),
-                        MyTextWidget(
-                          HelperFunctions.formatNumber(
-                              number: offerPrice * exchangeRate),
-                          style:
-                              Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: const Color(0xff3c3c3c),
-                                    fontWeight: FontWeight.bold,
-                                    height: 1.0,
-                                  ),
-                        ),
-                        const SizedBox(width: 2),
-                        MyTextWidget(
-                          currencySymbol,
-                          style: const TextStyle(fontSize: 8),
-                        ),
-                      ],
-                    ),
-                  ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            isRedeem
+                                ? MyTextWidget(
+                                    HelperFunctions.formatNumber(
+                                        number: redeemPrice * exchangeRate),
+                                    //      .toStringAsFixed(widget.decimalPoint),
+                                    style:
+                                        textTheme.headlineMedium?.bq.copyWith(
+                                      fontSize: 11.sp,
+                                      color: Colors.deepOrangeAccent,
+                                      height: 0,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            isRedeem
+                                ? MyTextWidget(
+                                    state.getCurrencyForCountryModel == null
+                                        ? ""
+                                        : state.getCurrencyForCountryModel!
+                                                .data!.currency!.symbol ??
+                                            "",
+                                    style: TextStyle(
+                                      fontSize: 11.sp,
+                                      color: Colors.deepOrangeAccent,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                          ]),
+                        );
+                      }),
                   // Buy Button
                   _buildCompactBuyButton(),
                 ],
@@ -328,6 +458,11 @@ class _ProductListing3DSliderOptimizedState
   Widget _buildCompactBuyButton() {
     return InkWell(
       onTap: () {
+        Future.delayed(
+            Duration(milliseconds: 50),
+            () => _homeBloc.add(AddCurrentSelectedColorEvent(
+                currentSelectedColor: 0,
+                productSlug: widget.productItem.slug.toString())));
         _homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
           isStatusInitaial: true,
         ));
@@ -338,32 +473,48 @@ class _ProductListing3DSliderOptimizedState
           () => widget.tapIndexToAddProductToCart.value = widget.itemIndex,
         );
       },
-      child: Container(
-        height: 25, // الارتفاع الأصلي
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: const Color(0x1D1D1D),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            MyTextWidget(
-              LocaleKeys.buy.tr(),
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: const Color(0xff414141),
-                    height: 1.2,
+      child: ValueListenableBuilder<bool>(
+          valueListenable: widget.visibleRedeem,
+          builder: (context, _visibleRedeem, _) {
+            bool isRedeem = GetIt.I<PrefsRepository>()
+                        .getRedeemDateForProduct(
+                            widget.productItem.productId.toString())
+                        ?.isAfter(DateTime.now().add(Duration(seconds: 1))) ==
+                    true &&
+                widget.productItem.hasRedeemDiscount == true;
+
+            return Container(
+              height: 25, // الارتفاع الأصلي
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0x1D1D1D),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  MyTextWidget(
+                    LocaleKeys.buy.tr(),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: isRedeem
+                              ? Colors.deepOrangeAccent
+                              : const Color(0xff414141),
+                          height: 1.2,
+                        ),
                   ),
-            ),
-            const SizedBox(width: 3),
-            SvgPicture.asset(
-              AppAssets.bagSvg,
-              height: 12,
-              width: 12,
-            ),
-          ],
-        ),
-      ),
+                  const SizedBox(width: 3),
+                  SvgPicture.asset(
+                    AppAssets.bagSvg,
+                    height: 12,
+                    width: 12,
+                    color: isRedeem
+                        ? Colors.deepOrangeAccent
+                        : const Color(0xff414141),
+                  ),
+                ],
+              ),
+            );
+          }),
     );
   }
 }

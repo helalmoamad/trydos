@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -15,6 +16,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 
@@ -38,6 +40,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_display_
 import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 
 import 'package:trydos/routes/router.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -105,6 +108,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final PanelController panelControllerForCart = PanelController();
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<bool> visibleSizeAndColorCard = ValueNotifier(false);
+  final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
   bool isChangedvariationWhenQtyZeroForFirst = false;
   final ValueNotifier<String?> productNotAvailableNotifier =
       ValueNotifier(null);
@@ -117,9 +121,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int currentSelectedColorAfterChangeVariant = -1;
   @override
   void initState() {
-    print(
-        "FFFFFFFFFF8888888888888888888888888888FFFFFFF${widget.productItem?.syncColorImages}");
-
     changeVariationIfQtyZero = true;
     if (widget.productItem != null) {
       productItem = widget.productItem!;
@@ -567,7 +568,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ?.forEach(
                                 (element) {
                                   if (!syncColorNames
-                                      .contains(element.colorName)) {
+                                      .contains(element.colorOption)) {
                                     syncColorImagesFromListing.add(element);
                                   }
                                 },
@@ -664,13 +665,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         productItem?.productId.toString()]!
                                     .product
                                     ?.choiceOptions,
-                                colors: colorsFromListing,
+                                colors: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.colors,
                                 images: state
                                     .cachedProductWithoutRelatedProductsModel[
                                         productItem?.productId.toString()]!
                                     .product
                                     ?.images,
-                                syncColorImages: syncColorImagesFromListing,
+                                syncColorImages: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.syncColorImages,
                               );
                               getAllDataForProductForFirst = false;
                             }
@@ -790,7 +799,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       .isNullOrEmpty
                                   : true
                               : true)) {
-                        homeBloc.add(AddCurrentColorSizeEvent(choice_1: null));
+                        homeBloc.add(AddCurrentColorSizeEvent(
+                            choice_1: null, choiceOption: null));
                       }
 
                       int currentSelectedColor =
@@ -809,7 +819,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   !productItem!.colors.isNullOrEmpty
                                       ? productItem!
                                               .colors![currentSelectedColor]
-                                              .name ??
+                                              .option ??
                                           ""
                                       : "",
                               variation: state.cachedProductWithoutRelatedProductsModel[
@@ -832,196 +842,469 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         },
                       );
 
-                      return ScrollConfiguration(
-                        behavior: const CupertinoScrollBehavior(),
-                        child: ListView(
-                          shrinkWrap: true,
-                          controller: scrollController,
-                          physics: enable
-                              ? const ClampingScrollPhysics()
-                              : const NeverScrollableScrollPhysics(),
-                          children: [
-                            Stack(
-                              alignment: LanguageService.rtl
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              children: [
-                                SizedBox(
-                                  height: 464,
-                                  child: ScrollConfiguration(
-                                    behavior: const CupertinoScrollBehavior(),
-                                    child: ListView.separated(
-                                      itemCount: productItem!
-                                              .syncColorImages.isNullOrEmpty
-                                          ? productItem!.images!.length
-                                          : !productItem!
-                                                  .syncColorImages![
-                                                      currentSelectedColor]
-                                                  .images
-                                                  .isNullOrEmpty
-                                              ? productItem!
-                                                  .syncColorImages![
-                                                      currentSelectedColor]
-                                                  .images!
-                                                  .length
-                                              : 0,
-                                      primary: false,
-                                      shrinkWrap: true,
-                                      physics: const ClampingScrollPhysics(),
-                                      scrollDirection: Axis.horizontal,
-                                      padding: EdgeInsets.only(
-                                          left: 10,
-                                          right: 10,
-                                          top: 10,
-                                          bottom: 15),
-                                      itemBuilder: (context, index) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            // pushOverscrollRoute(
-                                            //     context: context,
-                                            //     transitionDuration:
-                                            //         Duration(milliseconds: 250),
-                                            //     reverseTransitionDuration:
-                                            //         Duration(milliseconds: 400),
-                                            //     child:
-                                            //         ProductDetailsDisplayPicturesPage(
-                                            //             pictureIndex: index),
-                                            //     workNormally: true,
-                                            //     withRoundedCorners: true,
-                                            //     isArabicLanguage:
-                                            //         LanguageService.rtl,
-                                            //     dragToPopDirection:
-                                            //         DragToPopDirection.toBottom,
-                                            //     scrollToPopOption:
-                                            //         ScrollToPopOption.start,
-                                            //     fullscreenDialog: true);
-                                            HelperFunctions.slidingNavigation(
-                                              context,
-                                              ProductDetailsDisplayPicturesPage(
-                                                currentIndex: index,
-                                                images: productItem!
-                                                        .syncColorImages
-                                                        .isNullOrEmpty
-                                                    ? productItem!.images ?? []
-                                                    : productItem!
-                                                            .syncColorImages![
-                                                                currentSelectedColor]
-                                                            .images ??
-                                                        [],
-                                              ),
-                                            );
-                                            //////////////////////////////
-                                            // FirebaseAnalyticsService
-                                            //     .logEventForSession(
-                                            //   eventName: AnalyticsEventsConst
-                                            //       .buttonClicked,
-                                            //   executedEventName:
-                                            //       AnalyticsButtonsEventNameConst
-                                            //           .showProductPhotosButton,
-                                            // );
-                                          },
-                                          child: ProductDetailsImageWidget(
-                                            height: 464,
-                                            width: 320,
-                                            orginalHeight: productItem!
-                                                    .syncColorImages
-                                                    .isNullOrEmpty
-                                                ? double.parse(productItem!
-                                                    .images![index]
-                                                    .originalHeight!)
-                                                : double.parse(productItem!
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          isChangedvariationWhenQtyZeroForFirst = false;
+                          getAllDataForProductForFirst = true;
+
+                          // إعادة تحميل بيانات المنتج
+                          if (widget.productItem != null) {
+                            homeBloc.add(
+                                GetProductDatailsWithoutRelatedProductsEvent(
+                                    productSlug: productItem?.slug,
+                                    productId:
+                                        productItem?.productId.toString()));
+                          } else {
+                            homeBloc.add(GetFullProductDetailsEvent(
+                                productSlug:
+                                    widget.productSlugForOpeningChatDirectly ??
+                                        ""));
+                          }
+                        },
+                        color: Theme.of(context).primaryColor,
+                        backgroundColor: Colors.white,
+                        strokeWidth: 3.0,
+                        child: ScrollConfiguration(
+                          behavior: const CupertinoScrollBehavior(),
+                          child: ListView(
+                            shrinkWrap: true,
+                            controller: scrollController,
+                            physics: enable
+                                ? const AlwaysScrollableScrollPhysics()
+                                : const NeverScrollableScrollPhysics(),
+                            children: [
+                              Stack(
+                                alignment: LanguageService.rtl
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                children: [
+                                  SizedBox(
+                                    height: 464,
+                                    child: ScrollConfiguration(
+                                      behavior: const CupertinoScrollBehavior(),
+                                      child: ListView.separated(
+                                        itemCount: productItem!
+                                                .syncColorImages.isNullOrEmpty
+                                            ? productItem!.images!.length
+                                            : !productItem!
                                                     .syncColorImages![
                                                         currentSelectedColor]
-                                                    .images![index]
-                                                    .originalHeight!),
-                                            orginalWidth: productItem!
-                                                    .syncColorImages
-                                                    .isNullOrEmpty
-                                                ? double.parse(productItem!
-                                                    .images![index]
-                                                    .originalWidth!)
-                                                : double.parse(productItem!
-                                                    .syncColorImages![
-                                                        currentSelectedColor]
-                                                    .images![index]
-                                                    .originalWidth!),
-                                            imageUrl: productItem!
-                                                    .syncColorImages
+                                                    .images
                                                     .isNullOrEmpty
                                                 ? productItem!
-                                                    .images![index].filePath!
-                                                : productItem!
                                                     .syncColorImages![
                                                         currentSelectedColor]
-                                                    .images![index]
-                                                    .filePath,
-                                          ),
-                                        );
-                                      },
-                                      separatorBuilder: (context, index) {
-                                        return const SizedBox(
-                                          width: 9,
-                                        );
-                                      },
+                                                    .images!
+                                                    .length
+                                                : 0,
+                                        primary: false,
+                                        shrinkWrap: true,
+                                        physics: const ClampingScrollPhysics(),
+                                        scrollDirection: Axis.horizontal,
+                                        padding: EdgeInsets.only(
+                                            left: 10,
+                                            right: 10,
+                                            top: 10,
+                                            bottom: 15),
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              // pushOverscrollRoute(
+                                              //     context: context,
+                                              //     transitionDuration:
+                                              //         Duration(milliseconds: 250),
+                                              //     reverseTransitionDuration:
+                                              //         Duration(milliseconds: 400),
+                                              //     child:
+                                              //         ProductDetailsDisplayPicturesPage(
+                                              //             pictureIndex: index),
+                                              //     workNormally: true,
+                                              //     withRoundedCorners: true,
+                                              //     isArabicLanguage:
+                                              //         LanguageService.rtl,
+                                              //     dragToPopDirection:
+                                              //         DragToPopDirection.toBottom,
+                                              //     scrollToPopOption:
+                                              //         ScrollToPopOption.start,
+                                              //     fullscreenDialog: true);
+                                              HelperFunctions.slidingNavigation(
+                                                context,
+                                                ProductDetailsDisplayPicturesPage(
+                                                  currentIndex: index,
+                                                  images: productItem!
+                                                          .syncColorImages
+                                                          .isNullOrEmpty
+                                                      ? productItem!.images ??
+                                                          []
+                                                      : productItem!
+                                                              .syncColorImages![
+                                                                  currentSelectedColor]
+                                                              .images ??
+                                                          [],
+                                                ),
+                                              );
+                                              //////////////////////////////
+                                              // FirebaseAnalyticsService
+                                              //     .logEventForSession(
+                                              //   eventName: AnalyticsEventsConst
+                                              //       .buttonClicked,
+                                              //   executedEventName:
+                                              //       AnalyticsButtonsEventNameConst
+                                              //           .showProductPhotosButton,
+                                              // );
+                                            },
+                                            child: ProductDetailsImageWidget(
+                                              flashDealTime: index != 0
+                                                  ? ""
+                                                  : productItem!
+                                                          .flashDealEndDate ??
+                                                      "",
+                                              lableNames: index != 0
+                                                  ? []
+                                                  : productItem!.labelNames ??
+                                                      [],
+                                              height: 464,
+                                              width: 320,
+                                              orginalHeight: productItem!
+                                                      .syncColorImages
+                                                      .isNullOrEmpty
+                                                  ? double.parse(productItem!
+                                                      .images![index]
+                                                      .originalHeight!)
+                                                  : double.parse(productItem!
+                                                      .syncColorImages![
+                                                          currentSelectedColor]
+                                                      .images![index]
+                                                      .originalHeight!),
+                                              orginalWidth: productItem!
+                                                      .syncColorImages
+                                                      .isNullOrEmpty
+                                                  ? double.parse(productItem!
+                                                      .images![index]
+                                                      .originalWidth!)
+                                                  : double.parse(productItem!
+                                                      .syncColorImages![
+                                                          currentSelectedColor]
+                                                      .images![index]
+                                                      .originalWidth!),
+                                              imageUrl: productItem!
+                                                      .syncColorImages
+                                                      .isNullOrEmpty
+                                                  ? productItem!
+                                                      .images![index].filePath!
+                                                  : productItem!
+                                                      .syncColorImages![
+                                                          currentSelectedColor]
+                                                      .images![index]
+                                                      .filePath,
+                                            ),
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) {
+                                          return const SizedBox(
+                                            width: 9,
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  width: 40,
-                                  height: 464,
-                                  color: Colors.transparent,
-                                )
-                              ],
-                            ),
-                            ProductDetailsTitle(
-                              flashDealTime:
-                                  productItem!.flashDealEndDate ?? "",
-                              lableNames: productItem!.labelNames ?? [],
-                              productId: productItem!.productId.toString(),
-                              orginalHeight: double.parse(
-                                  productItem!.thumbnail!.originalHeight!),
-                              orginalWidth: double.parse(
-                                  productItem!.thumbnail!.originalWidth!),
-                              brand: productItem!.brand,
-                              productName: productItem!.name ?? "",
-                              thumbnail: (!productItem!
-                                          .syncColorImages.isNullOrEmpty &&
-                                      !productItem!.syncColorImages![0].images
-                                          .isNullOrEmpty)
-                                  ? (productItem!
-                                          .syncColorImages![
-                                              currentSelectedColor]
-                                          .images![0]
-                                          .filePath ??
-                                      widget.productItem?.thumbnail?.filePath ??
-                                      "")
-                                  : widget.productItem?.thumbnail?.filePath ??
-                                      "",
-                              colorName:
-                                  !productItem!.syncColorImages.isNullOrEmpty &&
-                                          !productItem!.syncColorImages![0]
-                                              .images.isNullOrEmpty
-                                      ? productItem!
-                                              .syncColorImages![
-                                                  currentSelectedColor]
-                                              .colorName ??
-                                          " "
-                                      : " ",
-                            ),
+                                  Container(
+                                    width: 40,
+                                    height: 464,
+                                    color: Colors.transparent,
+                                  )
+                                ],
+                              ),
+                              ProductDetailsTitle(
+                                productId: productItem!.productId.toString(),
+                                orginalHeight: double.parse(
+                                    productItem!.thumbnail!.originalHeight!),
+                                orginalWidth: double.parse(
+                                    productItem!.thumbnail!.originalWidth!),
+                                brand: productItem!.brand,
+                                productName: productItem!.name ?? "",
+                                thumbnail: (!productItem!
+                                            .syncColorImages.isNullOrEmpty &&
+                                        !productItem!.syncColorImages![0].images
+                                            .isNullOrEmpty)
+                                    ? (productItem!
+                                            .syncColorImages![
+                                                currentSelectedColor]
+                                            .images![0]
+                                            .filePath ??
+                                        widget
+                                            .productItem?.thumbnail?.filePath ??
+                                        "")
+                                    : widget.productItem?.thumbnail?.filePath ??
+                                        "",
+                                colorName: !productItem!
+                                            .syncColorImages.isNullOrEmpty &&
+                                        !productItem!.syncColorImages![0].images
+                                            .isNullOrEmpty
+                                    ? productItem!
+                                            .syncColorImages![
+                                                currentSelectedColor]
+                                            .colorName ??
+                                        " "
+                                    : " ",
+                              ),
 
-                            if (!state.cachedProductWithoutRelatedProductsModel
-                                .containsKey(
-                                    productItem!.productId.toString())) ...{
-                              SizedBox.shrink()
-                            } else ...{
-                              ProductDetailsDescriptionWidget(
-                                description: productItem!.details ?? " ",
-                              ),
+                              if (!state
+                                  .cachedProductWithoutRelatedProductsModel
+                                  .containsKey(
+                                      productItem!.productId.toString())) ...{
+                                SizedBox.shrink()
+                              } else ...{
+                                ProductDetailsDescriptionWidget(
+                                  description: productItem!.details ?? " ",
+                                ),
+                                SizedBox(
+                                  height: 12,
+                                ),
+                                BadgesList(
+                                  lable: state.cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .labels ??
+                                              []
+                                          : []
+                                      : [],
+                                ),
+                              },
                               SizedBox(
-                                height: 12,
+                                height: 15,
                               ),
-                              BadgesList(
-                                lable: state.cachedProductWithoutRelatedProductsModel[
+                              if (!state
+                                      .cachedProductWithoutRelatedProductsModel
+                                      .containsKey(
+                                          productItem!.productId.toString()) ||
+                                  (state.cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.productId
+                                                      .toString()]!
+                                              .product!
+                                              .descriptors
+                                              .isNullOrEmpty
+                                          : true
+                                      : true)) ...{
+                                SizedBox.shrink()
+                              } else ...{
+                                SizedBox(
+                                    height: 52,
+                                    child: ScrollConfiguration(
+                                      behavior: const CupertinoScrollBehavior(),
+                                      child: ListView.separated(
+                                        itemCount: state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.productId
+                                                    .toString()]!
+                                            .product!
+                                            .descriptors!
+                                            .length,
+                                        physics: const ClampingScrollPhysics(),
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.horizontal,
+                                        padding: EdgeInsets.only(
+                                            left: 20, right: 20),
+                                        itemBuilder: (context, index) {
+                                          return ProductDetailsChipWidget(
+                                            withIcon: state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem!.productId
+                                                            .toString()]!
+                                                    .product!
+                                                    .descriptors![index]
+                                                    .descriptorGroup!
+                                                    .icon !=
+                                                null,
+                                            descriptor: state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.productId
+                                                        .toString()]!
+                                                .product!
+                                                .descriptors![index],
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) {
+                                          return SizedBox(
+                                            width: 8,
+                                          );
+                                        },
+                                      ),
+                                    )),
+                              },
+                              SizedBox(
+                                height: 15,
+                              ),
+                              if (!productItem!
+                                  .syncColorImages.isNullOrEmpty) ...{
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: visibleSizeAndColorCard,
+                                  builder:
+                                      (context, _visibleSizeAndColorCard, _) {
+                                    return !_visibleSizeAndColorCard
+                                        ? SizedBox.shrink()
+                                        : DisplayColorsCard(
+                                            productItem: productItem!.copyWith(
+                                                syncColorImages: state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem?.productId
+                                                            .toString()]!
+                                                    .product
+                                                    ?.syncColorImages,
+                                                choiceOptions: state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem?.productId
+                                                            .toString()]!
+                                                    .product
+                                                    ?.choiceOptions,
+                                                colors: state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem?.productId
+                                                            .toString()]!
+                                                    .product
+                                                    ?.colors,
+                                                productId: state.cachedProductWithoutRelatedProductsModel[
+                                                            productItem
+                                                                ?.productId
+                                                                .toString()] !=
+                                                        null
+                                                    ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product !=
+                                                            null
+                                                        ? state
+                                                            .cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!
+                                                            .product!
+                                                            .id
+                                                        : null
+                                                    : null),
+                                            scrollController: scrollController,
+                                            currentColorForProduct:
+                                                currentSelectedColor,
+                                          );
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                              },
+                              if (!state
+                                      .cachedProductWithoutRelatedProductsModel
+                                      .containsKey(
+                                          productItem!.productId.toString()) ||
+                                  (state.cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.productId
+                                                      .toString()]!
+                                              .product!
+                                              .choiceOptions
+                                              .isNullOrEmpty
+                                          : true
+                                      : true)) ...{
+                                SizedBox.shrink()
+                              } else ...{
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: visibleSizeAndColorCard,
+                                  builder:
+                                      (context, _visibleSizeAndColorCard, _) {
+                                    return !_visibleSizeAndColorCard
+                                        ? SizedBox.shrink()
+                                        : DisplaySizesCard(
+                                            productItem: productItem!.copyWith(
+                                                syncColorImages: state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem?.productId
+                                                            .toString()]!
+                                                    .product
+                                                    ?.syncColorImages,
+                                                choiceOptions: state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem?.productId
+                                                            .toString()]!
+                                                    .product
+                                                    ?.choiceOptions,
+                                                colors: state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem?.productId
+                                                            .toString()]!
+                                                    .product
+                                                    ?.colors,
+                                                productId: state.cachedProductWithoutRelatedProductsModel[
+                                                            productItem
+                                                                ?.productId
+                                                                .toString()] !=
+                                                        null
+                                                    ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product !=
+                                                            null
+                                                        ? state
+                                                            .cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!
+                                                            .product!
+                                                            .id
+                                                        : null
+                                                    : null),
+                                            currentColorForProduct:
+                                                currentSelectedColor,
+                                            scrollController: scrollController,
+                                            variation: state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.productId
+                                                        .toString()]!
+                                                .product!
+                                                .variation,
+                                          );
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                              },
+                              // ProductStoriesCard(),
+                              ProductStoriesCard(),
+                              ProductShippingAndDelivery(
+                                countryName: state.getAllowedCountriesModel
+                                        ?.data?.countries
+                                        ?.firstWhere((element) {
+                                      return element.iso!.toLowerCase().contains(
+                                          '${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso?.toLowerCase() : GetIt.I<PrefsRepository>().countryIso?.toLowerCase()}');
+                                    },
+                                            orElse: () => Country(
+                                                id: 0,
+                                                iso: "",
+                                                name: "")).name ??
+                                    "",
+                                shippingCost: (state
+                                                .cachedProductWithoutRelatedProductsModel[
                                             productItem!.productId
                                                 .toString()] !=
                                         null
@@ -1036,284 +1319,69 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                     productItem!.productId
                                                         .toString()]!
                                                 .product!
-                                                .labels ??
-                                            []
-                                        : []
-                                    : [],
-                              ),
-                            },
-                            SizedBox(
-                              height: 15,
-                            ),
-                            if (!state.cachedProductWithoutRelatedProductsModel
-                                    .containsKey(
-                                        productItem!.productId.toString()) ||
-                                (state.cachedProductWithoutRelatedProductsModel[
-                                            productItem!.productId
-                                                .toString()] !=
-                                        null
-                                    ? state
-                                                .cachedProductWithoutRelatedProductsModel[
+                                                .shippingCost ??
+                                            0
+                                        : 0
+                                    : 0),
+                                shippingDay: ((state.cachedProductWithoutRelatedProductsModel[
                                                     productItem!.productId
-                                                        .toString()]!
-                                                .product !=
-                                            null
-                                        ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem!.productId
-                                                    .toString()]!
-                                            .product!
-                                            .descriptors
-                                            .isNullOrEmpty
-                                        : true
-                                    : true)) ...{
-                              SizedBox.shrink()
-                            } else ...{
-                              SizedBox(
-                                  height: 52,
-                                  child: ScrollConfiguration(
-                                    behavior: const CupertinoScrollBehavior(),
-                                    child: ListView.separated(
-                                      itemCount: state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productItem!.productId
-                                                  .toString()]!
-                                          .product!
-                                          .descriptors!
-                                          .length,
-                                      physics: const ClampingScrollPhysics(),
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.horizontal,
-                                      padding:
-                                          EdgeInsets.only(left: 20, right: 20),
-                                      itemBuilder: (context, index) {
-                                        return ProductDetailsChipWidget(
-                                          withIcon: state
-                                                  .cachedProductWithoutRelatedProductsModel[
-                                                      productItem!.productId
-                                                          .toString()]!
-                                                  .product!
-                                                  .descriptors![index]
-                                                  .descriptorGroup!
-                                                  .icon !=
-                                              null,
-                                          descriptor: state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem!.productId
-                                                      .toString()]!
-                                              .product!
-                                              .descriptors![index],
-                                        );
-                                      },
-                                      separatorBuilder: (context, index) {
-                                        return SizedBox(
-                                          width: 8,
-                                        );
-                                      },
-                                    ),
-                                  )),
-                            },
-                            SizedBox(
-                              height: 15,
-                            ),
-                            if (!productItem!
-                                .syncColorImages.isNullOrEmpty) ...{
-                              ValueListenableBuilder<bool>(
-                                valueListenable: visibleSizeAndColorCard,
-                                builder:
-                                    (context, _visibleSizeAndColorCard, _) {
-                                  return !_visibleSizeAndColorCard
-                                      ? SizedBox.shrink()
-                                      : DisplayColorsCard(
-                                          productItem: productItem!.copyWith(
-                                              productId: state.cachedProductWithoutRelatedProductsModel[
-                                                          productItem?.productId
-                                                              .toString()] !=
-                                                      null
-                                                  ? state
-                                                              .cachedProductWithoutRelatedProductsModel[
-                                                                  productItem
-                                                                      ?.productId
-                                                                      .toString()]!
-                                                              .product !=
-                                                          null
-                                                      ? state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              productItem
-                                                                  ?.productId
-                                                                  .toString()]!
-                                                          .product!
-                                                          .id
-                                                      : null
-                                                  : null),
-                                          scrollController: scrollController,
-                                          currentColorForProduct:
-                                              currentSelectedColor,
-                                        );
-                                },
+                                                        .toString()] !=
+                                                null
+                                            ? state
+                                                        .cachedProductWithoutRelatedProductsModel[
+                                                            productItem!
+                                                                .productId
+                                                                .toString()]!
+                                                        .product !=
+                                                    null
+                                                ? state
+                                                        .cachedProductWithoutRelatedProductsModel[
+                                                            productItem!
+                                                                .productId
+                                                                .toString()]!
+                                                        .product!
+                                                        .shippingDays ??
+                                                    0
+                                                : 0
+                                            : 0) +
+                                        (state.startingSetting?.shippingDay ??
+                                            0))
+                                    .toString(),
                               ),
                               SizedBox(
                                 height: 15,
                               ),
-                            },
-                            if (!state.cachedProductWithoutRelatedProductsModel
-                                    .containsKey(
-                                        productItem!.productId.toString()) ||
-                                (state.cachedProductWithoutRelatedProductsModel[
-                                            productItem!.productId
-                                                .toString()] !=
-                                        null
-                                    ? state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    productItem!.productId
-                                                        .toString()]!
-                                                .product !=
+                              BuyersCameraShots(
+                                productItem: productItem!.copyWith(
+                                    productId: state.cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()] !=
                                             null
                                         ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem!.productId
-                                                    .toString()]!
-                                            .product!
-                                            .choiceOptions
-                                            .isNullOrEmpty
-                                        : true
-                                    : true)) ...{
-                              SizedBox.shrink()
-                            } else ...{
-                              ValueListenableBuilder<bool>(
-                                valueListenable: visibleSizeAndColorCard,
-                                builder:
-                                    (context, _visibleSizeAndColorCard, _) {
-                                  return !_visibleSizeAndColorCard
-                                      ? SizedBox.shrink()
-                                      : DisplaySizesCard(
-                                          productItem: productItem!.copyWith(
-                                              productId: state.cachedProductWithoutRelatedProductsModel[
-                                                          productItem?.productId
-                                                              .toString()] !=
-                                                      null
-                                                  ? state
-                                                              .cachedProductWithoutRelatedProductsModel[
-                                                                  productItem
-                                                                      ?.productId
-                                                                      .toString()]!
-                                                              .product !=
-                                                          null
-                                                      ? state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              productItem
-                                                                  ?.productId
-                                                                  .toString()]!
-                                                          .product!
-                                                          .id
-                                                      : null
-                                                  : null),
-                                          currentColorForProduct:
-                                              currentSelectedColor,
-                                          scrollController: scrollController,
-                                          variation: state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem!.productId
-                                                      .toString()]!
-                                              .product!
-                                              .variation,
-                                        );
-                                },
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem?.productId
+                                                            .toString()]!
+                                                    .product !=
+                                                null
+                                            ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem?.productId
+                                                        .toString()]!
+                                                .product!
+                                                .id
+                                            : null
+                                        : null),
+                                panelControllerForBuyersCameraShots:
+                                    panelControllerForBuyersCameraShots,
                               ),
                               SizedBox(
-                                height: 15,
+                                height: 10,
                               ),
-                            },
-                            // ProductStoriesCard(),
-                            ProductStoriesCard(),
-                            ProductShippingAndDelivery(
-                              countryName: state
-                                      .getAllowedCountriesModel?.data?.countries
-                                      ?.firstWhere((element) {
-                                    return element.iso!.toLowerCase().contains(
-                                        '${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso?.toLowerCase() : GetIt.I<PrefsRepository>().countryIso?.toLowerCase()}');
-                                  },
-                                          orElse: () => Country(
-                                              id: 0, iso: "", name: "")).name ??
-                                  "",
-                              shippingCost: (state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                          productItem!.productId.toString()] !=
-                                      null
-                                  ? state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem!.productId
-                                                      .toString()]!
-                                              .product !=
-                                          null
-                                      ? state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem!.productId
-                                                      .toString()]!
-                                              .product!
-                                              .shippingCost ??
-                                          0
-                                      : 0
-                                  : 0),
-                              shippingDay:
-                                  ((state.cachedProductWithoutRelatedProductsModel[
-                                                      productItem!.productId
-                                                          .toString()] !=
-                                                  null
-                                              ? state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              productItem!
-                                                                  .productId
-                                                                  .toString()]!
-                                                          .product !=
-                                                      null
-                                                  ? state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              productItem!
-                                                                  .productId
-                                                                  .toString()]!
-                                                          .product!
-                                                          .shippingDays ??
-                                                      0
-                                                  : 0
-                                              : 0) +
-                                          (state.startingSetting?.shippingDay ??
-                                              0))
-                                      .toString(),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            BuyersCameraShots(
-                              productItem: productItem!.copyWith(
-                                  productId: state.cachedProductWithoutRelatedProductsModel[
-                                              productItem?.productId
-                                                  .toString()] !=
-                                          null
-                                      ? state
-                                                  .cachedProductWithoutRelatedProductsModel[
-                                                      productItem?.productId
-                                                          .toString()]!
-                                                  .product !=
-                                              null
-                                          ? state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem?.productId
-                                                      .toString()]!
-                                              .product!
-                                              .id
-                                          : null
-                                      : null),
-                              panelControllerForBuyersCameraShots:
-                                  panelControllerForBuyersCameraShots,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              height: (2 * 73.5 / (1.sh - 100.h)).sh,
-                            ),
-                          ],
+                              SizedBox(
+                                height: (2 * 73.5 / (1.sh - 100.h)).sh,
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -1321,6 +1389,92 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 },
               ),
             ),
+            ValueListenableBuilder<String?>(
+                valueListenable: productNotAvailableNotifier,
+                builder: (context, _productNotAvailableNotifier, _) {
+                  return ValueListenableBuilder<bool>(
+                      valueListenable: visibleRedeem,
+                      builder: (context, _visibleRedeem, _) {
+                        return BlocBuilder<HomeBloc, HomeState>(
+                            buildWhen: (p, c) =>
+                                p.getFullProductDetailsStatus !=
+                                    c.getFullProductDetailsStatus ||
+                                p.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                    c.getProductDetailWithoutSimilarRelatedProductsStatus,
+                            builder: (context, state) {
+                              return prefsRepository
+                                              .getRedeemDateForProduct(
+                                                  productItem!.productId
+                                                      .toString())
+                                              ?.isAfter(DateTime.now()
+                                                  .add(Duration(seconds: 1))) ==
+                                          true &&
+                                      state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.productId
+                                                      .toString()]
+                                              ?.product
+                                              ?.isRedeem ==
+                                          true &&
+                                      _productNotAvailableNotifier == null
+                                  ? Positioned(
+                                      top: 1.sh - 260,
+                                      right: 20,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.deepOrangeAccent),
+                                          color: Color(0xffFDFDEF),
+                                        ),
+                                        height: 30,
+                                        child: Row(
+                                          children: [
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            SvgPicture.asset(
+                                                AppAssets.alarmClockSvg),
+                                            Text(LocaleKeys.luck.tr(),
+                                                style: context
+                                                    .textTheme.bodyMedium?.ba
+                                                    .copyWith(
+                                                  fontSize: 12,
+                                                  color: const Color.fromARGB(
+                                                      255, 250, 71, 16),
+                                                )),
+                                            Text(
+                                                " ${LocaleKeys.add_to_bag_within.tr()} ",
+                                                style: context
+                                                    .textTheme.bodyMedium?.ra
+                                                    .copyWith(
+                                                  fontSize: 12,
+                                                  color: const Color.fromARGB(
+                                                      255, 250, 71, 16),
+                                                )),
+                                            SecondsCountdown(
+                                              visibleRedeem: visibleRedeem,
+                                              endTime: prefsRepository
+                                                      .getRedeemDateForProduct(
+                                                          productItem!.productId
+                                                              .toString()) ??
+                                                  DateTime.now(),
+                                            ),
+                                            Text(" ${LocaleKeys.seconds.tr()} ",
+                                                style: context
+                                                    .textTheme.bodyMedium?.ra
+                                                    .copyWith(
+                                                  fontSize: 12,
+                                                  color: const Color.fromARGB(
+                                                      255, 230, 67, 18),
+                                                )),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : SizedBox.shrink();
+                            });
+                      });
+                }),
             BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (p, c) =>
                   p.getFullProductDetailsStatus !=
@@ -1397,8 +1551,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 .getProductDetailWithoutSimilarRelatedProductsStatus ||
                         previous.changeSizesForEveryProduct !=
                             current.changeSizesForEveryProduct ||
-                        previous.currentColorSizeForCart?["size"] !=
-                            current.currentColorSizeForCart?["size"];
+                        previous.currentColorSizeForCart?["choiceOption"] !=
+                            current.currentColorSizeForCart?["choiceOption"];
                   },
                   builder: (context, state) {
                     /* if (state
@@ -1410,17 +1564,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     currentSelectedColor = state
                             .currentSelectedColorForEveryProduct[productSlug] ??
                         (productItem?.syncColorImages?.length ?? 0) ~/ 2;
-                    String currentSelectedColorName =
+                    String currentSelectedColorOption =
                         ((productItem?.colors?.length ?? 0) > 0)
-                            ? productItem!.colors![currentSelectedColor].name ??
+                            ? productItem!
+                                    .colors![currentSelectedColor].option ??
                                 ""
                             : "";
 
                     String currentVariantType =
-                        "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
-                            "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
-                            "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
-
+                        "${currentSelectedColorOption != "" ? currentSelectedColorOption : ""}" +
+                            "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && state.currentColorSizeForCart?["choiceOption"] != "") && (currentSelectedColorOption != "") ? "-" : ""}" +
+                            "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && state.currentColorSizeForCart?["choiceOption"] != "") ? "${state.currentColorSizeForCart?["choiceOption"]}" : ""}";
                     Variation? currentVariation = state
                         .cachedProductWithoutRelatedProductsModel[
                             productItem?.productId.toString()]
@@ -1432,6 +1586,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         return Variation(variantNotifyForUser: false);
                       },
                     );
+                    print(currentVariation?.type);
 
                     if ((state
                                 .cachedProductWithoutRelatedProductsModel[
@@ -1489,7 +1644,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ?.syncColorImages
                           ?.forEach(
                         (element) {
-                          if (!syncColorNames.contains(element.colorName)) {
+                          if (!syncColorNames.contains(element.colorOption)) {
                             syncColorImagesFromListing.add(element);
                           }
                         },
@@ -1523,195 +1678,259 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ));
                     }
 
-                    return ProductDetailsBottomSheet(
-                      initOfferPrice: (state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                      productItem?.productId.toString()] !=
-                                  null
-                              ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productItem?.productId
-                                                  .toString()]!
-                                          .product !=
-                                      null
-                                  ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem?.productId.toString()]!
-                                      .product!
-                                      .offerPrice
-                                  : 0
-                              : 0)
-                          .toString(),
-                      initPrice: (state.cachedProductWithoutRelatedProductsModel[
-                                      productItem?.productId.toString()] !=
-                                  null
-                              ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productItem?.productId
-                                                  .toString()]!
-                                          .product !=
-                                      null
-                                  ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem?.productId.toString()]!
-                                      .product!
-                                      .price
-                                  : 0
-                              : 0)
-                          .toString(),
-                      isGetFullProductDetails: widget.productItem == null,
-                      currentSelectedColorAfterChangeVariant:
-                          currentSelectedColorAfterChangeVariant,
-                      productNotAvailableNotifier: productNotAvailableNotifier,
-                      currentActiveTab: currentActiveTab,
-                      qtyForproductWithoutVariant: widget.productItem == null
-                          ? productItem?.availableQuantity
-                          : state
-                              .cachedProductWithoutRelatedProductsModel[
-                                  productItem!.productId.toString()]
-                              ?.product
-                              ?.availableQuantity,
-                      collectedAfterOrdering: widget.productItem == null
-                          ? productItem?.collectedAfterOrdering == 1
-                          : state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      productItem!.productId.toString()]
-                                  ?.product
-                                  ?.collectedAfterOrdering ==
-                              1,
-                      productIdForCashData: productId,
-                      panelController: panelControllerForCart,
-                      productSlugForTopic: state
-                              .cachedProductWithoutRelatedProductsModel[
-                                  productItem!.productId.toString()]
-                              ?.product
-                              ?.slug ??
-                          "",
-                      productDescription:
-                          HtmlParser.parseHTML(productItem!.details ?? "").text,
-                      countOfPieces: state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                  productItem!.productId.toString()] !=
-                              null
-                          ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem!.productId.toString()]!
-                                      .product !=
-                                  null
-                              ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem!.productId.toString()]!
-                                      .product!
-                                      .countOfPieces ??
-                                  0
-                              : 0
-                          : 0,
-                      addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
-                      currentColornum: productItem!.colors.isNullOrEmpty
-                          ? ''
-                          : productItem!.colors![currentSelectedColor].color ??
-                              "",
-                      boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()] !=
-                              null
-                          ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem!.productId.toString()]!
-                                      .product !=
-                                  null
-                              ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productItem!.productId
-                                                  .toString()]!
-                                          .product!
-                                          .boutique !=
-                                      null
-                                  ? state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem!.productId
-                                                      .toString()]!
-                                              .product!
-                                              .boutique!
-                                              .icon !=
-                                          null
-                                      ? state
-                                              .cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!
-                                              .product!
-                                              .boutique!
-                                              .icon!
-                                              .filePath ??
-                                          ""
-                                      : ""
-                                  : ""
-                              : ""
-                          : "",
-                      boutiqueId: state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                  productItem!.productId.toString()] !=
-                              null
-                          ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem!.productId.toString()]!
-                                      .product !=
-                                  null
-                              ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productItem!.productId
-                                                  .toString()]!
-                                          .product!
-                                          .boutique !=
-                                      null
-                                  ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem!.productId.toString()]!
-                                      .product!
-                                      .boutique!
-                                      .id!
-                                  : 0
-                              : 0
-                          : 0,
-                      currentColorName: productItem!.colors.isNullOrEmpty
-                          ? ''
-                          : productItem!.colors![currentSelectedColor].name ??
-                              "",
-                      productItem: productItem!.copyWith(
-                          availableQuantity:
-                              state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
-                                  ? 0
-                                  : state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem?.productId.toString()]!
-                                      .product
-                                      ?.availableQuantity,
-                          choiceOptions:
-                              state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
-                                  ? []
-                                  : state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem?.productId.toString()]!
-                                      .product
-                                      ?.choiceOptions,
-                          colors: colorsFromListing,
-                          images: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
-                              ? []
-                              : state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      productItem?.productId.toString()]!
-                                  .product
-                                  ?.images,
-                          syncColorImages: syncColorImagesFromListing,
-                          productId: int.tryParse(productId),
-                          price: (currentVariation?.price != null) ? currentVariation?.price : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.price,
-                          offerPrice: currentVariation?.offerPrice != null ? currentVariation?.offerPrice : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPrice,
-                          priceFormatted: currentVariation?.priceFormated != null ? currentVariation?.priceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.priceFormatted,
-                          offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPriceFormatted),
-                      currentColor: currentSelectedColor,
-                      maxAllowedToAddCart: state
-                              .cachedProductWithoutRelatedProductsModel[
-                                  productItem!.productId.toString()]
-                              ?.product
-                              ?.maxAllowedQty ??
-                          "0",
-                    );
+                    return ValueListenableBuilder<bool>(
+                        valueListenable: visibleRedeem,
+                        builder: (context, _visibleRedeem, _) {
+                          return ProductDetailsBottomSheet(
+                            isRedeem: prefsRepository
+                                        .getRedeemDateForProduct(
+                                            productItem!.productId.toString())
+                                        ?.isAfter(DateTime.now()
+                                            .add(Duration(seconds: 1))) ==
+                                    true &&
+                                state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productItem!.productId.toString()]
+                                        ?.product
+                                        ?.isRedeem ==
+                                    true,
+                            redeemPrice: state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()] !=
+                                    null
+                                ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()]!
+                                            .product !=
+                                        null
+                                    ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()]!
+                                            .product!
+                                            .redeemPrice ??
+                                        0
+                                    : 0
+                                : 0,
+                            redeemVariantPrice: (currentVariation
+                                        ?.redeemPrice !=
+                                    null)
+                                ? currentVariation?.redeemPrice ?? 0
+                                : state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productItem?.productId.toString()]
+                                        ?.product
+                                        ?.redeemPrice ??
+                                    0,
+                            initOfferPrice: (state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()] !=
+                                    null
+                                ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()]!
+                                            .product !=
+                                        null
+                                    ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()]!
+                                            .product!
+                                            .offerPrice ??
+                                        0
+                                    : 0
+                                : 0),
+                            initPrice: (state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()] !=
+                                    null
+                                ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()]!
+                                            .product !=
+                                        null
+                                    ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()]!
+                                            .product!
+                                            .price ??
+                                        0
+                                    : 0
+                                : 0),
+                            isGetFullProductDetails: widget.productItem == null,
+                            currentSelectedColorAfterChangeVariant:
+                                currentSelectedColorAfterChangeVariant,
+                            productNotAvailableNotifier:
+                                productNotAvailableNotifier,
+                            currentActiveTab: currentActiveTab,
+                            qtyForproductWithoutVariant: widget.productItem ==
+                                    null
+                                ? productItem?.availableQuantity
+                                : state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem!.productId.toString()]
+                                    ?.product
+                                    ?.availableQuantity,
+                            collectedAfterOrdering: widget.productItem == null
+                                ? productItem?.collectedAfterOrdering == 1
+                                : state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productItem!.productId.toString()]
+                                        ?.product
+                                        ?.collectedAfterOrdering ==
+                                    1,
+                            productIdForCashData: productId,
+                            panelController: panelControllerForCart,
+                            productSlugForTopic: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem!.productId.toString()]
+                                    ?.product
+                                    ?.slug ??
+                                "",
+                            productDescription:
+                                HtmlParser.parseHTML(productItem!.details ?? "")
+                                    .text,
+                            countOfPieces: state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                        productItem!.productId.toString()] !=
+                                    null
+                                ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.productId
+                                                    .toString()]!
+                                            .product !=
+                                        null
+                                    ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.productId
+                                                    .toString()]!
+                                            .product!
+                                            .countOfPieces ??
+                                        0
+                                    : 0
+                                : 0,
+                            addToBagButtonShapeNotifier:
+                                addToBagButtonShapeNotifier,
+                            currentColornum: productItem!.colors.isNullOrEmpty
+                                ? ''
+                                : productItem!
+                                        .colors![currentSelectedColor].color ??
+                                    "",
+                            boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
+                                        productItem!.productId.toString()] !=
+                                    null
+                                ? state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!.product !=
+                                        null
+                                    ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.productId
+                                                        .toString()]!
+                                                .product!
+                                                .boutique !=
+                                            null
+                                        ? state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        productItem!.productId
+                                                            .toString()]!
+                                                    .product!
+                                                    .boutique!
+                                                    .icon !=
+                                                null
+                                            ? state
+                                                    .cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!
+                                                    .product!
+                                                    .boutique!
+                                                    .icon!
+                                                    .filePath ??
+                                                ""
+                                            : ""
+                                        : ""
+                                    : ""
+                                : "",
+                            boutiqueId: state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                        productItem!.productId.toString()] !=
+                                    null
+                                ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.productId
+                                                    .toString()]!
+                                            .product !=
+                                        null
+                                    ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.productId
+                                                        .toString()]!
+                                                .product!
+                                                .boutique !=
+                                            null
+                                        ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.productId
+                                                    .toString()]!
+                                            .product!
+                                            .boutique!
+                                            .id!
+                                        : 0
+                                    : 0
+                                : 0,
+                            currentColorName: productItem!.colors.isNullOrEmpty
+                                ? ''
+                                : productItem!
+                                        .colors![currentSelectedColor].name ??
+                                    "",
+                            currentColorOption:
+                                productItem!.colors.isNullOrEmpty
+                                    ? ''
+                                    : productItem!.colors![currentSelectedColor]
+                                            .option ??
+                                        productItem!
+                                            .colors![currentSelectedColor]
+                                            .option ??
+                                        "",
+                            productItem: productItem!.copyWith(
+                                availableQuantity: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                    ? 0
+                                    : state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productItem?.productId.toString()]!
+                                        .product
+                                        ?.availableQuantity,
+                                choiceOptions: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                    ? []
+                                    : state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productItem?.productId.toString()]!
+                                        .product
+                                        ?.choiceOptions,
+                                colors: colorsFromListing,
+                                images: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] ==
+                                        null
+                                    ? []
+                                    : state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productItem?.productId.toString()]!
+                                        .product
+                                        ?.images,
+                                syncColorImages: syncColorImagesFromListing,
+                                productId: int.tryParse(productId),
+                                price: (currentVariation?.price != null) ? currentVariation?.price : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.price,
+                                offerPrice: currentVariation?.offerPrice != null ? currentVariation?.offerPrice : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPrice,
+                                priceFormatted: currentVariation?.priceFormated != null ? currentVariation?.priceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.priceFormatted,
+                                offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPriceFormatted),
+                            currentColor: currentSelectedColor,
+                            maxAllowedToAddCart: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem!.productId.toString()]
+                                    ?.product
+                                    ?.maxAllowedQty ??
+                                "0",
+                          );
+                        });
                   },
                 );
               },
@@ -1749,7 +1968,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     orElse: () => currentVariation!) ??
                 currentVariation!);
         int index = productItem?.syncColorImages?.indexWhere((element) =>
-                element.colorName ==
+                element.colorOption ==
                 (currentVariation!.type!.split("-").toList()[0])) ??
             -1;
         currentSelectedColorAfterChangeVariant = index;
@@ -1763,7 +1982,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         await Future.delayed(
             Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
-                choice_1: (currentVariation!.type!.split("-").toList()[1]))));
+                choice_1: productItem?.choiceOptions?[0].options
+                    ?.firstWhere((element) =>
+                        element.option ==
+                        (currentVariation!.type!.split("-").toList()[1]))
+                    .name,
+                choiceOption:
+                    (currentVariation!.type!.split("-").toList()[1]))));
       } else if ((productItem?.syncColorImages?.length ?? 0) > 0) {
         currentVariation = product?.variation?.firstWhere(
             (element) => ((element.qty ?? 0) > 0 &&
@@ -1774,7 +1999,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     orElse: () => currentVariation!) ??
                 currentVariation!);
         int index = productItem?.syncColorImages?.indexWhere(
-                (element) => element.colorName == (currentVariation!.type)) ??
+                (element) => element.colorOption == (currentVariation!.type)) ??
             -1;
         currentSelectedColorAfterChangeVariant = index;
 
@@ -1790,26 +2015,38 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             orElse: () => currentVariation!);
         await Future.delayed(
             Duration(milliseconds: 300),
-            () => homeBloc.add(
-                AddCurrentColorSizeEvent(choice_1: (currentVariation!.type))));
+            () => homeBloc.add(AddCurrentColorSizeEvent(
+                choice_1: productItem?.choiceOptions?[0].options
+                    ?.firstWhere(
+                        (element) => element.option == (currentVariation!.type))
+                    .name,
+                choiceOption: (currentVariation!.type))));
       }
     } else {
       if ((currentVariation?.type ?? "").contains("-")) {
         await Future.delayed(
             Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
-                choice_1: (currentVariation!.type!.split("-").toList()[1]))));
+                choice_1: productItem?.choiceOptions?[0].options
+                    ?.firstWhere((element) =>
+                        element.option ==
+                        (currentVariation!.type!.split("-").toList()[1]))
+                    .name,
+                choiceOption:
+                    (currentVariation!.type!.split("-").toList()[1]))));
       } else if (((productItem?.syncColorImages?.length ?? 0) == 0)) {
         await Future.delayed(
             Duration(milliseconds: 300),
-            () => homeBloc.add(
-                AddCurrentColorSizeEvent(choice_1: currentVariation!.type)));
+            () => homeBloc.add(AddCurrentColorSizeEvent(
+                choice_1: productItem?.choiceOptions?[0].options
+                    ?.firstWhere(
+                        (element) => element.option == (currentVariation!.type))
+                    .name,
+                choiceOption: currentVariation!.type)));
       }
 
       currentSelectedColorAfterChangeVariant = currentSelectedColor;
     }
-    print(
-        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD22222222222222222222EEEEEEEEEE!!");
 
     await Future.delayed(
         Duration(seconds: 1),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 import 'package:trydos/common/helper/add_lint_to_photo.dart';
 import 'package:trydos/common/helper/camera_screen_story.dart';
 import 'package:trydos/common/helper/show_message.dart';
@@ -16,14 +17,18 @@ import '../my_text_widget.dart';
 
 class GalleryAndCameraDialogWidget extends StatelessWidget {
   final bool? fromStory;
+  final bool? fromChat;
   GalleryAndCameraDialogWidget(
       {super.key,
       this.fromStory,
+      this.fromChat,
       required this.onChooseFileFromGalleryAction,
-      required this.onChooseFileFromCameraAction});
+      required this.onChooseFileFromCameraAction,
+      this.onImagePreviewAction});
 
   final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
   final void Function(File? file) onChooseFileFromCameraAction;
+  final void Function(File file)? onImagePreviewAction;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +59,18 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   );
                 }
 
+                // إذا كان من المحادثة وكانت صورة، اعرض المعاينة
+                if (fromChat == true && selectedFile != null) {
+                  String mimeStr =
+                      lookupMimeType(selectedFile!.absolute.path) ?? '';
+                  var fileType = mimeStr.split('/');
+                  if (fileType[0] == 'image') {
+                    Navigator.of(context).pop();
+                    onImagePreviewAction?.call(selectedFile!);
+                    return;
+                  }
+                }
+
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
                 /////////////////////////////////
@@ -74,8 +91,8 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   if (assetEntity != null) {
                     if (assetEntity.type == AssetType.video &&
                         assetEntity.duration > 59) {
-                      showWarningMessage(context,
-                          'Video length must not be longer than 59 seconds');
+                      showWarningMessage(
+                          context, LocaleKeys.video_length_limit.tr());
                     } else {
                       if (fromStory ?? false) {
                         File? gallaryFile = await assetEntity.file;
@@ -91,6 +108,15 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                                         ? null
                                         : gallaryFile,
                                     onChooseFileFromGalleryAction)));
+                      } else if (fromChat == true &&
+                          assetEntity.type == AssetType.image) {
+                        // إذا كان من المحادثة وكانت صورة، اعرض المعاينة
+                        File? galleryFile = await assetEntity.file;
+                        if (galleryFile != null) {
+                          Navigator.of(context).pop();
+                          onImagePreviewAction?.call(galleryFile);
+                          return;
+                        }
                       } else {
                         onChooseFileFromGalleryAction.call(assetEntity);
                         Navigator.of(context).pop();

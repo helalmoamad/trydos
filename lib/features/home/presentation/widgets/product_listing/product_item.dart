@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
@@ -30,12 +32,14 @@ class ProductItem extends StatefulWidget {
       this.fromHomePage = false,
       this.fromFlashDeal,
       this.imageSource,
+      required this.finishRedeem,
       this.displayImageColors,
       required this.tapIndexToAddProductToCart,
       required this.productItem});
 
   final void Function(int, int)? setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
+  final ValueNotifier<bool> finishRedeem;
   final bool? displayImageColors;
   final bool? fromFlashDeal;
   final bool fromHomePage;
@@ -52,12 +56,16 @@ class ProductItem extends StatefulWidget {
 class _ProductItemState extends State<ProductItem> {
   final PageController pageController = PageController();
   late final ValueNotifier<int> currentChosenColor;
-
+  final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
   @override
   void initState() {
     super.initState();
     currentChosenColor =
         ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
+    if (widget.productItem.hasRedeemDiscount == true) {
+      GetIt.I<PrefsRepository>().setRedeemDateForProduct(
+          widget.productItem.productId.toString(), "20");
+    }
   }
 
   @override
@@ -184,34 +192,58 @@ class _ProductItemState extends State<ProductItem> {
               ),
             ),
           ),*/
-          /* Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15.0),
-              child: BackdropFilter(
-                filter: ui.ImageFilter.blur(
-                  sigmaX: 10.0,
-                  sigmaY: 10.0,
+          widget.fromHomePage
+              ? Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15.0),
+                    child: BackdropFilter(
+                      filter: ui.ImageFilter.blur(
+                        sigmaX: 10.0,
+                        sigmaY: 10.0,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 250, 248, 248)
+                                .withOpacity(0.8)),
+                      ),
+                    ),
+                  ),
+                )
+              : SizedBox.shrink(),
+          widget.fromHomePage
+              ? ProductListing3DSliderOptimized(
+                  finishRedeem: widget.finishRedeem,
+                  productIsFlashDeal: widget.productIsFlashDeal,
+                  fromFlashDeal: widget.fromFlashDeal,
+                  fromHomePage: widget.fromHomePage,
+                  visibleRedeem: visibleRedeem,
+                  imageSource: widget.imageSource,
+                  productItem: widget.productItem,
+                  tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
+                  itemIndex: widget.itemIndex,
+                )
+              : ProductListing3DSlider(
+                  finishRedeem: widget.finishRedeem,
+                  visibleRedeem: visibleRedeem,
+                  currentChosenColor: currentChosenColor,
+                  displayImageColors: widget.displayImageColors ?? false,
+                  setThisEnabled:
+                      widget.setThisEnabled ?? (int index, int index2) {},
+                  slidingModeItem: widget.slidingModeItem ?? Tuple2(0, 0),
+                  fromFlashDeal: widget.fromFlashDeal,
+                  fromHomePage: widget.fromHomePage,
+                  productIsFlashDeal: widget.productIsFlashDeal,
+                  productItem: widget.productItem,
+                  tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
+                  itemIndex: widget.itemIndex,
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: const Color(0xffffffff).withOpacity(0.8)),
-                ),
-              ),
-            ),
-          ),*/
-          ProductListing3DSliderOptimized(
-            productIsFlashDeal: widget.productIsFlashDeal,
-            fromFlashDeal: widget.fromFlashDeal,
-            fromHomePage: widget.fromHomePage,
-            imageSource: widget.imageSource,
-            productItem: widget.productItem,
-            tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
-            itemIndex: widget.itemIndex,
-          ),
           Positioned(
               left: LanguageService.languageCode != "ar" ? null : 5,
               right: LanguageService.languageCode == "ar" ? null : 5,
-              top: (widget.productItem.flashDealEndDate != null) ? 55 : 10,
+              top: (widget.productItem.flashDealEndDate == null ||
+                      widget.productItem.flashDealEndDate != "")
+                  ? 10
+                  : 55,
               child: Column(
                 children: [
                   ...List.generate(

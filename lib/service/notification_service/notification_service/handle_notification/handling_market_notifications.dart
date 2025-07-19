@@ -126,10 +126,8 @@ class HandlingMarketNotifications {
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .order_status_changed_to_shipped]) {
         GetIt.I<OrderBloc>().add(
-          GetOrdersEvent(
-            status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
-            getWithPagination: false,
-          ),
+          GetOrdersByOrderGroupIDEvent(
+              orderGroupId: data?["order_group_id"].toString() ?? ""),
         );
       }
 

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
@@ -89,6 +90,17 @@ class PostClient<T> extends BaseApi<T> {
         onUploadingFinished?.call(true);
         return response;
       }).catchError((error, errorStack) {
+        // إظهار رسالة الفشل من الباك إند
+        if (error.response.statusCode == 422) {
+          showMessage(
+            error.response.data['message'],
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.red,
+            hasError: true,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_LONG,
+          );
+        }
         onUploadingFinished?.call(false);
         return error;
       });

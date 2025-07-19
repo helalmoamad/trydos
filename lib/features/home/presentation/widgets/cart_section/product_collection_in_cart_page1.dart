@@ -188,7 +188,7 @@ class _ProductCollectionInCartPage1State
                                                           .isNullOrEmpty
                                                       ? oldCartCollection[index]
                                                               .variations![0]
-                                                              .color ??
+                                                              .colorOption ??
                                                           ""
                                                       : ""),
                                               orElse: () =>
@@ -208,7 +208,7 @@ class _ProductCollectionInCartPage1State
                                                           .isNullOrEmpty
                                                       ? cartCollection[index]
                                                               .variations![0]
-                                                              .color ??
+                                                              .colorOption ??
                                                           ""
                                                       : ""),
                                               orElse: () =>
@@ -351,20 +351,20 @@ class _ProductCollectionInCartPage1State
                                         : !isOldCart &&
                                                     (cartCollection![index]
                                                                 .variations![0]
-                                                                .color ==
+                                                                .colorOption ==
                                                             "" ||
                                                         cartCollection[index]
                                                                 .variations![0]
-                                                                .color ==
+                                                                .colorOption ==
                                                             null) ||
                                                 isOldCart &&
                                                     (oldCartCollection![index]
                                                                 .variations![0]
-                                                                .color ==
+                                                                .colorOption ==
                                                             "" ||
                                                         oldCartCollection[index]
                                                                 .variations![0]
-                                                                .color ==
+                                                                .colorOption ==
                                                             null)
                                             ? SizedBox.shrink()
                                             : Container(
@@ -452,24 +452,24 @@ class _ProductCollectionInCartPage1State
                                                       (cartCollection![index]
                                                                   .variations![
                                                                       0]
-                                                                  .color ==
+                                                                  .colorOption ==
                                                               "" ||
                                                           cartCollection[index]
                                                                   .variations![
                                                                       0]
-                                                                  .color ==
+                                                                  .colorOption ==
                                                               null) ||
                                                   isOldCart &&
                                                       (oldCartCollection![index]
                                                                   .variations![
                                                                       0]
-                                                                  .color ==
+                                                                  .colorOption ==
                                                               "" ||
                                                           oldCartCollection[
                                                                       index]
                                                                   .variations![
                                                                       0]
-                                                                  .color ==
+                                                                  .colorOption ==
                                                               null)
                                               ? 0
                                               : 10,
@@ -486,20 +486,20 @@ class _ProductCollectionInCartPage1State
                                         : (!isOldCart &&
                                                     (cartCollection![index]
                                                                 .variations![0]
-                                                                .size ==
+                                                                .sizeOption ==
                                                             "" ||
                                                         cartCollection[index]
                                                                 .variations![0]
-                                                                .size ==
+                                                                .sizeOption ==
                                                             null)) ||
                                                 (isOldCart &&
                                                     (oldCartCollection![index]
                                                                 .variations![0]
-                                                                .size ==
+                                                                .sizeOption ==
                                                             "" ||
                                                         oldCartCollection[index]
                                                                 .variations![0]
-                                                                .size ==
+                                                                .sizeOption ==
                                                             null))
                                             ? SizedBox.shrink()
                                             : Container(
@@ -805,7 +805,7 @@ class _ProductCollectionInCartPage1State
                                                                 .firstWhere((element) =>
                                                                     element.colorName ==
                                                                     (!oldCartCollection![index].variations.isNullOrEmpty
-                                                                        ? oldCartCollection[index].variations![0].color ??
+                                                                        ? oldCartCollection[index].variations![0].colorOption ??
                                                                             ""
                                                                         : "")))
                                                         : state
@@ -816,7 +816,7 @@ class _ProductCollectionInCartPage1State
                                                                 .syncColorImages
                                                                 .isNullOrEmpty
                                                             ? -1
-                                                            : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
+                                                            : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                                     if (indexess != -1) {
                                                       GetIt.I<HomeBloc>().add(
                                                           ChangeStatusOFGetProductsDetailsToSuccessEvent(
@@ -902,13 +902,13 @@ class _ProductCollectionInCartPage1State
                                                               currentSize: !cartCollection[index]
                                                                       .variations
                                                                       .isNullOrEmpty
-                                                                  ? cartCollection[index].variations![0].size ??
+                                                                  ? cartCollection[index].variations![0].sizeOption ??
                                                                       ""
                                                                   : "",
-                                                              colorName: !cartCollection[index]
+                                                              colorOption: !cartCollection[index]
                                                                       .variations
                                                                       .isNullOrEmpty
-                                                                  ? cartCollection[index].variations![0].color ??
+                                                                  ? cartCollection[index].variations![0].colorOption ??
                                                                       ""
                                                                   : "",
                                                               productId: cartCollection[index]
@@ -922,7 +922,7 @@ class _ProductCollectionInCartPage1State
                                                               image: cartCollection[index].image ?? "",
                                                               cartId: cartCollection[index].id.toString(),
                                                               boutiqueId: cartCollection[index].boutique!.id.toString()))
-                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].size ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
+                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].sizeOption ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
                                                     },
                                                     child: (cartCollection![
                                                                         index]
@@ -1006,13 +1006,13 @@ class _ProductCollectionInCartPage1State
                                                         currentSize: !cartCollection[index]
                                                                 .variations
                                                                 .isNullOrEmpty
-                                                            ? cartCollection[index].variations![0].size ??
+                                                            ? cartCollection[index].variations![0].sizeOption ??
                                                                 ""
                                                             : "",
-                                                        colorName: !cartCollection[index]
+                                                        colorOption: !cartCollection[index]
                                                                 .variations
                                                                 .isNullOrEmpty
-                                                            ? cartCollection[index].variations![0].color ??
+                                                            ? cartCollection[index].variations![0].colorOption ??
                                                                 ""
                                                             : "",
                                                         productId: cartCollection[index]
@@ -1149,7 +1149,16 @@ class _ProductCollectionInCartPage1State
                                                       decorationColor:
                                                           Color(0xff505050),
                                                       fontSize: 14.sp,
-                                                      color: Color(0xff505050),
+                                                      color: isOldCart
+                                                          ? Color(0xff505050)
+                                                          : cartCollection![
+                                                                          index]
+                                                                      .isRedeem ==
+                                                                  true
+                                                              ? Colors
+                                                                  .deepOrangeAccent
+                                                              : Color(
+                                                                  0xff505050),
                                                     )),
                                                 Text(
                                                   widget.priceSymbol ?? '\$',
@@ -1159,7 +1168,14 @@ class _ProductCollectionInCartPage1State
                                                     decorationColor:
                                                         Color(0xffc4c2c2),
                                                     fontSize: 9.sp,
-                                                    color: Color(0xffc4c2c2),
+                                                    color: isOldCart
+                                                        ? Color(0xff505050)
+                                                        : cartCollection![index]
+                                                                    .isRedeem ==
+                                                                true
+                                                            ? Colors
+                                                                .deepOrangeAccent
+                                                            : Color(0xffc4c2c2),
                                                   ),
                                                 )
                                               ],
@@ -1300,8 +1316,8 @@ class _ProductCollectionInCartPage1State
                                                 (state.cartCollection?[index]
                                                         .haveHurryUpNotifyQty ??
                                                     false)
-                                            ? 65
-                                            : 30,
+                                            ? 75
+                                            : 40,
                                 right: LanguageService.languageCode != "ar"
                                     ? 5
                                     : null,
@@ -1376,7 +1392,7 @@ class _ProductCollectionInCartPage1State
                                                                 (!oldCartCollection![index]
                                                                         .variations
                                                                         .isNullOrEmpty
-                                                                    ? oldCartCollection[index].variations![0].color ??
+                                                                    ? oldCartCollection[index].variations![0].colorOption ??
                                                                         ""
                                                                     : "")))
                                                 : state
@@ -1390,7 +1406,7 @@ class _ProductCollectionInCartPage1State
                                                     : state
                                                         .productITemForCart[cartCollection[index].productId.toString()]!
                                                         .syncColorImages!
-                                                        .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
+                                                        .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                             if (indexess != -1) {
                                               GetIt.I<HomeBloc>().add(
                                                   ChangeStatusOFGetProductsDetailsToSuccessEvent(

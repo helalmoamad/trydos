@@ -20,6 +20,9 @@ StoryState _$StoryStateFromJson(Map<String, dynamic> json) => StoryState(
       getStoriesStatus: $enumDecodeNullable(
               _$GetStoriesStatusEnumMap, json['getStoriesStatus']) ??
           GetStoriesStatus.init,
+      deleteStoryStatus: $enumDecodeNullable(
+              _$DeleteStoryStatusEnumMap, json['deleteStoryStatus']) ??
+          DeleteStoryStatus.init,
       storiesCollections: (json['storiesCollections'] as List<dynamic>?)
               ?.map((e) =>
                   CollectionStoryModel.fromJson(e as Map<String, dynamic>))
@@ -53,6 +56,8 @@ Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>
       'getStoriesStatus': _$GetStoriesStatusEnumMap[instance.getStoriesStatus]!,
       'selectedVideoStatus':
           _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
+      'deleteStoryStatus':
+          _$DeleteStoryStatusEnumMap[instance.deleteStoryStatus]!,
       'storiesCollections':
           instance.storiesCollections.map((e) => e.toJson()).toList(),
       'currentPage': instance.currentPage,
@@ -96,4 +101,11 @@ const _$GetStoriesStatusEnumMap = {
   GetStoriesStatus.loading: 'loading',
   GetStoriesStatus.success: 'success',
   GetStoriesStatus.failure: 'failure',
+};
+
+const _$DeleteStoryStatusEnumMap = {
+  DeleteStoryStatus.init: 'init',
+  DeleteStoryStatus.loading: 'loading',
+  DeleteStoryStatus.success: 'success',
+  DeleteStoryStatus.failure: 'failure',
 };

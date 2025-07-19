@@ -29,6 +29,7 @@ class _CameraScreenState extends State<CameraScreenStory>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late AnimationController animatedController;
   late StoryBloc storyBloc;
+  String? link;
   ValueNotifier<bool> addUrlToStory = ValueNotifier(false);
   //todo start timer for recording video
   void _startTimer() {
@@ -612,6 +613,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                 padding: const EdgeInsets.all(10),
                                 child: AppTextField(
                                   onChange: (val) {
+                                    link = val;
                                     storyBloc.add(SetStoryLinkEvent(val));
                                   },
                                   textInputAction: TextInputAction.done,
@@ -643,6 +645,13 @@ class _CameraScreenState extends State<CameraScreenStory>
                                 height: 70,
                                 child: InkWell(
                                     onTap: () {
+                                      if (link?.contains("coupon") ?? false) {
+                                        showWarningMessage(
+                                            context,
+                                            LocaleKeys.coupon_link_not_allowed
+                                                .tr());
+                                        return;
+                                      }
                                       if (imageFile != null) {
                                         Navigator.pop(context, imageFile);
                                       } else if (videoFile != null) {
@@ -653,7 +662,8 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                 : null);
                                         if (lengthMoreThan60) {
                                           showMessage(
-                                              'Video length must not be longer than 59 seconds',
+                                              LocaleKeys.video_length_limit
+                                                  .tr(),
                                               hasError: true,
                                               showInRelease: true);
                                         }

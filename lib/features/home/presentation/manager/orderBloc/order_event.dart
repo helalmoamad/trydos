@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 import '../../../data/models/get_list_of_customer_addresses_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
+import '../../../domain/use_cases/cancel_order_item_usecase.dart';
+import '../../../domain/use_cases/cancel_order_usecase.dart';
+import '../../../domain/use_cases/change_order_address_usecase.dart';
 
 abstract class OrderEvent extends Equatable {
   const OrderEvent();
@@ -32,14 +35,15 @@ class SaveLastAddress extends OrderEvent {
 
 class GetOrdersByOrderGroupIDEvent extends OrderEvent {
   final String orderGroupId;
-
+  final bool firstOpenPage;
   GetOrdersByOrderGroupIDEvent({
     required this.orderGroupId,
+    this.firstOpenPage = false,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [orderGroupId];
+  List<Object?> get props => [orderGroupId, firstOpenPage];
 }
 
 class SaveCurrentOrederStatusEvent extends OrderEvent {
@@ -194,4 +198,40 @@ class ApplyCouponEvent extends OrderEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [code];
+}
+
+class CancelOrderItemEvent extends OrderEvent {
+  final CancelOrderItemParams cancelOrderItemParams;
+
+  CancelOrderItemEvent({
+    required this.cancelOrderItemParams,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [cancelOrderItemParams];
+}
+
+class CancelOrderEvent extends OrderEvent {
+  final CancelOrderParams cancelOrderParams;
+
+  CancelOrderEvent({
+    required this.cancelOrderParams,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [cancelOrderParams];
+}
+
+class ChangeOrderAddressEvent extends OrderEvent {
+  final ChangeOrderAddressParams changeOrderAddressParams;
+
+  ChangeOrderAddressEvent({
+    required this.changeOrderAddressParams,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [changeOrderAddressParams];
 }

@@ -45,6 +45,9 @@ import '../models/get_product_listing_with_filters_model.dart';
 import '../models/get_story_for_product_model.dart';
 import '../models/get_user_notifications_model.dart';
 import '../models/place_order_model.dart';
+import '../models/cancel_order_item_model.dart';
+import '../models/cancel_order_model.dart';
+import '../models/change_order_address_model.dart';
 
 @injectable
 class HomeRemoteDatasource {
@@ -1031,5 +1034,50 @@ class HomeRemoteDatasource {
     );
 
     return getOrders();
+  }
+
+  Future<CancelOrderItemModel> cancelOrderItem(Map<String, dynamic> params) {
+    PostClient<CancelOrderItemModel> cancelOrderItem =
+        PostClient<CancelOrderItemModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<CancelOrderItemModel>(
+        endpoint: MarketEndPoints.cancelOrderItemEP,
+        data: params,
+        response: ResponseValue<CancelOrderItemModel>(
+            fromJson: (response) => CancelOrderItemModel.fromJson(response)),
+      ),
+    );
+
+    return cancelOrderItem();
+  }
+
+  Future<CancelOrderModel> cancelOrder(Map<String, dynamic> params) {
+    PostClient<CancelOrderModel> cancelOrder = PostClient<CancelOrderModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<CancelOrderModel>(
+        endpoint: MarketEndPoints.cancelOrderEP,
+        data: params,
+        response: ResponseValue<CancelOrderModel>(
+            fromJson: (response) => CancelOrderModel.fromJson(response)),
+      ),
+    );
+
+    return cancelOrder();
+  }
+
+  Future<ChangeOrderAddressModel> changeOrderAddress(
+      Map<String, dynamic> params) {
+    PostClient<ChangeOrderAddressModel> changeOrderAddress =
+        PostClient<ChangeOrderAddressModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ChangeOrderAddressModel>(
+        endpoint: MarketEndPoints.changeOrderAddressEP,
+        data: params,
+        response: ResponseValue<ChangeOrderAddressModel>(
+            fromJson: (response) => ChangeOrderAddressModel.fromJson(response)),
+      ),
+    );
+
+    return changeOrderAddress();
   }
 }
