@@ -48,6 +48,7 @@ import '../models/place_order_model.dart';
 import '../models/cancel_order_item_model.dart';
 import '../models/cancel_order_model.dart';
 import '../models/change_order_address_model.dart';
+import '../models/color_size_for_product.dart';
 
 @injectable
 class HomeRemoteDatasource {
@@ -1079,5 +1080,36 @@ class HomeRemoteDatasource {
     );
 
     return changeOrderAddress();
+  }
+
+  Future<ColorSizeForProductModel> getProductColorSizeSyncAttribute(String id) {
+    GetClient<ColorSizeForProductModel> getProductColorSizeSyncAttribute =
+        GetClient<ColorSizeForProductModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ColorSizeForProductModel>(
+        endpoint: MarketEndPoints.getProductColorSizeSyncAttributeEP(id),
+        response: ResponseValue<ColorSizeForProductModel>(
+            fromJson: (response) =>
+                ColorSizeForProductModel.fromJson(response)),
+      ),
+    );
+
+    return getProductColorSizeSyncAttribute();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> changeOrderItemVariant(
+      Map<String, dynamic> params) {
+    PostClient<ReadOnlyMessageFromApiModel> changeOrderItemVariant =
+        PostClient<ReadOnlyMessageFromApiModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+        endpoint: MarketEndPoints.changeOrderItemVariantEP,
+        data: params,
+        response: ResponseValue<ReadOnlyMessageFromApiModel>(
+            fromJson: (response) =>
+                ReadOnlyMessageFromApiModel.fromJson(response)),
+      ),
+    );
+    return changeOrderItemVariant();
   }
 }

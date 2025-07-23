@@ -41,6 +41,7 @@ import '../../data/models/place_order_model.dart';
 import '../../data/models/cancel_order_item_model.dart';
 import '../../data/models/cancel_order_model.dart';
 import '../../data/models/change_order_address_model.dart';
+import '../../data/models/color_size_for_product.dart';
 
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
@@ -145,6 +146,8 @@ abstract class HomeRepository {
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
       requestForNotificationWhenProductBecameAvailable(
           Map<String, dynamic> params);
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> changeOrderItemVariant(
+      Map<String, dynamic> params);
 
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
     required int limit,
@@ -188,4 +191,7 @@ abstract class HomeRepository {
 
   Future<Either<Failure, ChangeOrderAddressModel>> changeOrderAddress(
       Map<String, dynamic> params);
+
+  Future<Either<Failure, ColorSizeForProductModel>>
+      getProductColorSizeSyncAttribute(String id);
 }

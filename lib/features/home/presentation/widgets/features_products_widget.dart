@@ -92,11 +92,18 @@ class FeatureProductsWidget extends StatelessWidget {
                         ],
                       ),
                     ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Container(
                       margin: EdgeInsets.only(bottom: 5),
                       width: 1.sw,
-                      height: 315,
+                      height: 300,
                       child: ListView.separated(
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false,
+                          addSemanticIndexes: false,
+                          cacheExtent: 0,
                           itemBuilder: (context, index) {
                             // التحقق من صحة الفهرس
                             if (index >= products.length) {

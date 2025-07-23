@@ -1,51 +1,53 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_deal_counter.dart';
-import 'dart:ui' as ui;
 
-import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider_optimized.dart';
-import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_simple_slider.dart';
+
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_without_silder.dart';
+import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:tuple/tuple.dart';
 
 class ProductItem extends StatefulWidget {
   const ProductItem(
       {super.key,
-      this.setThisEnabled,
-      this.slidingModeItem,
       required this.itemIndex,
       this.productIsFlashDeal,
       this.fromHomePage = false,
+      this.refreshFlashDeal,
       this.fromFlashDeal,
       this.imageSource,
       required this.finishRedeem,
+      this.showShadowForColorImages,
+      this.colorImagesPanelController,
+      this.tapIndexToShowColorImages,
       this.displayImageColors,
       required this.tapIndexToAddProductToCart,
       required this.productItem});
 
-  final void Function(int, int)? setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final ValueNotifier<bool> finishRedeem;
   final bool? displayImageColors;
   final bool? fromFlashDeal;
+  final ValueNotifier<int>? tapIndexToShowColorImages;
   final bool fromHomePage;
   final String? imageSource;
+  final ValueNotifier<bool>? showShadowForColorImages;
+  final PanelController? colorImagesPanelController;
   final ValueNotifier<bool>? productIsFlashDeal;
-  final Tuple2<int, int>? slidingModeItem;
+  final ValueNotifier<bool>? refreshFlashDeal;
+
   final productListingModel.Products productItem;
   final int itemIndex;
 
@@ -57,6 +59,7 @@ class _ProductItemState extends State<ProductItem> {
   final PageController pageController = PageController();
   late final ValueNotifier<int> currentChosenColor;
   final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
+  final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
   @override
   void initState() {
     super.initState();
@@ -64,7 +67,7 @@ class _ProductItemState extends State<ProductItem> {
         ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
     if (widget.productItem.hasRedeemDiscount == true) {
       GetIt.I<PrefsRepository>().setRedeemDateForProduct(
-          widget.productItem.productId.toString(), "20");
+          widget.productItem.productId.toString(), "50");
     }
   }
 
@@ -180,36 +183,7 @@ class _ProductItemState extends State<ProductItem> {
                                   );
                           })),
                 ),*/
-          /*  Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15.0),
-              child: BackdropFilter(
-                blendMode: BlendMode.overlay,
-                filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Container(
-                  decoration: const BoxDecoration(color: Color(0xfffafafa)),
-                ),
-              ),
-            ),
-          ),*/
-          widget.fromHomePage
-              ? Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15.0),
-                    child: BackdropFilter(
-                      filter: ui.ImageFilter.blur(
-                        sigmaX: 10.0,
-                        sigmaY: 10.0,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 250, 248, 248)
-                                .withOpacity(0.8)),
-                      ),
-                    ),
-                  ),
-                )
-              : SizedBox.shrink(),
+
           widget.fromHomePage
               ? ProductListing3DSliderOptimized(
                   finishRedeem: widget.finishRedeem,
@@ -222,14 +196,12 @@ class _ProductItemState extends State<ProductItem> {
                   tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
                   itemIndex: widget.itemIndex,
                 )
-              : ProductListing3DSlider(
+              : ProductListingWithoutSlider(
+                  tapIndexToShowColorImages: widget.tapIndexToShowColorImages,
                   finishRedeem: widget.finishRedeem,
+                  showShadowForColorImages: widget.showShadowForColorImages,
+                  colorImagesPanelController: widget.colorImagesPanelController,
                   visibleRedeem: visibleRedeem,
-                  currentChosenColor: currentChosenColor,
-                  displayImageColors: widget.displayImageColors ?? false,
-                  setThisEnabled:
-                      widget.setThisEnabled ?? (int index, int index2) {},
-                  slidingModeItem: widget.slidingModeItem ?? Tuple2(0, 0),
                   fromFlashDeal: widget.fromFlashDeal,
                   fromHomePage: widget.fromHomePage,
                   productIsFlashDeal: widget.productIsFlashDeal,
@@ -237,7 +209,7 @@ class _ProductItemState extends State<ProductItem> {
                   tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
                   itemIndex: widget.itemIndex,
                 ),
-          Positioned(
+          /*  Positioned(
               left: LanguageService.languageCode != "ar" ? null : 5,
               right: LanguageService.languageCode == "ar" ? null : 5,
               top: (widget.productItem.flashDealEndDate == null ||
@@ -302,11 +274,13 @@ class _ProductItemState extends State<ProductItem> {
                             ),
                           ))
                 ],
-              )),
+              )),*/
           (widget.productItem.flashDealEndDate == null ||
                   widget.productItem.flashDealEndDate == "")
               ? SizedBox.shrink()
-              : Positioned(
+              :
+
+              /* Positioned(
                   left: LanguageService.languageCode == "ar" ? null : 5,
                   right: LanguageService.languageCode != "ar" ? null : 0,
                   top: (widget.productItem.flashDealEndDate != null) ? 10 : 0,
@@ -362,7 +336,195 @@ class _ProductItemState extends State<ProductItem> {
                         )
                       ],
                     ),
-                  ))
+                  ))*/
+              (widget.productItem.flashDealEndDate ?? "") == ""
+                  ? SizedBox.shrink()
+                  : ValueListenableBuilder<bool>(
+                      valueListenable: visibleFlashDeal,
+                      builder: (context, _visibleFlashDeal, _) {
+                        bool isFlashDealEnded = false;
+                        DateTime endDate;
+                        Duration _duration = Duration();
+                        final now = DateTime.now();
+                        try {
+                          endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                              .parse(widget.productItem.flashDealEndDate ?? "");
+                          endDate = endDate.add(Duration(days: 1));
+                        } catch (e) {
+                          endDate = DateTime.now();
+                          print('Error parsing date: $e');
+                        }
+                        _duration = endDate.difference(now);
+                        if (_duration.isNegative || _duration.inSeconds < 1) {
+                          isFlashDealEnded = true;
+                        }
+
+                        return !isFlashDealEnded
+                            ? Positioned(
+                                left: LanguageService.languageCode != "ar"
+                                    ? 1
+                                    : null,
+                                right: LanguageService.languageCode == "ar"
+                                    ? 1
+                                    : null,
+                                top: widget.fromHomePage ? 0 : -8,
+                                child: Transform(
+                                  transform:
+                                      Matrix4.skewX(-0.4), // انحراف بسيط للشكل
+                                  child: Container(
+                                    margin: EdgeInsets.only(
+                                        left:
+                                            LanguageService.languageCode != "ar"
+                                                ? 1
+                                                : 20,
+                                        right:
+                                            LanguageService.languageCode == "ar"
+                                                ? 1
+                                                : 20),
+                                    decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: Color(0xffFF6200)),
+                                      color: Color(0xffFFF3E8),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    height: 20,
+                                    child: Transform(
+                                        transform: Matrix4.skewX(
+                                            0.4), // انحراف بسيط للشكل
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            SvgPicture.asset(
+                                              AppAssets.flashDealSvg,
+                                              height: 12,
+                                              color: Color(0xffFF6200),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              "${LocaleKeys.flash_deal.tr()}",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: context
+                                                  .textTheme.bodyMedium?.br
+                                                  .copyWith(
+                                                color: Color(0xffFF6200),
+                                                letterSpacing: 0.18,
+                                                fontSize: 9,
+                                                height: 1.3,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            FlashDealCountdownTimerWidget(
+                                              visibleFlashDeal:
+                                                  visibleFlashDeal,
+                                              refreshFlashDeal:
+                                                  widget.refreshFlashDeal,
+                                              endDateString: widget.productItem
+                                                      .flashDealEndDate ??
+                                                  "",
+                                            )
+                                          ],
+                                        )),
+                                  ),
+                                ))
+                            : SizedBox.shrink();
+                      }),
+          ValueListenableBuilder<bool>(
+              valueListenable: visibleRedeem,
+              builder: (context, _visibleRedeem, _) {
+                return (GetIt.I<PrefsRepository>()
+                                    .getRedeemDateForProduct(
+                                        widget.productItem.productId.toString())
+                                    ?.isAfter(DateTime.now()
+                                        .add(Duration(seconds: 1))) ==
+                                true &&
+                            widget.productItem.hasRedeemDiscount == true) ||
+                        (GetIt.I<PrefsRepository>()
+                                    .getRedeemSecondRemainingForProduct(widget
+                                        .productItem.productId
+                                        .toString()) ??
+                                0) >
+                            0
+                    ? Positioned(
+                        left: LanguageService.languageCode == "ar" ? null : 1,
+                        right: LanguageService.languageCode != "ar" ? null : 1,
+                        top: widget.fromHomePage ? 0 : -8,
+                        child: Transform(
+                          transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: LanguageService.languageCode != "ar"
+                                    ? 1
+                                    : 20,
+                                right: LanguageService.languageCode == "ar"
+                                    ? 1
+                                    : 20),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xffFF6200)),
+                              color: Color(0xffFFF3E8),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            height: 20,
+                            child: Transform(
+                                transform:
+                                    Matrix4.skewX(0.4), // انحراف بسيط للشكل
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    SvgPicture.asset(AppAssets.redeemClockSvg),
+                                    SizedBox(
+                                      width: 3,
+                                    ),
+                                    Text(LocaleKeys.luck.tr(),
+                                        style: context.textTheme.bodyMedium?.br
+                                            .copyWith(
+                                          fontSize: 9,
+                                          color: const Color(0xffFF6200),
+                                        )),
+                                    SizedBox(
+                                      width: 1,
+                                    ),
+                                    Text(
+                                        " ${LocaleKeys.add_to_bag_within.tr()} ",
+                                        style: context.textTheme.bodyMedium?.mr
+                                            .copyWith(
+                                          fontSize: 9,
+                                          color: const Color(0xffFF6200),
+                                        )),
+                                    SecondsCountdown(
+                                      productId: widget.productItem.productId
+                                          .toString(),
+                                      finishRedeem: widget.finishRedeem,
+                                      visibleRedeem: visibleRedeem,
+                                      endTime: GetIt.I<PrefsRepository>()
+                                              .getRedeemDateForProduct(widget
+                                                  .productItem.productId
+                                                  .toString()) ??
+                                          DateTime.now(),
+                                    ),
+                                    Text(" ${LocaleKeys.seconds.tr()} ",
+                                        style: context.textTheme.bodyMedium?.br
+                                            .copyWith(
+                                          fontSize: 9,
+                                          color: const Color(0xffFF6200),
+                                        )),
+                                  ],
+                                )),
+                          ),
+                        ))
+                    : SizedBox.shrink();
+              })
         ]);
   }
 }

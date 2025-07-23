@@ -111,6 +111,14 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               _$ChangeOrderAddressStatusEnumMap,
               json['changeOrderAddressStatus']) ??
           ChangeOrderAddressStatus.init,
+      getProductColorSizeSyncAttributeStatus: $enumDecodeNullable(
+              _$GetProductColorSizeSyncAttributeStatusEnumMap,
+              json['getProductColorSizeSyncAttributeStatus']) ??
+          GetProductColorSizeSyncAttributeStatus.init,
+      colorSizeForProductModel: json['colorSizeForProductModel'] == null
+          ? null
+          : ColorSizeForProductModel.fromJson(
+              json['colorSizeForProductModel'] as Map<String, dynamic>),
       resultSearch: (json['resultSearch'] as List<dynamic>?)
               ?.map((e) => ResultSearch.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -119,6 +127,10 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      changeOrderItemVariantStatus: $enumDecodeNullable(
+              _$ChangeOrderItemVariantStatusEnumMap,
+              json['changeOrderItemVariantStatus']) ??
+          ChangeOrderItemVariantStatus.init,
     );
 
 Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
@@ -176,6 +188,12 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
           _$CancelOrderStatusEnumMap[instance.cancelOrderStatus],
       'changeOrderAddressStatus':
           _$ChangeOrderAddressStatusEnumMap[instance.changeOrderAddressStatus],
+      'getProductColorSizeSyncAttributeStatus':
+          _$GetProductColorSizeSyncAttributeStatusEnumMap[
+              instance.getProductColorSizeSyncAttributeStatus],
+      'colorSizeForProductModel': instance.colorSizeForProductModel?.toJson(),
+      'changeOrderItemVariantStatus': _$ChangeOrderItemVariantStatusEnumMap[
+          instance.changeOrderItemVariantStatus],
     };
 
 const _$PlaceOrderStatusEnumMap = {
@@ -282,4 +300,18 @@ const _$ChangeOrderAddressStatusEnumMap = {
   ChangeOrderAddressStatus.loading: 'loading',
   ChangeOrderAddressStatus.success: 'success',
   ChangeOrderAddressStatus.failure: 'failure',
+};
+
+const _$GetProductColorSizeSyncAttributeStatusEnumMap = {
+  GetProductColorSizeSyncAttributeStatus.init: 'init',
+  GetProductColorSizeSyncAttributeStatus.loading: 'loading',
+  GetProductColorSizeSyncAttributeStatus.success: 'success',
+  GetProductColorSizeSyncAttributeStatus.failure: 'failure',
+};
+
+const _$ChangeOrderItemVariantStatusEnumMap = {
+  ChangeOrderItemVariantStatus.init: 'init',
+  ChangeOrderItemVariantStatus.loading: 'loading',
+  ChangeOrderItemVariantStatus.success: 'success',
+  ChangeOrderItemVariantStatus.failure: 'failure',
 };

@@ -1134,6 +1134,26 @@ class _HomePageState extends State<HomePage> {
                                   .getProductListingWithFiltersPaginationModels[
                                       "*flashDeal*withoutFilter"]!
                                   .items;
+                      List<filter.Products> productWithFlashDealEndDate = [];
+                      products.forEach((element) {
+                        DateTime endDate;
+                        Duration _duration = Duration();
+                        final now = DateTime.now();
+                        try {
+                          endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                              .parse(element.flashDealEndDate ?? "");
+                          endDate = endDate.add(Duration(days: 1));
+                        } catch (e) {
+                          endDate = DateTime.now();
+                          print('Error parsing date: $e');
+                        }
+                        _duration = endDate.difference(now);
+                        if (!(_duration.isNegative ||
+                            _duration.inSeconds < 1)) {
+                          productWithFlashDealEndDate.add(element);
+                        }
+                      });
+                      products = productWithFlashDealEndDate;
                     } else {
                       products =
                           state.getProductListingWithFiltersPaginationModels[
@@ -1583,21 +1603,17 @@ class _HomePageState extends State<HomePage> {
                                                                           ?.product
                                                                           ?.redeemPrice ??
                                                                       0,
-                                                              isRedeem: prefsRepository
-                                                                          .getRedeemDateForProduct(products[tapIndex]
-                                                                              .productId
-                                                                              .toString())
-                                                                          ?.isAfter(DateTime.now().add(Duration(
+                                                              isRedeem: (prefsRepository.getRedeemDateForProduct(products[tapIndex].productId.toString())?.isAfter(DateTime.now().add(Duration(
                                                                               seconds:
                                                                                   1))) ==
-                                                                      true &&
-                                                                  state
-                                                                          .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                          true &&
+                                                                      state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.isRedeem ==
+                                                                          true) ||
+                                                                  (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(products[tapIndex]
                                                                               .productId
-                                                                              .toString()]
-                                                                          ?.product
-                                                                          ?.isRedeem ==
-                                                                      true,
+                                                                              .toString()) ??
+                                                                          0) >
+                                                                      0,
                                                               redeemPrice: state
                                                                           .cachedProductWithoutRelatedProductsModel[products[
                                                                               tapIndex]

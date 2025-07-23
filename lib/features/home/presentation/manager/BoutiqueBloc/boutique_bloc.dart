@@ -1244,7 +1244,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   imageUrl: product.syncColorImages![0].images![0].filePath!,
                   width: 200,
                   // the width of the image in the ui
-                  height: 300,
+                  height: 290,
                   // the height of the image in the ui
                   ordinalWidth: double.tryParse(product
                       .syncColorImages![0].images![0].originalWidth
@@ -1254,7 +1254,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                       .toString()));
               if (!cachedLinksOfImages.contains(url)) {
                 prefetchImages(
-                    url, event.context!, "productListingImages", 200, 300);
+                    url, event.context!, "productListingImages", 200, 290);
               }
             }
           }
@@ -1263,7 +1263,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             imageUrl: product.images![0].filePath!,
             width: 200,
             // the width of the image in the ui
-            height: 300,
+            height: 290,
             // the height of the image in the ui
           );
           /*url2 = addSuitableWidthAndHeightToImage(
@@ -1274,7 +1274,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           );*/
           if (!cachedLinksOfImages.contains(url)) {
             prefetchImages(
-                url, event.context!, "productListingImages", 200, 300);
+                url, event.context!, "productListingImages", 200, 290);
           }
           /*  Future.delayed(Duration(seconds: 5), () {
             if (!cachedLinksOfImages.contains(url2)) {

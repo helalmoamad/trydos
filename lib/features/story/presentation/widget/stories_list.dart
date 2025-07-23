@@ -123,6 +123,8 @@ class _StoriesListState extends State<StoriesList> {
                     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${prefsRepository.myProfilePhoto == ""}");
                 List<CollectionStoryModel> storiesCollections =
                     state.storiesCollections;
+                storiesCollections
+                    .removeWhere((element) => element.stories?.length == 0);
 
                 //todo the ScrollConfiguration make behavior to the scroll
                 return ScrollConfiguration(

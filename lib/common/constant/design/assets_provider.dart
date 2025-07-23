@@ -99,6 +99,7 @@ abstract class AppAssets {
   static String get expandDetaileSvg => 'expand_details'.svg;
   static String get alarmClockSvg => 'alarm_clock'.svg;
   static String get editSvg => 'edit'.svg;
+  static String get redeemClockSvg => 'redeem_clock'.svg;
   static String get sizeSvg => 'size'.svg;
   static String get adresswSvg => 'adressw'.svg;
   static String get logoIconSvg => 'logo_icon'.svg;

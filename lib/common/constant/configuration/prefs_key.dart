@@ -77,4 +77,6 @@ abstract class PrefsKey {
   static const tagsFilters = r'__$tagsFilters$__';
   static const foundDataCashed = r'__$IsFoundDataCashed$__';
   static const redeemDateForProducts = r'__$__redeemDateForProduct$__';
+  static const redeemSecondRemainForProducts =
+      r'__$__redeemSecondRemainForProducts$__';
 }

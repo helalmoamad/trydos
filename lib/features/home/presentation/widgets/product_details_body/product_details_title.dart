@@ -14,6 +14,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_deal_counter.dart';
+import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -209,6 +210,29 @@ class ProductDetailsTitle extends StatelessWidget {
                 ),
               ),
             ),
+            (state.cachedProductWithoutRelatedProductsModel[productId]?.product
+                            ?.labelNames?.length ??
+                        0) ==
+                    0
+                ? SizedBox(
+                    height: 10,
+                  )
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: RotatingTextWidget(
+                      texts: state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  productId]
+                              ?.product
+                              ?.labelNames ??
+                          [],
+                      rotationDuration: Duration(seconds: 5),
+                      textStyle: context.textTheme.titleMedium?.rr.copyWith(
+                        fontSize: 9.sp,
+                        color: Color(0xff388CFF),
+                        height: 0,
+                      ),
+                    )),
           ],
         );
       },

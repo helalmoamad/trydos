@@ -66,6 +66,8 @@ abstract class MarketEndPoints {
   static final cancelOrderItemEP = "order/cancel-item".customerScope();
   static final cancelOrderEP = "order/cancel".customerScope();
   static final changeOrderAddressEP = "order/change-address".customerScope();
+  static final changeOrderItemVariantEP =
+      "order/change-item-variant".customerScope();
 
   static String placeOrderEP(String paymentMethod) =>
       "order/checkout/$paymentMethod".customerScope();
@@ -127,6 +129,8 @@ abstract class MarketEndPoints {
   static final addCommentEP = 'product_comment'.customerScope();
   static String getCommentForProductEP(String productId) =>
       'likesCommentsSharesDetails/$productId'.productScope();
+  static String getProductColorSizeSyncAttributeEP(String id) =>
+      'details_color_sync_attribute/$id'.productScope();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
   static final getMainCategoriesRelatedWithBoutiquesEP =
       'mainCategoriesRelatedWithBoutique'.homeScope();

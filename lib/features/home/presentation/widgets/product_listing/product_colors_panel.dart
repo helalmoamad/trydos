@@ -8,38 +8,36 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
+
 import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
+
 import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.dart';
-import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
+
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:tuple/tuple.dart';
+
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 
 /// 🚀 نسخة مبسطة جداً من ProductListing3DSlider - أداء فائق ⚡
-class ProductListing3DSliderOptimized extends StatefulWidget {
-  const ProductListing3DSliderOptimized({
+class ProductColorPanal extends StatefulWidget {
+  const ProductColorPanal({
     super.key,
     // required this.setThisEnabled,
     // required this.slidingModeItem,
     required this.itemIndex,
-    this.imageSource,
     required this.tapIndexToAddProductToCart,
     required this.visibleRedeem,
     required this.productItem,
-    this.productIsFlashDeal,
-    this.fromFlashDeal,
-    this.fromHomePage = false,
+    required this.colorImages,
     required this.finishRedeem,
+
     // جديد: افتراضي false
     //required this.displayImageColors,
     //  required this.currentChosenColor,
@@ -50,22 +48,16 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final ValueNotifier<bool> finishRedeem;
   final int itemIndex;
-  //final bool displayImageColors;
+
   final ValueNotifier<bool> visibleRedeem;
-  final bool fromHomePage;
-  final String? imageSource;
-  final bool? fromFlashDeal;
+  final List<String> colorImages;
   final productListingModel.Products productItem;
-  //final ValueNotifier<int> currentChosenColor;
-  final ValueNotifier<bool>? productIsFlashDeal;
 
   @override
-  State<ProductListing3DSliderOptimized> createState() =>
-      _ProductListing3DSliderOptimizedState();
+  State<ProductColorPanal> createState() => _ProductColorPanalState();
 }
 
-class _ProductListing3DSliderOptimizedState
-    extends State<ProductListing3DSliderOptimized> {
+class _ProductColorPanalState extends State<ProductColorPanal> {
   late HomeBloc _homeBloc;
 
   @override
@@ -85,8 +77,10 @@ class _ProductListing3DSliderOptimizedState
   /// 🎯 بطاقة منتج بسيطة - أداء ممتاز
   Widget _buildSimpleProductCard() {
     return Container(
-      height: 350,
-      width: 200,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          color: Color(0xffF8F8F8),
+          border: Border.all(color: Colors.white)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,19 +88,9 @@ class _ProductListing3DSliderOptimizedState
         children: [
           // 🖼️ صورة المنتج - بدون مسافات إضافية
           Container(
-            height: 230,
+            height: 300,
             width: 200,
-            child: _buildSingleImage((GetIt.I<PrefsRepository>()
-                            .getRedeemDateForProduct(
-                                widget.productItem.productId.toString())
-                            ?.isAfter(
-                                DateTime.now().add(Duration(seconds: 1))) ==
-                        true &&
-                    widget.productItem.hasRedeemDiscount == true) ||
-                (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
-                            widget.productItem.productId.toString()) ??
-                        0) >
-                    0),
+            child: buildSingleImage(widget.colorImages),
           ),
 
           // 💰 معلومات المنتج
@@ -145,7 +129,7 @@ class _ProductListing3DSliderOptimizedState
   Widget _buildSingleImage(bool isRedeem) {
     // الحصول على أول صورة متاحة
     String? imageUrl;
-    double imageHeight = 250;
+    double imageHeight = 290;
     double imageWidth = 200;
 
     // محاولة الحصول على الصورة من syncColorImages أولاً
@@ -154,8 +138,8 @@ class _ProductListing3DSliderOptimizedState
       if (firstColorImage.images?.isNotEmpty == true) {
         imageUrl = firstColorImage.images!.first.filePath;
         imageHeight = double.tryParse(
-                firstColorImage.images!.first.originalHeight ?? '250') ??
-            250;
+                firstColorImage.images!.first.originalHeight ?? '290') ??
+            290;
         imageWidth = double.tryParse(
                 firstColorImage.images!.first.originalWidth ?? '200') ??
             200;
@@ -166,7 +150,7 @@ class _ProductListing3DSliderOptimizedState
     if (imageUrl == null && widget.productItem.images?.isNotEmpty == true) {
       final firstImage = widget.productItem.images!.first;
       imageUrl = firstImage.filePath;
-      imageHeight = double.tryParse(firstImage.originalHeight ?? '250') ?? 250;
+      imageHeight = double.tryParse(firstImage.originalHeight ?? '290') ?? 290;
       imageWidth = double.tryParse(firstImage.originalWidth ?? '200') ?? 200;
     }
 
@@ -185,7 +169,7 @@ class _ProductListing3DSliderOptimizedState
                   0;
           return Container(
             width: 200,
-            height: 250,
+            height: 290,
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
             child: (imageUrl != null
@@ -195,7 +179,7 @@ class _ProductListing3DSliderOptimizedState
                     orginalWidth: imageWidth,
                     width: 200,
                     imageUrl: imageUrl,
-                    height: 250,
+                    height: 290,
                     circleShape: false,
                     innerShadowYOffset: 3,
                   )
@@ -210,13 +194,12 @@ class _ProductListing3DSliderOptimizedState
   /// 💰 معلومات المنتج المبسطة
   Widget _buildProductInfo() {
     return Column(
-      mainAxisSize: MainAxisSize.max, // تقليل المساحة المستخدمة
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // معلومات المنتج
         SizedBox(
-          width: 200,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               crossAxisAlignment: LanguageService.languageCode == "ar"
                   ? CrossAxisAlignment.end
@@ -226,99 +209,21 @@ class _ProductListing3DSliderOptimizedState
                 _buildBrandIcon(),
 
                 // Product Name and Category
-                _buildProductCategoryRow(),
+                _buildProductNameRow(),
 
-                Directionality(
-                    textDirection: LanguageService.languageCode == "ar"
-                        ? TextDirection.rtl
-                        : TextDirection.ltr,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RotatingTextWidget(
-                            texts: widget.productItem.labelNames ?? [],
-                            rotationDuration: Duration(seconds: 5),
-                            textStyle: textTheme.titleMedium?.br.copyWith(
-                              fontSize: 9.sp,
-                              color: Color(0xff388CFF),
-                              height: 0,
-                            ),
-                          ),
-                          Container(
-                            width: 50,
-                            height: 13,
-                            child: Container(
-                                width: 40,
-                                height: 12,
-                                child: ValueListenableBuilder<bool>(
-                                    valueListenable: widget.visibleRedeem,
-                                    builder: (context, _visibleRedeem, _) {
-                                      return (GetIt.I<PrefsRepository>()
-                                                          .getRedeemDateForProduct(
-                                                              widget.productItem
-                                                                  .productId
-                                                                  .toString())
-                                                          ?.isAfter(DateTime
-                                                                  .now()
-                                                              .add(Duration(
-                                                                  seconds:
-                                                                      1))) ==
-                                                      true &&
-                                                  widget.productItem
-                                                          .hasRedeemDiscount ==
-                                                      true) ||
-                                              (GetIt.I<PrefsRepository>()
-                                                          .getRedeemSecondRemainingForProduct(
-                                                              widget.productItem
-                                                                  .productId
-                                                                  .toString()) ??
-                                                      0) >
-                                                  0
-                                          ? Row(children: [
-                                              SvgPicture.asset(
-                                                AppAssets.redeemClockSvg,
-                                                color: Color(0xffFF6200),
-                                              ),
-                                              SizedBox(
-                                                width: 2,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  SecondsCountdown(
-                                                    productId: widget
-                                                        .productItem.productId
-                                                        .toString(),
-                                                    finishRedeem:
-                                                        widget.finishRedeem,
-                                                    visibleRedeem:
-                                                        widget.visibleRedeem,
-                                                    endTime: GetIt.I<
-                                                                PrefsRepository>()
-                                                            .getRedeemDateForProduct(
-                                                                widget
-                                                                    .productItem
-                                                                    .productId
-                                                                    .toString()) ??
-                                                        DateTime.now(),
-                                                  ),
-                                                  Text(
-                                                      " ${LocaleKeys.seconds.tr()} ",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.rr
-                                                          .copyWith(
-                                                        fontSize: 9,
-                                                        color: const Color(
-                                                            0xffFF6200),
-                                                      )),
-                                                ],
-                                              ),
-                                            ])
-                                          : SizedBox.shrink();
-                                    })),
-                          )
-                        ])),
+                (widget.productItem.labelNames?.length ?? 0) == 0
+                    ? SizedBox(
+                        height: 10,
+                      )
+                    : RotatingTextWidget(
+                        texts: widget.productItem.labelNames ?? [],
+                        rotationDuration: Duration(seconds: 5),
+                        textStyle: textTheme.titleMedium?.br.copyWith(
+                          fontSize: 9.sp,
+                          color: Color(0xff388CFF),
+                          height: 0,
+                        ),
+                      ),
               ],
             ),
           ),
@@ -333,115 +238,6 @@ class _ProductListing3DSliderOptimizedState
     );
   }
 
-  /*Widget _buildRedeemSection() {
-    return ValueListenableBuilder<bool>(
-        valueListenable: widget.visibleRedeem,
-        builder: (context, _visibleRedeem, _) {
-          return GetIt.I<PrefsRepository>()
-                          .getRedeemDateForProduct(
-                              widget.productItem.productId.toString())
-                          ?.isAfter(DateTime.now().add(Duration(seconds: 1))) ==
-                      true &&
-                  widget.productItem.hasRedeemDiscount == true
-              ? Container(
-                  margin: EdgeInsets.only(left: 1, right: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.deepOrangeAccent),
-                    color: Color(0xffFDFDEF),
-                  ),
-                  height: 20,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 3,
-                      ),
-                      SvgPicture.asset(AppAssets.alarmClockSvg),
-                      Text(LocaleKeys.luck.tr(),
-                          style: context.textTheme.bodyMedium?.ba.copyWith(
-                            fontSize: 11,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      Text(" ${LocaleKeys.add_to_bag_within.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      SecondsCountdown(
-                        finishRedeem: widget.finishRedeem,
-                        visibleRedeem: widget.visibleRedeem,
-                        endTime: GetIt.I<PrefsRepository>()
-                                .getRedeemDateForProduct(
-                                    widget.productItem.productId.toString()) ??
-                            DateTime.now(),
-                      ),
-                      Text(" ${LocaleKeys.seconds.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 230, 67, 18),
-                          )),
-                    ].reversed.toList(),
-                  ),
-                )
-              : SizedBox.shrink();
-        });
-  }*/
-
-/*Widget _buildLabelSection() {
-    return ValueListenableBuilder<bool>(
-        valueListenable: widget.visibleRedeem,
-        builder: (context, _visibleRedeem, _) {
-          return GetIt.I<PrefsRepository>()
-                          .getRedeemDateForProduct(
-                              widget.productItem.productId.toString())
-                          ?.isAfter(DateTime.now().add(Duration(seconds: 1))) !=
-                      true &&
-                  widget.productItem.hasRedeemDiscount != true
-              ? Container(
-                  margin: EdgeInsets.only(left: 1, right: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.deepOrangeAccent),
-                    color: Color(0xffFDFDEF),
-                  ),
-                  height: 20,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 3,
-                      ),
-                      SvgPicture.asset(AppAssets.alarmClockSvg),
-                      Text(LocaleKeys.luck.tr(),
-                          style: context.textTheme.bodyMedium?.ba.copyWith(
-                            fontSize: 11,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      Text(" ${LocaleKeys.add_to_bag_within.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      SecondsCountdown(
-                        finishRedeem: widget.finishRedeem,
-                        visibleRedeem: widget.visibleRedeem,
-                        endTime: GetIt.I<PrefsRepository>()
-                                .getRedeemDateForProduct(
-                                    widget.productItem.productId.toString()) ??
-                            DateTime.now(),
-                      ),
-                      Text(" ${LocaleKeys.seconds.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 230, 67, 18),
-                          )),
-                    ].reversed.toList(),
-                  ),
-                )
-              : SizedBox.shrink();
-        });
-  }*/
-
-  /// 🏷️ Brand Icon
   Widget _buildBrandIcon() {
     final brandIcon = widget.productItem.brand?.icon?.filePath;
     if (brandIcon == null) return const SizedBox.shrink();
@@ -454,34 +250,7 @@ class _ProductListing3DSliderOptimizedState
   }
 
   /// 📝 Product Name Row
-  Widget _buildProductCategoryRow() {
-    List<String> productCategory = [];
-    if ((widget.productItem.category?.name ?? "").length > 0) {
-      productCategory.add(widget.productItem.category?.name ?? '');
-    }
-    if ((widget.productItem.category?.subCategories?.length ?? 0) > 0) {
-      if (((widget.productItem.category?.subCategories ?? []).first.name ?? "")
-              .length >
-          0) {
-        productCategory
-            .add(widget.productItem.category?.subCategories?.first.name ?? '');
-      }
-      if ((widget.productItem.category?.subCategories?.first.childes?.length ??
-              0) >
-          0) {
-        if ((widget.productItem.category?.subCategories ??
-                    [].first.childes ??
-                    [].first.name ??
-                    "")
-                .length >
-            0) {
-          productCategory.add(widget.productItem.category?.subCategories?.first
-                  .childes?.first.name ??
-              '');
-        }
-      }
-    }
-
+  Widget _buildProductNameRow() {
     return Row(
       mainAxisAlignment: LanguageService.languageCode == "ar"
           ? MainAxisAlignment.end
@@ -494,11 +263,12 @@ class _ProductListing3DSliderOptimizedState
         // Product Name
         Flexible(
           child: MyTextWidget(
-            productCategory.join(' | '),
+            widget.productItem.name.toString(),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.titleMedium?.rr
-                .copyWith(color: const Color(0xff505050), fontSize: 10.sp),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: const Color(0xff3c3c3c),
+                ),
           ),
         ),
       ],
@@ -506,7 +276,7 @@ class _ProductListing3DSliderOptimizedState
   }
 
   /// 🏷️ Category Icon
-  Widget _buildCategoryIcon() {
+/*  Widget _buildCategoryIcon() {
     final categoryIcon = widget.productItem.category?.flatPhotoPath?.filePath;
     if (categoryIcon == null) return const SizedBox.shrink();
 
@@ -520,14 +290,14 @@ class _ProductListing3DSliderOptimizedState
         ),
       ),
     );
-  }
+  }*/
 
   /// 💰 Price Section - FIXED: أبعاد أصلية
   Widget _buildPriceSection() {
     return SizedBox(
       width: 200,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getCurrencyForCountryModel !=
@@ -538,8 +308,6 @@ class _ProductListing3DSliderOptimizedState
             final exchangeRate = state
                     .getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
                 1;
-            final currencySymbol =
-                state.getCurrencyForCountryModel?.data?.currency?.symbol ?? '';
 
             return Directionality(
               textDirection: LanguageService.languageCode == "ar"
@@ -642,7 +410,7 @@ class _ProductListing3DSliderOptimizedState
         _homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
           isStatusInitaial: true,
         ));
-        widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
+        // widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
 
         Future.delayed(
           const Duration(milliseconds: 600),
@@ -727,6 +495,76 @@ class _ProductListing3DSliderOptimizedState
               ),
             );
           }),
+    );
+  }
+}
+
+Widget buildSingleImage(List<String> colorImages) {
+  return SizedBox(
+    width: 200,
+    height: 300,
+    child: colorImages.isNotEmpty
+        ? _ImagePageViewWithDots(images: colorImages)
+        : Container(
+            color: Colors.grey[200],
+            child: Icon(Icons.image, size: 50, color: Colors.grey[400]),
+          ),
+  );
+}
+
+class _ImagePageViewWithDots extends StatefulWidget {
+  final List<String> images;
+  const _ImagePageViewWithDots({Key? key, required this.images})
+      : super(key: key);
+
+  @override
+  State<_ImagePageViewWithDots> createState() => _ImagePageViewWithDotsState();
+}
+
+class _ImagePageViewWithDotsState extends State<_ImagePageViewWithDots> {
+  int _page = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          width: 200,
+          height: 290,
+          child: PageView.builder(
+            itemCount: widget.images.length,
+            onPageChanged: (i) => setState(() => _page = i),
+            itemBuilder: (context, i) => ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              child: ProductListingImageWidget(
+                imageUrl: widget.images[i],
+                width: 200,
+                height: 290,
+                orginalWidth: 200,
+                orginalHeight: 290,
+                circleShape: false,
+                innerShadowYOffset: 3,
+              ),
+            ),
+          ),
+        ),
+        if (widget.images.length > 1)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              widget.images.length,
+              (i) => Container(
+                margin: const EdgeInsets.symmetric(horizontal: 2),
+                width: 4,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: _page == i ? Color(0xff8D8D8D) : Color(0xffD3D3D3),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          )
+      ],
     );
   }
 }

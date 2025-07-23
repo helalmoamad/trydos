@@ -5,6 +5,7 @@ import '../../../../../core/data/model/pagination_model.dart';
 import '../../../data/models/apply_coupon_model.dart';
 import '../../../data/models/cancel_order_item_model.dart';
 import '../../../data/models/customer_wallet_model.dart';
+import '../../../data/models/color_size_for_product.dart';
 import '../../../data/models/get_address_by_coordinates_model.dart';
 import '../../../data/models/get_address_by_text_model.dart';
 import '../../../data/models/get_list_of_customer_addresses_model.dart';
@@ -43,6 +44,10 @@ enum CancelOrderStatus { init, loading, success, failure }
 
 enum ChangeOrderAddressStatus { init, loading, success, failure }
 
+enum GetProductColorSizeSyncAttributeStatus { init, loading, success, failure }
+
+enum ChangeOrderItemVariantStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class OrderState extends Equatable {
@@ -74,8 +79,12 @@ class OrderState extends Equatable {
     this.cancelOrderItemStatus = CancelOrderItemStatus.init,
     this.cancelOrderStatus = CancelOrderStatus.init,
     this.changeOrderAddressStatus = ChangeOrderAddressStatus.init,
+    this.getProductColorSizeSyncAttributeStatus =
+        GetProductColorSizeSyncAttributeStatus.init,
+    this.colorSizeForProductModel,
     this.resultSearch = const [],
     this.provincesByIso = const [],
+    this.changeOrderItemVariantStatus = ChangeOrderItemVariantStatus.init,
   });
 
   final OrdersGroupModel? placeOrderModel;
@@ -108,6 +117,10 @@ class OrderState extends Equatable {
   final CancelOrderItemStatus? cancelOrderItemStatus;
   final CancelOrderStatus? cancelOrderStatus;
   final ChangeOrderAddressStatus? changeOrderAddressStatus;
+  final GetProductColorSizeSyncAttributeStatus?
+      getProductColorSizeSyncAttributeStatus;
+  final ColorSizeForProductModel? colorSizeForProductModel;
+  final ChangeOrderItemVariantStatus? changeOrderItemVariantStatus;
 
   @override
   List<Object?> get props => [
@@ -140,6 +153,9 @@ class OrderState extends Equatable {
         cancelOrderItemStatus,
         cancelOrderStatus,
         changeOrderAddressStatus,
+        getProductColorSizeSyncAttributeStatus,
+        colorSizeForProductModel,
+        changeOrderItemVariantStatus,
       ];
 
   OrderState copyWith({
@@ -172,6 +188,10 @@ class OrderState extends Equatable {
     final CancelOrderItemStatus? cancelOrderItemStatus,
     final CancelOrderStatus? cancelOrderStatus,
     final ChangeOrderAddressStatus? changeOrderAddressStatus,
+    final GetProductColorSizeSyncAttributeStatus?
+        getProductColorSizeSyncAttributeStatus,
+    final ColorSizeForProductModel? colorSizeForProductModel,
+    final ChangeOrderItemVariantStatus? changeOrderItemVariantStatus,
   }) {
     return OrderState(
       placeOrderModel: placeOrderModel ?? this.placeOrderModel,
@@ -221,6 +241,13 @@ class OrderState extends Equatable {
       cancelOrderStatus: cancelOrderStatus ?? this.cancelOrderStatus,
       changeOrderAddressStatus:
           changeOrderAddressStatus ?? this.changeOrderAddressStatus,
+      getProductColorSizeSyncAttributeStatus:
+          getProductColorSizeSyncAttributeStatus ??
+              this.getProductColorSizeSyncAttributeStatus,
+      colorSizeForProductModel:
+          colorSizeForProductModel ?? this.colorSizeForProductModel,
+      changeOrderItemVariantStatus:
+          changeOrderItemVariantStatus ?? this.changeOrderItemVariantStatus,
     );
   }
 

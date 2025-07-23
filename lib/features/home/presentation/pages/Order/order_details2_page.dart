@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,10 +22,12 @@ import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
+import 'package:trydos/features/home/data/models/color_size_for_product.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_order_address_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/change_order_item_variant_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart'
     show OrderBloc;
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
@@ -83,16 +86,24 @@ class _OrderDetails2 extends State<OrderDetails2> {
   final ValueNotifier<int?> sizeIndexTap = ValueNotifier(null);
   final ValueNotifier<int> productIndexTap = ValueNotifier(0);
 
-  final ValueNotifier<String?> optionVariant = ValueNotifier("color");
+  final ValueNotifier<String?> optionVariant = ValueNotifier(null);
   bool allOrder = false;
   late OrderBloc orderBloc;
   late HomeBloc homeBloc;
   int firstAddressChoosed = 0;
   OrderListModel? order;
+  List<ProductColor> productColors = [];
+  List<ProductSyncColorImage> productSyncColorImages = [];
+  List<ProductChoiceOption> productChoiceOptions = [];
+  String? firstColorNum;
+  String? firstColorName;
+  String? firstSizeName;
+  final TextEditingController qtyController = TextEditingController();
+
   @override
   void initState() {
     order = widget.order;
-    sizeIndexTap.value = 3;
+
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     indexTapAddress.value = orderBloc.state.listOfAddressInfoClassToSave
@@ -102,6 +113,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
     firstAddressChoosed = indexTapAddress.value;
     // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    qtyController.dispose();
+    super.dispose();
   }
 
   @override
@@ -2525,7 +2542,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 10.h,
                       ),
                       Text(
-                        LocaleKeys.about_change_request_address.tr(),
+                        LocaleKeys.about_change_request_product.tr(),
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: Colors.white,
                           letterSpacing: 0.18,
@@ -2641,87 +2658,183 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       SizedBox(
                         height: 30.h,
                       ),
-                      InkWell(
-                        onTap: () {
-                          if (agreeToPolicies.value == false) {
-                            return;
-                          }
-                          agreeToPolicies.value = false;
-                          panelController.close();
-                          showPanel.value = false;
-                          optionModifyPanel.value = null;
-                          enableChangeAddress.value = false;
-                          showShadowForPanel.value = false;
-                          showShadowForCanselOrder.value = false;
-                          optionCanselOrReturn.value = [];
-                          showShadowForChangeAddress.value = false;
-                          shadowForChangeVariant.value = false;
-                        },
-                        child: ValueListenableBuilder<bool>(
-                            valueListenable: agreeToPolicies,
-                            builder: (context, _agreeToPolicies, _) {
-                              return Container(
-                                margin: EdgeInsets.symmetric(horizontal: 24),
-                                alignment: Alignment.center,
-                                width: 1.sw,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    color: agreeToPolicies.value == true
-                                        ? const Color(0xff3066CC)
-                                        : const Color(0xffC4C2C2),
-                                    border: agreeToPolicies.value == true
-                                        ? Border.all(
-                                            color: const Color(0xffF8F8F8),
-                                          )
-                                        : Border.all(
-                                            color: const Color(0xffC4C2C2),
-                                          ),
-                                    borderRadius: BorderRadius.circular(15)),
+                      BlocListener<OrderBloc, OrderState>(
+                          listener: (context, state) {
+                            if (state.changeOrderItemVariantStatus ==
+                                ChangeOrderItemVariantStatus.success) {
+                              orderBloc.add(
+                                GetOrdersByOrderGroupIDEvent(
+                                    orderGroupId: order!.orderGroupId ?? ""),
+                              );
+
+                              agreeToPolicies.value = false;
+                              panelController.close();
+                              showPanel.value = false;
+                              optionModifyPanel.value = null;
+                              enableChangeAddress.value = false;
+                              showShadowForPanel.value = false;
+                              showShadowForCanselOrder.value = false;
+                              optionCanselOrReturn.value = [];
+                              showShadowForChangeAddress.value = false;
+                              shadowForChangeVariant.value = false;
+                            }
+                          },
+                          child: InkWell(
+                            onTap: () {
+                              if (agreeToPolicies.value == false) {
+                                return;
+                              }
+                              orderBloc.add(ChangeOrderItemVariantEvent(
+                                  params: ChangeOrderItemVariantParams(
+                                orderDetailId: order!
+                                        .details?[indexTap.value].id
+                                        .toString() ??
+                                    "",
+                                choice1: sizeIndexTap.value == null
+                                    ? firstSizeName ?? ""
+                                    : productChoiceOptions[0]
+                                            .options?[sizeIndexTap.value!]
+                                            .option ??
+                                        "",
+                                color: colorIndexTap.value == null
+                                    ? firstColorNum ?? ""
+                                    : productColors[colorIndexTap.value!]
+                                            .color ??
+                                        "",
+                              )));
+                            },
+                            child: ValueListenableBuilder<bool>(
+                                valueListenable: agreeToPolicies,
+                                builder: (context, _agreeToPolicies, _) {
+                                  return BlocBuilder<OrderBloc, OrderState>(
+                                      buildWhen: (previous, current) =>
+                                          previous
+                                              .changeOrderItemVariantStatus !=
+                                          current.changeOrderItemVariantStatus,
+                                      builder: (context, state) {
+                                        return state.changeOrderItemVariantStatus ==
+                                                ChangeOrderItemVariantStatus
+                                                    .loading
+                                            ? Shimmer.fromColors(
+                                                baseColor: Colors.grey[500]!,
+                                                highlightColor:
+                                                    Colors.grey[300]!,
+                                                child: Container(
+                                                  margin: EdgeInsets.symmetric(
+                                                      horizontal: 24),
+                                                  alignment: Alignment.center,
+                                                  width: 1.sw,
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                      color: agreeToPolicies
+                                                                  .value ==
+                                                              true
+                                                          ? const Color(
+                                                              0xff3066CC)
+                                                          : const Color(
+                                                              0xffC4C2C2),
+                                                      border: agreeToPolicies
+                                                                  .value ==
+                                                              true
+                                                          ? Border.all(
+                                                              color: const Color(
+                                                                  0xffF8F8F8),
+                                                            )
+                                                          : Border.all(
+                                                              color: const Color(
+                                                                  0xffC4C2C2),
+                                                            ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15)),
+                                                ))
+                                            : Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 24),
+                                                alignment: Alignment.center,
+                                                width: 1.sw,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                    color:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? const Color(
+                                                                0xff3066CC)
+                                                            : const Color(
+                                                                0xffC4C2C2),
+                                                    border:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? Border.all(
+                                                                color: const Color(
+                                                                    0xffF8F8F8),
+                                                              )
+                                                            : Border.all(
+                                                                color: const Color(
+                                                                    0xffC4C2C2),
+                                                              ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15)),
+                                                child: Text(
+                                                  LocaleKeys.i_agree_change
+                                                      .tr(),
+                                                  textAlign: TextAlign.center,
+                                                  style: context
+                                                      .textTheme.bodyMedium?.br
+                                                      .copyWith(
+                                                    color: Colors.white,
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 16,
+                                                    height: 1.3,
+                                                  ),
+                                                ),
+                                              );
+                                      });
+                                }),
+                          )),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      BlocBuilder<OrderBloc, OrderState>(
+                          buildWhen: (previous, current) =>
+                              previous.changeOrderItemVariantStatus !=
+                              current.changeOrderItemVariantStatus,
+                          builder: (context, state) {
+                            return Container(
+                              width: 200,
+                              height: 40,
+                              child: InkWell(
+                                onTap: () {
+                                  if (state.changeOrderItemVariantStatus ==
+                                      ChangeOrderItemVariantStatus.loading) {
+                                    return;
+                                  }
+                                  agreeToPolicies.value = false;
+                                  panelController.close();
+                                  showPanel.value = false;
+                                  optionModifyPanel.value = null;
+                                  enableChangeAddress.value = false;
+                                  showShadowForPanel.value = false;
+                                  showShadowForChangeAddress.value = false;
+                                  showShadowForCanselOrder.value = false;
+                                  optionCanselOrReturn.value = [];
+                                  shadowForChangeVariant.value = false;
+                                },
                                 child: Text(
-                                  LocaleKeys.i_agree_change.tr(),
+                                  LocaleKeys.i_disagree.tr(),
                                   textAlign: TextAlign.center,
                                   style:
-                                      context.textTheme.bodyMedium?.br.copyWith(
+                                      context.textTheme.bodyMedium?.rr.copyWith(
                                     color: Colors.white,
                                     letterSpacing: 0.18,
                                     fontSize: 16,
                                     height: 1.3,
                                   ),
                                 ),
-                              );
-                            }),
-                      ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                      Container(
-                        width: 200,
-                        height: 40,
-                        child: InkWell(
-                          onTap: () {
-                            agreeToPolicies.value = false;
-                            panelController.close();
-                            showPanel.value = false;
-                            optionModifyPanel.value = null;
-                            enableChangeAddress.value = false;
-                            showShadowForPanel.value = false;
-                            showShadowForChangeAddress.value = false;
-                            showShadowForCanselOrder.value = false;
-                            optionCanselOrReturn.value = [];
-                            shadowForChangeVariant.value = false;
-                          },
-                          child: Text(
-                            LocaleKeys.i_disagree.tr(),
-                            textAlign: TextAlign.center,
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: Colors.white,
-                              letterSpacing: 0.18,
-                              fontSize: 16,
-                              height: 1.3,
-                            ),
-                          ),
-                        ),
-                      ),
+                              ),
+                            );
+                          }),
                       SizedBox(
                         height: 10.h,
                       ),
@@ -3915,6 +4028,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             topRight: Radius.circular(30.r)),
                         isDraggable: true,
                         onPanelClosed: () {
+                          qtyController.clear();
                           colorIndexTap.value = null;
                           sizeIndexTap.value = null;
                           agreeToPolicies.value = false;
@@ -5445,17 +5559,108 @@ class _OrderDetails2 extends State<OrderDetails2> {
               SizedBox(
                 height: 20,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: optionOfModify(
-                    onTap: () {
+              BlocListener<OrderBloc, OrderState>(
+                  listenWhen: (previous, current) =>
+                      previous.getProductColorSizeSyncAttributeStatus !=
+                      current.getProductColorSizeSyncAttributeStatus,
+                  listener: (context, state) {
+                    if (state.getProductColorSizeSyncAttributeStatus ==
+                        GetProductColorSizeSyncAttributeStatus.success) {
+                      productColors =
+                          state.colorSizeForProductModel?.data?.colors ?? [];
+                      productSyncColorImages = state.colorSizeForProductModel
+                              ?.data?.syncColorImages ??
+                          [];
+                      productChoiceOptions =
+                          state.colorSizeForProductModel?.data?.choiceOptions ??
+                              [];
+                      if (productColors.isNotEmpty) {
+                        firstColorName = order!.details![indexTap.value].variant
+                                ?.split("-")
+                                .toList()
+                                .first ??
+                            "";
+                      }
+                      if (productChoiceOptions.isNotEmpty) {
+                        firstSizeName = order!.details![indexTap.value].variant
+                                ?.split("-")
+                                .toList()
+                                .last ??
+                            "";
+                      }
+                      firstColorNum =
+                          state.colorSizeForProductModel?.data?.colors
+                              ?.firstWhere(
+                                (element) => element.option == firstColorName,
+                                orElse: () => ProductColor(
+                                  color: "",
+                                  name: "",
+                                  option: "",
+                                ),
+                              )
+                              .color;
+
+                      if (productColors.isNotEmpty) {
+                        productColors.removeWhere(
+                            (element) => element.option == firstColorName);
+                        productSyncColorImages.removeWhere(
+                            (element) => element.colorOption == firstColorName);
+                      }
+                      if (productChoiceOptions.isNotEmpty) {
+                        productChoiceOptions[0].options?.removeWhere(
+                            (element) => element.option == firstSizeName);
+                      }
+                      if (productColors.isNotEmpty) {
+                        optionVariant.value = "color";
+                      } else if (productChoiceOptions.isNotEmpty) {
+                        optionVariant.value = "size";
+                      } else {
+                        optionVariant.value = "qty";
+                      }
                       optionModifyPanel.value = "Change_Product_Request";
-                    },
-                    svg: AppAssets.changeProductRequestSvg,
-                    image2: order!.details?[indexTap.value].image ?? "",
-                    tiltle: "${LocaleKeys.change_product_request.tr()}",
-                    body: "${LocaleKeys.change_size_color_other.tr()}"),
-              ),
+                    }
+                  },
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: BlocBuilder<OrderBloc, OrderState>(
+                          buildWhen: (previous, current) =>
+                              previous.getProductColorSizeSyncAttributeStatus !=
+                              current.getProductColorSizeSyncAttributeStatus,
+                          builder: (context, state) {
+                            if (state.getProductColorSizeSyncAttributeStatus ==
+                                GetProductColorSizeSyncAttributeStatus
+                                    .loading) {
+                              return Center(
+                                  child: Shimmer.fromColors(
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      child: Container(
+                                        width: 1.sw,
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: const Color(0xffF8F8F8),
+                                        ),
+                                      )));
+                            }
+                            return optionOfModify(
+                                onTap: () {
+                                  orderBloc.add(
+                                      GetProductColorSizeSyncAttributeEvent(
+                                          id: order!.details?[indexTap.value]
+                                                  .productId
+                                                  .toString() ??
+                                              ""));
+                                },
+                                svg: AppAssets.changeProductRequestSvg,
+                                image2:
+                                    order!.details?[indexTap.value].image ?? "",
+                                tiltle:
+                                    "${LocaleKeys.change_product_request.tr()}",
+                                body:
+                                    "${LocaleKeys.change_size_color_other.tr()}");
+                          }))),
               SizedBox(
                 height: 5,
               ),
@@ -5997,366 +6202,372 @@ class _OrderDetails2 extends State<OrderDetails2> {
           ),
           changeSizeOrColorOrQty(),
           Spacer(),
-          ValueListenableBuilder<int?>(
-              valueListenable: colorIndexTap,
-              builder: (context, _colorIndexTap, _) {
+          ValueListenableBuilder<String?>(
+              valueListenable: optionVariant,
+              builder: (context, _option, _) {
                 return ValueListenableBuilder<int?>(
-                    valueListenable: sizeIndexTap,
-                    builder: (context, _sizeIndexTap, _) {
-                      return InkWell(
-                        onTap: () {
-                          if (_sizeIndexTap != null || _colorIndexTap != null) {
-                            shadowForChangeVariant.value = true;
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: 1.sw,
-                            height: 53,
-                            decoration: BoxDecoration(
-                                color: (_sizeIndexTap != null ||
-                                        _colorIndexTap != null)
-                                    ? Color(0xff402CDD)
-                                    : Color(0xffD3D3D3),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                            child: Text("${LocaleKeys.change_request.tr()}",
-                                maxLines: 1,
-                                style:
-                                    context.textTheme.bodyMedium?.mr.copyWith(
-                                  color: Colors.white,
-                                  letterSpacing: 0.18,
-                                  fontSize: 16,
-                                  height: 1.3,
-                                )),
-                          ),
-                        ),
-                      );
+                    valueListenable: colorIndexTap,
+                    builder: (context, _colorIndexTap, _) {
+                      return ValueListenableBuilder<int?>(
+                          valueListenable: sizeIndexTap,
+                          builder: (context, _sizeIndexTap, _) {
+                            return InkWell(
+                              onTap: () {
+                                if (_sizeIndexTap != null ||
+                                    _colorIndexTap != null ||
+                                    ((qtyController.text !=
+                                            (order!.details?[indexTap.value]
+                                                    .qty!
+                                                    .round())
+                                                .toString()) &&
+                                        qtyController.text.isNotEmpty)) {
+                                  shadowForChangeVariant.value = true;
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  width: 1.sw,
+                                  height: 53,
+                                  decoration: BoxDecoration(
+                                      color: (_sizeIndexTap != null ||
+                                              ((qtyController.text !=
+                                                      (order!
+                                                              .details?[indexTap
+                                                                  .value]
+                                                              .qty!
+                                                              .round())
+                                                          .toString()) &&
+                                                  qtyController
+                                                      .text.isNotEmpty) ||
+                                              _colorIndexTap != null)
+                                          ? Color(0xff402CDD)
+                                          : Color(0xffD3D3D3),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20))),
+                                  child: Text(
+                                      "${LocaleKeys.change_request.tr()}",
+                                      maxLines: 1,
+                                      style: context.textTheme.bodyMedium?.mr
+                                          .copyWith(
+                                        color: Colors.white,
+                                        letterSpacing: 0.18,
+                                        fontSize: 16,
+                                        height: 1.3,
+                                      )),
+                                ),
+                              ),
+                            );
+                          });
                     });
               }),
         ]);
   }
 
   Widget changeSizeOrColorOrQty() {
-    return ValueListenableBuilder<String?>(
-        valueListenable: optionVariant,
-        builder: (context, _option, _) {
-          return Column(
-            children: [
-              Container(
-                width: 1.sw,
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                height: 50,
-                decoration: BoxDecoration(
-                    color: Color(0xffF8F8F8),
-                    borderRadius: BorderRadius.all(Radius.circular(20))),
-                child: Row(
+    return BlocBuilder<OrderBloc, OrderState>(
+        buildWhen: (previous, current) =>
+            previous.getProductColorSizeSyncAttributeStatus !=
+            current.getProductColorSizeSyncAttributeStatus,
+        builder: (context, state) {
+          return ValueListenableBuilder<String?>(
+              valueListenable: optionVariant,
+              builder: (context, _option, _) {
+                return Column(
                   children: [
-                    InkWell(
-                      onTap: () {
-                        optionVariant.value = "color";
-                      },
-                      child: Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        width: (1.sw - 48) / 3,
-                        decoration: BoxDecoration(
-                            border: _option == "color"
-                                ? Border.all(color: Color(0xff402CDD))
-                                : null,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: Text("${LocaleKeys.change_color.tr()}",
-                            textAlign: TextAlign.center,
-                            style: _option == "color"
-                                ? context.textTheme.bodyMedium?.mr.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  )
-                                : context.textTheme.bodyMedium?.rr.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  )),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        optionVariant.value = "size";
-                      },
-                      child: Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        width: (1.sw - 48) / 3,
-                        decoration: BoxDecoration(
-                            border: _option == "size"
-                                ? Border.all(color: Color(0xff402CDD))
-                                : null,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: Text("${LocaleKeys.change_size.tr()}",
-                            textAlign: TextAlign.center,
-                            style: _option == "size"
-                                ? context.textTheme.bodyMedium?.mr.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  )
-                                : context.textTheme.bodyMedium?.rr.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  )),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        optionVariant.value = "qty";
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 50,
-                        width: (1.sw - 48) / 3,
-                        decoration: BoxDecoration(
-                            border: _option == "qty"
-                                ? Border.all(color: Color(0xff402CDD))
-                                : null,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: Text("${LocaleKeys.change_qty.tr()}",
-                            textAlign: TextAlign.center,
-                            style: _option == "qty"
-                                ? context.textTheme.bodyMedium?.mr.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  )
-                                : context.textTheme.bodyMedium?.rr.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  )),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(50))),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    child: MyCachedNetworkImage(
-                      withInnerShadow: true,
-                      withImageShadow: true,
-                      radius: 15,
-                      imageUrl: order!.details?[indexTap.value].image ?? "",
-                      imageFit: BoxFit.fill,
-                      width: 70,
-                      height: 70,
-                    ),
-                  )),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                  "${LocaleKeys.change_from.tr()} ${(_option == "color") ? "Denim Blue" : (_option == "size") ? "Medium" : "${LocaleKeys.qty.tr()} 1"}",
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 14,
-                    height: 1.3,
-                  )),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: 1.sw,
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                height: 0.5,
-                decoration: BoxDecoration(
-                    color: Color(0xffC4C2C2),
-                    border: Border.all(color: Color(0xffC4C2C2)),
-                    borderRadius: BorderRadius.all(Radius.circular(2))),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              (_option == "color")
-                  ? Text("${LocaleKeys.to_new_color.tr()} ?",
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.bodyMedium?.mr.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        letterSpacing: 0.18,
-                        fontSize: 14,
-                        height: 1.3,
-                      ))
-                  : (_option == "size")
-                      ? Text("${LocaleKeys.to_new_size.tr()} ?",
-                          textAlign: TextAlign.center,
-                          style: context.textTheme.bodyMedium?.mr.copyWith(
-                            color: const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 14,
-                            height: 1.3,
-                          ))
-                      : SizedBox.shrink(),
-              SizedBox(
-                height: 15,
-              ),
-              (_option == "color")
-                  ? ValueListenableBuilder<int?>(
-                      valueListenable: colorIndexTap,
-                      builder: (context, _colorIndexTap, _) {
-                        return Container(
-                          width: 1.sw,
-                          height: 100,
-                          margin: EdgeInsets.symmetric(horizontal: 24),
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 5,
-                            itemBuilder: (context, index) => Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              child: InkWell(
-                                onTap: () {
-                                  if (_colorIndexTap == index) {
-                                    colorIndexTap.value = null;
-                                    return;
-                                  }
-                                  colorIndexTap.value = index;
-                                },
-                                child: Column(
-                                  children: [
-                                    Center(
-                                      child: Container(
-                                          width: 70,
-                                          height: 70,
-                                          decoration: BoxDecoration(
-                                              border: _colorIndexTap == index
-                                                  ? Border.all(
-                                                      color: Color(0xff402CDD))
-                                                  : null,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(40))),
-                                          child: ClipRRect(
+                    Container(
+                      width: 1.sw,
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: Color(0xffF8F8F8),
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          productColors.isEmpty
+                              ? SizedBox.shrink()
+                              : InkWell(
+                                  onTap: () {
+                                    optionVariant.value = "color";
+                                    sizeIndexTap.value = null;
+                                    qtyController.clear();
+                                  },
+                                  child: Container(
+                                    height: 50,
+                                    alignment: Alignment.center,
+                                    width: (1.sw - 48) / 3,
+                                    decoration: BoxDecoration(
+                                        border: _option == "color"
+                                            ? Border.all(
+                                                color: Color(0xff402CDD))
+                                            : null,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20))),
+                                    child: Text(
+                                        "${LocaleKeys.change_color.tr()}",
+                                        textAlign: TextAlign.center,
+                                        style: _option == "color"
+                                            ? context.textTheme.bodyMedium?.mr
+                                                .copyWith(
+                                                color: const Color(0xff1D1D1D),
+                                                letterSpacing: 0.18,
+                                                fontSize: 14,
+                                                height: 1.3,
+                                              )
+                                            : context.textTheme.bodyMedium?.rr
+                                                .copyWith(
+                                                color: const Color(0xff1D1D1D),
+                                                letterSpacing: 0.18,
+                                                fontSize: 14,
+                                                height: 1.3,
+                                              )),
+                                  ),
+                                ),
+                          InkWell(
+                            onTap: () {
+                              qtyController.clear();
+                              optionVariant.value = "size";
+                              colorIndexTap.value = null;
+                            },
+                            child: (productChoiceOptions.isEmpty)
+                                ? SizedBox.shrink()
+                                : (productChoiceOptions[0].options?.isEmpty ??
+                                        false)
+                                    ? SizedBox.shrink()
+                                    : Container(
+                                        height: 50,
+                                        alignment: Alignment.center,
+                                        width: (1.sw - 48) / 3,
+                                        decoration: BoxDecoration(
+                                            border: _option == "size"
+                                                ? Border.all(
+                                                    color: Color(0xff402CDD))
+                                                : null,
                                             borderRadius: BorderRadius.all(
-                                                Radius.circular(40)),
-                                            child: MyCachedNetworkImage(
-                                              withInnerShadow: true,
-                                              withImageShadow: true,
-                                              radius: 40,
-                                              imageUrl: order!
-                                                      .details?[indexTap.value]
-                                                      .image ??
-                                                  "",
-                                              imageFit: BoxFit.fill,
-                                              width: 70,
-                                              height: 70,
-                                            ),
-                                          )),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text("White",
-                                        style: context.textTheme.bodyMedium?.rr
-                                            .copyWith(
-                                          color: _colorIndexTap == index
-                                              ? Color(0xff402CDD)
-                                              : const Color(0xff5D5C5D),
+                                                Radius.circular(20))),
+                                        child: Text(
+                                            "${LocaleKeys.change_size.tr()}",
+                                            textAlign: TextAlign.center,
+                                            style: _option == "size"
+                                                ? context
+                                                    .textTheme.bodyMedium?.mr
+                                                    .copyWith(
+                                                    color:
+                                                        const Color(0xff1D1D1D),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 14,
+                                                    height: 1.3,
+                                                  )
+                                                : context
+                                                    .textTheme.bodyMedium?.rr
+                                                    .copyWith(
+                                                    color:
+                                                        const Color(0xff1D1D1D),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 14,
+                                                    height: 1.3,
+                                                  )),
+                                      ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              optionVariant.value = "qty";
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 50,
+                              width: (1.sw - 48) / 3,
+                              decoration: BoxDecoration(
+                                  border: _option == "qty"
+                                      ? Border.all(color: Color(0xff402CDD))
+                                      : null,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: Text("${LocaleKeys.change_qty.tr()}",
+                                  textAlign: TextAlign.center,
+                                  style: _option == "qty"
+                                      ? context.textTheme.bodyMedium?.mr
+                                          .copyWith(
+                                          color: const Color(0xff1D1D1D),
+                                          letterSpacing: 0.18,
+                                          fontSize: 14,
+                                          height: 1.3,
+                                        )
+                                      : context.textTheme.bodyMedium?.rr
+                                          .copyWith(
+                                          color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
                                           fontSize: 14,
                                           height: 1.3,
                                         )),
-                                  ],
-                                ),
-                              ),
                             ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          child: MyCachedNetworkImage(
+                            withInnerShadow: true,
+                            withImageShadow: true,
+                            radius: 15,
+                            imageUrl:
+                                order!.details?[indexTap.value].image ?? "",
+                            imageFit: BoxFit.fill,
+                            width: 70,
+                            height: 70,
                           ),
-                        );
-                      })
-                  : (_option == "size")
-                      ? ValueListenableBuilder<int?>(
-                          valueListenable: sizeIndexTap,
-                          builder: (context, _sizeIndexTap, _) {
-                            return Container(
-                              width: 1.sw,
-                              height: 100,
-                              margin: EdgeInsets.symmetric(horizontal: 24),
-                              child: ListView.builder(
+                        )),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                        "${LocaleKeys.change_from.tr()} ${(_option == "color") ? "${firstColorName}" : (_option == "size") ? "${firstSizeName}" : "${LocaleKeys.qty.tr()} ${order!.details?[indexTap.value].qty?.round()}"}",
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.bodyMedium?.mr.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.3,
+                        )),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: 1.sw,
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      height: 0.5,
+                      decoration: BoxDecoration(
+                          color: Color(0xffC4C2C2),
+                          border: Border.all(color: Color(0xffC4C2C2)),
+                          borderRadius: BorderRadius.all(Radius.circular(2))),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    (_option == "color")
+                        ? Text("${LocaleKeys.to_new_color.tr()} ?",
+                            textAlign: TextAlign.center,
+                            style: context.textTheme.bodyMedium?.mr.copyWith(
+                              color: const Color(0xff1D1D1D),
+                              letterSpacing: 0.18,
+                              fontSize: 14,
+                              height: 1.3,
+                            ))
+                        : (_option == "size")
+                            ? Text("${LocaleKeys.to_new_size.tr()} ?",
+                                textAlign: TextAlign.center,
+                                style:
+                                    context.textTheme.bodyMedium?.mr.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 1.3,
+                                ))
+                            : Text(LocaleKeys.to_qty.tr(),
+                                textAlign: TextAlign.center,
+                                style:
+                                    context.textTheme.bodyMedium?.mr.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 1.3,
+                                )),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    (_option == "color")
+                        ? ValueListenableBuilder<int?>(
+                            valueListenable: colorIndexTap,
+                            builder: (context, _colorIndexTap, _) {
+                              return Container(
+                                width: 1.sw,
+                                height: 105,
+                                alignment: Alignment.center,
+                                margin: EdgeInsets.symmetric(horizontal: 24),
+                                child: SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: 5,
-                                  itemBuilder: (context, index) => Padding(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: List.generate(
+                                      state.colorSizeForProductModel?.data
+                                              ?.syncColorImages?.length ??
+                                          0,
+                                      (index) => Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: InkWell(
                                           onTap: () {
-                                            if (_sizeIndexTap == index) {
-                                              sizeIndexTap.value = null;
+                                            if (_colorIndexTap == index) {
+                                              colorIndexTap.value = null;
                                               return;
                                             }
-                                            sizeIndexTap.value = index;
+                                            colorIndexTap.value = index;
                                           },
                                           child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
                                             children: [
-                                              Container(
-                                                  width: 70,
-                                                  height: 70,
-                                                  decoration: BoxDecoration(
-                                                      border: _sizeIndexTap ==
-                                                              index
-                                                          ? Border.all(
-                                                              color: Color(
-                                                                  0xff402CDD))
-                                                          : null,
+                                              Center(
+                                                child: Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    decoration: BoxDecoration(
+                                                        border: _colorIndexTap ==
+                                                                index
+                                                            ? Border.all(
+                                                                color: Color(
+                                                                    0xff402CDD))
+                                                            : null,
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    40))),
+                                                    child: ClipRRect(
                                                       borderRadius:
                                                           BorderRadius.all(
                                                               Radius.circular(
-                                                                  40))),
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                40)),
-                                                    child: MyCachedNetworkImage(
-                                                      withInnerShadow: true,
-                                                      withImageShadow: true,
-                                                      radius: 40,
-                                                      imageUrl: order!
-                                                              .details?[indexTap
-                                                                  .value]
-                                                              .image ??
-                                                          "",
-                                                      imageFit: BoxFit.fill,
-                                                      width: 70,
-                                                      height: 70,
-                                                    ),
-                                                  )),
+                                                                  40)),
+                                                      child:
+                                                          MyCachedNetworkImage(
+                                                        withInnerShadow: true,
+                                                        withImageShadow: true,
+                                                        radius: 40,
+                                                        imageUrl:
+                                                            productSyncColorImages[
+                                                                        index]
+                                                                    .images?[0] ??
+                                                                "",
+                                                        imageFit: BoxFit.fill,
+                                                        width: 70,
+                                                        height: 70,
+                                                      ),
+                                                    )),
+                                              ),
                                               SizedBox(
                                                 height: 10,
                                               ),
-                                              Text("XXL",
+                                              Text(
+                                                  productColors[index].name ??
+                                                      "",
                                                   style: context
                                                       .textTheme.bodyMedium?.rr
                                                       .copyWith(
                                                     color:
-                                                        _sizeIndexTap == index
+                                                        _colorIndexTap == index
                                                             ? Color(0xff402CDD)
                                                             : const Color(
                                                                 0xff5D5C5D),
@@ -6367,12 +6578,140 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             ],
                                           ),
                                         ),
-                                      )),
-                            );
-                          })
-                      : SizedBox.shrink(),
-            ],
-          );
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            })
+                        : (_option == "size")
+                            ? ValueListenableBuilder<int?>(
+                                valueListenable: sizeIndexTap,
+                                builder: (context, _sizeIndexTap, _) {
+                                  return Container(
+                                    width: 1.sw,
+                                    height: 100,
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 24),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: List.generate(
+                                          productChoiceOptions[0]
+                                                  .options
+                                                  ?.length ??
+                                              0,
+                                          (index) => Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            child: InkWell(
+                                              onTap: () {
+                                                if (_sizeIndexTap == index) {
+                                                  sizeIndexTap.value = null;
+                                                  return;
+                                                }
+                                                sizeIndexTap.value = index;
+                                              },
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    decoration: BoxDecoration(
+                                                      border: _sizeIndexTap ==
+                                                              index
+                                                          ? Border.all(
+                                                              color: Color(
+                                                                  0xff402CDD))
+                                                          : null,
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  40)),
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  40)),
+                                                      child:
+                                                          MyCachedNetworkImage(
+                                                        withInnerShadow: true,
+                                                        withImageShadow: true,
+                                                        radius: 40,
+                                                        imageUrl: order!
+                                                                .details?[
+                                                                    indexTap
+                                                                        .value]
+                                                                .image ??
+                                                            "",
+                                                        imageFit: BoxFit.fill,
+                                                        width: 70,
+                                                        height: 70,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Text(
+                                                    productChoiceOptions[0]
+                                                            .options?[index]
+                                                            .name ??
+                                                        "",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.rr
+                                                        .copyWith(
+                                                      color: _sizeIndexTap ==
+                                                              index
+                                                          ? Color(0xff402CDD)
+                                                          : const Color(
+                                                              0xff5D5C5D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 14,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                })
+                            : SizedBox(
+                                width: 75,
+                                height: 40.h,
+                                child: TextFormField(
+                                  controller: qtyController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 2, horizontal: 8),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Color(0xFF8D8D8D)),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Color(0xFF8D8D8D)),
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    color: Color(0xFF1D1D1D),
+                                  ),
+                                ),
+                              )
+                  ],
+                );
+              });
         });
   }
 

@@ -954,7 +954,26 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               // );
                                             },
                                             child: ProductDetailsImageWidget(
-                                              flashDealTime: index != 0
+                                              flashDealEndDate: productItem
+                                                      ?.flashDealEndDate ??
+                                                  "",
+                                              productId:
+                                                  productItem?.productId ?? 0,
+                                              visibleRedeem: visibleRedeem,
+                                              isRedeem: state.cachedProductWithoutRelatedProductsModel[
+                                                          productItem?.productId
+                                                              .toString()] !=
+                                                      null
+                                                  ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem
+                                                                  ?.productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.isRedeem ==
+                                                      true
+                                                  : false,
+                                              /*    flashDealTime: index != 0
                                                   ? ""
                                                   : productItem!
                                                           .flashDealEndDate ??
@@ -962,7 +981,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               lableNames: index != 0
                                                   ? []
                                                   : productItem!.labelNames ??
-                                                      [],
+                                                      [],*/
                                               height: 464,
                                               width: 320,
                                               orginalHeight: productItem!
@@ -1389,92 +1408,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 },
               ),
             ),
-            ValueListenableBuilder<String?>(
-                valueListenable: productNotAvailableNotifier,
-                builder: (context, _productNotAvailableNotifier, _) {
-                  return ValueListenableBuilder<bool>(
-                      valueListenable: visibleRedeem,
-                      builder: (context, _visibleRedeem, _) {
-                        return BlocBuilder<HomeBloc, HomeState>(
-                            buildWhen: (p, c) =>
-                                p.getFullProductDetailsStatus !=
-                                    c.getFullProductDetailsStatus ||
-                                p.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                    c.getProductDetailWithoutSimilarRelatedProductsStatus,
-                            builder: (context, state) {
-                              return prefsRepository
-                                              .getRedeemDateForProduct(
-                                                  productItem!.productId
-                                                      .toString())
-                                              ?.isAfter(DateTime.now()
-                                                  .add(Duration(seconds: 1))) ==
-                                          true &&
-                                      state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem!.productId
-                                                      .toString()]
-                                              ?.product
-                                              ?.isRedeem ==
-                                          true &&
-                                      _productNotAvailableNotifier == null
-                                  ? Positioned(
-                                      top: 1.sh - 260,
-                                      right: 20,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.deepOrangeAccent),
-                                          color: Color(0xffFDFDEF),
-                                        ),
-                                        height: 30,
-                                        child: Row(
-                                          children: [
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            SvgPicture.asset(
-                                                AppAssets.alarmClockSvg),
-                                            Text(LocaleKeys.luck.tr(),
-                                                style: context
-                                                    .textTheme.bodyMedium?.ba
-                                                    .copyWith(
-                                                  fontSize: 12,
-                                                  color: const Color.fromARGB(
-                                                      255, 250, 71, 16),
-                                                )),
-                                            Text(
-                                                " ${LocaleKeys.add_to_bag_within.tr()} ",
-                                                style: context
-                                                    .textTheme.bodyMedium?.ra
-                                                    .copyWith(
-                                                  fontSize: 12,
-                                                  color: const Color.fromARGB(
-                                                      255, 250, 71, 16),
-                                                )),
-                                            SecondsCountdown(
-                                              visibleRedeem: visibleRedeem,
-                                              endTime: prefsRepository
-                                                      .getRedeemDateForProduct(
-                                                          productItem!.productId
-                                                              .toString()) ??
-                                                  DateTime.now(),
-                                            ),
-                                            Text(" ${LocaleKeys.seconds.tr()} ",
-                                                style: context
-                                                    .textTheme.bodyMedium?.ra
-                                                    .copyWith(
-                                                  fontSize: 12,
-                                                  color: const Color.fromARGB(
-                                                      255, 230, 67, 18),
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  : SizedBox.shrink();
-                            });
-                      });
-                }),
             BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (p, c) =>
                   p.getFullProductDetailsStatus !=
@@ -1682,18 +1615,26 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         valueListenable: visibleRedeem,
                         builder: (context, _visibleRedeem, _) {
                           return ProductDetailsBottomSheet(
-                            isRedeem: prefsRepository
-                                        .getRedeemDateForProduct(
-                                            productItem!.productId.toString())
-                                        ?.isAfter(DateTime.now()
-                                            .add(Duration(seconds: 1))) ==
-                                    true &&
-                                state
-                                        .cachedProductWithoutRelatedProductsModel[
-                                            productItem!.productId.toString()]
-                                        ?.product
-                                        ?.isRedeem ==
-                                    true,
+                            isRedeem: (prefsRepository
+                                            .getRedeemDateForProduct(
+                                                productItem!.productId
+                                                    .toString())
+                                            ?.isAfter(DateTime.now()
+                                                .add(Duration(seconds: 1))) ==
+                                        true &&
+                                    state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.productId
+                                                    .toString()]
+                                            ?.product
+                                            ?.isRedeem ==
+                                        true) ||
+                                (GetIt.I<PrefsRepository>()
+                                            .getRedeemSecondRemainingForProduct(
+                                                (productItem?.productId ?? 0)
+                                                    .toString()) ??
+                                        0) >
+                                    0,
                             redeemPrice: state
                                             .cachedProductWithoutRelatedProductsModel[
                                         productItem?.productId.toString()] !=
@@ -2038,10 +1979,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         await Future.delayed(
             Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
-                choice_1: productItem?.choiceOptions?[0].options
-                    ?.firstWhere(
-                        (element) => element.option == (currentVariation!.type))
-                    .name,
+                choice_1: productItem?.choiceOptions?.length == 0
+                    ? ""
+                    : productItem?.choiceOptions?[0].options
+                        ?.firstWhere((element) =>
+                            element.option == (currentVariation!.type))
+                        .name,
                 choiceOption: currentVariation!.type)));
       }
 

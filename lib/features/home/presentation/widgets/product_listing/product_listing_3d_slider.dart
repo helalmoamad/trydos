@@ -24,6 +24,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
+import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
@@ -684,42 +685,71 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                             viewportFraction: 1,
                                           ),
                                           itemBuilder: (context, index, _) {
-                                            return ProductListingImageWidget(
-                                              orginalHeight: syncColorImageList
-                                                      .isNullOrEmpty
-                                                  ? double.parse(widget
-                                                      .productItem
-                                                      .images![index]
-                                                      .originalHeight!)
-                                                  : double.parse(
-                                                      syncColorImageList![
-                                                              prevIndexInSecondSlider]
-                                                          .images![index]
-                                                          .originalHeight!),
-                                              orginalWidth: syncColorImageList
-                                                      .isNullOrEmpty
-                                                  ? double.parse(widget
-                                                      .productItem
-                                                      .images![index]
-                                                      .originalWidth!)
-                                                  : double.parse(
-                                                      syncColorImageList![
-                                                              prevIndexInSecondSlider]
-                                                          .images![index]
-                                                          .originalWidth!),
-                                              width: 200,
-                                              imageUrl: syncColorImageList
-                                                      .isNullOrEmpty
-                                                  ? widget.productItem
-                                                      .images![index].filePath!
-                                                  : syncColorImageList![
-                                                          prevIndexInSecondSlider]
-                                                      .images![index]
-                                                      .filePath!,
-                                              height: 300,
-                                              circleShape: false,
-                                              innerShadowYOffset: 3,
-                                            );
+                                            return ValueListenableBuilder<bool>(
+                                                valueListenable:
+                                                    widget.visibleRedeem,
+                                                builder: (context,
+                                                    _visibleRedeem, _) {
+                                                  bool isRedeem = (GetIt.I<PrefsRepository>()
+                                                                  .getRedeemDateForProduct(widget
+                                                                      .productItem
+                                                                      .productId
+                                                                      .toString())
+                                                                  ?.isAfter(DateTime.now().add(Duration(
+                                                                      seconds:
+                                                                          1))) ==
+                                                              true &&
+                                                          widget.productItem.hasRedeemDiscount ==
+                                                              true) ||
+                                                      (GetIt.I<PrefsRepository>()
+                                                                  .getRedeemSecondRemainingForProduct(widget
+                                                                      .productItem
+                                                                      .productId
+                                                                      .toString()) ??
+                                                              0) >
+                                                          0;
+                                                  return ProductListingImageWidget(
+                                                    borderColor: isRedeem
+                                                        ? Color(0xffFF6200)
+                                                        : null,
+                                                    orginalHeight: syncColorImageList
+                                                            .isNullOrEmpty
+                                                        ? double.parse(widget
+                                                            .productItem
+                                                            .images![index]
+                                                            .originalHeight!)
+                                                        : double.parse(
+                                                            syncColorImageList![
+                                                                    prevIndexInSecondSlider]
+                                                                .images![index]
+                                                                .originalHeight!),
+                                                    orginalWidth: syncColorImageList
+                                                            .isNullOrEmpty
+                                                        ? double.parse(widget
+                                                            .productItem
+                                                            .images![index]
+                                                            .originalWidth!)
+                                                        : double.parse(
+                                                            syncColorImageList![
+                                                                    prevIndexInSecondSlider]
+                                                                .images![index]
+                                                                .originalWidth!),
+                                                    width: 200,
+                                                    imageUrl: syncColorImageList
+                                                            .isNullOrEmpty
+                                                        ? widget
+                                                            .productItem
+                                                            .images![index]
+                                                            .filePath!
+                                                        : syncColorImageList![
+                                                                prevIndexInSecondSlider]
+                                                            .images![index]
+                                                            .filePath!,
+                                                    height: 300,
+                                                    circleShape: false,
+                                                    innerShadowYOffset: 3,
+                                                  );
+                                                });
                                           }),
                                     ),
                                     Container(
@@ -880,9 +910,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       style: textTheme.titleSmall?.mq.copyWith(
                                         color: Color(0xff5d5d5d),
                                       )),*/
-                                  const SizedBox(
-                                    width: 2,
-                                  ),
+                                  widget.productItem.category != null
+                                      ? const SizedBox(
+                                          width: 2,
+                                        )
+                                      : SizedBox.shrink(),
                                   SizedBox(
                                     height: 10,
                                     child: Transform.translate(
@@ -917,9 +949,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   //           imageFit: BoxFit.cover,
                                   //           height: 10);
                                   //     }),
-                                  const SizedBox(
-                                    width: 3,
-                                  ),
+                                  widget.productItem.category != null
+                                      ? const SizedBox(
+                                          width: 3,
+                                        )
+                                      : SizedBox.shrink(),
                                   Flexible(
                                     child: MyTextWidget(
                                         widget.productItem.name.toString(),
@@ -934,7 +968,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                               ),
                             ])),
                   ),
-                  ValueListenableBuilder<bool>(
+                  /*    ValueListenableBuilder<bool>(
                       valueListenable: widget.visibleRedeem,
                       builder: (context, _visibleRedeem, _) {
                         return GetIt.I<PrefsRepository>()
@@ -963,7 +997,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     Text(LocaleKeys.luck.tr(),
                                         style: context.textTheme.bodyMedium?.ba
                                             .copyWith(
-                                          fontSize: 11,
+                                          fontSize: 10,
                                           color: const Color.fromARGB(
                                               255, 250, 71, 16),
                                         )),
@@ -971,7 +1005,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         " ${LocaleKeys.add_to_bag_within.tr()} ",
                                         style: context.textTheme.bodyMedium?.ra
                                             .copyWith(
-                                          fontSize: 10,
+                                          fontSize: 9,
                                           color: const Color.fromARGB(
                                               255, 250, 71, 16),
                                         )),
@@ -987,7 +1021,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     Text(" ${LocaleKeys.seconds.tr()} ",
                                         style: context.textTheme.bodyMedium?.ra
                                             .copyWith(
-                                          fontSize: 10,
+                                          fontSize: 9,
                                           color: const Color.fromARGB(
                                               255, 230, 67, 18),
                                         )),
@@ -995,225 +1029,239 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 ),
                               )
                             : SizedBox.shrink();
-                      }),
+                      }),*/
+                  (widget.productItem.labelNames?.length ?? 0) == 0
+                      ? SizedBox.shrink()
+                      : SizedBox(
+                          height: 3,
+                        ),
+                  (widget.productItem.labelNames?.length ?? 0) == 0
+                      ? SizedBox.shrink()
+                      : SizedBox(
+                          width: 200,
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(width: 16),
+                                RotatingTextWidget(
+                                  texts: widget.productItem.labelNames ?? [],
+                                  rotationDuration: Duration(seconds: 5),
+                                  textStyle: textTheme.titleMedium?.rr.copyWith(
+                                    fontSize: 9.sp,
+                                    color: Color(0xff388CFF),
+                                    height: 0,
+                                  ),
+                                )
+                              ])),
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.visibleRedeem,
                       builder: (context, _visibleRedeem, _) {
-                        bool isRedeem = GetIt.I<PrefsRepository>()
-                                    .getRedeemDateForProduct(
-                                        widget.productItem.productId.toString())
-                                    ?.isAfter(DateTime.now()
-                                        .add(Duration(seconds: 1))) ==
-                                true &&
-                            widget.productItem.hasRedeemDiscount == true;
+                        bool isRedeem = (GetIt.I<PrefsRepository>()
+                                        .getRedeemDateForProduct(widget
+                                            .productItem.productId
+                                            .toString())
+                                        ?.isAfter(DateTime.now()
+                                            .add(Duration(seconds: 1))) ==
+                                    true &&
+                                widget.productItem.hasRedeemDiscount == true) ||
+                            (GetIt.I<PrefsRepository>()
+                                        .getRedeemSecondRemainingForProduct(
+                                            widget.productItem.productId
+                                                .toString()) ??
+                                    0) >
+                                0;
                         return SizedBox(
-                            width: 225,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 20, right: 22),
-                              child: BlocBuilder<HomeBloc, HomeState>(
-                                  buildWhen: (previous, current) =>
-                                      previous.getCurrencyForCountryModel !=
-                                          current.getCurrencyForCountryModel ||
-                                      previous.currentSelectedColorForEveryProductStatus !=
-                                          current
-                                              .currentSelectedColorForEveryProductStatus,
-                                  builder: (context, state) {
-                                    double price = widget.productItem.price!;
-                                    double offerPrice =
-                                        widget.productItem.offerPrice!;
-                                    double redeemPrice =
-                                        widget.productItem.redeemPrice ?? 0;
-                                    return Directionality(
-                                      textDirection:
-                                          LanguageService.languageCode == "ar"
-                                              ? TextDirection.rtl
-                                              : TextDirection.ltr,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Row(children: [
-                                            MyTextWidget(
-                                              HelperFunctions.formatNumber(
-                                                  number: (price *
-                                                      ((state.getCurrencyForCountryModel ==
-                                                              null)
-                                                          ? 1
-                                                          : state
-                                                              .getCurrencyForCountryModel!
-                                                              .data!
-                                                              .currency!
-                                                              .exchangeRate!)))
-                                              /* .toStringAsFixed(state.startingSetting
+                          width: 225,
+                          child: BlocBuilder<HomeBloc, HomeState>(
+                              buildWhen: (previous, current) =>
+                                  previous.getCurrencyForCountryModel !=
+                                      current.getCurrencyForCountryModel ||
+                                  previous.currentSelectedColorForEveryProductStatus !=
+                                      current
+                                          .currentSelectedColorForEveryProductStatus,
+                              builder: (context, state) {
+                                double price = widget.productItem.price!;
+                                double offerPrice =
+                                    widget.productItem.offerPrice!;
+                                double redeemPrice =
+                                    widget.productItem.redeemPrice ?? 0;
+                                return Directionality(
+                                  textDirection:
+                                      LanguageService.languageCode == "ar"
+                                          ? TextDirection.rtl
+                                          : TextDirection.ltr,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Row(children: [
+                                        MyTextWidget(
+                                          HelperFunctions.formatNumber(
+                                              number: (price *
+                                                  ((state.getCurrencyForCountryModel ==
+                                                          null)
+                                                      ? 1
+                                                      : state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .exchangeRate!)))
+                                          /* .toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                                              ,
-                                              style: textTheme.titleMedium?.lq
-                                                  .copyWith(
-                                                fontSize:
-                                                    isRedeem ? 8.sp : 11.sp,
-                                                color: Color(0xff3c3c3c),
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                height: 0,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 2,
-                                            ),
-                                            MyTextWidget(
-                                              HelperFunctions.formatNumber(
-                                                  number: (offerPrice *
-                                                      ((state.getCurrencyForCountryModel ==
-                                                              null)
-                                                          ? 1
-                                                          : state
-                                                              .getCurrencyForCountryModel!
-                                                              .data!
-                                                              .currency!
-                                                              .exchangeRate!)))
-                                              /*.toStringAsFixed(state.startingSetting
+                                          ,
+                                          style: textTheme.titleMedium?.lq
+                                              .copyWith(
+                                            fontSize: 10.sp,
+                                            color: Color(0xff3c3c3c),
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            height: 0,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        MyTextWidget(
+                                          HelperFunctions.formatNumber(
+                                              number: (offerPrice *
+                                                  ((state.getCurrencyForCountryModel ==
+                                                          null)
+                                                      ? 1
+                                                      : state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .exchangeRate!)))
+                                          /*.toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                                              ,
-                                              style: textTheme.titleMedium?.bq
-                                                  .copyWith(
-                                                fontSize:
-                                                    isRedeem ? 8.sp : 11.sp,
-                                                decoration: isRedeem
-                                                    ? TextDecoration.lineThrough
-                                                    : null,
-                                                color: Color(0xff3c3c3c),
-                                                height: 0,
+                                          ,
+                                          style: textTheme.titleMedium?.mr
+                                              .copyWith(
+                                            fontSize: 10.sp,
+                                            decorationColor: Color(0xffFF6200),
+                                            decoration: isRedeem
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                            color: Color(0xff3c3c3c),
+                                            height: 0,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        isRedeem
+                                            ? SizedBox.shrink()
+                                            : MyTextWidget(
+                                                state.getCurrencyForCountryModel ==
+                                                        null
+                                                    ? ""
+                                                    : state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .symbol ??
+                                                        "",
+                                                style: TextStyle(
+                                                  fontSize: 9.sp,
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(
-                                              width: 2,
-                                            ),
-                                            isRedeem
-                                                ? SizedBox.shrink()
-                                                : MyTextWidget(
-                                                    state.getCurrencyForCountryModel ==
-                                                            null
-                                                        ? ""
-                                                        : state
-                                                                .getCurrencyForCountryModel!
-                                                                .data!
-                                                                .currency!
-                                                                .symbol ??
-                                                            "",
-                                                    style: TextStyle(
-                                                      fontSize: isRedeem
-                                                          ? 8.sp
-                                                          : 11.sp,
-                                                    ),
-                                                  ),
-                                            SizedBox(
-                                              width: 3,
-                                            ),
-                                            isRedeem
-                                                ? MyTextWidget(
-                                                    HelperFunctions.formatNumber(
-                                                        number: redeemPrice *
-                                                            ((state.getCurrencyForCountryModel ==
-                                                                    null)
-                                                                ? 1
-                                                                : state
-                                                                    .getCurrencyForCountryModel!
-                                                                    .data!
-                                                                    .currency!
-                                                                    .exchangeRate!)),
-                                                    //      .toStringAsFixed(widget.decimalPoint),
-                                                    style: textTheme
-                                                        .headlineMedium?.bq
-                                                        .copyWith(
-                                                      fontSize: isRedeem
-                                                          ? 8.sp
-                                                          : 11.sp,
-                                                      color: Colors
-                                                          .deepOrangeAccent,
-                                                      height: 0,
-                                                    ),
-                                                  )
-                                                : const SizedBox.shrink(),
-                                            SizedBox(
-                                              width: 2,
-                                            ),
-                                            isRedeem
-                                                ? MyTextWidget(
-                                                    state.getCurrencyForCountryModel ==
-                                                            null
-                                                        ? ""
-                                                        : state
-                                                                .getCurrencyForCountryModel!
-                                                                .data!
-                                                                .currency!
-                                                                .symbol ??
-                                                            "",
-                                                    style: TextStyle(
-                                                        fontSize: isRedeem
-                                                            ? 8.sp
-                                                            : 11.sp,
-                                                        color: Colors
-                                                            .deepOrangeAccent),
-                                                  )
-                                                : const SizedBox.shrink(),
-                                          ]),
-                                          InkWell(
-                                            onTap: () {
-                                              widget.productIsFlashDeal?.value =
-                                                  widget.fromFlashDeal ?? false;
-                                              homeBloc.add(
-                                                  ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                                                      isStatusInitaial: true));
+                                      ]),
+                                      InkWell(
+                                        onTap: () {
+                                          widget.productIsFlashDeal?.value =
+                                              widget.fromFlashDeal ?? false;
+                                          homeBloc.add(
+                                              ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                  isStatusInitaial: true));
 
-                                              Future.delayed(
-                                                  Duration(milliseconds: 600),
-                                                  () => widget
-                                                      .tapIndexToAddProductToCart
-                                                      .value = widget.itemIndex);
-                                            },
-                                            child: Container(
-                                              height: 30.h,
-                                              color: Color(0x1D1D1D),
-                                              child: Row(
-                                                children: [
-                                                  MyTextWidget(
-                                                    '${LocaleKeys.buy.tr()}',
-                                                    style: textTheme
-                                                        .titleSmall?.lq
-                                                        .copyWith(
-                                                      color: isRedeem
-                                                          ? Colors
-                                                              .deepOrangeAccent
-                                                          : Color(0xff414141),
-                                                      height: 1.4,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 2,
-                                                  ),
-                                                  SvgPicture.asset(
-                                                    AppAssets.bagSvg,
-                                                    height: 15,
-                                                    width: 15,
-                                                    color: isRedeem
-                                                        ? Colors
-                                                            .deepOrangeAccent
-                                                        : Color(0xff414141),
-                                                  ),
-                                                ],
+                                          Future.delayed(
+                                              Duration(milliseconds: 600),
+                                              () => widget
+                                                  .tapIndexToAddProductToCart
+                                                  .value = widget.itemIndex);
+                                        },
+                                        child: Container(
+                                          height: 30.h,
+                                          color: Color(0x1D1D1D),
+                                          child: Row(
+                                            children: [
+                                              MyTextWidget(
+                                                '${LocaleKeys.buy.tr()}',
+                                                style: textTheme.titleSmall?.rr
+                                                    .copyWith(
+                                                  fontSize: 9.sp,
+                                                  color: isRedeem
+                                                      ? Color(0xffFF6200)
+                                                      : Color(0xff414141),
+                                                  height: 1.4,
+                                                ),
                                               ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  }),
-                            ));
+                                              const SizedBox(
+                                                width: 2,
+                                              ),
+                                              isRedeem
+                                                  ? MyTextWidget(
+                                                      HelperFunctions.formatNumber(
+                                                          number: redeemPrice *
+                                                              ((state.getCurrencyForCountryModel ==
+                                                                      null)
+                                                                  ? 1
+                                                                  : state
+                                                                      .getCurrencyForCountryModel!
+                                                                      .data!
+                                                                      .currency!
+                                                                      .exchangeRate!)),
+                                                      //      .toStringAsFixed(widget.decimalPoint),
+                                                      style: textTheme
+                                                          .headlineMedium?.bq
+                                                          .copyWith(
+                                                        fontSize: 9.sp,
+                                                        color:
+                                                            Color(0xffFF6200),
+                                                        height: 1.6,
+                                                      ),
+                                                    )
+                                                  : const SizedBox.shrink(),
+                                              SizedBox(
+                                                width: 2,
+                                              ),
+                                              isRedeem
+                                                  ? MyTextWidget(
+                                                      state.getCurrencyForCountryModel ==
+                                                              null
+                                                          ? ""
+                                                          : state
+                                                                  .getCurrencyForCountryModel!
+                                                                  .data!
+                                                                  .currency!
+                                                                  .symbol ??
+                                                              "",
+                                                      style: TextStyle(
+                                                          fontSize: 8.sp,
+                                                          height: 1.6,
+                                                          color: Color(
+                                                              0xffFF6200)),
+                                                    )
+                                                  : const SizedBox.shrink(),
+                                              SvgPicture.asset(
+                                                AppAssets.bagSvg,
+                                                height: 15,
+                                                width: 15,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              }),
+                        );
                       }),
                 ],
               ),

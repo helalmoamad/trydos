@@ -147,6 +147,8 @@ import '../../features/home/domain/use_cases/change_country_language_for_notific
     as _i814;
 import '../../features/home/domain/use_cases/change_order_address_usecase.dart'
     as _i636;
+import '../../features/home/domain/use_cases/change_order_item_variant_usecase.dart'
+    as _i607;
 import '../../features/home/domain/use_cases/check_availability_product_cart_usecase.dart'
     as _i812;
 import '../../features/home/domain/use_cases/convert_item_from_Cart_to_oldCart_usecase.dart'
@@ -251,6 +253,8 @@ import '../../features/home/domain/use_cases/update_whatsapp_notification_usecas
     as _i744;
 import '../../features/home/domain/use_cases/upload_user_photo_usecase.dart'
     as _i651;
+import '../../features/home/domain/use_cases/get_product_color_size_sync_attribute_usecase.dart'
+    as _i440;
 import '../../features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart'
     as _i511;
 import '../../features/home/presentation/manager/categoryBloc/category_bloc.dart'
@@ -499,6 +503,10 @@ Future<_i174.GetIt> $initGetIt(
       () => _i744.UpdateWhatsappNotificationUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i651.UpdateUserPhotoUseCase>(
       () => _i651.UpdateUserPhotoUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i440.GetProductColorSizeSyncAttributeUseCase>(() =>
+      _i440.GetProductColorSizeSyncAttributeUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i607.ChangeOrderItemVariantUsecase>(
+      () => _i607.ChangeOrderItemVariantUsecase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i944.CategoryBloc>(() => _i944.CategoryBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i518.GetHomeBoutiqesUseCase>(),
@@ -595,6 +603,8 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i970.GetAddressByCoordinatesUsecase>(),
         gh<_i976.GetAddressByTextUsecase>(),
         gh<_i493.ApplyCouponUsecase>(),
+        gh<_i440.GetProductColorSizeSyncAttributeUseCase>(),
+        gh<_i607.ChangeOrderItemVariantUsecase>(),
       ));
   gh.lazySingleton<_i903.HomeBloc>(() => _i903.HomeBloc(
         gh<_i533.GetStoryForProductUseCase>(),

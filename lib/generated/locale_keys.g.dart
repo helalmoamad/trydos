@@ -627,4 +627,6 @@ abstract class LocaleKeys {
   static const luck = 'luck';
   static const add_to_bag_within = 'add_to_bag_within';
   static const seconds = 'seconds';
+  static const about_change_request_product = 'about_change_request_product';
+  static const to_qty = 'to_qty';
 }

@@ -44,84 +44,120 @@ class FlashDealProductsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ValueNotifier<bool> refreshFlashDeal = ValueNotifier(false);
     List<filter.Products> products = [];
 
-    return BlocBuilder<BoutiqueBloc, BoutiqueState>(
-        buildWhen: (previous, current) =>
-            previous
-                .getProductListingWithFiltersPaginationModels[
-                    "*flashDeal*withoutFilter"]
-                ?.paginationStatus !=
-            current
-                .getProductListingWithFiltersPaginationModels[
-                    "*flashDeal*withoutFilter"]
-                ?.paginationStatus,
-        builder: (context, state) {
-          try {
-            products = state.getProductListingWithFiltersPaginationModels[
-                        "*flashDeal*withoutFilter"] ==
-                    null
-                ? []
-                : state
+    return ValueListenableBuilder<bool>(
+        valueListenable: refreshFlashDeal,
+        builder: (context, _refreshFlashDeal, _) {
+          return BlocBuilder<BoutiqueBloc, BoutiqueState>(
+            buildWhen: (previous, current) =>
+                previous
                     .getProductListingWithFiltersPaginationModels[
-                        "*flashDeal*withoutFilter"]!
-                    .items;
-          } catch (e) {
-            debugPrint('❌ Error getting flash deal products: $e');
-            products = [];
-          }
+                        "*flashDeal*withoutFilter"]
+                    ?.paginationStatus !=
+                current
+                    .getProductListingWithFiltersPaginationModels[
+                        "*flashDeal*withoutFilter"]
+                    ?.paginationStatus,
+            builder: (context, state) {
+              try {
+                products = state.getProductListingWithFiltersPaginationModels[
+                            "*flashDeal*withoutFilter"] ==
+                        null
+                    ? []
+                    : state
+                        .getProductListingWithFiltersPaginationModels[
+                            "*flashDeal*withoutFilter"]!
+                        .items;
+                List<filter.Products> productWithFlashDealEndDate = [];
+                products.forEach((element) {
+                  DateTime endDate;
+                  Duration _duration = Duration();
+                  final now = DateTime.now();
+                  try {
+                    endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                        .parse(element.flashDealEndDate ?? "");
+                    endDate = endDate.add(Duration(days: 1));
+                  } catch (e) {
+                    endDate = DateTime.now();
+                    print('Error parsing date: $e');
+                  }
+                  _duration = endDate.difference(now);
+                  if (!(_duration.isNegative || _duration.inSeconds < 1)) {
+                    productWithFlashDealEndDate.add(element);
+                  }
+                });
+                products = productWithFlashDealEndDate;
+              } catch (e) {
+                debugPrint('❌ Error getting flash deal products: $e');
+                products = [];
+              }
 
-          return products.isNullOrEmpty
-              ? SizedBox.shrink()
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      width: 250,
-                      height: 20,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.flashDealSvg,
-                            height: 18,
+              return products.isNullOrEmpty
+                  ? SizedBox.shrink()
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          width: 250,
+                          height: 20,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.flashDealSvg,
+                                height: 18,
+                              ),
+                              MyTextWidget(
+                                " ${LocaleKeys.flash_deal.tr()}",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14),
+                              ),
+                            ],
                           ),
-                          MyTextWidget(
-                            " ${LocaleKeys.flash_deal.tr()}",
-                            style: TextStyle(color: Colors.black, fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(bottom: 5),
-                      width: 1.sw,
-                      height: 315,
-                      child: ListView.separated(
-                          itemBuilder: (context, index) {
-                            // التحقق من صحة الفهرس
-                            if (index >= products.length) {
-                              return SizedBox.shrink();
-                            }
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 5),
+                          width: 1.sw,
+                          height: 300,
+                          child: ListView.separated(
+                              addAutomaticKeepAlives: false,
+                              addRepaintBoundaries: false,
+                              addSemanticIndexes: false,
+                              cacheExtent: 0,
+                              itemBuilder: (context, index) {
+                                // التحقق من صحة الفهرس
+                                if (index >= products.length) {
+                                  return SizedBox.shrink();
+                                }
 
-                            if (index == 5 && products.length > 5) {
-                              return _buildMoreButton(context, products, index);
-                            }
-                            return _buildProductItem(context, products, index);
-                          },
-                          physics: const BouncingScrollPhysics(
-                            parent: ClampingScrollPhysics(),
-                          ),
-                          padding:
-                              EdgeInsetsDirectional.symmetric(horizontal: 10),
-                          scrollDirection: Axis.horizontal,
-                          separatorBuilder: (context, index) =>
-                              SizedBox(width: 15),
-                          itemCount: products.length > 6 ? 6 : products.length),
-                    )
-                  ],
-                );
+                                if (index == 5 && products.length > 5) {
+                                  return _buildMoreButton(
+                                      context, products, index);
+                                }
+                                return _buildProductItem(
+                                    context, refreshFlashDeal, products, index);
+                              },
+                              physics: const BouncingScrollPhysics(
+                                parent: ClampingScrollPhysics(),
+                              ),
+                              padding: EdgeInsetsDirectional.symmetric(
+                                  horizontal: 10),
+                              scrollDirection: Axis.horizontal,
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(width: 15),
+                              itemCount:
+                                  products.length > 6 ? 6 : products.length),
+                        )
+                      ],
+                    );
+            },
+          );
         });
   }
 
@@ -194,7 +230,10 @@ class FlashDealProductsWidget extends StatelessWidget {
   }
 
   Widget _buildProductItem(
-      BuildContext context, List<filter.Products> products, int index) {
+      BuildContext context,
+      ValueNotifier<bool> refreshFlashDeal,
+      List<filter.Products> products,
+      int index) {
     return InkWell(
       onTap: () {
         try {
@@ -218,6 +257,7 @@ class FlashDealProductsWidget extends StatelessWidget {
         }
       },
       child: ProductItem(
+        refreshFlashDeal: refreshFlashDeal,
         fromFlashDeal: true,
         finishRedeem: finishRedeem,
         fromHomePage: true,

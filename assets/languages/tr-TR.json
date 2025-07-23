@@ -550,7 +550,9 @@
   "download_timeout": "İndirme zaman aşımı",
   "retry_download": "İndirmeyi yeniden dene",
   "image_not_available": "Resim mevcut değil",
-  "luck": "Bol şans!"
+  "luck": "şans!"
   ,"add_to_bag_within": "Şu sürede sepete ekle"
   ,"seconds": "saniye"
+  ,"about_change_request_product": "Ürün Değişiklik Talebi Hakkında"
+  ,"to_qty": "Miktara ?"
 }

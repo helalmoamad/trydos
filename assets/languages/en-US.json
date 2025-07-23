@@ -550,7 +550,9 @@
   "download_timeout": "Download timeout",
   "retry_download": "Retry download",
   "image_not_available": "Image not available",
-  "luck": "Good luck!"
+  "luck": "luck!"
   ,"add_to_bag_within": "Add to bag within"
   ,"seconds": "seconds"
+  ,"about_change_request_product": "About Change Request Product"
+  ,"to_qty": "To Qty ?"
 }

@@ -370,99 +370,98 @@ class Products {
             isProductNotifiedForUser ?? this.isProductNotifiedForUser,
       );
 
-  factory Products.fromJson(Map<String, dynamic> json) => Products(
-      productId: json["product_id"] != null ? json["product_id"] : json["id"],
-      boutiqueId: json["boutique_id"].toString(),
-      name: json["name"],
-      slug: json["slug"],
-      shareLink: json["share_link"],
-      isRedeem: json["is_redeem"],
-      redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
-      details: json["details"],
-      countryIsRestricted: json["is_country_restricted"],
-      hasRedeemDiscount: json["has_redeem_discount"],
-      shippingCostMultiplyWithQuantity:
-          json["shipping_cost_multiply_with_quantity"],
-      shippingCost: double.tryParse(json["shipping_cost"].toString()),
-      thumbnail: json["thumbnail"] == null
-          ? null
-          : Thumbnail.fromJson(json["thumbnail"]),
-      images: json["images"] == null
-          ? []
-          : List<Thumbnail>.from(
-              json["images"]!.map((x) => Thumbnail.fromJson(x))),
-      categories: json["categories"] == null
-          ? []
-          : List<Category>.from(
-              json["categories"]!.map((x) => Category.fromJson(x))),
-      category: json["category"] == null || json["category"] != []
-          ? null
-          : Category.fromJson(json["category"]),
-      brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
-      colors: json["colors"] == null
-          ? []
-          : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
-      syncColorImages: json["sync_color_images"] == null
-          ? []
-          : List<SyncColorImage>.from(json["sync_color_images"]!
-              .map((x) => SyncColorImage.fromJson(x))),
-      price: json["price"].toDouble(),
-      priceFormatted: json["price_formatted"],
-      offerPrice: json["offer_price"].toDouble(),
-      maxAllowedQty: json["max_allowed_qty"],
-      offerPriceFormatted: json["offer_price_formatted"],
-      collectedAfterOrdering: json["collected_after_ordering"],
-      isFavourite: json["is_favourite"],
-      isActive: json["is_active"],
-      labelNames: json["label_names"] == null
-          ? []
-          : List<String>.from(json["label_names"]!.map((x) => x)),
-      flashDealEndDate: json["flash_deal_end_date"],
-      rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
-      flashDealDetails: json["flash_deal_details"],
-      flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
-      dateNow: DateTime.now().toString(),
-      description: json["description"],
-      countOfPieces: json["count_of_pieces"],
-      model: json["model"],
-      features: json["features"],
-      slugEnTopic: json["slug_en_topic"],
-      boutique: json["boutique"] == null
-          ? null
-          : BoutiqueForCart.fromJson(json["boutique"]),
-      variation: json["variation"] == null
-          ? []
-          : List<Variation>.from(
-              json["variation"]!.map((x) => Variation.fromJson(x))),
-      choiceOptions: json["choice_options"] == null
-          ? []
-          : List<ChoiceOption>.from(
-              json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
-      hasDiscount: json["has_discount"],
-      hasTax: json["has_tax"],
-      deliveryAt: json["delivery_at"],
-      isLiked: json["is_liked"],
-      countOfLikes: json["count_of_likes"],
-      tax: json["tax"].toString(),
-      unitPrice: json["unit_price"].toString(),
-      availableQuantity: json["available_quantity"]?.toInt(),
-      leftStock: json["Left_stock"],
-      // reviewsCount: json["reviews_count"],
-      sellerId: json["seller_id"],
-      shippingDays: json["shipping_days"],
-      seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
-      shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-      isFavSeller: json["is_fav_seller"],
-      reviews: json["reviews"] == null
-          ? []
-          : List<dynamic>.from(json["reviews"]!.map((x) => x)),
-      hasWholeSale: json["has_whole_sale"],
-      wholeSaleLink: json["whole_sale_link"],
-      // viewsCount: json["views_count"],
-      descriptors:
-          json["descriptors"] == null ? [] : List<DataDescriptor>.from(json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
-      labels: json["labels"] == null ? [] : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
-      isProductNotifiedForUser: json['is_product_notify_for_user'] ?? false);
+  factory Products.fromJson(Map<String, dynamic> json) {
+    return Products(
+        productId: json["product_id"] != null ? json["product_id"] : json["id"],
+        boutiqueId: json["boutique_id"].toString(),
+        name: json["name"],
+        slug: json["slug"],
+        shareLink: json["share_link"],
+        isRedeem: json["is_redeem"],
+        redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
+        details: json["details"],
+        countryIsRestricted: json["is_country_restricted"],
+        hasRedeemDiscount: json["has_redeem_discount"],
+        shippingCostMultiplyWithQuantity:
+            json["shipping_cost_multiply_with_quantity"],
+        shippingCost: double.tryParse(json["shipping_cost"].toString()),
+        thumbnail: json["thumbnail"] == null
+            ? null
+            : Thumbnail.fromJson(json["thumbnail"]),
+        images: json["images"] == null
+            ? []
+            : List<Thumbnail>.from(
+                json["images"]!.map((x) => Thumbnail.fromJson(x))),
+        categories: json["categories"] == null
+            ? []
+            : List<Category>.from(
+                json["categories"]!.map((x) => Category.fromJson(x))),
+        category: json["category"] == null || json["category"] == []
+            ? null
+            : Category.fromJson(json["category"]),
+        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
+        colors: json["colors"] == null
+            ? []
+            : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
+        syncColorImages: json["sync_color_images"] == null
+            ? []
+            : List<SyncColorImage>.from(json["sync_color_images"]!
+                .map((x) => SyncColorImage.fromJson(x))),
+        price: json["price"].toDouble(),
+        priceFormatted: json["price_formatted"],
+        offerPrice: json["offer_price"].toDouble(),
+        maxAllowedQty: json["max_allowed_qty"],
+        offerPriceFormatted: json["offer_price_formatted"],
+        collectedAfterOrdering: json["collected_after_ordering"],
+        isFavourite: json["is_favourite"],
+        isActive: json["is_active"],
+        labelNames: json["label_names"] == null
+            ? []
+            : List<String>.from(json["label_names"]!.map((x) => x)),
+        flashDealEndDate: json["flash_deal_end_date"],
+        rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
+        flashDealDetails: json["flash_deal_details"],
+        flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
+        dateNow: DateTime.now().toString(),
+        description: json["description"],
+        countOfPieces: json["count_of_pieces"],
+        model: json["model"],
+        features: json["features"],
+        slugEnTopic: json["slug_en_topic"],
+        boutique: json["boutique"] == null
+            ? null
+            : BoutiqueForCart.fromJson(json["boutique"]),
+        variation: json["variation"] == null
+            ? []
+            : List<Variation>.from(
+                json["variation"]!.map((x) => Variation.fromJson(x))),
+        choiceOptions: json["choice_options"] == null
+            ? []
+            : List<ChoiceOption>.from(
+                json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
+        hasDiscount: json["has_discount"],
+        hasTax: json["has_tax"],
+        deliveryAt: json["delivery_at"],
+        isLiked: json["is_liked"],
+        countOfLikes: json["count_of_likes"],
+        tax: json["tax"].toString(),
+        unitPrice: json["unit_price"].toString(),
+        availableQuantity: json["available_quantity"]?.toInt(),
+        leftStock: json["Left_stock"],
+        // reviewsCount: json["reviews_count"],
+        sellerId: json["seller_id"],
+        shippingDays: json["shipping_days"],
+        seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
+        shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
+        isFavSeller: json["is_fav_seller"],
+        reviews: json["reviews"] == null ? [] : List<dynamic>.from(json["reviews"]!.map((x) => x)),
+        hasWholeSale: json["has_whole_sale"],
+        wholeSaleLink: json["whole_sale_link"],
+        // viewsCount: json["views_count"],
+        descriptors: json["descriptors"] == null ? [] : List<DataDescriptor>.from(json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
+        labels: json["labels"] == null ? [] : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+        isProductNotifiedForUser: json['is_product_notify_for_user'] ?? false);
+  }
 
   Map<String, dynamic> toJson() => {
         "product_id": productId,

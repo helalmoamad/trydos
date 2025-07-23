@@ -41,6 +41,7 @@ import 'package:trydos/features/home/data/models/popular_search_terms_model.dart
 import 'package:trydos/features/home/data/models/cancel_order_item_model.dart';
 import 'package:trydos/features/home/data/models/cancel_order_model.dart';
 import 'package:trydos/features/home/data/models/change_order_address_model.dart';
+import 'package:trydos/features/home/data/models/color_size_for_product.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
@@ -529,5 +530,20 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
       tryCall: () => dataSource.changeOrderAddress(params),
     );
+  }
+
+  @override
+  Future<Either<Failure, ColorSizeForProductModel>>
+      getProductColorSizeSyncAttribute(String id) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getProductColorSizeSyncAttribute(id),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> changeOrderItemVariant(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.changeOrderItemVariant(params));
   }
 }

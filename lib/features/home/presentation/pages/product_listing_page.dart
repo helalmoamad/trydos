@@ -45,6 +45,9 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/item_test.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_without_silder.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
@@ -125,6 +128,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
 
   final ValueNotifier<int> tapIndexToAddProductToCart = ValueNotifier(-1);
+  final ValueNotifier<int> tapIndexToShowColorImages = ValueNotifier(-1);
+
   final ValueNotifier<bool> loadingForRquestProductDetails =
       ValueNotifier(false);
   final ValueNotifier<bool> searchVisible = ValueNotifier(true);
@@ -135,9 +140,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
   final ScrollController scrollController = ScrollController();
   final ScrollController scrollControllerFilter = ScrollController();
+  final PanelController colorImagesPanelController = PanelController();
+  final ValueNotifier<bool> showShadowForColorImages = ValueNotifier(false);
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
-  final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
-      ValueNotifier(Tuple2(-1, -1));
+  // final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
+  //   ValueNotifier(Tuple2(-1, -1));
   Timer? debounce;
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
@@ -174,9 +181,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       debounce!.cancel();
     }
     debounce = Timer(Duration(milliseconds: firstOpenPage ? 600 : 300), () {
-      if (setThisEnabledNotifier.value.item1 != -1) {
-        setThisEnabledNotifier.value = Tuple2(-1, -1);
-      }
+      //if (setThisEnabledNotifier.value.item1 != -1) {
+      //  setThisEnabledNotifier.value = Tuple2(-1, -1);
+      // }
       boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
       if ((scrollController.offset >= 50) &&
@@ -495,6 +502,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
     };*/
     return WillPopScope(
       onWillPop: () async {
+        try {
+          if (colorImagesPanelController.isPanelOpen) {
+            colorImagesPanelController.close();
+            showShadowForColorImages.value = false;
+            return false;
+          }
+        } catch (e) {}
         prefsRepository.setTagsInUrlToFilter([]);
         try {
           if (panelControllerForCart.isPanelOpen) {
@@ -586,32 +600,33 @@ class _ProductListingPageState extends State<ProductListingPage> {
             alignment: Alignment.topCenter,
             children: [
               Scaffold(
-                backgroundColor: Color(0xffF8F8F8),
-                bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                    buildWhen: (p, c) => p.showBars != c.showBars,
-                    builder: (context, state) {
-                      if (state.showBars == true) {
-                        return BlocBuilder<AppBloc, AppState>(
-                            buildWhen: (p, c) =>
-                                p.hideBottomNavigationBar !=
-                                c.hideBottomNavigationBar,
-                            builder: (context, state) {
-                              return state.hideBottomNavigationBar ||
-                                      (widget.fromSearch)
-                                  ? const SizedBox.shrink()
-                                  : AppBottomNavBar(
-                                      isShowPanelForVerified:
-                                          widget.isShowPanelForVerified ??
-                                              isShowPanelForVerified);
-                            });
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
-                body: ValueListenableBuilder<Tuple2<int, int>>(
+                  backgroundColor: Color(0xffF8F8F8),
+                  bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                      buildWhen: (p, c) => p.showBars != c.showBars,
+                      builder: (context, state) {
+                        if (state.showBars == true) {
+                          return BlocBuilder<AppBloc, AppState>(
+                              buildWhen: (p, c) =>
+                                  p.hideBottomNavigationBar !=
+                                  c.hideBottomNavigationBar,
+                              builder: (context, state) {
+                                return state.hideBottomNavigationBar ||
+                                        (widget.fromSearch)
+                                    ? const SizedBox.shrink()
+                                    : AppBottomNavBar(
+                                        isShowPanelForVerified:
+                                            widget.isShowPanelForVerified ??
+                                                isShowPanelForVerified);
+                              });
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                  body: /* ValueListenableBuilder<Tuple2<int, int>>(
                     valueListenable: setThisEnabledNotifier,
                     builder: (context, slidingMode, _) {
-                      return BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                      return */
+                      BlocBuilder<BoutiqueBloc, BoutiqueState>(
                           buildWhen: (p, c) =>
                               p.isExpandedForListingPage !=
                               c.isExpandedForListingPage,
@@ -2393,6 +2408,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                                     isStatusInitaial:
                                                                         true));
+                                                            homeBloc.add(AddCurrentSelectedColorEvent(
+                                                                currentSelectedColor:
+                                                                    0,
+                                                                productSlug: products[
+                                                                        index]
+                                                                    .slug
+                                                                    .toString()));
 
                                                             Future.delayed(
                                                                 Duration(
@@ -2406,9 +2428,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             ))));
                                                           },
                                                           child: _productItem(
-                                                              index: index,
-                                                              slidingMode:
-                                                                  slidingMode),
+                                                            index: index,
+                                                          ),
                                                         );
                                                       },
                                                     ),
@@ -2436,9 +2457,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     ]));
                               },
                             );
-                          });
-                    }),
-              ),
+                          })
+                  // }),
+                  ),
               Positioned(
                 top: 10,
                 child: Stack(
@@ -2493,6 +2514,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   ],
                 ),
               ),
+              shadowForPanel(),
+              panelWidget(),
               ValueListenableBuilder<int>(
                   valueListenable: tapIndexToAddProductToCart,
                   builder: (context, tapIndex, _) {
@@ -3005,25 +3028,27 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     ?.product
                                                                     ?.redeemPrice ??
                                                                 0,
-                                                        isRedeem: prefsRepository
-                                                                    .getRedeemDateForProduct(products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString())
-                                                                    ?.isAfter(DateTime
-                                                                            .now()
-                                                                        .add(Duration(
+                                                        isRedeem: (prefsRepository
+                                                                        .getRedeemDateForProduct(products[tapIndex]
+                                                                            .productId
+                                                                            .toString())
+                                                                        ?.isAfter(DateTime.now().add(Duration(
                                                                             seconds:
                                                                                 1))) ==
-                                                                true &&
-                                                            state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                    true &&
+                                                                state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]
+                                                                        ?.product
+                                                                        ?.isRedeem ==
+                                                                    true) ||
+                                                            (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(products[
                                                                             tapIndex]
                                                                         .productId
-                                                                        .toString()]
-                                                                    ?.product
-                                                                    ?.isRedeem ==
-                                                                true,
+                                                                        .toString()) ??
+                                                                    0) >
+                                                                0,
                                                         redeemPrice: state
                                                                     .cachedProductWithoutRelatedProductsModel[products[
                                                                         tapIndex]
@@ -3333,7 +3358,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   Widget buildProductList({
     required List<productListingModel.Products> products,
-    required Tuple2<int, int> slidingMode,
+    //required Tuple2<int, int> slidingMode,
   }) {
     return SliverPadding(
       key: TestVariables.kTestMode ? Key(WidgetsKeys.productsListKey) : null,
@@ -3389,7 +3414,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                 homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
                     isStatusInitaial: true));
-
+                homeBloc.add(AddCurrentSelectedColorEvent(
+                    currentSelectedColor: 0,
+                    productSlug: products[index].slug.toString()));
                 Future.delayed(
                     Duration(milliseconds: 300),
                     () => Navigator.of(context).push(
@@ -3402,7 +3429,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               },
               child: _productItem(
                 index: index,
-                slidingMode: slidingMode,
+                //   slidingMode: slidingMode,
               ),
             );
           },
@@ -3491,8 +3518,158 @@ class _ProductListingPageState extends State<ProductListingPage> {
         () => homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
             isChangedvariationWhenQtyZero: true)));
   }*/
+
+  Widget shadowForPanel() {
+    return ValueListenableBuilder<bool>(
+        valueListenable: showShadowForColorImages,
+        builder: (context, isShowShadowForPanel, _) {
+          return !isShowShadowForPanel
+              ? SizedBox.shrink()
+              : InkWell(
+                  onTap: () {
+                    showShadowForColorImages.value = false;
+                    Future.delayed(
+                      Duration(microseconds: 300),
+                      () {
+                        colorImagesPanelController.close();
+                        showShadowForColorImages.value = false;
+                      },
+                    );
+                  },
+                  child: Container(
+                    height: 1.sh,
+                    width: 1.sw,
+                    color: Color.fromRGBO(29, 29, 29, 0.6),
+                  ),
+                );
+        });
+  }
+
+  Widget panelWidget() {
+    return ValueListenableBuilder<bool>(
+      valueListenable: showShadowForColorImages,
+      builder: (context, isShowPanel, _) {
+        return Positioned(
+            bottom: 0,
+            child: Container(
+                width: 1.sw,
+                height: isShowPanel ? (1.sh - 100.h) : 0,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.r),
+                        topRight: Radius.circular(30.r))),
+                child: SlidingUpPanel(
+                  controller: colorImagesPanelController,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.r),
+                      topRight: Radius.circular(30.r)),
+                  isDraggable: true,
+                  onPanelClosed: () {
+                    showShadowForColorImages.value = false;
+                  },
+                  onPanelOpened: () {},
+                  minHeight: 0,
+                  maxHeight: (1.sh - 100.h),
+                  panelBuilder: (sc) => panelBuilderContent(sc),
+                )));
+      },
+    );
+  }
+
+  Widget panelBuilderContent(ScrollController sc) {
+    final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(30.r)),
+        color: Colors.white,
+      ),
+      child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.all(10),
+                height: 2,
+                width: 40,
+                decoration: BoxDecoration(color: Color(0xffC4C2C2)),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              ValueListenableBuilder<bool>(
+                  valueListenable: finishRedeem,
+                  builder: (context, _finishRedeem, _) => ValueListenableBuilder<
+                          int>(
+                      valueListenable: tapIndexToShowColorImages,
+                      builder: (context, _tapIndexToShowColorImages, _) =>
+                          _tapIndexToShowColorImages == -1
+                              ? SizedBox.shrink()
+                              : Expanded(
+                                  child: GridView.builder(
+                                      controller: sc,
+                                      itemCount:
+                                          products[_tapIndexToShowColorImages]
+                                              .syncColorImages
+                                              ?.length,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              mainAxisSpacing: 5,
+                                              crossAxisSpacing: 5,
+                                              childAspectRatio:
+                                                  1.sw / (392 * 2),
+                                              crossAxisCount: 2),
+                                      itemBuilder: (context, index) => InkWell(
+                                          onTap: () {
+                                            GetIt.I<HomeBloc>().add(
+                                                ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                    isStatusInitaial: true));
+                                            homeBloc.add(
+                                                AddCurrentSelectedColorEvent(
+                                                    currentSelectedColor: index,
+                                                    productSlug: products[
+                                                            _tapIndexToShowColorImages]
+                                                        .slug
+                                                        .toString()));
+
+                                            Future.delayed(
+                                                Duration(milliseconds: 300),
+                                                () =>
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (ctx) =>
+                                                            ProductDetailsPage(
+                                                          productItem: products[
+                                                              _tapIndexToShowColorImages],
+                                                        ),
+                                                      ),
+                                                    ));
+                                          },
+                                          child: ProductColorPanal(
+                                            colorImages: products[
+                                                        _tapIndexToShowColorImages]
+                                                    .syncColorImages?[index]
+                                                    .images
+                                                    ?.map(
+                                                        (e) => e.filePath ?? "")
+                                                    .toList() ??
+                                                [],
+                                            finishRedeem: finishRedeem,
+                                            visibleRedeem: visibleRedeem,
+                                            productItem: products[
+                                                _tapIndexToShowColorImages],
+                                            tapIndexToAddProductToCart:
+                                                tapIndexToAddProductToCart,
+                                            itemIndex:
+                                                _tapIndexToShowColorImages,
+                                          ))))))
+            ],
+          )),
+    );
+  }
+
   Widget _productItem({
-    required Tuple2<int, int> slidingMode,
+    //required Tuple2<int, int> slidingMode,
     required int index,
   }) {
     return /*!displayImageColors && !widget.fromSearch
@@ -3512,6 +3689,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
               },
             ))*/
         ProductItem(
+      productItem: products[index],
+      itemIndex: index,
+      tapIndexToShowColorImages: tapIndexToShowColorImages,
+      showShadowForColorImages: showShadowForColorImages,
+      colorImagesPanelController: colorImagesPanelController,
       finishRedeem: finishRedeem,
       displayImageColors: true,
       fromHomePage: false,
@@ -3519,12 +3701,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
       key: TestVariables.kTestMode
           ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
           : null,
-      slidingModeItem: slidingMode,
+      /*  slidingModeItem: slidingMode,
       productItem: products[index],
       itemIndex: index,
       setThisEnabled: (int index, int slideMode) {
         setThisEnabledNotifier.value = Tuple2(index, slideMode);
-      },
+      },*/
     );
   }
 }

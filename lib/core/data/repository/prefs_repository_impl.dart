@@ -983,6 +983,33 @@ class PrefsRepositoryImpl extends PrefsRepository {
         PrefsKey.redeemDateForProducts, convert.jsonEncode(afterRemove));
   }
 
+  @override
+  int? getRedeemSecondRemainingForProduct(String productId) {
+    Map<String, dynamic> map = convert.jsonDecode(
+        _preferences.getString(PrefsKey.redeemSecondRemainForProducts) ?? '{}');
+    return map[productId] != null
+        ? int.tryParse((map[productId] ?? "0").toString())
+        : null;
+  }
+
+  @override
+  Future<bool> setRedeemSecondRemainingForProduct(
+      String productId, int secondsLeft) {
+    Map<String, dynamic> map =
+        _preferences.getString(PrefsKey.redeemSecondRemainForProducts) != null
+            ? convert.jsonDecode(_preferences
+                    .getString(PrefsKey.redeemSecondRemainForProducts) ??
+                '{}')
+            : {};
+    if (secondsLeft <= 0) {
+      map.remove(productId);
+    } else {
+      map[productId] = secondsLeft.toString();
+    }
+    return _preferences.setString(
+        PrefsKey.redeemSecondRemainForProducts, convert.jsonEncode(map));
+  }
+
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

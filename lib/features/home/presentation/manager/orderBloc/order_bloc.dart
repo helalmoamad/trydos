@@ -29,8 +29,10 @@ import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../../domain/use_cases/cancel_order_item_usecase.dart';
 import '../../../domain/use_cases/cancel_order_usecase.dart';
 import '../../../domain/use_cases/change_order_address_usecase.dart';
+import '../../../domain/use_cases/get_product_color_size_sync_attribute_usecase.dart';
 import '../../../domain/use_cases/set_customer_address_default_usecase.dart';
 import '../../../domain/use_cases/update_customer_address_usecase.dart';
+import '../../../domain/use_cases/change_order_item_variant_usecase.dart';
 import '../../widgets/cart_section/payment_method.dart';
 import 'order_event.dart';
 import 'order_state.dart';
@@ -54,6 +56,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final GetAddressByTextUsecase getAddressByTextUsecase;
   final ApplyCouponUsecase applyCouponUsecase;
   final GetProvincesByIsoUseCase getProvincesByIsoUseCase;
+  final GetProductColorSizeSyncAttributeUseCase
+      getProductColorSizeSyncAttributeUseCase;
+  final ChangeOrderItemVariantUsecase changeOrderItemVariantUsecase;
 
   OrderBloc(
     this.placeOrderUsecase,
@@ -73,6 +78,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     this.getAddressByCoordinatesUsecase,
     this.getAddressByTextUsecase,
     this.applyCouponUsecase,
+    this.getProductColorSizeSyncAttributeUseCase,
+    this.changeOrderItemVariantUsecase,
   ) : super(OrderState()) {
     on<PlaceOrderEvent>(
       _onPlaceOrderEvent,
@@ -142,6 +149,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<ChangeOrderAddressEvent>(
       _onChangeOrderAddressEvent,
     );
+    on<GetProductColorSizeSyncAttributeEvent>(
+      _onGetProductColorSizeSyncAttributeEvent,
+    );
+    on<ChangeOrderItemVariantEvent>(_onChangeOrderItemVariantEvent);
   }
 
   FutureOr<void> _onPlaceOrderEvent(
@@ -1230,6 +1241,90 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             changeOrderAddressStatus: ChangeOrderAddressStatus.success,
           ),
         );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetProductColorSizeSyncAttributeEvent(
+    GetProductColorSizeSyncAttributeEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getProductColorSizeSyncAttributeStatus:
+            GetProductColorSizeSyncAttributeStatus.loading,
+      ),
+    );
+
+    final response = await getProductColorSizeSyncAttributeUseCase(
+      event.id,
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime
+            .contains('GetProductColorSizeSyncAttributeEvent')) {
+          add(
+            GetProductColorSizeSyncAttributeEvent(id: event.id),
+          );
+          isFailedTheFirstTime.add('GetProductColorSizeSyncAttributeEvent');
+        }
+        emit(
+          state.copyWith(
+            getProductColorSizeSyncAttributeStatus:
+                GetProductColorSizeSyncAttributeStatus.failure,
+          ),
+        );
+        // إظهار رسالة الفشل من الباك إند
+      },
+      (r) async {
+        isFailedTheFirstTime.remove('GetProductColorSizeSyncAttributeEvent');
+
+        debugPrint('GetProductColorSizeSyncAttributeStatus success');
+
+        ////////////////////////////////////////////
+        emit(
+          state.copyWith(
+            getProductColorSizeSyncAttributeStatus:
+                GetProductColorSizeSyncAttributeStatus.success,
+            colorSizeForProductModel: r,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onChangeOrderItemVariantEvent(
+      ChangeOrderItemVariantEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.loading));
+    final result = await changeOrderItemVariantUsecase(event.params);
+    result.fold(
+      (failure) {
+        if (!isFailedTheFirstTime.contains('ChangeOrderItemVariantEvent')) {
+          add(ChangeOrderItemVariantEvent(params: event.params));
+          isFailedTheFirstTime.add('ChangeOrderItemVariantEvent');
+        }
+
+        emit(state.copyWith(
+            changeOrderItemVariantStatus:
+                ChangeOrderItemVariantStatus.failure));
+        // يمكنك هنا عرض رسالة خطأ أو التعامل مع الفشل حسب الحاجة
+      },
+      (response) {
+        isFailedTheFirstTime.remove('ChangeOrderItemVariantEvent');
+        showMessage(
+          response.message ?? 'تم تغيير العنوان بنجاح',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+        emit(state.copyWith(
+            changeOrderItemVariantStatus:
+                ChangeOrderItemVariantStatus.success));
+        // يمكنك هنا التعامل مع النجاح (مثلاً تحديث الطلب أو عرض رسالة)
       },
     );
   }

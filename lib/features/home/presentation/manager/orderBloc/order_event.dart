@@ -4,6 +4,8 @@ import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../../domain/use_cases/cancel_order_item_usecase.dart';
 import '../../../domain/use_cases/cancel_order_usecase.dart';
 import '../../../domain/use_cases/change_order_address_usecase.dart';
+import '../../../domain/use_cases/change_order_item_variant_usecase.dart';
+import '../../../domain/use_cases/get_product_color_size_sync_attribute_usecase.dart';
 
 abstract class OrderEvent extends Equatable {
   const OrderEvent();
@@ -234,4 +236,24 @@ class ChangeOrderAddressEvent extends OrderEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [changeOrderAddressParams];
+}
+
+class GetProductColorSizeSyncAttributeEvent extends OrderEvent {
+  final String id;
+
+  GetProductColorSizeSyncAttributeEvent({
+    required this.id,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [id];
+}
+
+class ChangeOrderItemVariantEvent extends OrderEvent {
+  final ChangeOrderItemVariantParams params;
+  const ChangeOrderItemVariantEvent({required this.params});
+
+  @override
+  List<Object?> get props => [params];
 }

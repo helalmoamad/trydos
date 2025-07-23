@@ -335,7 +335,7 @@ void main() async {
   FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
-  //GetIt.I<PrefsRepository>().removeRedeemDateForAnyProductFinished();
+  // GetIt.I<PrefsRepository>().removeRedeemDateForAnyProductFinished();
 
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());

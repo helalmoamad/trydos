@@ -1290,7 +1290,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       if (r.product?.isRedeem == true) {
         GetIt.I<PrefsRepository>()
-            .setRedeemDateForProduct(r.product!.id.toString(), "22");
+            .setRedeemDateForProduct(r.product!.id.toString(), "52");
       }
       if ((event.fromListingPage ?? false) == false) {
         Future.delayed(Duration(seconds: 2), () {
@@ -3470,7 +3470,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       });
       if (r.productItem!.isRedeem == true) {
         GetIt.I<PrefsRepository>()
-            .setRedeemDateForProduct(r.productItem!.productId.toString(), "22");
+            .setRedeemDateForProduct(r.productItem!.productId.toString(), "52");
       }
       emit(state.copyWith(
         productStatus: productStatus,

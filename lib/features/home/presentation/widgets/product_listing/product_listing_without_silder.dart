@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -16,6 +17,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/static_circle_carousel.dart';
 import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -26,8 +28,8 @@ import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 
 /// 🚀 نسخة مبسطة جداً من ProductListing3DSlider - أداء فائق ⚡
-class ProductListing3DSliderOptimized extends StatefulWidget {
-  const ProductListing3DSliderOptimized({
+class ProductListingWithoutSlider extends StatefulWidget {
+  const ProductListingWithoutSlider({
     super.key,
     // required this.setThisEnabled,
     // required this.slidingModeItem,
@@ -40,6 +42,9 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
     this.fromFlashDeal,
     this.fromHomePage = false,
     required this.finishRedeem,
+    this.tapIndexToShowColorImages,
+    this.showShadowForColorImages,
+    this.colorImagesPanelController,
     // جديد: افتراضي false
     //required this.displayImageColors,
     //  required this.currentChosenColor,
@@ -50,6 +55,9 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final ValueNotifier<bool> finishRedeem;
   final int itemIndex;
+  final ValueNotifier<bool>? showShadowForColorImages;
+  final ValueNotifier<int>? tapIndexToShowColorImages;
+  final PanelController? colorImagesPanelController;
   //final bool displayImageColors;
   final ValueNotifier<bool> visibleRedeem;
   final bool fromHomePage;
@@ -60,12 +68,12 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
   final ValueNotifier<bool>? productIsFlashDeal;
 
   @override
-  State<ProductListing3DSliderOptimized> createState() =>
-      _ProductListing3DSliderOptimizedState();
+  State<ProductListingWithoutSlider> createState() =>
+      _ProductListingWithoutSliderState();
 }
 
-class _ProductListing3DSliderOptimizedState
-    extends State<ProductListing3DSliderOptimized> {
+class _ProductListingWithoutSliderState
+    extends State<ProductListingWithoutSlider> {
   late HomeBloc _homeBloc;
 
   @override
@@ -85,8 +93,10 @@ class _ProductListing3DSliderOptimizedState
   /// 🎯 بطاقة منتج بسيطة - أداء ممتاز
   Widget _buildSimpleProductCard() {
     return Container(
-      height: 350,
-      width: 200,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          color: Color(0xffF8F8F8),
+          border: Border.all(color: Colors.white)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +104,7 @@ class _ProductListing3DSliderOptimizedState
         children: [
           // 🖼️ صورة المنتج - بدون مسافات إضافية
           Container(
-            height: 230,
+            height: 290,
             width: 200,
             child: _buildSingleImage((GetIt.I<PrefsRepository>()
                             .getRedeemDateForProduct(
@@ -145,7 +155,7 @@ class _ProductListing3DSliderOptimizedState
   Widget _buildSingleImage(bool isRedeem) {
     // الحصول على أول صورة متاحة
     String? imageUrl;
-    double imageHeight = 250;
+    double imageHeight = 290;
     double imageWidth = 200;
 
     // محاولة الحصول على الصورة من syncColorImages أولاً
@@ -154,8 +164,8 @@ class _ProductListing3DSliderOptimizedState
       if (firstColorImage.images?.isNotEmpty == true) {
         imageUrl = firstColorImage.images!.first.filePath;
         imageHeight = double.tryParse(
-                firstColorImage.images!.first.originalHeight ?? '250') ??
-            250;
+                firstColorImage.images!.first.originalHeight ?? '290') ??
+            290;
         imageWidth = double.tryParse(
                 firstColorImage.images!.first.originalWidth ?? '200') ??
             200;
@@ -166,7 +176,7 @@ class _ProductListing3DSliderOptimizedState
     if (imageUrl == null && widget.productItem.images?.isNotEmpty == true) {
       final firstImage = widget.productItem.images!.first;
       imageUrl = firstImage.filePath;
-      imageHeight = double.tryParse(firstImage.originalHeight ?? '250') ?? 250;
+      imageHeight = double.tryParse(firstImage.originalHeight ?? '290') ?? 290;
       imageWidth = double.tryParse(firstImage.originalWidth ?? '200') ?? 200;
     }
 
@@ -185,20 +195,41 @@ class _ProductListing3DSliderOptimizedState
                   0;
           return Container(
             width: 200,
-            height: 250,
+            height: 290,
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
             child: (imageUrl != null
-                ? ProductListingImageWidget(
-                    borderColor: isRedeem ? Color(0xffFF6200) : null,
-                    orginalHeight: imageHeight,
-                    orginalWidth: imageWidth,
-                    width: 200,
-                    imageUrl: imageUrl,
-                    height: 250,
-                    circleShape: false,
-                    innerShadowYOffset: 3,
-                  )
+                ? Stack(alignment: Alignment.bottomCenter, children: [
+                    ProductListingImageWidget(
+                      borderColor: isRedeem ? Color(0xffFF6200) : null,
+                      orginalHeight: imageHeight,
+                      orginalWidth: imageWidth,
+                      width: 200,
+                      imageUrl: imageUrl,
+                      height: 290,
+                      circleShape: false,
+                      innerShadowYOffset: 3,
+                    ),
+                    Positioned(
+                        bottom: 0,
+                        child: StaticCircleCarousel(
+                          itemIndex: widget.itemIndex,
+                          tapIndexToShowColorImages:
+                              widget.tapIndexToShowColorImages,
+                          colorImagesPanelController:
+                              widget.colorImagesPanelController,
+                          showShadowForColorImages:
+                              widget.showShadowForColorImages,
+                          imageUrls: widget.productItem.syncColorImages
+                                  ?.map((e) => e.images?.first.filePath ?? "")
+                                  .toList() ??
+                              [],
+                          colors: widget.productItem.colors
+                                  ?.map((e) => e.color ?? "")
+                                  .toList() ??
+                              [],
+                        ))
+                  ])
                 : Container(
                     color: Colors.grey[200],
                     child: Icon(Icons.image, size: 50, color: Colors.grey[400]),
@@ -210,13 +241,12 @@ class _ProductListing3DSliderOptimizedState
   /// 💰 معلومات المنتج المبسطة
   Widget _buildProductInfo() {
     return Column(
-      mainAxisSize: MainAxisSize.max, // تقليل المساحة المستخدمة
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // معلومات المنتج
         SizedBox(
-          width: 200,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               crossAxisAlignment: LanguageService.languageCode == "ar"
                   ? CrossAxisAlignment.end
@@ -497,8 +527,9 @@ class _ProductListing3DSliderOptimizedState
             productCategory.join(' | '),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.titleMedium?.rr
-                .copyWith(color: const Color(0xff505050), fontSize: 10.sp),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: const Color(0xff3c3c3c),
+                ),
           ),
         ),
       ],
@@ -527,7 +558,7 @@ class _ProductListing3DSliderOptimizedState
     return SizedBox(
       width: 200,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getCurrencyForCountryModel !=
@@ -642,7 +673,7 @@ class _ProductListing3DSliderOptimizedState
         _homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
           isStatusInitaial: true,
         ));
-        widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
+        // widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
 
         Future.delayed(
           const Duration(milliseconds: 600),
