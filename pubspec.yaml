@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_screenutil: ^5.9.0
   flutter_svg: ^2.0.10+1
   tuple: ^2.0.2
@@ -153,6 +155,7 @@ dependencies:
   expandable_richtext: ^1.0.7
   geodesy: ^0.10.2
   extended_image: ^9.1.0
+  flutter_rating_bar: ^4.0.1
   # flutter_image_compress:
   #   git:
   #     url: https://gitlab.com/trydos_app/flutter_image_compress-1.1.3.git

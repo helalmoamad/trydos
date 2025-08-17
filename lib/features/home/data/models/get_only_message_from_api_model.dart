@@ -12,24 +12,22 @@ String readOnlyMessageFromApiModelToJson(ReadOnlyMessageFromApiModel data) =>
 
 class ReadOnlyMessageFromApiModel {
   final String? message;
-
-  ReadOnlyMessageFromApiModel({
-    this.message,
-  });
+  final String? response;
+  ReadOnlyMessageFromApiModel({this.message, this.response});
 
   ReadOnlyMessageFromApiModel copyWith({
     String? message,
+    String? response,
   }) =>
       ReadOnlyMessageFromApiModel(
-        message: message ?? this.message,
-      );
+          message: message ?? this.message,
+          response: response ?? this.response);
 
   factory ReadOnlyMessageFromApiModel.fromJson(Map<String, dynamic> json) =>
       ReadOnlyMessageFromApiModel(
         message: json["message"],
+        response: json["response"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "message": message,
-      };
+  Map<String, dynamic> toJson() => {"message": message, "response": response};
 }

@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
@@ -80,7 +81,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(Duration(seconds: 10)));
     on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent,
         transformer: throttleDroppable(Duration(seconds: 10)));
-    on<SendOtpEvent>(_onSendOtpEvent);
+    on<SendOtpEvent>(_onSendOtpEvent,
+        transformer: throttleDroppable(Duration(seconds: 10)));
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
     on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
@@ -155,14 +157,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('LoginToChatEvent')) {
+        if (ErrorManager.shouldRetry('LoginToChatEvent', l.statusCode)) {
           add(LoginToChatEvent(
               mobilePhone: event.mobilePhone,
               otpIdToken: event.otpIdToken,
               name: event.name,
               fcmToken: event.fcmToken,
               originalUserId: event.originalUserId));
-          isFailedTheFirstTime.add('LoginToChatEvent');
+          ErrorManager.incrementRetry('LoginToChatEvent');
         }
         emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
         showMessage("fail to log in to chat",
@@ -176,7 +178,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (r) {
         emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
         _prefsRepository.setLogInToChat(true);
-        isFailedTheFirstTime.remove('LoginToChatEvent');
+        ErrorManager.resetRetry('LoginToChatEvent');
         final id = r.data!.id;
         final token = r.data!.accessToken;
         final name = r.data!.name;
@@ -217,16 +219,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           serverName: event.serverName),
     );
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('StoreFcmTokenEvent')) {
+      if (ErrorManager.shouldRetry('StoreFcmTokenEvent', l.statusCode)) {
         add(StoreFcmTokenEvent(
             userId: event.userId,
             fcmToken: event.fcmToken,
             serverName: event.serverName));
-        isFailedTheFirstTime.add('StoreFcmTokenEvent');
+        ErrorManager.incrementRetry('StoreFcmTokenEvent');
       }
       emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
     }, (r) {
-      isFailedTheFirstTime.remove('StoreFcmTokenEvent');
+      ErrorManager.resetRetry('StoreFcmTokenEvent');
       final id = r.data!.id;
       _prefsRepository.setFcmTokenId(id!);
       emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
@@ -240,10 +242,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await sendOtpUseCase(
       SendOtpParams(isViaWhatsApp: event.isViaWhatsApp, phone: event.phone),
     );
-    response.fold(
-        (l) => emit(state.copyWith(
-            sendOtpStatus: SendOtpStatus.failure,
-            sendOtpError: 'please wait some seconds and try again')), (r) {
+    response.fold((l) {
+      if (ErrorManager.shouldRetry('SendOtpEvent', l.statusCode)) {
+        add(SendOtpEvent(
+            isViaWhatsApp: event.isViaWhatsApp, phone: event.phone));
+        ErrorManager.incrementRetry('SendOtpEvent');
+      }
+      emit(state.copyWith(
+          sendOtpStatus: SendOtpStatus.failure,
+          sendOtpError: 'please wait some seconds and try again'));
+    }, (r) {
+      ErrorManager.resetRetry('SendOtpEvent');
       _prefsRepository.setVerificationId(r.data!.verificationId!);
       emit(state.copyWith(sendOtpStatus: SendOtpStatus.success));
     });
@@ -257,10 +266,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       VerifyOtpFromGuestParams(
           otp: event.otp, verificationId: event.verificationId),
     );
-    response.fold(
-        (l) => emit(state.copyWith(
-            verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure)),
-        (r) async {
+    response.fold((l) {
+      if (ErrorManager.shouldRetry('VerifyOtpFromGuestEvent', l.statusCode)) {
+        add(VerifyOtpFromGuestEvent(
+            otp: event.otp, verificationId: event.verificationId));
+        ErrorManager.incrementRetry('VerifyOtpFromGuestEvent');
+      }
+      emit(state.copyWith(
+          verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure));
+    }, (r) async {
+      ErrorManager.resetRetry('VerifyOtpFromGuestEvent');
       try {
         if ((r.data!.user?.name?.replaceAll(' ', '') ?? '') != '') {
           _prefsRepository.setMyMarketName(r.data!.user!.name!);
@@ -285,7 +300,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
-        GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+        //GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
 
         add(LoginToStoriesEvent(
           name: r.data!.user?.name,
@@ -308,14 +323,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       emit(state.copyWith(
           verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.success));
-      await NotificationProcess().fcmToken();
-
-      add(LoginToChatEvent(
-          fcmToken: NotificationProcess.myFcmToken!,
-          mobilePhone: r.data?.user?.phone,
-          name: r.data!.user?.name,
-          originalUserId: r.data!.user?.id.toString(),
-          otpIdToken: r.data!.user?.lastOtpIdToken));
+      await NotificationProcess().fcmToken(
+          r.data?.user?.phone,
+          r.data!.user?.name,
+          r.data!.user?.id.toString(),
+          r.data!.user?.lastOtpIdToken);
     });
   }
 
@@ -333,13 +345,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('LoginToStoriesEvent')) {
+        if (ErrorManager.shouldRetry('LoginToStoriesEvent', l.statusCode)) {
           add(LoginToStoriesEvent(
               phone: event.phone,
               name: event.name,
               otpIdToken: event.otpIdToken,
               originalUserId: event.originalUserId));
-          isFailedTheFirstTime.add('LoginToStoriesEvent');
+          ErrorManager.incrementRetry('LoginToStoriesEvent');
         }
         emit(
             state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure));
@@ -347,7 +359,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (r) {
         emit(
             state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.success));
-        isFailedTheFirstTime.remove('LoginToStoriesEvent');
+        ErrorManager.resetRetry('LoginToStoriesEvent');
 
         final id = r.data!.id;
         final token = r.data!.accessToken;
@@ -374,10 +386,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verificationId: event.verificationId, otp: event.otp),
     );
     response.fold((l) {
+      if (ErrorManager.shouldRetry('VerifyOtpInProfileEvent', l.statusCode)) {
+        add(VerifyOtpInProfileEvent(
+            verificationId: event.verificationId, otp: event.otp));
+        ErrorManager.incrementRetry('VerifyOtpInProfileEvent');
+      }
       emit(state.copyWith(
           verifyOtpInProfileStatus: VerifyOtpInProfileStatus.failure,
           signInErrorMessage: l.message));
     }, (r) async {
+      ErrorManager.resetRetry('VerifyOtpInProfileEvent');
       _prefsRepository.setIdToken((r.data!.idToken).toString());
       emit(state.copyWith(
         verifyOtpInProfileStatus: VerifyOtpInProfileStatus.success,
@@ -394,10 +412,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verificationId: event.verificationId, otp: event.otp),
     );
     response.fold((l) {
+      if (ErrorManager.shouldRetry('VerifyOtpSignInEvent', l.statusCode)) {
+        add(VerifyOtpSignInEvent(
+            verificationId: event.verificationId,
+            otp: event.otp,
+            phone: event.phone));
+        ErrorManager.incrementRetry('VerifyOtpSignInEvent');
+      }
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
           signInErrorMessage: l.message));
-    }, (r) async {
+    }, (r) {
+      ErrorManager.resetRetry('VerifyOtpSignInEvent');
       try {
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
@@ -412,7 +438,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
-        GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+        // GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         print(
             "*****************************-----------------------------${r.data!.token!}");
@@ -421,20 +447,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository
             .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
         ////////////////////////
-        await FirebaseAnalytics.instance.setUserId(
+        FirebaseAnalytics.instance.setUserId(
           id: r.data!.user!.id.toString(),
         );
 
-        await FirebaseAnalytics.instance.setUserId(
+        FirebaseAnalytics.instance.setUserId(
           id: "12345",
         );
 
-        await FirebaseAnalytics.instance.setUserProperty(
+        FirebaseAnalytics.instance.setUserProperty(
           name: 'gender',
           value: r.data!.user!.gender.toString(),
         );
 
-        await FirebaseAnalytics.instance.setUserProperty(
+        FirebaseAnalytics.instance.setUserProperty(
           name: 'user_type',
           value: 'registered',
         );
@@ -465,17 +491,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         return;
       }
+      NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
+          r.data!.user!.id!.toString(), r.data!.idToken);
 
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
           marketUser: r.data!.user));
-      await NotificationProcess().fcmToken();
-      add(LoginToChatEvent(
-          fcmToken: NotificationProcess.myFcmToken!,
-          mobilePhone: r.data!.user!.phone,
-          name: r.data!.user!.name,
-          originalUserId: r.data!.user!.id!.toString(),
-          otpIdToken: r.data!.idToken!));
     });
   }
 
@@ -489,11 +510,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           name: event.name),
     );
     response.fold((l) {
+      if (ErrorManager.shouldRetry('VerifyOtpSignUpEvent', l.statusCode)) {
+        add(VerifyOtpSignUpEvent(
+            verificationId: event.verificationId,
+            otp: event.otp,
+            name: event.name));
+        ErrorManager.incrementRetry('VerifyOtpSignUpEvent');
+      }
       emit(state.copyWith(
         signUpErrorMessage: 'faild',
         verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
       ));
-    }, (r) async {
+    }, (r) {
+      ErrorManager.resetRetry('VerifyOtpSignUpEvent');
       if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
         _prefsRepository.setMyMarketName(r.data!.user!.name!);
       }
@@ -504,19 +533,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setTokenExpired(false);
 
       //////////////////////////////////////
-      await FirebaseAnalytics.instance.setUserId(
+      FirebaseAnalytics.instance.setUserId(
         id: r.data!.user!.id.toString(),
       );
-      await FirebaseAnalytics.instance.setUserId(
+      FirebaseAnalytics.instance.setUserId(
         id: "12345",
       );
 
-      await FirebaseAnalytics.instance.setUserProperty(
+      FirebaseAnalytics.instance.setUserProperty(
         name: 'gender',
         value: r.data!.user!.gender.toString(),
       );
 
-      await FirebaseAnalytics.instance.setUserProperty(
+      FirebaseAnalytics.instance.setUserProperty(
         name: 'user_type',
         value: 'new',
       );
@@ -524,12 +553,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());
       GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
-      GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+      //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       ;
       _prefsRepository.setIdToken((r.data!.idToken).toString());
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-      print(
-          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${r.data!.user?.isPhoneVerified}");
+      //    print(
+      //    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${r.data!.user?.isPhoneVerified}");
 
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
@@ -553,14 +582,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(
           verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
           marketUser: r.data!.user));
-      await NotificationProcess().fcmToken();
-
-      add(LoginToChatEvent(
-          fcmToken: NotificationProcess.myFcmToken!,
-          mobilePhone: r.data!.user!.phone,
-          originalUserId: r.data!.user!.id!.toString(),
-          name: r.data!.user!.name,
-          otpIdToken: r.data!.idToken!));
+      NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
+          r.data!.user!.id!.toString(), r.data!.idToken);
     });
   }
 
@@ -579,13 +602,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _prefsRepository.setVerifiedPhone(false);
     response.fold((l) {
       _prefsRepository.setVerifiedPhone(previousStatusOfIsVerifiedPhone);
-      if (!isFailedTheFirstTime.contains('RegisterGuestEvent')) {
+      if (ErrorManager.shouldRetry('RegisterGuestEvent', l.statusCode)) {
         add(RegisterGuestEvent(
             deviceId: event.deviceId, oldGuestUserId: event.oldGuestUserId));
-        isFailedTheFirstTime.add('RegisterGuestEvent');
+        ErrorManager.incrementRetry('RegisterGuestEvent');
       }
       emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
-    }, (r) async {
+    }, (r) {
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));
@@ -595,27 +618,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setTokenExpired(false);
         },
       );
-      isFailedTheFirstTime.remove('RegisterGuestEvent');
+      ErrorManager.resetRetry('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository
           .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
       _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
 
       //////////////////////////////////////
-      await FirebaseAnalytics.instance.setUserId(
+      FirebaseAnalytics.instance.setUserId(
         id: r.data!.user!.id.toString(),
       );
 
-      await FirebaseAnalytics.instance.setUserId(
+      FirebaseAnalytics.instance.setUserId(
         id: "12345",
       );
 
-      await FirebaseAnalytics.instance.setUserProperty(
+      FirebaseAnalytics.instance.setUserProperty(
         name: 'gender',
         value: r.data!.user!.gender.toString(),
       );
 
-      await FirebaseAnalytics.instance.setUserProperty(
+      FirebaseAnalytics.instance.setUserProperty(
         name: 'user_type',
         value: 'guest',
       );
@@ -629,8 +652,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       GetIt.I<HomeBloc>()
           .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
       GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
-      GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
-      NotificationProcess().fcmToken();
+      //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+      NotificationProcess().fcmToken(null, null, null, null);
     });
   }
 
@@ -641,16 +664,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UpdateNameParams(name: event.name),
     );
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateNameEvent')) {
+      if (ErrorManager.shouldRetry('UpdateNameEvent', l.statusCode)) {
         add(UpdateNameEvent(name: event.name));
-        isFailedTheFirstTime.add('UpdateNameEvent');
+        ErrorManager.incrementRetry('UpdateNameEvent');
       }
       emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure));
     }, (r) {
       //  GetIt.I<HomeBloc>().add(UpdateProfileEvent(name: event.name));
       add(UpdateChatUserNameEvent(name: event.name ?? ""));
       add(UpdateStoriesUserEvent(name: event.name ?? ""));
-      isFailedTheFirstTime.remove('UpdateNameEvent');
+      ErrorManager.resetRetry('UpdateNameEvent');
       emit(state.copyWith(
         updateNameStatus: UpdateNameStatus.success,
       ));
@@ -663,14 +686,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetCustomerInfoEvent')) {
+      if (ErrorManager.shouldRetry('GetCustomerInfoEvent', l.statusCode)) {
         add(GetCustomerInfoEvent());
-        isFailedTheFirstTime.add('GetCustomerInfoEvent');
+        ErrorManager.incrementRetry('GetCustomerInfoEvent');
       }
       emit(
           state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.failure));
     }, (userInfo) {
-      isFailedTheFirstTime.remove('GetCustomerInfoEvent');
+      ErrorManager.resetRetry('GetCustomerInfoEvent');
 
       _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
       if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
@@ -690,12 +713,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold((l) {
       emit(state.copyWith(
           getCustomerCountryStatus: GetCustomerCountryStatus.failure));
-      if (!isFailedTheFirstTime.contains('GetUserCountryEvent')) {
+      if (ErrorManager.shouldRetry('GetUserCountryEvent', l.statusCode)) {
         add(GetUserCountryEvent());
-        isFailedTheFirstTime.add('GetUserCountryEvent');
+        ErrorManager.incrementRetry('GetUserCountryEvent');
       }
     }, (r) {
-      isFailedTheFirstTime.remove('GetUserCountryEvent');
+      ErrorManager.resetRetry('GetUserCountryEvent');
       _prefsRepository.setCountryIso(r.countryCode);
 
       emit(state.copyWith(
@@ -718,9 +741,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           name: event.name, phone: event.phone, photo: event.photo),
     );
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateStoriesUserEvent')) {
+      if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
         add(UpdateStoriesUserEvent(name: event.name));
-        isFailedTheFirstTime.add('UpdateStoriesUserEvent');
+        ErrorManager.incrementRetry('UpdateStoriesUserEvent');
       }
       emit(state.copyWith(
           updateStoriesUserStatus: UpdateStoriesUserStatus.failure));
@@ -732,9 +755,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UpdateNameParams(name: event.name),
     );
     marketResponse.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateStoriesUserEvent')) {
+      if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
         add(UpdateStoriesUserEvent(name: event.name));
-        isFailedTheFirstTime.add('UpdateStoriesUserEvent');
+        ErrorManager.incrementRetry('UpdateStoriesUserEvent');
       }
       emit(state.copyWith(
         updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
@@ -747,16 +770,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UpdateChatUserNameParams(name: event.name ?? ""),
     );
     chatResponse.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateStoriesUserEvent')) {
+      if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
         add(UpdateStoriesUserEvent(name: event.name));
-        isFailedTheFirstTime.add('UpdateStoriesUserEvent');
+        ErrorManager.incrementRetry('UpdateStoriesUserEvent');
       }
       emit(state.copyWith(
         updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
       ));
     }, (r) {
       GetIt.I<StoryBloc>().add(GetStoryEvent(withPaginition: false));
-      isFailedTheFirstTime.remove('UpdateStoriesUserEvent');
+      ErrorManager.resetRetry('UpdateStoriesUserEvent');
       _prefsRepository.setMyStoriesName(event.name ?? "");
       _prefsRepository.setMyMarketName(event.name ?? "");
 
@@ -782,9 +805,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UpdateChatUserNameParams(name: event.name),
     );
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateChatUserNameEvent')) {
+      if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
         add(UpdateStoriesUserEvent(name: event.name));
-        isFailedTheFirstTime.add('UpdateChatUserNameEvent');
+        ErrorManager.incrementRetry('UpdateChatUserNameEvent');
       }
       emit(state.copyWith(
           updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
@@ -796,9 +819,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UpdateNameParams(name: event.name),
     );
     marketResponse.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateChatUserNameEvent')) {
+      if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
         add(UpdateStoriesUserEvent(name: event.name));
-        isFailedTheFirstTime.add('UpdateChatUserNameEvent');
+        ErrorManager.incrementRetry('UpdateChatUserNameEvent');
       }
       emit(state.copyWith(
           updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
@@ -816,14 +839,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UpdateStoriesUserParams(name: event.name),
     );
     storiesResponse.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateChatUserNameEvent')) {
+      if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
         add(UpdateStoriesUserEvent(name: event.name));
-        isFailedTheFirstTime.add('UpdateChatUserNameEvent');
+        ErrorManager.incrementRetry('UpdateChatUserNameEvent');
       }
       emit(state.copyWith(
           updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
     }, (r) {
-      isFailedTheFirstTime.remove('UpdateChatUserNameEvent');
+      ErrorManager.resetRetry('UpdateChatUserNameEvent');
       _prefsRepository.setMyStoriesName(event.name);
 
       emit(state.copyWith(

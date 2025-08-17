@@ -169,6 +169,7 @@ class _OrdersPageState extends State<OrdersPage> {
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
                                       OrderDetails1(
+                                          indexGroupe: -1,
                                           currentStatus: currentStatus.value,
                                           orderIdFormNotification:
                                               widget.orderIdFormNotification,
@@ -250,6 +251,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                             HelperFunctions.slidingNavigation(
                                               context,
                                               OrderDetails1(
+                                                  indexGroupe: index,
                                                   currentStatus:
                                                       currentStatus.value,
                                                   orders: items[index]),
@@ -402,20 +404,29 @@ class _OrdersPageState extends State<OrdersPage> {
                 itemCount: details.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
-                  print(
-                      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII${details[index].image}");
                   return ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Container(
-                      color: Colors.white,
-                      child: MyCachedNetworkImage(
-                        imageUrl: details[index].image ?? '',
-                        imageFit: BoxFit.contain,
-                        width: 90,
-                        height: 125,
-                      ),
-                    ),
-                  );
+                      borderRadius: BorderRadius.circular(15),
+                      child: InkWell(
+                          onTap: () {
+                            HelperFunctions.slidingNavigation(
+                              context,
+                              OrderDetails1(
+                                  indexGroupe: index,
+                                  orderIdToOpenPackage:
+                                      details[index].orderId.toString(),
+                                  currentStatus: currentStatus.value,
+                                  orders: item),
+                            );
+                          },
+                          child: Container(
+                            color: Colors.white,
+                            child: MyCachedNetworkImage(
+                              imageUrl: details[index].image ?? '',
+                              imageFit: BoxFit.contain,
+                              width: 90,
+                              height: 125,
+                            ),
+                          )));
                 },
                 separatorBuilder: (context, index) {
                   return const SizedBox(

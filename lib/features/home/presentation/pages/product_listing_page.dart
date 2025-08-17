@@ -50,6 +50,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_without_silder.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
@@ -313,6 +314,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
       _setHtmlDescriptionHeight();
     });*/
+    productIdToSaveRedeemTimer = [];
     scrollController.addListener(_listenToScroll);
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
@@ -450,9 +452,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       // 🎯 دع Flutter يدير الذاكرة تلقائياً عند dispose
 
       categoryBloc.add(ReplyFromGeminiEvent(
-          fromSearch: false,
-          sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
-          theReplyFromGemini: ""));
+        fromSearch: false,
+        resetTheReply: true,
+      ));
 
       debugPrint('✅ Product listing disposed with performance optimization');
     } catch (e) {
@@ -502,6 +504,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
     };*/
     return WillPopScope(
       onWillPop: () async {
+        if (MediaQuery.of(context).viewInsets.bottom > 0) {
+          FocusScope.of(context).unfocus();
+          return false;
+        }
         try {
           if (colorImagesPanelController.isPanelOpen) {
             colorImagesPanelController.close();
@@ -523,9 +529,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
         }
 
         categoryBloc.add(ReplyFromGeminiEvent(
-            fromSearch: false,
-            sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
-            theReplyFromGemini: ""));
+          fromSearch: false,
+          resetTheReply: true,
+        ));
         if (widget.fromSearch) {
           widget.controllerFormSearchPage?.text = controller.text;
         }
@@ -855,10 +861,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               .fromBackground) {
                                                                             context.go(GRouter.config.kRootRoute);
                                                                           }
-                                                                          categoryBloc.add(ReplyFromGeminiEvent(
-                                                                              fromSearch: false,
-                                                                              sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
-                                                                              theReplyFromGemini: ""));
+                                                                          categoryBloc
+                                                                              .add(ReplyFromGeminiEvent(
+                                                                            fromSearch:
+                                                                                false,
+                                                                            resetTheReply:
+                                                                                true,
+                                                                          ));
                                                                           if (widget
                                                                               .fromSearch) {
                                                                             widget.controllerFormSearchPage?.text =
@@ -2338,11 +2347,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             index]
                                                                         .price
                                                                         .toString(),
-                                                                    'brand': products[
-                                                                            index]
-                                                                        .brand!
-                                                                        .name
-                                                                        .toString(),
+                                                                    'brand': products[index].brand ==
+                                                                            null
+                                                                        ? ""
+                                                                        : products[index]
+                                                                            .brand!
+                                                                            .name
+                                                                            .toString(),
                                                                     'category': products[
                                                                             index]
                                                                         .categories!
@@ -3607,6 +3618,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                               ? SizedBox.shrink()
                               : Expanded(
                                   child: GridView.builder(
+                                      addAutomaticKeepAlives: false,
+                                      addRepaintBoundaries: false,
+                                      addSemanticIndexes: false,
+                                      cacheExtent: 0,
                                       controller: sc,
                                       itemCount:
                                           products[_tapIndexToShowColorImages]

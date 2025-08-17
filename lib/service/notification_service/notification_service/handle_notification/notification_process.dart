@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as fln;
 import 'package:get_it/get_it.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -48,10 +49,19 @@ class NotificationProcess {
     }
   }
 
-  Future fcmToken() async {
+  Future fcmToken(String? mobilePhone, String? name, String? originalUserId,
+      String? otpIdToken) async {
     await FirebaseMessaging.instance.deleteToken();
 
     myFcmToken = await FirebaseMessaging.instance.getToken();
+    if (otpIdToken != null) {
+      GetIt.I<AuthBloc>().add(LoginToChatEvent(
+          fcmToken: myFcmToken!,
+          mobilePhone: mobilePhone,
+          name: name,
+          originalUserId: originalUserId,
+          otpIdToken: otpIdToken));
+    }
     print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);

@@ -11,6 +11,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/common/helper/show_message.dart';
 
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
 
@@ -21,6 +22,7 @@ import 'package:trydos/features/home/data/models/main_categories_response_model.
 
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/search_by_images_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 
@@ -34,6 +36,7 @@ import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../main.dart';
+import '../../../../../core/error/error_manager.dart';
 
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../chat/presentation/manager/chat_bloc.dart';
@@ -51,7 +54,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @LazySingleton()
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   CategoryBloc(
-    //  this.getHomeSectionsUseCase,
+    this.searchByImageFromGeminiUseCase,
     this.getMainCategoriesUseCase,
     this.getHomeBoutiqesUseCase,
   ) : super(CategoryState()) {
@@ -72,6 +75,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
 
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
+  final SearchByImageFromGeminiUseCase searchByImageFromGeminiUseCase;
 
   FutureOr<void> _onGetHomeBoutiquesEvent(
     GetHomeBoutiqesEvent event,
@@ -197,82 +201,46 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             event.categorySlug == "Empty" ? null : event.categorySlug));
 
     response.fold((l) {
-      /*  if (event.withSemaphore ?? false) {
-        prefechMainCategory.release();
-      }*/
-
       if (!event.getWithPrefetchToStoreInMemory) {
         Map<String, PaginationModel<HomeBoutiques>>
             getHomeBoutiquesPaginationObjectByMainCategory =
             Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
 
-        if (!isFailedTheFirstTime.contains('GetHomeBoutiqesEvent')) {
-          add(
-            GetHomeBoutiqesEvent(
-              getWithPrefetchToStoreInMemory:
-                  event.getWithPrefetchToStoreInMemory,
-              getWithOutPrefetchForEachBoutiques:
-                  event.getWithOutPrefetchForEachBoutiques,
-              offset: event.offset,
-              context: event.context,
-              categorySlug: event.categorySlug,
-              getWithPagination: event.getWithPagination,
-            ),
-          );
-
-          isFailedTheFirstTime.add('GetHomeBoutiqesEvent');
+        if (ErrorManager.shouldRetry('GetHomeBoutiqesEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetHomeBoutiqesEvent');
+          add(GetHomeBoutiqesEvent(
+            getWithPrefetchToStoreInMemory:
+                event.getWithPrefetchToStoreInMemory,
+            getWithOutPrefetchForEachBoutiques:
+                event.getWithOutPrefetchForEachBoutiques,
+            offset: event.offset,
+            context: event.context,
+            categorySlug: event.categorySlug,
+            getWithPagination: event.getWithPagination,
+          ));
+          return; // لا تحدث الحالة
         }
-        emit(
-          state.copyWith(
-            getHomeBoutiquesPaginationObjectByMainCategory:
-                getHomeBoutiquesPaginationObjectByMainCategory.map(
-              (key, value) {
-                if (key == event.categorySlug)
-                  return MapEntry(
-                      key,
-                      value.copyWith(
-                          paginationStatus: PaginationStatus.failure));
-                return MapEntry(key, value);
-              },
-            ),
+
+        emit(state.copyWith(
+          getHomeBoutiquesPaginationObjectByMainCategory:
+              getHomeBoutiquesPaginationObjectByMainCategory.map(
+            (key, value) {
+              if (key == event.categorySlug)
+                return MapEntry(key,
+                    value.copyWith(paginationStatus: PaginationStatus.failure));
+              return MapEntry(key, value);
+            },
           ),
-        );
+        ));
       }
     }, (r) {
-      /* if (event.withSemaphore ?? false) {
-        prefechMainCategory.release();
-      }*/
       if (!event.getWithPagination) {
         prefsRepository.setPrefechOfBoutiquesForEachMainCategoryInHomePage(
             event.categorySlug, jsonEncode(r));
       }
 
       if (!event.getWithPrefetchToStoreInMemory) {
-        /* String url = '';
-        int numOfBanners = -1;
-        r.data?.boutiques?.forEach((boutique) {
-          // boutique images
-          numOfBanners = boutique.banners?.length ?? 0;
-          boutique.banners?.forEach((banner) {
-            url = addSuitableWidthAndHeightToImage(
-                imageUrl: banner.filePath!,
-                width: 1.sw,
-                height: numOfBanners == 1 ? 135 : 155);
-            prefetchImages(url, event.context, "banner", (1.sw).round(),
-                numOfBanners == 1 ? 135 : 155);
-          });
-
-          // boutique categories images
-          boutique.mainCategoriesForProductIds?.forEach((category) {
-            url = addSuitableWidthAndHeightToImage(
-                imageUrl: category.mostViewedProductThumbnail!.filePath!,
-                width: 40.w,
-                height: 40.w);
-            prefetchImages(url, event.context, "categoryBoutique", 40, 40);
-          });
-        });*/
-
-        isFailedTheFirstTime.remove('GetHomeBoutiqesEvent');
+        ErrorManager.resetRetry('GetHomeBoutiqesEvent');
 
         getHomeBoutiquesPaginationObjectByMainCategory =
             Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
@@ -281,37 +249,35 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                 .items);
 
-        emit(
-          state.copyWith(
-            getHomeBoutiquesPaginationObjectByMainCategory:
-                getHomeBoutiquesPaginationObjectByMainCategory.map(
-              (key, value) {
-                if (key == event.categorySlug) {
-                  return MapEntry(
-                    key,
-                    value.copyWith(
-                      hasReachedMax:
-                          (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
-                      paginationStatus: PaginationStatus.success,
-                      page: event.getWithPagination
-                          ? getHomeBoutiquesPaginationObjectByMainCategory[
-                                      event.categorySlug]!
-                                  .page +
-                              1
-                          : 2,
-                      offset: r.data?.offset,
-                      items: !event.getWithPagination
-                          ? [...r.data!.boutiques ?? []]
-                          : [...boutiques, ...r.data!.boutiques ?? []],
-                    ),
-                  );
-                } else {
-                  return MapEntry(key, value);
-                }
-              },
-            ),
+        emit(state.copyWith(
+          getHomeBoutiquesPaginationObjectByMainCategory:
+              getHomeBoutiquesPaginationObjectByMainCategory.map(
+            (key, value) {
+              if (key == event.categorySlug) {
+                return MapEntry(
+                  key,
+                  value.copyWith(
+                    hasReachedMax:
+                        (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
+                    paginationStatus: PaginationStatus.success,
+                    page: event.getWithPagination
+                        ? getHomeBoutiquesPaginationObjectByMainCategory[
+                                    event.categorySlug]!
+                                .page +
+                            1
+                        : 2,
+                    offset: r.data?.offset,
+                    items: !event.getWithPagination
+                        ? [...r.data!.boutiques ?? []]
+                        : [...boutiques, ...r.data!.boutiques ?? []],
+                  ),
+                );
+              } else {
+                return MapEntry(key, value);
+              }
+            },
           ),
-        );
+        ));
 
         if (!event.getWithPagination &&
             event.getWithOutPrefetchForEachBoutiques) {
@@ -377,18 +343,42 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   FutureOr<void> _onReplyFromGeminiEvent(
       ReplyFromGeminiEvent event, Emitter<CategoryState> emit) async {
-    if (event.sendRequestToGeminiStatus != null) {
-      emit(state.copyWith(
-          theReplyFromGemini:
-              !event.resetTheReply ? event.theReplyFromGemini : "",
-          fromSearchForSearchWithGemini: event.fromSearch,
-          sendRequestToGeminiStatus: event.sendRequestToGeminiStatus));
-    }
-
     emit(state.copyWith(
-      theReplyFromGemini: !event.resetTheReply ? event.theReplyFromGemini : "",
+      theReplyFromGemini: "",
+      sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
       fromSearchForSearchWithGemini: event.fromSearch,
     ));
+    print(
+        "###########################################################*****${state.sendRequestToGeminiStatus}");
+
+    await Future.delayed(Duration(milliseconds: 300));
+    if (event.resetTheReply) {
+      emit(state.copyWith(
+        theReplyFromGemini: "",
+        sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+        fromSearchForSearchWithGemini: event.fromSearch,
+      ));
+      return;
+    }
+
+    final response = await searchByImageFromGeminiUseCase(
+        SearchByImagesParams(image: event.image!));
+
+    response.fold((l) {
+      showMessage(l.message, hasError: true);
+      // فقط بعد انتهاء المحاولات
+      emit(state.copyWith(
+          theReplyFromGemini: "",
+          sendRequestToGeminiStatus: SendRequestToGeminiStatus.failure));
+      print(
+          "###########################################################${state.sendRequestToGeminiStatus}");
+    }, (r) async {
+      emit(state.copyWith(
+        sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+        theReplyFromGemini: !event.resetTheReply ? r.response : "",
+        fromSearchForSearchWithGemini: event.fromSearch,
+      ));
+    });
   }
 
   prefetchImages(
@@ -443,18 +433,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     final response = await getMainCategoriesUseCase(GetMainCategoryParams());
 
     response.fold((l) {
-      /* if (l.statusCode == 400 &&
-          !isFailedTheFirstTime.contains('GetMainCategoriesEvent')) {
-        emit(state.copyWith(moveUrlFromElasticToMarketServer: true));
-        add(GetMainCategoriesEvent(getWithPrefech: event.getWithPrefech));
-        isFailedTheFirstTime.add('GetMainCategoriesEvent');
-        return;
-      }*/
-
-      if (!isFailedTheFirstTime.contains('GetMainCategoriesEvent')) {
+      if (ErrorManager.shouldRetry('GetMainCategoriesEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('GetMainCategoriesEvent');
         add(GetMainCategoriesEvent(context: event.context));
-        isFailedTheFirstTime.add('GetMainCategoriesEvent');
+        return; // لا تحدث الحالة
       }
+      requestAPIAfterHome();
+      // فقط بعد انتهاء المحاولات
       emit(state.copyWith(
           getMainCategoriesStatus: GetMainCategoriesStatus.failure));
     }, (r) async {
@@ -464,7 +449,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       requestAPIAfterHome();
 
       apisMustNotToRequest.add('GetMainCategoriesEvent');
-      isFailedTheFirstTime.remove('GetMainCategoriesEvent');
+      ErrorManager.resetRetry('GetMainCategoriesEvent');
 
       emit(state.copyWith(
           mainCategoriesResponseModel: r,

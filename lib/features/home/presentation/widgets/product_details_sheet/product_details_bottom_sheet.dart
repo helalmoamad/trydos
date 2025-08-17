@@ -136,6 +136,18 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   List<double>? orginalHeight;
   List<double>? orginalWidth;
   bool isMoving = false;
+  final ValueNotifier<String?> animatedMessage = ValueNotifier(null);
+  final ValueNotifier<bool> showAnimatedMessage = ValueNotifier(false);
+
+  void showAnimatedMessageFunc(String message) {
+    animatedMessage.value = message;
+    showAnimatedMessage.value = true;
+    Future.delayed(const Duration(seconds: 3), () {
+      showAnimatedMessage.value = false;
+      // animatedMessage.value = null; // إذا أردت تصفير الرسالة بعد الإخفاء
+    });
+  }
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -147,10 +159,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
     ];
     images = syncColorImageList.map((e) => e.images![0].filePath!).toList();
     orginalHeight = syncColorImageList
-        .map((e) => double.parse(e.images![0].originalHeight!))
+        .map((e) => double.tryParse(e.images![0].originalHeight!) ?? 0)
         .toList();
     orginalWidth = syncColorImageList
-        .map((e) => double.parse(e.images![0].originalWidth!))
+        .map((e) => double.tryParse(e.images![0].originalWidth!) ?? 0)
         .toList();
 
     _focusNode.addListener(_onFocusChange);
@@ -200,47 +212,49 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
           previous.isChangedColorBeforeOpenPanel == false &&
           current.isChangedColorBeforeOpenPanel == true,
       listener: (context, state) {
-        Future.delayed(
-          Duration(milliseconds: 50),
-          () {
-            try {
-              gallery3dControllerForCircles?.animateTo(
-                  state.currentSelectedColorForEveryProduct[
-                          widget.productItem.slug] ??
-                      0,
-                  true);
-            } catch (e) {}
+        if (state.isChangedColorBeforeOpenPanel == true) {
+          Future.delayed(
+            Duration(milliseconds: 100),
+            () {
+              colorsQuantityForEachProduct =
+                  state.colorsQuantitiesForEachProduct ?? [];
+              colorsForEachProduct = state.colorsForEachProduct ?? [];
+              sizesForEachProduct = state.sizesForEachColor ?? [];
 
-            sizeIsNotAvailableNotifier.value = null;
-            colorIsNotAvailableNotifier.value = null;
+              try {
+                gallery3dControllerForCircles?.animateTo(
+                    widget.currentColor, true);
+              } catch (e) {}
 
-            Future.delayed(
-              Duration(milliseconds: 300),
-              () {
-                if (sizesForEachProduct.length != 0) {
-                  requestToNotifyMeFormFirstSize = true;
-                }
+              sizeIsNotAvailableNotifier.value = null;
+              colorIsNotAvailableNotifier.value = null;
 
-                if (sizesForEachProduct.length == 0) {
-                  if (colorsQuantityForEachProduct[0] == 0 &&
-                      !widget.collectedAfterOrdering) {
-                    colorIsNotAvailableNotifier.value = colorsForEachProduct[0];
-                  } else {
-                    colorIsNotAvailableNotifier.value = null;
+              Future.delayed(
+                Duration(milliseconds: 300),
+                () {
+                  if (sizesForEachProduct.length != 0) {
+                    requestToNotifyMeFormFirstSize = true;
                   }
-                }
-              },
-            );
-            currentIndexInSlider = state.currentSelectedColorForEveryProduct[
-                    widget.productItem.slug] ??
-                0;
-            homeBloc.add(AddCurrentSelectedColorEvent(
-                currentSelectedColor: state.currentSelectedColorForEveryProduct[
-                        widget.productItem.slug] ??
-                    0,
-                productSlug: widget.productItem.slug.toString()));
-          },
-        );
+
+                  if (sizesForEachProduct.length == 0) {
+                    if (colorsQuantityForEachProduct[widget.currentColor] ==
+                            0 &&
+                        !widget.collectedAfterOrdering) {
+                      colorIsNotAvailableNotifier.value =
+                          colorsForEachProduct[widget.currentColor];
+                    } else {
+                      colorIsNotAvailableNotifier.value = null;
+                    }
+                  }
+                },
+              );
+              currentIndexInSlider = widget.currentColor;
+              homeBloc.add(AddCurrentSelectedColorEvent(
+                  currentSelectedColor: widget.currentColor,
+                  productSlug: widget.productItem.slug.toString()));
+            },
+          );
+        }
       },
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
@@ -367,7 +381,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             BlocProvider.of<HomeBloc>(context).add(
                                 IsChangedColorBeforOpenPanelEvent(
                                     iChangedColorBeforOpenPanelEvent: false));
-                            widget.tapIndexToAddProductToCart?.value = -1;
+                            Future.delayed(Duration(milliseconds: 300), () {
+                              widget.tapIndexToAddProductToCart?.value = -1;
+                            });
                             widget.addToBagButtonShapeNotifier.value = 0;
 
                             /*   if ((prefsRepository.isTokenExpired ??
@@ -813,6 +829,138 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           ),
                                   ),
                                   5.verticalSpace,
+                                  BlocListener<HomeBloc, HomeState>(
+                                      listenWhen: (previous, current) =>
+                                          previous.deleteItemInCartStatus !=
+                                          current.deleteItemInCartStatus,
+                                      listener: (context, state) {
+                                        if (state.deleteItemInCartStatus ==
+                                            DeleteItemInCartStatus.success) {
+                                          showAnimatedMessageFunc(
+                                              state.animatedCartMessage ?? "");
+                                        }
+                                      },
+                                      child: BlocListener<HomeBloc, HomeState>(
+                                          listenWhen: (previous, current) =>
+                                              previous.updateItemInCartStatus !=
+                                              current.updateItemInCartStatus,
+                                          listener: (context, state) {
+                                            if (state.updateItemInCartStatus ==
+                                                UpdateItemInCartStatus
+                                                    .success) {
+                                              showAnimatedMessageFunc(
+                                                  state.animatedCartMessage ??
+                                                      "");
+                                            }
+                                          },
+                                          child: BlocListener<HomeBloc,
+                                                  HomeState>(
+                                              listenWhen: (previous, current) =>
+                                                  previous
+                                                      .addItemInCartStatus !=
+                                                  current.addItemInCartStatus,
+                                              listener: (context, state) {
+                                                if (state.addItemInCartStatus ==
+                                                    AddItemInCartStatus
+                                                        .success) {
+                                                  showAnimatedMessageFunc(state
+                                                          .animatedCartMessage ??
+                                                      "");
+                                                }
+                                              },
+                                              child:
+                                                  ValueListenableBuilder<bool>(
+                                                      valueListenable:
+                                                          showAnimatedMessage,
+                                                      builder:
+                                                          (context, show, _) {
+                                                        return ValueListenableBuilder<
+                                                            String?>(
+                                                          valueListenable:
+                                                              animatedMessage,
+                                                          builder: (context,
+                                                              msg, _) {
+                                                            if (!show ||
+                                                                msg == null) {
+                                                              return const SizedBox
+                                                                  .shrink();
+                                                            }
+                                                            return AnimatedSlide(
+                                                              offset: show
+                                                                  ? Offset(0, 0)
+                                                                  : Offset(
+                                                                      0, -1),
+                                                              duration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          500),
+                                                              child:
+                                                                  AnimatedOpacity(
+                                                                opacity: show
+                                                                    ? 1.0
+                                                                    : 0.0,
+                                                                duration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            500),
+                                                                child:
+                                                                    Container(
+                                                                  margin: EdgeInsets
+                                                                      .symmetric(
+                                                                          horizontal:
+                                                                              28.w),
+                                                                  width: 1.sw,
+                                                                  height: 38.h,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Color(
+                                                                        0xffCEFFE6),
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .only(
+                                                                      topLeft: Radius
+                                                                          .circular(
+                                                                              20.r),
+                                                                      topRight:
+                                                                          Radius.circular(
+                                                                              20.r),
+                                                                    ),
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
+                                                                        children: [
+                                                                          Text(
+                                                                            msg,
+                                                                            style:
+                                                                                context.textTheme.bodySmall?.rr.copyWith(color: Color(0xff3C3C3C), fontSize: 14),
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                          ),
+                                                                          5.horizontalSpace,
+                                                                          Stack(
+                                                                            alignment:
+                                                                                Alignment.center,
+                                                                            children: [
+                                                                              SvgPicture.asset(
+                                                                                AppAssets.success1Svg,
+                                                                                height: 15,
+                                                                              ),
+                                                                              SvgPicture.asset(
+                                                                                AppAssets.success2Svg,
+                                                                                height: 5,
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        ]),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      })))),
                                 },
                                 Stack(
                                   alignment: Alignment.topCenter,

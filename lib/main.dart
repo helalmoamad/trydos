@@ -273,6 +273,7 @@ bool notificationClicked = false;
 //todo this list will store on it the api's that we try to load it and returned a failure for the first time so we check if it's not  in this list we try to reload it
 List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
+List<String> productIdToSaveRedeemTimer = [];
 int applicationVersion = 1;
 request() async {
   final Stopwatch stopWatch = Stopwatch();

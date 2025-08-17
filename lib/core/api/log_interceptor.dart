@@ -105,6 +105,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     try {
+      // إضافة كود الخطأ للـresponse حتى يصل للـBloc
+
       // if (err.response?.statusCode == 400) {
       //   showMessage(jsonDecode(err.response.toString())["message"].toString(),
       //       foreGroundColor: Colors.white,
@@ -112,7 +114,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       //       showInRelease: true,
       //       timeShowing: Toast.LENGTH_LONG);
       // }
-      if (err.response?.statusCode == 400) {
+      if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
         showMessage(jsonDecode(err.response.toString())["message"].toString(),
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
@@ -184,7 +186,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
                   .contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
-          (err.requestOptions.path.contains("market")) &&
+          (err.requestOptions.path.contains("trydos_staging")) &&
           !(_prefsRepository.isTokenExpired ?? false)) {
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
             _prefsRepository.isVerifiedPhone ?? false);
@@ -227,7 +229,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
           err.response?.statusCode,
           err.requestOptions.method,
           err.requestOptions.queryParameters,
-          err.requestOptions.data);
+          err.requestOptions.data is FormData
+              ? {'data': 'FormData'}
+              : err.requestOptions.data);
     }
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
     //   "user_id": _prefsRepository.myChatId,
@@ -235,7 +239,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     //   "description": err.toString()
     // });
 
-    String apiPath = err.requestOptions.path;
+    //String apiPath = err.requestOptions.path;
     // FirebaseAnalyticsService.logEventForSession(
     //   eventName: AnalyticsEventsConst.programmingEvent,
     //   executedEventName: AnalyticsButtonsEventNameConst.apiResponseEvent,
@@ -247,6 +251,28 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     //   },
     // );
 
-    handler.next(err);
+    //  handler.next(err);
+
+    // إضافة كود الخطأ للـdata
+    Map<String, dynamic> errorData = {
+      'error_code': err.response?.statusCode ?? 0,
+      'error_message': err.message ?? "",
+      'error_type': err.type.toString(),
+      'original_data': err.response?.data is FormData
+          ? {'data': 'FormData'}
+          : err.response?.data ?? {},
+    };
+
+    // إنشاء response جديد مع معلومات الخطأ
+    Response errorResponse = Response(
+      requestOptions: err.requestOptions,
+      statusCode: err.response?.statusCode ?? 0,
+      statusMessage: err.response?.statusMessage ?? "",
+      data: errorData,
+      headers: err.response?.headers,
+    );
+
+    // إرسال الـresponse بدلاً من الـerror
+    handler.resolve(errorResponse);
   }
 }

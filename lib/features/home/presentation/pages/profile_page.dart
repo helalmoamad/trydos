@@ -347,8 +347,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           current.getStartingSettingsStatus,
       builder: (context, state) {
         language = state.startingSetting?.languages ?? [];
-        languageIndex = language.indexWhere(
-            (element) => element.code == LanguageService.languageCode);
+        languageIndex = language.indexWhere((element) =>
+            element.code ==
+            (LanguageService.isKurdish ? "ku" : LanguageService.languageCode));
         return (state.getStartingSettingsStatus !=
                     GetStartingSettingsStatus.success &&
                 languageIndex == -1)
@@ -793,12 +794,19 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 if (!(prefsRepository.isVerifiedPhone ??
                                     false)) {
                                   isVerified.value = false;
+                                  if ((prefsRepository
+                                          .isVerifiedPhonePeforeExpiredToken ??
+                                      false)) {
+                                    authBloc.add(SendOtpEvent(
+                                        phone: prefsRepository.myPhoneNumber!,
+                                        isViaWhatsApp: 1));
+                                  }
                                 }
                               },
                               child: Container(
                                 margin: EdgeInsets.symmetric(horizontal: 15),
                                 height: 35,
-                                width: 60,
+                                width: 72,
                                 child: Column(
                                   children: [
                                     Stack(

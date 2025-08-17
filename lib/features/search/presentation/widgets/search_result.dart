@@ -10,6 +10,7 @@ import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -261,6 +262,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                             .items[index]
                             .images![0]
                             .filePath!;
+                    filePath = addSuitableWidthAndHeightToImage(
+                        imageUrl: filePath, height: 50, width: 35);
 
                     return Stack(
                       alignment: Alignment.centerLeft,
@@ -270,14 +273,49 @@ class _SearchResultState extends ThemeState<SearchResult> {
                             BlocProvider.of<HomeBloc>(context).add(
                                 AddSearchTextToHistoryEvent(
                                     searchTitle: widget.controller.text));
-                            HelperFunctions.slidingNavigation(
-                                context,
-                                ProductDetailsPage(
-                                  productItem: state
-                                      .getProductListingWithFiltersPaginationModels[
-                                          key]!
-                                      .items[index],
-                                ));
+                            BlocProvider.of<HomeBloc>(context).add(
+                                GetFullProductDetailsEvent(
+                                    currentColorName: state
+                                            .getProductListingWithFiltersPaginationModels[
+                                                key]!
+                                            .items[index]
+                                            .syncColorImages
+                                            .isNullOrEmpty
+                                        ? null
+                                        : state
+                                            .getProductListingWithFiltersPaginationModels[
+                                                key]!
+                                            .items[index]
+                                            .syncColorImages
+                                            ?.first
+                                            .colorName,
+                                    productSlug: state
+                                            .getProductListingWithFiltersPaginationModels[
+                                                key]!
+                                            .items[index]
+                                            .slug ??
+                                        ""));
+                            Future.delayed(
+                                Duration(milliseconds: 300),
+                                () =>
+                                    Navigator.of(context).push(PageRouteBuilder(
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          ProductDetailsPage(
+                                              productSlugForOpeningChatDirectly:
+                                                  state
+                                                      .getProductListingWithFiltersPaginationModels[
+                                                          key]!
+                                                      .items[index]
+                                                      .slug,
+                                              fromNotification: false,
+                                              productIdForOpeningChatDirectly: state
+                                                  .getProductListingWithFiltersPaginationModels[
+                                                      key]!
+                                                  .items[index]
+                                                  .productId
+                                                  .toString()),
+                                    )));
                           },
                           child: Container(
                               height: 50,
@@ -313,9 +351,9 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               )),
                         ),
                         Container(
-                          height: 50,
-                          width: 35,
-                          decoration: BoxDecoration(
+                            height: 50,
+                            width: 35,
+                            decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
                                   color: Color(0xff388CFF), width: 0.3),
@@ -325,12 +363,20 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                 bottomLeft: Radius.circular(15),
                                 bottomRight: Radius.circular(5),
                               ),
-                              image: DecorationImage(
+                            ),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(15),
+                                  topRight: Radius.circular(5),
+                                  bottomLeft: Radius.circular(15),
+                                  bottomRight: Radius.circular(5),
+                                ),
+                                child: Image.network(
+                                  filePath,
+                                  height: 50,
                                   fit: BoxFit.contain,
-                                  image: NetworkImage(
-                                    filePath,
-                                  ))),
-                        )
+                                  width: 35,
+                                )))
                       ],
                     );
                   },

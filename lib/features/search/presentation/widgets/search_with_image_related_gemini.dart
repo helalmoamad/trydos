@@ -1,284 +1,103 @@
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:get_it/get_it.dart';
 import 'package:mime/mime.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
-import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
-import 'package:trydos/service/language_service.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'search_image_preview_widget.dart';
 
 class SearchWithImageRelatedGemini {
   static void SelecteImageForSearch(
       {required BuildContext context, required bool fromSearch}) async {
+    void _sendImageForSearch(File image) {
+      GetIt.I<CategoryBloc>()
+          .add(ReplyFromGeminiEvent(fromSearch: fromSearch, image: image));
+    }
+
+    void _showImagePreview(File imageFile) {
+      print('SearchWithImageRelatedGemini: _showImagePreview called');
+      print('SearchWithImageRelatedGemini: imageFile path = ${imageFile.path}');
+      print(
+          'SearchWithImageRelatedGemini: imageFile exists = ${imageFile.existsSync()}');
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return SearchImagePreviewWidget(
+            imageFile: imageFile,
+            onSend: _sendImageForSearch,
+            onCancel: () => Navigator.of(context).pop(),
+          );
+        },
+      );
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return GalleryAndCameraDialogWidget(
+          fromChat: true, // إضافة هذا لتفعيل معاينة الصور
           onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
+            print(
+                'SearchWithImageRelatedGemini: onChooseFileFromGalleryAction called');
             if (assetEntity != null) {
               File file = (await assetEntity.originFile)!;
+              print(
+                  'SearchWithImageRelatedGemini: gallery file path = ${file.path}');
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
 
               if (fileType[0] != 'image') {
-                Fluttertoast.showToast(
-                  fontSize: 18,
-                  timeInSecForIosWeb: 3,
-                  msg: "the video file is not supported",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.TOP,
-                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                  textColor: Colors.white,
-                );
-                /////////////////////////////
-                // FirebaseAnalyticsService.logEventForSession(
-                //   eventName: AnalyticsEventsConst.programmingEvent,
-                //   executedEventName:
-                //       AnalyticsButtonsEventNameConst.videoNotSupported,
-                // );
+                showErrorMessage(
+                    context, LocaleKeys.video_file_not_supported.tr());
               } else {
-                // FirebaseAnalyticsService.logEventForSession(
-                //   eventName: AnalyticsEventsConst.buttonClicked,
-                //   executedEventName: AnalyticsButtonsEventNameConst
-                //       .confirmUploadSearchImageButton,
-                // );
+                // إغلاق ديالوج الاختيار
+                Navigator.of(context).pop();
+                // تأخير صغير لضمان إغلاق الديالوج
+                await Future.delayed(Duration(milliseconds: 100));
+                // عرض معاينة الصورة
+                _showImagePreview(file);
               }
-              final Uint8List imageBytes = file.readAsBytesSync();
-              final geminis.Gemini gemini = geminis.Gemini.instance;
-              GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
-                  fromSearch: fromSearch,
-                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
-                  theReplyFromGemini: ""));
-
-              await gemini.textAndImage(
-                  text: LanguageService.languageCode == "ar"
-                      ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
-                      : "Identify what's in this picture with just one word in the singular absent answer in English",
-                  images: [imageBytes]).then((value) {
-                GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
-                    fromSearch: fromSearch,
-                    sendRequestToGeminiStatus:
-                        SendRequestToGeminiStatus.success,
-                    theReplyFromGemini:
-                        value?.content?.parts?[0].text?.split(".").first ??
-                            value?.content?.parts?[0].text ??
-                            ""));
-
-                // FirebaseAnalyticsService.logEventForSession(
-                //   eventName: AnalyticsEventsConst.programmingEvent,
-                //   executedEventName:
-                //       AnalyticsButtonsEventNameConst.uploadSearchImageSuccess,
-                // );
-              }).onError(
-                (error, stackTrace) {
-                  GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
-                      fromSearch: fromSearch,
-                      sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.failure,
-                      theReplyFromGemini: ""));
-
-                  if (error.toString().contains("Failed host")) {
-                    Fluttertoast.showToast(
-                        fontSize: 18,
-                        timeInSecForIosWeb: 3,
-                        msg: "the internet is not available ",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.TOP,
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        textColor: Colors.white);
-                    return;
-                  }
-                  if (error
-                      .toString()
-                      .contains("The request was manually cancelled")) {
-                    Fluttertoast.showToast(
-                        fontSize: 18,
-                        timeInSecForIosWeb: 3,
-                        msg: "time out ",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.TOP,
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        textColor: Colors.white);
-                    return;
-                  }
-                  print("3333333333333333333333############${error}");
-                  Fluttertoast.showToast(
-                      msg: "this service is not available in your Country ",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.TOP,
-                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                      textColor: Colors.white,
-                      fontSize: 18,
-                      timeInSecForIosWeb: 3);
-
-                  // FirebaseAnalyticsService.logEventForSession(
-                  //   eventName: AnalyticsEventsConst.programmingEvent,
-                  //   executedEventName:
-                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
-                  // );
-                },
-              ).timeout(
-                Duration(
-                  seconds: 20,
-                ),
-                onTimeout: () {
-                  gemini.cancelRequest();
-                  GetIt.I<CategoryBloc>().add(
-                    ReplyFromGeminiEvent(
-                        fromSearch: fromSearch,
-                        sendRequestToGeminiStatus:
-                            SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""),
-                  );
-                  /////////////////////////////
-                  // FirebaseAnalyticsService.logEventForSession(
-                  //   eventName: AnalyticsEventsConst.programmingEvent,
-                  //   executedEventName:
-                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
-                  // );
-                },
-              );
             }
           },
           onChooseFileFromCameraAction: (File? file) async {
+            print(
+                'SearchWithImageRelatedGemini: onChooseFileFromCameraAction called');
             if (file != null) {
+              print(
+                  'SearchWithImageRelatedGemini: camera file path = ${file.path}');
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
               if (fileType[0] != 'image') {
-                Fluttertoast.showToast(
-                  fontSize: 18,
-                  timeInSecForIosWeb: 3,
-                  msg: "the video file is not supported",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.TOP,
-                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                  textColor: Colors.white,
-                );
-                /////////////////////////////
-                // FirebaseAnalyticsService.logEventForSession(
-                //   eventName: AnalyticsEventsConst.programmingEvent,
-                //   executedEventName:
-                //       AnalyticsButtonsEventNameConst.videoNotSupported,
-                // );
+                showErrorMessage(
+                    context, LocaleKeys.video_file_not_supported.tr());
               } else {
-                // FirebaseAnalyticsService.logEventForSession(
-                //   eventName: AnalyticsEventsConst.buttonClicked,
-                //   executedEventName: AnalyticsButtonsEventNameConst
-                //       .confirmUploadSearchImageButton,
-                // );
+                // إغلاق ديالوج الاختيار
+                Navigator.of(context).pop();
+                // تأخير صغير لضمان إغلاق الديالوج
+                await Future.delayed(Duration(milliseconds: 100));
+                // عرض معاينة الصورة
+                _showImagePreview(file);
               }
-              final Uint8List imageBytes = file.readAsBytesSync();
-              final geminis.Gemini gemini = geminis.Gemini.instance;
-              GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
-                  fromSearch: fromSearch,
-                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
-                  theReplyFromGemini: ""));
-              await gemini.textAndImage(
-                  text: LanguageService.languageCode == "ar"
-                      ? "اعطني جواب مختصر بكلمتين الاولى ماذا تجد في الصوره والثانية لونه"
-                      : "Give me a short answer in two words. The first is what you find in the picture, and the second is its color.",
-                  images: [imageBytes]).then((value) {
-                print(
-                    "111111111111111111111111111111111111111111111111111111#333333333333333333${value?.content?.parts?[0].text}");
-
-                GetIt.I<CategoryBloc>().add(
-                  ReplyFromGeminiEvent(
-                      fromSearch: fromSearch,
-                      sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.success,
-                      theReplyFromGemini:
-                          value?.content?.parts?[0].text?.split(".").first ??
-                              value?.content?.parts?[0].text ??
-                              ""),
-                );
-                /////////////////////////////
-                // FirebaseAnalyticsService.logEventForSession(
-                //   eventName: AnalyticsEventsConst.programmingEvent,
-                //   executedEventName:
-                //       AnalyticsButtonsEventNameConst.uploadSearchImageSuccess,
-                // );
-              }).onError(
-                (error, stackTrace) {
-                  print(
-                      "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
-
-                  GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
-                      fromSearch: fromSearch,
-                      sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.failure,
-                      theReplyFromGemini: ""));
-
-                  if (error.toString().contains("Failed host")) {
-                    Fluttertoast.showToast(
-                        fontSize: 18,
-                        timeInSecForIosWeb: 3,
-                        msg: "the internet is not available ",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.TOP,
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        textColor: Colors.white);
-                    return;
-                  }
-                  if (error
-                      .toString()
-                      .contains("The request was manually cancelled")) {
-                    Fluttertoast.showToast(
-                        fontSize: 18,
-                        timeInSecForIosWeb: 3,
-                        msg: "time out ",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.TOP,
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        textColor: Colors.white);
-                    return;
-                  }
-                  Fluttertoast.showToast(
-                      fontSize: 18,
-                      timeInSecForIosWeb: 1,
-                      msg: "this service is not available in your Country ",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.TOP,
-                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                      textColor: Colors.white);
-                  //////////////////////////////////////
-                  // FirebaseAnalyticsService.logEventForSession(
-                  //   eventName: AnalyticsEventsConst.programmingEvent,
-                  //   executedEventName:
-                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
-                  // );
-                },
-              ).timeout(
-                Duration(
-                  seconds: 20,
-                ),
-                onTimeout: () {
-                  gemini.cancelRequest();
-                  GetIt.I<CategoryBloc>().add(
-                    ReplyFromGeminiEvent(
-                        fromSearch: fromSearch,
-                        sendRequestToGeminiStatus:
-                            SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""),
-                  );
-                  //////////////////////////////////////
-                  // FirebaseAnalyticsService.logEventForSession(
-                  //   eventName: AnalyticsEventsConst.programmingEvent,
-                  //   executedEventName:
-                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
-                  // );
-                },
-              );
             }
+          },
+          onImagePreviewAction: (File image) {
+            print('SearchWithImageRelatedGemini: onImagePreviewAction called');
+            print(
+                'SearchWithImageRelatedGemini: preview image path = ${image.path}');
+            // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
+            // عندما fromChat = true
+            _showImagePreview(image);
           },
         );
       },

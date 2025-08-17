@@ -9,26 +9,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simple_image_cropper/simple_image_cropper.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 class CopperImage extends StatefulWidget {
   File image;
   final bool? fromOrder;
-  final ValueNotifier<bool> visiblecamera;
+  final bool? forSearchImage;
+  final bool? fromSearch;
+  final ValueNotifier<bool>? visiblecamera;
   final ValueNotifier<bool>? visibleSave;
   final ValueNotifier<File?>? visiblePersonPhoto;
-  final ValueNotifier<List<File?>>? orderPhotos;
+
   final ValueNotifier<bool>? visibleNewImage;
   CopperImage(
       {Key? key,
       required this.image,
       this.fromOrder = false,
-      this.orderPhotos,
+      this.forSearchImage,
       this.visiblePersonPhoto,
       this.visibleNewImage,
-      required this.visiblecamera,
+      this.visiblecamera,
+      this.fromSearch,
       this.visibleSave})
       : super(key: key);
 
@@ -38,10 +46,14 @@ class CopperImage extends StatefulWidget {
 
 class _CopperImageState extends State<CopperImage> {
   late ImageProvider _image;
+  late OrderBloc orderBloc;
+  late CategoryBloc categoryBloc;
   final GlobalKey<SimpleImageCropperState> cropKey = GlobalKey();
 
   @override
   void initState() {
+    orderBloc = BlocProvider.of<OrderBloc>(context);
+    categoryBloc = BlocProvider.of<CategoryBloc>(context);
     _image = FileImage(widget.image);
     super.initState();
   }
@@ -87,15 +99,21 @@ class _CopperImageState extends State<CopperImage> {
 
           Navigator.pop(context);
           if (widget.fromOrder ?? false) {
-            List<File?> files = widget.orderPhotos?.value ?? [];
-            files.add(file);
-            widget.orderPhotos?.value = [...files];
-            widget.visiblecamera.value = false;
+            //  List<File?> files = widget.orderPhotos?.value ?? [];
+            //   files.add(file);
+            // widget.orderPhotos?.value = [...files];
+            orderBloc.add(UploadImagesForReturnProductEvent(file));
+            widget.visiblecamera?.value = false;
+            return;
+          }
+          if (widget.forSearchImage ?? false) {
+            categoryBloc.add(ReplyFromGeminiEvent(
+                fromSearch: widget.fromSearch ?? true, image: file));
             return;
           }
           widget.visibleNewImage?.value = true;
           widget.visiblePersonPhoto?.value = file;
-          widget.visiblecamera.value = false;
+          widget.visiblecamera?.value = false;
           widget.visibleSave?.value = true;
         },
       ),

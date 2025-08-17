@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../data/models/apply_coupon_model.dart';
-import '../../../data/models/cancel_order_item_model.dart';
+
 import '../../../data/models/customer_wallet_model.dart';
 import '../../../data/models/color_size_for_product.dart';
 import '../../../data/models/get_address_by_coordinates_model.dart';
@@ -12,11 +12,21 @@ import '../../../data/models/get_list_of_customer_addresses_model.dart';
 import '../../../data/models/get_orders_model.dart';
 import '../../../data/models/place_order_model.dart';
 
+import '../../../data/models/return_reasons_model.dart';
+
+import '../../../data/models/get_order_details_return_model.dart';
+
 part 'order_state.g.dart';
 
 enum PlaceOrderStatus { init, loading, success, failure, unavailable }
 
-enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
+enum GetOrdersByOrderGroupIDStatus {
+  init,
+  loading,
+  loadingForRating,
+  success,
+  failure
+}
 
 enum GetOrdersByCartGroupIDStatus { init, loading, success, failure }
 
@@ -40,6 +50,8 @@ enum ApplyCouponStatus { init, loading, success, failure }
 
 enum CancelOrderItemStatus { init, loading, success, failure }
 
+enum UploadImagesForReturnProductStatus { init, loading, success, failure }
+
 enum CancelOrderStatus { init, loading, success, failure }
 
 enum ChangeOrderAddressStatus { init, loading, success, failure }
@@ -47,6 +59,28 @@ enum ChangeOrderAddressStatus { init, loading, success, failure }
 enum GetProductColorSizeSyncAttributeStatus { init, loading, success, failure }
 
 enum ChangeOrderItemVariantStatus { init, loading, success, failure }
+
+enum AddOrderCommentStatus { init, loading, success, failure }
+
+enum UpdateOrderCommentStatus { init, loading, success, failure }
+
+enum GetReturnReasonsStatus { init, loading, success, failure }
+
+enum StoreReturnRequestProductStatus { init, loading, success, failure }
+
+enum UpdateReturnRequestProductStatus { init, loading, success, failure }
+
+enum CancelReturnRequestStatus { init, loading, success, failure }
+
+enum CancelReturnRequestProductStatus { init, loading, success, failure }
+
+enum StoreReturnRequestStatus { init, loading, success, failure }
+
+enum OrderReturnRequestsViewStatus { init, loading, success, failure }
+
+enum ConfirmReturnRequestStatus { init, loading, success, failure }
+
+enum OrderReturnDetailsStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 @immutable
@@ -66,16 +100,23 @@ class OrderState extends Equatable {
     this.setCustomerAddressDefaultStatus = SetCustomerAddressDefaultStatus.init,
     this.getCustomerAddressStatus = GetCustomerAddressesStatus.init,
     this.currentAddressChoosed,
+    this.orderReturnRequestsViewStatus,
+    this.confirmReturnRequestStatus,
     this.currentOrederStatus,
+    this.updateReturnRequestProductStatus =
+        UpdateReturnRequestProductStatus.init,
     this.listOfAddressInfoClassToSave = const [],
     this.removeAddressToOrderStatus = RemoveAddressToOrderStatus.init,
     this.addAddressToOrderStatus = AddAddressToOrderStatus.init,
     this.editAddressToOrderStatus = EditAddressToOrderStatus.init,
     this.getAddressByCoordinatesStatus = GetAddressByCoordinatesStatus.init,
     this.getAddressByCoordinatesModel,
+    this.uploadImagesForReturnProductStatus =
+        UploadImagesForReturnProductStatus.init,
     this.getAddressByTextStatus = GetAddressByTextStatus.init,
     this.applyCouponStatus = ApplyCouponStatus.init,
     this.applyCouponModel,
+    this.imagesForReturn = const [],
     this.cancelOrderItemStatus = CancelOrderItemStatus.init,
     this.cancelOrderStatus = CancelOrderStatus.init,
     this.changeOrderAddressStatus = ChangeOrderAddressStatus.init,
@@ -85,10 +126,23 @@ class OrderState extends Equatable {
     this.resultSearch = const [],
     this.provincesByIso = const [],
     this.changeOrderItemVariantStatus = ChangeOrderItemVariantStatus.init,
+    this.addOrderCommentStatus = AddOrderCommentStatus.init,
+    this.updateOrderCommentStatus = UpdateOrderCommentStatus.init,
+    this.getReturnReasonsStatus = GetReturnReasonsStatus.init,
+    this.returnReasonsModel,
+    this.storeReturnRequestStatus,
+    this.storeReturnRequestProductStatus = StoreReturnRequestProductStatus.init,
+    this.cancelReturnRequestStatus = CancelReturnRequestStatus.init,
+    this.cancelReturnRequestProductStatus =
+        CancelReturnRequestProductStatus.init,
+    this.orderReturnDetailsStatus = OrderReturnDetailsStatus.init,
+    this.orderReturnDetailsModel,
   });
-
+  final OrderReturnRequestsViewStatus? orderReturnRequestsViewStatus;
+  final ConfirmReturnRequestStatus? confirmReturnRequestStatus;
   final OrdersGroupModel? placeOrderModel;
   final PlaceOrderStatus? placeOrderStatus;
+  final StoreReturnRequestStatus? storeReturnRequestStatus;
   final OrdersGroupModel? getOrdersByOrderGroupIDModel;
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
   final CustomerWalletModel? customerWalletModel;
@@ -110,6 +164,8 @@ class OrderState extends Equatable {
   final GetAddressByTextStatus? getAddressByTextStatus;
   final List<ResultSearch>? resultSearch;
   final List<String>? provincesByIso;
+  final List<String>? imagesForReturn;
+
   final int orderTotalSize;
   final String? currentOrederStatus;
   final ApplyCouponStatus? applyCouponStatus;
@@ -121,6 +177,17 @@ class OrderState extends Equatable {
       getProductColorSizeSyncAttributeStatus;
   final ColorSizeForProductModel? colorSizeForProductModel;
   final ChangeOrderItemVariantStatus? changeOrderItemVariantStatus;
+  final AddOrderCommentStatus? addOrderCommentStatus;
+  final UpdateReturnRequestProductStatus? updateReturnRequestProductStatus;
+  final UpdateOrderCommentStatus? updateOrderCommentStatus;
+  final GetReturnReasonsStatus? getReturnReasonsStatus;
+  final ReturnReasonsModel? returnReasonsModel;
+  final UploadImagesForReturnProductStatus uploadImagesForReturnProductStatus;
+  final StoreReturnRequestProductStatus? storeReturnRequestProductStatus;
+  final CancelReturnRequestStatus? cancelReturnRequestStatus;
+  final CancelReturnRequestProductStatus? cancelReturnRequestProductStatus;
+  final OrderReturnDetailsStatus orderReturnDetailsStatus;
+  final GetOrderReturntDetailsModel? orderReturnDetailsModel;
 
   @override
   List<Object?> get props => [
@@ -136,9 +203,12 @@ class OrderState extends Equatable {
         getCustomerWalletStatus,
         customerWalletModel,
         getOrdersModel,
+        updateReturnRequestProductStatus,
         setCustomerAddressDefaultStatus,
         getCustomerAddressStatus,
+        storeReturnRequestStatus,
         orderTotalSize,
+        uploadImagesForReturnProductStatus,
         currentAddressChoosed,
         listOfAddressInfoClassToSave,
         removeAddressToOrderStatus,
@@ -156,21 +226,40 @@ class OrderState extends Equatable {
         getProductColorSizeSyncAttributeStatus,
         colorSizeForProductModel,
         changeOrderItemVariantStatus,
+        addOrderCommentStatus,
+        updateOrderCommentStatus,
+        getReturnReasonsStatus,
+        returnReasonsModel,
+        storeReturnRequestProductStatus,
+        cancelReturnRequestStatus,
+        confirmReturnRequestStatus,
+        cancelReturnRequestProductStatus,
+        orderReturnRequestsViewStatus,
+        imagesForReturn,
+        orderReturnDetailsStatus,
+        orderReturnDetailsModel,
       ];
 
   OrderState copyWith({
     final PlaceOrderStatus? placeOrderStatus,
     final OrdersGroupModel? placeOrderModel,
+    final List<String>? imagesForReturn,
+    final OrderReturnRequestsViewStatus? orderReturnRequestsViewStatus,
+    final ConfirmReturnRequestStatus? confirmReturnRequestStatus,
     final OrdersGroupModel? getOrdersByOrderGroupIDModel,
     final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus,
     final OrdersGroupModel? getOrdersByCartGroupIDModel,
     final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus,
     final CustomerWalletModel? customerWalletModel,
     final GetCustomerWalletStatus? getCustomerWalletStatus,
+    final UploadImagesForReturnProductStatus?
+        uploadImagesForReturnProductStatus,
     final Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel,
     final SetCustomerAddressDefaultStatus? setCustomerAddressDefaultStatus,
     final GetCustomerAddressesStatus? getCustomerAddressesStatus,
     final int? currentAddressChoosed,
+    final StoreReturnRequestStatus? storeReturnRequestStatus,
+    final UpdateReturnRequestProductStatus? updateReturnRequestProductStatus,
     final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,
     final CustomerAddressesInfo? lastAdressInfoClassToSave,
     final int? orderTotalSize,
@@ -192,21 +281,41 @@ class OrderState extends Equatable {
         getProductColorSizeSyncAttributeStatus,
     final ColorSizeForProductModel? colorSizeForProductModel,
     final ChangeOrderItemVariantStatus? changeOrderItemVariantStatus,
+    final AddOrderCommentStatus? addOrderCommentStatus,
+    final UpdateOrderCommentStatus? updateOrderCommentStatus,
+    final GetReturnReasonsStatus? getReturnReasonsStatus,
+    final ReturnReasonsModel? returnReasonsModel,
+    final StoreReturnRequestProductStatus? storeReturnRequestProductStatus,
+    final CancelReturnRequestStatus? cancelReturnRequestStatus,
+    final CancelReturnRequestProductStatus? cancelReturnRequestProductStatus,
+    final OrderReturnDetailsStatus? orderReturnDetailsStatus,
+    final GetOrderReturntDetailsModel? orderReturnDetailsModel,
   }) {
     return OrderState(
       placeOrderModel: placeOrderModel ?? this.placeOrderModel,
       placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
       getOrdersByOrderGroupIDModel:
           getOrdersByOrderGroupIDModel ?? this.getOrdersByOrderGroupIDModel,
+      updateReturnRequestProductStatus: updateReturnRequestProductStatus ??
+          this.updateReturnRequestProductStatus,
+      storeReturnRequestStatus:
+          storeReturnRequestStatus ?? this.storeReturnRequestStatus,
       getOrdersByOrderGroupIDStatus:
           getOrdersByOrderGroupIDStatus ?? this.getOrdersByOrderGroupIDStatus,
+      uploadImagesForReturnProductStatus: uploadImagesForReturnProductStatus ??
+          this.uploadImagesForReturnProductStatus,
       getOrdersByCartGroupIDModel:
           getOrdersByCartGroupIDModel ?? this.getOrdersByCartGroupIDModel,
+      imagesForReturn: imagesForReturn ?? this.imagesForReturn,
       provincesByIso: provincesByIso ?? this.provincesByIso,
       getOrdersByCartGroupIDStatus:
           getOrdersByCartGroupIDStatus ?? this.getOrdersByCartGroupIDStatus,
       getCustomerWalletStatus:
           getCustomerWalletStatus ?? this.getCustomerWalletStatus,
+      orderReturnRequestsViewStatus:
+          orderReturnRequestsViewStatus ?? this.orderReturnRequestsViewStatus,
+      confirmReturnRequestStatus:
+          confirmReturnRequestStatus ?? this.confirmReturnRequestStatus,
       customerWalletModel: customerWalletModel ?? this.customerWalletModel,
       getOrdersModel: getOrdersModel ?? this.getOrdersModel,
       setCustomerAddressDefaultStatus: setCustomerAddressDefaultStatus ??
@@ -248,6 +357,23 @@ class OrderState extends Equatable {
           colorSizeForProductModel ?? this.colorSizeForProductModel,
       changeOrderItemVariantStatus:
           changeOrderItemVariantStatus ?? this.changeOrderItemVariantStatus,
+      addOrderCommentStatus:
+          addOrderCommentStatus ?? this.addOrderCommentStatus,
+      updateOrderCommentStatus:
+          updateOrderCommentStatus ?? this.updateOrderCommentStatus,
+      getReturnReasonsStatus:
+          getReturnReasonsStatus ?? this.getReturnReasonsStatus,
+      returnReasonsModel: returnReasonsModel ?? this.returnReasonsModel,
+      storeReturnRequestProductStatus: storeReturnRequestProductStatus ??
+          this.storeReturnRequestProductStatus,
+      cancelReturnRequestStatus:
+          cancelReturnRequestStatus ?? this.cancelReturnRequestStatus,
+      cancelReturnRequestProductStatus: cancelReturnRequestProductStatus ??
+          this.cancelReturnRequestProductStatus,
+      orderReturnDetailsStatus:
+          orderReturnDetailsStatus ?? this.orderReturnDetailsStatus,
+      orderReturnDetailsModel:
+          orderReturnDetailsModel ?? this.orderReturnDetailsModel,
     );
   }
 

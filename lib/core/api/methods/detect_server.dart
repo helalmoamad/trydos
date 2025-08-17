@@ -2,12 +2,22 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
+import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 import '../../../common/constant/configuration/elastic_url_routes.dart';
 import '../../../common/constant/configuration/stories_url_routes.dart';
 
-enum ServerName { chat, market, stories, location, cloudinary, gemini, elastic }
+enum ServerName {
+  chat,
+  market,
+  stories,
+  location,
+  cloudinary,
+  gemini,
+  elastic,
+  webApp
+}
 
 //todo make the return value dynamic to return the cloudinary as String
 Uri getBaseUriForSpecificServer(ServerName serverName) {
@@ -24,6 +34,8 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
       return Uri.parse('http://ip-api.com');
     case ServerName.cloudinary:
       return CloudinaryUrls.baseUri;
+    case ServerName.webApp:
+      return WebUrls.baseUri;
     case ServerName.gemini:
       return Uri.parse("https://api.gemini.com");
   }
@@ -43,6 +55,8 @@ String? getServerToken(ServerName serverName) {
     case ServerName.location:
       return null;
     case ServerName.cloudinary:
+      return null;
+    case ServerName.webApp:
       return null;
     case ServerName.gemini:
       return null;

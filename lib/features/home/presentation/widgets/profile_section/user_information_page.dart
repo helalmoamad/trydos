@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/typography.dart';
 
@@ -16,6 +17,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -37,11 +39,108 @@ class UserInformationPage extends StatefulWidget {
 class _UserInformationPageState extends State<UserInformationPage> {
   late HomeBloc homeBloc;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+  final ValueNotifier<String?> changeGender = ValueNotifier("null");
+  final ValueNotifier<bool> visibleSave = ValueNotifier(false);
+  final TextEditingController emailController = TextEditingController();
+  final ValueNotifier<bool> visiblePrefix = ValueNotifier(false);
+  final ValueNotifier<bool> visiblePrefixOptional = ValueNotifier(false);
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController alternativePhoneController =
+      TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
+  late AuthBloc authBloc;
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
+
+    authBloc = BlocProvider.of<AuthBloc>(context);
+    fullNameController.text = homeBloc.state.userInfo?.name == "guest"
+        ? ""
+        : homeBloc.state.userInfo?.name ?? "";
+
+    homeBloc.state.userInfo?.alternativePhone ?? "";
+    if ((homeBloc.state.userInfo?.phone?.length ?? 0) > 4) {
+      if (homeBloc.state.userInfo!.phone!.startsWith("+")) {
+        phoneController.text =
+            homeBloc.state.userInfo!.phone!.split("+").toList()[1];
+      } else {
+        phoneController.text = homeBloc.state.userInfo?.phone ?? "";
+      }
+    }
+    String _getCountryCodeFromNumber(String num) {
+      Country newCountry = countries.firstWhere(
+          (element) => '+${num.toLowerCase()}'
+              .startsWith(element.dialCode.toLowerCase()),
+          orElse: () => Country(
+              name: '',
+              flag: '',
+              code: '',
+              dialCode: '',
+              minLength: 0,
+              maxLength: 0));
+      if (newCountry.code != "") {
+        return newCountry.dialCode.split("+").toList()[1];
+      }
+      return "";
+    }
+
+    String formattedPhone = _formatNumber(
+        phoneController.text, _getCountryCodeFromNumber(phoneController.text));
+    phoneController.text = formattedPhone;
+
+    if ((homeBloc.state.userInfo?.alternativePhone?.length ?? 0) > 4) {
+      if (homeBloc.state.userInfo!.alternativePhone!.startsWith("+")) {
+        alternativePhoneController.text =
+            homeBloc.state.userInfo!.alternativePhone!.split("+").toList()[1];
+      } else {
+        alternativePhoneController.text =
+            homeBloc.state.userInfo?.alternativePhone ?? "";
+      }
+    }
+
+    String formattedAlternativePhone = _formatNumber(
+        alternativePhoneController.text,
+        _getCountryCodeFromNumber(alternativePhoneController.text));
+    alternativePhoneController.text = formattedAlternativePhone;
+
+    emailController.text =
+        (homeBloc.state.userInfo?.email?.contains("@guest.com") ?? false)
+            ? ""
+            : homeBloc.state.userInfo?.email ?? "";
+    changeGender.value =
+        (homeBloc.state.userInfo?.gender?.name.toString()) ?? "null";
+
+    if (phoneController.text.length > 0) {
+      visiblePrefix.value = true;
+    }
+    if (alternativePhoneController.text.length > 0) {
+      visiblePrefixOptional.value = true;
+    }
     super.initState();
+  }
+
+  String _formatNumber(String input, String countryCode) {
+    if (countryCode == "") {
+      return input;
+    }
+    // إزالة الفراغات
+
+    String inputWithoutCode = input.split("${countryCode}").toList()[1];
+    String digitsOnly =
+        inputWithoutCode.replaceAll(' ', '').replaceAll(RegExp(r'[^0-9]'), '');
+
+    // إضافة فراغات بين كل 3 أرقام
+    StringBuffer formatted = StringBuffer();
+    for (int i = 0; i < digitsOnly.length; i++) {
+      if (i > 0 && i % 3 == 0) {
+        formatted.write(' '); // إضافة فراغ
+      }
+      formatted.write(digitsOnly[i]);
+    }
+
+    return "${countryCode}${(digitsOnly.length == 0) ? formatted.toString() : (" " + formatted.toString())}";
   }
 
   @override
@@ -92,7 +191,16 @@ class _UserInformationPageState extends State<UserInformationPage> {
                   ),
                   InkWell(
                     onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ProfilePersonalInfoPage())),
+                        builder: (context) => ProfilePersonalInfoPage(
+                            changeGender: changeGender,
+                            visibleSave: visibleSave,
+                            emailController: emailController,
+                            visiblePrefix: visiblePrefix,
+                            visiblePrefixOptional: visiblePrefixOptional,
+                            phoneController: phoneController,
+                            alternativePhoneController:
+                                alternativePhoneController,
+                            fullNameController: fullNameController))),
                     child: _actionWidget(AppAssets.personalInfoSvg,
                         LocaleKeys.personal_info.tr()),
                   ),

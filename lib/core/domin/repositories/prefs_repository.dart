@@ -78,6 +78,8 @@ abstract class PrefsRepository {
   DateTime? getRedeemDateForProduct(String productId);
   int? getRedeemSecondRemainingForProduct(String productId);
   Future<bool> removeRedeemDateForAnyProductFinished();
+  Future<bool> resetAllRedeemTimer();
+
   Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(String key);
   String? getPrefechOfProductsForEachBoutiqueInHomePage(String key);
   Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(

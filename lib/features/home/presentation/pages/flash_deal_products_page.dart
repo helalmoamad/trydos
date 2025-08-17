@@ -32,6 +32,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/language_service.dart';
 
 import 'package:tuple/tuple.dart';
@@ -130,7 +131,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-
+    //productIdToSaveRedeemTimer = [];
     scrollController.addListener(_listenToScroll);
     // TODO: implement initState
     super.initState();
@@ -366,123 +367,118 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                               setThisEnabledNotifier,
                                           builder: (context, slidingMode, _) {
                                             return*/
-                                              Directionality(
-                                            textDirection: ui.TextDirection.ltr,
-                                            child: LayoutBuilder(
-                                              builder: (context, constraints) {
-                                                // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)
-                                                final double spacing = 5;
-                                                final int crossAxisCount = 2;
-                                                final double totalSpacing =
-                                                    spacing *
-                                                        (crossAxisCount + 1);
-                                                final double itemWidth =
-                                                    (constraints.maxWidth -
-                                                            totalSpacing) /
-                                                        crossAxisCount;
-                                                final double itemHeight = 375;
+                                              LayoutBuilder(
+                                            builder: (context, constraints) {
+                                              // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)
+                                              final double spacing = 5;
+                                              final int crossAxisCount = 2;
+                                              final double totalSpacing =
+                                                  spacing *
+                                                      (crossAxisCount + 1);
+                                              final double itemWidth =
+                                                  (constraints.maxWidth -
+                                                          totalSpacing) /
+                                                      crossAxisCount;
+                                              final double itemHeight = 375;
 
-                                                return Column(
-                                                  children: [
-                                                    Expanded(
-                                                      child: GridView.builder(
-                                                        shrinkWrap: false,
-                                                        addRepaintBoundaries:
-                                                            false,
-                                                        addAutomaticKeepAlives:
-                                                            false,
-                                                        addSemanticIndexes:
-                                                            false,
-                                                        cacheExtent: 0,
-                                                        controller:
-                                                            scrollController,
-                                                        gridDelegate:
-                                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                                          crossAxisCount:
-                                                              crossAxisCount,
-                                                          mainAxisSpacing:
-                                                              spacing,
-                                                          crossAxisSpacing:
-                                                              spacing,
-                                                          childAspectRatio:
-                                                              itemWidth /
-                                                                  itemHeight,
-                                                        ),
-                                                        itemCount:
-                                                            products.length,
-                                                        physics:
-                                                            const AlwaysScrollableScrollPhysics(),
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          return InkWell(
-                                                            onTap: () {
-                                                              GetIt.I<HomeBloc>().add(
-                                                                  ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                                                                      isStatusInitaial:
-                                                                          true));
-                                                              homeBloc.add(AddCurrentSelectedColorEvent(
-                                                                  currentSelectedColor:
-                                                                      0,
-                                                                  productSlug: products[
-                                                                          index]
-                                                                      .slug
-                                                                      .toString()));
-
-                                                              Future.delayed(
-                                                                  Duration(
-                                                                      milliseconds:
-                                                                          300),
-                                                                  () =>
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .push(
-                                                                        MaterialPageRoute(
-                                                                          builder: (ctx) =>
-                                                                              ProductDetailsPage(
-                                                                            productItem:
-                                                                                products[index],
-                                                                          ),
-                                                                        ),
-                                                                      ));
-                                                            },
-                                                            child: ProductItem(
-                                                              colorImagesPanelController:
-                                                                  colorImagesPanelController,
-                                                              showShadowForColorImages:
-                                                                  showShadowForColorImages,
-                                                              tapIndexToShowColorImages:
-                                                                  tapIndexToShowColorImages,
-                                                              refreshFlashDeal:
-                                                                  refreshFlashDeal,
-                                                              fromHomePage:
-                                                                  false,
-                                                              itemIndex: index,
-                                                              finishRedeem:
-                                                                  finishRedeem,
-                                                              fromFlashDeal:
-                                                                  true,
-                                                              tapIndexToAddProductToCart:
-                                                                  tapIndexToAddProductToCart,
-                                                              key: TestVariables
-                                                                      .kTestMode
-                                                                  ? Key(
-                                                                      '"featuresPtoduct"$index')
-                                                                  : null,
-                                                              productItem:
-                                                                  products[
-                                                                      index],
-                                                            ),
-                                                          );
-                                                        },
+                                              return Column(
+                                                children: [
+                                                  Expanded(
+                                                    child: GridView.builder(
+                                                      shrinkWrap: false,
+                                                      addRepaintBoundaries:
+                                                          false,
+                                                      addAutomaticKeepAlives:
+                                                          false,
+                                                      addSemanticIndexes: false,
+                                                      cacheExtent: 0,
+                                                      controller:
+                                                          scrollController,
+                                                      gridDelegate:
+                                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                                        crossAxisCount:
+                                                            crossAxisCount,
+                                                        mainAxisSpacing:
+                                                            spacing,
+                                                        crossAxisSpacing:
+                                                            spacing,
+                                                        childAspectRatio:
+                                                            itemWidth /
+                                                                itemHeight,
                                                       ),
+                                                      itemCount:
+                                                          products.length,
+                                                      physics:
+                                                          const AlwaysScrollableScrollPhysics(),
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return InkWell(
+                                                          onTap: () {
+                                                            GetIt.I<HomeBloc>().add(
+                                                                ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                                    isStatusInitaial:
+                                                                        true));
+                                                            homeBloc.add(AddCurrentSelectedColorEvent(
+                                                                currentSelectedColor:
+                                                                    0,
+                                                                productSlug: products[
+                                                                        index]
+                                                                    .slug
+                                                                    .toString()));
+
+                                                            Future.delayed(
+                                                                Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                                () =>
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .push(
+                                                                      MaterialPageRoute(
+                                                                        builder:
+                                                                            (ctx) =>
+                                                                                ProductDetailsPage(
+                                                                          productItem:
+                                                                              products[index],
+                                                                        ),
+                                                                      ),
+                                                                    ));
+                                                          },
+                                                          child: ProductItem(
+                                                            colorImagesPanelController:
+                                                                colorImagesPanelController,
+                                                            showShadowForColorImages:
+                                                                showShadowForColorImages,
+                                                            tapIndexToShowColorImages:
+                                                                tapIndexToShowColorImages,
+                                                            refreshFlashDeal:
+                                                                refreshFlashDeal,
+                                                            fromHomePage: false,
+                                                            itemIndex: index,
+                                                            finishRedeem:
+                                                                finishRedeem,
+                                                            fromFlashDeal: true,
+                                                            tapIndexToAddProductToCart:
+                                                                tapIndexToAddProductToCart,
+                                                            key: TestVariables
+                                                                    .kTestMode
+                                                                ? Key(
+                                                                    '"featuresPtoduct"$index')
+                                                                : null,
+                                                            productItem:
+                                                                products[index],
+                                                          ),
+                                                        );
+                                                      },
                                                     ),
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                          )
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ),
+
                                           //  }),
-                                          );
+                                        );
                                 });
                           }),
                       BlocBuilder<BoutiqueBloc, BoutiqueState>(
@@ -1411,6 +1407,10 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                           Expanded(
                               child: GridView.builder(
                                   controller: sc,
+                                  addAutomaticKeepAlives: false,
+                                  addRepaintBoundaries: false,
+                                  addSemanticIndexes: false,
+                                  cacheExtent: 0,
                                   itemCount:
                                       products[_tapIndexToShowColorImages]
                                           .syncColorImages

@@ -42,10 +42,6 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
           json['currentRequestIdForAvoidPreRequest'] as String? ?? "",
       fileCountInEachChat: (json['fileCountInEachChat'] as num?)?.toInt() ?? 0,
       recipientUserId: json['recipientUserId'] as String?,
-      getSharedProductCount:
-          (json['getSharedProductCount'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
-      ),
       videoCountInEachChat:
           (json['videoCountInEachChat'] as num?)?.toInt() ?? 0,
       loadImageWidthAndHeight: $enumDecodeNullable(
@@ -159,7 +155,6 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'getContactsStatus':
           _$GetContactsStatusEnumMap[instance.getContactsStatus]!,
       'duration': instance.duration?.inMicroseconds,
-      'getSharedProductCount': instance.getSharedProductCount,
       'getMediaCountStatus':
           _$GetMediaCountStatusEnumMap[instance.getMediaCountStatus]!,
       'readMessagesStatus':

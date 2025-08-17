@@ -25,6 +25,9 @@ extension AssetsUtils on String {
 abstract class AppAssets {
   /// region SVG Section
   static String get logoSvg => 'logo'.svg;
+  static String get groupStarsRattingSvg => 'group_stars_ratting'.svg;
+  static String get starOutlineSvg => 'star_outline_svg'.svg;
+  static String get starFilledSvg => 'star_filled_svg'.svg;
   static String get changeProductRequestSvg => 'change_product_request'.svg;
   static String get hideThisProductSvg => 'hide_this_product'.svg;
   static String get reporthisProductSvg => 'report_this_product'.svg;
@@ -101,7 +104,7 @@ abstract class AppAssets {
   static String get editSvg => 'edit'.svg;
   static String get redeemClockSvg => 'redeem_clock'.svg;
   static String get sizeSvg => 'size'.svg;
-  static String get adresswSvg => 'adressw'.svg;
+
   static String get logoIconSvg => 'logo_icon'.svg;
   static String get inactiveLogoIconSvg => 'inactive_logo_icon'.svg;
   static String get logoTextActiveSvg => 'logo_text_active'.svg;

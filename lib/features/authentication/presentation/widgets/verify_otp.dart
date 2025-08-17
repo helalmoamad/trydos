@@ -15,6 +15,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/authentication/presentation/widgets/pin_item.dart';
+import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -132,7 +133,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
           p.sendOtpStatus != c.sendOtpStatus &&
           c.sendOtpStatus == SendOtpStatus.failure,
       listener: (context, state) {
-        showWarningMessage(context, state.sendOtpError.toString());
+        //   showWarningMessage(context, state.sendOtpError.toString());
       },
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (p, c) =>
@@ -568,290 +569,346 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                 return ValueListenableBuilder<int>(
                                     valueListenable: checkOtp,
                                     builder: (context, codeStatus, _) {
-                                      return Directionality(
-                                        textDirection: ui.TextDirection.ltr,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            PinItem(
-                                              key: Key('otp_item_1'),
-                                              borderColor: codeStatus == 1
-                                                  ? Color(0xff35CE3F)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFF5F61)
-                                                      : isExpired
-                                                          ? Color(0xffFFBC26)
-                                                          : Color(0xff4D84FF),
-                                              isExpired: isExpired,
-                                              contentColor: codeStatus == 1
-                                                  ? Color(0xffF4FFF4)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFDF5F5)
-                                                      : Color(0xffFAFAFA),
-                                              controller: form.controllers[0],
-                                              wrongCode: codeStatus == 2,
-                                              index: 0,
-                                              pasteOtpCode: pasteOtpCode,
-                                              onChange: () {
-                                                checkOtp.value = 0;
-                                              },
-                                              autoFocus: true,
-                                            ),
-                                            PinItem(
-                                              key: Key('otp_item_2'),
-                                              borderColor: codeStatus == 1
-                                                  ? Color(0xff35CE3F)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFF5F61)
-                                                      : isExpired
-                                                          ? Color(0xffFFBC26)
-                                                          : Color(0xff4D84FF),
-                                              contentColor: codeStatus == 1
-                                                  ? Color(0xffF4FFF4)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFDF5F5)
-                                                      : Color(0xffFAFAFA),
-                                              isExpired: isExpired,
-                                              controller: form.controllers[1],
-                                              wrongCode: codeStatus == 2,
-                                              index: 1,
-                                              onChange: () {
-                                                checkOtp.value = 0;
-                                              },
-                                              autoFocus: false,
-                                            ),
-                                            PinItem(
-                                              key: Key('otp_item_3'),
-                                              borderColor: codeStatus == 1
-                                                  ? Color(0xff35CE3F)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFF5F61)
-                                                      : isExpired
-                                                          ? Color(0xffFFBC26)
-                                                          : Color(0xff4D84FF),
-                                              isExpired: isExpired,
-                                              contentColor: codeStatus == 1
-                                                  ? Color(0xffF4FFF4)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFDF5F5)
-                                                      : Color(0xffFAFAFA),
-                                              index: 2,
-                                              wrongCode: codeStatus == 2,
-                                              onChange: () {
-                                                checkOtp.value = 0;
-                                              },
-                                              controller: form.controllers[2],
-                                              autoFocus: false,
-                                            ),
-                                            PinItem(
-                                              key: Key('otp_item_4'),
-                                              borderColor: codeStatus == 1
-                                                  ? Color(0xff35CE3F)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFF5F61)
-                                                      : isExpired
-                                                          ? Color(0xffFFBC26)
-                                                          : Color(0xff4D84FF),
-                                              isExpired: isExpired,
-                                              contentColor: codeStatus == 1
-                                                  ? Color(0xffF4FFF4)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFDF5F5)
-                                                      : Color(0xffFAFAFA),
-                                              index: 3,
-                                              wrongCode: codeStatus == 2,
-                                              onChange: () {
-                                                checkOtp.value = 0;
-                                              },
-                                              controller: form.controllers[3],
-                                              autoFocus: false,
-                                            ),
-                                            PinItem(
-                                              key: Key('otp_item_5'),
-                                              borderColor: codeStatus == 1
-                                                  ? Color(0xff35CE3F)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFF5F61)
-                                                      : isExpired
-                                                          ? Color(0xffFFBC26)
-                                                          : Color(0xff4D84FF),
-                                              contentColor: codeStatus == 1
-                                                  ? Color(0xffF4FFF4)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFDF5F5)
-                                                      : Color(0xffFAFAFA),
-                                              isExpired: isExpired,
-                                              index: 4,
-                                              wrongCode: codeStatus == 2,
-                                              onChange: () {
-                                                checkOtp.value = 0;
-                                              },
-                                              controller: form.controllers[4],
-                                              autoFocus: false,
-                                            ),
-                                            PinItem(
-                                              key: Key('otp_item_6'),
-                                              borderColor: codeStatus == 1
-                                                  ? Color(0xff35CE3F)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFF5F61)
-                                                      : isExpired
-                                                          ? Color(0xffFFBC26)
-                                                          : Color(0xff4D84FF),
-                                              isExpired: isExpired,
-                                              contentColor: codeStatus == 1
-                                                  ? Color(0xffF4FFF4)
-                                                  : codeStatus == 2
-                                                      ? Color(0xffFDF5F5)
-                                                      : Color(0xffFAFAFA),
-                                              index: 5,
-                                              wrongCode: codeStatus == 2,
-                                              onChange: () {
-                                                checkOtp.value = 0;
-                                              },
-                                              checkOtp: () {
-                                                debugPrint(
-                                                    '/// checkOtp //////');
-                                                debugPrint(prefsRepository
-                                                    .verificationId);
-                                                if (prefsRepository
-                                                        .verificationId !=
-                                                    null) {
-                                                  debugPrint(
-                                                      '/// verificationId not null //////');
-                                                  String insertedCode = form
-                                                          .controllers[0].text +
-                                                      form.controllers[1].text +
-                                                      form.controllers[2].text +
-                                                      form.controllers[3].text +
-                                                      form.controllers[4].text +
-                                                      form.controllers[5].text;
-                                                  if (widget.fromProfile) {
-                                                    authBloc.add(
-                                                        VerifyOtpInProfileEvent(
-                                                      verificationId:
-                                                          prefsRepository
-                                                              .verificationId!,
-                                                      otp: insertedCode,
-                                                    ));
-                                                  } else if (widget
-                                                      .fromExpired) {
-                                                    authBloc.add(
-                                                        VerifyOtpFromGuestEvent(
-                                                      verificationId:
-                                                          prefsRepository
-                                                              .verificationId!,
-                                                      otp: insertedCode,
-                                                    ));
-                                                  } else if (widget.fromLogin) {
-                                                    debugPrint(
-                                                        '/// fromLogin //////');
-
-                                                    authBloc.add(
-                                                        VerifyOtpSignInEvent(
+                                      return BlocBuilder<AuthBloc, AuthState>(
+                                        buildWhen: (p, c) =>
+                                            p.sendOtpStatus != c.sendOtpStatus,
+                                        builder: (context, state) {
+                                          if (state.sendOtpStatus ==
+                                              SendOtpStatus.loading) {
+                                            return Center(
+                                              child: SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2),
+                                              ),
+                                            );
+                                          } else if (state.sendOtpStatus ==
+                                              SendOtpStatus.failure) {
+                                            return _FailureWithTimerAndTryAgain();
+                                          } else {
+                                            // success أو الحالة الافتراضية: الحقول كما هي الآن
+                                            return Directionality(
+                                              textDirection:
+                                                  ui.TextDirection.ltr,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  PinItem(
+                                                    key: Key('otp_item_1'),
+                                                    borderColor: codeStatus == 1
+                                                        ? Color(0xff35CE3F)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFF5F61)
+                                                            : isExpired
+                                                                ? Color(
+                                                                    0xffFFBC26)
+                                                                : Color(
+                                                                    0xff4D84FF),
+                                                    isExpired: isExpired,
+                                                    contentColor: codeStatus ==
+                                                            1
+                                                        ? Color(0xffF4FFF4)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFDF5F5)
+                                                            : Color(0xffFAFAFA),
+                                                    controller:
+                                                        form.controllers[0],
+                                                    wrongCode: codeStatus == 2,
+                                                    index: 0,
+                                                    pasteOtpCode: pasteOtpCode,
+                                                    onChange: () {
+                                                      checkOtp.value = 0;
+                                                    },
+                                                    autoFocus: true,
+                                                  ),
+                                                  PinItem(
+                                                    key: Key('otp_item_2'),
+                                                    borderColor: codeStatus == 1
+                                                        ? Color(0xff35CE3F)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFF5F61)
+                                                            : isExpired
+                                                                ? Color(
+                                                                    0xffFFBC26)
+                                                                : Color(
+                                                                    0xff4D84FF),
+                                                    contentColor: codeStatus ==
+                                                            1
+                                                        ? Color(0xffF4FFF4)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFDF5F5)
+                                                            : Color(0xffFAFAFA),
+                                                    isExpired: isExpired,
+                                                    controller:
+                                                        form.controllers[1],
+                                                    wrongCode: codeStatus == 2,
+                                                    index: 1,
+                                                    onChange: () {
+                                                      checkOtp.value = 0;
+                                                    },
+                                                    autoFocus: false,
+                                                  ),
+                                                  PinItem(
+                                                    key: Key('otp_item_3'),
+                                                    borderColor: codeStatus == 1
+                                                        ? Color(0xff35CE3F)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFF5F61)
+                                                            : isExpired
+                                                                ? Color(
+                                                                    0xffFFBC26)
+                                                                : Color(
+                                                                    0xff4D84FF),
+                                                    isExpired: isExpired,
+                                                    contentColor: codeStatus ==
+                                                            1
+                                                        ? Color(0xffF4FFF4)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFDF5F5)
+                                                            : Color(0xffFAFAFA),
+                                                    index: 2,
+                                                    wrongCode: codeStatus == 2,
+                                                    onChange: () {
+                                                      checkOtp.value = 0;
+                                                    },
+                                                    controller:
+                                                        form.controllers[2],
+                                                    autoFocus: false,
+                                                  ),
+                                                  PinItem(
+                                                    key: Key('otp_item_4'),
+                                                    borderColor: codeStatus == 1
+                                                        ? Color(0xff35CE3F)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFF5F61)
+                                                            : isExpired
+                                                                ? Color(
+                                                                    0xffFFBC26)
+                                                                : Color(
+                                                                    0xff4D84FF),
+                                                    isExpired: isExpired,
+                                                    contentColor: codeStatus ==
+                                                            1
+                                                        ? Color(0xffF4FFF4)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFDF5F5)
+                                                            : Color(0xffFAFAFA),
+                                                    index: 3,
+                                                    wrongCode: codeStatus == 2,
+                                                    onChange: () {
+                                                      checkOtp.value = 0;
+                                                    },
+                                                    controller:
+                                                        form.controllers[3],
+                                                    autoFocus: false,
+                                                  ),
+                                                  PinItem(
+                                                    key: Key('otp_item_5'),
+                                                    borderColor: codeStatus == 1
+                                                        ? Color(0xff35CE3F)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFF5F61)
+                                                            : isExpired
+                                                                ? Color(
+                                                                    0xffFFBC26)
+                                                                : Color(
+                                                                    0xff4D84FF),
+                                                    contentColor: codeStatus ==
+                                                            1
+                                                        ? Color(0xffF4FFF4)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFDF5F5)
+                                                            : Color(0xffFAFAFA),
+                                                    isExpired: isExpired,
+                                                    index: 4,
+                                                    wrongCode: codeStatus == 2,
+                                                    onChange: () {
+                                                      checkOtp.value = 0;
+                                                    },
+                                                    controller:
+                                                        form.controllers[4],
+                                                    autoFocus: false,
+                                                  ),
+                                                  PinItem(
+                                                    key: Key('otp_item_6'),
+                                                    borderColor: codeStatus == 1
+                                                        ? Color(0xff35CE3F)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFF5F61)
+                                                            : isExpired
+                                                                ? Color(
+                                                                    0xffFFBC26)
+                                                                : Color(
+                                                                    0xff4D84FF),
+                                                    isExpired: isExpired,
+                                                    contentColor: codeStatus ==
+                                                            1
+                                                        ? Color(0xffF4FFF4)
+                                                        : codeStatus == 2
+                                                            ? Color(0xffFDF5F5)
+                                                            : Color(0xffFAFAFA),
+                                                    index: 5,
+                                                    wrongCode: codeStatus == 2,
+                                                    onChange: () {
+                                                      checkOtp.value = 0;
+                                                    },
+                                                    checkOtp: () {
+                                                      debugPrint(
+                                                          '/// checkOtp //////');
+                                                      debugPrint(prefsRepository
+                                                          .verificationId);
+                                                      if (prefsRepository
+                                                              .verificationId !=
+                                                          null) {
+                                                        debugPrint(
+                                                            '/// verificationId not null //////');
+                                                        String insertedCode = form
+                                                                .controllers[0]
+                                                                .text +
+                                                            form.controllers[1]
+                                                                .text +
+                                                            form.controllers[2]
+                                                                .text +
+                                                            form.controllers[3]
+                                                                .text +
+                                                            form.controllers[4]
+                                                                .text +
+                                                            form.controllers[5]
+                                                                .text;
+                                                        if (widget
+                                                            .fromProfile) {
+                                                          authBloc.add(
+                                                              VerifyOtpInProfileEvent(
                                                             verificationId:
                                                                 prefsRepository
                                                                     .verificationId!,
                                                             otp: insertedCode,
-                                                            phone: widget
-                                                                .phoneNumber));
+                                                          ));
+                                                        } else if (widget
+                                                            .fromExpired) {
+                                                          authBloc.add(
+                                                              VerifyOtpFromGuestEvent(
+                                                            verificationId:
+                                                                prefsRepository
+                                                                    .verificationId!,
+                                                            otp: insertedCode,
+                                                          ));
+                                                        } else if (widget
+                                                            .fromLogin) {
+                                                          debugPrint(
+                                                              '/// fromLogin //////');
 
-                                                    /////////////////////////////////////
+                                                          authBloc.add(VerifyOtpSignInEvent(
+                                                              verificationId:
+                                                                  prefsRepository
+                                                                      .verificationId!,
+                                                              otp: insertedCode,
+                                                              phone: widget
+                                                                  .phoneNumber));
 
-                                                    FirebaseAnalyticsService
-                                                        .logEventForSession(
-                                                      executedEventName:
-                                                          AuthScreenConst
-                                                              .OTP_INPUT_SCREEN,
-                                                      eventName:
-                                                          AnalyticsEventsConst
-                                                              .VERIFY_OTP_SIGNIN,
-                                                      extraParams: {
-                                                        'mission_name':
-                                                            widget.fromLogin
-                                                                ? 'login'
-                                                                : 'signup',
-                                                        'method':
-                                                            widget.isVisWhatsApp ==
-                                                                    1
-                                                                ? 'whatsapp'
-                                                                : 'sms',
-                                                      },
-                                                    );
-                                                  } else {
-                                                    authBloc.add(
-                                                      VerifyOtpSignUpEvent(
-                                                        verificationId:
-                                                            prefsRepository
-                                                                .verificationId!,
-                                                        otp: insertedCode,
-                                                      ),
-                                                    );
+                                                          /////////////////////////////////////
 
-                                                    /////////////////////////////////////
-                                                    FirebaseAnalyticsService
-                                                        .logEventForSession(
-                                                      executedEventName:
-                                                          AuthScreenConst
-                                                              .OTP_INPUT_SCREEN,
-                                                      eventName:
-                                                          AnalyticsEventsConst
-                                                              .VERIFY_OTP_SIGNUP,
-                                                      extraParams: {
-                                                        'mission_name':
-                                                            widget.fromLogin
-                                                                ? 'login'
-                                                                : 'signup',
-                                                        'method':
-                                                            widget.isVisWhatsApp ==
-                                                                    1
-                                                                ? 'whatsapp'
-                                                                : 'sms',
-                                                      },
-                                                    );
-                                                  }
-                                                } else {
-                                                  debugPrint(
-                                                      '/// verificationId is null //////');
-                                                  showWarningMessage(
-                                                    context,
-                                                    LocaleKeys
-                                                        .please_wait_5_seconds
-                                                        .tr(),
-                                                  );
-                                                  pasteOtpCode('');
-                                                  //widget.checkOtp.value = 2;
-                                                  /////////////////////////////////////
+                                                          FirebaseAnalyticsService
+                                                              .logEventForSession(
+                                                            executedEventName:
+                                                                AuthScreenConst
+                                                                    .OTP_INPUT_SCREEN,
+                                                            eventName:
+                                                                AnalyticsEventsConst
+                                                                    .VERIFY_OTP_SIGNIN,
+                                                            extraParams: {
+                                                              'mission_name':
+                                                                  widget.fromLogin
+                                                                      ? 'login'
+                                                                      : 'signup',
+                                                              'method':
+                                                                  widget.isVisWhatsApp ==
+                                                                          1
+                                                                      ? 'whatsapp'
+                                                                      : 'sms',
+                                                            },
+                                                          );
+                                                        } else {
+                                                          authBloc.add(
+                                                            VerifyOtpSignUpEvent(
+                                                              verificationId:
+                                                                  prefsRepository
+                                                                      .verificationId!,
+                                                              otp: insertedCode,
+                                                            ),
+                                                          );
 
-                                                  FirebaseAnalyticsService
-                                                      .logEventForSession(
-                                                    executedEventName:
-                                                        AuthScreenConst
-                                                            .OTP_INPUT_SCREEN,
-                                                    eventName:
-                                                        AnalyticsEventsConst
-                                                            .EXCEPTION,
-                                                    extraParams: {
-                                                      'description':
-                                                          'please Wait 5 Seconds',
-                                                      'context':
-                                                          widget.fromLogin
-                                                              ? 'login'
-                                                              : 'signup',
-                                                      'mission_name':
-                                                          widget.fromLogin
-                                                              ? 'login'
-                                                              : 'signup',
+                                                          /////////////////////////////////////
+                                                          FirebaseAnalyticsService
+                                                              .logEventForSession(
+                                                            executedEventName:
+                                                                AuthScreenConst
+                                                                    .OTP_INPUT_SCREEN,
+                                                            eventName:
+                                                                AnalyticsEventsConst
+                                                                    .VERIFY_OTP_SIGNUP,
+                                                            extraParams: {
+                                                              'mission_name':
+                                                                  widget.fromLogin
+                                                                      ? 'login'
+                                                                      : 'signup',
+                                                              'method':
+                                                                  widget.isVisWhatsApp ==
+                                                                          1
+                                                                      ? 'whatsapp'
+                                                                      : 'sms',
+                                                            },
+                                                          );
+                                                        }
+                                                      } else {
+                                                        debugPrint(
+                                                            '/// verificationId is null //////');
+                                                        showWarningMessage(
+                                                          context,
+                                                          LocaleKeys
+                                                              .please_wait_5_seconds
+                                                              .tr(),
+                                                        );
+                                                        pasteOtpCode('');
+                                                        //widget.checkOtp.value = 2;
+                                                        /////////////////////////////////////
+
+                                                        FirebaseAnalyticsService
+                                                            .logEventForSession(
+                                                          executedEventName:
+                                                              AuthScreenConst
+                                                                  .OTP_INPUT_SCREEN,
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .EXCEPTION,
+                                                          extraParams: {
+                                                            'description':
+                                                                'please Wait 5 Seconds',
+                                                            'context':
+                                                                widget.fromLogin
+                                                                    ? 'login'
+                                                                    : 'signup',
+                                                            'mission_name':
+                                                                widget.fromLogin
+                                                                    ? 'login'
+                                                                    : 'signup',
+                                                          },
+                                                        );
+                                                      }
                                                     },
-                                                  );
-                                                }
-                                              },
-                                              controller: form.controllers[5],
-                                              autoFocus: false,
-                                            ),
-                                          ],
-                                        ),
+                                                    controller:
+                                                        form.controllers[5],
+                                                    autoFocus: false,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                        },
                                       );
                                     });
                               }),
@@ -954,4 +1011,22 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
   @override
 // TODO: implement numberOfFields
   int get numberOfFields => 6;
+}
+
+class _FailureWithTimerAndTryAgain extends StatelessWidget {
+  const _FailureWithTimerAndTryAgain({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: MyTextWidget(
+        LocaleKeys.otp_error_try_again_later.tr(),
+        style: Theme.of(context).textTheme.bodySmall?.rr.copyWith(
+              fontSize: 12,
+              color: Color(0xFF1D1D1D),
+            ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
 }

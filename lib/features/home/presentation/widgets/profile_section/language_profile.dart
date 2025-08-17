@@ -52,8 +52,9 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
     appBloc = BlocProvider.of<AppBloc>(context);
     language = homeBloc.state.startingSetting?.languages ?? [];
 
-    changeLanguage.value = language
-        .indexWhere((element) => element.code == LanguageService.languageCode);
+    changeLanguage.value = language.indexWhere((element) =>
+        element.code ==
+        (LanguageService.isKurdish ? "ku" : LanguageService.languageCode));
 
     super.initState();
   }
@@ -262,10 +263,12 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
             itemBuilder: (context, index) {
               return _LanguageWidget(
                   language[index].code == "ar"
-                      ? "SA"
+                      ? "SY"
                       : language[index].code == "tr"
                           ? "TR"
-                          : "US",
+                          : language[index].code == "ku"
+                              ? "IQ"
+                              : "US",
                   language[index].name ?? "",
                   index);
             },

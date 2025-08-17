@@ -5,7 +5,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/features/home/domain/use_cases/confirm_return_request_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_provinces_by_iso_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/order_return_requests_view_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/store_return_request_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_return_request_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/upload_images_product_return_useCase.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/main.dart';
@@ -36,6 +41,15 @@ import '../../../domain/use_cases/change_order_item_variant_usecase.dart';
 import '../../widgets/cart_section/payment_method.dart';
 import 'order_event.dart';
 import 'order_state.dart';
+import 'package:trydos/core/error/error_manager.dart';
+import '../../../domain/use_cases/add_order_comment_usecase.dart';
+import '../../../domain/use_cases/update_order_comment_usecase.dart';
+import '../../../domain/use_cases/get_return_reasons_usecase.dart';
+import '../../../domain/use_cases/store_return_request_product_usecase.dart';
+import '../../../domain/use_cases/cancel_return_request_usecase.dart';
+import '../../../domain/use_cases/cancel_return_request_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/order_return_details_usecase.dart';
+import '../../../data/models/get_order_details_return_model.dart';
 
 @LazySingleton()
 class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
@@ -58,17 +72,32 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final GetProvincesByIsoUseCase getProvincesByIsoUseCase;
   final GetProductColorSizeSyncAttributeUseCase
       getProductColorSizeSyncAttributeUseCase;
+  final ConfirmReturnRequestUseCase confirmReturnRequestUseCase;
+  final OrderReturnRequestsViewUseCase orderReturnRequestsViewUseCase;
   final ChangeOrderItemVariantUsecase changeOrderItemVariantUsecase;
-
+  final AddOrderCommentUseCase addOrderCommentUseCase;
+  final UpdateOrderCommentUseCase updateOrderCommentUseCase;
+  final GetReturnReasonsUseCase getReturnReasonsUseCase;
+  final StoreReturnRequestProductUseCase storeReturnRequestProductUseCase;
+  final CancelReturnRequestUseCase cancelReturnRequestUseCase;
+  final CancelReturnRequestProductUseCase cancelReturnRequestProductUseCase;
+  final StoreReturnRequestUseCase storeReturnRequestUseCase;
+  final UploadImagesProductReturnUseCase uploadImagesProductReturnUseCase;
+  final OrderReturnDetailsUseCase orderReturnDetailsUseCase;
+  final UpdateReturnRequestProductUseCase updateReturnRequestProductUseCase;
   OrderBloc(
     this.placeOrderUsecase,
     this.cancelOrderItemUsecase,
     this.cancelOrderUsecase,
+    this.uploadImagesProductReturnUseCase,
     this.changeOrderAddressUsecase,
     this.getOrdersByOrderGroupIDUsecase,
     this.getOrdersByCartGroupIDUsecase,
     this.getProvincesByIsoUseCase,
     this.getCustomerWalletUseCase,
+    this.storeReturnRequestUseCase,
+    this.confirmReturnRequestUseCase,
+    this.orderReturnRequestsViewUseCase,
     this.getOrdersUseCase,
     this.setCustomerAddressDefaultUseCase,
     this.getCustomerAddressesUseCase,
@@ -80,7 +109,16 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     this.applyCouponUsecase,
     this.getProductColorSizeSyncAttributeUseCase,
     this.changeOrderItemVariantUsecase,
-  ) : super(OrderState()) {
+    this.addOrderCommentUseCase,
+    this.updateOrderCommentUseCase,
+    this.getReturnReasonsUseCase,
+    this.storeReturnRequestProductUseCase,
+    this.cancelReturnRequestUseCase,
+    this.cancelReturnRequestProductUseCase,
+    this.updateReturnRequestProductUseCase,
+    this.orderReturnDetailsUseCase,
+  ) : super(OrderState(
+            orderReturnDetailsStatus: OrderReturnDetailsStatus.init)) {
     on<PlaceOrderEvent>(
       _onPlaceOrderEvent,
     );
@@ -91,19 +129,29 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<SaveLastAddress>(
       _onSaveLastAddress,
     );
+
+    on<ResetAllStatusEvent>(
+      _onResetAllStatusEvent,
+    );
     on<GetOrdersByCartGroupIDEvent>(
       _onGetOrdersByCartGroupIDEvent,
     );
-
+    on<UploadImagesForReturnProductEvent>(_onUploadImagesForReturnProductEvent);
+    on<OrderReturnRequestsViewEvent>(_onOrderReturnRequestsViewEvent);
+    on<ConfirmReturnRequestEvent>(
+      _onConfirmReturnRequestEvent,
+    );
     on<SaveCurrentOrederStatusEvent>(
       _onSaveCurrentOrederStatusEvent,
     );
     on<GetCustomerWalletEvent>(
       _onGetCustomerWalletEvent,
     );
+    on<UpdateReturnRequestProductEvent>(_onUpdateReturnRequestProductEvent);
     on<GetProvincesByIsoEvent>(
       _onGetProvincesByIsoEvent,
     );
+    on<StoreReturnRequestEvent>(_onStoreReturnRequestEvent);
     on<GetOrdersEvent>(
       _onGetOrdersEvent,
     );
@@ -143,6 +191,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<CancelOrderItemEvent>(
       _onCancelOrderItemEvent,
     );
+    on<StoreImagesForUpdateReturnEvent>(
+      _onStoreImagesForUpdateReturnEvent,
+    );
     on<CancelOrderEvent>(
       _onCancelOrderEvent,
     );
@@ -153,6 +204,16 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       _onGetProductColorSizeSyncAttributeEvent,
     );
     on<ChangeOrderItemVariantEvent>(_onChangeOrderItemVariantEvent);
+    on<AddOrderCommentEvent>(_onAddOrderCommentEvent);
+    on<UpdateOrderCommentEvent>(_onUpdateOrderCommentEvent);
+    on<GetReturnReasonsEvent>(_onGetReturnReasonsEvent);
+    on<StoreReturnRequestProductEvent>(_onStoreReturnRequestProductEvent);
+    on<CancelReturnRequestEvent>(_onCancelReturnRequestEvent);
+    on<CancelReturnRequestProductEvent>(_onCancelReturnRequestProductEvent);
+    on<FetchOrderReturnDetailsEvent>(
+      _onFetchOrderReturnDetailsEvent,
+      transformer: restartable(),
+    );
   }
 
   FutureOr<void> _onPlaceOrderEvent(
@@ -162,45 +223,24 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     debugPrint(event.placeOrderParams.paymentMethod);
     debugPrint(event.placeOrderParams.addressId.toString());
     debugPrint(event.placeOrderParams.payByWallet.toString());
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        placeOrderStatus: PlaceOrderStatus.loading,
-      ),
-    );
-
-    final response = await placeOrderUsecase(
-      event.placeOrderParams,
-    );
-
+    emit(state.copyWith(placeOrderStatus: PlaceOrderStatus.loading));
+    final response = await placeOrderUsecase(event.placeOrderParams);
     response.fold(
       (l) {
         if (l.statusCode == 403) {
-          emit(
-            state.copyWith(
-              placeOrderStatus: PlaceOrderStatus.unavailable,
-            ),
-          );
+          emit(state.copyWith(placeOrderStatus: PlaceOrderStatus.unavailable));
         } else {
-          if (!isFailedTheFirstTime.contains('PlaceOrderEvent')) {
-            add(
-              PlaceOrderEvent(placeOrderParams: event.placeOrderParams),
-            );
-            isFailedTheFirstTime.add('PlaceOrderEvent');
+          if (ErrorManager.shouldRetry('PlaceOrderEvent', l.statusCode)) {
+            ErrorManager.incrementRetry('PlaceOrderEvent');
+            add(PlaceOrderEvent(placeOrderParams: event.placeOrderParams));
           }
-          emit(
-            state.copyWith(
-              placeOrderStatus: PlaceOrderStatus.failure,
-            ),
-          );
+          emit(state.copyWith(placeOrderStatus: PlaceOrderStatus.failure));
         }
       },
       (r) async {
-        isFailedTheFirstTime.remove('PlaceOrderEvent');
-
+        ErrorManager.resetRetry('PlaceOrderEvent');
         debugPrint('PlaceOrderStatus success');
-
-        debugPrint('orders length : ${r.data!.length}');
+        debugPrint('orders length :  r.data!.length}');
         List<String> getNotificationIdsToRemoveAfterplaceOrder =
             prefsRepository.getNotificationIdsToRemoveAfterplaceOrder ?? [];
         getNotificationIdsToRemoveAfterplaceOrder.forEach((element) {
@@ -210,13 +250,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           } catch (e) {}
         });
         prefsRepository.removeNotificationIdsToRemoveAfterplaceOrder();
-        ////////////////////////////////////////////
-        emit(
-          state.copyWith(
-            placeOrderStatus: PlaceOrderStatus.success,
-            placeOrderModel: r,
-          ),
-        );
+        emit(state.copyWith(
+            placeOrderStatus: PlaceOrderStatus.success, placeOrderModel: r));
       },
     );
   }
@@ -225,98 +260,121 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetOrdersByOrderGroupIDEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
+    emit(state.copyWith(
         getOrdersByOrderGroupIDModel: null,
-        getOrdersByOrderGroupIDStatus: event.firstOpenPage
-            ? GetOrdersByOrderGroupIDStatus.init
-            : GetOrdersByOrderGroupIDStatus.loading,
-      ),
-    );
-
-    final response = await getOrdersByOrderGroupIDUsecase(
-      event.orderGroupId,
-    );
-
+        getOrdersByOrderGroupIDStatus: event.getWithRating
+            ? GetOrdersByOrderGroupIDStatus.loadingForRating
+            : event.firstOpenPage
+                ? GetOrdersByOrderGroupIDStatus.init
+                : GetOrdersByOrderGroupIDStatus.loading));
+    final response = await getOrdersByOrderGroupIDUsecase(event.orderGroupId);
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetOrdersByOrderGroupIDEvent')) {
-          add(
-            GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId),
-          );
-          isFailedTheFirstTime.add('GetOrdersByOrderGroupIDEvent');
+        if (ErrorManager.shouldRetry(
+            'GetOrdersByOrderGroupIDEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetOrdersByOrderGroupIDEvent');
+          add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
         }
-
-        emit(
-          state.copyWith(
+        emit(state.copyWith(
             getOrdersByOrderGroupIDStatus:
-                GetOrdersByOrderGroupIDStatus.failure,
-          ),
-        );
+                GetOrdersByOrderGroupIDStatus.failure));
       },
       (r) {
-        isFailedTheFirstTime.remove('GetOrdersByOrderGroupIDEvent');
-
+        ErrorManager.resetRetry('GetOrdersByOrderGroupIDEvent');
         debugPrint('GetOrdersByOrderGroupIDEvent success');
-
-        debugPrint('orders length : ${r.data!.length}');
-        ////////////////////////////
-        emit(
-          state.copyWith(
+        debugPrint('orders length :  r.data!.length}');
+        emit(state.copyWith(
             getOrdersByOrderGroupIDStatus:
                 GetOrdersByOrderGroupIDStatus.success,
-            getOrdersByOrderGroupIDModel: r,
-          ),
-        );
+            getOrdersByOrderGroupIDModel: r));
       },
     );
+  }
+
+  _onCancelReturnRequestEvent(
+      CancelReturnRequestEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        cancelReturnRequestStatus: CancelReturnRequestStatus.loading));
+    final response = await cancelReturnRequestUseCase(CancelReturnRequestParams(
+        returnRequestId: event.returnRequestId.toString()));
+    response.fold((l) {
+      if (ErrorManager.shouldRetry('CancelReturnRequestEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('CancelReturnRequestEvent');
+        add(CancelReturnRequestEvent(
+            returnRequestId: event.returnRequestId,
+            orderGroupId: event.orderGroupId));
+        return;
+      }
+      showMessage(l.message, hasError: true);
+      emit(state.copyWith(
+          cancelReturnRequestStatus: CancelReturnRequestStatus.failure));
+    }, (r) {
+      add(GetOrdersByOrderGroupIDEvent(
+          getWithRating: false,
+          firstOpenPage: false,
+          orderGroupId: event.orderGroupId));
+      showMessage(r.message ?? '');
+      ErrorManager.resetRetry('CancelReturnRequestEvent');
+      emit(state.copyWith(
+          orderReturnDetailsModel: null,
+          cancelReturnRequestStatus: CancelReturnRequestStatus.success));
+    });
+  }
+
+  _onCancelReturnRequestProductEvent(
+      CancelReturnRequestProductEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        cancelReturnRequestProductStatus:
+            CancelReturnRequestProductStatus.loading));
+    final response = await cancelReturnRequestProductUseCase(event.params);
+    response.fold((l) {
+      if (ErrorManager.shouldRetry(
+          'CancelReturnRequestProductEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('CancelReturnRequestProductEvent');
+        add(CancelReturnRequestProductEvent(
+            params: event.params, returnRequestId: event.returnRequestId));
+        return;
+      }
+      showMessage(l.message, hasError: true);
+      emit(state.copyWith(
+          cancelReturnRequestProductStatus:
+              CancelReturnRequestProductStatus.failure));
+    }, (r) {
+      add(FetchOrderReturnDetailsEvent(event.returnRequestId));
+      showMessage(r.message ?? '');
+      ErrorManager.resetRetry('CancelReturnRequestProductEvent');
+      emit(state.copyWith(
+          cancelReturnRequestProductStatus:
+              CancelReturnRequestProductStatus.success));
+    });
   }
 
   FutureOr<void> _onGetOrdersByCartGroupIDEvent(
     GetOrdersByCartGroupIDEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.loading,
-      ),
-    );
-
-    final response = await getOrdersByCartGroupIDUsecase(
-      event.cartGroupId,
-    );
-
+    emit(state.copyWith(
+        getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.loading));
+    final response = await getOrdersByCartGroupIDUsecase(event.cartGroupId);
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetOrdersByCartGroupIDEvent') &&
-            l.statusCode != 400) {
-          add(
-            GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId),
-          );
-          isFailedTheFirstTime.add('GetOrdersByCartGroupIDEvent');
+        if (l.statusCode != 400 &&
+            ErrorManager.shouldRetry(
+                'GetOrdersByCartGroupIDEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetOrdersByCartGroupIDEvent');
+          add(GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId));
         }
-
-        emit(
-          state.copyWith(
-            getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.failure,
-          ),
-        );
+        emit(state.copyWith(
+            getOrdersByCartGroupIDStatus:
+                GetOrdersByCartGroupIDStatus.failure));
       },
       (r) {
-        isFailedTheFirstTime.remove('GetOrdersByCartGroupIDEvent');
-
+        ErrorManager.resetRetry('GetOrdersByCartGroupIDEvent');
         debugPrint('GetOrdersByCartGroupIDEvent success');
-
-        debugPrint('orders length : ${r.data!.length}');
-        ////////////////////////////
-        emit(
-          state.copyWith(
+        debugPrint('orders length :  r.data!.length}');
+        emit(state.copyWith(
             getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.success,
-            getOrdersByCartGroupIDModel: r,
-          ),
-        );
+            getOrdersByCartGroupIDModel: r));
       },
     );
   }
@@ -325,71 +383,70 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetProvincesByIsoEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-
     final response = await getProvincesByIsoUseCase.call(NoParams());
-
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetProvincesByIsoEvent')) {
-          add(
-            GetProvincesByIsoEvent(),
-          );
-          isFailedTheFirstTime.add('GetProvincesByIsoEvent');
+        if (ErrorManager.shouldRetry('GetProvincesByIsoEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetProvincesByIsoEvent');
+          add(GetProvincesByIsoEvent());
           return;
         }
       },
       (r) {
-        isFailedTheFirstTime.remove('GetProvincesByIsoEvent');
-
-        emit(
-          state.copyWith(
-            provincesByIso: r.data,
-          ),
-        );
+        ErrorManager.resetRetry('GetProvincesByIsoEvent');
+        emit(state.copyWith(provincesByIso: r.data));
       },
     );
+  }
+
+  FutureOr<void> _onStoreImagesForUpdateReturnEvent(
+    StoreImagesForUpdateReturnEvent event,
+    Emitter<OrderState> emit,
+  ) {
+    emit(state.copyWith(imagesForReturn: event.images));
+  }
+
+  FutureOr<void> _onResetAllStatusEvent(
+    ResetAllStatusEvent event,
+    Emitter<OrderState> emit,
+  ) {
+    emit(state.copyWith(
+        cancelReturnRequestProductStatus: CancelReturnRequestProductStatus.init,
+        cancelReturnRequestStatus: CancelReturnRequestStatus.init,
+        cancelOrderStatus: CancelOrderStatus.init,
+        cancelOrderItemStatus: CancelOrderItemStatus.init,
+        confirmReturnRequestStatus: ConfirmReturnRequestStatus.init,
+        changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.init,
+        changeOrderAddressStatus: ChangeOrderAddressStatus.init,
+        storeReturnRequestProductStatus: StoreReturnRequestProductStatus.init,
+        orderReturnDetailsStatus: OrderReturnDetailsStatus.init,
+        updateReturnRequestProductStatus: UpdateReturnRequestProductStatus.init,
+        storeReturnRequestStatus: StoreReturnRequestStatus.init));
   }
 
   FutureOr<void> _onGetCustomerWalletEvent(
     GetCustomerWalletEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        getCustomerWalletStatus: GetCustomerWalletStatus.loading,
-      ),
-    );
-
-    final response = await getCustomerWalletUseCase.call(
-      CustomerWalletParams(limit: event.limit, offset: event.offset),
-    );
-
+    emit(state.copyWith(
+        getCustomerWalletStatus: GetCustomerWalletStatus.loading));
+    final response = await getCustomerWalletUseCase
+        .call(CustomerWalletParams(limit: event.limit, offset: event.offset));
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetCustomerWalletEvent')) {
-          add(
-            GetCustomerWalletEvent(limit: event.limit, offset: event.offset),
-          );
-          isFailedTheFirstTime.add('GetCustomerWalletEvent');
+        if (ErrorManager.shouldRetry('GetCustomerWalletEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetCustomerWalletEvent');
+          add(GetCustomerWalletEvent(limit: event.limit, offset: event.offset));
           return;
         }
-        emit(
-          state.copyWith(
-            getCustomerWalletStatus: GetCustomerWalletStatus.failure,
-          ),
-        );
+        emit(state.copyWith(
+            getCustomerWalletStatus: GetCustomerWalletStatus.failure));
       },
       (r) {
-        isFailedTheFirstTime.remove('GetCustomerWalletEvent');
-
-        emit(
-          state.copyWith(
+        ErrorManager.resetRetry('GetCustomerWalletEvent');
+        emit(state.copyWith(
             getCustomerWalletStatus: GetCustomerWalletStatus.success,
-            customerWalletModel: r,
-          ),
-        );
+            customerWalletModel: r));
       },
     );
   }
@@ -437,6 +494,22 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetOrdersEvent event,
     Emitter<OrderState> emit,
   ) async {
+    if (event.index != -1 && event.orders.isNotEmpty) {
+      Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel =
+          state.getOrdersModel;
+      List<List<OrderListModel>> listOrder =
+          getOrdersModel?[event.status]?.items ?? [];
+      listOrder[event.index] = event.orders;
+      getOrdersModel?[event.status] = PaginationModel<List<OrderListModel>>(
+          page: 1,
+          items: listOrder,
+          paginationStatus: getOrdersModel[event.status]?.paginationStatus ??
+              PaginationStatus.success,
+          hasReachedMax: getOrdersModel[event.status]?.hasReachedMax ?? false);
+
+      emit(state.copyWith(getOrdersModel: getOrdersModel));
+      return;
+    }
     Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel =
         !event.getWithPagination ? {} : Map.of(state.getOrdersModel ?? {});
 
@@ -450,20 +523,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
                 PaginationStatus.loading)) {
       return;
     }
-    ///////////////////////////
-    emit(
-      state.copyWith(getOrdersModel: getOrdersModel.map(
-        (key, value) {
-          if (key == event.status) {
-            return MapEntry(key,
-                value.copyWith(paginationStatus: PaginationStatus.loading));
-          } else {
-            return MapEntry(key, value);
-          }
-        },
-      )),
-    );
-    ///////////////////////////////
+
+    emit(state.copyWith(getOrdersModel: getOrdersModel.map(
+      (key, value) {
+        if (key == event.status) {
+          return MapEntry(
+              key, value.copyWith(paginationStatus: PaginationStatus.loading));
+        } else {
+          return MapEntry(key, value);
+        }
+      },
+    )));
+
     GetOrdersParams params = GetOrdersParams(
       offset:
           event.getWithPagination ? getOrdersModel[event.status]?.page ?? 1 : 1,
@@ -476,31 +547,27 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       (l) {
         getOrdersModel = state.getOrdersModel;
 
-        if (!isFailedTheFirstTime.contains('GetOrdersEvent')) {
-          add(
-            GetOrdersEvent(
-              status: event.status,
-              getWithPagination: event.getWithPagination,
-            ),
-          );
-          isFailedTheFirstTime.add('GetOrdersEvent');
+        if (ErrorManager.shouldRetry('GetOrdersEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetOrdersEvent');
+          add(GetOrdersEvent(
+            status: event.status,
+            getWithPagination: event.getWithPagination,
+          ));
+          return; // لا تحدث الحالة
         }
 
-        emit(
-          state.copyWith(getOrdersModel: getOrdersModel?.map(
-            (key, value) {
-              if (key == event.status)
-                return MapEntry(key,
-                    value.copyWith(paginationStatus: PaginationStatus.failure));
-              return MapEntry(key, value);
-            },
-          )),
-        );
+        emit(state.copyWith(getOrdersModel: getOrdersModel?.map(
+          (key, value) {
+            if (key == event.status)
+              return MapEntry(key,
+                  value.copyWith(paginationStatus: PaginationStatus.failure));
+            return MapEntry(key, value);
+          },
+        )));
       },
       (r) {
         getOrdersModel = state.getOrdersModel;
-
-        isFailedTheFirstTime.remove('GetOrdersEvent');
+        ErrorManager.resetRetry('GetOrdersEvent');
 
         List<List<OrderListModel>> oldOrders = [];
         if (getOrdersModel?[event.status] != null &&
@@ -510,8 +577,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
         List<OrderListModel> ordersFromApi = List.of(r.data?.orders ?? []);
         List<List<OrderListModel>> newOrders = [];
-        /*ordersFromApi.forEach((elements) => elements.details?.forEach(
-            (element) => element.orderProductStatus = elements.orderStatus));*/
+
         final seen = <String>{};
         final List<String> duplicatesOrderGroupIds = [];
 
@@ -542,96 +608,31 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           },
         );
 
-        /*  for (var duplicateId in duplicatesOrderGroupIds) {
-          List<OrderListModel> ordersWithSameId = ordersFromApi.where(
-            (element) {
-              return element.orderGroupId == duplicateId;
-            },
-          ).toList();
-          ordersFromApi.forEach(
-            (element) {
-              if (ordersWithSameId.contains(element)&&newOrders.contains(element)) {
-                newOrders.insert(0, ordersWithSameId);
+        emit(state.copyWith(
+          orderTotalSize: r.data?.total ?? 0,
+          getOrdersModel: getOrdersModel?.map(
+            (key, value) {
+              if (key == event.status) {
+                return MapEntry(
+                  key,
+                  value.copyWith(
+                    hasReachedMax:
+                        (r.data!.orders?.length ?? kPageSize) < kPageSize,
+                    paginationStatus: PaginationStatus.success,
+                    page: event.getWithPagination
+                        ? getOrdersModel![event.status]!.page + 1
+                        : 2,
+                    items: !event.getWithPagination
+                        ? [...newOrders]
+                        : [...oldOrders, ...newOrders],
+                  ),
+                );
+              } else {
+                return MapEntry(key, value);
               }
             },
-          );
-          ///////////////////////////
-          /*    OrderListModel firstOrder = ordersWithSameId[0];
-          int firstOrderIndex = ordersFromApi.indexOf(firstOrder);
-          ////////////////////
-          ordersWithSameId.remove(firstOrder);
-          ////////////////////////////////
-          List<OrderListDetailModel> aggregatedDetails =
-              firstOrder.details ?? [];
-          for (var i = 0; i < aggregatedDetails.length; i++) {
-            aggregatedDetails[i] = aggregatedDetails[i]
-                .copyWith(orderProductStatus: firstOrder.orderStatus);
-          }
-          bool? statusIsOutForDelivary =
-              firstOrder.orderStatus?.value == "out_for_delivery";
-          double firstOrderAmount = firstOrder.orderAmount ?? 0;
-          double firstOrderShippingCost = firstOrder.shippingCost ?? 0;
-
-          double aggregatedAmount = firstOrderAmount;
-          double aggregatedshippingCost = firstOrderShippingCost;
-          for (var order in ordersWithSameId) {
-            double orderAmount = order.orderAmount ?? 0;
-            double shippingCost = order.shippingCost ?? 0;
-
-            aggregatedAmount = aggregatedAmount + orderAmount;
-            aggregatedshippingCost = aggregatedshippingCost + shippingCost;
-            if (order.orderStatus?.value == "out_for_delivery") {
-              statusIsOutForDelivary = true;
-            }
-            for (OrderListDetailModel detail in order.details ?? []) {
-              aggregatedDetails
-                  .add(detail.copyWith(orderProductStatus: order.orderStatus));
-            }
-          }
-
-          OrderListModel aggregatedOrder = firstOrder.copyWith(
-            orderAmount: aggregatedAmount,
-            statusIsOutForDelivary: statusIsOutForDelivary,
-            shippingCost: aggregatedshippingCost,
-            details: aggregatedDetails,
-          );
-
-          ordersFromApi.removeWhere(
-            (element) => element.orderGroupId == duplicateId,
-          );
-          // ordersFromApi.add(aggregatedOrder);*/
-
-          //   ordersFromApi.insert(firstOrderIndex, aggregatedOrder);
-        }*/
-
-        ////////////////////////////
-        emit(
-          state.copyWith(
-            orderTotalSize: r.data?.total ?? 0,
-            getOrdersModel: getOrdersModel?.map(
-              (key, value) {
-                if (key == event.status) {
-                  return MapEntry(
-                    key,
-                    value.copyWith(
-                      hasReachedMax:
-                          (r.data!.orders?.length ?? kPageSize) < kPageSize,
-                      paginationStatus: PaginationStatus.success,
-                      page: event.getWithPagination
-                          ? getOrdersModel![event.status]!.page + 1
-                          : 2,
-                      items: !event.getWithPagination
-                          ? [...newOrders]
-                          : [...oldOrders, ...newOrders],
-                    ),
-                  );
-                } else {
-                  return MapEntry(key, value);
-                }
-              },
-            ),
           ),
-        );
+        ));
       },
     );
   }
@@ -647,9 +648,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         SetCustomerAddressDefaultParams(addressId: event.adressId ?? 0));
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('SetCustomerAddressDefaultEvent')) {
+      if (ErrorManager.shouldRetry(
+          'SetCustomerAddressDefaultEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('SetCustomerAddressDefaultEvent');
         add(SetCustomerAddressDefaultEvent(adressId: event.adressId));
-        isFailedTheFirstTime.add('SetCustomerAddressDefaultEvent');
         return;
       }
 
@@ -659,7 +661,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     }, (r) async {
       add(GetCustomerAddressesEvent());
       GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
-      isFailedTheFirstTime.remove('SetCustomerAddressDefaultEvent');
+      ErrorManager.resetRetry('SetCustomerAddressDefaultEvent');
 
       emit(state.copyWith(
           setCustomerAddressDefaultStatus:
@@ -676,15 +678,15 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     final response = await getCustomerAddressesUseCase(NoParams());
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('getCustomerAddresses')) {
+      if (ErrorManager.shouldRetry('getCustomerAddresses', l.statusCode)) {
+        ErrorManager.incrementRetry('getCustomerAddresses');
         add(GetCustomerAddressesEvent());
-        isFailedTheFirstTime.add('getCustomerAddresses');
       }
 
       emit(state.copyWith(
           getCustomerAddressesStatus: GetCustomerAddressesStatus.failure));
     }, (r) async {
-      isFailedTheFirstTime.remove('getCustomerAddresses');
+      ErrorManager.resetRetry('getCustomerAddresses');
       List<CustomerAddressesInfo>? listOfAdressInfoClassToSave = [];
       listOfAdressInfoClassToSave = [...r.data!];
       int currentAddressChoosed = 0;
@@ -726,11 +728,13 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         DeleteCustomerAddressParams(addressId: event.adressInfoClassId ?? 0));
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('deleteCustomerAddress')) {
+      if (ErrorManager.shouldRetry('deleteCustomerAddress', l.statusCode)) {
+        ErrorManager.incrementRetry('deleteCustomerAddress');
         add(DeleteAdressInfoClassEvent(
             adressInfoClassId: event.adressInfoClassId));
-        isFailedTheFirstTime.add('deleteCustomerAddress');
+        return; // لا تعرض رسالة ولا تحدث الحالة
       }
+      // فقط بعد انتهاء المحاولات
       showMessage(l.message,
           foreGroundColor: Colors.white,
           hasError: true,
@@ -750,7 +754,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
-      isFailedTheFirstTime.remove('deleteCustomerAddress');
+      ErrorManager.resetRetry('deleteCustomerAddress');
 
       emit(state.copyWith(
           removeAddressToOrderStatus: RemoveAddressToOrderStatus.success,
@@ -795,11 +799,13 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ));
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('addCustomerAddress')) {
+      if (ErrorManager.shouldRetry('addCustomerAddress', l.statusCode)) {
+        ErrorManager.incrementRetry('addCustomerAddress');
         add(AddAddressInfoClassEvent(
             addressInfoClassToSave: event.addressInfoClassToSave));
-        isFailedTheFirstTime.add('addCustomerAddress');
+        return; // لا تعرض رسالة ولا تحدث الحالة
       }
+      // فقط بعد انتهاء المحاولات
       showMessage(l.message,
           foreGroundColor: Colors.white,
           hasError: true,
@@ -820,7 +826,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
-      isFailedTheFirstTime.remove('addCustomerAddress');
+      ErrorManager.resetRetry('addCustomerAddress');
 
       emit(state.copyWith(
           lastAdressInfoClassToSave: CustomerAddressesInfo(),
@@ -873,19 +879,21 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ));
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('updateCustomerAddress')) {
+      if (ErrorManager.shouldRetry('updateCustomerAddress', l.statusCode)) {
+        ErrorManager.incrementRetry('updateCustomerAddress');
         add(EditAdressInfoClassEvent(
           addressInfoClassToSave: event.addressInfoClassToSave,
           preIdToEdit: event.preIdToEdit,
         ));
-        showMessage(l.message,
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            hasError: true,
-            showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG);
-        isFailedTheFirstTime.add('updateCustomerAddress');
+        return; // لا تعرض رسالة ولا تحدث الحالة
       }
+      // فقط بعد انتهاء المحاولات
+      showMessage(l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          hasError: true,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG);
       final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
           List.of(state.listOfAddressInfoClassToSave ?? []);
       listOfAddressInfoClassToSave.insert(index, preCustomerAddresses);
@@ -899,7 +907,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
-      isFailedTheFirstTime.remove('updateCustomerAddress');
+      ErrorManager.resetRetry('updateCustomerAddress');
 
       emit(state.copyWith(
           editAddressToOrderStatus: EditAddressToOrderStatus.success,
@@ -930,8 +938,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetAddressByCoordinatesEvent')) {
-          isFailedTheFirstTime.add('GetAddressByCoordinatesEvent');
+        if (ErrorManager.shouldRetry(
+            'GetAddressByCoordinatesEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetAddressByCoordinatesEvent');
         }
         emit(
           state.copyWith(
@@ -941,7 +950,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         );
       },
       (r) {
-        isFailedTheFirstTime.remove('GetAddressByCoordinatesEvent');
+        ErrorManager.resetRetry('GetAddressByCoordinatesEvent');
         emit(
           state.copyWith(
               getAddressByCoordinatesStatus:
@@ -976,14 +985,13 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         GetAddressByTextParams(query: event.query));
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetAddressByTextEvent')) {
-        ;
-        isFailedTheFirstTime.add('GetAddressByTextEvent');
+      if (ErrorManager.shouldRetry('GetAddressByTextEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('GetAddressByTextEvent');
       }
       emit(state.copyWith(
           getAddressByTextStatus: GetAddressByTextStatus.failure));
     }, (r) {
-      isFailedTheFirstTime.remove('GetAddressByTextEvent');
+      ErrorManager.resetRetry('GetAddressByTextEvent');
 
       emit(state.copyWith(
         resultSearch: r.results,
@@ -1003,42 +1011,26 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ApplyCouponEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        applyCouponStatus: ApplyCouponStatus.loading,
-      ),
-    );
-
+    emit(state.copyWith(applyCouponStatus: ApplyCouponStatus.loading));
     final response = await applyCouponUsecase(event.code);
-
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('ApplyCouponEvent')) {
-          add(
-            ApplyCouponEvent(code: event.code),
-          );
-          isFailedTheFirstTime.add('ApplyCouponEvent');
+        if (ErrorManager.shouldRetry('ApplyCouponEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('ApplyCouponEvent');
+          add(ApplyCouponEvent(code: event.code));
+          return; // لا تعرض رسالة ولا تحدث الحالة
         }
-
-        emit(
-          state.copyWith(
-            applyCouponStatus: ApplyCouponStatus.failure,
-          ),
-        );
+        // فقط بعد انتهاء المحاولات
+        emit(state.copyWith(applyCouponStatus: ApplyCouponStatus.failure));
       },
       (r) {
-        isFailedTheFirstTime.remove('ApplyCouponEvent');
+        ErrorManager.resetRetry('ApplyCouponEvent');
         var data = r.data;
 
         if (data!.status == 0) {
-          emit(
-            state.copyWith(
+          emit(state.copyWith(
               applyCouponStatus: ApplyCouponStatus.failure,
-              applyCouponModel: r,
-            ),
-          );
-          //////////////
+              applyCouponModel: r));
           showMessage(
             r.message ?? 'invalid',
             foreGroundColor: Colors.white,
@@ -1048,14 +1040,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           );
         } else {
           debugPrint('ApplyCouponEvent success');
-          ////////////////////////////
-          emit(
-            state.copyWith(
+          emit(state.copyWith(
               applyCouponStatus: ApplyCouponStatus.success,
-              applyCouponModel: r,
-            ),
-          );
-          //////////////
+              applyCouponModel: r));
           showMessage(
             r.message ?? 'Success',
             foreGroundColor: Colors.white,
@@ -1072,32 +1059,19 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     CancelOrderItemEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        cancelOrderItemStatus: CancelOrderItemStatus.loading,
-      ),
-    );
-
-    final response = await cancelOrderItemUsecase(
-      event.cancelOrderItemParams,
-    );
-
+    emit(state.copyWith(cancelOrderItemStatus: CancelOrderItemStatus.loading));
+    final response = await cancelOrderItemUsecase(event.cancelOrderItemParams);
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('CancelOrderItemEvent')) {
-          add(
-            CancelOrderItemEvent(
-                cancelOrderItemParams: event.cancelOrderItemParams),
-          );
-          isFailedTheFirstTime.add('CancelOrderItemEvent');
+        if (ErrorManager.shouldRetry('CancelOrderItemEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('CancelOrderItemEvent');
+          add(CancelOrderItemEvent(
+              cancelOrderItemParams: event.cancelOrderItemParams));
+          return; // لا تعرض رسالة ولا تحدث الحالة
         }
-        emit(
-          state.copyWith(
-            cancelOrderItemStatus: CancelOrderItemStatus.failure,
-          ),
-        );
-        // إظهار رسالة الفشل من الباك إند
+        // فقط بعد انتهاء المحاولات
+        emit(state.copyWith(
+            cancelOrderItemStatus: CancelOrderItemStatus.failure));
         showMessage(
           l.message,
           foreGroundColor: Colors.white,
@@ -1107,11 +1081,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         );
       },
       (r) async {
-        isFailedTheFirstTime.remove('CancelOrderItemEvent');
-
+        ErrorManager.resetRetry('CancelOrderItemEvent');
         debugPrint('CancelOrderItemStatus success');
-
-        // إظهار رسالة النجاح من الباك إند
         showMessage(
           r.message ?? 'تم إلغاء العنصر بنجاح',
           foreGroundColor: Colors.white,
@@ -1119,13 +1090,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG,
         );
-
-        ////////////////////////////////////////////
-        emit(
-          state.copyWith(
-            cancelOrderItemStatus: CancelOrderItemStatus.success,
-          ),
-        );
+        emit(state.copyWith(
+            cancelOrderItemStatus: CancelOrderItemStatus.success));
       },
     );
   }
@@ -1134,37 +1100,21 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     CancelOrderEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        cancelOrderStatus: CancelOrderStatus.loading,
-      ),
-    );
-
-    final response = await cancelOrderUsecase(
-      event.cancelOrderParams,
-    );
-
+    emit(state.copyWith(cancelOrderStatus: CancelOrderStatus.loading));
+    final response = await cancelOrderUsecase(event.cancelOrderParams);
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('CancelOrderEvent')) {
-          add(
-            CancelOrderEvent(cancelOrderParams: event.cancelOrderParams),
-          );
-          isFailedTheFirstTime.add('CancelOrderEvent');
+        if (ErrorManager.shouldRetry('CancelOrderEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('CancelOrderEvent');
+          add(CancelOrderEvent(cancelOrderParams: event.cancelOrderParams));
+          return; // لا تعرض رسالة ولا تحدث الحالة
         }
-        emit(
-          state.copyWith(
-            cancelOrderStatus: CancelOrderStatus.failure,
-          ),
-        );
+        // فقط بعد انتهاء المحاولات
+        emit(state.copyWith(cancelOrderStatus: CancelOrderStatus.failure));
       },
       (r) async {
-        isFailedTheFirstTime.remove('CancelOrderEvent');
-
+        ErrorManager.resetRetry('CancelOrderEvent');
         debugPrint('CancelOrderStatus success');
-
-        // إظهار رسالة النجاح من الباك إند
         showMessage(
           r.message ?? 'تم إلغاء الطلب بنجاح',
           foreGroundColor: Colors.white,
@@ -1172,13 +1122,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG,
         );
-
-        ////////////////////////////////////////////
-        emit(
-          state.copyWith(
-            cancelOrderStatus: CancelOrderStatus.success,
-          ),
-        );
+        emit(state.copyWith(cancelOrderStatus: CancelOrderStatus.success));
       },
     );
   }
@@ -1187,32 +1131,21 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ChangeOrderAddressEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        changeOrderAddressStatus: ChangeOrderAddressStatus.loading,
-      ),
-    );
-
-    final response = await changeOrderAddressUsecase(
-      event.changeOrderAddressParams,
-    );
-
+    emit(state.copyWith(
+        changeOrderAddressStatus: ChangeOrderAddressStatus.loading));
+    final response =
+        await changeOrderAddressUsecase(event.changeOrderAddressParams);
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('ChangeOrderAddressEvent')) {
-          add(
-            ChangeOrderAddressEvent(
-                changeOrderAddressParams: event.changeOrderAddressParams),
-          );
-          isFailedTheFirstTime.add('ChangeOrderAddressEvent');
+        if (ErrorManager.shouldRetry('ChangeOrderAddressEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('ChangeOrderAddressEvent');
+          add(ChangeOrderAddressEvent(
+              changeOrderAddressParams: event.changeOrderAddressParams));
+          return; // لا تعرض رسالة ولا تحدث الحالة
         }
-        emit(
-          state.copyWith(
-            changeOrderAddressStatus: ChangeOrderAddressStatus.failure,
-          ),
-        );
-        // إظهار رسالة الفشل من الباك إند
+        // فقط بعد انتهاء المحاولات
+        emit(state.copyWith(
+            changeOrderAddressStatus: ChangeOrderAddressStatus.failure));
         showMessage(
           l.message,
           foreGroundColor: Colors.white,
@@ -1222,11 +1155,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         );
       },
       (r) async {
-        isFailedTheFirstTime.remove('ChangeOrderAddressEvent');
-
+        ErrorManager.resetRetry('ChangeOrderAddressEvent');
         debugPrint('ChangeOrderAddressStatus success');
-
-        // إظهار رسالة النجاح من الباك إند
         showMessage(
           r.message ?? 'تم تغيير العنوان بنجاح',
           foreGroundColor: Colors.white,
@@ -1234,13 +1164,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG,
         );
-
-        ////////////////////////////////////////////
-        emit(
-          state.copyWith(
-            changeOrderAddressStatus: ChangeOrderAddressStatus.success,
-          ),
-        );
+        emit(state.copyWith(
+            changeOrderAddressStatus: ChangeOrderAddressStatus.success));
       },
     );
   }
@@ -1249,48 +1174,31 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetProductColorSizeSyncAttributeEvent event,
     Emitter<OrderState> emit,
   ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
+    emit(state.copyWith(
         getProductColorSizeSyncAttributeStatus:
-            GetProductColorSizeSyncAttributeStatus.loading,
-      ),
-    );
-
-    final response = await getProductColorSizeSyncAttributeUseCase(
-      event.id,
-    );
-
+            GetProductColorSizeSyncAttributeStatus.loading));
+    final response = await getProductColorSizeSyncAttributeUseCase(event.id);
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime
-            .contains('GetProductColorSizeSyncAttributeEvent')) {
-          add(
-            GetProductColorSizeSyncAttributeEvent(id: event.id),
-          );
-          isFailedTheFirstTime.add('GetProductColorSizeSyncAttributeEvent');
+        if (ErrorManager.shouldRetry(
+            'GetProductColorSizeSyncAttributeEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetProductColorSizeSyncAttributeEvent');
+          add(GetProductColorSizeSyncAttributeEvent(id: event.id));
+          return; // لا تعرض رسالة ولا تحدث الحالة
         }
-        emit(
-          state.copyWith(
+        // فقط بعد انتهاء المحاولات
+        emit(state.copyWith(
             getProductColorSizeSyncAttributeStatus:
-                GetProductColorSizeSyncAttributeStatus.failure,
-          ),
-        );
-        // إظهار رسالة الفشل من الباك إند
+                GetProductColorSizeSyncAttributeStatus.failure));
       },
       (r) async {
-        isFailedTheFirstTime.remove('GetProductColorSizeSyncAttributeEvent');
-
+        ErrorManager.resetRetry('GetProductColorSizeSyncAttributeEvent');
         debugPrint('GetProductColorSizeSyncAttributeStatus success');
-
-        ////////////////////////////////////////////
-        emit(
-          state.copyWith(
-            getProductColorSizeSyncAttributeStatus:
-                GetProductColorSizeSyncAttributeStatus.success,
-            colorSizeForProductModel: r,
-          ),
-        );
+        emit(state.copyWith(
+          getProductColorSizeSyncAttributeStatus:
+              GetProductColorSizeSyncAttributeStatus.success,
+          colorSizeForProductModel: r,
+        ));
       },
     );
   }
@@ -1302,18 +1210,19 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     final result = await changeOrderItemVariantUsecase(event.params);
     result.fold(
       (failure) {
-        if (!isFailedTheFirstTime.contains('ChangeOrderItemVariantEvent')) {
+        if (ErrorManager.shouldRetry(
+            'ChangeOrderItemVariantEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('ChangeOrderItemVariantEvent');
           add(ChangeOrderItemVariantEvent(params: event.params));
-          isFailedTheFirstTime.add('ChangeOrderItemVariantEvent');
+          return; // لا تعرض رسالة ولا تحدث الحالة
         }
-
+        // فقط بعد انتهاء المحاولات
         emit(state.copyWith(
             changeOrderItemVariantStatus:
                 ChangeOrderItemVariantStatus.failure));
-        // يمكنك هنا عرض رسالة خطأ أو التعامل مع الفشل حسب الحاجة
       },
       (response) {
-        isFailedTheFirstTime.remove('ChangeOrderItemVariantEvent');
+        ErrorManager.resetRetry('ChangeOrderItemVariantEvent');
         showMessage(
           response.message ?? 'تم تغيير العنوان بنجاح',
           foreGroundColor: Colors.white,
@@ -1324,12 +1233,223 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         emit(state.copyWith(
             changeOrderItemVariantStatus:
                 ChangeOrderItemVariantStatus.success));
-        // يمكنك هنا التعامل مع النجاح (مثلاً تحديث الطلب أو عرض رسالة)
+      },
+    );
+  }
+
+  Future<void> _onAddOrderCommentEvent(
+      AddOrderCommentEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(addOrderCommentStatus: AddOrderCommentStatus.loading));
+    final result = await addOrderCommentUseCase(event.params);
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'AddOrderCommentEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('AddOrderCommentEvent');
+          add(AddOrderCommentEvent(params: event.params));
+          return; // لا تعرض رسالة ولا تحدث الحالة
+        }
+        // فقط بعد انتهاء المحاولات
+        emit(state.copyWith(
+            addOrderCommentStatus: AddOrderCommentStatus.failure));
+      },
+      (response) {
+        ErrorManager.resetRetry('AddOrderCommentEvent');
+        showMessage(
+          response.message ?? 'تم إضافة التقييم بنجاح',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+        emit(state.copyWith(
+            addOrderCommentStatus: AddOrderCommentStatus.success));
+      },
+    );
+  }
+
+  Future<void> _onUpdateOrderCommentEvent(
+      UpdateOrderCommentEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        updateOrderCommentStatus: UpdateOrderCommentStatus.loading));
+    final result = await updateOrderCommentUseCase(event.params);
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'UpdateOrderCommentEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('UpdateOrderCommentEvent');
+          add(UpdateOrderCommentEvent(params: event.params));
+          return; // لا تعرض رسالة ولا تحدث الحالة
+        }
+        // فقط بعد انتهاء المحاولات
+        emit(state.copyWith(
+            updateOrderCommentStatus: UpdateOrderCommentStatus.failure));
+      },
+      (response) {
+        ErrorManager.resetRetry('UpdateOrderCommentEvent');
+        showMessage(
+          response.message ?? 'تم تعديل التقييم بنجاح',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG,
+        );
+        emit(state.copyWith(
+          updateOrderCommentStatus: UpdateOrderCommentStatus.success,
+        ));
+      },
+    );
+  }
+
+  Future<void> _onGetReturnReasonsEvent(
+      GetReturnReasonsEvent event, Emitter<OrderState> emit) async {
+    emit(
+        state.copyWith(getReturnReasonsStatus: GetReturnReasonsStatus.loading));
+    final result = await getReturnReasonsUseCase(NoParams());
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'GetReturnReasonsEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('GetReturnReasonsEvent');
+          add(GetReturnReasonsEvent());
+          return;
+        }
+        emit(state.copyWith(
+            getReturnReasonsStatus: GetReturnReasonsStatus.failure));
+      },
+      (response) {
+        ErrorManager.resetRetry('GetReturnReasonsEvent');
+        emit(state.copyWith(
+          getReturnReasonsStatus: GetReturnReasonsStatus.success,
+          returnReasonsModel: response,
+        ));
+      },
+    );
+  }
+
+  Future<void> _onStoreReturnRequestProductEvent(
+      StoreReturnRequestProductEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        storeReturnRequestProductStatus:
+            StoreReturnRequestProductStatus.loading));
+    final result = await storeReturnRequestProductUseCase(event.params);
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'StoreReturnRequestProductEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('StoreReturnRequestProductEvent');
+          add(StoreReturnRequestProductEvent(
+              orderGroupId: event.orderGroupId,
+              params: event.params,
+              withConfirm: event.withConfirm,
+              returnRequestId: event.returnRequestId));
+          return;
+        }
+        showMessage(failure.message, hasError: true);
+        emit(state.copyWith(
+            storeReturnRequestProductStatus:
+                StoreReturnRequestProductStatus.failure));
+      },
+      (response) {
+        ErrorManager.resetRetry('StoreReturnRequestProductEvent');
+        if (event.withConfirm) {
+          showMessage(response.message ?? "", hasError: false);
+          add(ConfirmReturnRequestEvent(
+            orderGroupId: event.orderGroupId,
+            returnRequestId: event.returnRequestId,
+          ));
+        } else {
+          add(FetchOrderReturnDetailsEvent(
+              int.tryParse(event.returnRequestId) ?? 0));
+          showMessage(response.message ?? "", hasError: false);
+        }
+        emit(state.copyWith(
+            storeReturnRequestProductStatus:
+                StoreReturnRequestProductStatus.success));
       },
     );
   }
 
   //////////////////////////////////////////////////////////
+  Future<void> _onUpdateReturnRequestProductEvent(
+      UpdateReturnRequestProductEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        updateReturnRequestProductStatus:
+            UpdateReturnRequestProductStatus.loading));
+    final result = await updateReturnRequestProductUseCase(event.params);
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'UpdateReturnRequestProductEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('UpdateReturnRequestProductEvent');
+          add(UpdateReturnRequestProductEvent(
+              orderGroupId: event.orderGroupId,
+              params: event.params,
+              withConfirm: event.withConfirm,
+              returnRequestId: event.returnRequestId));
+          return;
+        }
+        showMessage(failure.message, hasError: true);
+        emit(state.copyWith(
+            updateReturnRequestProductStatus:
+                UpdateReturnRequestProductStatus.failure));
+      },
+      (response) {
+        ErrorManager.resetRetry('UpdateReturnRequestProductEvent');
+        if (event.withConfirm) {
+          add(ConfirmReturnRequestEvent(
+            orderGroupId: event.orderGroupId,
+            returnRequestId: event.returnRequestId.toString(),
+          ));
+        } else {
+          int returnRequestId = int.parse(event.returnRequestId.toString());
+          add(FetchOrderReturnDetailsEvent(returnRequestId));
+          showMessage(response.message ?? "", hasError: false);
+        }
+        emit(state.copyWith(
+            updateReturnRequestProductStatus:
+                UpdateReturnRequestProductStatus.success));
+      },
+    );
+  }
+
+  ///
+  Future<void> _onStoreReturnRequestEvent(
+      StoreReturnRequestEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        cancelReturnRequestProductStatus: CancelReturnRequestProductStatus.init,
+        cancelReturnRequestStatus: CancelReturnRequestStatus.init,
+        confirmReturnRequestStatus: ConfirmReturnRequestStatus.init,
+        changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.init,
+        changeOrderAddressStatus: ChangeOrderAddressStatus.init,
+        storeReturnRequestProductStatus: StoreReturnRequestProductStatus.init,
+        orderReturnDetailsStatus: OrderReturnDetailsStatus.init,
+        updateReturnRequestProductStatus: UpdateReturnRequestProductStatus.init,
+        storeReturnRequestStatus: StoreReturnRequestStatus.init));
+    final result = await storeReturnRequestUseCase(event.params);
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'StoreReturnRequestEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('StoreReturnRequestEvent');
+          add(StoreReturnRequestEvent(
+            params: event.params,
+          ));
+          return;
+        }
+        emit(state.copyWith(
+            storeReturnRequestStatus: StoreReturnRequestStatus.failure));
+      },
+      (response) {
+        add(FetchOrderReturnDetailsEvent(response.data?.returnRequestId ?? 0));
+        ErrorManager.resetRetry('StoreReturnRequestEvent');
+        emit(state.copyWith(
+            storeReturnRequestStatus: StoreReturnRequestStatus.success));
+      },
+    );
+  }
+
+  ///
 
   @override
   OrderState? fromJson(Map<String, dynamic> json) {
@@ -1342,10 +1462,146 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         .copyWith(
           placeOrderStatus: PlaceOrderStatus.init,
           getOrdersModel: {},
+          cancelReturnRequestProductStatus:
+              CancelReturnRequestProductStatus.init,
+          cancelReturnRequestStatus: CancelReturnRequestStatus.init,
+          confirmReturnRequestStatus: ConfirmReturnRequestStatus.init,
+          storeReturnRequestProductStatus: StoreReturnRequestProductStatus.init,
+          orderReturnDetailsStatus: OrderReturnDetailsStatus.init,
+          updateReturnRequestProductStatus:
+              UpdateReturnRequestProductStatus.init,
           applyCouponStatus: ApplyCouponStatus.init,
           cancelOrderItemStatus: CancelOrderItemStatus.init,
           cancelOrderStatus: CancelOrderStatus.init,
         )
         .toJson();
+  }
+
+  //////////////////////////////////////////////////////////
+  Future<void> _onOrderReturnRequestsViewEvent(
+      OrderReturnRequestsViewEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        orderReturnRequestsViewStatus: OrderReturnRequestsViewStatus.loading));
+    final result = await orderReturnRequestsViewUseCase(event.params);
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'OrderReturnRequestsViewEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('OrderReturnRequestsViewEvent');
+          add(OrderReturnRequestsViewEvent(params: event.params));
+          return;
+        }
+        emit(state.copyWith(
+            orderReturnRequestsViewStatus:
+                OrderReturnRequestsViewStatus.failure));
+      },
+      (response) {
+        ErrorManager.resetRetry('OrderReturnRequestsViewEvent');
+        emit(state.copyWith(
+            orderReturnRequestsViewStatus:
+                OrderReturnRequestsViewStatus.success));
+      },
+    );
+  }
+
+  FutureOr<void> _onUploadImagesForReturnProductEvent(
+      UploadImagesForReturnProductEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        uploadImagesForReturnProductStatus:
+            UploadImagesForReturnProductStatus.loading));
+    final result = await uploadImagesProductReturnUseCase(
+        UpdateImagesForReturnProductParams(
+            path: "return_request_products/", image: event.file));
+    result.fold((failure) {
+      emit(state.copyWith(
+          uploadImagesForReturnProductStatus:
+              UploadImagesForReturnProductStatus.failure));
+    }, (response) {
+      List<String> imagesForReturns = List.of(state.imagesForReturn ?? []);
+      imagesForReturns.add(response.data?.subPath ?? "");
+      emit(state.copyWith(
+          imagesForReturn: imagesForReturns,
+          uploadImagesForReturnProductStatus:
+              UploadImagesForReturnProductStatus.success));
+    });
+  }
+
+  ///
+  ///
+  ///
+  /// //////////////////////////////////////////////////////////
+  Future<void> _onConfirmReturnRequestEvent(
+      ConfirmReturnRequestEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+        confirmReturnRequestStatus: ConfirmReturnRequestStatus.loading));
+    final result = await confirmReturnRequestUseCase(
+        ConfirmReturnRequestParams(returnRequestId: event.returnRequestId));
+    result.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'ConfirmReturnRequestEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('ConfirmReturnRequestEvent');
+          add(ConfirmReturnRequestEvent(
+              orderGroupId: event.orderGroupId,
+              returnRequestId: event.returnRequestId));
+          return;
+        }
+        showMessage(failure.message, hasError: true);
+        emit(state.copyWith(
+            confirmReturnRequestStatus: ConfirmReturnRequestStatus.failure));
+      },
+      (response) {
+        add(FetchOrderReturnDetailsEvent(
+            int.parse(event.returnRequestId.toString())));
+        add(GetOrdersByOrderGroupIDEvent(
+            getWithRating: false,
+            firstOpenPage: false,
+            orderGroupId: event.orderGroupId));
+        showMessage(response.message ?? "", hasError: false);
+        ErrorManager.resetRetry('ConfirmReturnRequestEvent');
+        emit(state.copyWith(
+            confirmReturnRequestStatus: ConfirmReturnRequestStatus.success));
+      },
+    );
+  }
+
+  ///
+  FutureOr<void> _onFetchOrderReturnDetailsEvent(
+      FetchOrderReturnDetailsEvent event, Emitter<OrderState> emit) async {
+    emit(state.copyWith(
+      orderReturnDetailsStatus: OrderReturnDetailsStatus.loading,
+      orderReturnDetailsModel: null,
+    ));
+    final response = await orderReturnDetailsUseCase(
+        GetOrderReturntDetailsParams(
+            returnRequestId: event.returnRequestId.toString()));
+    response.fold(
+      (failure) {
+        if (ErrorManager.shouldRetry(
+            'FetchOrderReturnDetailsEvent', failure.statusCode)) {
+          ErrorManager.incrementRetry('FetchOrderReturnDetailsEvent');
+          add(FetchOrderReturnDetailsEvent(event.returnRequestId));
+
+          return;
+        }
+        if (failure.statusCode == 400) {
+          emit(state.copyWith(
+            orderReturnDetailsModel: null,
+            orderReturnDetailsStatus: OrderReturnDetailsStatus.failure,
+          ));
+          return;
+        }
+        emit(state.copyWith(
+          orderReturnDetailsStatus: OrderReturnDetailsStatus.failure,
+        ));
+      },
+      (details) {
+        ErrorManager.resetRetry('FetchOrderReturnDetailsEvent');
+        emit(state.copyWith(
+          orderReturnDetailsStatus: OrderReturnDetailsStatus.success,
+          orderReturnDetailsModel: details,
+        ));
+      },
+    );
   }
 }

@@ -362,7 +362,7 @@ String addSuitableWidthAndHeightToImage({
   List<String> list = imageUrl.split('upload');
   String url = '';
 
-  if (ordinalHeight != null &&
+  /*if (ordinalHeight != null &&
       ordinalWidth != null &&
       ordinalHeight != 0 &&
       ordinalWidth != 0) {
@@ -374,21 +374,21 @@ String addSuitableWidthAndHeightToImage({
         : list[0] +
             'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,w_${fWidth != 0 ? fWidth : fHeight}' +
             list[1];
+  } else {*/
+  // 🔧 إصلاح: حالة عدم وجود الأبعاد الأصلية (مثل home page)
+  // استخدام استراتيجية ذكية بدلاً من h_ فقط
+  if (width >= height) {
+    // الصورة أعرض من الارتفاع - استخدم العرض
+    url = list[0] +
+        'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,w_${fWidth}' +
+        list[1];
   } else {
-    // 🔧 إصلاح: حالة عدم وجود الأبعاد الأصلية (مثل home page)
-    // استخدام استراتيجية ذكية بدلاً من h_ فقط
-    if (width >= height) {
-      // الصورة أعرض من الارتفاع - استخدم العرض
-      url = list[0] +
-          'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,w_${fWidth}' +
-          list[1];
-    } else {
-      // الصورة أطول من العرض - استخدم الارتفاع
-      url = list[0] +
-          'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,h_${fHeight}' +
-          list[1];
-    }
+    // الصورة أطول من العرض - استخدم الارتفاع
+    url = list[0] +
+        'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,h_${fHeight}' +
+        list[1];
   }
+  //}
 
   return url;
 }

@@ -666,14 +666,14 @@ class VariationCart {
   factory VariationCart.fromJson(Map<String, dynamic> json) => VariationCart(
         sizeOption: json["size_options"],
         colorOption: json["color_options"],
-        size: json["size"],
+        size: json["Size"],
         color: json["color"],
       );
 
   Map<String, dynamic> toJson() => {
         "size_options": sizeOption,
         "color_options": colorOption,
-        "size": size,
+        "Size": size,
         "color": color,
       };
 }

@@ -39,12 +39,12 @@ import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
 
 class CartDelivaryAddress extends StatefulWidget {
-  final List<Map<String, String>> cartImages;
+  final List<Map<String, String>> cartItems;
   final String currencySympole;
   final String maxShippingDay;
   final String cartGroupId;
   const CartDelivaryAddress({
-    required this.cartImages,
+    required this.cartItems,
     required this.maxShippingDay,
     required this.currencySympole,
     Key? key,
@@ -71,9 +71,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
 
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController couponKey = TextEditingController();
-
+  List<Map<String, String>> cartImages = [];
   @override
   void initState() {
+    cartImages = widget.cartItems;
     // homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -200,8 +201,25 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
               return BlocBuilder<HomeBloc, HomeState>(
                 buildWhen: (previous, current) =>
                     previous.getCartOverviewStatus !=
-                    current.getCartOverviewStatus,
+                        current.getCartOverviewStatus ||
+                    previous.getCartItemsStatus != current.getCartItemsStatus,
                 builder: (context, homeState) {
+                  cartImages = [];
+                  homeState.cartCollection?.forEach(
+                    (element) {
+                      cartImages.add(
+                        {
+                          "image": element.image ?? "",
+                          "size": element.variations?.isNullOrEmpty ?? false
+                              ? ""
+                              : element.variations?[0].size ?? "",
+                          "color": element.variations?.isNullOrEmpty ?? false
+                              ? ""
+                              : element.variations?[0].color ?? ""
+                        },
+                      );
+                    },
+                  );
                   List<String> availablePaymentMethod = homeState
                           .getCartShippingItemsModel!
                           .data!
@@ -218,6 +236,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                       (homeState.getCartShippingItemsModel?.data?.total ?? 0) *
                           homeState.getCurrencyForCountryModel!.data!.currency!
                               .exchangeRate!;
+                  if (!(totalPrice > 0)) {
+                    totalCashed = 0;
+                  }
 
                   double couponDiscount = homeState
                           .getCartShippingItemsModel?.data?.couponDiscount ??
@@ -248,141 +269,153 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                     buildPageHeader(context, orderState),
                                     ///////////////////////
                                     Expanded(
-                                      child: SingleChildScrollView(
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                          ),
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          child: Column(
-                                            children: [
-                                              SizedBox(
-                                                height: 10.h,
-                                              ),
-                                              ////////////////////
-                                              ValueListenableBuilder<bool>(
-                                                valueListenable: isExpanded,
-                                                builder:
-                                                    (context, expanded, _) {
-                                                  return buildBagItemsWidget(
-                                                      expanded, context);
-                                                },
-                                              ),
-                                              //////////////////////////////////
-                                              SizedBox(
-                                                height: 12.h,
-                                              ),
-                                              //////////////////////////////////
-                                              buildAddressWidget(orderState,
-                                                  context, _indexTap),
-                                              ////////////////////
-                                              SizedBox(
-                                                height: 12.h,
-                                              ),
-                                              ////////////////////
-                                              /*   (orderState
-                                                      .listOfAddressInfoClassToSave
-                                                      .isNullOrEmpty)
-                                                  ? SizedBox.shrink()
-                                                  :*/
-                                              orderState.getCustomerWalletStatus ==
-                                                      GetCustomerWalletStatus
-                                                          .failure
-                                                  ? TryAgainWidget(
-                                                      tryAgain: () {
-                                                        BlocProvider.of<
-                                                                    OrderBloc>(
-                                                                context)
-                                                            .add(
-                                                          GetCustomerWalletEvent(
-                                                              limit: 10,
-                                                              offset: 1),
-                                                        );
-                                                      },
-                                                    )
-                                                  : orderState.getCustomerWalletStatus ==
-                                                          GetCustomerWalletStatus
-                                                              .loading
-                                                      ? TrydosShimmerLoading(
-                                                          width: 1.sw,
-                                                          logoTextWidth: 15,
-                                                          height: 70,
-                                                          logoTextHeight: 15,
-                                                        )
-                                                      : PaymentMethod(
-                                                          fromSuccessOrder:
-                                                              false,
-                                                          amount: walletBalance,
-                                                          fromPalceOrder: false,
-                                                          availablePaymentMethod:
-                                                              availablePaymentMethod,
-                                                          currencySymbol: orderState
-                                                                      .customerWalletModel ==
-                                                                  null
-                                                              ? ""
-                                                              : orderState
-                                                                      .customerWalletModel!
-                                                                      .data
-                                                                      .currencySymbol ??
-                                                                  '',
-                                                          paymentMethods:
-                                                              paymentMethods,
-                                                          totalPrice:
-                                                              totalPrice,
-                                                          decimalPointSetting: homeState
-                                                                  .startingSetting
-                                                                  ?.decimalPointSettings ??
-                                                              2,
-                                                        ),
-                                              ////////////
-                                              SizedBox(
-                                                height: 25.h,
-                                              ),
-                                              ////////////
-                                              ValueListenableBuilder<bool>(
-                                                valueListenable:
-                                                    isExpandedCoupon,
-                                                builder: (context,
-                                                    expandedCoupon, _) {
-                                                  return buildCouponWidget(
-                                                    expandedCoupon,
-                                                    context,
-                                                    orderState,
-                                                    couponDiscount,
-                                                    couponCode,
-                                                  );
-                                                },
-                                              ),
-                                              ////////////////
-                                              (orderState
-                                                      .listOfAddressInfoClassToSave
-                                                      .isNullOrEmpty)
-                                                  ? SizedBox.shrink()
-                                                  : ValueListenableBuilder<
-                                                      bool>(
-                                                      valueListenable:
-                                                          isExpanded,
-                                                      builder: (context,
-                                                          _isExpanded, _) {
-                                                        return ValueListenableBuilder<
-                                                            bool>(
-                                                          valueListenable:
-                                                              isExpandedCoupon,
-                                                          builder: (context,
-                                                              _isExpandedCoupon,
-                                                              child) {
-                                                            return SizedBox(
-                                                                height: _isExpanded
-                                                                    ? 120.h
-                                                                    : (_isExpandedCoupon && !_isExpanded)
-                                                                        ? 120.h
-                                                                        : 0);
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
-                                            ],
+                                      child: RefreshIndicator(
+                                        onRefresh: () async {
+                                          homeBloc.add(GetCartItemEvent());
+                                          await Future.delayed(
+                                              Duration(seconds: 4));
+                                        },
+                                        child: SingleChildScrollView(
+                                          physics:
+                                              AlwaysScrollableScrollPhysics(),
+                                          child: Container(
+                                            margin: EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                            ),
+                                            color: Color.fromARGB(
+                                                255, 255, 255, 255),
+                                            child: Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: 10.h,
+                                                ),
+                                                ////////////////////
+                                                ValueListenableBuilder<bool>(
+                                                  valueListenable: isExpanded,
+                                                  builder:
+                                                      (context, expanded, _) {
+                                                    return buildBagItemsWidget(
+                                                        expanded, context);
+                                                  },
+                                                ),
+                                                //////////////////////////////////
+                                                SizedBox(
+                                                  height: 12.h,
+                                                ),
+                                                //////////////////////////////////
+                                                buildAddressWidget(orderState,
+                                                    context, _indexTap),
+                                                ////////////////////
+                                                SizedBox(
+                                                  height: 12.h,
+                                                ),
+                                                ////////////////////
+                                                /*   (orderState
+                                                        .listOfAddressInfoClassToSave
+                                                        .isNullOrEmpty)
+                                                    ? SizedBox.shrink()
+                                                    :*/
+                                                orderState.getCustomerWalletStatus ==
+                                                        GetCustomerWalletStatus
+                                                            .failure
+                                                    ? TryAgainWidget(
+                                                        tryAgain: () {
+                                                          BlocProvider.of<
+                                                                      OrderBloc>(
+                                                                  context)
+                                                              .add(
+                                                            GetCustomerWalletEvent(
+                                                                limit: 10,
+                                                                offset: 1),
+                                                          );
+                                                        },
+                                                      )
+                                                    : orderState.getCustomerWalletStatus ==
+                                                            GetCustomerWalletStatus
+                                                                .loading
+                                                        ? TrydosShimmerLoading(
+                                                            width: 1.sw,
+                                                            logoTextWidth: 15,
+                                                            height: 70,
+                                                            logoTextHeight: 15,
+                                                          )
+                                                        : PaymentMethod(
+                                                            fromSuccessOrder:
+                                                                false,
+                                                            amount:
+                                                                walletBalance,
+                                                            fromPalceOrder:
+                                                                false,
+                                                            availablePaymentMethod:
+                                                                availablePaymentMethod,
+                                                            currencySymbol: orderState
+                                                                        .customerWalletModel ==
+                                                                    null
+                                                                ? ""
+                                                                : orderState
+                                                                        .customerWalletModel!
+                                                                        .data
+                                                                        .currencySymbol ??
+                                                                    '',
+                                                            paymentMethods:
+                                                                paymentMethods,
+                                                            totalPrice:
+                                                                totalPrice,
+                                                            decimalPointSetting:
+                                                                homeState
+                                                                        .startingSetting
+                                                                        ?.decimalPointSettings ??
+                                                                    2,
+                                                          ),
+                                                ////////////
+                                                SizedBox(
+                                                  height: 25.h,
+                                                ),
+                                                ////////////
+                                                ValueListenableBuilder<bool>(
+                                                  valueListenable:
+                                                      isExpandedCoupon,
+                                                  builder: (context,
+                                                      expandedCoupon, _) {
+                                                    return buildCouponWidget(
+                                                      expandedCoupon,
+                                                      context,
+                                                      orderState,
+                                                      couponDiscount,
+                                                      couponCode,
+                                                    );
+                                                  },
+                                                ),
+                                                ////////////////
+                                                (orderState
+                                                        .listOfAddressInfoClassToSave
+                                                        .isNullOrEmpty)
+                                                    ? SizedBox.shrink()
+                                                    : ValueListenableBuilder<
+                                                        bool>(
+                                                        valueListenable:
+                                                            isExpanded,
+                                                        builder: (context,
+                                                            _isExpanded, _) {
+                                                          return ValueListenableBuilder<
+                                                              bool>(
+                                                            valueListenable:
+                                                                isExpandedCoupon,
+                                                            builder: (context,
+                                                                _isExpandedCoupon,
+                                                                child) {
+                                                              return SizedBox(
+                                                                  height: _isExpanded
+                                                                      ? 120.h
+                                                                      : (_isExpandedCoupon && !_isExpanded)
+                                                                          ? 120.h
+                                                                          : 0);
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -672,7 +705,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                           cartGroupId: widget.cartGroupId,
                           paymentMethods: paymentMethods,
                           availablePaymentMethod: availablePaymentMethods,
-                          cartImages: widget.cartImages,
+                          cartImages: cartImages,
                           currencySympole: widget.currencySympole,
                           totalPrice: totalPrice,
                           exchangeRate: homeState.getCurrencyForCountryModel!
@@ -1465,7 +1498,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                             height: 1.33),
                       ),
                       Text(
-                        "${widget.cartImages.length} item",
+                        "${cartImages.length} ${LocaleKeys.item.tr()}",
                         style: context.textTheme.bodyMedium?.br.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
@@ -1504,7 +1537,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                 width: 5,
                               ),
                           scrollDirection: Axis.horizontal,
-                          itemCount: widget.cartImages.length,
+                          itemCount: cartImages.length,
                           itemBuilder: (context, index) => Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
@@ -1520,8 +1553,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                         withInnerShadow: false,
                                         imageFit: BoxFit.cover,
                                         blurRadius: 0,
-                                        imageUrl: widget.cartImages[index]
-                                            ["image"],
+                                        imageUrl: cartImages[index]["image"],
                                         width: 91.w,
                                         radius: 15,
                                       ),
@@ -1530,7 +1562,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                       height: 2,
                                     ),
                                     Text(
-                                      '${widget.cartImages[index]["size"]}',
+                                      '${cartImages[index]["size"]}',
                                       style: context.textTheme.bodyMedium?.rr
                                           .copyWith(
                                               color: const Color(0xff1D1D1D),
@@ -1539,7 +1571,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                               height: 1.33),
                                     ),
                                     Text(
-                                      '${widget.cartImages[index]["color"]}',
+                                      '${cartImages[index]["color"]}',
                                       style: context.textTheme.bodyMedium?.rr
                                           .copyWith(
                                               color: const Color(0xff1D1D1D),

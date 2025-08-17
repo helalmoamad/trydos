@@ -55,7 +55,7 @@ class ChatState {
   final SaveContactsStatus saveContactsStatus;
   final GetContactsStatus getContactsStatus;
   final Duration? duration;
-  final Map<String, String>? getSharedProductCount;
+  //final Map<String, String>? getSharedProductCount;
   final GetMediaCountStatus getMediaCountStatus;
   final ResetReadMessagesStatus readMessagesStatus;
   final String currentRequestIdForAvoidPreRequest;
@@ -110,7 +110,7 @@ class ChatState {
     this.currentRequestIdForAvoidPreRequest = "",
     this.fileCountInEachChat = 0,
     this.recipientUserId,
-    this.getSharedProductCount,
+    // this.getSharedProductCount,
     this.videoCountInEachChat = 0,
     //this.searchTextInChatStatus = SearchTextInChatStatus.init,
     this.loadImageWidthAndHeight = LoadImageWidthAndHeight.init,
@@ -196,7 +196,7 @@ class ChatState {
     final int? unReadMessagesFromAllChats,
     final String? messageType,
     final String? messageContent,
-    final Map<String, String>? getSharedProductCount,
+    //   final Map<String, String>? getSharedProductCount,
     final GetSharedProductCountStatus? getSharedProductCountStatus,
     String? userConnectedStatuse,
     final List<Chat>? pinnedChats,
@@ -249,8 +249,8 @@ class ChatState {
           this.changeMessageStateFromPusherStatus,
       scrollToParentMessage:
           scrollToParentMessage ?? this.scrollToParentMessage,
-      getSharedProductCount:
-          getSharedProductCount ?? this.getSharedProductCount,
+      // getSharedProductCount:
+      //  getSharedProductCount ?? this.getSharedProductCount,
       notifyThatIReceivedMessageStatus: notifyThatIReceivedMessageStatus ??
           this.notifyThatIReceivedMessageStatus,
       currentMessage: currentMessage ?? this.currentMessage,

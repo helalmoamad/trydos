@@ -11,6 +11,7 @@ import 'package:mime/mime.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
+import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -35,6 +36,8 @@ import 'package:trydos/features/chat/domain/use_cases/update_profile_chat_usecas
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/v4.dart';
@@ -110,17 +113,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<DeleteMessageNotificationReceivedInChatsEvent>(
         _onDeleteMessageNotificationReceivedInChatsEvent);
     on<DeleteChatEvent>(_onDeleteChatEvent);
+    on<ClearChatEvent>(_onClearChatEvent);
 
-    on<GetSharedProductCountEvent>(_onGetSharedProductCountEvent);
+    //  on<GetSharedProductCountEvent>(_onGetSharedProductCountEvent);
     on<ReceiveMessageFromPusherEvent>(_onReceiveMessageFromPusherEvent);
     on<WatchedMessageFromPusherEvent>(_onWatchedMessageFromPusherEvent);
     on<ChangeChatPropertyEvent>(_onChangeChatPropertyEvent);
     on<GetMessagesForChatEvent>(_onGetMessagesForChatEvent);
     on<GetAllMessagesBetweenEvent>(_onGetAllMessagesBetweenEvent,
         transformer: throttleDroppable(Duration(seconds: 2)));
-    on<SaveContactsEvent>(
-      _onSaveContactsEvent,
-    );
+    on<SaveContactsEvent>(_onSaveContactsEvent,
+        transformer: throttleDroppable(throttleDuration));
     on<GetChatsEvent>(
       _onGetChatsEvent,
     );
@@ -132,8 +135,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       _onReceiveMissCallEvent,
     );
 
-    on<GetContactsEvent>(_onGetContactsEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetContactsEvent>(
+      _onGetContactsEvent,
+    );
 
     on<AddMediaCountEvent>(
       _onAddMediaCountEvent,
@@ -167,6 +171,20 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   String? currentOpenedChatId;
   bool enableRequestGetChats = true;
+
+  FutureOr<void> _onClearChatEvent(
+      ClearChatEvent event, Emitter<ChatState> emit) async {
+    emit(state.copyWith(
+      unReadMessagesFromAllChats: 0,
+      currentMessage: [],
+      currentFailedMessage: [],
+      chats: [],
+      pinnedChats: [],
+      channelId: null,
+      currentOpenedChatId: null,
+      createAnewChat: false,
+    ));
+  }
 
   FutureOr<void> _onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
@@ -503,8 +521,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             currentFailedMessage: currentFailedMessage));
       },
       (r) {
-        print(
-            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${r.messageContent?.content}");
+        GetIt.I<HomeBloc>()
+            .add(IncreaseCountShareOfProductEvent(productId: event.productId));
         ids.remove(messageId);
         pinnedChats = state.pinnedChats.map((e) {
           if (event.channelIds.contains(e.localId) &&
@@ -574,10 +592,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onSaveContactsEvent(
       SaveContactsEvent event, Emitter<ChatState> emit) async {
-    if (apisMustNotToRequest.contains('SaveContactsEvent')) {
+    /*   if (apisMustNotToRequest.contains('SaveContactsEvent')) {
       return;
     }
-    apisMustNotToRequest.add('SaveContactsEvent');
+    apisMustNotToRequest.add('SaveContactsEvent');*/
     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
 
     List<Map<String, dynamic>> contacts =
@@ -587,15 +605,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         await saveContactsUseCase(SaveContactsParams(contacts: contacts));
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
+        if (ErrorManager.shouldRetry('SaveContactsEvent', l.statusCode)) {
           add(SaveContactsEvent());
-          isFailedTheFirstTime.add('SaveContactsEvent');
+          ErrorManager.incrementRetry('SaveContactsEvent');
         }
         apisMustNotToRequest.remove('SaveContactsEvent');
         emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
       },
       (r) {
-        isFailedTheFirstTime.remove('SaveContactsEvent');
+        ErrorManager.resetRetry('SaveContactsEvent');
         emit(
           state.copyWith(
             saveContactsStatus: SaveContactsStatus.success,
@@ -628,9 +646,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     : null));
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetChatsEvent')) {
+        if (ErrorManager.shouldRetry('GetChatsEvent', l.statusCode)) {
           add(GetChatsEvent(limit: 10));
-          isFailedTheFirstTime.add('GetChatsEvent');
+          ErrorManager.incrementRetry('GetChatsEvent');
         }
 
         emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));
@@ -649,7 +667,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                 fcmToken: NotificationProcess.myFcmToken!));
           }*/
 
-          isFailedTheFirstTime.remove('GetChatsEvent');
+          ErrorManager.resetRetry('GetChatsEvent');
           int unReadMessagesFromAllChats = 0;
           r.data?.chats?.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
@@ -709,25 +727,25 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onGetContactsEvent(
       GetContactsEvent event, Emitter<ChatState> emit) async {
-    if (apisMustNotToRequest.contains('GetContactsEvent')) return;
-    apisMustNotToRequest.add('GetContactsEvent');
+    /*  if (apisMustNotToRequest.contains('GetContactsEvent')) return;
+    apisMustNotToRequest.add('GetContactsEvent');*/
     emit(state.copyWith(
       getContactsStatus: GetContactsStatus.loading,
     ));
     final response = await getContactsUseCase(NoParams());
     response.fold(
       (l) {
-        apisMustNotToRequest.remove('GetContactsEvent');
+        // apisMustNotToRequest.remove('GetContactsEvent');
 
-        if (!isFailedTheFirstTime.contains('GetContactsEvent')) {
+        if (ErrorManager.shouldRetry('GetContactsEvent', l.statusCode)) {
           add(GetContactsEvent());
-          isFailedTheFirstTime.add('GetContactsEvent');
+          ErrorManager.incrementRetry('GetContactsEvent');
         }
         emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));
       },
       (r) {
-        apisMustNotToRequest.add('GetContactsEvent');
-        isFailedTheFirstTime.remove('GetContactsEvent');
+        //   apisMustNotToRequest.add('GetContactsEvent');
+        ErrorManager.resetRetry('GetContactsEvent');
         List<Chat> newChats = List.of(state.chats);
         bool changed = false;
         List<Chat> chats = List.of(state.chats);
@@ -794,16 +812,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         orderId: event.orderId, originalUserId: event.originalUserId));
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetOrderRecipientIdEvent')) {
+        if (ErrorManager.shouldRetry(
+            'GetOrderRecipientIdEvent', l.statusCode)) {
           add(GetOrderRecipientIdEvent(
               orderId: event.orderId, originalUserId: event.originalUserId));
-          isFailedTheFirstTime.add('GetOrderRecipientIdEvent');
+          ErrorManager.incrementRetry('GetOrderRecipientIdEvent');
         }
         emit(state.copyWith(
             getOrderRecipientIdStatus: GetOrderRecipientIdStatus.failure));
       },
       (r) {
-        isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
+        ErrorManager.resetRetry('GetOrderRecipientIdEvent');
         List<Chat> newChats = List.of(state.chats);
         newChats.removeWhere((element) => element.isPrivate ?? false);
         //bool changed = false;
@@ -1103,13 +1122,13 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     response.fold((l) {
       showMessage('This Channel was deleted',
           hasError: true, showInRelease: true);
-      if (!isFailedTheFirstTime.contains('ReadAllMessagesEvent')) {
+      if (ErrorManager.shouldRetry('ReadAllMessagesEvent', l.statusCode)) {
         add(ReadAllMessagesEvent(event.channelId));
-        isFailedTheFirstTime.add('ReadAllMessagesEvent');
+        ErrorManager.incrementRetry('ReadAllMessagesEvent');
       }
       emit(state.copyWith(readMessagesStatus: ResetReadMessagesStatus.failure));
     }, (r) {
-      isFailedTheFirstTime.remove('ReadAllMessagesEvent');
+      ErrorManager.resetRetry('ReadAllMessagesEvent');
       emit(state.copyWith(
           readMessagesStatus: ResetReadMessagesStatus.success,
           unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -
@@ -1146,18 +1165,18 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         phone: event.phone,
         photo: event.photo));
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('UpdateProfileInChatEvent')) {
+      if (ErrorManager.shouldRetry('UpdateProfileInChatEvent', l.statusCode)) {
         add(UpdateProfileInChatEvent(
             name: event.name,
             phone: event.phone,
             photo: event.photo,
             userId: event.userId));
-        isFailedTheFirstTime.add('UpdateProfileInChatEvent');
+        ErrorManager.incrementRetry('UpdateProfileInChatEvent');
       }
     }, (r) {
       _prefsRepository.setMyChatName(event.name);
       _prefsRepository.setMyChatPhoto(event.photo);
-      isFailedTheFirstTime.remove('UpdateProfileInChatEvent');
+      ErrorManager.resetRetry('UpdateProfileInChatEvent');
     });
   }
 
@@ -1166,15 +1185,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     final response = await receiveMessageUseCase(
         ReceiveMessageParams(channelId: event.channelId));
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('NotifyThatIReceivedMessageEvent')) {
+      if (ErrorManager.shouldRetry(
+          'NotifyThatIReceivedMessageEvent', l.statusCode)) {
         add(NotifyThatIReceivedMessageEvent(channelId: event.channelId));
-        isFailedTheFirstTime.add('NotifyThatIReceivedMessageEvent');
+        ErrorManager.incrementRetry('NotifyThatIReceivedMessageEvent');
+        return;
       }
       emit(state.copyWith(
           notifyThatIReceivedMessageStatus:
               NotifyThatIReceivedMessageStatus.failure));
     }, (r) {
-      isFailedTheFirstTime.remove('NotifyThatIReceivedMessageEvent');
+      ErrorManager.resetRetry('NotifyThatIReceivedMessageEvent');
       emit(state.copyWith(
           notifyThatIReceivedMessageStatus:
               NotifyThatIReceivedMessageStatus.success));
@@ -1835,7 +1856,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
   }
 
-  _onGetSharedProductCountEvent(
+  /*_onGetSharedProductCountEvent(
       GetSharedProductCountEvent event, Emitter<ChatState> emit) async {
     emit(state.copyWith(
         getSharedProductCountStatus: GetSharedProductCountStatus.loading));
@@ -1858,7 +1879,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           getSharedProductCountStatus: GetSharedProductCountStatus.success,
           getSharedProductCount: getSharedProductCount));
     });
-  }
+  }*/
 
   _onGetMediaCountEvent(
       GetMediaCountEvent event, Emitter<ChatState> emit) async {
@@ -2161,13 +2182,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         getSharedProductCountStatus: GetSharedProductCountStatus.loading));
 
     response.fold((l) => print("............"), (r) {
-      Map<String, String>? getSharedProductCount =
-          state.getSharedProductCount ?? {};
-      int count =
-          int.tryParse((getSharedProductCount[event.productId] ?? '0')) ?? 0;
-      getSharedProductCount[event.productId] = '${count + 1}';
+      //    Map<String, String>? getSharedProductCount =
+      //    state.getSharedProductCount ?? {};
+      //  int count =
+      //     int.tryParse((getSharedProductCount[event.productId] ?? '0')) ?? 0;
+      //   getSharedProductCount[event.productId] = '${count + 1}';
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF888888888888888888888888888**********");
+      GetIt.I<HomeBloc>()
+          .add(IncreaseCountShareOfProductEvent(productId: event.productId));
       emit(state.copyWith(
-          getSharedProductCount: getSharedProductCount,
+          // getSharedProductCount: getSharedProductCount,
           getSharedProductCountStatus: GetSharedProductCountStatus.success));
     });
   }

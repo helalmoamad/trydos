@@ -63,7 +63,17 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               json['getCustomerAddressStatus']) ??
           GetCustomerAddressesStatus.init,
       currentAddressChoosed: (json['currentAddressChoosed'] as num?)?.toInt(),
+      orderReturnRequestsViewStatus: $enumDecodeNullable(
+          _$OrderReturnRequestsViewStatusEnumMap,
+          json['orderReturnRequestsViewStatus']),
+      confirmReturnRequestStatus: $enumDecodeNullable(
+          _$ConfirmReturnRequestStatusEnumMap,
+          json['confirmReturnRequestStatus']),
       currentOrederStatus: json['currentOrederStatus'] as String?,
+      updateReturnRequestProductStatus: $enumDecodeNullable(
+              _$UpdateReturnRequestProductStatusEnumMap,
+              json['updateReturnRequestProductStatus']) ??
+          UpdateReturnRequestProductStatus.init,
       listOfAddressInfoClassToSave:
           (json['listOfAddressInfoClassToSave'] as List<dynamic>?)
                   ?.map((e) =>
@@ -90,6 +100,10 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
           ? null
           : GetAddressByCoordinatesModel.fromJson(
               json['getAddressByCoordinatesModel'] as Map<String, dynamic>),
+      uploadImagesForReturnProductStatus: $enumDecodeNullable(
+              _$UploadImagesForReturnProductStatusEnumMap,
+              json['uploadImagesForReturnProductStatus']) ??
+          UploadImagesForReturnProductStatus.init,
       getAddressByTextStatus: $enumDecodeNullable(
               _$GetAddressByTextStatusEnumMap,
               json['getAddressByTextStatus']) ??
@@ -101,6 +115,10 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
           ? null
           : ApplyCouponModel.fromJson(
               json['applyCouponModel'] as Map<String, dynamic>),
+      imagesForReturn: (json['imagesForReturn'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       cancelOrderItemStatus: $enumDecodeNullable(
               _$CancelOrderItemStatusEnumMap, json['cancelOrderItemStatus']) ??
           CancelOrderItemStatus.init,
@@ -131,12 +149,55 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               _$ChangeOrderItemVariantStatusEnumMap,
               json['changeOrderItemVariantStatus']) ??
           ChangeOrderItemVariantStatus.init,
+      addOrderCommentStatus: $enumDecodeNullable(
+              _$AddOrderCommentStatusEnumMap, json['addOrderCommentStatus']) ??
+          AddOrderCommentStatus.init,
+      updateOrderCommentStatus: $enumDecodeNullable(
+              _$UpdateOrderCommentStatusEnumMap,
+              json['updateOrderCommentStatus']) ??
+          UpdateOrderCommentStatus.init,
+      getReturnReasonsStatus: $enumDecodeNullable(
+              _$GetReturnReasonsStatusEnumMap,
+              json['getReturnReasonsStatus']) ??
+          GetReturnReasonsStatus.init,
+      returnReasonsModel: json['returnReasonsModel'] == null
+          ? null
+          : ReturnReasonsModel.fromJson(
+              json['returnReasonsModel'] as Map<String, dynamic>),
+      storeReturnRequestStatus: $enumDecodeNullable(
+          _$StoreReturnRequestStatusEnumMap, json['storeReturnRequestStatus']),
+      storeReturnRequestProductStatus: $enumDecodeNullable(
+              _$StoreReturnRequestProductStatusEnumMap,
+              json['storeReturnRequestProductStatus']) ??
+          StoreReturnRequestProductStatus.init,
+      cancelReturnRequestStatus: $enumDecodeNullable(
+              _$CancelReturnRequestStatusEnumMap,
+              json['cancelReturnRequestStatus']) ??
+          CancelReturnRequestStatus.init,
+      cancelReturnRequestProductStatus: $enumDecodeNullable(
+              _$CancelReturnRequestProductStatusEnumMap,
+              json['cancelReturnRequestProductStatus']) ??
+          CancelReturnRequestProductStatus.init,
+      orderReturnDetailsStatus: $enumDecodeNullable(
+              _$OrderReturnDetailsStatusEnumMap,
+              json['orderReturnDetailsStatus']) ??
+          OrderReturnDetailsStatus.init,
+      orderReturnDetailsModel: json['orderReturnDetailsModel'] == null
+          ? null
+          : GetOrderReturntDetailsModel.fromJson(
+              json['orderReturnDetailsModel'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
     <String, dynamic>{
+      'orderReturnRequestsViewStatus': _$OrderReturnRequestsViewStatusEnumMap[
+          instance.orderReturnRequestsViewStatus],
+      'confirmReturnRequestStatus': _$ConfirmReturnRequestStatusEnumMap[
+          instance.confirmReturnRequestStatus],
       'placeOrderModel': instance.placeOrderModel?.toJson(),
       'placeOrderStatus': _$PlaceOrderStatusEnumMap[instance.placeOrderStatus],
+      'storeReturnRequestStatus':
+          _$StoreReturnRequestStatusEnumMap[instance.storeReturnRequestStatus],
       'getOrdersByOrderGroupIDModel':
           instance.getOrdersByOrderGroupIDModel?.toJson(),
       'getOrdersByOrderGroupIDStatus': _$GetOrdersByOrderGroupIDStatusEnumMap[
@@ -177,6 +238,7 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
           _$GetAddressByTextStatusEnumMap[instance.getAddressByTextStatus],
       'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
       'provincesByIso': instance.provincesByIso,
+      'imagesForReturn': instance.imagesForReturn,
       'orderTotalSize': instance.orderTotalSize,
       'currentOrederStatus': instance.currentOrederStatus,
       'applyCouponStatus':
@@ -194,6 +256,30 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
       'colorSizeForProductModel': instance.colorSizeForProductModel?.toJson(),
       'changeOrderItemVariantStatus': _$ChangeOrderItemVariantStatusEnumMap[
           instance.changeOrderItemVariantStatus],
+      'addOrderCommentStatus':
+          _$AddOrderCommentStatusEnumMap[instance.addOrderCommentStatus],
+      'updateReturnRequestProductStatus':
+          _$UpdateReturnRequestProductStatusEnumMap[
+              instance.updateReturnRequestProductStatus],
+      'updateOrderCommentStatus':
+          _$UpdateOrderCommentStatusEnumMap[instance.updateOrderCommentStatus],
+      'getReturnReasonsStatus':
+          _$GetReturnReasonsStatusEnumMap[instance.getReturnReasonsStatus],
+      'returnReasonsModel': instance.returnReasonsModel?.toJson(),
+      'uploadImagesForReturnProductStatus':
+          _$UploadImagesForReturnProductStatusEnumMap[
+              instance.uploadImagesForReturnProductStatus]!,
+      'storeReturnRequestProductStatus':
+          _$StoreReturnRequestProductStatusEnumMap[
+              instance.storeReturnRequestProductStatus],
+      'cancelReturnRequestStatus': _$CancelReturnRequestStatusEnumMap[
+          instance.cancelReturnRequestStatus],
+      'cancelReturnRequestProductStatus':
+          _$CancelReturnRequestProductStatusEnumMap[
+              instance.cancelReturnRequestProductStatus],
+      'orderReturnDetailsStatus':
+          _$OrderReturnDetailsStatusEnumMap[instance.orderReturnDetailsStatus]!,
+      'orderReturnDetailsModel': instance.orderReturnDetailsModel?.toJson(),
     };
 
 const _$PlaceOrderStatusEnumMap = {
@@ -207,6 +293,7 @@ const _$PlaceOrderStatusEnumMap = {
 const _$GetOrdersByOrderGroupIDStatusEnumMap = {
   GetOrdersByOrderGroupIDStatus.init: 'init',
   GetOrdersByOrderGroupIDStatus.loading: 'loading',
+  GetOrdersByOrderGroupIDStatus.loadingForRating: 'loadingForRating',
   GetOrdersByOrderGroupIDStatus.success: 'success',
   GetOrdersByOrderGroupIDStatus.failure: 'failure',
 };
@@ -239,6 +326,27 @@ const _$GetCustomerAddressesStatusEnumMap = {
   GetCustomerAddressesStatus.failure: 'failure',
 };
 
+const _$OrderReturnRequestsViewStatusEnumMap = {
+  OrderReturnRequestsViewStatus.init: 'init',
+  OrderReturnRequestsViewStatus.loading: 'loading',
+  OrderReturnRequestsViewStatus.success: 'success',
+  OrderReturnRequestsViewStatus.failure: 'failure',
+};
+
+const _$ConfirmReturnRequestStatusEnumMap = {
+  ConfirmReturnRequestStatus.init: 'init',
+  ConfirmReturnRequestStatus.loading: 'loading',
+  ConfirmReturnRequestStatus.success: 'success',
+  ConfirmReturnRequestStatus.failure: 'failure',
+};
+
+const _$UpdateReturnRequestProductStatusEnumMap = {
+  UpdateReturnRequestProductStatus.init: 'init',
+  UpdateReturnRequestProductStatus.loading: 'loading',
+  UpdateReturnRequestProductStatus.success: 'success',
+  UpdateReturnRequestProductStatus.failure: 'failure',
+};
+
 const _$RemoveAddressToOrderStatusEnumMap = {
   RemoveAddressToOrderStatus.init: 'init',
   RemoveAddressToOrderStatus.loading: 'loading',
@@ -265,6 +373,13 @@ const _$GetAddressByCoordinatesStatusEnumMap = {
   GetAddressByCoordinatesStatus.loading: 'loading',
   GetAddressByCoordinatesStatus.success: 'success',
   GetAddressByCoordinatesStatus.failure: 'failure',
+};
+
+const _$UploadImagesForReturnProductStatusEnumMap = {
+  UploadImagesForReturnProductStatus.init: 'init',
+  UploadImagesForReturnProductStatus.loading: 'loading',
+  UploadImagesForReturnProductStatus.success: 'success',
+  UploadImagesForReturnProductStatus.failure: 'failure',
 };
 
 const _$GetAddressByTextStatusEnumMap = {
@@ -314,4 +429,60 @@ const _$ChangeOrderItemVariantStatusEnumMap = {
   ChangeOrderItemVariantStatus.loading: 'loading',
   ChangeOrderItemVariantStatus.success: 'success',
   ChangeOrderItemVariantStatus.failure: 'failure',
+};
+
+const _$AddOrderCommentStatusEnumMap = {
+  AddOrderCommentStatus.init: 'init',
+  AddOrderCommentStatus.loading: 'loading',
+  AddOrderCommentStatus.success: 'success',
+  AddOrderCommentStatus.failure: 'failure',
+};
+
+const _$UpdateOrderCommentStatusEnumMap = {
+  UpdateOrderCommentStatus.init: 'init',
+  UpdateOrderCommentStatus.loading: 'loading',
+  UpdateOrderCommentStatus.success: 'success',
+  UpdateOrderCommentStatus.failure: 'failure',
+};
+
+const _$GetReturnReasonsStatusEnumMap = {
+  GetReturnReasonsStatus.init: 'init',
+  GetReturnReasonsStatus.loading: 'loading',
+  GetReturnReasonsStatus.success: 'success',
+  GetReturnReasonsStatus.failure: 'failure',
+};
+
+const _$StoreReturnRequestStatusEnumMap = {
+  StoreReturnRequestStatus.init: 'init',
+  StoreReturnRequestStatus.loading: 'loading',
+  StoreReturnRequestStatus.success: 'success',
+  StoreReturnRequestStatus.failure: 'failure',
+};
+
+const _$StoreReturnRequestProductStatusEnumMap = {
+  StoreReturnRequestProductStatus.init: 'init',
+  StoreReturnRequestProductStatus.loading: 'loading',
+  StoreReturnRequestProductStatus.success: 'success',
+  StoreReturnRequestProductStatus.failure: 'failure',
+};
+
+const _$CancelReturnRequestStatusEnumMap = {
+  CancelReturnRequestStatus.init: 'init',
+  CancelReturnRequestStatus.loading: 'loading',
+  CancelReturnRequestStatus.success: 'success',
+  CancelReturnRequestStatus.failure: 'failure',
+};
+
+const _$CancelReturnRequestProductStatusEnumMap = {
+  CancelReturnRequestProductStatus.init: 'init',
+  CancelReturnRequestProductStatus.loading: 'loading',
+  CancelReturnRequestProductStatus.success: 'success',
+  CancelReturnRequestProductStatus.failure: 'failure',
+};
+
+const _$OrderReturnDetailsStatusEnumMap = {
+  OrderReturnDetailsStatus.init: 'init',
+  OrderReturnDetailsStatus.loading: 'loading',
+  OrderReturnDetailsStatus.success: 'success',
+  OrderReturnDetailsStatus.failure: 'failure',
 };

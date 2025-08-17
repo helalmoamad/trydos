@@ -77,9 +77,9 @@ class _ProductDetailsDisplayPicturesPageState
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: ProductDetailsImageWidget(
-                        orginalHeight: double.parse(
+                        orginalHeight: double.tryParse(
                             widget.images[selectedIndex].originalHeight!),
-                        orginalWidth: double.parse(
+                        orginalWidth: double.tryParse(
                             widget.images[selectedIndex].originalWidth!),
                         height: 0.6.sh,
                         width: 1.sw,
@@ -108,9 +108,9 @@ class _ProductDetailsDisplayPicturesPageState
                                         selectedPicture.value = index;
                                       },
                                       child: ProductDetailsImageWidget(
-                                        orginalHeight: double.parse(widget
+                                        orginalHeight: double.tryParse(widget
                                             .images[index].originalHeight!),
-                                        orginalWidth: double.parse(widget
+                                        orginalWidth: double.tryParse(widget
                                             .images[index].originalWidth!),
                                         height: 140,
                                         radius: 15,

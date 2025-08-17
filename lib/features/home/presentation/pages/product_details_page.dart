@@ -41,6 +41,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/d
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
+import 'package:trydos/main.dart';
 
 import 'package:trydos/routes/router.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -127,6 +128,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    productIdToSaveRedeemTimer.remove(productItem?.productId.toString());
+    //homeBloc.add(AddProductIdToSaveRedeemTimerEvent(
+    //   on: false, productIdToSaveRedeemTimer: productIdToSaveRedeemTimer));
     homeBloc.add(IsChangedColorBeforOpenPanelEvent(
         iChangedColorBeforOpenPanelEvent: false));
     initialColor = homeBloc.state.currentSelectedColorForEveryProduct[
@@ -172,6 +176,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    if (productItem == null) {
+      return;
+    }
+
+    late DateTime _endTime;
+    final now = DateTime.now();
+    final prefs = GetIt.I<PrefsRepository>();
+    int? savedSeconds = prefs
+        .getRedeemSecondRemainingForProduct(productItem!.productId.toString());
+    if (savedSeconds != null && savedSeconds > 0) {
+      _endTime = DateTime.now().add(Duration(seconds: savedSeconds));
+    } else {
+      _endTime =
+          prefs.getRedeemDateForProduct(productItem!.productId.toString()) ??
+              DateTime.now();
+    }
+    final diff = _endTime.difference(now);
+    int secondsToSave = (diff.inSeconds) > 0 ? diff.inSeconds : 0;
+
+    prefs.setRedeemSecondRemainingForProduct(
+        productItem!.productId.toString(), secondsToSave);
+    //  homeBloc.add(AddProductIdToSaveRedeemTimerEvent(
+    //      on: true, productIdToSaveRedeemTimer: productIdToSaveRedeemTimer));
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -484,8 +517,285 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   if (widget.productItem == null) {
                     if (state.getFullProductDetailsStatus ==
                         GetFullProductDetailsStatus.loading) {
-                      return Center(
-                        child: TrydosLoader(),
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 1.sw,
+                            height: 500,
+                            child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    ...List.generate(
+                                        2,
+                                        (index) => Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 10.w, right: 10.w),
+                                            child: Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade600,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15.r),
+                                                ),
+                                                height: 450.h,
+                                                width: 320.w,
+                                              ),
+                                            )))
+                                  ],
+                                )),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.only(right: 12.w, left: 12.w),
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey.shade300,
+                                highlightColor: Colors.grey.shade50,
+                                child: Container(
+                                  height: 50.h,
+                                  width: 300.w,
+                                  color: Colors.grey.shade600,
+                                ),
+                              )),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Padding(
+                              padding: EdgeInsets.only(right: 12.w, left: 12.w),
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey.shade300,
+                                highlightColor: Colors.grey.shade50,
+                                child: Container(
+                                  height: 50.h,
+                                  width: 300.w,
+                                  color: Colors.grey.shade600,
+                                ),
+                              )),
+                          Spacer(),
+                          Container(
+                            height: 120.h, // ارتفاع الـ panel المغلقة
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(30.r),
+                                topRight: Radius.circular(30.r),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                // Handle Bar (شريط الإغلاق)
+                                Container(
+                                  margin: EdgeInsets.only(top: 7.h),
+                                  child: Container(
+                                    width: 25.w,
+                                    height: 3.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(2.r),
+                                    ),
+                                  ),
+                                ),
+                                // Bottom Action Bar (شريط الإجراءات السفلي)
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20.w, vertical: 10.h),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // Left side - Add to Bag Button
+                                        Container(
+                                          width: 100.w,
+                                          height: 70.h,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(25.r),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              // Shopping Bag Icon
+                                              Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade300,
+                                                highlightColor:
+                                                    Colors.grey.shade50,
+                                                child: SvgPicture.asset(
+                                                  AppAssets.bagSvg,
+                                                  height: 30.h,
+                                                  width: 30.w,
+                                                  color: Colors.grey.shade600,
+                                                ),
+                                              ),
+                                              SizedBox(height: 5.h),
+                                              // "Add To Bag" Text
+                                              Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade300,
+                                                highlightColor:
+                                                    Colors.grey.shade50,
+                                                child: Container(
+                                                  width: 60.w,
+                                                  height: 10.h,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey.shade300,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.r),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: 30.w),
+                                        // Right side - Action Icons
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            // Heart Icon (Like)
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor:
+                                                      Colors.grey.shade50,
+                                                  child: SvgPicture.asset(
+                                                    AppAssets.favoriteSvg,
+                                                    height: 30.h,
+                                                    width: 30.w,
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 5.h),
+                                                Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor:
+                                                      Colors.grey.shade50,
+                                                  child: Container(
+                                                    width: 15.w,
+                                                    height: 10.h,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade300,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              2.r),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(width: 35.w),
+                                            // Chat Bubble Icon
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor:
+                                                      Colors.grey.shade50,
+                                                  child: SvgPicture.asset(
+                                                    AppAssets.chatMarkSvg,
+                                                    height: 30.h,
+                                                    width: 30.w,
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 5.h),
+                                                Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor:
+                                                      Colors.grey.shade50,
+                                                  child: Container(
+                                                    width: 15.w,
+                                                    height: 10.h,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade300,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              2.r),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(width: 35.w),
+                                            // Share Icon
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor:
+                                                      Colors.grey.shade50,
+                                                  child: SvgPicture.asset(
+                                                    AppAssets.shareSvg,
+                                                    height: 30.h,
+                                                    width: 30.w,
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 5.h),
+                                                Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor:
+                                                      Colors.grey.shade50,
+                                                  child: Container(
+                                                    width: 15.w,
+                                                    height: 10.h,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade300,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              2.r),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(width: 35.w),
+                                            // More Options Icon
+                                            Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: SvgPicture.asset(
+                                                AppAssets.moreOptionSvg,
+                                                height: 30.h,
+                                                width: 30.w,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
                       );
                     }
                     if (state.getFullProductDetailsStatus ==
@@ -527,8 +837,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                             c
                                 .getProductDetailWithoutSimilarRelatedProductsStatus ||
-                        p.currentSelectedColorForEveryProduct !=
-                            c.currentSelectedColorForEveryProduct ||
+                        p.currentSelectedColorForEveryProduct[
+                                productItem?.slug.toString()] !=
+                            c.currentSelectedColorForEveryProduct[
+                                productItem?.slug.toString()] ||
                         p.cachedProductWithoutRelatedProductsModel !=
                             c.cachedProductWithoutRelatedProductsModel,
                     builder: (context, state) {
@@ -620,11 +932,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         productItem?.productId.toString()]!
                                     .product
                                     ?.isActive,
-                                isLiked: state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productItem?.productId.toString()]!
-                                    .product
-                                    ?.isLiked,
                                 leftStock: state
                                     .cachedProductWithoutRelatedProductsModel[
                                         productItem?.productId.toString()]!
@@ -744,7 +1051,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             widget.productItem?.productId.toString() ?? '';
                       }
                       String productSlug = widget
-                              .productIdForOpeningChatDirectly ??
+                              .productSlugForOpeningChatDirectly ??
                           (state.cachedProductWithoutRelatedProductsModel[
                                       productItem?.productId.toString()] !=
                                   null
@@ -954,6 +1261,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               // );
                                             },
                                             child: ProductDetailsImageWidget(
+                                              index: index,
+                                              productNotAvailableNotifier:
+                                                  productNotAvailableNotifier,
                                               flashDealEndDate: productItem
                                                       ?.flashDealEndDate ??
                                                   "",
@@ -984,28 +1294,40 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                       [],*/
                                               height: 464,
                                               width: 320,
-                                              orginalHeight: productItem!
-                                                      .syncColorImages
-                                                      .isNullOrEmpty
-                                                  ? double.parse(productItem!
-                                                      .images![index]
-                                                      .originalHeight!)
-                                                  : double.parse(productItem!
-                                                      .syncColorImages![
-                                                          currentSelectedColor]
-                                                      .images![index]
-                                                      .originalHeight!),
-                                              orginalWidth: productItem!
-                                                      .syncColorImages
-                                                      .isNullOrEmpty
-                                                  ? double.parse(productItem!
-                                                      .images![index]
-                                                      .originalWidth!)
-                                                  : double.parse(productItem!
-                                                      .syncColorImages![
-                                                          currentSelectedColor]
-                                                      .images![index]
-                                                      .originalWidth!),
+                                              orginalHeight: widget
+                                                          .productItem ==
+                                                      null
+                                                  ? 0
+                                                  : widget
+                                                          .productItem!
+                                                          .syncColorImages
+                                                          .isNullOrEmpty
+                                                      ? double.tryParse(
+                                                          productItem!
+                                                              .images![index]
+                                                              .originalHeight!)
+                                                      : double.tryParse(productItem!
+                                                          .syncColorImages![
+                                                              currentSelectedColor]
+                                                          .images![index]
+                                                          .originalHeight!),
+                                              orginalWidth: widget
+                                                          .productItem ==
+                                                      null
+                                                  ? 0
+                                                  : widget
+                                                          .productItem!
+                                                          .syncColorImages
+                                                          .isNullOrEmpty
+                                                      ? double.tryParse(
+                                                          productItem!
+                                                              .images![index]
+                                                              .originalWidth!)
+                                                      : double.tryParse(productItem!
+                                                          .syncColorImages![
+                                                              currentSelectedColor]
+                                                          .images![index]
+                                                          .originalWidth!),
                                               imageUrl: productItem!
                                                       .syncColorImages
                                                       .isNullOrEmpty
@@ -1036,26 +1358,24 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ),
                               ProductDetailsTitle(
                                 productId: productItem!.productId.toString(),
-                                orginalHeight: double.parse(
-                                    productItem!.thumbnail!.originalHeight!),
-                                orginalWidth: double.parse(
-                                    productItem!.thumbnail!.originalWidth!),
+                                orginalHeight: 0,
+                                orginalWidth: 0,
                                 brand: productItem!.brand,
                                 productName: productItem!.name ?? "",
                                 thumbnail: (!productItem!
-                                            .syncColorImages.isNullOrEmpty &&
-                                        !productItem!.syncColorImages![0].images
+                                        .syncColorImages.isNullOrEmpty)
+                                    ? (!productItem!.syncColorImages![0].images
                                             .isNullOrEmpty)
-                                    ? (productItem!
-                                            .syncColorImages![
-                                                currentSelectedColor]
-                                            .images![0]
-                                            .filePath ??
-                                        widget
-                                            .productItem?.thumbnail?.filePath ??
-                                        "")
-                                    : widget.productItem?.thumbnail?.filePath ??
-                                        "",
+                                        ? (productItem!
+                                                .syncColorImages![
+                                                    currentSelectedColor]
+                                                .images![0]
+                                                .filePath ??
+                                            productItem!.images?[0].filePath ??
+                                            "")
+                                        : (productItem!.images![0].filePath ??
+                                            "")
+                                    : (productItem!.images![0].filePath ?? ""),
                                 colorName: !productItem!
                                             .syncColorImages.isNullOrEmpty &&
                                         !productItem!.syncColorImages![0].images
@@ -1415,12 +1735,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               builder: (context, state) {
                 if (widget.productItem == null) {
                   if (state.getFullProductDetailsStatus !=
-                          GetFullProductDetailsStatus.success ||
+                          GetFullProductDetailsStatus
+                              .success /* ||
                       (state.productContentForStatusOfOpeningProductDetailsDirectly
                                   ?.countryIsRestricted ==
                               true &&
                           state.getFullProductDetailsStatus ==
-                              GetFullProductDetailsStatus.success)) {
+                              GetFullProductDetailsStatus.success)*/
+                      ) {
                     return SizedBox.shrink();
                   }
                   productItem = state
@@ -1539,10 +1861,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             isChangedvariationWhenQtyZeroForFirst = true;
                             changeVariationWhenNotAvailable(
                                 currentVariation: currentVariation,
-                                product: state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productItem?.productId.toString()]
-                                    ?.product,
+                                variation:
+                                    state.cachedProductWithoutRelatedProductsModel[
+                                                productItem?.productId
+                                                    .toString()] ==
+                                            null
+                                        ? []
+                                        : state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem?.productId
+                                                        .toString()]!
+                                                .product
+                                                ?.variation ??
+                                            [],
                                 productSlug: productSlug,
                                 productId: productId);
                             changeVariationIfQtyZero = false;
@@ -1600,15 +1931,211 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             .getProductDetailWithoutSimilarRelatedProductsStatus ==
                         GetProductDetailWithoutSimilarRelatedProductsStatus
                             .loading) {
-                      return Shimmer.fromColors(
-                          baseColor: Colors.grey.shade200,
-                          highlightColor: Colors.grey.shade50,
-                          enabled: true,
-                          child: Container(
-                            color: Colors.grey.shade50,
-                            width: 1.sw,
-                            height: 100.h,
-                          ));
+                      return Container(
+                        height: 120.h, // ارتفاع الـ panel المغلقة
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30.r),
+                            topRight: Radius.circular(30.r),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            // Handle Bar (شريط الإغلاق)
+                            Container(
+                              margin: EdgeInsets.only(top: 7.h),
+                              child: Container(
+                                width: 25.w,
+                                height: 3.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: BorderRadius.circular(2.r),
+                                ),
+                              ),
+                            ),
+                            // Bottom Action Bar (شريط الإجراءات السفلي)
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w, vertical: 10.h),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    // Left side - Add to Bag Button
+                                    Container(
+                                      width: 100.w,
+                                      height: 70.h,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(width: 1),
+                                        borderRadius:
+                                            BorderRadius.circular(25.r),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // Shopping Bag Icon
+                                          Shimmer.fromColors(
+                                            baseColor: Colors.grey.shade300,
+                                            highlightColor: Colors.grey.shade50,
+                                            child: SvgPicture.asset(
+                                              AppAssets.bagSvg,
+                                              height: 30.h,
+                                              width: 30.w,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                          SizedBox(height: 5.h),
+                                          // "Add To Bag" Text
+                                          Shimmer.fromColors(
+                                            baseColor: Colors.grey.shade300,
+                                            highlightColor: Colors.grey.shade50,
+                                            child: Container(
+                                              width: 60.w,
+                                              height: 10.h,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade300,
+                                                borderRadius:
+                                                    BorderRadius.circular(2.r),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 30.w),
+                                    // Right side - Action Icons
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // Heart Icon (Like)
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: SvgPicture.asset(
+                                                AppAssets.favoriteSvg,
+                                                height: 30.h,
+                                                width: 30.w,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5.h),
+                                            Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: Container(
+                                                width: 15.w,
+                                                height: 10.h,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade300,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          2.r),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(width: 35.w),
+                                        // Chat Bubble Icon
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: SvgPicture.asset(
+                                                AppAssets.chatMarkSvg,
+                                                height: 30.h,
+                                                width: 30.w,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5.h),
+                                            Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: Container(
+                                                width: 15.w,
+                                                height: 10.h,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade300,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          2.r),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(width: 35.w),
+                                        // Share Icon
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: SvgPicture.asset(
+                                                AppAssets.shareSvg,
+                                                height: 30.h,
+                                                width: 30.w,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5.h),
+                                            Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor:
+                                                  Colors.grey.shade50,
+                                              child: Container(
+                                                width: 15.w,
+                                                height: 10.h,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade300,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          2.r),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(width: 35.w),
+                                        // More Options Icon
+                                        Shimmer.fromColors(
+                                          baseColor: Colors.grey.shade300,
+                                          highlightColor: Colors.grey.shade50,
+                                          child: SvgPicture.asset(
+                                            AppAssets.moreOptionSvg,
+                                            height: 30.h,
+                                            width: 30.w,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     }
 
                     return ValueListenableBuilder<bool>(
@@ -1890,7 +2417,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       {required Variation? currentVariation,
       required String productId,
       required String productSlug,
-      required Product? product}) async {
+      required List<Variation> variation}) async {
     if (!widget.fromNotification &&
         !widget.fromNotificationComment &&
         !(widget.fromCart ?? false) &&
@@ -1898,14 +2425,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         currentVariation?.qty != null &&
         currentVariation?.qty == 0) {
       if (currentVariation!.type!.contains("-")) {
-        currentVariation = product?.variation?.firstWhere(
+        currentVariation = variation.firstWhere(
             (element) =>
                 (element.qty ?? 0) > 0 &&
                 (element.type!.split("-").toList()[0] ==
                     currentVariation?.type!.split("-").toList()[0]),
             orElse: () =>
-                product.variation?.firstWhere(
-                    (element) => (element.qty ?? 0) > 0,
+                variation.firstWhere((element) => (element.qty ?? 0) > 0,
                     orElse: () => currentVariation!) ??
                 currentVariation!);
         int index = productItem?.syncColorImages?.indexWhere((element) =>
@@ -1931,27 +2457,28 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 choiceOption:
                     (currentVariation!.type!.split("-").toList()[1]))));
       } else if ((productItem?.syncColorImages?.length ?? 0) > 0) {
-        currentVariation = product?.variation?.firstWhere(
+        currentVariation = variation.firstWhere(
             (element) => ((element.qty ?? 0) > 0 &&
                 element.type == currentVariation?.type),
             orElse: () =>
-                product.variation?.firstWhere(
-                    (element) => (element.qty ?? 0) > 0,
+                variation.firstWhere((element) => (element.qty ?? 0) > 0,
                     orElse: () => currentVariation!) ??
                 currentVariation!);
         int index = productItem?.syncColorImages?.indexWhere(
                 (element) => element.colorOption == (currentVariation!.type)) ??
             -1;
         currentSelectedColorAfterChangeVariant = index;
+        print(
+            "DFDFEDFEWFEFEFEWFEWF++++.........******//////${currentSelectedColorAfterChangeVariant}");
 
         await Future.delayed(
-            Duration(milliseconds: 300),
+            Duration(milliseconds: 50),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
                 productSlug: productSlug)));
       } else {
         currentSelectedColorAfterChangeVariant = currentSelectedColor;
-        currentVariation = product?.variation?.firstWhere(
+        currentVariation = variation.firstWhere(
             (element) => (element.qty ?? 0) > 0,
             orElse: () => currentVariation!);
         await Future.delayed(

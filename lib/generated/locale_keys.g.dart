@@ -629,4 +629,27 @@ abstract class LocaleKeys {
   static const seconds = 'seconds';
   static const about_change_request_product = 'about_change_request_product';
   static const to_qty = 'to_qty';
+  static const otp_error_try_again_later = 'otp_error_try_again_later';
+  static const info_message = 'info_message';
+  static const chat_with_delivery_person = 'chat_with_delivery_person';
+  static const add_comment_for_rating = 'add_comment_for_rating';
+  static const write_your_comment_here = 'write_your_comment_here';
+  static const rate_and_get_money = 'rate_and_get_money';
+  static const rating_section_description = 'rating_section_description';
+  static const please_login_to_add_comment = 'please_login_to_add_comment';
+  static const return_pieces_hint = 'return_pieces_hint';
+  static const i_want_returm_more_products = 'i_want_returm_more_products';
+  static const cost = 'cost';
+  static const confirm_return_request = 'confirm_return_request';
+  static const cancel_return_request = 'cancel_return_request';
+  static const edit_return_request = 'edit_return_request';
+  static const i_agree_return = 'i_agree_return';
+  static const canceled_status_short = 'canceled_status_short';
+  static const video_file_not_supported = 'video_file_not_supported';
+  static const search_image_preview_instructions =
+      'search_image_preview_instructions';
+  static const new_update_available = 'new_update_available';
+  static const newer_version_available_message =
+      'newer_version_available_message';
+  static const update_now = 'update_now';
 }

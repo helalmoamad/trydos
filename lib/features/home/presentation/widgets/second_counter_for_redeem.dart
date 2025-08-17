@@ -10,12 +10,14 @@ class SecondsCountdown extends StatefulWidget {
   final ValueNotifier<bool> visibleRedeem;
   final ValueNotifier<bool>? finishRedeem;
   final String productId;
+  final bool denyStopTimer;
 
   const SecondsCountdown(
       {Key? key,
       required this.endTime,
       required this.visibleRedeem,
       required this.productId,
+      this.denyStopTimer = false,
       this.finishRedeem})
       : super(key: key);
 
@@ -38,6 +40,9 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
 
   @override
   void dispose() {
+    if (widget.denyStopTimer) {
+      return;
+    }
     // خزّن عدد الثواني المتبقية عند التخلص من الودجت
     final now = DateTime.now();
     final diff = _endTime.difference(now);
@@ -52,6 +57,9 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
   @override
   void didUpdateWidget(covariant SecondsCountdown oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.denyStopTimer) {
+      return;
+    }
     // إذا تغير المنتج أو وقت النهاية
     if (widget.productId != _lastProductId ||
         widget.endTime != oldWidget.endTime) {

@@ -122,19 +122,22 @@ class OrderListModel {
   final String? verificationCode;
   final String? orderNote;
   final String? sellerId;
+  final bool? canReturnOrder;
   final String? createdAt;
   final bool? orderCanReturn;
   final bool? orderHasReturnRequest;
-  final dynamic returnRequestId;
+  final String? returnRequestId;
   final bool? showReturnRequest;
   final bool? editReturnRequest;
   final bool? orderCanExchange;
   final bool? canUpdateAddress;
   final bool? canCanceleOrder;
+  final bool? canChangeVariant;
   final List<OrderListDetailModel>? details;
 
   OrderListModel({
     this.id,
+    this.canReturnOrder,
     this.customerId,
     this.paymentStatus,
     this.orderStatus,
@@ -159,6 +162,7 @@ class OrderListModel {
     this.canUpdateAddress,
     this.canCanceleOrder,
     this.createdAt,
+    this.canChangeVariant,
     this.orderCanReturn,
     this.orderHasReturnRequest,
     this.returnRequestId,
@@ -179,6 +183,7 @@ class OrderListModel {
     double? orderAmount,
     double? partialPaymentByWallet,
     double? discountAmount,
+    bool? canReturnOrder,
     double? shippingCost,
     int? shippingAddress,
     ShippingAddressData? shippingAddressData,
@@ -194,12 +199,13 @@ class OrderListModel {
     String? createdAt,
     bool? orderCanReturn,
     bool? orderHasReturnRequest,
-    dynamic returnRequestId,
+    String? returnRequestId,
     bool? showReturnRequest,
     bool? editReturnRequest,
     bool? orderCanExchange,
     bool? canUpdateAddress,
     bool? canCanceleOrder,
+    bool? canChangeVariant,
     List<OrderListDetailModel>? details,
   }) =>
       OrderListModel(
@@ -213,9 +219,11 @@ class OrderListModel {
         paymentMethod: paymentMethod ?? this.paymentMethod,
         transactionRef: transactionRef ?? this.transactionRef,
         orderAmount: orderAmount ?? this.orderAmount,
+        canChangeVariant: canChangeVariant ?? this.canChangeVariant,
         partialPaymentByWallet:
             partialPaymentByWallet ?? this.partialPaymentByWallet,
         discountAmount: discountAmount ?? this.discountAmount,
+        canReturnOrder: canReturnOrder ?? this.canReturnOrder,
         shippingCost: shippingCost ?? this.shippingCost,
         shippingAddress: shippingAddress ?? this.shippingAddress,
         shippingAddressData: shippingAddressData ?? this.shippingAddressData,
@@ -249,6 +257,7 @@ class OrderListModel {
         orderGroupStatus: json["order_group_status"] == null
             ? null
             : OrderStatus.fromJson(json["order_group_status"]),
+        canReturnOrder: json["can_return_order"],
         paymentMethod: json["payment_method"] == null
             ? null
             : OrderStatus.fromJson(json["payment_method"]),
@@ -276,6 +285,7 @@ class OrderListModel {
         shippingMethodId: json["shipping_method_id"],
         orderGroupId: json["order_group_id"],
         canUpdateAddress: json["can_update_address"],
+        canChangeVariant: json["can_change_variant"],
         canCanceleOrder: json["can_cancele_order"],
         verificationCode: json["verification_code"],
         orderNote: json["order_note"],
@@ -283,7 +293,9 @@ class OrderListModel {
         createdAt: json["created_at"] ?? '',
         orderCanReturn: json["order_can_return"],
         orderHasReturnRequest: json["order_has_return_request"],
-        returnRequestId: json["return_request_id"],
+        returnRequestId: json["return_request_id"] == null
+            ? null
+            : json["return_request_id"].toString(),
         showReturnRequest: json["show_return_request"],
         editReturnRequest: json["edit_return_request"],
         orderCanExchange: json["order_can_exchange"],
@@ -302,6 +314,8 @@ class OrderListModel {
         "payment_method": paymentMethod?.toJson(),
         "transaction_ref": transactionRef,
         "order_amount": orderAmount,
+        "can_change_variant": canChangeVariant,
+        "can_return_order": canReturnOrder,
         "partial_payment_by_wallet": partialPaymentByWallet,
         "discount_amount": discountAmount,
         "shipping_cost": shippingCost,
@@ -321,7 +335,7 @@ class OrderListModel {
         "created_at": createdAt,
         "order_can_return": orderCanReturn,
         "order_has_return_request": orderHasReturnRequest,
-        "return_request_id": returnRequestId,
+        "return_request_id": returnRequestId.toString(),
         "show_return_request": showReturnRequest,
         "edit_return_request": editReturnRequest,
         "order_can_exchange": orderCanExchange,
@@ -335,6 +349,7 @@ class OrderListDetailModel {
   final int? id;
   final int? orderId;
   final int? productId;
+  final String? productSlug;
   final OrderProductDetailsModel? productDetails;
   final double? qty;
   final double? price;
@@ -347,7 +362,7 @@ class OrderListDetailModel {
   final dynamic shippingMethodId;
   final String? variant;
   final bool? collectProductAfterOrdering;
-  final GetOrderVariationModel? variation;
+  final List<GetOrderVariationModel>? variation;
   final String? discountType;
   final int? isStockDecreased;
   final String? refundRequest;
@@ -355,6 +370,7 @@ class OrderListDetailModel {
   final int? isOdooProduct;
   final int? odooId;
   final int? odooOrderId;
+  final List<OrderRatingAndComment>? comments;
   final String? image;
 
   OrderListDetailModel({
@@ -365,6 +381,7 @@ class OrderListDetailModel {
     this.qty,
     this.price,
     this.discount,
+    this.comments,
     this.priceAfterDiscount,
     this.tax,
     this.deliveryStatus,
@@ -381,16 +398,19 @@ class OrderListDetailModel {
     this.odooId,
     this.odooOrderId,
     this.image,
+    this.productSlug,
   });
 
   OrderListDetailModel copyWith({
     int? id,
     int? orderId,
     int? productId,
+    String? productSlug,
     OrderProductDetailsModel? productDetails,
     double? qty,
     double? price,
     double? discount,
+    List<OrderRatingAndComment>? comments,
     double? priceAfterDiscount,
     double? tax,
     String? deliveryStatus,
@@ -398,7 +418,7 @@ class OrderListDetailModel {
     dynamic shippingMethodId,
     String? variant,
     bool? collectProductAfterOrdering,
-    GetOrderVariationModel? variation,
+    List<GetOrderVariationModel>? variation,
     String? discountType,
     int? isStockDecreased,
     String? refundRequest,
@@ -412,9 +432,11 @@ class OrderListDetailModel {
         id: id ?? this.id,
         orderId: orderId ?? this.orderId,
         productId: productId ?? this.productId,
+        comments: comments ?? this.comments,
         productDetails: productDetails ?? this.productDetails,
         qty: qty ?? this.qty,
         price: price ?? this.price,
+        productSlug: productSlug ?? this.productSlug,
         discount: discount ?? this.discount,
         priceAfterDiscount: priceAfterDiscount ?? this.priceAfterDiscount,
         tax: tax ?? this.tax,
@@ -440,6 +462,11 @@ class OrderListDetailModel {
       id: json["id"],
       orderId: json["order_id"],
       productId: json["product_id"],
+      productSlug: json["product_slug"],
+      comments: json["comments"] == null
+          ? []
+          : List<OrderRatingAndComment>.from(
+              json["comments"]!.map((x) => OrderRatingAndComment.fromJson(x))),
       productDetails: json["product_details"] == null
           ? null
           : OrderProductDetailsModel.fromJson(json["product_details"]),
@@ -457,9 +484,12 @@ class OrderListDetailModel {
       shippingMethodId: json["shipping_method_id"],
       variant: json["variant"],
       collectProductAfterOrdering: json["collect_product_after_ordering"],
-      variation: json["variation"] == null
-          ? null
-          : GetOrderVariationModel.fromJson(json["variation"]),
+      variation: json["variation"] == null || json["variation"] == []
+          ? []
+          : json["variation"]?[0].isEmpty
+              ? []
+              : List<GetOrderVariationModel>.from(json["variation"]
+                  .map((x) => GetOrderVariationModel.fromJson(x))),
       discountType: json["discount_type"],
       isStockDecreased: json["is_stock_decreased"],
       refundRequest: json["refund_request"].toString(),
@@ -483,10 +513,18 @@ class OrderListDetailModel {
         "tax": tax,
         "delivery_status": deliveryStatus,
         "payment_status": paymentStatus,
+        "product_slug": productSlug,
         "shipping_method_id": shippingMethodId,
         "variant": variant,
+        "comments": comments == null
+            ? []
+            : List<dynamic>.from(comments!.map((x) => x.toJson())),
         "collect_product_after_ordering": collectProductAfterOrdering,
-        "variation": variation?.toJson(),
+        "variation": variation == null || variation == []
+            ? []
+            : variation?[0] == null
+                ? []
+                : List<dynamic>.from(variation!.map((x) => x.toJson())),
         "discount_type": discountType,
         "is_stock_decreased": isStockDecreased,
         "refund_request": refundRequest.toString(),
@@ -495,6 +533,42 @@ class OrderListDetailModel {
         "odoo_id": odooId,
         "odoo_order_id": odooOrderId,
         "image": image,
+      };
+}
+
+class OrderRatingAndComment {
+  final int? id;
+  final String? comment;
+  final String? starRating;
+
+  OrderRatingAndComment({
+    this.id,
+    this.comment,
+    this.starRating,
+  });
+
+  OrderRatingAndComment copyWith({
+    int? id,
+    String? comment,
+    String? starRating,
+  }) =>
+      OrderRatingAndComment(
+        id: id ?? this.id,
+        comment: comment ?? this.comment,
+        starRating: starRating ?? this.starRating,
+      );
+
+  factory OrderRatingAndComment.fromJson(Map<String, dynamic> json) =>
+      OrderRatingAndComment(
+        id: json["id"],
+        comment: json["comment"],
+        starRating: json["star_rating"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "comment": comment,
+        "star_rating": starRating,
       };
 }
 
@@ -633,32 +707,43 @@ class GetOrderRatingModel {
 }
 
 class GetOrderVariationModel {
-  final String? color;
+  final String? sizeOption;
+  final String? colorOption;
   final String? size;
-
+  final String? color;
   GetOrderVariationModel({
-    this.color,
+    this.sizeOption,
+    this.colorOption,
     this.size,
+    this.color,
   });
 
   GetOrderVariationModel copyWith({
-    String? color,
+    String? sizeOption,
+    String? colorOption,
     String? size,
+    String? color,
   }) =>
       GetOrderVariationModel(
-        color: color ?? this.color,
+        sizeOption: sizeOption ?? this.sizeOption,
+        colorOption: colorOption ?? this.colorOption,
         size: size ?? this.size,
+        color: color ?? this.color,
       );
 
   factory GetOrderVariationModel.fromJson(Map<String, dynamic> json) =>
       GetOrderVariationModel(
-        color: json["color"] ?? '',
-        size: json["Size"] ?? '',
+        sizeOption: json["size_options"],
+        colorOption: json["color_options"],
+        size: json["Size"],
+        color: json["color"],
       );
 
   Map<String, dynamic> toJson() => {
-        "color": color,
+        "size_options": sizeOption,
+        "color_options": colorOption,
         "Size": size,
+        "color": color,
       };
 }
 

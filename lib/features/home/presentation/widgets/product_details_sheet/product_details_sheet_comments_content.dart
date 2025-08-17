@@ -60,19 +60,14 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
     };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
-          previous.getCommentForProductStatus !=
-              current.getCommentForProductStatus ||
           previous.addCommentStatus != current.addCommentStatus,
       builder: (context, state) {
-        if ((state.getCommentForProductStatus ==
-                    GetCommentForProductStatus.loading &&
-                (state.getCommentForProductModel[productId]?.commentsForProduct
-                            ?.commentsCount ??
-                        0) <
-                    1) ||
-            state.getCommentForProductModel[productId] == null) {
+        /*if ((state.cachedProductWithoutRelatedProductsModel[productId]?.product
+                    ?.commentsCount ??
+                0) <
+            1) {
           return cupertino.SizedBox.shrink();
-        }
+        }*/
         return ScrollConfiguration(
           behavior: const cupertino.CupertinoScrollBehavior(),
           child: ListView(
@@ -83,7 +78,11 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
             children: [
               10.verticalSpace,
               !(prefsRepository.isVerifiedPhone ?? false)
-                  ? SizedBox.shrink()
+                  ? Center(
+                      child: MyTextWidget(
+                          LocaleKeys.please_login_to_add_comment.tr(),
+                          style: context.textTheme.bodyMedium?.rr
+                              .copyWith(color: Colors.red, fontSize: 14)))
                   : Container(
                       height: 65,
                       decoration: BoxDecoration(
@@ -212,33 +211,42 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                 height: 10,
               ),
               ...List.generate(
-                  state.getCommentForProductModel[productId]!
-                          .commentsForProduct!.commentsCount ??
+                  state.cachedProductWithoutRelatedProductsModel[productId]
+                          ?.product?.comments?.length ??
                       0,
                   (index) => Column(
                         children: [
                           CommentCard(
-                            comment: state.getCommentForProductModel[productId]!
-                                .commentsForProduct!.comments![index].comment!,
+                            comment: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productId]
+                                    ?.product
+                                    ?.comments?[index]
+                                    .comment ??
+                                "",
                             imageUrl: state
-                                    .getCommentForProductModel[productId]!
-                                    .commentsForProduct!
-                                    .comments![index]
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productId]
+                                    ?.product
+                                    ?.comments?[index]
                                     .customer!
                                     .image ??
                                 "",
                             names: state
-                                    .getCommentForProductModel[productId]!
-                                    .commentsForProduct!
-                                    .comments![index]
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productId]
+                                    ?.product
+                                    ?.comments?[index]
                                     .customer!
                                     .name ??
                                 "",
                             date: HelperFunctions.getDatesInFormat(state
-                                .getCommentForProductModel[productId]!
-                                .commentsForProduct!
-                                .comments![index]
-                                .createdAt!),
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productId]
+                                    ?.product
+                                    ?.comments?[index]
+                                    .createdAt ??
+                                DateTime.now()),
                           ),
                           SizedBox(
                             height: 5,

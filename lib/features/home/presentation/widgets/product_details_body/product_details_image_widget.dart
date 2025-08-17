@@ -35,19 +35,23 @@ class ProductDetailsImageWidget extends StatelessWidget {
       this.flashDealEndDate,
       this.lableNames,
       this.orginalHeight,
+      this.index = 0,
       this.blurRadius = 10,
       this.imageWidth,
       this.orginalWidth,
       this.height,
+      this.productNotAvailableNotifier,
       this.radius});
 
   final double? width;
 
   final List<String>? lableNames;
   final ValueNotifier<bool>? visibleRedeem;
+  final ValueNotifier<String?>? productNotAvailableNotifier;
   final String? flashDealEndDate;
   final bool? isRedeem;
   final int? productId;
+  final int index;
   final double? height;
   final double? imageWidth;
   final double? imageHeight;
@@ -139,185 +143,224 @@ class ProductDetailsImageWidget extends StatelessWidget {
           ),
           (flashDealEndDate ?? "") == ""
               ? SizedBox.shrink()
-              : ValueListenableBuilder<bool>(
-                  valueListenable: visibleFlashDeal,
-                  builder: (context, _visibleFlashDeal, _) {
-                    bool isFlashDealEnded = false;
-                    DateTime endDate;
-                    Duration _duration = Duration();
-                    final now = DateTime.now();
-                    try {
-                      endDate = DateFormat('MM/dd/yyyy', 'en_US')
-                          .parse(flashDealEndDate ?? "");
-                      endDate = endDate.add(Duration(days: 1));
-                    } catch (e) {
-                      endDate = DateTime.now();
-                      print('Error parsing date: $e');
-                    }
-                    _duration = endDate.difference(now);
-                    if (_duration.isNegative || _duration.inSeconds < 1) {
-                      isFlashDealEnded = true;
-                    }
+              : ValueListenableBuilder<String?>(
+                  valueListenable:
+                      productNotAvailableNotifier ?? ValueNotifier(null),
+                  builder: (context, _productNotAvailableNotifier, _) {
+                    return _productNotAvailableNotifier != null
+                        ? SizedBox.shrink()
+                        : ValueListenableBuilder<bool>(
+                            valueListenable: visibleFlashDeal,
+                            builder: (context, _visibleFlashDeal, _) {
+                              bool isFlashDealEnded = false;
+                              DateTime endDate;
+                              Duration _duration = Duration();
+                              final now = DateTime.now();
+                              try {
+                                endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                                    .parse(flashDealEndDate ?? "");
+                                endDate = endDate.add(Duration(days: 1));
+                              } catch (e) {
+                                endDate = DateTime.now();
+                                print('Error parsing date: $e');
+                              }
+                              _duration = endDate.difference(now);
+                              if (_duration.isNegative ||
+                                  _duration.inSeconds < 1) {
+                                isFlashDealEnded = true;
+                              }
 
-                    return !isFlashDealEnded
-                        ? Positioned(
-                            left: 7,
-                            right: 7,
-                            top: 0,
-                            child: Transform(
-                              transform:
-                                  Matrix4.skewX(-0.4), // انحراف بسيط للشكل
-                              child: Container(
-                                width: 150,
-                                margin: EdgeInsets.only(
-                                    left: LanguageService.languageCode != "ar"
-                                        ? 1
-                                        : 130.w,
-                                    right: LanguageService.languageCode == "ar"
-                                        ? 1
-                                        : 130.w),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xffFF6200)),
-                                  color: Color(0xffFFF3E8),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                height: 20,
-                                child: Transform(
-                                    transform:
-                                        Matrix4.skewX(0.4), // انحراف بسيط للشكل
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        SvgPicture.asset(
-                                          AppAssets.flashDealSvg,
-                                          height: 12,
-                                          color: Color(0xffFF6200),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          "${LocaleKeys.flash_deal.tr()}",
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: context
-                                              .textTheme.bodyMedium?.br
-                                              .copyWith(
-                                            color: Color(0xffFF6200),
-                                            letterSpacing: 0.18,
-                                            fontSize: 9,
-                                            height: 1.3,
+                              return !isFlashDealEnded
+                                  ? Positioned(
+                                      left: 7,
+                                      right: 7,
+                                      top: 0,
+                                      child: Transform(
+                                        transform: Matrix4.skewX(
+                                            -0.4), // انحراف بسيط للشكل
+                                        child: Container(
+                                          width: 150,
+                                          margin: EdgeInsets.only(
+                                              left: LanguageService
+                                                          .languageCode !=
+                                                      "ar"
+                                                  ? 1
+                                                  : 120.w,
+                                              right: LanguageService
+                                                          .languageCode ==
+                                                      "ar"
+                                                  ? 1
+                                                  : 120.w),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Color(0xffFF6200)),
+                                            color: Color(0xffFFF3E8),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                           ),
+                                          height: 20,
+                                          child: Transform(
+                                              transform: Matrix4.skewX(
+                                                  0.4), // انحراف بسيط للشكل
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  SvgPicture.asset(
+                                                    AppAssets.flashDealSvg,
+                                                    height: 12,
+                                                    color: Color(0xffFF6200),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    "${LocaleKeys.flash_deal.tr()}",
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: context.textTheme
+                                                        .bodyMedium?.br
+                                                        .copyWith(
+                                                      color: Color(0xffFF6200),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 9,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  FlashDealCountdownTimerWidget(
+                                                    visibleFlashDeal:
+                                                        visibleFlashDeal,
+                                                    endDateString:
+                                                        flashDealEndDate ?? "",
+                                                  )
+                                                ],
+                                              )),
                                         ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        FlashDealCountdownTimerWidget(
-                                          visibleFlashDeal: visibleFlashDeal,
-                                          endDateString: flashDealEndDate ?? "",
-                                        )
-                                      ],
-                                    )),
-                              ),
-                            ))
-                        : SizedBox.shrink();
+                                      ))
+                                  : SizedBox.shrink();
+                            });
                   }),
-          visibleRedeem != null
-              ? ValueListenableBuilder<bool>(
-                  valueListenable: visibleRedeem!,
-                  builder: (context, _visibleRedeem, _) {
-                    return (GetIt.I<PrefsRepository>()
-                                        .getRedeemDateForProduct(
-                                            productId.toString())
-                                        ?.isAfter(DateTime.now()
-                                            .add(Duration(seconds: 1))) ==
-                                    true &&
-                                isRedeem == true) ||
-                            (GetIt.I<PrefsRepository>()
-                                        .getRedeemSecondRemainingForProduct(
-                                            productId.toString()) ??
-                                    0) >
-                                0
-                        ? Positioned(
-                            left: 7,
-                            right: 7,
-                            top: 0,
-                            child: Transform(
-                              transform:
-                                  Matrix4.skewX(-0.4), // انحراف بسيط للشكل
-                              child: Container(
-                                width: 150,
-                                margin: EdgeInsets.only(
-                                    left: LanguageService.languageCode != "ar"
-                                        ? 1
-                                        : 130.w,
-                                    right: LanguageService.languageCode == "ar"
-                                        ? 1
-                                        : 130.w),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xffFF6200)),
-                                  color: Color(0xffFFF3E8),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                height: 20,
-                                child: Transform(
-                                    transform:
-                                        Matrix4.skewX(0.4), // انحراف بسيط للشكل
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: 8,
-                                        ),
-                                        SvgPicture.asset(
-                                            AppAssets.redeemClockSvg),
-                                        SizedBox(
-                                          width: 3,
-                                        ),
-                                        Text(LocaleKeys.luck.tr(),
-                                            style: context
-                                                .textTheme.bodyMedium?.br
-                                                .copyWith(
-                                              fontSize: 9,
-                                              color: const Color(0xffFF6200),
-                                            )),
-                                        SizedBox(
-                                          width: 1,
-                                        ),
-                                        Text(
-                                            " ${LocaleKeys.add_to_bag_within.tr()} ",
-                                            style: context
-                                                .textTheme.bodyMedium?.mr
-                                                .copyWith(
-                                              fontSize: 9,
-                                              color: const Color(0xffFF6200),
-                                            )),
-                                        SecondsCountdown(
-                                          productId: productId.toString(),
-                                          //   finishRedeem: widget.finishRedeem,
-                                          visibleRedeem: visibleRedeem!,
-                                          endTime: GetIt.I<PrefsRepository>()
+          visibleRedeem != null && index == 0
+              ? ValueListenableBuilder<String?>(
+                  valueListenable:
+                      productNotAvailableNotifier ?? ValueNotifier(null),
+                  builder: (context, _productNotAvailableNotifier, _) {
+                    return _productNotAvailableNotifier != null
+                        ? SizedBox.shrink()
+                        : ValueListenableBuilder<bool>(
+                            valueListenable: visibleRedeem!,
+                            builder: (context, _visibleRedeem, _) {
+                              return (GetIt.I<PrefsRepository>()
                                                   .getRedeemDateForProduct(
+                                                      productId.toString())
+                                                  ?.isAfter(DateTime.now().add(
+                                                      Duration(seconds: 1))) ==
+                                              true &&
+                                          isRedeem == true) ||
+                                      (GetIt.I<PrefsRepository>()
+                                                  .getRedeemSecondRemainingForProduct(
                                                       productId.toString()) ??
-                                              DateTime.now(),
+                                              0) >
+                                          0
+                                  ? Positioned(
+                                      left: 7,
+                                      right: 7,
+                                      top: 0,
+                                      child: Transform(
+                                        transform: Matrix4.skewX(
+                                            -0.4), // انحراف بسيط للشكل
+                                        child: Container(
+                                          width: 150,
+                                          margin: EdgeInsets.only(
+                                              left: LanguageService
+                                                          .languageCode !=
+                                                      "ar"
+                                                  ? 1
+                                                  : 120.w,
+                                              right: LanguageService
+                                                          .languageCode ==
+                                                      "ar"
+                                                  ? 1
+                                                  : 120.w),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Color(0xffFF6200)),
+                                            color: Color(0xffFFF3E8),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          height: 20,
+                                          child: Transform(
+                                              transform: Matrix4.skewX(
+                                                  0.4), // انحراف بسيط للشكل
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  SvgPicture.asset(
+                                                      AppAssets.redeemClockSvg),
+                                                  SizedBox(
+                                                    width: 3,
+                                                  ),
+                                                  Text(LocaleKeys.luck.tr(),
+                                                      style: context.textTheme
+                                                          .bodyMedium?.br
+                                                          .copyWith(
+                                                        fontSize: 9,
+                                                        color: const Color(
+                                                            0xffFF6200),
+                                                      )),
+                                                  SizedBox(
+                                                    width: 1,
+                                                  ),
+                                                  Text(
+                                                      " ${LocaleKeys.add_to_bag_within.tr()} ",
+                                                      style: context.textTheme
+                                                          .bodyMedium?.mr
+                                                          .copyWith(
+                                                        fontSize: 9,
+                                                        color: const Color(
+                                                            0xffFF6200),
+                                                      )),
+                                                  SecondsCountdown(
+                                                    denyStopTimer: true,
+                                                    productId:
+                                                        productId.toString(),
+                                                    //   finishRedeem: widget.finishRedeem,
+                                                    visibleRedeem:
+                                                        visibleRedeem!,
+                                                    endTime: GetIt.I<
+                                                                PrefsRepository>()
+                                                            .getRedeemDateForProduct(
+                                                                productId
+                                                                    .toString()) ??
+                                                        DateTime.now(),
+                                                  ),
+                                                  Text(
+                                                      " ${LocaleKeys.seconds.tr()} ",
+                                                      style: context.textTheme
+                                                          .bodyMedium?.br
+                                                          .copyWith(
+                                                        fontSize: 9,
+                                                        color: const Color(
+                                                            0xffFF6200),
+                                                      )),
+                                                ],
+                                              )),
                                         ),
-                                        Text(" ${LocaleKeys.seconds.tr()} ",
-                                            style: context
-                                                .textTheme.bodyMedium?.br
-                                                .copyWith(
-                                              fontSize: 9,
-                                              color: const Color(0xffFF6200),
-                                            )),
-                                      ],
-                                    )),
-                              ),
-                            ))
-                        : SizedBox.shrink();
+                                      ))
+                                  : SizedBox.shrink();
+                            });
                   })
               : SizedBox.shrink()
           /*  Positioned(

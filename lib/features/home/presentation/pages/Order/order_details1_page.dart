@@ -12,6 +12,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart'
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
@@ -19,8 +20,10 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
+import 'package:trydos/features/home/domain/use_cases/add_order_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_order_address_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_order_comment_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart'
     show
@@ -29,9 +32,15 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.
         CancelOrderEvent,
         GetOrdersByOrderGroupIDEvent,
         GetCustomerAddressesEvent,
-        ChangeOrderAddressEvent;
+        ChangeOrderAddressEvent,
+        UpdateOrderCommentEvent,
+        AddOrderCommentEvent,
+        FetchOrderReturnDetailsEvent,
+        ResetAllStatusEvent;
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
+import 'package:trydos/features/home/presentation/widgets/star_rating_widget.dart';
+import 'package:trydos/main.dart' show navigatorKey;
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
@@ -47,17 +56,22 @@ import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 class OrderDetails1 extends StatefulWidget {
-  OrderDetails1(
+  const OrderDetails1(
       {super.key,
       this.fromNotification = false,
       this.currentStatus = "",
+      this.orderIdToOpenPackage = "",
+      this.indexGroupe = -1,
       this.orderIdFormNotification,
       required this.orders});
 
   final List<OrderListModel> orders;
-  bool fromNotification;
-  String? orderIdFormNotification;
-  String? currentStatus;
+  final bool fromNotification;
+  final String? orderIdFormNotification;
+
+  final String orderIdToOpenPackage;
+  final String? currentStatus;
+  final int indexGroupe;
   @override
   State<OrderDetails1> createState() => _OrderDetails1State();
 }
@@ -83,6 +97,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
   List<OrderListModel> orders = [];
   int firstAddressChoosed = 0;
   bool firstOpenPage = true;
+  bool requestReturnApi = true;
   @override
   void initState() {
     orders = widget.orders;
@@ -106,6 +121,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
 
       indexTapPackage.value = orders.indexWhere(
           (element) => element.id.toString() == widget.orderIdFormNotification);
+    } else if (widget.orderIdToOpenPackage != "") {
+      indexTapPackage.value = orders.indexWhere(
+          (element) => element.id.toString() == widget.orderIdToOpenPackage);
     }
     homeBloc = BlocProvider.of<HomeBloc>(context);
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -174,15 +192,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 c.getOrdersByOrderGroupIDStatus,
             listener: (context, state) {
               if (state.getOrdersByOrderGroupIDStatus ==
-                      GetOrdersByOrderGroupIDStatus.success &&
-                  (!firstOpenPage)) {
+                  GetOrdersByOrderGroupIDStatus.success) {
                 if (orders[indexTapPackage.value].orderGroupId ==
                     state.getOrdersByOrderGroupIDModel
                         ?.orders?[indexTapPackage.value].orderGroupId) {
-                  orderBloc.add(GetOrdersEvent(
-                      status: widget.currentStatus ?? '',
-                      getWithPagination: false));
                   orders = state.getOrdersByOrderGroupIDModel?.orders ?? [];
+                }
+                if (!firstOpenPage) {
                   indexTapAddress.value = orderBloc
                           .state.listOfAddressInfoClassToSave
                           ?.indexWhere((element) =>
@@ -192,6 +208,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                   ?.id) ??
                       -1;
                   firstAddressChoosed = indexTapAddress.value;
+                  orderBloc.add(GetOrdersEvent(
+                      status: widget.currentStatus ?? '',
+                      orders: orders,
+                      index: widget.indexGroupe,
+                      getWithPagination: false));
                 }
               }
               if (state.getOrdersByOrderGroupIDStatus !=
@@ -707,60 +728,109 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             height: 8.h,
                                           ),
                                           ///////////////////
-                                          buildThirdSection(
-                                            context: context,
-                                            contactInfo:
-                                                orders[_indexTapPackage]
-                                                        .shippingAddressData
-                                                        ?.phone ??
-                                                    '',
-                                            recipientName:
-                                                orders[_indexTapPackage]
-                                                        .shippingAddressData
-                                                        ?.contactPersonName ??
-                                                    '',
-                                            shippingDeliveryAddress:
-                                                addressString,
-                                          ),
+                                          orders[_indexTapPackage]
+                                                      .orderStatus
+                                                      ?.value ==
+                                                  "delivered"
+                                              ? buildThirdSectionForRating()
+                                              : buildThirdSection(
+                                                  context: context,
+                                                  contactInfo: orders[
+                                                              _indexTapPackage]
+                                                          .shippingAddressData
+                                                          ?.phone ??
+                                                      '',
+                                                  recipientName: orders[
+                                                              _indexTapPackage]
+                                                          .shippingAddressData
+                                                          ?.contactPersonName ??
+                                                      '',
+                                                  shippingDeliveryAddress:
+                                                      addressString,
+                                                ),
                                           ///////////////////
                                           SizedBox(
                                             height: 8.h,
                                           ),
                                           ///////////////////
-                                          GestureDetector(
-                                            onTapUp: (details) {
-                                              final double dx =
-                                                  details.localPosition.dx;
-                                              print(dx);
+                                          BlocListener<OrderBloc, OrderState>(
+                                              listenWhen: (previous, current) =>
+                                                  previous
+                                                      .orderReturnDetailsStatus !=
+                                                  current
+                                                      .orderReturnDetailsStatus,
+                                              listener: (context, state) {
+                                                if (state.orderReturnDetailsStatus ==
+                                                        OrderReturnDetailsStatus
+                                                            .success &&
+                                                    requestReturnApi) {
+                                                  requestReturnApi = false;
+                                                  HelperFunctions
+                                                      .slidingNavigation(
+                                                    context,
+                                                    OrderDetails2(
+                                                      indexGroupe:
+                                                          widget.indexGroupe,
+                                                      indexPackage:
+                                                          _indexTapPackage,
+                                                      fromNotification: widget
+                                                          .fromNotification,
+                                                      order: orders[
+                                                          _indexTapPackage],
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              child: GestureDetector(
+                                                onTapUp: (details) {
+                                                  final double dx =
+                                                      details.localPosition.dx;
+                                                  print(dx);
 
-                                              if ((dx > (1.sw - 75) &&
-                                                  orders[_indexTapPackage]
-                                                          .orderStatus
-                                                          ?.value ==
-                                                      "out_for_delivery")) {
-                                                return;
-                                              }
-
-                                              HelperFunctions.slidingNavigation(
-                                                context,
-                                                OrderDetails2(
-                                                  indexPackage:
-                                                      _indexTapPackage,
-                                                  fromNotification:
-                                                      widget.fromNotification,
-                                                  order:
-                                                      orders[_indexTapPackage],
-                                                ),
-                                              );
-                                            },
-                                            child: buildFourthSection(
-                                                context: context,
-                                                itemsCount:
-                                                    orders[_indexTapPackage]
-                                                        .details!
-                                                        .length
-                                                        .toString()),
-                                          ),
+                                                  if ((dx > (1.sw - 75) &&
+                                                      orders[_indexTapPackage]
+                                                              .orderStatus
+                                                              ?.value ==
+                                                          "out_for_delivery")) {
+                                                    return;
+                                                  }
+                                                  if (orders[_indexTapPackage]
+                                                          .orderHasReturnRequest ??
+                                                      false) {
+                                                    requestReturnApi = true;
+                                                    orderBloc.add(
+                                                        FetchOrderReturnDetailsEvent(
+                                                            int.parse(orders[
+                                                                    _indexTapPackage]
+                                                                .returnRequestId
+                                                                .toString())));
+                                                    return;
+                                                  } else {
+                                                    requestReturnApi = false;
+                                                  }
+                                                  HelperFunctions
+                                                      .slidingNavigation(
+                                                    context,
+                                                    OrderDetails2(
+                                                      indexGroupe:
+                                                          widget.indexGroupe,
+                                                      indexPackage:
+                                                          _indexTapPackage,
+                                                      fromNotification: widget
+                                                          .fromNotification,
+                                                      order: orders[
+                                                          _indexTapPackage],
+                                                    ),
+                                                  );
+                                                },
+                                                child: buildFourthSection(
+                                                    context: context,
+                                                    itemsCount:
+                                                        orders[_indexTapPackage]
+                                                            .details!
+                                                            .length
+                                                            .toString()),
+                                              )),
                                           ///////////////////
                                           SizedBox(
                                             height: 8.h,
@@ -773,6 +843,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   orders[_indexTapPackage]
                                                           .orderStatus
                                                           ?.value ??
+                                                      "",
+                                              orderStatusLabel:
+                                                  orders[_indexTapPackage]
+                                                          .orderStatus
+                                                          ?.label ??
                                                       ""),
                                           ///////////////////
                                           SizedBox(
@@ -858,15 +933,17 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      Text(
-                        "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: Colors.white,
-                          letterSpacing: 0.18,
-                          fontSize: 16,
-                          height: 1.3,
-                        ),
-                      ),
+                      orders[indexTapPackage.value].paymentStatus == "unpaid"
+                          ? SizedBox.shrink()
+                          : Text(
+                              "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 0.18,
+                                fontSize: 16,
+                                height: 1.3,
+                              ),
+                            ),
                       SizedBox(
                         height: 20.h,
                       ),
@@ -3466,6 +3543,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: optionOfModify(
                           onTap: () {
+                            orderBloc.add(ResetAllStatusEvent());
                             optionModifyPanel.value = "Change_Address";
                           },
                           svg: AppAssets.orderChangeAddressSvg,
@@ -3482,6 +3560,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
                     onTap: () {
+                      orderBloc.add(ResetAllStatusEvent());
                       optionModifyPanel.value = "Hide_This_Product";
                     },
                     svg: AppAssets.hideThisProductSvg,
@@ -3497,6 +3576,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: optionOfModify(
                           onTap: () {
+                            orderBloc.add(ResetAllStatusEvent());
                             optionModifyPanel.value = "Cancel_This_Order";
                           },
                           svg: AppAssets.orderCanselSvg,
@@ -3627,17 +3707,18 @@ class _OrderDetails1State extends State<OrderDetails1> {
 
   Widget buildFifthSection(
       {required List<OrderListDetailModel>? details,
-      required String orderStatus}) {
+      required String orderStatus,
+      required String orderStatusLabel}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: SizedBox(
-        height: 180,
+        height: orderStatus == 'delivered' ? 190 : 180,
         child: ListView.separated(
           itemCount: details?.length ?? 0,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ClipRRect(
@@ -3657,41 +3738,48 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   height: 3,
                 ),
                 ///////////////////
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      orderStatus == 'shipped'
-                          ? AppAssets.shippedAndOutOfDeliveryBagSvg
-                          : AppAssets.preparingBagSvg,
-                      width: 13,
-                    ),
-                    //////////////////////////
-                    SizedBox(
-                      width: 2,
-                    ),
-                    //////////////////////////
-                    SvgPicture.asset(
-                      orderStatus == 'shipped'
-                          ? AppAssets.shippedBlackSvg
-                          : orderStatus == 'delivered'
-                              ? AppAssets.deliveredBlackSvg
-                              : orderStatus == 'pending'
-                                  ? AppAssets.pendeingBlackCheck
-                                  : AppAssets.orderPreparingSvg,
-                      width: 13,
-                    ),
-                  ],
-                ),
+                orderStatus == 'delivered'
+                    ? SvgPicture.asset(
+                        AppAssets.delivered_bagSvg,
+                        width: 13,
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            orderStatus == 'shipped'
+                                ? AppAssets.shippedAndOutOfDeliveryBagSvg
+                                : AppAssets.preparingBagSvg,
+                            width: 13,
+                          ),
+                          //////////////////////////
+                          SizedBox(
+                            width: 2,
+                          ),
+                          //////////////////////////
+                          SvgPicture.asset(
+                            orderStatus == 'shipped'
+                                ? AppAssets.shippedBlackSvg
+                                : orderStatus == 'delivered'
+                                    ? AppAssets.deliveredBlackSvg
+                                    : orderStatus == 'pending'
+                                        ? AppAssets.pendeingBlackCheck
+                                        : AppAssets.orderPreparingSvg,
+                            width: 13,
+                          ),
+                        ],
+                      ),
                 ///////////////////
                 const SizedBox(
                   height: 2,
                 ),
                 ///////////////////
                 Text(
-                  details?[index].variation == null
-                      ? ''
-                      : details?[index].variation?.size ?? '',
+                  orderStatus == 'delivered'
+                      ? orderStatusLabel
+                      : (details?[index].variation.isNullOrEmpty ?? false)
+                          ? ''
+                          : details?[index].variation?[0].size ?? '',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -3706,19 +3794,162 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   height: 2,
                 ),
                 ///////////////////
-                Text(
-                  details?[index].variation == null
-                      ? ''
-                      : details?[index].variation?.color ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: context.textTheme.bodyMedium?.rq.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 10,
-                    height: 1.3,
-                  ),
-                ),
+                orderStatus == 'delivered'
+                    ? BlocListener<OrderBloc, OrderState>(
+                        listenWhen: (previous, current) =>
+                            previous.addOrderCommentStatus !=
+                                current.addOrderCommentStatus ||
+                            previous.updateOrderCommentStatus !=
+                                current.updateOrderCommentStatus,
+                        listener: (context, state) {
+                          if (state.addOrderCommentStatus ==
+                                  AddOrderCommentStatus.success ||
+                              state.updateOrderCommentStatus ==
+                                  UpdateOrderCommentStatus.success) {
+                            GetIt.I<OrderBloc>()
+                                .add(GetOrdersByOrderGroupIDEvent(
+                              getWithRating: true,
+                              orderGroupId:
+                                  orders[indexTapPackage.value].orderGroupId ??
+                                      '',
+                            ));
+                          }
+                        },
+                        child: BlocBuilder<OrderBloc, OrderState>(
+                            buildWhen: (previous, current) =>
+                                previous.addOrderCommentStatus !=
+                                    current.addOrderCommentStatus ||
+                                previous.updateOrderCommentStatus !=
+                                    current.updateOrderCommentStatus ||
+                                previous.getOrdersByOrderGroupIDStatus !=
+                                    current.getOrdersByOrderGroupIDStatus,
+                            builder: (context, state) {
+                              return state.getOrdersByOrderGroupIDStatus ==
+                                          GetOrdersByOrderGroupIDStatus
+                                              .loadingForRating ||
+                                      state.updateOrderCommentStatus ==
+                                          UpdateOrderCommentStatus.loading ||
+                                      state.addOrderCommentStatus ==
+                                          AddOrderCommentStatus.loading
+                                  ? Center(
+                                      child: Shimmer.fromColors(
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      child: SizedBox(
+                                        width: 80,
+                                        height: 16,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: List.generate(
+                                            5,
+                                            (index) => Container(
+                                              width: 16,
+                                              height: 16,
+                                              child: Center(
+                                                child: SvgPicture.asset(
+                                                  AppAssets.starOutlineSvg,
+                                                  width: 14,
+                                                  height: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ))
+                                  : Center(
+                                      child: StarRatingWidget(
+                                        initialRating: (details?[index]
+                                                    .comments
+                                                    .isNullOrEmpty ??
+                                                false)
+                                            ? 0
+                                            : details?[index]
+                                                        .comments
+                                                        ?.first
+                                                        .starRating ==
+                                                    null
+                                                ? 0
+                                                : double.parse(details?[index]
+                                                        .comments
+                                                        ?.first
+                                                        .starRating ??
+                                                    '0'),
+                                        onRatingChanged: (rating, comment) {
+                                          if (details?[index]
+                                                  .comments
+                                                  .isNullOrEmpty ??
+                                              false) {
+                                            GetIt.I<OrderBloc>().add(
+                                                AddOrderCommentEvent(
+                                                    params:
+                                                        AddOrderCommentParams(
+                                              orderDetailsId: details?[index]
+                                                      .id
+                                                      .toString() ??
+                                                  '',
+                                              productId: details?[index]
+                                                      .productId
+                                                      .toString() ??
+                                                  '',
+                                              customerId:
+                                                  GetIt.I<PrefsRepository>()
+                                                      .myMarketId
+                                                      .toString(),
+                                              starRating: rating.toString(),
+                                              comment: comment,
+                                            )));
+                                          } else {
+                                            if (details?[index]
+                                                    .comments
+                                                    ?.first
+                                                    .id ==
+                                                null) {
+                                            } else {
+                                              GetIt.I<OrderBloc>().add(
+                                                  UpdateOrderCommentEvent(
+                                                      params:
+                                                          UpdateOrderCommentParams(
+                                                orderDetailsId: details?[index]
+                                                        .id
+                                                        .toString() ??
+                                                    '',
+                                                id: details?[index]
+                                                        .comments
+                                                        ?.first
+                                                        .id
+                                                        .toString() ??
+                                                    '',
+                                                comment: comment,
+                                                productId: details?[index]
+                                                        .productId
+                                                        .toString() ??
+                                                    '',
+                                                customerId:
+                                                    GetIt.I<PrefsRepository>()
+                                                        .myMarketId
+                                                        .toString(),
+                                                starRating: rating.toString(),
+                                              )));
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    );
+                            }))
+                    : Text(
+                        (details?[index].variation.isNullOrEmpty ?? false)
+                            ? ''
+                            : details?[index].variation?[0].color ?? '',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.3,
+                        ),
+                      ),
               ],
             );
           },
@@ -3736,174 +3967,328 @@ class _OrderDetails1State extends State<OrderDetails1> {
     required BuildContext context,
     required String itemsCount,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Container(
-        height: 74,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 237, 237, 237),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
-                  AppAssets.bagsSvg,
-                  width: 20,
-                ),
-                ///////////////////
-                SizedBox(
-                  height: 2,
-                ),
-                ///////////////////
-                Text(
-                  LocaleKeys.order_details.tr(),
-                  style: context.textTheme.bodyMedium?.rq.copyWith(
-                    color: const Color(0xff8D8D8D),
-                    letterSpacing: 0.18,
-                    fontSize: 10,
-                    height: 1.3,
-                  ),
-                ),
-                ///////////////////
-                SizedBox(
-                  height: 2,
-                ),
-                ///////////////////
-                RichText(
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                    style: context.textTheme.bodyMedium?.rq.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.3,
+    return BlocBuilder<OrderBloc, OrderState>(
+        buildWhen: (previous, current) =>
+            previous.orderReturnDetailsStatus !=
+            current.orderReturnDetailsStatus,
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: state.orderReturnDetailsStatus ==
+                    OrderReturnDetailsStatus.loading
+                ? Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 1.sw,
+                      height: 74,
+                      decoration: BoxDecoration(
+                          color: const Color(0xffC4C2C2),
+                          border: Border.all(
+                            color: const Color(0xffC4C2C2),
+                          ),
+                          borderRadius: BorderRadius.circular(15)),
+                    ))
+                : Container(
+                    height: 74,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 237, 237, 237),
+                      borderRadius: BorderRadius.circular(15),
                     ),
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.bagsSvg,
+                              width: 20,
+                            ),
+                            ///////////////////
+                            SizedBox(
+                              height: 2,
+                            ),
+                            ///////////////////
+                            Text(
+                              LocaleKeys.order_details.tr(),
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff8D8D8D),
+                                letterSpacing: 0.18,
+                                fontSize: 10,
+                                height: 1.3,
+                              ),
+                            ),
+                            ///////////////////
+                            SizedBox(
+                              height: 2,
+                            ),
+                            ///////////////////
+                            RichText(
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(
+                                style:
+                                    context.textTheme.bodyMedium?.rq.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 1.3,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: itemsCount,
+                                    style: context.textTheme.bodyMedium?.bq
+                                        .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  TextSpan(text: ' ${LocaleKeys.item.tr()}'),
+                                ],
+                              ),
+                            ),
+                            ///////////////////
+                          ],
+                        ),
+                        Spacer(),
+                        ValueListenableBuilder<int>(
+                            valueListenable: indexTapPackage,
+                            builder: (context, _indexTapPackage, _) {
+                              return orders[_indexTapPackage]
+                                          .orderStatus
+                                          ?.value !=
+                                      "out_for_delivery"
+                                  ? SizedBox.shrink()
+                                  : Container(
+                                      width: 105,
+                                      height: 40,
+                                      child: BlocListener<ChatBloc, ChatState>(
+                                          listenWhen: (previous, current) =>
+                                              previous
+                                                  .getOrderRecipientIdStatus !=
+                                              current.getOrderRecipientIdStatus,
+                                          listener: (context, state) {
+                                            if (state
+                                                    .getOrderRecipientIdStatus ==
+                                                GetOrderRecipientIdStatus
+                                                    .success) {
+                                              String receiverName = "DW";
+                                              String fullReceiverName =
+                                                  "Delivery Worker";
+                                              String? recipientUserId =
+                                                  state.recipientUserId;
+                                              if (recipientUserId == null) {
+                                                return;
+                                              }
+                                              Chat? chat;
+                                              User? receiver;
+                                              List<Chat> chats = List.of(
+                                                  GetIt.I<ChatBloc>()
+                                                      .state
+                                                      .chats);
+                                              debugPrint(chats.toString());
+                                              chats.addAll(GetIt.I<ChatBloc>()
+                                                  .state
+                                                  .pinnedChats);
+                                              chat = chats.firstWhere(
+                                                  (element) => element
+                                                          .channelMembers!
+                                                          .any((element) {
+                                                        return element.userId
+                                                                .toString() ==
+                                                            recipientUserId;
+                                                      }));
+                                              final preferences =
+                                                  GetIt.I<PrefsRepository>();
+                                              receiver = chat.channelMembers
+                                                  ?.firstWhere(
+                                                    (element) =>
+                                                        element.userId !=
+                                                        preferences.myChatId,
+                                                    orElse: () => ChannelMember(
+                                                        userId: int.tryParse(
+                                                            recipientUserId),
+                                                        user: User(
+                                                            id: int.tryParse(
+                                                                recipientUserId),
+                                                            name:
+                                                                receiverName)),
+                                                  )
+                                                  .user;
+                                              String fromOrder = "true";
+                                              context.go(GRouter
+                                                      .config
+                                                      .applicationRoutes
+                                                      .kSinglePageChatPagePath +
+                                                  '?chatId=${chat.id!.toString()}&fromOrder=$fromOrder&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
+                                            }
+                                            // TODO: implement listener
+                                          },
+                                          child:
+                                              BlocBuilder<ChatBloc, ChatState>(
+                                            buildWhen: (previous, current) =>
+                                                previous
+                                                    .getOrderRecipientIdStatus !=
+                                                current
+                                                    .getOrderRecipientIdStatus,
+                                            builder: (context, state) {
+                                              if (state
+                                                      .getOrderRecipientIdStatus ==
+                                                  GetOrderRecipientIdStatus
+                                                      .loading) {
+                                                return Container(
+                                                  width: 30,
+                                                  height: 30,
+                                                  child: TrydosLoader(
+                                                    size: 16,
+                                                  ),
+                                                );
+                                              }
+                                              return Container(
+                                                alignment: Alignment.center,
+                                                width: 70,
+                                                height: 30,
+                                                child: InkWell(
+                                                    onTap: () {
+                                                      chatBloc.add(GetOrderRecipientIdEvent(
+                                                          originalUserId: GetIt.I<
+                                                                  PrefsRepository>()
+                                                              .myMarketId
+                                                              .toString(),
+                                                          orderId: orders[
+                                                                  indexTapPackage
+                                                                      .value]
+                                                              .id
+                                                              .toString()));
+                                                    },
+                                                    child: Row(
+                                                      children: [
+                                                        SvgPicture.asset(
+                                                          AppAssets
+                                                              .chatMarkActiveSvg,
+                                                          width: 15,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text(
+                                                          LocaleKeys
+                                                              .chat_with_delivery_person
+                                                              .tr(),
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.rr
+                                                              .copyWith(
+                                                            color: const Color(
+                                                                0xff1D1D1D),
+                                                            fontSize: 9,
+                                                            height: 1.3,
+                                                            letterSpacing: 0.18,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    )),
+                                              );
+                                            },
+                                          )),
+                                    );
+                            }),
+                      ],
+                    ),
+                  ),
+          );
+        });
+  }
+
+  Widget buildThirdSectionForRating() {
+    return Container(
+      padding: EdgeInsets.only(top: 12, left: 12, right: 12, bottom: 0),
+      margin: EdgeInsets.symmetric(horizontal: 12),
+      height: 158,
+      width: 1.sw,
+      decoration: BoxDecoration(
+        color: Color(0xffF4F4F4),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Color(0xff402CDD)),
+      ),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SvgPicture.asset(
+              AppAssets.groupStarsRattingSvg,
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              LocaleKeys.rate_and_get_money.tr(),
+              style: context.textTheme.bodyMedium?.mr.copyWith(
+                color: Color(0xff1D1D1D),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 1.3,
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              LocaleKeys.rating_section_description.tr(),
+              style: context.textTheme.bodyMedium?.rr.copyWith(
+                color: Color(0xff5D5C5D),
+                letterSpacing: 0.18,
+                fontSize: 10,
+                height: 1.3,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(
+                  alignment: Alignment.center,
+                  width: 290.w,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: Color(0xff402CDD),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextSpan(
-                        text: itemsCount,
-                        style: context.textTheme.bodyMedium?.bq.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          letterSpacing: 0.18,
+                      SvgPicture.asset(
+                        AppAssets.groupStarsRattingSvg,
+                        color: Color(0xffFFD800),
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Text(
+                        LocaleKeys.rate_and_get_money.tr(),
+                        style: context.textTheme.bodyMedium?.mr.copyWith(
                           fontSize: 14,
-                          height: 1.3,
+                          height: 1.7,
+                          color: Color(0xffFFD800),
                         ),
                       ),
-                      TextSpan(text: ' ${LocaleKeys.item.tr()}'),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      SvgPicture.asset(
+                        AppAssets.groupStarsRattingSvg,
+                        color: Color(0xffFFD800),
+                      ),
                     ],
-                  ),
-                ),
-                ///////////////////
-              ],
-            ),
-            Spacer(),
-            ValueListenableBuilder<int>(
-                valueListenable: indexTapPackage,
-                builder: (context, _indexTapPackage, _) {
-                  return orders[_indexTapPackage].orderStatus?.value !=
-                          "out_for_delivery"
-                      ? SizedBox.shrink()
-                      : Container(
-                          width: 30,
-                          height: 40,
-                          child: BlocListener<ChatBloc, ChatState>(
-                              listenWhen: (previous, current) =>
-                                  previous.getOrderRecipientIdStatus !=
-                                  current.getOrderRecipientIdStatus,
-                              listener: (context, state) {
-                                if (state.getOrderRecipientIdStatus ==
-                                    GetOrderRecipientIdStatus.success) {
-                                  String receiverName = "DW";
-                                  String fullReceiverName = "Delivery Worker";
-                                  String? recipientUserId =
-                                      state.recipientUserId;
-                                  if (recipientUserId == null) {
-                                    return;
-                                  }
-                                  Chat? chat;
-                                  User? receiver;
-                                  List<Chat> chats =
-                                      List.of(GetIt.I<ChatBloc>().state.chats);
-                                  debugPrint(chats.toString());
-                                  chats.addAll(
-                                      GetIt.I<ChatBloc>().state.pinnedChats);
-                                  chat = chats.firstWhere((element) =>
-                                      element.channelMembers!.any((element) {
-                                        return element.userId.toString() ==
-                                            recipientUserId;
-                                      }));
-                                  final preferences =
-                                      GetIt.I<PrefsRepository>();
-                                  receiver = chat.channelMembers
-                                      ?.firstWhere(
-                                        (element) =>
-                                            element.userId !=
-                                            preferences.myChatId,
-                                        orElse: () => ChannelMember(
-                                            userId:
-                                                int.tryParse(recipientUserId),
-                                            user: User(
-                                                id: int.tryParse(
-                                                    recipientUserId),
-                                                name: receiverName)),
-                                      )
-                                      .user;
-                                  String fromOrder = "true";
-                                  context.go(GRouter.config.applicationRoutes
-                                          .kSinglePageChatPagePath +
-                                      '?chatId=${chat.id!.toString()}&fromOrder=$fromOrder&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
-                                }
-                                // TODO: implement listener
-                              },
-                              child: BlocBuilder<ChatBloc, ChatState>(
-                                buildWhen: (previous, current) =>
-                                    previous.getOrderRecipientIdStatus !=
-                                    current.getOrderRecipientIdStatus,
-                                builder: (context, state) {
-                                  if (state.getOrderRecipientIdStatus ==
-                                      GetOrderRecipientIdStatus.loading) {
-                                    return Container(
-                                      width: 30,
-                                      height: 30,
-                                      child: TrydosLoader(
-                                        size: 16,
-                                      ),
-                                    );
-                                  }
-                                  return Container(
-                                    alignment: Alignment.center,
-                                    width: 30,
-                                    height: 30,
-                                    child: InkWell(
-                                      onTap: () {
-                                        chatBloc.add(GetOrderRecipientIdEvent(
-                                            originalUserId:
-                                                GetIt.I<PrefsRepository>()
-                                                    .myMarketId
-                                                    .toString(),
-                                            orderId:
-                                                orders[indexTapPackage.value]
-                                                    .id
-                                                    .toString()));
-                                      },
-                                      child: SvgPicture.asset(
-                                        AppAssets.chatMarkActiveSvg,
-                                        width: 20,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )),
-                        );
-                }),
-          ],
-        ),
-      ),
+                  ))
+            ])
+          ]),
     );
   }
 

@@ -37,7 +37,16 @@ class AddCurrentSelectedColorEvent extends HomeEvent {
   List<Object?> get props => [currentSelectedColor, productSlug];
 }
 
-class GetCommentForProductEvent extends HomeEvent {
+class IncreaseCountShareOfProductEvent extends HomeEvent {
+  final String productId;
+
+  const IncreaseCountShareOfProductEvent({required this.productId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+/* GetCommentForProductEvent extends HomeEvent {
   final String productId;
 
   const GetCommentForProductEvent({required this.productId});
@@ -45,7 +54,7 @@ class GetCommentForProductEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [productId];
-}
+}*/
 
 class ChangeCountryLanguageForNotificationEvent extends HomeEvent {
   final String country;
@@ -176,7 +185,7 @@ class SendErrorToMobileErrorLogEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class GetProductsListInCartEvent extends HomeEvent {
+/*class GetProductsListInCartEvent extends HomeEvent {
   const GetProductsListInCartEvent(
       //  {this.getWithPagination = false}
       );
@@ -184,7 +193,7 @@ class GetProductsListInCartEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [];
-}
+}*/
 
 /*class GeColorsAndSizesForSearchEvent extends HomeEvent {
   const GeColorsAndSizesForSearchEvent();
@@ -454,6 +463,7 @@ class AddItemToCartEvent extends HomeEvent {
   final String colorName;
   final String sizeName;
   final String? maxAllowed;
+  final bool fromCartPage;
   final bool finishAddAllTheItems;
   final bool isRedeem;
   final double redeemVariantPrice;
@@ -462,6 +472,7 @@ class AddItemToCartEvent extends HomeEvent {
 
   AddItemToCartEvent(
       {this.quantity,
+      required this.fromCartPage,
       this.boutiqueIcon,
       this.finishAddAllTheItems = true,
       this.boutiqueId,
@@ -489,6 +500,7 @@ class AddMultiItemsToCartEvent extends HomeEvent {
   final String productSlugForTopic;
   final int? boutiqueId;
   final String? maxAllowed;
+  final bool fromCartPage;
   final Products products;
   final bool isRedeem;
   final double redeemVariantPrice;
@@ -497,6 +509,7 @@ class AddMultiItemsToCartEvent extends HomeEvent {
     this.id,
     this.boutiqueIcon,
     required this.isRedeem,
+    required this.fromCartPage,
     required this.redeemVariantPrice,
     required this.maxAllowed,
     required this.productSlugForTopic,
@@ -521,7 +534,7 @@ class AddCurrentColorSizeEvent extends HomeEvent {
   List<Object?> get props => [choice_1, choiceOption];
 }
 
-class AddProductItemForCartEvent extends HomeEvent {
+/*class AddProductItemForCartEvent extends HomeEvent {
   final Products? product;
   final String productId;
 
@@ -529,7 +542,7 @@ class AddProductItemForCartEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [productId, product];
-}
+}*/
 
 class ClearAllAppCashEvent extends HomeEvent {
   const ClearAllAppCashEvent();
@@ -543,6 +556,7 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String itemId;
   final String productId;
   final String currentSize;
+  final bool fromCartPage;
 
   final String colorName;
   final String image;
@@ -551,6 +565,7 @@ class RemoveItemFormCartEvent extends HomeEvent {
     required this.boutiqueId,
     required this.image,
     required this.currentSize,
+    required this.fromCartPage,
     required this.colorName,
     required this.productId,
   });
@@ -563,6 +578,7 @@ class UpdateItemInCartEvent extends HomeEvent {
   final String cartId;
   final int totalQuantity;
   final int newQuantity;
+  final bool fromCartPage;
   final String currentSize;
   final String productId;
   final bool fishAddAllTheItems;
@@ -580,6 +596,7 @@ class UpdateItemInCartEvent extends HomeEvent {
     required this.newQuantity,
     this.fishAddAllTheItems = true,
     required this.cartId,
+    required this.fromCartPage,
     required this.image,
     required this.maxAllowed,
     required this.currentSize,
@@ -636,6 +653,18 @@ class AddSearchTextToHistoryEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [];
+}
+
+class AddProductIdToSaveRedeemTimerEvent extends HomeEvent {
+  final List<String> productIdToSaveRedeemTimer;
+  final bool on;
+  AddProductIdToSaveRedeemTimerEvent({
+    required this.productIdToSaveRedeemTimer,
+    required this.on,
+  });
+
+  @override
+  List<Object?> get props => [productIdToSaveRedeemTimer];
 }
 
 class RemoveSearchTextfromHistoryEvent extends HomeEvent {
@@ -765,4 +794,12 @@ class GetUserNotificationEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [getWithPagination];
+}
+
+class FetchAuthProductDetailsEvent extends HomeEvent {
+  final String productSlug;
+  const FetchAuthProductDetailsEvent(this.productSlug);
+
+  @override
+  List<Object?> get props => [productSlug];
 }

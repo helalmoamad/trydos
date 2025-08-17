@@ -119,10 +119,8 @@ class _StoriesListState extends State<StoriesList> {
                   previous.getStoriesStatus != current.getStoriesStatus ||
                   previous.deleteStoryStatus != current.deleteStoryStatus,
               builder: (context, state) {
-                print(
-                    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${prefsRepository.myProfilePhoto == ""}");
                 List<CollectionStoryModel> storiesCollections =
-                    state.storiesCollections;
+                    List.of(state.storiesCollections);
                 storiesCollections
                     .removeWhere((element) => element.stories?.length == 0);
 
@@ -137,498 +135,511 @@ class _StoriesListState extends State<StoriesList> {
                               switch (state.getStoriesStatus) {
                                 case GetStoriesStatus.success:
                                   return SizedBox(
-                                      key: TestVariables.kTestMode
-                                          ? Key(WidgetsKeys
-                                              .storiesSuccessStatusKey)
-                                          : null,
-                                      height: 220,
-                                      child: Directionality(
-                                        textDirection: ui.TextDirection.ltr,
-                                        child: ListView.separated(
-                                            controller: listViewController,
-                                            itemBuilder: (context, index) {
-                                              if (index ==
-                                                  storiesCollections.length +
-                                                      1) {
-                                                return Container(
-                                                  height: !(state
-                                                          .getStoryWithPagintionStatusLoading)
-                                                      ? 0
-                                                      : 50,
-                                                  width: !(state
-                                                          .getStoryWithPagintionStatusLoading)
-                                                      ? 0
-                                                      : 50,
-                                                  child: !(state
-                                                          .getStoryWithPagintionStatusLoading)
-                                                      ? SizedBox.shrink()
-                                                      : TrydosLoader(
-                                                          size: 20,
-                                                        ),
-                                                );
-                                              }
-                                              //todo FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
-                                              if (index == 0) {
-                                                return state.uploadStoryCloudinaryStatus ==
-                                                        UploadStoryCloudinaryStatus
-                                                            .loading
-                                                    ? TrydosLoader()
-                                                    : Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          SizedBox(height: 40),
-                                                          Material(
-                                                            color: const Color
-                                                                .fromARGB(0,
-                                                                255, 222, 222),
-                                                            child: SizedBox(
-                                                              width: 100,
-                                                              height: 150,
-                                                              child: Stack(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                children: [
-                                                                  ClipRRect(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
+                                    key: TestVariables.kTestMode
+                                        ? Key(
+                                            WidgetsKeys.storiesSuccessStatusKey)
+                                        : null,
+                                    height: 220,
+                                    child: ListView.separated(
+                                        controller: listViewController,
+                                        itemBuilder: (context, index) {
+                                          if (index ==
+                                              storiesCollections.length + 1) {
+                                            return Container(
+                                              height: !(state
+                                                      .getStoryWithPagintionStatusLoading)
+                                                  ? 0
+                                                  : 50,
+                                              width: !(state
+                                                      .getStoryWithPagintionStatusLoading)
+                                                  ? 0
+                                                  : 50,
+                                              child: !(state
+                                                      .getStoryWithPagintionStatusLoading)
+                                                  ? SizedBox.shrink()
+                                                  : TrydosLoader(
+                                                      size: 20,
+                                                    ),
+                                            );
+                                          }
+                                          //todo FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
+                                          if (index == 0) {
+                                            return state.uploadStoryCloudinaryStatus ==
+                                                    UploadStoryCloudinaryStatus
+                                                        .loading
+                                                ? TrydosLoader()
+                                                : Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      SizedBox(height: 40),
+                                                      Material(
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            0, 255, 222, 222),
+                                                        child: SizedBox(
+                                                          width: 100,
+                                                          height: 150,
+                                                          child: Stack(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            children: [
+                                                              ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
                                                                             20),
-                                                                    child: MyCachedNetworkImage(
-                                                                        imageUrl:
-                                                                            prefsRepository.myProfilePhoto ??
-                                                                                "",
+                                                                child: MyCachedNetworkImage(
+                                                                    imageUrl:
+                                                                        prefsRepository.myProfilePhoto ??
+                                                                            "",
+                                                                    width: 100,
+                                                                    imageFit:
+                                                                        BoxFit
+                                                                            .cover,
+                                                                    height:
+                                                                        150),
+                                                              ),
+                                                              InkWell(
+                                                                highlightColor:
+                                                                    Colors
+                                                                        .transparent,
+                                                                splashColor: Colors
+                                                                    .transparent,
+                                                                child: (authState
+                                                                            .loginToStoriesStatus ==
+                                                                        LoginToStoriesStatus
+                                                                            .loading)
+                                                                    ? ClipRRect(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20),
+                                                                        child: Container(
+                                                                            color: Colors.grey,
+                                                                            alignment: Alignment.center,
+                                                                            height: 150,
+                                                                            width: 100,
+                                                                            child: TrydosLoader(
+                                                                              size: 25,
+                                                                              color: Colors.white,
+                                                                            )),
+                                                                      )
+                                                                    : Container(
+                                                                        child: Center(
+                                                                            child:
+                                                                                MyTextWidget(LocaleKeys.upload.tr())),
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(20.0),
+                                                                          color: (prefsRepository.myProfilePhoto == null || prefsRepository.myProfilePhoto == "")
+                                                                              ? Colors.grey
+                                                                              : Colors.grey.withOpacity(0.7),
+                                                                        ),
                                                                         width:
                                                                             100,
-                                                                        imageFit:
-                                                                            BoxFit
-                                                                                .cover,
-                                                                        height:
-                                                                            150),
-                                                                  ),
-                                                                  InkWell(
-                                                                    highlightColor:
-                                                                        Colors
-                                                                            .transparent,
-                                                                    splashColor:
-                                                                        Colors
-                                                                            .transparent,
-                                                                    child: (authState.loginToStoriesStatus ==
-                                                                            LoginToStoriesStatus.loading)
-                                                                        ? ClipRRect(
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(20),
-                                                                            child: Container(
-                                                                                color: Colors.grey,
-                                                                                alignment: Alignment.center,
-                                                                                height: 150,
-                                                                                width: 100,
-                                                                                child: TrydosLoader(
-                                                                                  size: 25,
-                                                                                  color: Colors.white,
-                                                                                )),
-                                                                          )
-                                                                        : Container(
-                                                                            child:
-                                                                                Center(child: MyTextWidget(LocaleKeys.upload.tr())),
-                                                                            decoration:
-                                                                                BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(20.0),
-                                                                              color: (prefsRepository.myProfilePhoto == null || prefsRepository.myProfilePhoto == "") ? Colors.grey : Colors.grey.withOpacity(0.7),
-                                                                            ),
-                                                                            width:
-                                                                                100,
-                                                                          ),
-                                                                    onTap:
-                                                                        () async {
-                                                                      if (authState
-                                                                              .loginToStoriesStatus ==
-                                                                          LoginToStoriesStatus
-                                                                              .loading) {
-                                                                        return;
-                                                                      }
-                                                                      disableResizing();
-                                                                      if (GetIt.I<PrefsRepository>().isVerifiedPhone ==
-                                                                              false ||
-                                                                          GetIt.I<PrefsRepository>()
-                                                                              .storiesToken
-                                                                              .isNullOrEmpty) {
-                                                                        widget
-                                                                            .isShowPanelForVerified
-                                                                            .value = true;
-                                                                      } else if ((GetIt.I<PrefsRepository>().myMarketName?.length ??
-                                                                              0) <
-                                                                          3) {
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          barrierDismissible:
-                                                                              false,
-                                                                          builder:
-                                                                              (BuildContext context) {
-                                                                            return UpdateUserNameWidget();
-                                                                          },
-                                                                        );
-                                                                      } else {
-                                                                        // FirebaseAnalyticsService
-                                                                        //     .logEventForSession(
-                                                                        //   eventName:
-                                                                        //       AnalyticsEventsConst.buttonClicked,
-                                                                        //   executedEventName:
-                                                                        //       AnalyticsButtonsEventNameConst.uploadStoryButton,
-                                                                        // );
-                                                                        //////////////////////////////////////
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          builder:
-                                                                              (BuildContext context) {
-                                                                            return GalleryAndCameraDialogWidget(
-                                                                              fromStory: true,
-                                                                              onChooseFileFromCameraAction: (File? file) async {
-                                                                                if (file != null) {
-                                                                                  GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(file));
+                                                                      ),
+                                                                onTap:
+                                                                    () async {
+                                                                  if (authState
+                                                                          .loginToStoriesStatus ==
+                                                                      LoginToStoriesStatus
+                                                                          .loading) {
+                                                                    return;
+                                                                  }
+                                                                  disableResizing();
+                                                                  if (GetIt.I<PrefsRepository>()
+                                                                              .isVerifiedPhone ==
+                                                                          false ||
+                                                                      GetIt.I<PrefsRepository>()
+                                                                          .storiesToken
+                                                                          .isNullOrEmpty) {
+                                                                    widget
+                                                                        .isShowPanelForVerified
+                                                                        .value = true;
+                                                                  } else if ((GetIt.I<PrefsRepository>()
+                                                                              .myMarketName
+                                                                              ?.length ??
+                                                                          0) <
+                                                                      3) {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      barrierDismissible:
+                                                                          false,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return UpdateUserNameWidget();
+                                                                      },
+                                                                    );
+                                                                  } else {
+                                                                    // FirebaseAnalyticsService
+                                                                    //     .logEventForSession(
+                                                                    //   eventName:
+                                                                    //       AnalyticsEventsConst.buttonClicked,
+                                                                    //   executedEventName:
+                                                                    //       AnalyticsButtonsEventNameConst.uploadStoryButton,
+                                                                    // );
+                                                                    //////////////////////////////////////
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return GalleryAndCameraDialogWidget(
+                                                                          fromStory:
+                                                                              true,
+                                                                          onChooseFileFromCameraAction:
+                                                                              (File? file) async {
+                                                                            if (file !=
+                                                                                null) {
+                                                                              GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(file));
 
-                                                                                  // final cloudinary =
-                                                                                  //     CloudinaryPublic(
-                                                                                  //         'djooohujg',
-                                                                                  //         'v4h8xqns',
-                                                                                  //         cache:false);
-                                                                                  // CloudinaryResponse
-                                                                                  //     response =
-                                                                                  //     await cloudinary
-                                                                                  //         .uploadFile(
-                                                                                  //
-                                                                                  //
-                                                                                  //   CloudinaryFile.fromFile(
-                                                                                  ///////////////////////////////////////////
-                                                                                  // FirebaseAnalyticsService.logEventForSession(
-                                                                                  //   eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                  //   executedEventName: AnalyticsButtonsEventNameConst.confirmUploadStoryButton,
-                                                                                  // );
-                                                                                }
-                                                                              },
-                                                                              onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
-                                                                                if (assetEntity != null) {
-                                                                                  File file = (await assetEntity.originFile)!;
-                                                                                  GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(file));
-                                                                                }
-                                                                              },
-                                                                            );
+                                                                              // final cloudinary =
+                                                                              //     CloudinaryPublic(
+                                                                              //         'djooohujg',
+                                                                              //         'v4h8xqns',
+                                                                              //         cache:false);
+                                                                              // CloudinaryResponse
+                                                                              //     response =
+                                                                              //     await cloudinary
+                                                                              //         .uploadFile(
+                                                                              //
+                                                                              //
+                                                                              //   CloudinaryFile.fromFile(
+                                                                              ///////////////////////////////////////////
+                                                                              // FirebaseAnalyticsService.logEventForSession(
+                                                                              //   eventName: AnalyticsEventsConst.buttonClicked,
+                                                                              //   executedEventName: AnalyticsButtonsEventNameConst.confirmUploadStoryButton,
+                                                                              // );
+                                                                            }
+                                                                          },
+                                                                          onChooseFileFromGalleryAction:
+                                                                              (AssetEntity? assetEntity) async {
+                                                                            if (assetEntity !=
+                                                                                null) {
+                                                                              File file = (await assetEntity.originFile)!;
+                                                                              GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(file));
+                                                                            }
                                                                           },
                                                                         );
-                                                                      }
-                                                                    },
-                                                                  ),
-                                                                ],
+                                                                      },
+                                                                    );
+                                                                  }
+                                                                },
                                                               ),
-                                                            ),
+                                                            ],
                                                           ),
-                                                        ],
-                                                      );
-                                              } else {
-                                                //todo cause we take the index 0 to the upload button
-                                                index = index - 1;
-                                                //TODO CHECK WITHER THE USER AUTH OR NOT SO IF AUTH IF HE HAS STORY RETURN TO IT THE
-                                                //TODO LAST STORY HE UPLOAD ELSE MAKE THE FIRST STORY NOT SHOWED IN FRONT
-                                                int indexOfInitialStory;
-                                                Story initialStory;
-                                                if (GetIt.I<PrefsRepository>()
-                                                        .myStoriesId ==
-                                                    storiesCollections[index]
-                                                        .stories![0]
-                                                        .userId) {
-                                                  indexOfInitialStory =
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                          } else {
+                                            //todo cause we take the index 0 to the upload button
+                                            index = index - 1;
+                                            //TODO CHECK WITHER THE USER AUTH OR NOT SO IF AUTH IF HE HAS STORY RETURN TO IT THE
+                                            //TODO LAST STORY HE UPLOAD ELSE MAKE THE FIRST STORY NOT SHOWED IN FRONT
+                                            int indexOfInitialStory;
+                                            Story initialStory;
+                                            if (GetIt.I<PrefsRepository>()
+                                                    .myStoriesId ==
+                                                storiesCollections[index]
+                                                    .stories![0]
+                                                    .userId) {
+                                              indexOfInitialStory =
+                                                  storiesCollections[index]
+                                                      .stories!
+                                                      .lastIndexWhere(
+                                                          (element) =>
+                                                              element.isSeen ==
+                                                              false);
+                                              indexOfInitialStory =
+                                                  indexOfInitialStory == -1
+                                                      ? 0
+                                                      : indexOfInitialStory;
+                                            } else {
+                                              indexOfInitialStory =
+                                                  firstWhereNotShowed(
                                                       storiesCollections[index]
-                                                          .stories!
-                                                          .lastIndexWhere(
-                                                              (element) =>
-                                                                  element
-                                                                      .isSeen ==
-                                                                  false);
-                                                  indexOfInitialStory =
-                                                      indexOfInitialStory == -1
-                                                          ? 0
-                                                          : indexOfInitialStory;
-                                                } else {
-                                                  indexOfInitialStory =
-                                                      firstWhereNotShowed(
-                                                          storiesCollections[
-                                                                  index]
-                                                              .stories!);
-                                                }
-                                                initialStory =
-                                                    storiesCollections[index]
-                                                            .stories![
-                                                        indexOfInitialStory];
+                                                          .stories!);
+                                            }
+                                            initialStory = storiesCollections[
+                                                    index]
+                                                .stories![indexOfInitialStory];
 
-                                                String? imageOfVideoUrl;
-                                                if (initialStory.isPhoto != 1) {
-                                                  int index = initialStory
+                                            String? imageOfVideoUrl;
+                                            if (initialStory.isPhoto != 1) {
+                                              int index = initialStory
+                                                  .fullVideoPath!
+                                                  .lastIndexOf('.');
+                                              imageOfVideoUrl = initialStory
                                                       .fullVideoPath!
-                                                      .lastIndexOf('.');
-                                                  imageOfVideoUrl = initialStory
-                                                          .fullVideoPath!
-                                                          .substring(0, index) +
-                                                      '.png';
-                                                }
-                                                return AnimatedPadding(
-                                                  duration: Duration(
-                                                      milliseconds: 200),
-                                                  padding: EdgeInsets.only(
-                                                      left: focused.value1 !=
-                                                                  -1 &&
-                                                              focused.value1 ==
-                                                                  (index - 1)
-                                                          ? 30
-                                                          : 0),
-                                                  child: GestureDetector(
-                                                      onLongPressStart:
-                                                          (details) {
-                                                        bool isFirstPress =
-                                                            resizeStories.value
-                                                                    .value1 ==
-                                                                -1;
-                                                        resizeStories.value =
-                                                            resizeStories.value.copyWith(
-                                                                value1: (details
-                                                                            .globalPosition
-                                                                            .dx +
-                                                                        listViewController
-                                                                            .offset -
-                                                                        115) ~/
-                                                                    115);
-                                                        if (details.localPosition.dx <=
-                                                                (40 +
-                                                                    resizeStories
+                                                      .substring(0, index) +
+                                                  '.png';
+                                            }
+                                            return AnimatedPadding(
+                                              duration:
+                                                  Duration(milliseconds: 200),
+                                              padding: EdgeInsets.only(
+                                                  left: focused.value1 != -1 &&
+                                                          focused.value1 ==
+                                                              (index - 1)
+                                                      ? 30
+                                                      : 0),
+                                              child: GestureDetector(
+                                                  onLongPressStart: (details) {
+                                                    bool isFirstPress =
+                                                        resizeStories
+                                                                .value.value1 ==
+                                                            -1;
+                                                    resizeStories.value =
+                                                        resizeStories.value.copyWith(
+                                                            value1: (details
+                                                                        .globalPosition
+                                                                        .dx +
+                                                                    listViewController
+                                                                        .offset -
+                                                                    115) ~/
+                                                                115);
+                                                    if (details.localPosition
+                                                                .dx <=
+                                                            (40 +
+                                                                resizeStories
+                                                                        .value
+                                                                        .value1 *
+                                                                    115 +
+                                                                (resizeStories
                                                                             .value
-                                                                            .value1 *
-                                                                        115 +
-                                                                    (resizeStories.value.value1 ==
-                                                                            resizeStories
-                                                                                .value.value2
-                                                                        ? 45
-                                                                        : 0)) &&
-                                                            details.localPosition
-                                                                    .dy <=
-                                                                (40 +
-                                                                    (isFirstPress
-                                                                        ? 20
-                                                                        : 0) +
-                                                                    (resizeStories.value.value1 ==
-                                                                            resizeStories.value.value2
-                                                                        ? 45
-                                                                        : 0))) {
-                                                          resizeStories.value =
-                                                              resizeStories
-                                                                  .value
-                                                                  .copyWith(
-                                                                      value2: resizeStories
+                                                                            .value1 ==
+                                                                        resizeStories
+                                                                            .value
+                                                                            .value2
+                                                                    ? 45
+                                                                    : 0)) &&
+                                                        details.localPosition
+                                                                .dy <=
+                                                            (40 +
+                                                                (isFirstPress
+                                                                    ? 20
+                                                                    : 0) +
+                                                                (resizeStories
+                                                                            .value
+                                                                            .value1 ==
+                                                                        resizeStories
+                                                                            .value
+                                                                            .value2
+                                                                    ? 45
+                                                                    : 0))) {
+                                                      resizeStories.value =
+                                                          resizeStories.value
+                                                              .copyWith(
+                                                                  value2:
+                                                                      resizeStories
                                                                           .value
                                                                           .value1);
-                                                        } else {
-                                                          resizeStories.value =
-                                                              resizeStories
-                                                                  .value
-                                                                  .copyWith(
-                                                                      value2:
-                                                                          -1);
-                                                        }
-                                                      },
-                                                      onLongPressUp: () {
+                                                    } else {
+                                                      resizeStories.value =
+                                                          resizeStories.value
+                                                              .copyWith(
+                                                                  value2: -1);
+                                                    }
+                                                  },
+                                                  onLongPressUp: () {
+                                                    resizeStories.value =
                                                         resizeStories.value =
+                                                            resizeStories.value
+                                                                .copyWith(
+                                                                    value2: -1,
+                                                                    value1: -1);
+                                                  },
+                                                  onLongPressMoveUpdate:
+                                                      (details) {
+                                                    resizeStories.value =
+                                                        resizeStories.value.copyWith(
+                                                            value1: (details
+                                                                        .globalPosition
+                                                                        .dx +
+                                                                    listViewController
+                                                                        .offset -
+                                                                    115) ~/
+                                                                115);
+                                                    if (details.localPosition
+                                                                .dx <=
+                                                            (40 +
+                                                                resizeStories
+                                                                        .value
+                                                                        .value1 *
+                                                                    115 +
+                                                                (resizeStories
+                                                                            .value
+                                                                            .value1 ==
+                                                                        resizeStories
+                                                                            .value
+                                                                            .value2
+                                                                    ? 50
+                                                                    : 0)) &&
+                                                        details.localPosition
+                                                                .dy <=
+                                                            (40 +
+                                                                (resizeStories
+                                                                            .value
+                                                                            .value1 ==
+                                                                        resizeStories
+                                                                            .value
+                                                                            .value2
+                                                                    ? 50
+                                                                    : 0))) {
+                                                      resizeStories.value =
+                                                          resizeStories.value
+                                                              .copyWith(
+                                                                  value2:
+                                                                      resizeStories
+                                                                          .value
+                                                                          .value1);
+                                                    } else {
+                                                      resizeStories.value =
+                                                          resizeStories.value
+                                                              .copyWith(
+                                                                  value2: -1);
+                                                    }
+                                                  },
+                                                  child: (initialStory
+                                                              .isPhoto ==
+                                                          1)
+                                                      ? StoryItemWidget(
+                                                          index: index,
+                                                          onTapOnStoryAction:
+                                                              () async {
+                                                            GetIt.I<StoryBloc>().add(
+                                                                StorySelectedEvent(
+                                                                    collectionIndex:
+                                                                        index,
+                                                                    currentPage:
+                                                                        index,
+                                                                    selectedStoryIndexInCollection:
+                                                                        indexOfInitialStory));
+                                                            // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
+                                                            //             initialPage:
+                                                            //             index)));
+                                                            pushOverscrollRoute(
+                                                                context:
+                                                                    context,
+                                                                child: StoryCollectionPageView(
+                                                                    initialPage:
+                                                                        index),
+                                                                dragToPopDirection:
+                                                                    DragToPopDirection
+                                                                        .toBottom,
+                                                                fullscreenDialog:
+                                                                    true);
+                                                            disableResizing();
+                                                            //////////////////////////////
+                                                            // FirebaseAnalyticsService
+                                                            //     .logEventForSession(
+                                                            //   eventName:
+                                                            //       AnalyticsEventsConst
+                                                            //           .buttonClicked,
+                                                            //   executedEventName:
+                                                            //       AnalyticsButtonsEventNameConst
+                                                            //           .viewStoryButton,
+                                                            // );
+                                                          },
+                                                          onTapOnUserImage: () {
                                                             resizeStories
                                                                     .value =
                                                                 resizeStories
                                                                     .value
                                                                     .copyWith(
                                                                         value2:
-                                                                            -1,
+                                                                            index,
                                                                         value1:
-                                                                            -1);
-                                                      },
-                                                      onLongPressMoveUpdate:
-                                                          (details) {
-                                                        resizeStories.value =
-                                                            resizeStories.value.copyWith(
-                                                                value1: (details
-                                                                            .globalPosition
-                                                                            .dx +
-                                                                        listViewController
-                                                                            .offset -
-                                                                        115) ~/
-                                                                    115);
-                                                        if (details
-                                                                    .localPosition
-                                                                    .dx <=
-                                                                (40 +
-                                                                    resizeStories
-                                                                            .value
-                                                                            .value1 *
-                                                                        115 +
-                                                                    (resizeStories.value.value1 ==
-                                                                            resizeStories
-                                                                                .value.value2
-                                                                        ? 50
-                                                                        : 0)) &&
-                                                            details.localPosition
-                                                                    .dy <=
-                                                                (40 +
-                                                                    (resizeStories.value.value1 ==
-                                                                            resizeStories.value.value2
-                                                                        ? 50
-                                                                        : 0))) {
-                                                          resizeStories.value =
-                                                              resizeStories
-                                                                  .value
-                                                                  .copyWith(
-                                                                      value2: resizeStories
-                                                                          .value
-                                                                          .value1);
-                                                        } else {
-                                                          resizeStories.value =
-                                                              resizeStories
-                                                                  .value
-                                                                  .copyWith(
-                                                                      value2:
-                                                                          -1);
-                                                        }
-                                                      },
-                                                      child: (initialStory
-                                                                  .isPhoto ==
-                                                              1)
-                                                          ? StoryItemWidget(
-                                                              index: index,
-                                                              onTapOnStoryAction:
-                                                                  () async {
-                                                                GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                                                                            index);
+                                                          },
+                                                          resize: index ==
+                                                              focused.value1,
+                                                          resizeUserImage:
+                                                              index ==
+                                                                  focused
+                                                                      .value2,
+                                                          firstPhotoNotShowed:
+                                                              initialStory
+                                                                  .photoPath,
+                                                        )
+                                                      : StoryItemWidget(
+                                                          index: index,
+                                                          onTapOnStoryAction:
+                                                              () async {
+                                                            disableResizing();
+                                                            GetIt.I<StoryBloc>().add(
+                                                                StorySelectedEvent(
                                                                     collectionIndex:
                                                                         index,
                                                                     currentPage:
                                                                         index,
                                                                     selectedStoryIndexInCollection:
                                                                         indexOfInitialStory));
-                                                                // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
-                                                                //             initialPage:
-                                                                //             index)));
-                                                                pushOverscrollRoute(
-                                                                    context:
-                                                                        context,
-                                                                    child: StoryCollectionPageView(
-                                                                        initialPage:
-                                                                            index),
-                                                                    dragToPopDirection:
-                                                                        DragToPopDirection
-                                                                            .toBottom,
-                                                                    fullscreenDialog:
-                                                                        true);
-                                                                disableResizing();
-                                                                //////////////////////////////
-                                                                // FirebaseAnalyticsService
-                                                                //     .logEventForSession(
-                                                                //   eventName:
-                                                                //       AnalyticsEventsConst
-                                                                //           .buttonClicked,
-                                                                //   executedEventName:
-                                                                //       AnalyticsButtonsEventNameConst
-                                                                //           .viewStoryButton,
-                                                                // );
-                                                              },
-                                                              onTapOnUserImage:
-                                                                  () {
+                                                            // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
+                                                            //     initialPage:
+                                                            //     index)));
+                                                            pushOverscrollRoute(
+                                                                context:
+                                                                    context,
+                                                                child: StoryCollectionPageView(
+                                                                    initialPage:
+                                                                        index),
+                                                                dragToPopDirection:
+                                                                    DragToPopDirection
+                                                                        .toBottom,
+                                                                fullscreenDialog:
+                                                                    true);
+                                                            // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
+                                                            //////////////////////////////
+                                                            // FirebaseAnalyticsService
+                                                            //     .logEventForSession(
+                                                            //   eventName:
+                                                            //       AnalyticsEventsConst
+                                                            //           .buttonClicked,
+                                                            //   executedEventName:
+                                                            //       AnalyticsButtonsEventNameConst
+                                                            //           .viewStoryButton,
+                                                            // );
+                                                          },
+                                                          onTapOnUserImage: () {
+                                                            resizeStories
+                                                                    .value =
                                                                 resizeStories
-                                                                        .value =
-                                                                    resizeStories.value.copyWith(
+                                                                    .value
+                                                                    .copyWith(
                                                                         value2:
                                                                             index,
                                                                         value1:
                                                                             index);
-                                                              },
-                                                              resize: index ==
+                                                          },
+                                                          resize: index ==
+                                                              focused.value1,
+                                                          resizeUserImage:
+                                                              index ==
                                                                   focused
-                                                                      .value1,
-                                                              resizeUserImage:
-                                                                  index ==
-                                                                      focused
-                                                                          .value2,
-                                                              firstPhotoNotShowed:
-                                                                  initialStory
-                                                                      .photoPath,
-                                                            )
-                                                          : StoryItemWidget(
-                                                              index: index,
-                                                              onTapOnStoryAction:
-                                                                  () async {
-                                                                disableResizing();
-                                                                GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                                                    collectionIndex:
-                                                                        index,
-                                                                    currentPage:
-                                                                        index,
-                                                                    selectedStoryIndexInCollection:
-                                                                        indexOfInitialStory));
-                                                                // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
-                                                                //     initialPage:
-                                                                //     index)));
-                                                                pushOverscrollRoute(
-                                                                    context:
-                                                                        context,
-                                                                    child: StoryCollectionPageView(
-                                                                        initialPage:
-                                                                            index),
-                                                                    dragToPopDirection:
-                                                                        DragToPopDirection
-                                                                            .toBottom,
-                                                                    fullscreenDialog:
-                                                                        true);
-                                                                // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
-                                                                //////////////////////////////
-                                                                // FirebaseAnalyticsService
-                                                                //     .logEventForSession(
-                                                                //   eventName:
-                                                                //       AnalyticsEventsConst
-                                                                //           .buttonClicked,
-                                                                //   executedEventName:
-                                                                //       AnalyticsButtonsEventNameConst
-                                                                //           .viewStoryButton,
-                                                                // );
-                                                              },
-                                                              onTapOnUserImage:
-                                                                  () {
-                                                                resizeStories
-                                                                        .value =
-                                                                    resizeStories.value.copyWith(
-                                                                        value2:
-                                                                            index,
-                                                                        value1:
-                                                                            index);
-                                                              },
-                                                              resize: index ==
-                                                                  focused
-                                                                      .value1,
-                                                              resizeUserImage:
-                                                                  index ==
-                                                                      focused
-                                                                          .value2,
-                                                              firstPhotoNotShowed:
-                                                                  imageOfVideoUrl,
-                                                            )),
-                                                );
-                                              }
-                                            },
-                                            physics:
-                                                const ClampingScrollPhysics(),
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                    horizontal: 10),
-                                            scrollDirection: Axis.horizontal,
-                                            separatorBuilder:
-                                                (context, index) => SizedBox(
-                                                      width: 15,
-                                                    ),
-                                            itemCount:
-                                                storiesCollections.length + 2),
-                                      ));
+                                                                      .value2,
+                                                          firstPhotoNotShowed:
+                                                              imageOfVideoUrl,
+                                                        )),
+                                            );
+                                          }
+                                        },
+                                        physics: const ClampingScrollPhysics(),
+                                        padding:
+                                            EdgeInsetsDirectional.symmetric(
+                                                horizontal: 10),
+                                        scrollDirection: Axis.horizontal,
+                                        separatorBuilder: (context, index) =>
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                        itemCount:
+                                            storiesCollections.length + 2),
+                                  );
                                 case GetStoriesStatus.init:
                                   return Container();
                                 case GetStoriesStatus.failure:

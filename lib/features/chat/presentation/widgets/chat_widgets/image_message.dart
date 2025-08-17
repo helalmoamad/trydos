@@ -148,6 +148,12 @@ class _ImageMessageState extends State<ImageMessage>
 
   // دالة لتهيئة الصورة مرة واحدة فقط
   void _initializeImage() {
+    // ✅ التحقق من أن الـ Widget ما زال موجوداً
+    if (!mounted) {
+      debugPrint("❌ Widget disposed - skipping image initialization");
+      return;
+    }
+
     debugPrint(
         "🔄 _initializeImage called - isDownloading: $_isDownloading, isLoaded: $_isImageLoaded, imageUrl: '${widget.imageUrl ?? 'null'}'");
 
@@ -155,7 +161,9 @@ class _ImageMessageState extends State<ImageMessage>
     if (widget.imageUrl.isNullOrEmpty || widget.imageUrl!.trim().isEmpty) {
       debugPrint("❌ Invalid imageUrl - setting error state");
       _isImageLoaded = false;
-      _loadingImage.value = -1; // خطأ - URL غير صالح
+      if (mounted) {
+        _loadingImage.value = -1; // خطأ - URL غير صالح
+      }
       if (mounted) setState(() {});
       return;
     }
@@ -171,14 +179,18 @@ class _ImageMessageState extends State<ImageMessage>
       debugPrint("📁 Using cached image file");
       widget.imageFile = _cachedImageFile;
       _isImageLoaded = true;
-      _loadingImage.value = 2;
+      if (mounted) {
+        _loadingImage.value = 2;
+      }
       if (mounted) setState(() {});
       return;
     }
 
     debugPrint("⬇️ Starting download from URL: ${widget.imageUrl}");
     _isDownloading = true;
-    _loadingImage.value = 1; // حالة التحميل
+    if (mounted) {
+      _loadingImage.value = 1; // حالة التحميل
+    }
 
     // ✅ إضافة timeout للتحميل (30 ثانية)
     Timer(Duration(seconds: 30), () {
@@ -186,7 +198,9 @@ class _ImageMessageState extends State<ImageMessage>
         debugPrint("⏰ Download timeout - switching to error state");
         _isDownloading = false;
         _isImageLoaded = false;
-        _loadingImage.value = -1;
+        if (mounted) {
+          _loadingImage.value = -1;
+        }
         if (mounted) setState(() {});
       }
     });
@@ -203,14 +217,18 @@ class _ImageMessageState extends State<ImageMessage>
         widget.imageFile = file;
         _cachedImageFile = file; // ✅ حفظ نسخة احتياطية
         _isImageLoaded = true;
-        _loadingImage.value = 2; // تم التحميل بنجاح
+        if (mounted) {
+          _loadingImage.value = 2; // تم التحميل بنجاح
+        }
         if (mounted) setState(() {});
       } else {
         debugPrint("❌ Download failed - file is null or doesn't exist");
         // ✅ التأكد من إعادة تعيين جميع الحالات عند الفشل
         _isImageLoaded = false;
         _cachedImageFile = null; // مسح أي كاش معطل
-        _loadingImage.value = -1; // فشل التحميل
+        if (mounted) {
+          _loadingImage.value = -1; // فشل التحميل
+        }
         if (mounted) {
           setState(() {}); // ✅ إجبار إعادة بناء UI لإظهار زر إعادة المحاولة
         }
@@ -227,7 +245,9 @@ class _ImageMessageState extends State<ImageMessage>
       _cachedImageUrl = widget.imageUrl;
       _isImageLoaded = false;
       _isDownloading = false;
-      _loadingImage.value = 0;
+      if (mounted) {
+        _loadingImage.value = 0;
+      }
       _initializeImage();
     }
   }
@@ -389,7 +409,7 @@ class _ImageMessageState extends State<ImageMessage>
                                                 ? widget.userMessagePhoto!
                                                 : ("${dotenv.env['Images_Url']}") +
                                                     widget.userMessagePhoto!),
-                                            imageFit: BoxFit.fitWidth,
+                                            imageFit: BoxFit.contain,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
                                             radius: 8,
@@ -441,7 +461,12 @@ class _ImageMessageState extends State<ImageMessage>
 
   @override
   void dispose() {
-    _loadingImage.dispose(); // ✅ تنظيف ValueNotifier
+    // ✅ إيقاف أي عمليات تحميل جارية
+    _isDownloading = false;
+    _isImageLoaded = false;
+
+    // ✅ تنظيف ValueNotifier
+    _loadingImage.dispose();
     super.dispose();
   }
 
@@ -525,11 +550,11 @@ class _ImageMessageState extends State<ImageMessage>
             child: Container(
               key: ValueKey("image_${widget.messageId}"),
               width: 200.w,
-              height: 400,
+              height: 250,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: FileImage(imageFile),
-                  fit: BoxFit.fill,
+                  fit: BoxFit.contain,
                   onError: (exception, stackTrace) {
                     // ✅ في حالة الخطأ، log فقط - لا تغيير للحالة
                     debugPrint("Image display error: $exception");
@@ -555,7 +580,7 @@ class _ImageMessageState extends State<ImageMessage>
   Widget _buildLoadingOrError() {
     return Container(
       width: 200.w,
-      height: 400,
+      height: 250,
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
         borderRadius: BorderRadius.circular(12.0),

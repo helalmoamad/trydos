@@ -15,7 +15,7 @@ class GetFullProductDetailsUseCase
 
   @override
   Future<Either<Failure, GetFullProductDetailsModel>> call(
-      String productId) async {
-    return repository.getFullProductDetails(productId);
+      String productSlug) async {
+    return repository.getFullProductDetails(productSlug);
   }
 }

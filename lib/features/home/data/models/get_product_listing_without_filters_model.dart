@@ -111,13 +111,16 @@ class Products {
   final String? shareLink;
   final String? maxAllowedQty;
   final String? details;
-  final Thumbnail? thumbnail;
+  // final Thumbnail? thumbnail;
   final List<Thumbnail>? images;
   final List<Category>? categories;
   final Category? category;
   final List<String>? labelNames;
   final String? flashDealEndDate;
   final int? collectedAfterOrdering;
+  final int? flashDealStatus;
+  final double? flashDealDiscount;
+  final double? flashDealPrice;
   final Brand? brand;
   final List<Color>? colors;
   final List<SyncColorImage>? syncColorImages;
@@ -156,9 +159,9 @@ class Products {
   final Seller? seller;
   final Shop? shop;
   final bool? isFavSeller;
-  final bool? isLiked;
-  final int? countOfLikes;
 
+  final int? countOfLikes;
+  final CategoryHierarchy? categoryHierarchy;
   final int? countOfPieces;
   final List<dynamic>? reviews;
   final bool? hasWholeSale;
@@ -176,13 +179,14 @@ class Products {
     this.slug,
     this.shareLink,
     this.details,
-    this.thumbnail,
+    //this.thumbnail,
     this.maxAllowedQty,
     this.images,
     this.isRedeem,
     this.redeemPrice,
     this.categories,
     this.hasRedeemDiscount,
+    this.categoryHierarchy,
     this.category,
     this.collectedAfterOrdering,
     this.brand,
@@ -202,11 +206,13 @@ class Products {
     this.dateNow,
     this.description,
     this.descriptors,
+    this.flashDealStatus,
+    this.flashDealDiscount,
+    this.flashDealPrice,
     this.model,
     this.features,
     this.countOfPieces,
     this.variation,
-    this.isLiked,
     this.slugEnTopic,
     this.shippingCostMultiplyWithQuantity,
     this.shippingCost,
@@ -248,6 +254,7 @@ class Products {
     List<Thumbnail>? images,
     List<Category>? categories,
     Category? category,
+    CategoryHierarchy? categoryHierarchy,
     Brand? brand,
     List<Color>? colors,
     List<SyncColorImage>? syncColorImages,
@@ -272,6 +279,9 @@ class Products {
     String? slugEnTopic,
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
+    int? flashDealStatus,
+    double? flashDealDiscount,
+    double? flashDealPrice,
     bool? hasDiscount,
     List<String>? labelNames,
     String? flashDealEndDate,
@@ -286,7 +296,6 @@ class Products {
     dynamic sellerId,
     int? shippingDays,
     BoutiqueForCart? boutique,
-    bool? isLiked,
     int? countOfLikes,
     Seller? seller,
     Shop? shop,
@@ -309,12 +318,16 @@ class Products {
         slug: slug ?? this.slug,
         shareLink: shareLink ?? this.shareLink,
         details: details ?? this.details,
-        thumbnail: thumbnail ?? this.thumbnail,
+        //thumbnail: thumbnail ?? this.thumbnail,
         hasRedeemDiscount: hasRedeemDiscount ?? this.hasRedeemDiscount,
         images: images ?? this.images,
         categories: categories ?? this.categories,
         category: category ?? this.category,
+        flashDealStatus: flashDealStatus ?? this.flashDealStatus,
+        flashDealDiscount: flashDealDiscount ?? this.flashDealDiscount,
+        flashDealPrice: flashDealPrice ?? this.flashDealPrice,
         brand: brand ?? this.brand,
+        categoryHierarchy: categoryHierarchy ?? this.categoryHierarchy,
         colors: colors ?? this.colors,
         syncColorImages: syncColorImages ?? this.syncColorImages,
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
@@ -332,8 +345,8 @@ class Products {
         description: description ?? this.description,
         slugEnTopic: slugEnTopic ?? this.slugEnTopic,
         model: model ?? this.model,
-        features: features ?? this.features,
         variation: variation ?? this.variation,
+        features: features ?? this.features,
         choiceOptions: choiceOptions ?? this.choiceOptions,
         hasDiscount: hasDiscount ?? this.hasDiscount,
         hasTax: hasTax ?? this.hasTax,
@@ -349,7 +362,6 @@ class Products {
         shippingDays: shippingDays ?? this.shippingDays,
         availableQuantity: availableQuantity ?? this.availableQuantity,
         leftStock: leftStock ?? this.leftStock,
-        isLiked: isLiked ?? this.isLiked,
         collectedAfterOrdering:
             collectedAfterOrdering ?? this.collectedAfterOrdering,
         countOfLikes: countOfLikes ?? this.countOfLikes,
@@ -372,7 +384,9 @@ class Products {
 
   factory Products.fromJson(Map<String, dynamic> json) {
     return Products(
-        productId: json["product_id"] != null ? json["product_id"] : json["id"],
+        productId: json["product_id"] != null
+            ? int.tryParse(json["product_id"].toString())
+            : int.tryParse(json["id"].toString()),
         boutiqueId: json["boutique_id"].toString(),
         name: json["name"],
         slug: json["slug"],
@@ -385,13 +399,20 @@ class Products {
         shippingCostMultiplyWithQuantity:
             json["shipping_cost_multiply_with_quantity"],
         shippingCost: double.tryParse(json["shipping_cost"].toString()),
-        thumbnail: json["thumbnail"] == null
-            ? null
-            : Thumbnail.fromJson(json["thumbnail"]),
+        // thumbnail: json["thumbnail"] == null
+        //    ? null
+        //     : Thumbnail.fromJson(json["thumbnail"]),
+        flashDealStatus: json["flash_deal_status"],
+        flashDealDiscount: json["flash_deal_discount"]?.toDouble(),
+        flashDealPrice:
+            double.tryParse((json["flash_deal_price"] ?? 0).toString()),
         images: json["images"] == null
             ? []
             : List<Thumbnail>.from(
                 json["images"]!.map((x) => Thumbnail.fromJson(x))),
+        categoryHierarchy: json["category_hierarchy"] == null
+            ? null
+            : CategoryHierarchy.fromJson(json["category_hierarchy"]),
         categories: json["categories"] == null
             ? []
             : List<Category>.from(
@@ -442,7 +463,6 @@ class Products {
         hasDiscount: json["has_discount"],
         hasTax: json["has_tax"],
         deliveryAt: json["delivery_at"],
-        isLiked: json["is_liked"],
         countOfLikes: json["count_of_likes"],
         tax: json["tax"].toString(),
         unitPrice: json["unit_price"].toString(),
@@ -471,16 +491,20 @@ class Products {
         "redeem_price": redeemPrice,
         "slug": slug,
         "share_link": shareLink,
+        "flash_deal_status": flashDealStatus,
+        "flash_deal_discount": flashDealDiscount,
+        "flash_deal_price": flashDealPrice,
         "has_redeem_discount": hasRedeemDiscount,
 
         "details": details,
-        "thumbnail": thumbnail?.toJson(),
+        //"thumbnail": thumbnail?.toJson(),
         "images": images == null
             ? []
             : List<dynamic>.from(images!.map((x) => x.toJson())),
         "categories": categories == null
             ? []
             : List<dynamic>.from(categories!.map((x) => x.toJson())),
+        "category_hierarchy": categoryHierarchy?.toJson(),
         "category": category?.toJson(),
         "brand": brand?.toJson(),
         "colors": colors == null
@@ -519,6 +543,7 @@ class Products {
         "variation": variation == null
             ? []
             : List<dynamic>.from(variation!.map((x) => x.toJson())),
+
         "choice_options": choiceOptions == null
             ? []
             : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
@@ -528,7 +553,7 @@ class Products {
         "delivery_at": deliveryAt,
         "slug_en_topic": slugEnTopic,
         "shipping_days": shippingDays,
-        "is_liked": isLiked,
+
         "count_of_likes": countOfLikes,
         "tax": tax,
         "unit_price": unitPrice,
@@ -553,6 +578,77 @@ class Products {
             ? []
             : List<dynamic>.from(labels!.map((x) => x.toJson())),
         "is_product_notify_for_user": isProductNotifiedForUser
+      };
+}
+
+class CategoryHierarchy {
+  final CategoryName? mainCategory;
+  final CategoryName? subCategory;
+  final CategoryName? subSubCategory;
+
+  CategoryHierarchy({
+    this.mainCategory,
+    this.subCategory,
+    this.subSubCategory,
+  });
+
+  CategoryHierarchy copyWith({
+    CategoryName? mainCategory,
+    CategoryName? subCategory,
+    CategoryName? subSubCategory,
+  }) =>
+      CategoryHierarchy(
+        mainCategory: mainCategory ?? this.mainCategory,
+        subCategory: subCategory ?? this.subCategory,
+        subSubCategory: subSubCategory ?? this.subSubCategory,
+      );
+
+  factory CategoryHierarchy.fromJson(Map<String, dynamic> json) =>
+      CategoryHierarchy(
+        mainCategory: json["main_category"] == null
+            ? null
+            : CategoryName.fromJson(json["main_category"]),
+        subCategory: json["sub_category"] == null
+            ? null
+            : CategoryName.fromJson(json["sub_category"]),
+        subSubCategory: json["sub_sub_category"] == null
+            ? null
+            : CategoryName.fromJson(json["sub_sub_category"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "main_category": mainCategory?.toJson(),
+        "sub_category": subCategory?.toJson(),
+        "sub_sub_category": subSubCategory?.toJson(),
+      };
+}
+
+class CategoryName {
+  final int? id;
+  final String? name;
+
+  CategoryName({
+    this.id,
+    this.name,
+  });
+
+  CategoryName copyWith({
+    int? id,
+    String? name,
+  }) =>
+      CategoryName(
+        id: id ?? this.id,
+        name: name ?? this.name,
+      );
+
+  factory CategoryName.fromJson(Map<String, dynamic> json) => CategoryName(
+        id: json["id"],
+        name: json["name"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
       };
 }
 
@@ -623,10 +719,12 @@ class Thumbnail {
         filePath: json["file_path"]?.contains("cloudinary")
             ? json["file_path"]
             : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
-        originalWidth:
-            json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight:
-            json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalWidth: json["original_width"] == null
+            ? "0"
+            : json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalHeight: json["original_width"] == null
+            ? ""
+            : json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {
@@ -728,15 +826,19 @@ class SyncColorImage {
         colorTrend: colorTrend ?? this.colorTrend,
       );
 
-  factory SyncColorImage.fromJson(Map<String, dynamic> json) => SyncColorImage(
-        colorName: json["color_name"],
-        colorOption: json["color_option"],
-        images: json["images"] == null
-            ? []
-            : List<Thumbnail>.from(
-                json["images"]!.map((x) => Thumbnail.fromJson(x))),
-        colorTrend: json["color_trend"],
-      );
+  factory SyncColorImage.fromJson(Map<String, dynamic> json) {
+    return SyncColorImage(
+      colorName: json["color_name"],
+      colorOption: json["color_option"],
+      images: json["images"] == null
+          ? []
+          : List<Thumbnail>.from(
+              json["images"]!.map((x) => Thumbnail.fromJson(x))),
+      colorTrend: json["color_trend"] == null || json["color_trend"] == "on"
+          ? false
+          : json["color_trend"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "color_name": colorName,

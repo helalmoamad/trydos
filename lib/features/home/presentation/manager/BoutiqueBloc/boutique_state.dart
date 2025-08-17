@@ -47,6 +47,7 @@ class BoutiqueState extends Equatable {
   final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, bool> boutiquesThatDidPrefetch;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
+
   final Map<String, get_filters.GetProductFiltersModel?> appliedFiltersByUser;
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   final bool cashedOrginalBoutique;

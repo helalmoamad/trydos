@@ -8,6 +8,7 @@ import '../api/log_interceptor.dart';
 import '../data/repository/prefs_repository_impl.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'di_container.config.dart';
+
 final GetIt _getIt = GetIt.I;
 
 @InjectableInit(

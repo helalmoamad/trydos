@@ -1313,10 +1313,6 @@ class _HomePageState extends State<HomePage> {
                                                       products[tapIndex]
                                                               .colors ??
                                                           [];*/
-                                                  if (state
-                                                          .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                      GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                          .success) {}
 
                                                   currentSelectedColor = state
                                                               .currentSelectedColorForEveryProduct[
@@ -1893,8 +1889,8 @@ class _HomePageState extends State<HomePage> {
         ), // height 220
         Positioned(
           top: 0,
-          right: currentLocale.languageCode == "ar" ? 10 : null,
-          left: currentLocale.languageCode == "ar" ? null : 10,
+          right: LanguageService.languageCode == "ar" ? 10 : null,
+          left: LanguageService.languageCode == "ar" ? null : 10,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,

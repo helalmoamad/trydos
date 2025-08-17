@@ -180,10 +180,18 @@ class _ProductDetailsSheetBottomBarState
               current.listitemForAddToCart?.length ||
           previous.enableAddToCardAfterChangeVariantZero !=
               current.enableAddToCardAfterChangeVariantZero ||
-          previous.getCommentForProductStatus !=
-              current.getCommentForProductStatus ||
           previous.changeSizesForEveryProduct !=
               current.changeSizesForEveryProduct ||
+          previous
+                  .cachedProductWithoutRelatedProductsModel[
+                      widget.productIdForCashproducts]
+                  ?.product
+                  ?.sharedCount !=
+              current
+                  .cachedProductWithoutRelatedProductsModel[
+                      widget.productIdForCashproducts]
+                  ?.product
+                  ?.sharedCount ||
           previous.addCommentStatus != current.addCommentStatus,
       builder: (context, state) {
         List<String> allimages = [];
@@ -350,7 +358,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                     return;
                                                                                   }
                                                                                   if (details.localPosition.dx <= 92.w) {
-                                                                                    homeBloc.add(UpdateItemInCartEvent(newQuantity: -1, maxAllowed: 0, currentSize: state.addVariationToCartId?[cartIds.last]?["size"] ?? "", colorOption: state.addVariationToCartId?[cartIds.last]?["color"] ?? "", productId: widget.productIdForRequestApi, totalQuantity: (state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.length ?? 0) - 1, image: state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.last ?? "", cartId: cartIds.last, boutiqueId: ""));
+                                                                                    homeBloc.add(UpdateItemInCartEvent(fromCartPage: false, newQuantity: -1, maxAllowed: 0, currentSize: state.addVariationToCartId?[cartIds.last]?["size"] ?? "", colorOption: state.addVariationToCartId?[cartIds.last]?["color"] ?? "", productId: widget.productIdForRequestApi, totalQuantity: (state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.length ?? 0) - 1, image: state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.last ?? "", cartId: cartIds.last, boutiqueId: ""));
                                                                                     return;
                                                                                   }
                                                                                   animationController.forward();
@@ -360,6 +368,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                   homeBloc.add(
                                                                                     AddMultiItemsToCartEvent(
                                                                                       isRedeem: widget.isRedeem,
+                                                                                      fromCartPage: false,
                                                                                       redeemVariantPrice: widget.redeemVariantPrice,
                                                                                       maxAllowed: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ?? "0",
                                                                                       boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
@@ -431,6 +440,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                   homeBloc.add(UpdateListOfItemForAddToCartEvent(productId: widget.productIdForRequestApi, imageForAddToCart: imageForAddToCart, operation: "+"));
                                                                                   homeBloc.add(
                                                                                     AddMultiItemsToCartEvent(
+                                                                                      fromCartPage: false,
                                                                                       isRedeem: widget.isRedeem,
                                                                                       redeemVariantPrice: widget.redeemVariantPrice,
                                                                                       maxAllowed: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ?? "0",
@@ -706,22 +716,23 @@ class _ProductDetailsSheetBottomBarState
                                               current.productStatus ||
                                           previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                                               current
-                                                  .getProductDetailWithoutSimilarRelatedProductsStatus,
+                                                  .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                                          previous.authProductDetailsStatus !=
+                                              current.authProductDetailsStatus,
                                       builder: (context, state) {
                                         return state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                    .loading
+                                                    GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                        .loading ||
+                                                state.authProductDetailsStatus ==
+                                                    AuthProductDetailsStatus
+                                                        .loading
                                             ? Shimmer.fromColors(
                                                 baseColor: Colors.grey.shade400,
                                                 highlightColor:
                                                     Colors.grey.shade100,
                                                 child: SvgPicture.asset(
-                                                  (state
-                                                              .cachedProductWithoutRelatedProductsModel[
-                                                                  widget
-                                                                      .productIdForCashproducts]
-                                                              ?.product
-                                                              ?.isLiked ??
+                                                  (state.authProductDetailsModel
+                                                              ?.data?.isLiked ??
                                                           false)
                                                       ? AppAssets
                                                           .favoriteActiveSvg
@@ -732,10 +743,8 @@ class _ProductDetailsSheetBottomBarState
                                                 text:
                                                     "${state.cachedProductWithoutRelatedProductsModel[widget.productIdForCashproducts]?.product?.countOfLikes ?? 0}",
                                                 svgPath: (state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                widget
-                                                                    .productIdForCashproducts]
-                                                            ?.product
+                                                            .authProductDetailsModel
+                                                            ?.data
                                                             ?.isLiked ??
                                                         false)
                                                     ? AppAssets
@@ -753,10 +762,8 @@ class _ProductDetailsSheetBottomBarState
                                                       productSlug:
                                                           widget.productSlug,
                                                       isFavourite: !(state
-                                                              .cachedProductWithoutRelatedProductsModel[
-                                                                  widget
-                                                                      .productIdForCashproducts]
-                                                              ?.product
+                                                              .authProductDetailsModel
+                                                              ?.data
                                                               ?.isLiked ??
                                                           false),
                                                       productId: widget
@@ -765,45 +772,23 @@ class _ProductDetailsSheetBottomBarState
                                                 });
                                       },
                                     ),
-                                    state
-                                                .getCommentForProductModel[
-                                                    widget
-                                                        .productIdForRequestApi]
-                                                ?.commentsForProduct
-                                                ?.commentsCount ==
-                                            null
-                                        ? Shimmer.fromColors(
-                                            baseColor: Colors.grey.shade400,
-                                            highlightColor:
-                                                Colors.grey.shade100,
-                                            child: SvgPicture.asset(
-                                              AppAssets.chatMarkSvg,
-                                            ),
-                                          )
-                                        : BarWidget(
-                                            text:
-                                                '${state.getCommentForProductModel[widget.productIdForRequestApi]?.commentsForProduct?.commentsCount ?? 0}',
-                                            svgPath: currentTab == 0
-                                                ? AppAssets.chatMarkActiveSvg
-                                                : AppAssets.chatMarkSvg,
-                                            onTap: widget.clickOnComments),
+                                    BarWidget(
+                                        text:
+                                            '${state.cachedProductWithoutRelatedProductsModel[widget.productIdForCashproducts]?.product?.commentsCount ?? 0}',
+                                        svgPath: currentTab == 0
+                                            ? AppAssets.chatMarkActiveSvg
+                                            : AppAssets.chatMarkSvg,
+                                        onTap: widget.clickOnComments),
                                     BlocBuilder<ChatBloc, ChatState>(
                                       buildWhen: (previous, current) =>
-                                          previous.getSharedProductCountStatus !=
-                                              current
-                                                  .getSharedProductCountStatus ||
-                                          previous.getSharedProductCount?[widget
-                                                  .productIdForRequestApi] !=
-                                              current.getSharedProductCount?[
-                                                  widget
-                                                      .productIdForRequestApi],
-                                      builder: (context, state) {
-                                        return state.getSharedProductCount?[widget
-                                                        .productIdForRequestApi] ==
-                                                    null &&
-                                                state.getSharedProductCountStatus ==
-                                                    GetSharedProductCountStatus
-                                                        .loading
+                                          previous
+                                              .getSharedProductCountStatus !=
+                                          current.getSharedProductCountStatus,
+                                      builder: (context, chatState) {
+                                        return chatState
+                                                    .getSharedProductCountStatus ==
+                                                GetSharedProductCountStatus
+                                                    .loading
                                             ? Shimmer.fromColors(
                                                 baseColor: Colors.grey.shade400,
                                                 highlightColor:
@@ -813,7 +798,7 @@ class _ProductDetailsSheetBottomBarState
                                               )
                                             : BarWidget(
                                                 text:
-                                                    '${state.getSharedProductCount?[widget.productIdForRequestApi] ?? "0"}',
+                                                    '${state.cachedProductWithoutRelatedProductsModel[widget.productIdForCashproducts]?.product?.sharedCount ?? "0"}',
                                                 svgPath: AppAssets.shareSvg,
                                                 color: currentTab == 1
                                                     ? Color(0xff505050)

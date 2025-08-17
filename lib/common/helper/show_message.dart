@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../features/app/my_text_widget.dart';
@@ -18,15 +19,6 @@ FToast fToast = FToast();
 // دالة مساعدة للتحقق من الاتجاه
 bool _isRTL(BuildContext context) {
   return Directionality.of(context) == TextDirection.rtl;
-}
-
-// دالة للحصول على النص المترجم
-String _getLocalizedTitle(BuildContext context) {
-  try {
-    return 'alert'.tr();
-  } catch (e) {
-    return 'تنبيه'; // fallback
-  }
 }
 
 showMessage(
@@ -168,7 +160,7 @@ Widget _buildSuccessWidget(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   MyTextWidget(
-                    _getLocalizedTitle(context),
+                    LocaleKeys.info_message.tr(),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -313,7 +305,7 @@ Widget _buildErrorWidget(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   MyTextWidget(
-                    _getLocalizedTitle(context),
+                    LocaleKeys.info_message.tr(),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -458,7 +450,7 @@ Widget _buildWarningWidget(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   MyTextWidget(
-                    _getLocalizedTitle(context),
+                    LocaleKeys.info_message.tr(),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -589,7 +581,7 @@ void _showCustomToast(BuildContext context, String message,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     MyTextWidget(
-                      _getLocalizedTitle(context),
+                      LocaleKeys.info_message.tr(),
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
@@ -654,13 +646,15 @@ void _showCustomToast(BuildContext context, String message,
 }
 
 void _showDialogToast(BuildContext context, String message, bool isSuccess) {
+  // تحقق من mounted قبل أي استخدام لـ context
+  if (!context.mounted) return;
   showDialog(
     context: context,
     barrierDismissible: true,
     barrierColor: Colors.transparent,
     builder: (BuildContext dialogContext) {
       Timer(Duration(seconds: 3), () {
-        if (Navigator.of(dialogContext).canPop()) {
+        if (dialogContext.mounted && Navigator.of(dialogContext).canPop()) {
           Navigator.of(dialogContext).pop();
         }
       });
@@ -705,7 +699,7 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       MyTextWidget(
-                        _getLocalizedTitle(context),
+                        LocaleKeys.info_message.tr(),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,

@@ -37,6 +37,13 @@ class SearchTextInChatEvent extends ChatEvent {
   List<Object?> get props => [];
 }
 
+class ClearChatEvent extends ChatEvent {
+  const ClearChatEvent();
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class CreateUserEvent extends ChatEvent {
   final String? name;
   final String? mobilePhone;
@@ -421,7 +428,7 @@ class IncreaseSharedProductCountOnSocialAppEvent extends ChatEvent {
   List<Object?> get props => [sharedCount, productId, socialMediaName];
 }
 
-class GetSharedProductCountEvent extends ChatEvent {
+/*class GetSharedProductCountEvent extends ChatEvent {
   final String productId;
 
   const GetSharedProductCountEvent({required this.productId});
@@ -429,7 +436,7 @@ class GetSharedProductCountEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [productId];
-}
+}*/
 
 class AddMediaCountEvent extends ChatEvent {
   int images = 0;

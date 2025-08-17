@@ -5,18 +5,23 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mime/mime.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -24,17 +29,31 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/data/models/color_size_for_product.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
+import 'package:trydos/features/home/data/models/get_order_details_return_model.dart';
+import 'package:trydos/features/home/data/models/return_reasons_model.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/cancel_return_request_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/cancel_return_request_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_order_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_order_item_variant_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/confirm_return_request_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/store_return_request_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/store_return_request_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_return_request_product_usecase.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart'
     show OrderBloc;
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/crope_image.dart'
     show CopperImage;
+import 'package:trydos/features/search/presentation/widgets/search_image_preview_widget.dart';
+import 'package:trydos/features/home/presentation/widgets/star_rating_widget.dart';
+import 'package:trydos/features/story/presentation/widget/try_again.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -52,11 +71,13 @@ class OrderDetails2 extends StatefulWidget {
     super.key,
     required this.order,
     required this.indexPackage,
+    required this.indexGroupe,
     this.currentStatus = "",
     this.fromNotification = false,
   });
   final String? currentStatus;
   final bool fromNotification;
+  final int indexGroupe;
   final int indexPackage;
   final OrderListModel order;
 
@@ -71,10 +92,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
   final ValueNotifier<bool> showPanel = ValueNotifier(false);
   final ValueNotifier<bool> showShadowForCanselOrder = ValueNotifier(false);
   final ValueNotifier<bool> visiblecamera = ValueNotifier(false);
-  final ValueNotifier<List<File?>> orderPhotos = ValueNotifier([]);
+  final ValueNotifier<List<String>> orderPhotos = ValueNotifier([]);
   final ValueNotifier<String?> optionModifyPanel = ValueNotifier(null);
   final ValueNotifier<bool> agreeToPolicies = ValueNotifier(false);
-  final ValueNotifier<List<String>> optionCanselOrReturn = ValueNotifier([]);
+  final ValueNotifier<List<String>> optionCansel = ValueNotifier([]);
+  final ValueNotifier<int> optionReturn = ValueNotifier(0);
   final ValueNotifier<bool> shadowForChangeVariant = ValueNotifier(false);
 
   // final ValueNotifier<bool> showShadowForChangeSize = ValueNotifier(false);
@@ -84,8 +106,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
   final ValueNotifier<int> indexTap = ValueNotifier(0);
   final ValueNotifier<int?> colorIndexTap = ValueNotifier(null);
   final ValueNotifier<int?> sizeIndexTap = ValueNotifier(null);
-  final ValueNotifier<int> productIndexTap = ValueNotifier(0);
-
+  final ValueNotifier<int> returnBottomIndexTap = ValueNotifier(0);
+  final ValueNotifier<int> qtyOfReturnValueNotifier = ValueNotifier(0);
   final ValueNotifier<String?> optionVariant = ValueNotifier(null);
   bool allOrder = false;
   late OrderBloc orderBloc;
@@ -96,15 +118,19 @@ class _OrderDetails2 extends State<OrderDetails2> {
   List<ProductSyncColorImage> productSyncColorImages = [];
   List<ProductChoiceOption> productChoiceOptions = [];
   String? firstColorNum;
+  String? firstColorOption;
+  String? firstSizeOption;
   String? firstColorName;
   String? firstSizeName;
   final TextEditingController qtyController = TextEditingController();
-
+  // TextEditingController qtyOfReturnController = TextEditingController();
   @override
   void initState() {
     order = widget.order;
 
     orderBloc = BlocProvider.of<OrderBloc>(context);
+    orderBloc.add(GetReturnReasonsEvent());
+
     homeBloc = BlocProvider.of<HomeBloc>(context);
     indexTapAddress.value = orderBloc.state.listOfAddressInfoClassToSave
             ?.indexWhere(
@@ -118,14 +144,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
   @override
   void dispose() {
     qtyController.dispose();
+    // qtyOfReturnController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool _isLoading = false;
+    //bool _isLoading = false;
 
-    Future<void> _refreshData() async {
+    /* Future<void> _refreshData() async {
       setState(() {
         _isLoading = true; // بدء التحميل
       });
@@ -140,10 +167,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
       setState(() {
         _isLoading = false; // إنهاء التحميل
       });
-    }
+    }*/
 
     return WillPopScope(
       onWillPop: () async {
+        if (MediaQuery.of(context).viewInsets.bottom > 0) {
+          FocusScope.of(context).unfocus();
+          return false;
+        }
         // didCallOnWillPop = true;
         orderBloc.add(ChangeOrderByGroupStatus());
         try {
@@ -152,7 +183,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
             panelController.close();
             showPanel.value = false;
             optionModifyPanel.value = null;
-            optionCanselOrReturn.value = [];
+            optionReturn.value = 0;
+            qtyOfReturnValueNotifier.value = 0;
+            qtyController.clear();
+            //  qtyOfReturnController.clear();
+            optionCansel.value = [];
             enableChangeAddress.value = false;
             showShadowForPanel.value = false;
             showShadowForChangeAddress.value = false;
@@ -176,6 +211,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   state.getOrdersByOrderGroupIDModel
                       ?.orders?[widget.indexPackage].orderGroupId) {
                 orderBloc.add(GetOrdersEvent(
+                    index: widget.indexGroupe,
+                    orders: state.getOrdersByOrderGroupIDModel?.orders ?? [],
                     status: widget.currentStatus ?? '',
                     getWithPagination: false));
                 order = state
@@ -307,468 +344,671 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       borderRadius: BorderRadius.circular(15),
                                     ),
                                     padding: const EdgeInsets.all(8),
-                                    child: RefreshIndicator(
-                                      backgroundColor: Colors.white,
-                                      color: Colors.black,
-                                      onRefresh: _refreshData,
-                                      child: SingleChildScrollView(
-                                        physics:
-                                            AlwaysScrollableScrollPhysics(),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              height: 10,
-                                              width: 60,
-                                              color: Colors.black,
-                                            ),
-                                            ///////////////////
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            ///////////////////
-                                            BlocBuilder<HomeBloc, HomeState>(
-                                              buildWhen: (previous, current) =>
-                                                  (previous
-                                                          .getCurrencyForCountryModel !=
-                                                      current
-                                                          .getCurrencyForCountryModel),
-                                              builder: (context, state) {
-                                                String currencySymbol = state
-                                                        .getCurrencyForCountryModel!
-                                                        .data!
-                                                        .currency!
-                                                        .symbol ??
-                                                    "";
-                                                String orderAmount = (order!
-                                                            .orderAmount! *
-                                                        state
-                                                            .getCurrencyForCountryModel!
-                                                            .data!
-                                                            .currency!
-                                                            .exchangeRate!)
-                                                    .toStringAsFixed(state
-                                                            .startingSetting
-                                                            ?.decimalPointSettings ??
-                                                        0);
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 10,
+                                            width: 60,
+                                            color: Colors.black,
+                                          ),
+                                          ///////////////////
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          ///////////////////
+                                          BlocBuilder<HomeBloc, HomeState>(
+                                            buildWhen: (previous, current) => (previous
+                                                    .getCurrencyForCountryModel !=
+                                                current
+                                                    .getCurrencyForCountryModel),
+                                            builder: (context, state) {
+                                              String currencySymbol = state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .symbol ??
+                                                  "";
+                                              String orderAmount = (order!
+                                                          .orderAmount! *
+                                                      state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .exchangeRate!)
+                                                  .toStringAsFixed(state
+                                                          .startingSetting
+                                                          ?.decimalPointSettings ??
+                                                      0);
 
-                                                return RichText(
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  text: TextSpan(
-                                                    style: context.textTheme
-                                                        .bodyMedium?.rq
-                                                        .copyWith(
-                                                      color: const Color(
-                                                          0xff505050),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 12,
-                                                      height: 1.3,
-                                                    ),
-                                                    children: [
-                                                      TextSpan(
-                                                          text:
-                                                              '${LocaleKeys.buying.tr()} '),
-                                                      /////////////////////////
-                                                      TextSpan(
+                                              return RichText(
+                                                overflow: TextOverflow.ellipsis,
+                                                text: TextSpan(
+                                                  style: context
+                                                      .textTheme.bodyMedium?.rq
+                                                      .copyWith(
+                                                    color:
+                                                        const Color(0xff505050),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 12,
+                                                    height: 1.3,
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
                                                         text:
-                                                            '${order!.details?.length ?? 0}',
-                                                        style: context.textTheme
-                                                            .bodyMedium?.bq
-                                                            .copyWith(
-                                                          color: const Color(
-                                                              0xff1D1D1D),
-                                                          letterSpacing: 0.18,
-                                                          fontSize: 12,
-                                                          height: 1.3,
-                                                        ),
+                                                            '${LocaleKeys.buying.tr()} '),
+                                                    /////////////////////////
+                                                    TextSpan(
+                                                      text:
+                                                          '${order!.details?.length ?? 0}',
+                                                      style: context.textTheme
+                                                          .bodyMedium?.bq
+                                                          .copyWith(
+                                                        color: const Color(
+                                                            0xff1D1D1D),
+                                                        letterSpacing: 0.18,
+                                                        fontSize: 12,
+                                                        height: 1.3,
                                                       ),
-                                                      /////////////////////////
-                                                      TextSpan(
-                                                          text:
-                                                              ' ${LocaleKeys.item.tr()} . '),
-                                                      /////////////////////////
-                                                      TextSpan(
-                                                        text: '${orderAmount}',
-                                                        style: context.textTheme
-                                                            .bodyMedium?.bq
-                                                            .copyWith(
-                                                          color: const Color(
-                                                              0xff1D1D1D),
-                                                          letterSpacing: 0.18,
-                                                          fontSize: 12,
-                                                          height: 1.3,
-                                                        ),
+                                                    ),
+                                                    /////////////////////////
+                                                    TextSpan(
+                                                        text:
+                                                            ' ${LocaleKeys.item.tr()} . '),
+                                                    /////////////////////////
+                                                    TextSpan(
+                                                      text: '${orderAmount}',
+                                                      style: context.textTheme
+                                                          .bodyMedium?.bq
+                                                          .copyWith(
+                                                        color: const Color(
+                                                            0xff1D1D1D),
+                                                        letterSpacing: 0.18,
+                                                        fontSize: 12,
+                                                        height: 1.3,
                                                       ),
-                                                      /////////////////////////
-                                                      TextSpan(
-                                                          text:
-                                                              ' $currencySymbol'),
-                                                      /////////////////////////
-                                                    ],
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            ///////////////////
-                                            SizedBox(
-                                              height: 5.h,
-                                            ),
-                                            ///////////////////
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      SvgPicture.asset(
-                                                        AppAssets
-                                                            .orderAddressSvg,
-                                                        width: 20,
-                                                      ),
-                                                      ///////////////////
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      ///////////////////
-                                                      Text(
-                                                        LocaleKeys
-                                                            .expected_delivery_date
-                                                            .tr(),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: context.textTheme
-                                                            .bodyMedium?.rq
-                                                            .copyWith(
-                                                          color: const Color(
-                                                              0xff8D8D8D),
-                                                          letterSpacing: 0.18,
-                                                          fontSize: 10,
-                                                          height: 1.3,
-                                                        ),
-                                                      ),
-                                                      ///////////////////
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      ///////////////////
-                                                      Text(
-                                                        'Monday 2.Jun | 3 Work Days',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: context.textTheme
-                                                            .bodyMedium?.rq
-                                                            .copyWith(
-                                                          color: const Color(
-                                                              0xff1D1D1D),
-                                                          letterSpacing: 0.18,
-                                                          fontSize: 12,
-                                                          height: 1.3,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                    ),
+                                                    /////////////////////////
+                                                    TextSpan(
+                                                        text:
+                                                            ' $currencySymbol'),
+                                                    /////////////////////////
+                                                  ],
                                                 ),
-                                                /////////////
-                                                Expanded(
-                                                  child: state.getOrdersByOrderGroupIDStatus ==
-                                                          GetOrdersByOrderGroupIDStatus
-                                                              .loading
-                                                      ? TrydosLoader(
-                                                          size: 16,
-                                                        )
-                                                      : Container(
-                                                          color: Colors.white,
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .end,
-                                                            children: [
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .end,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  order!.orderGroupStatus
-                                                                              ?.value ==
-                                                                          'canceled'
-                                                                      ? SvgPicture
-                                                                          .asset(
-                                                                          AppAssets
-                                                                              .whiteBagSvg,
-                                                                          width:
-                                                                              15,
-                                                                        )
-                                                                      : order!.orderGroupStatus?.value ==
-                                                                              'pending'
-                                                                          ? SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.pendingBagSvg,
-                                                                              width: 20,
-                                                                            )
-                                                                          : SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.pendingBagSvg,
-                                                                              width: 15,
-                                                                            ),
-                                                                  ////////////////////
-                                                                  const SizedBox(
-                                                                    width: 3,
-                                                                  ),
-                                                                  ///////////////////
-                                                                  order!.orderGroupStatus
-                                                                              ?.value ==
-                                                                          'canceled'
-                                                                      ? SvgPicture
-                                                                          .asset(
-                                                                          AppAssets
-                                                                              .whiteBagSvg,
-                                                                          width:
-                                                                              15,
-                                                                        )
-                                                                      : order!.orderGroupStatus?.value ==
-                                                                              'pending'
-                                                                          ? SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.whiteBagSvg,
-                                                                              width: 15,
-                                                                            )
-                                                                          : order!.orderGroupStatus?.value == 'preparing'
-                                                                              ? SvgPicture.asset(
-                                                                                  AppAssets.preparingBagSvg,
-                                                                                  width: 20,
-                                                                                )
-                                                                              : SvgPicture.asset(
-                                                                                  AppAssets.preparingBagSvg,
-                                                                                  width: 15,
-                                                                                ),
-                                                                  ////////////////////
-                                                                  const SizedBox(
-                                                                    width: 3,
-                                                                  ),
-                                                                  ///////////////////
-                                                                  order!.orderGroupStatus
-                                                                              ?.value ==
-                                                                          'canceled'
-                                                                      ? SvgPicture
-                                                                          .asset(
-                                                                          AppAssets
-                                                                              .whiteBagSvg,
-                                                                          width:
-                                                                              15,
-                                                                        )
-                                                                      : order!.orderGroupStatus?.value ==
-                                                                              'pending'
-                                                                          ? SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.whiteBagSvg,
-                                                                              width: 15,
-                                                                            )
-                                                                          : order!.orderGroupStatus?.value == 'preparing'
-                                                                              ? SvgPicture.asset(
-                                                                                  AppAssets.whiteBagSvg,
-                                                                                  width: 15,
-                                                                                )
-                                                                              : order!.orderGroupStatus?.value == 'shipped'
-                                                                                  ? SvgPicture.asset(
-                                                                                      AppAssets.shippedAndOutOfDeliveryBagSvg,
-                                                                                      width: 20,
-                                                                                    )
-                                                                                  : SvgPicture.asset(
-                                                                                      AppAssets.shippedAndOutOfDeliveryBagSvg,
-                                                                                      width: 15,
-                                                                                    ),
-                                                                  ////////////////////
-                                                                  const SizedBox(
-                                                                    width: 3,
-                                                                  ),
-                                                                  ///////////////////
-                                                                  order!.orderGroupStatus
-                                                                              ?.value ==
-                                                                          'canceled'
-                                                                      ? SvgPicture
-                                                                          .asset(
-                                                                          AppAssets
-                                                                              .whiteBagSvg,
-                                                                          width:
-                                                                              15,
-                                                                        )
-                                                                      : order!.orderGroupStatus?.value ==
-                                                                              'pending'
-                                                                          ? SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.whiteBagSvg,
-                                                                              width: 15,
-                                                                            )
-                                                                          : order!.orderGroupStatus?.value == 'preparing'
-                                                                              ? SvgPicture.asset(
-                                                                                  AppAssets.whiteBagSvg,
-                                                                                  width: 15,
-                                                                                )
-                                                                              : order!.orderGroupStatus?.value == 'shipped'
-                                                                                  ? SvgPicture.asset(
-                                                                                      AppAssets.whiteBagSvg,
-                                                                                      width: 15,
-                                                                                    )
-                                                                                  : order!.orderGroupStatus?.value == 'delivered'
-                                                                                      ? SvgPicture.asset(
-                                                                                          AppAssets.delivered_bagSvg,
-                                                                                          width: 20,
-                                                                                        )
-                                                                                      : SvgPicture.asset(
-                                                                                          AppAssets.delivered_bagSvg,
-                                                                                          width: 15,
-                                                                                        ),
-                                                                  ///////////////////////
-                                                                ],
-                                                              ),
-                                                              ///////////////////
-                                                              SizedBox(
-                                                                height: 5,
-                                                              ),
-                                                              ///////////////////
-                                                              Row(
-                                                                children: [
-                                                                  Spacer(),
-                                                                  Text(
-                                                                    LocaleKeys
-                                                                        .order_status
-                                                                        .tr(),
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                    style: context
-                                                                        .textTheme
-                                                                        .bodyMedium
-                                                                        ?.rq
-                                                                        .copyWith(
-                                                                      color: const Color(
-                                                                          0xff8D8D8D),
-                                                                      letterSpacing:
-                                                                          0.18,
-                                                                      fontSize:
-                                                                          10,
-                                                                      height:
-                                                                          1.3,
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 12,
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              ///////////////////
-                                                              SizedBox(
-                                                                height: 5,
-                                                              ),
-                                                              ///////////////////
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  Text(
-                                                                    order!.orderGroupStatus
-                                                                            ?.label ??
-                                                                        '',
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                    style: context
-                                                                        .textTheme
-                                                                        .bodyMedium
-                                                                        ?.rq
-                                                                        .copyWith(
-                                                                      color: const Color(
-                                                                          0xff1D1D1D),
-                                                                      letterSpacing:
-                                                                          0.18,
-                                                                      fontSize:
-                                                                          12,
-                                                                      height:
-                                                                          1.3,
-                                                                    ),
-                                                                  ),
-                                                                  ///////////////////
-                                                                  SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                  ///////////////////
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    order!.orderGroupStatus?.value ==
-                                                                            'canceled'
-                                                                        ? AppAssets
-                                                                            .orderCanselSvg
+                                              );
+                                            },
+                                          ),
+                                          ///////////////////
+                                          SizedBox(
+                                            height: 5.h,
+                                          ),
+                                          ///////////////////
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      AppAssets.orderAddressSvg,
+                                                      width: 20,
+                                                    ),
+                                                    ///////////////////
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    ///////////////////
+                                                    Text(
+                                                      LocaleKeys
+                                                          .expected_delivery_date
+                                                          .tr(),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: context.textTheme
+                                                          .bodyMedium?.rq
+                                                          .copyWith(
+                                                        color: const Color(
+                                                            0xff8D8D8D),
+                                                        letterSpacing: 0.18,
+                                                        fontSize: 10,
+                                                        height: 1.3,
+                                                      ),
+                                                    ),
+                                                    ///////////////////
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    ///////////////////
+                                                    Text(
+                                                      'Monday 2.Jun | 3 Work Days',
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: context.textTheme
+                                                          .bodyMedium?.rq
+                                                          .copyWith(
+                                                        color: const Color(
+                                                            0xff1D1D1D),
+                                                        letterSpacing: 0.18,
+                                                        fontSize: 12,
+                                                        height: 1.3,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              /////////////
+                                              Expanded(
+                                                child: state.getOrdersByOrderGroupIDStatus ==
+                                                        GetOrdersByOrderGroupIDStatus
+                                                            .loading
+                                                    ? TrydosLoader(
+                                                        size: 16,
+                                                      )
+                                                    : Container(
+                                                        color: Colors.white,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                order!.orderGroupStatus
+                                                                            ?.value ==
+                                                                        'canceled'
+                                                                    ? SvgPicture
+                                                                        .asset(
+                                                                        AppAssets
+                                                                            .whiteBagSvg,
+                                                                        width:
+                                                                            15,
+                                                                      )
+                                                                    : order!.orderGroupStatus?.value ==
+                                                                            'pending'
+                                                                        ? SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.pendingBagSvg,
+                                                                            width:
+                                                                                20,
+                                                                          )
+                                                                        : SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.pendingBagSvg,
+                                                                            width:
+                                                                                15,
+                                                                          ),
+                                                                ////////////////////
+                                                                const SizedBox(
+                                                                  width: 3,
+                                                                ),
+                                                                ///////////////////
+                                                                order!.orderGroupStatus
+                                                                            ?.value ==
+                                                                        'canceled'
+                                                                    ? SvgPicture
+                                                                        .asset(
+                                                                        AppAssets
+                                                                            .whiteBagSvg,
+                                                                        width:
+                                                                            15,
+                                                                      )
+                                                                    : order!.orderGroupStatus?.value ==
+                                                                            'pending'
+                                                                        ? SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.whiteBagSvg,
+                                                                            width:
+                                                                                15,
+                                                                          )
                                                                         : order!.orderGroupStatus?.value ==
-                                                                                'shipped'
-                                                                            ? AppAssets.shippedBlackSvg
-                                                                            : order!.orderStatus?.value == 'delivered'
-                                                                                ? AppAssets.deliveredBlackSvg
-                                                                                : order!.orderStatus?.value == 'pending'
-                                                                                    ? AppAssets.pendeingBlackCheck
-                                                                                    : AppAssets.orderPreparingSvg,
-                                                                    width: 15,
+                                                                                'preparing'
+                                                                            ? SvgPicture.asset(
+                                                                                AppAssets.preparingBagSvg,
+                                                                                width: 20,
+                                                                              )
+                                                                            : SvgPicture.asset(
+                                                                                AppAssets.preparingBagSvg,
+                                                                                width: 15,
+                                                                              ),
+                                                                ////////////////////
+                                                                const SizedBox(
+                                                                  width: 3,
+                                                                ),
+                                                                ///////////////////
+                                                                order!.orderGroupStatus
+                                                                            ?.value ==
+                                                                        'canceled'
+                                                                    ? SvgPicture
+                                                                        .asset(
+                                                                        AppAssets
+                                                                            .whiteBagSvg,
+                                                                        width:
+                                                                            15,
+                                                                      )
+                                                                    : order!.orderGroupStatus?.value ==
+                                                                            'pending'
+                                                                        ? SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.whiteBagSvg,
+                                                                            width:
+                                                                                15,
+                                                                          )
+                                                                        : order!.orderGroupStatus?.value ==
+                                                                                'preparing'
+                                                                            ? SvgPicture.asset(
+                                                                                AppAssets.whiteBagSvg,
+                                                                                width: 15,
+                                                                              )
+                                                                            : order!.orderGroupStatus?.value == 'shipped'
+                                                                                ? SvgPicture.asset(
+                                                                                    AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                                                                    width: 20,
+                                                                                  )
+                                                                                : SvgPicture.asset(
+                                                                                    AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                                                                    width: 15,
+                                                                                  ),
+                                                                ////////////////////
+                                                                const SizedBox(
+                                                                  width: 3,
+                                                                ),
+                                                                ///////////////////
+                                                                order!.orderGroupStatus
+                                                                            ?.value ==
+                                                                        'canceled'
+                                                                    ? SvgPicture
+                                                                        .asset(
+                                                                        AppAssets
+                                                                            .whiteBagSvg,
+                                                                        width:
+                                                                            15,
+                                                                      )
+                                                                    : order!.orderGroupStatus?.value ==
+                                                                            'pending'
+                                                                        ? SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.whiteBagSvg,
+                                                                            width:
+                                                                                15,
+                                                                          )
+                                                                        : order!.orderGroupStatus?.value ==
+                                                                                'preparing'
+                                                                            ? SvgPicture.asset(
+                                                                                AppAssets.whiteBagSvg,
+                                                                                width: 15,
+                                                                              )
+                                                                            : order!.orderGroupStatus?.value == 'shipped'
+                                                                                ? SvgPicture.asset(
+                                                                                    AppAssets.whiteBagSvg,
+                                                                                    width: 15,
+                                                                                  )
+                                                                                : order!.orderGroupStatus?.value == 'delivered'
+                                                                                    ? SvgPicture.asset(
+                                                                                        AppAssets.delivered_bagSvg,
+                                                                                        width: 20,
+                                                                                      )
+                                                                                    : SvgPicture.asset(
+                                                                                        AppAssets.delivered_bagSvg,
+                                                                                        width: 15,
+                                                                                      ),
+                                                                ///////////////////////
+                                                              ],
+                                                            ),
+                                                            ///////////////////
+                                                            SizedBox(
+                                                              height: 5,
+                                                            ),
+                                                            ///////////////////
+                                                            Row(
+                                                              children: [
+                                                                Spacer(),
+                                                                Text(
+                                                                  LocaleKeys
+                                                                      .order_status
+                                                                      .tr(),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: context
+                                                                      .textTheme
+                                                                      .bodyMedium
+                                                                      ?.rq
+                                                                      .copyWith(
+                                                                    color: const Color(
+                                                                        0xff8D8D8D),
+                                                                    letterSpacing:
+                                                                        0.18,
+                                                                    fontSize:
+                                                                        10,
+                                                                    height: 1.3,
                                                                   ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 12,
+                                                                )
+                                                              ],
+                                                            ),
+                                                            ///////////////////
+                                                            SizedBox(
+                                                              height: 5,
+                                                            ),
+                                                            ///////////////////
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                Text(
+                                                                  order!.orderGroupStatus
+                                                                          ?.label ??
+                                                                      '',
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: context
+                                                                      .textTheme
+                                                                      .bodyMedium
+                                                                      ?.rq
+                                                                      .copyWith(
+                                                                    color: const Color(
+                                                                        0xff1D1D1D),
+                                                                    letterSpacing:
+                                                                        0.18,
+                                                                    fontSize:
+                                                                        12,
+                                                                    height: 1.3,
+                                                                  ),
+                                                                ),
+                                                                ///////////////////
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                ///////////////////
+                                                                SvgPicture
+                                                                    .asset(
+                                                                  order!.orderGroupStatus
+                                                                              ?.value ==
+                                                                          'canceled'
+                                                                      ? AppAssets
+                                                                          .orderCanselSvg
+                                                                      : order!.orderGroupStatus?.value ==
+                                                                              'shipped'
+                                                                          ? AppAssets
+                                                                              .shippedBlackSvg
+                                                                          : order!.orderStatus?.value == 'delivered'
+                                                                              ? AppAssets.deliveredBlackSvg
+                                                                              : order!.orderStatus?.value == 'pending'
+                                                                                  ? AppAssets.pendeingBlackCheck
+                                                                                  : AppAssets.orderPreparingSvg,
+                                                                  width: 15,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
                                                         ),
-                                                )
-                                              ],
-                                            ),
-                                            ///////////////////
-                                            SizedBox(
-                                              height: 12,
-                                            ),
-                                            ///////////////////
-                                            Container(
-                                              width: double.infinity,
-                                              height: 1,
-                                              color: const Color(0xffC4C2C2),
-                                            ),
-                                            ///////////////////
-                                            SizedBox(
-                                              height: 12,
-                                            ),
-                                            ///////////////////
-                                            ListView.separated(
-                                              itemCount:
-                                                  order!.details?.length ?? 0,
-                                              shrinkWrap: true,
-                                              physics:
-                                                  NeverScrollableScrollPhysics(),
-                                              itemBuilder: (context, index) {
-                                                return productWidget(
-                                                    order!.details![index],
-                                                    index);
-                                              },
-                                              separatorBuilder:
-                                                  (context, index) {
-                                                return Container(
+                                                      ),
+                                              )
+                                            ],
+                                          ),
+                                          ///////////////////
+                                          SizedBox(
+                                            height: 12,
+                                          ),
+                                          ///////////////////
+                                          Container(
+                                            width: double.infinity,
+                                            height: 1,
+                                            color: const Color(0xffC4C2C2),
+                                          ),
+                                          ///////////////////
+
+                                          BlocBuilder<OrderBloc, OrderState>(
+                                              buildWhen: (previous, current) =>
+                                                  previous.cancelReturnRequestStatus !=
+                                                      current
+                                                          .cancelReturnRequestStatus ||
+                                                  previous.getOrdersByOrderGroupIDStatus !=
+                                                      current
+                                                          .getOrdersByOrderGroupIDStatus,
+                                              builder: (context, state) {
+                                                return order?.returnRequestId ==
+                                                        null
+                                                    ? SizedBox.shrink()
+                                                    : state.cancelReturnRequestStatus ==
+                                                                CancelReturnRequestStatus
+                                                                    .loading ||
+                                                            state.getOrdersByOrderGroupIDStatus ==
+                                                                GetOrdersByOrderGroupIDStatus
+                                                                    .loading
+                                                        ? Shimmer.fromColors(
+                                                            baseColor: Colors
+                                                                .grey[300]!,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .grey[100]!,
+                                                            child: Container(
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        top:
+                                                                            10),
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 1.sw,
+                                                                height: 30,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                        color: const Color(
+                                                                            0xffC4C2C2),
+                                                                        border: Border
+                                                                            .all(
+                                                                          color:
+                                                                              const Color(0xffC4C2C2),
+                                                                        ),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(15))))
+                                                        : InkWell(
+                                                            onTap: () {
+                                                              orderBloc.add(CancelReturnRequestEvent(
+                                                                  orderGroupId:
+                                                                      order?.orderGroupId ??
+                                                                          "",
+                                                                  returnRequestId:
+                                                                      int.parse(order!
+                                                                          .returnRequestId
+                                                                          .toString())));
+                                                            },
+                                                            child: Container(
+                                                                alignment: Alignment.center,
+                                                                margin: EdgeInsets.only(top: 10),
+                                                                decoration: BoxDecoration(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  borderRadius:
+                                                                      BorderRadius.all(
+                                                                          Radius.circular(
+                                                                              15)),
+                                                                ),
+                                                                width: 1.sw,
+                                                                height: 30,
+                                                                child: Text(
+                                                                  LocaleKeys
+                                                                      .cancel_return_request
+                                                                      .tr(),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: context
+                                                                      .textTheme
+                                                                      .bodyMedium
+                                                                      ?.rq
+                                                                      .copyWith(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    letterSpacing:
+                                                                        0.24,
+                                                                    fontSize:
+                                                                        14,
+                                                                    height: 1.3,
+                                                                  ),
+                                                                )));
+                                              }),
+
+                                          BlocBuilder<OrderBloc, OrderState>(
+                                              buildWhen: (previous, current) =>
+                                                  previous.confirmReturnRequestStatus != current.confirmReturnRequestStatus ||
+                                                  previous.getOrdersByOrderGroupIDStatus !=
+                                                      current
+                                                          .getOrdersByOrderGroupIDStatus ||
+                                                  previous.orderReturnDetailsStatus !=
+                                                      current
+                                                          .orderReturnDetailsStatus,
+                                              builder: (context, state) {
+                                                return order?.returnRequestId ==
+                                                            null ||
+                                                        (!(state.orderReturnDetailsModel
+                                                                ?.data?.status
+                                                                ?.contains(
+                                                                    "draft") ??
+                                                            false))
+                                                    ? SizedBox.shrink()
+                                                    : state.confirmReturnRequestStatus == ConfirmReturnRequestStatus.loading ||
+                                                            state.orderReturnDetailsStatus ==
+                                                                OrderReturnDetailsStatus
+                                                                    .loading ||
+                                                            state.getOrdersByOrderGroupIDStatus ==
+                                                                GetOrdersByOrderGroupIDStatus
+                                                                    .loading
+                                                        ? Shimmer.fromColors(
+                                                            baseColor: Colors
+                                                                .grey[300]!,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .grey[100]!,
+                                                            child: Container(
+                                                                margin:
+                                                                    EdgeInsets.only(
+                                                                        top: 5),
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 1.sw,
+                                                                height: 30,
+                                                                decoration: BoxDecoration(
+                                                                    color: const Color(0xffC4C2C2),
+                                                                    border: Border.all(
+                                                                      color: const Color(
+                                                                          0xffC4C2C2),
+                                                                    ),
+                                                                    borderRadius: BorderRadius.circular(15))))
+                                                        : InkWell(
+                                                            onTap: () {
+                                                              orderBloc.add(ConfirmReturnRequestEvent(
+                                                                  orderGroupId:
+                                                                      order?.orderGroupId ??
+                                                                          "",
+                                                                  returnRequestId:
+                                                                      order?.returnRequestId ??
+                                                                          "".toString()));
+                                                            },
+                                                            child: Container(
+                                                                alignment: Alignment.center,
+                                                                margin: EdgeInsets.only(top: 5),
+                                                                decoration: BoxDecoration(
+                                                                  color: const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      32,
+                                                                      122,
+                                                                      28),
+                                                                  borderRadius:
+                                                                      BorderRadius.all(
+                                                                          Radius.circular(
+                                                                              15)),
+                                                                ),
+                                                                width: 1.sw,
+                                                                height: 30,
+                                                                child: Text(
+                                                                  LocaleKeys
+                                                                      .confirm_return_request
+                                                                      .tr(),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: context
+                                                                      .textTheme
+                                                                      .bodyMedium
+                                                                      ?.rq
+                                                                      .copyWith(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    letterSpacing:
+                                                                        0.24,
+                                                                    fontSize:
+                                                                        14,
+                                                                    height: 1.3,
+                                                                  ),
+                                                                )));
+                                              }),
+                                          order?.returnRequestId == null
+                                              ? SizedBox.shrink()
+                                              : SizedBox(
+                                                  height: 10,
+                                                ),
+                                          order?.returnRequestId == null
+                                              ? SizedBox.shrink()
+                                              : Container(
                                                   width: double.infinity,
                                                   height: 1,
                                                   color:
                                                       const Color(0xffC4C2C2),
-                                                  margin: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 12,
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
+                                                ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          ///////////////////
+                                          ListView.separated(
+                                            itemCount:
+                                                order!.details?.length ?? 0,
+                                            shrinkWrap: true,
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            itemBuilder: (context, index) {
+                                              return productWidget(
+                                                  order!.details![index],
+                                                  index);
+                                            },
+                                            separatorBuilder: (context, index) {
+                                              return Container(
+                                                width: double.infinity,
+                                                height: 1,
+                                                color: const Color(0xffC4C2C2),
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 10,
+                                                  vertical: 12,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -1063,6 +1303,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
                     onTap: () {
+                      orderBloc.add(ResetAllStatusEvent());
                       optionModifyPanel.value = "Change_Address";
                     },
                     svg: AppAssets.orderChangeAddressSvg,
@@ -1079,6 +1320,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: optionOfModify(
               onTap: () {
+                orderBloc.add(ResetAllStatusEvent());
                 optionModifyPanel.value = "Hide_This_Product";
               },
               svg: AppAssets.hideThisProductSvg,
@@ -1094,6 +1336,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
                     onTap: () {
+                      orderBloc.add(ResetAllStatusEvent());
                       optionModifyPanel.value = "Cancel";
                     },
                     svg: AppAssets.orderCanselSvg,
@@ -1111,290 +1354,392 @@ class _OrderDetails2 extends State<OrderDetails2> {
   }
 
   Widget productWidget(OrderListDetailModel orderListDetailModel, int index) {
-    return Container(
-      height: 170 + 100 + 132,
-      width: 1.sw,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 170,
+    return BlocBuilder<OrderBloc, OrderState>(
+        buildWhen: (previous, current) =>
+            previous.orderReturnDetailsStatus !=
+                current.orderReturnDetailsStatus ||
+            previous.cancelReturnRequestProductStatus !=
+                current.cancelReturnRequestProductStatus ||
+            previous.cancelReturnRequestStatus !=
+                current.cancelReturnRequestStatus ||
+            previous.confirmReturnRequestStatus !=
+                current.confirmReturnRequestStatus ||
+            previous.storeReturnRequestProductStatus !=
+                current.storeReturnRequestProductStatus,
+        builder: (context, state) {
+          OrderDetail? orderDetails =
+              state.orderReturnDetailsModel?.data?.orderDetails?.firstWhere(
+            (element) => element.detailId == orderListDetailModel.id,
+            orElse: () => OrderDetail(),
+          );
+          ReturnReasonModel? reason;
+
+          if ((state.returnReasonsModel?.data?.returnReasons?.length ?? 0) >
+              0) {
+            reason = state.returnReasonsModel?.data?.returnReasons!.firstWhere(
+                (element) =>
+                    element.id == orderDetails?.returnRequestProductReasonId,
+                orElse: () => ReturnReasonModel(cost: 0));
+          }
+
+          return Container(
+            height: orderDetails?.returnRequestProductId == null
+                ? 190
+                : 170 + 100 + 100,
             width: 1.sw,
-            child: Row(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    color: const Color.fromARGB(255, 250, 250, 250),
-                    child: MyCachedNetworkImage(
-                      imageUrl: orderListDetailModel.image ?? '',
-                      imageFit: BoxFit.contain,
-                      width: 100,
-                      height: 150,
-                    ),
-                  ),
-                ),
-                ///////////////////
-                const SizedBox(
-                  width: 12,
-                ),
-                ///////////////////
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                    ),
-                    child: Stack(
-                      alignment: AlignmentDirectional.topEnd,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 8,
-                              width: 50,
-                              color: Colors.black,
-                            ),
-                            ///////////////////
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            ///////////////////
-                            Text(
-                              orderListDetailModel.productDetails?.name ?? '',
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: const Color(0xff505050),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1.3,
-                              ),
-                            ),
-                            ///////////////////
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            ///////////////////
-                            (orderListDetailModel.variation?.size == null ||
-                                        orderListDetailModel.variation?.size ==
-                                            "") &&
-                                    (orderListDetailModel.variation?.color ==
-                                            null ||
-                                        orderListDetailModel.variation?.color ==
-                                            "")
-                                ? SizedBox.shrink()
-                                : Row(
+                Container(
+                  height: 170,
+                  width: 1.sw,
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: InkWell(
+                              onTap: () {
+                                BlocProvider.of<HomeBloc>(
+                                        navigatorKey.currentState!.context)
+                                    .add(GetFullProductDetailsEvent(
+                                  currentColorName: (orderListDetailModel
+                                          .variation.isNullOrEmpty)
+                                      ? ""
+                                      : orderListDetailModel
+                                          .variation?[0].colorOption,
+                                  productSlug:
+                                      orderListDetailModel.productSlug ?? "",
+                                ));
+
+                                Future.delayed(
+                                    Duration(seconds: 1),
+                                    () => Navigator.of(navigatorKey
+                                                .currentState!.context)
+                                            .push(PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              ProductDetailsPage(
+                                                  productSlugForOpeningChatDirectly:
+                                                      orderListDetailModel
+                                                              .productSlug ??
+                                                          "",
+                                                  fromNotification: false,
+                                                  productIdForOpeningChatDirectly:
+                                                      orderListDetailModel
+                                                          .productId
+                                                          .toString()),
+                                        )));
+                              },
+                              child: Container(
+                                color: const Color.fromARGB(255, 250, 250, 250),
+                                child: MyCachedNetworkImage(
+                                  imageUrl: orderListDetailModel.image ?? '',
+                                  imageFit: BoxFit.contain,
+                                  width: 100,
+                                  height: 150,
+                                ),
+                              ))),
+                      ///////////////////
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      ///////////////////
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                          child: Stack(
+                            alignment: AlignmentDirectional.topEnd,
+                            children: [
+                              InkWell(
+                                  onTap: () {
+                                    BlocProvider.of<HomeBloc>(
+                                            navigatorKey.currentState!.context)
+                                        .add(GetFullProductDetailsEvent(
+                                      currentColorName: (orderListDetailModel
+                                              .variation.isNullOrEmpty)
+                                          ? ""
+                                          : orderListDetailModel
+                                              .variation?[0].colorOption,
+                                      productSlug:
+                                          orderListDetailModel.productSlug ??
+                                              "",
+                                    ));
+
+                                    Future.delayed(
+                                        Duration(seconds: 1),
+                                        () => Navigator.of(navigatorKey
+                                                    .currentState!.context)
+                                                .push(PageRouteBuilder(
+                                              pageBuilder: (context, animation,
+                                                      secondaryAnimation) =>
+                                                  ProductDetailsPage(
+                                                      productSlugForOpeningChatDirectly:
+                                                          orderListDetailModel
+                                                                  .productSlug ??
+                                                              "",
+                                                      fromNotification: false,
+                                                      productIdForOpeningChatDirectly:
+                                                          orderListDetailModel
+                                                              .productId
+                                                              .toString()),
+                                            )));
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      RichText(
+                                      Container(
+                                        height: 8,
+                                        width: 50,
+                                        color: Colors.black,
+                                      ),
+                                      ///////////////////
+                                      const SizedBox(
+                                        height: 15,
+                                      ),
+                                      ///////////////////
+                                      Text(
+                                        orderListDetailModel
+                                                .productDetails?.name ??
+                                            '',
                                         overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        text: TextSpan(
-                                          style: context
-                                              .textTheme.bodyMedium?.rq
-                                              .copyWith(
-                                            color: const Color(0xff8D8D8D),
-                                            letterSpacing: 0.18,
-                                            fontSize: 10,
-                                            height: 1.3,
-                                          ),
-                                          children: [
-                                            orderListDetailModel
-                                                            .variation?.color ==
-                                                        "" ||
-                                                    orderListDetailModel
-                                                            .variation?.color ==
-                                                        null
-                                                ? TextSpan(text: "")
-                                                : TextSpan(
-                                                    text:
-                                                        '${LocaleKeys.color.tr()} : ',
-                                                  ),
-                                            ////////////////////////////
-                                            TextSpan(
-                                              text: orderListDetailModel
-                                                          .variation ==
-                                                      null
-                                                  ? ''
-                                                  : orderListDetailModel
-                                                          .variation?.color ??
-                                                      '',
+                                        maxLines: 2,
+                                        style: context.textTheme.bodyMedium?.rq
+                                            .copyWith(
+                                          color: const Color(0xff505050),
+                                          letterSpacing: 0.18,
+                                          fontSize: 12,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                      ///////////////////
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      ///////////////////
+                                      (orderListDetailModel
+                                              .variation.isNullOrEmpty)
+                                          ? SizedBox.shrink()
+                                          : (orderListDetailModel.variation?[0]
+                                                              .size ==
+                                                          null ||
+                                                      orderListDetailModel
+                                                              .variation?[0]
+                                                              .size ==
+                                                          "") &&
+                                                  (orderListDetailModel
+                                                              .variation?[0]
+                                                              .color ==
+                                                          null ||
+                                                      orderListDetailModel
+                                                              .variation?[0]
+                                                              .color ==
+                                                          "")
+                                              ? SizedBox.shrink()
+                                              : Row(
+                                                  children: [
+                                                    RichText(
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                      text: TextSpan(
+                                                        style: context.textTheme
+                                                            .bodyMedium?.rq
+                                                            .copyWith(
+                                                          color: const Color(
+                                                              0xff8D8D8D),
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 10,
+                                                          height: 1.3,
+                                                        ),
+                                                        children: [
+                                                          orderListDetailModel
+                                                                  .variation
+                                                                  .isNullOrEmpty
+                                                              ? TextSpan(
+                                                                  text: "")
+                                                              : orderListDetailModel
+                                                                              .variation?[
+                                                                                  0]
+                                                                              .color ==
+                                                                          "" ||
+                                                                      orderListDetailModel
+                                                                              .variation?[
+                                                                                  0]
+                                                                              .color ==
+                                                                          null
+                                                                  ? TextSpan(
+                                                                      text: "")
+                                                                  : TextSpan(
+                                                                      text:
+                                                                          '${LocaleKeys.color.tr()} : ',
+                                                                    ),
+                                                          ////////////////////////////
+                                                          TextSpan(
+                                                            text: orderListDetailModel
+                                                                    .variation
+                                                                    .isNullOrEmpty
+                                                                ? ''
+                                                                : orderListDetailModel
+                                                                        .variation?[
+                                                                            0]
+                                                                        .color ??
+                                                                    '',
+                                                            style: context
+                                                                .textTheme
+                                                                .bodyMedium
+                                                                ?.mq
+                                                                .copyWith(
+                                                              color: const Color(
+                                                                  0xff505050),
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              fontSize: 10,
+                                                              height: 1.3,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    ///////////////////
+                                                    SizedBox(
+                                                      width: (orderListDetailModel
+                                                              .variation
+                                                              .isNullOrEmpty)
+                                                          ? 0
+                                                          : orderListDetailModel
+                                                                          .variation?[
+                                                                              0]
+                                                                          .color ==
+                                                                      "" ||
+                                                                  orderListDetailModel
+                                                                          .variation?[
+                                                                              0]
+                                                                          .color ==
+                                                                      null
+                                                              ? 0
+                                                              : 12,
+                                                    ),
+                                                    ///////////////////
+                                                    Flexible(
+                                                      fit: FlexFit.loose,
+                                                      child: RichText(
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 1,
+                                                        text: TextSpan(
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.rq
+                                                              .copyWith(
+                                                            color: const Color(
+                                                                0xff8D8D8D),
+                                                            letterSpacing: 0.18,
+                                                            fontSize: 10,
+                                                            height: 1.3,
+                                                          ),
+                                                          children: [
+                                                            (orderListDetailModel
+                                                                    .variation
+                                                                    .isNullOrEmpty)
+                                                                ? TextSpan(
+                                                                    text: "")
+                                                                : orderListDetailModel.variation?[0].size ==
+                                                                            null ||
+                                                                        orderListDetailModel.variation?[0].size ==
+                                                                            ""
+                                                                    ? TextSpan(
+                                                                        text:
+                                                                            "")
+                                                                    : TextSpan(
+                                                                        text:
+                                                                            '${LocaleKeys.size.tr()} : ',
+                                                                      ),
+                                                            ////////////////////////////
+                                                            TextSpan(
+                                                              text: orderListDetailModel
+                                                                      .variation
+                                                                      .isNullOrEmpty
+                                                                  ? ""
+                                                                  : orderListDetailModel
+                                                                              .variation?[
+                                                                                  0]
+                                                                              .size ==
+                                                                          null
+                                                                      ? ''
+                                                                      : orderListDetailModel
+                                                                              .variation?[0]
+                                                                              .size ??
+                                                                          '',
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.mq
+                                                                  .copyWith(
+                                                                color: const Color(
+                                                                    0xff505050),
+                                                                letterSpacing:
+                                                                    0.18,
+                                                                fontSize: 10,
+                                                                height: 1.3,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                      ///////////////////
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      ///////////////////
+                                      Row(
+                                        children: [
+                                          RichText(
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            text: TextSpan(
                                               style: context
-                                                  .textTheme.bodyMedium?.mq
+                                                  .textTheme.bodyMedium?.rq
                                                   .copyWith(
-                                                color: const Color(0xff505050),
+                                                color: const Color(0xff8D8D8D),
                                                 letterSpacing: 0.18,
                                                 fontSize: 10,
                                                 height: 1.3,
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      ///////////////////
-                                      SizedBox(
-                                        width: orderListDetailModel
-                                                        .variation?.color ==
-                                                    "" ||
-                                                orderListDetailModel
-                                                        .variation?.color ==
-                                                    null
-                                            ? 0
-                                            : 12,
-                                      ),
-                                      ///////////////////
-                                      Flexible(
-                                        fit: FlexFit.loose,
-                                        child: RichText(
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          text: TextSpan(
-                                            style: context
-                                                .textTheme.bodyMedium?.rq
-                                                .copyWith(
-                                              color: const Color(0xff8D8D8D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 10,
-                                              height: 1.3,
-                                            ),
-                                            children: [
-                                              orderListDetailModel.variation
-                                                              ?.size ==
-                                                          null ||
-                                                      orderListDetailModel
-                                                              .variation
-                                                              ?.size ==
-                                                          ""
-                                                  ? TextSpan(text: "")
-                                                  : TextSpan(
-                                                      text:
-                                                          '${LocaleKeys.size.tr()} : ',
-                                                    ),
-                                              ////////////////////////////
-                                              TextSpan(
-                                                text: orderListDetailModel
-                                                            .variation ==
-                                                        null
-                                                    ? ''
-                                                    : orderListDetailModel
-                                                            .variation?.size ??
-                                                        '',
-                                                style: context
-                                                    .textTheme.bodyMedium?.mq
-                                                    .copyWith(
-                                                  color:
-                                                      const Color(0xff505050),
-                                                  letterSpacing: 0.18,
-                                                  fontSize: 10,
-                                                  height: 1.3,
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      '${LocaleKeys.composed_of.tr()}: ',
                                                 ),
-                                              ),
-                                            ],
+                                                ////////////////////////////
+                                                TextSpan(
+                                                  text:
+                                                      '${orderListDetailModel.productDetails?.countOfPieces} ${LocaleKeys.piece.tr()}',
+                                                  style: context
+                                                      .textTheme.bodyMedium?.mq
+                                                      .copyWith(
+                                                    color:
+                                                        const Color(0xff505050),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 10,
+                                                    height: 1.3,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                            ///////////////////
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            ///////////////////
-                            Row(
-                              children: [
-                                RichText(
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  text: TextSpan(
-                                    style: context.textTheme.bodyMedium?.rq
-                                        .copyWith(
-                                      color: const Color(0xff8D8D8D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 10,
-                                      height: 1.3,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            '${LocaleKeys.composed_of.tr()}: ',
-                                      ),
-                                      ////////////////////////////
-                                      TextSpan(
-                                        text:
-                                            '${orderListDetailModel.productDetails?.countOfPieces} ${LocaleKeys.piece.tr()}',
-                                        style: context.textTheme.bodyMedium?.mq
-                                            .copyWith(
-                                          color: const Color(0xff505050),
-                                          letterSpacing: 0.18,
-                                          fontSize: 10,
-                                          height: 1.3,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                ///////////////////
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                ///////////////////
-                                Flexible(
-                                  child: RichText(
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    text: TextSpan(
-                                      style: context.textTheme.bodyMedium?.rq
-                                          .copyWith(
-                                        color: const Color(0xff8D8D8D),
-                                        letterSpacing: 0.18,
-                                        fontSize: 10,
-                                        height: 1.3,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: '${LocaleKeys.item.tr()}: ',
-                                        ),
-                                        ////////////////////////////
-                                        TextSpan(
-                                          text: orderListDetailModel.qty
-                                              .toString(),
-                                          style: context
-                                              .textTheme.bodyMedium?.mq
-                                              .copyWith(
-                                            color: const Color(0xff505050),
-                                            letterSpacing: 0.18,
-                                            fontSize: 10,
-                                            height: 1.3,
+                                          ///////////////////
+                                          SizedBox(
+                                            width: 12,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            ///////////////////
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            ///////////////////
-                            BlocBuilder<OrderBloc, OrderState>(
-                                buildWhen: (p, c) =>
-                                    p.getOrdersModel?[widget.currentStatus]
-                                            ?.paginationStatus !=
-                                        c.getOrdersModel?[widget.currentStatus]
-                                            ?.paginationStatus ||
-                                    p.getOrdersByOrderGroupIDStatus !=
-                                        c.getOrdersByOrderGroupIDStatus,
-                                builder: (context, state) => state
-                                            .getOrdersByOrderGroupIDStatus ==
-                                        GetOrdersByOrderGroupIDStatus.loading
-                                    ? TrydosLoader(
-                                        size: 16,
-                                      )
-                                    : Row(
-                                        children: [
+                                          ///////////////////
                                           Flexible(
                                             child: RichText(
                                               overflow: TextOverflow.ellipsis,
@@ -1412,13 +1757,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 children: [
                                                   TextSpan(
                                                     text:
-                                                        '${LocaleKeys.item_status.tr()}: ',
+                                                        '${LocaleKeys.item.tr()}: ',
                                                   ),
                                                   ////////////////////////////
                                                   TextSpan(
-                                                    text: order!.orderStatus
-                                                            ?.label ??
-                                                        "",
+                                                    text: orderListDetailModel
+                                                        .qty
+                                                        .toString(),
                                                     style: context.textTheme
                                                         .bodyMedium?.mq
                                                         .copyWith(
@@ -1433,44 +1778,127 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               ),
                                             ),
                                           ),
-                                          ///////////////////
-
-                                          ///
-                                          ///
-                                          ///
-                                          SizedBox(
-                                            width: 12,
-                                          ),
-                                          ///////////////////
-                                          SvgPicture.asset(
-                                            order!.orderStatus?.value ==
-                                                    'canceled'
-                                                ? AppAssets.orderCanselSvg
-                                                : order!.orderStatus?.value ==
-                                                        'shipped'
-                                                    ? AppAssets.shippedBlackSvg
-                                                    : order!.orderStatus
-                                                                ?.value ==
-                                                            'delivered'
-                                                        ? AppAssets
-                                                            .deliveredBlackSvg
-                                                        : order!.orderStatus
-                                                                    ?.value ==
-                                                                'pending'
-                                                            ? AppAssets
-                                                                .pendeingBlackCheck
-                                                            : AppAssets
-                                                                .orderPreparingSvg,
-                                            width: 15,
-                                          ),
                                         ],
-                                      )),
+                                      ),
+                                      ///////////////////
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      ///////////////////
+                                      BlocBuilder<OrderBloc, OrderState>(
+                                          buildWhen: (p, c) =>
+                                              p
+                                                      .getOrdersModel?[
+                                                          widget.currentStatus]
+                                                      ?.paginationStatus !=
+                                                  c
+                                                      .getOrdersModel?[
+                                                          widget.currentStatus]
+                                                      ?.paginationStatus ||
+                                              p.getOrdersByOrderGroupIDStatus !=
+                                                  c
+                                                      .getOrdersByOrderGroupIDStatus,
+                                          builder: (context, state) => state
+                                                          .getOrdersByOrderGroupIDStatus ==
+                                                      GetOrdersByOrderGroupIDStatus
+                                                          .loading ||
+                                                  state.orderReturnDetailsStatus ==
+                                                      OrderReturnRequestsViewStatus
+                                                          .loading
+                                              ? TrydosLoader(
+                                                  size: 16,
+                                                )
+                                              : Row(
+                                                  children: [
+                                                    Flexible(
+                                                      child: RichText(
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 1,
+                                                        text: TextSpan(
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.rq
+                                                              .copyWith(
+                                                            color: const Color(
+                                                                0xff8D8D8D),
+                                                            letterSpacing: 0.18,
+                                                            fontSize: 10,
+                                                            height: 1.3,
+                                                          ),
+                                                          children: [
+                                                            TextSpan(
+                                                              text:
+                                                                  '${LocaleKeys.item_status.tr()}: ',
+                                                            ),
+                                                            ////////////////////////////
+                                                            TextSpan(
+                                                              text:
+                                                                  ("${(orderListDetailModel.qty ?? 0) == 0 ? LocaleKeys.canceled_status_short.tr() : order!.orderStatus?.label ?? ""} ${orderDetails?.returnRequestProductId == null ? "" : "- ${LocaleKeys.return_request.tr()}"}"),
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.mq
+                                                                  .copyWith(
+                                                                color: const Color(
+                                                                    0xff505050),
+                                                                letterSpacing:
+                                                                    0.18,
+                                                                fontSize: 10,
+                                                                height: 1.3,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    ///////////////////
 
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            ///////////////////
-                            /*  Row(
+                                                    ///
+                                                    ///
+                                                    ///
+                                                    SizedBox(
+                                                      width: 12,
+                                                    ),
+                                                    ///////////////////
+                                                    SvgPicture.asset(
+                                                      order!.orderStatus
+                                                                      ?.value ==
+                                                                  'canceled' ||
+                                                              (orderListDetailModel
+                                                                          .qty ??
+                                                                      0) ==
+                                                                  0
+                                                          ? AppAssets
+                                                              .orderCanselSvg
+                                                          : order!.orderStatus
+                                                                      ?.value ==
+                                                                  'shipped'
+                                                              ? AppAssets
+                                                                  .shippedBlackSvg
+                                                              : order!.orderStatus
+                                                                          ?.value ==
+                                                                      'delivered'
+                                                                  ? AppAssets
+                                                                      .deliveredBlackSvg
+                                                                  : order!.orderStatus
+                                                                              ?.value ==
+                                                                          'pending'
+                                                                      ? AppAssets
+                                                                          .pendeingBlackCheck
+                                                                      : AppAssets
+                                                                          .orderPreparingSvg,
+                                                      width: 15,
+                                                    ),
+                                                  ],
+                                                )),
+
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      ///////////////////
+                                      /*  Row(
                               children: [
                                 Text(
                                   '${LocaleKeys.return_request.tr()}',
@@ -1497,7 +1925,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                               ],
                             ),*/
-                            /* Row(
+                                      /* Row(
                               children: [
                                 Text(
                                   'Canseled',
@@ -1524,132 +1952,158 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                               ],
                             ),*/
-                            ////////////////////
-                            const Spacer(),
-                            ////////////////////
-                            RichText(
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              text: TextSpan(
-                                style:
-                                    context.textTheme.bodyMedium?.rq.copyWith(
-                                  color: const Color(0xffC4C2C2),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        '${((orderListDetailModel.productDetails?.price ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
-                                    style: context.textTheme.bodyMedium?.rq
-                                        .copyWith(
-                                      color: const Color(0xffC4C2C2),
-                                      letterSpacing: 0.18,
-                                      fontSize: 12,
-                                      height: 1.3,
-                                      decoration: TextDecoration.lineThrough,
-                                    ),
-                                  ),
-                                  ////////////////////////////
-                                  TextSpan(
-                                    text:
-                                        ' ${((orderListDetailModel.productDetails?.offerPrice ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
-                                    style: context.textTheme.bodyMedium?.bq
-                                        .copyWith(
-                                      color: const Color(0xff1D1D1D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 12,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                  /////////////
-                                  TextSpan(
-                                    text:
-                                        ' ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
-                                    style: context.textTheme.bodyMedium?.lq
-                                        .copyWith(
-                                      color: const Color(0xff1D1D1D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 12,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        '  ${LocaleKeys.back_to_your_wallet.tr()}',
-                                    style: context.textTheme.bodyMedium?.rr
-                                        .copyWith(
-                                      color: const Color(0xff388CFF),
-                                      letterSpacing: 0.18,
-                                      fontSize: 10,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        ///////////////////
-                        Container(
-                          width: 30,
-                          height: 15,
-                          child: BlocBuilder<OrderBloc, OrderState>(
-                            buildWhen: (previous, current) =>
-                                previous.getCustomerAddressStatus !=
-                                    current.getCustomerAddressStatus ||
-                                previous.editAddressToOrderStatus !=
-                                    current.editAddressToOrderStatus ||
-                                previous.setCustomerAddressDefaultStatus !=
-                                    current.setCustomerAddressDefaultStatus ||
-                                previous.addAddressToOrderStatus !=
-                                    current.addAddressToOrderStatus ||
-                                previous.removeAddressToOrderStatus !=
-                                    current.removeAddressToOrderStatus,
-                            builder: (context, state) {
-                              return InkWell(
-                                  onTap: () {
-                                    allOrder = false;
-                                    showPanel.value = true;
-                                    panelController.open();
-                                    showShadowForPanel.value = true;
-                                    indexTapAddress.value =
-                                        state.currentAddressChoosed ?? 0;
-                                    indexTap.value = index;
+                                      ////////////////////
+                                      const Spacer(),
+                                      ////////////////////
+                                      RichText(
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        text: TextSpan(
+                                          style: context
+                                              .textTheme.bodyMedium?.rq
+                                              .copyWith(
+                                            color: const Color(0xffC4C2C2),
+                                            letterSpacing: 0.18,
+                                            fontSize: 12,
+                                            height: 1.3,
+                                          ),
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  '${(((orderListDetailModel.productDetails?.price ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
+                                              style: context
+                                                  .textTheme.bodyMedium?.rq
+                                                  .copyWith(
+                                                color: const Color(0xffC4C2C2),
+                                                letterSpacing: 0.18,
+                                                fontSize: 12,
+                                                height: 1.3,
+                                                decoration:
+                                                    TextDecoration.lineThrough,
+                                              ),
+                                            ),
+                                            ////////////////////////////
+                                            TextSpan(
+                                              text:
+                                                  ' ${((orderListDetailModel.productDetails?.offerPrice ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
+                                              style: context
+                                                  .textTheme.bodyMedium?.bq
+                                                  .copyWith(
+                                                color: const Color(0xff1D1D1D),
+                                                letterSpacing: 0.18,
+                                                fontSize: 12,
+                                                height: 1.3,
+                                              ),
+                                            ),
+                                            /////////////
+                                            TextSpan(
+                                              text:
+                                                  ' ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
+                                              style: context
+                                                  .textTheme.bodyMedium?.lq
+                                                  .copyWith(
+                                                color: const Color(0xff1D1D1D),
+                                                letterSpacing: 0.18,
+                                                fontSize: 12,
+                                                height: 1.3,
+                                              ),
+                                            ),
+                                            orderDetails?.returnRequestProductId ==
+                                                        null ||
+                                                    orderListDetailModel
+                                                            .paymentStatus ==
+                                                        "unpaid"
+                                                ? TextSpan(text: "")
+                                                : TextSpan(
+                                                    text:
+                                                        ' ${LocaleKeys.back_to_your_wallet.tr()} ${(((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                                    style: context.textTheme
+                                                        .bodyMedium?.rr
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xff388CFF),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 10,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                              ///////////////////
+                              Container(
+                                width: 30,
+                                height: 15,
+                                child: BlocBuilder<OrderBloc, OrderState>(
+                                  buildWhen: (previous, current) =>
+                                      previous.getCustomerAddressStatus !=
+                                          current.getCustomerAddressStatus ||
+                                      previous.editAddressToOrderStatus !=
+                                          current.editAddressToOrderStatus ||
+                                      previous.setCustomerAddressDefaultStatus !=
+                                          current
+                                              .setCustomerAddressDefaultStatus ||
+                                      previous.addAddressToOrderStatus !=
+                                          current.addAddressToOrderStatus ||
+                                      previous.removeAddressToOrderStatus !=
+                                          current.removeAddressToOrderStatus,
+                                  builder: (context, state) {
+                                    return InkWell(
+                                        onTap: () {
+                                          allOrder = false;
+                                          showPanel.value = true;
+                                          panelController.open();
+                                          showShadowForPanel.value = true;
+                                          indexTapAddress.value =
+                                              state.currentAddressChoosed ?? 0;
+                                          indexTap.value = index;
+                                        },
+                                        child: Container(
+                                          width: 40,
+                                          height: 20,
+                                          child: SvgPicture.asset(
+                                            AppAssets.orderMenuSvg,
+                                            width: 20,
+                                            height: 20,
+                                          ),
+                                        ));
                                   },
-                                  child: Container(
-                                    width: 40,
-                                    height: 20,
-                                    child: SvgPicture.asset(
-                                      AppAssets.orderMenuSvg,
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                  ));
-                            },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      )
+                    ],
                   ),
-                )
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            width: 1.sw,
-            padding: EdgeInsets.only(left: 10, right: 10, top: 5),
-            height: 53 + 132,
-            decoration: BoxDecoration(
-                color: Color(0xffFFFCF0),
-                borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: Column(
-              children: [
-                /*  SuccessFulOfReturned(
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                orderDetails?.returnRequestProductId == null ||
+                        order?.returnRequestId == null
+                    ? SizedBox.shrink()
+                    : state.cancelReturnRequestProductStatus ==
+                                CancelReturnRequestProductStatus.loading ||
+                            state.orderReturnDetailsStatus ==
+                                OrderReturnDetailsStatus.loading
+                        ? TrydosLoader(
+                            size: 18,
+                          )
+                        : Container(
+                            width: 1.sw,
+                            padding:
+                                EdgeInsets.only(left: 10, right: 10, top: 5),
+                            height: 53 + 100,
+                            decoration: BoxDecoration(
+                                color: Color(0xffFFFCF0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            child: Column(
+                              children: [
+                                /*  SuccessFulOfReturned(
                     AppAssets.returnedBlacSvg,
                     LocaleKeys.product_has_been_returned_successfully.tr(),
                     LocaleKeys.back_to_your_wallet.tr(),
@@ -1658,79 +2112,129 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     "2 h ago",
                     true,
                     true),*/
-                statusOfReturned(
-                    AppAssets.returnedBlacSvg,
-                    LocaleKeys.product_return_has_been_requested.tr(),
-                    LocaleKeys.product_return_request_approve.tr(),
-                    "3 H",
-                    "00:02:19",
-                    true,
-                    true),
-                statusOfReturned(
-                    AppAssets.returnedBlacSvg,
-                    LocaleKeys.product_return_request_approve.tr(),
-                    "${LocaleKeys.product_collection_within.tr()}" +
-                        "  1 ${LocaleKeys.day.tr()}",
-                    "",
-                    "",
-                    false,
-                    false),
-                statusOfReturned(
-                    AppAssets.returnedBlacSvg,
-                    LocaleKeys.product_return_has_been_requested.tr(),
-                    LocaleKeys.product_return_request_approve.tr(),
-                    "",
-                    "",
-                    false,
-                    false),
-                statusOfReturned(
-                    AppAssets.returnedBlacSvg,
-                    LocaleKeys.product_return_has_been_requested.tr(),
-                    LocaleKeys.product_return_request_approve.tr(),
-                    "",
-                    "",
-                    false,
-                    false)
+                                statusOfReturned(
+                                    AppAssets.returnedBlacSvg,
+                                    LocaleKeys.product_return_has_been_requested
+                                        .tr(),
+                                    LocaleKeys.product_return_request_approve
+                                        .tr(),
+                                    "3 H",
+                                    "00:02:19",
+                                    true,
+                                    true),
+                                statusOfReturned(
+                                    AppAssets.returnedBlacSvg,
+                                    LocaleKeys.product_return_request_approve
+                                        .tr(),
+                                    "${LocaleKeys.product_collection_within.tr()}" +
+                                        "  1 ${LocaleKeys.day.tr()}",
+                                    "3 H",
+                                    "00:02:19",
+                                    orderDetails?.returnRequestProductStatus
+                                            ?.contains("approved") ??
+                                        false,
+                                    orderDetails?.returnRequestProductStatus
+                                            ?.contains("approved") ??
+                                        false),
+                                statusOfReturned(
+                                    AppAssets.returnedBlacSvg,
+                                    LocaleKeys
+                                        .product_has_been_returned_successfully
+                                        .tr(),
+                                    orderListDetailModel.paymentStatus ==
+                                            "unpaid"
+                                        ? ""
+                                        : '${LocaleKeys.back_to_your_wallet.tr()} ${(((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                    "3 H",
+                                    "00:02:19",
+                                    ((orderDetails?.returnRequestProductStatus
+                                                ?.contains("returned") ??
+                                            false) ||
+                                        (orderDetails
+                                                ?.returnRequestProductStatus
+                                                ?.contains("resolved") ??
+                                            false)),
+                                    ((orderDetails?.returnRequestProductStatus
+                                                ?.contains("returned") ??
+                                            false) ||
+                                        (orderDetails
+                                                ?.returnRequestProductStatus
+                                                ?.contains("resolved") ??
+                                            false))) /*,
+                                statusOfReturned(
+                                    AppAssets.returnedBlacSvg,
+                                    LocaleKeys.product_return_has_been_requested
+                                        .tr(),
+                                    LocaleKeys.product_return_request_approve
+                                        .tr(),
+                                    "",
+                                    "",
+                                    false,
+                                    false)*/
+                              ],
+                            ),
+                          ),
+                SizedBox(
+                  height: 10,
+                ),
+                orderDetails?.returnRequestProductId == null ||
+                        order?.returnRequestId == null
+                    ? SizedBox.shrink()
+                    : state.cancelReturnRequestProductStatus ==
+                                CancelReturnRequestProductStatus.loading ||
+                            state.orderReturnDetailsStatus ==
+                                OrderReturnDetailsStatus.loading
+                        ? TrydosLoader(
+                            size: 18,
+                          )
+                        : InkWell(
+                            onTap: () {
+                              orderBloc.add(CancelReturnRequestProductEvent(
+                                  returnRequestId:
+                                      orderDetails?.returnRequestId ?? 0,
+                                  params: CancelReturnRequestProductParams(
+                                      returnRequestProductId: (orderDetails
+                                                  ?.returnRequestProductId ??
+                                              "")
+                                          .toString())));
+                            },
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "${LocaleKeys.cancel_return_request_get.tr()}",
+                                    style: context.textTheme.bodyMedium?.rr
+                                        .copyWith(
+                                      decoration: TextDecoration.underline,
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                  Text(
+                                    " 3 USD",
+                                    style: context.textTheme.bodyMedium?.br
+                                        .copyWith(
+                                      decoration: TextDecoration.underline,
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ))
               ],
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "${LocaleKeys.cancel_return_request_get.tr()}",
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                    decoration: TextDecoration.underline,
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.5,
-                  ),
-                ),
-                Text(
-                  " 3 USD",
-                  style: context.textTheme.bodyMedium?.br.copyWith(
-                    decoration: TextDecoration.underline,
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 
   Widget statusOfReturned(String svg, String tilte, String body, String time,
-      String timer, bool isBlac, bool isTextBlac) {
+      String timer, bool isBlak, bool isTextBlak) {
     return Container(
       width: 1.sw,
       height: 45,
@@ -1750,7 +2254,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 Text(
                   tilte,
                   style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: !isTextBlac
+                    color: !isTextBlak
                         ? const Color(0xffC4C2C2)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
@@ -1762,7 +2266,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 Text(
                   time,
                   style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: !isTextBlac
+                    color: !isTextBlak
                         ? const Color(0xffC4C2C2)
                         : const Color(0xffC4C2C2),
                     letterSpacing: 0.18,
@@ -1779,59 +2283,61 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ],
             ),
           ),
-          Container(
-            width: 1.sw,
-            height: 14,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: 20,
-                ),
-                Text(
-                  "${LocaleKeys.waiting.tr()}",
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: !isTextBlac
-                        ? const Color(0xffC4C2C2)
-                        : const Color(0xff388CFF),
-                    letterSpacing: 0.18,
-                    fontSize: 10,
-                    height: 1.5,
+          body == ""
+              ? SizedBox.shrink()
+              : Container(
+                  width: 1.sw,
+                  height: 15,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        "${LocaleKeys.waiting.tr()}",
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: !isTextBlak
+                              ? const Color(0xffC4C2C2)
+                              : const Color(0xff388CFF),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.5,
+                        ),
+                      ),
+                      Text(
+                        " $body",
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: !isTextBlak
+                              ? const Color(0xffC4C2C2)
+                              : const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.5,
+                        ),
+                      ),
+                      Spacer(),
+                      Text(
+                        timer,
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: !isTextBlak
+                              ? const Color(0xffC4C2C2)
+                              : const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      SvgPicture.asset(
+                        AppAssets.orderClockSvg,
+                        color: isBlak ? Color(0xff1D1D1D) : null,
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  " $body",
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: !isTextBlac
-                        ? const Color(0xffC4C2C2)
-                        : const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 10,
-                    height: 1.5,
-                  ),
-                ),
-                Spacer(),
-                Text(
-                  timer,
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: !isTextBlac
-                        ? const Color(0xffC4C2C2)
-                        : const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 10,
-                    height: 1.5,
-                  ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                SvgPicture.asset(
-                  AppAssets.orderClockSvg,
-                  color: isBlac ? Color(0xff1D1D1D) : null,
-                ),
-              ],
-            ),
-          ),
           SizedBox(
             height: 5,
           ),
@@ -2024,7 +2530,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
             order!.orderStatus?.value != "out_for_delivery"
                 ? SizedBox.shrink()
                 : Container(
-                    width: 30,
+                    width: 105,
                     height: 40,
                     child: BlocListener<ChatBloc, ChatState>(
                         listenWhen: (previous, current) =>
@@ -2086,23 +2592,40 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             }
                             return Container(
                               alignment: Alignment.center,
-                              width: 30,
+                              width: 70,
                               height: 30,
                               child: InkWell(
-                                onTap: () {
-                                  GetIt.I<ChatBloc>().add(
-                                      GetOrderRecipientIdEvent(
-                                          originalUserId:
-                                              GetIt.I<PrefsRepository>()
-                                                  .myMarketId
-                                                  .toString(),
-                                          orderId: order!.id.toString()));
-                                },
-                                child: SvgPicture.asset(
-                                  AppAssets.chatMarkActiveSvg,
-                                  width: 20,
-                                ),
-                              ),
+                                  onTap: () {
+                                    GetIt.I<ChatBloc>().add(
+                                        GetOrderRecipientIdEvent(
+                                            originalUserId:
+                                                GetIt.I<PrefsRepository>()
+                                                    .myMarketId
+                                                    .toString(),
+                                            orderId: order!.id.toString()));
+                                  },
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppAssets.chatMarkActiveSvg,
+                                        width: 15,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        LocaleKeys.chat_with_delivery_person
+                                            .tr(),
+                                        style: context.textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                          color: const Color(0xff1D1D1D),
+                                          fontSize: 9,
+                                          height: 1.3,
+                                          letterSpacing: 0.18,
+                                        ),
+                                      )
+                                    ],
+                                  )),
                             );
                           },
                         )),
@@ -2565,15 +3088,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      Text(
-                        "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: Colors.white,
-                          letterSpacing: 0.18,
-                          fontSize: 16,
-                          height: 1.3,
-                        ),
-                      ),
+                      order!.paymentStatus == "unpaid"
+                          ? SizedBox.shrink()
+                          : Text(
+                              "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 0.18,
+                                fontSize: 16,
+                                height: 1.3,
+                              ),
+                            ),
                       SizedBox(
                         height: 20.h,
                       ),
@@ -2674,7 +3199,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               enableChangeAddress.value = false;
                               showShadowForPanel.value = false;
                               showShadowForCanselOrder.value = false;
-                              optionCanselOrReturn.value = [];
+                              optionReturn.value = 0;
+                              optionCansel.value = [];
                               showShadowForChangeAddress.value = false;
                               shadowForChangeVariant.value = false;
                             }
@@ -2691,7 +3217,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         .toString() ??
                                     "",
                                 choice1: sizeIndexTap.value == null
-                                    ? firstSizeName ?? ""
+                                    ? firstSizeOption ?? ""
                                     : productChoiceOptions[0]
                                             .options?[sizeIndexTap.value!]
                                             .option ??
@@ -2818,7 +3344,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   showShadowForPanel.value = false;
                                   showShadowForChangeAddress.value = false;
                                   showShadowForCanselOrder.value = false;
-                                  optionCanselOrReturn.value = [];
+                                  optionReturn.value = 0;
+                                  optionCansel.value = [];
                                   shadowForChangeVariant.value = false;
                                 },
                                 child: Text(
@@ -2903,15 +3430,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      Text(
-                        "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: Colors.white,
-                          letterSpacing: 0.18,
-                          fontSize: 16,
-                          height: 1.3,
-                        ),
-                      ),
+                      order?.paymentStatus == "unpaid"
+                          ? SizedBox.shrink()
+                          : Text(
+                              "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 0.18,
+                                fontSize: 16,
+                                height: 1.3,
+                              ),
+                            ),
                       SizedBox(
                         height: 20.h,
                       ),
@@ -3000,13 +3529,29 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           listenWhen: (previous, current) =>
                               previous.cancelOrderStatus !=
                                   current.cancelOrderStatus ||
+                              previous.storeReturnRequestProductStatus !=
+                                  current.storeReturnRequestProductStatus ||
+                              previous.updateReturnRequestProductStatus !=
+                                  current.updateReturnRequestProductStatus ||
                               previous.cancelOrderItemStatus !=
-                                  current.cancelOrderItemStatus,
+                                  current.cancelOrderItemStatus ||
+                              previous.confirmReturnRequestStatus !=
+                                  current.confirmReturnRequestStatus,
                           listener: (context, state) {
                             if (state.cancelOrderStatus ==
                                     CancelOrderStatus.success ||
                                 state.cancelOrderItemStatus ==
-                                    CancelOrderItemStatus.success) {
+                                    CancelOrderItemStatus.success ||
+                                (state.storeReturnRequestProductStatus ==
+                                        StoreReturnRequestProductStatus
+                                            .success &&
+                                    state.confirmReturnRequestStatus ==
+                                        ConfirmReturnRequestStatus.success) ||
+                                (state.updateReturnRequestProductStatus ==
+                                        UpdateReturnRequestProductStatus
+                                            .success &&
+                                    state.confirmReturnRequestStatus ==
+                                        ConfirmReturnRequestStatus.success)) {
                               orderBloc.add(
                                 GetOrdersByOrderGroupIDEvent(
                                     orderGroupId:
@@ -3019,92 +3564,50 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               enableChangeAddress.value = false;
                               showShadowForPanel.value = false;
                               showShadowForCanselOrder.value = false;
-                              optionCanselOrReturn.value = [];
+                              optionReturn.value = 0;
+                              optionCansel.value = [];
                               showShadowForChangeAddress.value = false;
                               shadowForChangeVariant.value = false;
                             }
                           },
-                          child: BlocBuilder<OrderBloc, OrderState>(
-                              buildWhen: (previous, current) =>
-                                  previous.cancelOrderStatus !=
-                                      current.cancelOrderStatus ||
-                                  previous.cancelOrderItemStatus !=
-                                      current.cancelOrderItemStatus,
-                              builder: (context, state) {
-                                return state.cancelOrderStatus ==
-                                            CancelOrderStatus.loading ||
-                                        state.cancelOrderItemStatus ==
-                                            CancelOrderItemStatus.loading
-                                    ? Shimmer.fromColors(
-                                        baseColor: Colors.grey[500]!,
-                                        highlightColor: Colors.grey[300]!,
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 24),
-                                          alignment: Alignment.center,
-                                          width: 1.sw,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color:
-                                                  agreeToPolicies.value == true
-                                                      ? const Color(0xff3066CC)
-                                                      : const Color(0xffC4C2C2),
-                                              border:
-                                                  agreeToPolicies.value == true
-                                                      ? Border.all(
-                                                          color: const Color(
-                                                              0xffF8F8F8),
-                                                        )
-                                                      : Border.all(
-                                                          color: const Color(
-                                                              0xffC4C2C2),
-                                                        ),
-                                              borderRadius:
-                                                  BorderRadius.circular(15)),
-                                        ))
-                                    : InkWell(
-                                        onTap: () {
-                                          if (agreeToPolicies.value == false) {
-                                            return;
-                                          }
-                                          if (!isReturn) {
-                                            if (allOrder) {
-                                              orderBloc.add(CancelOrderEvent(
-                                                cancelOrderParams:
-                                                    CancelOrderParams(
-                                                  orderId: order!.id.toString(),
-                                                ),
-                                              ));
-                                            } else {
-                                              orderBloc
-                                                  .add(CancelOrderItemEvent(
-                                                cancelOrderItemParams:
-                                                    CancelOrderItemParams(
-                                                        orderId: order!.id
-                                                            .toString(),
-                                                        detailId: order!
-                                                                .details?[
-                                                                    indexTap
-                                                                        .value]
-                                                                .id
-                                                                .toString() ??
-                                                            "",
-                                                        qty: (order!
-                                                                .details?[
-                                                                    indexTap
-                                                                        .value]
-                                                                .qty!
-                                                                .round())
-                                                            .toString()),
-                                              ));
-                                            }
-                                          }
-                                        },
-                                        child: ValueListenableBuilder<bool>(
-                                            valueListenable: agreeToPolicies,
-                                            builder:
-                                                (context, _agreeToPolicies, _) {
-                                              return Container(
+                          child: ValueListenableBuilder<int>(
+                              valueListenable: returnBottomIndexTap,
+                              builder: (context, _returnBottomIndexTap, _) {
+                                return BlocBuilder<OrderBloc, OrderState>(
+                                    buildWhen: (previous, current) =>
+                                        previous.cancelOrderStatus !=
+                                            current.cancelOrderStatus ||
+                                        previous.cancelOrderItemStatus !=
+                                            current.cancelOrderItemStatus ||
+                                        previous.storeReturnRequestProductStatus !=
+                                            current
+                                                .storeReturnRequestProductStatus ||
+                                        previous.updateReturnRequestProductStatus !=
+                                            current
+                                                .updateReturnRequestProductStatus ||
+                                        previous.confirmReturnRequestStatus !=
+                                            current.confirmReturnRequestStatus,
+                                    builder: (context, state) {
+                                      return state.cancelOrderStatus ==
+                                                  CancelOrderStatus.loading ||
+                                              state.cancelOrderItemStatus ==
+                                                  CancelOrderItemStatus
+                                                      .loading ||
+                                              ((state
+                                                              .storeReturnRequestProductStatus ==
+                                                          StoreReturnRequestProductStatus
+                                                              .loading ||
+                                                      state.updateReturnRequestProductStatus ==
+                                                          UpdateReturnRequestProductStatus
+                                                              .loading ||
+                                                      state.confirmReturnRequestStatus ==
+                                                          ConfirmReturnRequestStatus
+                                                              .loading) &&
+                                                  _returnBottomIndexTap == 0)
+                                          ? Shimmer.fromColors(
+                                              baseColor: Colors.grey[500]!,
+                                              highlightColor: Colors.grey[300]!,
+                                              child: Container(
                                                 margin: EdgeInsets.symmetric(
                                                     horizontal: 24),
                                                 alignment: Alignment.center,
@@ -3132,23 +3635,436 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             15)),
-                                                child: Text(
-                                                  LocaleKeys.i_agree_cancel
-                                                      .tr(),
-                                                  textAlign: TextAlign.center,
-                                                  style: context
-                                                      .textTheme.bodyMedium?.br
-                                                      .copyWith(
-                                                    color: Colors.white,
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 16,
-                                                    height: 1.3,
-                                                  ),
-                                                ),
-                                              );
-                                            }),
-                                      );
+                                              ))
+                                          : InkWell(
+                                              onTap: () {
+                                                if (agreeToPolicies.value ==
+                                                    false) {
+                                                  return;
+                                                }
+                                                if (!isReturn) {
+                                                  if (allOrder) {
+                                                    orderBloc
+                                                        .add(CancelOrderEvent(
+                                                      cancelOrderParams:
+                                                          CancelOrderParams(
+                                                        orderId: order!.id
+                                                            .toString(),
+                                                      ),
+                                                    ));
+                                                  } else {
+                                                    orderBloc.add(
+                                                        CancelOrderItemEvent(
+                                                      cancelOrderItemParams:
+                                                          CancelOrderItemParams(
+                                                              orderId: order!.id
+                                                                  .toString(),
+                                                              detailId: order!
+                                                                      .details?[
+                                                                          indexTap
+                                                                              .value]
+                                                                      .id
+                                                                      .toString() ??
+                                                                  "",
+                                                              qty: (order!
+                                                                      .details?[
+                                                                          indexTap
+                                                                              .value]
+                                                                      .qty!
+                                                                      .round())
+                                                                  .toString()),
+                                                    ));
+                                                  }
+                                                } else {
+                                                  returnBottomIndexTap.value =
+                                                      0;
+                                                  OrderDetail? orderDetails =
+                                                      state
+                                                          .orderReturnDetailsModel
+                                                          ?.data
+                                                          ?.orderDetails
+                                                          ?.firstWhere(
+                                                    (element) =>
+                                                        element.detailId ==
+                                                        order
+                                                            ?.details?[
+                                                                indexTap.value]
+                                                            .id,
+                                                    orElse: () => OrderDetail(),
+                                                  );
+                                                  if (!(orderDetails
+                                                          ?.alreadyReturn ??
+                                                      false)) {
+                                                    orderBloc.add(StoreReturnRequestProductEvent(
+                                                        orderGroupId:
+                                                            order?.orderGroupId ??
+                                                                "",
+                                                        withConfirm: true,
+                                                        returnRequestId: orderDetails!
+                                                            .returnRequestId
+                                                            .toString(),
+                                                        params: ReturnRequestProductParams(
+                                                            details: "",
+                                                            images: orderPhotos
+                                                                .value,
+                                                            isForExchange: '0',
+                                                            quantity:
+                                                                qtyOfReturnValueNotifier
+                                                                    .value
+                                                                    .toString(),
+                                                            returnRequestReasonId:
+                                                                optionReturn.value
+                                                                    .toString(),
+                                                            productId: orderDetails
+                                                                .productId
+                                                                .toString(),
+                                                            returnRequestId: orderDetails
+                                                                .returnRequestId
+                                                                .toString(),
+                                                            orderDetailId: orderDetails
+                                                                .detailId
+                                                                .toString())));
+                                                  } else {
+                                                    orderBloc.add(
+                                                        UpdateReturnRequestProductEvent(
+                                                            orderGroupId: order
+                                                                    ?.orderGroupId ??
+                                                                "",
+                                                            withConfirm: true,
+                                                            returnRequestId:
+                                                                orderDetails!
+                                                                    .returnRequestId
+                                                                    .toString(),
+                                                            params:
+                                                                UpdateReturnRequestProductParams(
+                                                              details: "",
+                                                              id: (orderDetails
+                                                                          .returnRequestProductId ??
+                                                                      0)
+                                                                  .toString(),
+                                                              images:
+                                                                  orderPhotos
+                                                                      .value,
+                                                              quantity:
+                                                                  qtyOfReturnValueNotifier
+                                                                      .value
+                                                                      .toString(),
+                                                              returnRequestReasonId:
+                                                                  optionReturn
+                                                                      .value
+                                                                      .toString(),
+                                                            )));
+                                                  }
+                                                }
+                                              },
+                                              child: ValueListenableBuilder<
+                                                      bool>(
+                                                  valueListenable:
+                                                      agreeToPolicies,
+                                                  builder: (context,
+                                                      _agreeToPolicies, _) {
+                                                    return Container(
+                                                      margin:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 24),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      width: 1.sw,
+                                                      height: 50,
+                                                      decoration: BoxDecoration(
+                                                          color: agreeToPolicies
+                                                                      .value ==
+                                                                  true
+                                                              ? const Color(
+                                                                  0xff3066CC)
+                                                              : const Color(
+                                                                  0xffC4C2C2),
+                                                          border: agreeToPolicies
+                                                                      .value ==
+                                                                  true
+                                                              ? Border.all(
+                                                                  color: const Color(
+                                                                      0xffF8F8F8),
+                                                                )
+                                                              : Border.all(
+                                                                  color: const Color(
+                                                                      0xffC4C2C2),
+                                                                ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      15)),
+                                                      child: Text(
+                                                        isReturn
+                                                            ? LocaleKeys
+                                                                .i_agree_return
+                                                                .tr()
+                                                            : LocaleKeys
+                                                                .i_agree_cancel
+                                                                .tr(),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: context.textTheme
+                                                            .bodyMedium?.br
+                                                            .copyWith(
+                                                          color: Colors.white,
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 16,
+                                                          height: 1.3,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }),
+                                            );
+                                    });
                               })),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      !isReturn
+                          ? SizedBox.shrink()
+                          : BlocListener<OrderBloc, OrderState>(
+                              listenWhen: (previous, current) =>
+                                  previous.storeReturnRequestProductStatus !=
+                                      current.storeReturnRequestProductStatus ||
+                                  previous.updateReturnRequestProductStatus !=
+                                      current.updateReturnRequestProductStatus,
+                              listener: (context, state) {
+                                if (state.storeReturnRequestProductStatus ==
+                                        StoreReturnRequestProductStatus
+                                            .success ||
+                                    state.updateReturnRequestProductStatus ==
+                                        UpdateReturnRequestProductStatus
+                                            .success) {
+                                  orderBloc.add(
+                                    GetOrdersByOrderGroupIDEvent(
+                                        orderGroupId:
+                                            widget.order.orderGroupId ?? ""),
+                                  );
+                                  agreeToPolicies.value = false;
+                                  panelController.close();
+                                  showPanel.value = false;
+                                  optionModifyPanel.value = null;
+                                  enableChangeAddress.value = false;
+                                  showShadowForPanel.value = false;
+                                  showShadowForCanselOrder.value = false;
+                                  optionReturn.value = 0;
+                                  optionCansel.value = [];
+                                  showShadowForChangeAddress.value = false;
+                                  shadowForChangeVariant.value = false;
+                                }
+                              },
+                              child: ValueListenableBuilder<int>(
+                                  valueListenable: returnBottomIndexTap,
+                                  builder: (context, _returnBottomIndexTap, _) {
+                                    return BlocBuilder<OrderBloc, OrderState>(
+                                        buildWhen: (previous, current) =>
+                                            previous.storeReturnRequestProductStatus !=
+                                                current
+                                                    .storeReturnRequestProductStatus ||
+                                            previous.updateReturnRequestProductStatus !=
+                                                current
+                                                    .updateReturnRequestProductStatus,
+                                        builder: (context, state) {
+                                          return (state.storeReturnRequestProductStatus ==
+                                                          StoreReturnRequestProductStatus
+                                                              .loading ||
+                                                      state.updateReturnRequestProductStatus ==
+                                                          UpdateReturnRequestProductStatus
+                                                              .loading) &&
+                                                  _returnBottomIndexTap == 1
+                                              ? Shimmer.fromColors(
+                                                  baseColor: Colors.grey[500]!,
+                                                  highlightColor:
+                                                      Colors.grey[300]!,
+                                                  child: Container(
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 24),
+                                                    alignment: Alignment.center,
+                                                    width: 1.sw,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(
+                                                        color: agreeToPolicies
+                                                                    .value ==
+                                                                true
+                                                            ? const Color(
+                                                                0xff3066CC)
+                                                            : const Color(
+                                                                0xffC4C2C2),
+                                                        border: agreeToPolicies
+                                                                    .value ==
+                                                                true
+                                                            ? Border.all(
+                                                                color: const Color(
+                                                                    0xffF8F8F8),
+                                                              )
+                                                            : Border.all(
+                                                                color: const Color(
+                                                                    0xffC4C2C2),
+                                                              ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15)),
+                                                  ))
+                                              : InkWell(
+                                                  onTap: () {
+                                                    if (agreeToPolicies.value ==
+                                                        false) {
+                                                      return;
+                                                    }
+                                                    returnBottomIndexTap.value =
+                                                        1;
+
+                                                    OrderDetail? orderDetails =
+                                                        state
+                                                            .orderReturnDetailsModel
+                                                            ?.data
+                                                            ?.orderDetails
+                                                            ?.firstWhere(
+                                                      (element) =>
+                                                          element.detailId ==
+                                                          order
+                                                              ?.details?[
+                                                                  indexTap
+                                                                      .value]
+                                                              .id,
+                                                      orElse: () =>
+                                                          OrderDetail(),
+                                                    );
+                                                    if (!(orderDetails
+                                                            ?.alreadyReturn ??
+                                                        false)) {
+                                                      orderBloc.add(StoreReturnRequestProductEvent(
+                                                          orderGroupId:
+                                                              order?.orderGroupId ??
+                                                                  "",
+                                                          withConfirm: false,
+                                                          returnRequestId: orderDetails!
+                                                              .returnRequestId
+                                                              .toString(),
+                                                          params: ReturnRequestProductParams(
+                                                              details: "",
+                                                              images: orderPhotos
+                                                                  .value,
+                                                              isForExchange:
+                                                                  '0',
+                                                              quantity: qtyOfReturnValueNotifier
+                                                                  .value
+                                                                  .toString(),
+                                                              returnRequestReasonId:
+                                                                  optionReturn.value
+                                                                      .toString(),
+                                                              productId: orderDetails
+                                                                  .productId
+                                                                  .toString(),
+                                                              returnRequestId: orderDetails
+                                                                  .returnRequestId
+                                                                  .toString(),
+                                                              orderDetailId: orderDetails
+                                                                  .detailId
+                                                                  .toString())));
+                                                    } else {
+                                                      orderBloc.add(
+                                                          UpdateReturnRequestProductEvent(
+                                                              orderGroupId:
+                                                                  order?.orderGroupId ??
+                                                                      "",
+                                                              withConfirm:
+                                                                  false,
+                                                              returnRequestId:
+                                                                  orderDetails!
+                                                                      .returnRequestId
+                                                                      .toString(),
+                                                              params:
+                                                                  UpdateReturnRequestProductParams(
+                                                                details: "",
+                                                                id: (orderDetails
+                                                                            .returnRequestProductId ??
+                                                                        0)
+                                                                    .toString(),
+                                                                images:
+                                                                    orderPhotos
+                                                                        .value,
+                                                                quantity:
+                                                                    qtyOfReturnValueNotifier
+                                                                        .value
+                                                                        .toString(),
+                                                                returnRequestReasonId:
+                                                                    optionReturn
+                                                                        .value
+                                                                        .toString(),
+                                                              )));
+                                                    }
+                                                  },
+                                                  child:
+                                                      ValueListenableBuilder<
+                                                              bool>(
+                                                          valueListenable:
+                                                              agreeToPolicies,
+                                                          builder: (context,
+                                                              _agreeToPolicies,
+                                                              _) {
+                                                            return Container(
+                                                              margin: EdgeInsets
+                                                                  .symmetric(
+                                                                      horizontal:
+                                                                          24),
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              width: 1.sw,
+                                                              height: 50,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                      color: agreeToPolicies.value ==
+                                                                              true
+                                                                          ? const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              157,
+                                                                              183,
+                                                                              231)
+                                                                          : const Color(
+                                                                              0xffC4C2C2),
+                                                                      border: agreeToPolicies.value ==
+                                                                              true
+                                                                          ? Border
+                                                                              .all(
+                                                                              color: const Color(0xffF8F8F8),
+                                                                            )
+                                                                          : Border
+                                                                              .all(
+                                                                              color: const Color(0xffC4C2C2),
+                                                                            ),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              15)),
+                                                              child: Text(
+                                                                LocaleKeys
+                                                                    .i_want_returm_more_products
+                                                                    .tr(),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style: context
+                                                                    .textTheme
+                                                                    .bodyMedium
+                                                                    ?.br
+                                                                    .copyWith(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  letterSpacing:
+                                                                      0.18,
+                                                                  fontSize: 16,
+                                                                  height: 1.3,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }),
+                                                );
+                                        });
+                                  })),
                       SizedBox(
                         height: 20.h,
                       ),
@@ -3160,14 +4076,24 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 previous.cancelOrderStatus !=
                                     current.cancelOrderStatus ||
                                 previous.cancelOrderItemStatus !=
-                                    current.cancelOrderItemStatus,
+                                    current.cancelOrderItemStatus ||
+                                previous.updateReturnRequestProductStatus !=
+                                    current.updateReturnRequestProductStatus ||
+                                previous.storeReturnRequestProductStatus !=
+                                    current.storeReturnRequestProductStatus,
                             builder: (context, state) {
                               return InkWell(
                                 onTap: () {
                                   if (state.cancelOrderStatus ==
                                           CancelOrderStatus.loading ||
                                       state.cancelOrderItemStatus ==
-                                          CancelOrderItemStatus.loading) {
+                                          CancelOrderItemStatus.loading ||
+                                      state.storeReturnRequestProductStatus ==
+                                          StoreReturnRequestProductStatus
+                                              .loading ||
+                                      state.updateReturnRequestProductStatus ==
+                                          UpdateReturnRequestProductStatus
+                                              .loading) {
                                     return;
                                   }
                                   agreeToPolicies.value = false;
@@ -3178,7 +4104,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   showShadowForPanel.value = false;
                                   showShadowForChangeAddress.value = false;
                                   showShadowForCanselOrder.value = false;
-                                  optionCanselOrReturn.value = [];
+                                  optionReturn.value = 0;
+                                  optionCansel.value = [];
                                   shadowForChangeVariant.value = false;
                                 },
                                 child: Text(
@@ -3826,7 +4753,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   optionModifyPanel.value = null;
                                   showShadowForCanselOrder.value = false;
                                   enableChangeAddress.value = false;
-                                  optionCanselOrReturn.value = [];
+                                  optionReturn.value = 0;
+                                  optionCansel.value = [];
                                   showShadowForPanel.value = false;
                                   showShadowForChangeAddress.value = false;
                                   shadowForChangeVariant.value = false;
@@ -3965,7 +4893,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       panelController.close();
                                       showPanel.value = false;
                                       optionModifyPanel.value = null;
-                                      optionCanselOrReturn.value = [];
+                                      optionReturn.value = 0;
+                                      optionCansel.value = [];
                                       enableChangeAddress.value = false;
                                       showShadowForPanel.value = false;
                                       showShadowForChangeAddress.value = false;
@@ -4030,14 +4959,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         onPanelClosed: () {
                           qtyController.clear();
                           colorIndexTap.value = null;
+                          // qtyOfReturnController.clear();
                           sizeIndexTap.value = null;
+                          qtyOfReturnValueNotifier.value = 0;
                           agreeToPolicies.value = false;
                           variantHasBeenChanged.value = false;
                           showPanel.value = false;
                           optionModifyPanel.value = null;
                           enableChangeAddress.value = false;
                           showShadowForPanel.value = false;
-                          optionCanselOrReturn.value = [];
+                          optionReturn.value = 0;
+                          optionCansel.value = [];
                           showShadowForChangeAddress.value = false;
 
                           showShadowForCanselOrder.value = false;
@@ -5490,6 +6422,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
     if (_option == "Change_Product_Request") {
       return panelVaraintContent(sc);
     }
+    OrderDetail? orderDetails =
+        orderBloc.state.orderReturnDetailsModel?.data?.orderDetails?.firstWhere(
+      (element) => element.detailId == order!.details?[indexTap.value].id,
+      orElse: () => OrderDetail(),
+    );
     return Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -5575,23 +6512,35 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           state.colorSizeForProductModel?.data?.choiceOptions ??
                               [];
                       if (productColors.isNotEmpty) {
-                        firstColorName = order!.details![indexTap.value].variant
+                        firstColorOption = order!
+                                .details![indexTap.value].variant
                                 ?.split("-")
                                 .toList()
                                 .first ??
                             "";
                       }
                       if (productChoiceOptions.isNotEmpty) {
-                        firstSizeName = order!.details![indexTap.value].variant
+                        firstSizeOption = order!
+                                .details![indexTap.value].variant
                                 ?.split("-")
                                 .toList()
                                 .last ??
                             "";
+                        firstSizeName = productChoiceOptions[0]
+                            .options!
+                            .firstWhere(
+                              (element) => element.option == firstSizeOption,
+                              orElse: () => Option(
+                                option: firstSizeOption,
+                                name: firstSizeOption,
+                              ),
+                            )
+                            .name;
                       }
                       firstColorNum =
                           state.colorSizeForProductModel?.data?.colors
                               ?.firstWhere(
-                                (element) => element.option == firstColorName,
+                                (element) => element.option == firstColorOption,
                                 orElse: () => ProductColor(
                                   color: "",
                                   name: "",
@@ -5599,16 +6548,27 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                               )
                               .color;
+                      firstColorName =
+                          state.colorSizeForProductModel?.data?.colors
+                              ?.firstWhere(
+                                (element) => element.option == firstColorOption,
+                                orElse: () => ProductColor(
+                                  color: "",
+                                  name: "",
+                                  option: "",
+                                ),
+                              )
+                              .name;
 
                       if (productColors.isNotEmpty) {
                         productColors.removeWhere(
-                            (element) => element.option == firstColorName);
-                        productSyncColorImages.removeWhere(
-                            (element) => element.colorOption == firstColorName);
+                            (element) => element.option == firstColorOption);
+                        productSyncColorImages.removeWhere((element) =>
+                            element.colorOption == firstColorOption);
                       }
                       if (productChoiceOptions.isNotEmpty) {
                         productChoiceOptions[0].options?.removeWhere(
-                            (element) => element.option == firstSizeName);
+                            (element) => element.option == firstSizeOption);
                       }
                       if (productColors.isNotEmpty) {
                         optionVariant.value = "color";
@@ -5644,45 +6604,76 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ),
                                       )));
                             }
-                            return optionOfModify(
-                                onTap: () {
-                                  orderBloc.add(
-                                      GetProductColorSizeSyncAttributeEvent(
-                                          id: order!.details?[indexTap.value]
-                                                  .productId
-                                                  .toString() ??
-                                              ""));
-                                },
-                                svg: AppAssets.changeProductRequestSvg,
-                                image2:
-                                    order!.details?[indexTap.value].image ?? "",
-                                tiltle:
-                                    "${LocaleKeys.change_product_request.tr()}",
-                                body:
-                                    "${LocaleKeys.change_size_color_other.tr()}");
+                            return (order!.details?[indexTap.value].qty ?? 0) ==
+                                        0 ||
+                                    (!(order!.canChangeVariant ?? false))
+                                ? SizedBox.shrink()
+                                : optionOfModify(
+                                    onTap: () {
+                                      orderBloc.add(ResetAllStatusEvent());
+                                      orderBloc.add(
+                                          GetProductColorSizeSyncAttributeEvent(
+                                              id: order!
+                                                      .details?[indexTap.value]
+                                                      .productId
+                                                      .toString() ??
+                                                  ""));
+                                    },
+                                    svg: AppAssets.changeProductRequestSvg,
+                                    image2:
+                                        order!.details?[indexTap.value].image ??
+                                            "",
+                                    tiltle:
+                                        "${LocaleKeys.change_product_request.tr()}",
+                                    body:
+                                        "${LocaleKeys.change_size_color_other.tr()}");
                           }))),
               SizedBox(
                 height: 5,
               ),
-              /* Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: optionOfModify(
-                    onTap: () {
-                      optionModifyPanel.value = "Return_This_Product";
-                    },
-                    svg: AppAssets.returnThisProductSvg,
-                    image2: "",
-                    tiltle: "${LocaleKeys.return_this_product.tr()}",
-                    body:
-                        "${LocaleKeys.return_this_product_in_24_hours_and_back_your_money.tr()}"),
-              ),
+              ((order?.canReturnOrder ?? false) &&
+                      (order!.details?[indexTap.value].qty ?? 0) > 0)
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: optionOfModify(
+                          onTap: () {
+                            orderBloc.add(ResetAllStatusEvent());
+                            optionModifyPanel.value = "Return_This_Product";
+                            if (orderDetails?.returnRequestProductId != null &&
+                                order?.returnRequestId != null) {
+                              //      qtyOfReturnController.text =
+                              //    (orderDetails?.quantity ?? "").toString();
+                              qtyOfReturnValueNotifier.value =
+                                  orderDetails?.quantity ?? 0;
+                              optionReturn.value =
+                                  orderDetails?.returnRequestProductReasonId ??
+                                      0;
+                              orderBloc.add(StoreImagesForUpdateReturnEvent(
+                                  images: orderDetails?.img ?? []));
+                            } else {
+                              qtyOfReturnValueNotifier.value =
+                                  (order?.details?[indexTap.value].qty ?? 0)
+                                      .round();
+                              orderBloc.add(
+                                  StoreImagesForUpdateReturnEvent(images: []));
+                            }
+                          },
+                          svg: AppAssets.returnThisProductSvg,
+                          image2: "",
+                          tiltle:
+                              "${orderDetails?.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_this_product.tr()}",
+                          body:
+                              "${LocaleKeys.return_this_product_in_24_hours_and_back_your_money.tr()}"),
+                    )
+                  : SizedBox.shrink(),
               SizedBox(
                 height: 5,
-              ),*/
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
                     onTap: () {
+                      orderBloc.add(ResetAllStatusEvent());
                       optionModifyPanel.value = "Report_This_Product";
                     },
                     svg: AppAssets.reporthisProductSvg,
@@ -5691,14 +6682,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     body:
                         "${LocaleKeys.delivery_time_delivery_man_delivery_car.tr()}"),
               ),
-              SizedBox(
-                height: 5,
-              ),
               (order?.canCanceleOrder ?? false)
+                  ? SizedBox(
+                      height: 5,
+                    )
+                  : SizedBox.shrink(),
+              (order?.canCanceleOrder ?? false) &&
+                      (order!.details?[indexTap.value].qty ?? 0) > 0
                   ? Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: optionOfModify(
                           onTap: () {
+                            orderBloc.add(ResetAllStatusEvent());
                             optionModifyPanel.value = "Cancel";
                           },
                           svg: AppAssets.orderCanselSvg,
@@ -5714,7 +6709,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               /*  Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
-                    onTap: () {
+                    onTap: () { orderBloc.add(ResetAllStatusEvent());
                       optionModifyPanel.value = "Change_Address";
                     },
                     svg: AppAssets.orderChangeAddressSvg,
@@ -5728,6 +6723,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: optionOfModify(
                     onTap: () {
+                      orderBloc.add(ResetAllStatusEvent());
                       optionModifyPanel.value = "Hide_This_Product";
                     },
                     svg: AppAssets.hideThisProductSvg,
@@ -6590,7 +7586,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 builder: (context, _sizeIndexTap, _) {
                                   return Container(
                                     width: 1.sw,
-                                    height: 100,
+                                    height: 105,
+                                    alignment: Alignment.center,
                                     margin:
                                         EdgeInsets.symmetric(horizontal: 24),
                                     child: SingleChildScrollView(
@@ -6707,6 +7704,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   style: TextStyle(
                                     color: Color(0xFF1D1D1D),
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
                               )
                   ],
@@ -6716,538 +7714,1139 @@ class _OrderDetails2 extends State<OrderDetails2> {
   }
 
   Widget panelReturnedContent(ScrollController sc) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 10.h,
-          ),
-          Container(
-            width: 40,
-            height: 2,
-            decoration: BoxDecoration(
-                color: Color(0xffC4C2C2),
-                border: Border.all(color: Color(0xffC4C2C2)),
-                borderRadius: BorderRadius.all(Radius.circular(2))),
-          ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Container(
-              width: 104,
-              height: 140.h,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Container(
-                  color: Colors.white,
-                  child: MyCachedNetworkImage(
-                    withInnerShadow: true,
-                    withImageShadow: true,
-                    radius: 15,
-                    imageUrl: order?.details?[indexTap.value].image ?? "",
-                    imageFit: BoxFit.contain,
-                    width: 100,
-                    height: 140,
-                  ),
-                ),
-              )),
-          SizedBox(
-            height: 8.h,
-          ),
-          SvgPicture.asset(
-            AppAssets.returnWihoutPhotoSvg,
-          ),
-          SizedBox(
-            height: 14.h,
-          ),
-          Text("${LocaleKeys.return_this_product.tr()}",
-              style: context.textTheme.bodyMedium?.mr.copyWith(
-                color: const Color(0xff402CDD),
-                letterSpacing: 0.18,
-                fontSize: 14,
-                height: 1.3,
-              )),
-          SizedBox(
-            height: 8.h,
-          ),
-          Text("${LocaleKeys.you_can_return_product_without_conditions.tr()}",
-              maxLines: 1,
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: const Color(0xff8D8D8D),
-                letterSpacing: 0.18,
-                fontSize: 12.sp,
-                height: 1.3,
-              )),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return BlocBuilder<OrderBloc, OrderState>(
+        buildWhen: (previous, current) =>
+            previous.getReturnReasonsStatus != current.getReturnReasonsStatus,
+        builder: (context, state) {
+          List<ReturnReasonModel>? reasons =
+              state.returnReasonsModel?.data?.returnReasons ?? [];
+          final double maxRowWidth =
+              MediaQuery.of(context).size.width - 10; // 20 يمين و20 يسار
+          final double spacing = 5;
+
+          // توزيع الأسباب في صفوف حسب العرض الفعلي
+          List<List<ReturnReasonModel>> rows = [];
+          List<ReturnReasonModel> currentRow = [];
+          double currentWidth = 0;
+          double _calculateButtonWidth(String text) {
+            // يمكنك تعديل هذه القيم حسب التصميم والخط
+            const double baseWidth = 0; // هامش أساسي للزر
+            const double charWidth = 7; // تقدير تقريبي لحجم الحرف
+            return baseWidth + (text.length * charWidth);
+          }
+
+          for (final reason in reasons) {
+            final text = reason.reasonAeEn ?? '';
+            final btnWidth = _calculateButtonWidth(text);
+            // إذا كان إضافة الزر الحالي سيجعل الصف يتجاوز الحد، ابدأ صف جديد
+            if (currentRow.isNotEmpty &&
+                (currentWidth + btnWidth + spacing) > maxRowWidth) {
+              rows.add(currentRow);
+              currentRow = [];
+              currentWidth = 0;
+            }
+            currentRow.add(reason);
+            currentWidth += btnWidth + (currentRow.length > 1 ? spacing : 0);
+          }
+          if (currentRow.isNotEmpty) rows.add(currentRow);
+          OrderDetail? orderDetails = orderBloc
+              .state.orderReturnDetailsModel?.data?.orderDetails
+              ?.firstWhere(
+            (element) => element.detailId == order!.details?[indexTap.value].id,
+            orElse: () => OrderDetail(),
+          );
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("${LocaleKeys.return_policy_get_full_refund.tr()}",
-                  maxLines: 1,
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: const Color(0xff8D8D8D),
-                    letterSpacing: 0.18,
-                    fontSize: 12.sp,
-                    height: 1.3,
+              SizedBox(
+                height: 10.h,
+              ),
+              Container(
+                width: 40,
+                height: 2,
+                decoration: BoxDecoration(
+                    color: Color(0xffC4C2C2),
+                    border: Border.all(color: Color(0xffC4C2C2)),
+                    borderRadius: BorderRadius.all(Radius.circular(2))),
+              ),
+              SizedBox(
+                height: 15.h,
+              ),
+              Container(
+                  width: 104,
+                  height: 140.h,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Container(
+                      color: Colors.white,
+                      child: MyCachedNetworkImage(
+                        withInnerShadow: true,
+                        withImageShadow: true,
+                        radius: 15,
+                        imageUrl: order?.details?[indexTap.value].image ?? "",
+                        imageFit: BoxFit.contain,
+                        width: 100,
+                        height: 140,
+                      ),
+                    ),
                   )),
-              Text(" 140",
-                  maxLines: 1,
-                  style: context.textTheme.bodyMedium?.br.copyWith(
-                    color: const Color(0xff8D8D8D),
-                    letterSpacing: 0.18,
-                    fontSize: 12.sp,
-                    height: 1.3,
-                  )),
-              Text(" USD ${LocaleKeys.to_your_account.tr()}",
-                  maxLines: 1,
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: const Color(0xff8D8D8D),
-                    letterSpacing: 0.18,
-                    fontSize: 12.sp,
-                    height: 1.3,
-                  )),
-            ],
-          ),
-          SizedBox(
-            height: 8.h,
-          ),
-          Container(
-            width: 1.sw,
-            height: 0.5,
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-                color: Color(0xffC4C2C2),
-                border: Border.all(color: Color(0xffC4C2C2)),
-                borderRadius: BorderRadius.all(Radius.circular(2))),
-          ),
-          SizedBox(
-            height: 30.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("${LocaleKeys.why_was_product_return.tr()}",
-                  maxLines: 1,
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: const Color(0xff8D8D8D),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.3,
-                  )),
-              Text(" ${LocaleKeys.learn_more_tips.tr()}",
-                  maxLines: 1,
+              SizedBox(
+                height: 8.h,
+              ),
+              SvgPicture.asset(
+                AppAssets.returnWihoutPhotoSvg,
+              ),
+              SizedBox(
+                height: 14.h,
+              ),
+              Text("${LocaleKeys.return_this_product.tr()}",
                   style: context.textTheme.bodyMedium?.mr.copyWith(
                     color: const Color(0xff402CDD),
                     letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.3,
+                  )),
+              SizedBox(
+                height: 8.h,
+              ),
+              Text(
+                  "${LocaleKeys.you_can_return_product_without_conditions.tr()}",
+                  maxLines: 1,
+                  style: context.textTheme.bodyMedium?.rr.copyWith(
+                    color: const Color(0xff8D8D8D),
+                    letterSpacing: 0.18,
                     fontSize: 12.sp,
                     height: 1.3,
                   )),
-            ],
-          ),
-          SizedBox(
-            height: 25.h,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.i_didnt_like.tr(), 90, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
-                          .contains(LocaleKeys.i_didnt_like.tr())) {
-                        options.remove(LocaleKeys.i_didnt_like.tr());
-
-                        optionCanselOrReturn.value = [...options];
-
-                        return;
-                      }
-                      options.add(LocaleKeys.i_didnt_like.tr());
-
-                      optionCanselOrReturn.value = [...options];
-                    }),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    optionOfCanselOrReturnOrder(LocaleKeys.bad_quality.tr(), 90,
-                        () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
-                          .contains(LocaleKeys.bad_quality.tr())) {
-                        options.remove(LocaleKeys.bad_quality.tr());
-
-                        optionCanselOrReturn.value = [...options];
-
-                        return;
-                      }
-                      options.add(LocaleKeys.bad_quality.tr());
-
-                      optionCanselOrReturn.value = [...options];
-                    }),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.it_arrived_damaged.tr(), 130, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
-                          .contains(LocaleKeys.it_arrived_damaged.tr())) {
-                        options.remove(LocaleKeys.it_arrived_damaged.tr());
-
-                        optionCanselOrReturn.value = [...options];
-
-                        return;
-                      }
-                      options.add(LocaleKeys.it_arrived_damaged.tr());
-
-                      optionCanselOrReturn.value = [...options];
-                    }),
-                  ],
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.i_received_different_product.tr(), 190, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value.contains(
-                          LocaleKeys.i_received_different_product.tr())) {
-                        options.remove(
-                            LocaleKeys.i_received_different_product.tr());
-
-                        optionCanselOrReturn.value = [...options];
-
-                        return;
-                      }
-                      options.add(LocaleKeys.i_received_different_product.tr());
-
-                      optionCanselOrReturn.value = [...options];
-                    }),
-                  ],
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.different_color.tr(), 90, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
-                          .contains(LocaleKeys.different_color.tr())) {
-                        options.remove(LocaleKeys.different_color.tr());
-
-                        optionCanselOrReturn.value = [...options];
-
-                        return;
-                      }
-                      options.add(LocaleKeys.different_color.tr());
-
-                      optionCanselOrReturn.value = [...options];
-                    }),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.differen_sizes.tr(), 90, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
-                          .contains(LocaleKeys.differen_sizes.tr())) {
-                        options.remove(LocaleKeys.differen_sizes.tr());
-
-                        optionCanselOrReturn.value = [...options];
-
-                        return;
-                      }
-                      options.add(LocaleKeys.differen_sizes.tr());
-
-                      optionCanselOrReturn.value = [...options];
-                    }),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.completely_different.tr(), 120, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
-                          .contains(LocaleKeys.completely_different.tr())) {
-                        options.remove(LocaleKeys.completely_different.tr());
-
-                        optionCanselOrReturn.value = [...options];
-
-                        return;
-                      }
-                      options.add(LocaleKeys.completely_different.tr());
-
-                      optionCanselOrReturn.value = [...options];
-                    }),
-                  ],
-                ),
-                SizedBox(
-                  height: 24.h,
-                ),
-                Container(
-                  width: 1.sw,
-                  height: 0.5,
-                  decoration: BoxDecoration(
-                      color: Color(0xffC4C2C2),
-                      border: Border.all(color: Color(0xffC4C2C2)),
-                      borderRadius: BorderRadius.all(Radius.circular(2))),
-                ),
-                SizedBox(
-                  height: 12.h,
-                ),
-                ValueListenableBuilder<List<File?>?>(
-                    valueListenable: orderPhotos,
-                    builder: (context, _orderPhotos, _) {
-                      return SizedBox(
-                        height: 198.h,
-                        width: 1.sw,
-                        child: Column(
-                          children: [
-                            Container(
-                              alignment: Alignment.center,
-                              width: 1.sw,
-                              height: 80,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("${LocaleKeys.return_policy_get_full_refund.tr()}",
+                      maxLines: 1,
+                      style: context.textTheme.bodyMedium?.rr.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 12.sp,
+                        height: 1.3,
+                      )),
+                  Text(" 140",
+                      maxLines: 1,
+                      style: context.textTheme.bodyMedium?.br.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 12.sp,
+                        height: 1.3,
+                      )),
+                  Text(" USD ${LocaleKeys.to_your_account.tr()}",
+                      maxLines: 1,
+                      style: context.textTheme.bodyMedium?.rr.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 12.sp,
+                        height: 1.3,
+                      )),
+                ],
+              ),
+              SizedBox(
+                height: 8.h,
+              ),
+              Container(
+                width: 1.sw,
+                height: 0.5,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                    color: Color(0xffC4C2C2),
+                    border: Border.all(color: Color(0xffC4C2C2)),
+                    borderRadius: BorderRadius.all(Radius.circular(2))),
+              ),
+              SizedBox(
+                height: 5.h,
+              ),
+              ValueListenableBuilder<int>(
+                  valueListenable: qtyOfReturnValueNotifier,
+                  builder: (context, _qtyOfReturnValueNotifier, _) {
+                    return ValueListenableBuilder<int>(
+                        valueListenable: optionReturn,
+                        builder: (context, _optionReturn, _) {
+                          return Container(
+                              width: 220,
                               decoration: BoxDecoration(
-                                  color: Color(0xffF8F8F8),
+                                  border: Border.all(
+                                      color: const Color(0xFF1D1D1D)),
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(12.r)),
-                                  border: (_orderPhotos?.length ?? 0) > 0
-                                      ? null
-                                      : Border.all(color: Color(0xff402CDD))),
-                              child: (_orderPhotos?.length ?? 0) > 0
-                                  ? Stack(
-                                      children: [
-                                        ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: orderPhotos.value.length,
-                                          itemBuilder: (context, index) {
-                                            return Container(
-                                                width: 57,
-                                                height: 80,
-                                                margin: EdgeInsets.only(
-                                                    right: LanguageService
-                                                                .languageCode ==
-                                                            "ar"
-                                                        ? 0
-                                                        : 5,
-                                                    left: LanguageService
-                                                                .languageCode !=
-                                                            "ar"
-                                                        ? 0
-                                                        : 5),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(12),
-                                                  ),
-                                                  child: Image.file(
-                                                    _orderPhotos![index]!,
-                                                    width: 57,
-                                                    height: 80,
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ));
-                                          },
-                                        ),
-                                        Positioned(
-                                          right: LanguageService.languageCode ==
-                                                  "ar"
-                                              ? null
-                                              : 20,
-                                          left: LanguageService.languageCode !=
-                                                  "ar"
-                                              ? null
-                                              : 20,
-                                          top: 30,
-                                          child: InkWell(
-                                            onTap: () async {
-                                              AssetEntity? assetEntity;
-                                              assetEntity =
-                                                  await HelperFunctions
-                                                      .getAssetFromGallery(
-                                                          context);
-                                              if (assetEntity != null) {
-                                                if (assetEntity.type ==
-                                                    AssetType.video) {
-                                                  showWarningMessage(
-                                                    context,
-                                                    'only photo',
-                                                  );
-                                                } else {
-                                                  File? file = await assetEntity
-                                                      .originFile;
-                                                  if (file != null) {
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    CopperImage(
-                                                                      fromOrder:
-                                                                          true,
-                                                                      orderPhotos:
-                                                                          orderPhotos,
-                                                                      image:
-                                                                          file,
-                                                                      visiblecamera:
-                                                                          visiblecamera,
-                                                                    )));
-                                                  }
-                                                }
-                                              }
-                                            },
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  AppAssets.addPhotoSvg,
-                                                  color: Color(0xff402CDD),
-                                                  width: 20,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : InkWell(
-                                      onTap: () async {
-                                        AssetEntity? assetEntity;
-                                        assetEntity = await HelperFunctions
-                                            .getAssetFromGallery(context);
-                                        if (assetEntity != null) {
-                                          if (assetEntity.type ==
-                                              AssetType.video) {
-                                            showWarningMessage(
-                                              context,
-                                              'only photo',
-                                            );
-                                          } else {
-                                            File? file =
-                                                await assetEntity.originFile;
-                                            if (file != null) {
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          CopperImage(
-                                                            orderPhotos:
-                                                                orderPhotos,
-                                                            image: file,
-                                                            visiblecamera:
-                                                                visiblecamera,
-                                                          )));
-                                            }
+                                      BorderRadius.all(Radius.circular(15))),
+                              height: _optionReturn == 0 ? 60.h : 30.h,
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                        onTap: () {
+                                          if (order?.details?[indexTap.value]
+                                                  .qty ==
+                                              _qtyOfReturnValueNotifier) {
+                                            return;
                                           }
-                                        }
-                                      },
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          SvgPicture.asset(
-                                            AppAssets.addPhotoSvg,
-                                            color: Color(0xff402CDD),
+                                          qtyOfReturnValueNotifier.value =
+                                              qtyOfReturnValueNotifier.value +
+                                                  1;
+                                        },
+                                        child: Container(
+                                            alignment: Alignment.center,
                                             width: 20,
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text("${LocaleKeys.add_photo.tr()}",
-                                              textAlign: TextAlign.center,
-                                              style: context
-                                                  .textTheme.bodyMedium?.rr
-                                                  .copyWith(
-                                                color: Color(0xff402CDD),
-                                                letterSpacing: 0.18,
-                                                fontSize: 10,
-                                                height: 1.3,
-                                              )),
-                                        ],
-                                      ),
+                                            height: _optionReturn == 0
+                                                ? 60.h
+                                                : 30.h,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey,
+                                              borderRadius: BorderRadius.only(
+                                                  bottomRight:
+                                                      Radius.circular(14),
+                                                  topRight:
+                                                      Radius.circular(14)),
+                                            ),
+                                            child: Text("+",
+                                                textAlign: TextAlign.center,
+                                                style: context
+                                                    .textTheme.bodyMedium?.rr
+                                                    .copyWith(
+                                                  color: Colors.white,
+                                                  letterSpacing: 0.18,
+                                                  fontSize: _optionReturn == 0
+                                                      ? 18.sp
+                                                      : 16.sp,
+                                                )))),
+                                    Spacer(),
+                                    Text(LocaleKeys.return_pieces_hint.tr(),
+                                        style: context.textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                          color: const Color(0xFF1D1D1D),
+                                          letterSpacing: 0.18,
+                                          fontSize: _optionReturn == 0
+                                              ? 12.sp
+                                              : 11.sp,
+                                        )),
+                                    SizedBox(
+                                      width: 10.h,
                                     ),
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            (_orderPhotos?.length ?? 0) > 0
-                                ? SizedBox.shrink()
-                                : Text(
-                                    "${LocaleKeys.please_add_photos_of_product_received.tr()}",
-                                    maxLines: 2,
-                                    textAlign: TextAlign.center,
-                                    style: context.textTheme.bodyMedium?.rr
-                                        .copyWith(
-                                      color: Color(0xff402CDD),
-                                      letterSpacing: 0.18,
-                                      fontSize: 10,
-                                      height: 1.3,
-                                    )),
+                                    Text((_qtyOfReturnValueNotifier).toString(),
+                                        style: context.textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                          color: const Color(0xFF1D1D1D),
+                                          letterSpacing: 0.18,
+                                          fontSize: _optionReturn == 0
+                                              ? 18.sp
+                                              : 16.sp,
+                                        )),
+                                    Spacer(),
+                                    InkWell(
+                                        onTap: () {
+                                          if (qtyOfReturnValueNotifier.value ==
+                                              1) {
+                                            return;
+                                          }
+                                          qtyOfReturnValueNotifier.value =
+                                              qtyOfReturnValueNotifier.value -
+                                                  1;
+                                        },
+                                        child: Container(
+                                            alignment: Alignment.center,
+                                            width: 20,
+                                            height: _optionReturn == 0
+                                                ? 60.h
+                                                : 30.h,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey,
+                                              borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(14),
+                                                  topLeft: Radius.circular(14)),
+                                            ),
+                                            child: Text("-",
+                                                textAlign: TextAlign.center,
+                                                style: context
+                                                    .textTheme.bodyMedium?.rr
+                                                    .copyWith(
+                                                  color: Colors.white,
+                                                  letterSpacing: 0.18,
+                                                  fontSize: _optionReturn == 0
+                                                      ? 18.sp
+                                                      : 16.sp,
+                                                )))),
+                                  ]) /*TextFormField(
+                        onChanged: (value) {
+                          qtyOfReturnValueNotifier.value =
+                              int.tryParse(value) ?? 0;
+                        },
+                        controller: qtyOfReturnController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        decoration: InputDecoration(
+                          hintText: ,
+                          hintStyle: context.textTheme.bodyMedium?.rr.copyWith(
+                            color: const Color(0xFF1D1D1D),
+                            letterSpacing: 0.18,
+                            fontSize: _optionReturn == 0 ? 12.sp : 11.sp,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF8D8D8D)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF8D8D8D)),
+                          ),
+                        ),
+                        style: TextStyle(
+                          color: Color(0xFF1D1D1D),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),*/
+                              );
+                        });
+                  }),
+              SizedBox(
+                height: 5.h,
+              ),
+              Container(
+                width: 1.sw,
+                height: 0.5,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                    color: Color(0xffC4C2C2),
+                    border: Border.all(color: Color(0xffC4C2C2)),
+                    borderRadius: BorderRadius.all(Radius.circular(2))),
+              ),
+              SizedBox(
+                height: 5.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("${LocaleKeys.why_was_product_return.tr()}",
+                      maxLines: 1,
+                      style: context.textTheme.bodyMedium?.rr.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 12,
+                        height: 1.3,
+                      )),
+                  Text(" ${LocaleKeys.learn_more_tips.tr()}",
+                      maxLines: 1,
+                      style: context.textTheme.bodyMedium?.mr.copyWith(
+                        color: const Color(0xff402CDD),
+                        letterSpacing: 0.18,
+                        fontSize: 12.sp,
+                        height: 1.3,
+                      )),
+                ],
+              ),
+              SizedBox(
+                height: 18.h,
+              ),
+              // جلب الأسباب من orderState
+
+              state.getReturnReasonsStatus == GetReturnReasonsStatus.loading
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                                padding:
+                                    EdgeInsets.only(left: 10.w, right: 10.w),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade50,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade600,
+                                      borderRadius: BorderRadius.circular(15.r),
+                                    ),
+                                    height: 50.h,
+                                    width: 150.w,
+                                  ),
+                                )),
+                            Padding(
+                                padding:
+                                    EdgeInsets.only(left: 10.w, right: 10.w),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade50,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade600,
+                                      borderRadius: BorderRadius.circular(15.r),
+                                    ),
+                                    height: 50.h,
+                                    width: 150.w,
+                                  ),
+                                ))
                           ],
                         ),
-                      );
-                    }),
-                SizedBox(
-                  height: 22.h,
-                ),
-                ValueListenableBuilder<List<String>>(
-                    valueListenable: optionCanselOrReturn,
-                    builder: (context, _optionCansel, _) {
-                      return ValueListenableBuilder<List<File?>?>(
-                          valueListenable: orderPhotos,
-                          builder: (context, _orderPhotos, _) {
-                            return InkWell(
-                              onTap: () {
-                                if ((_orderPhotos?.length ?? 0) > 0 &&
-                                    (_optionCansel.length > 0)) {
-                                  showShadowForCanselOrder.value = true;
-                                }
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                width: 1.sw,
-                                height: 53,
-                                decoration: BoxDecoration(
-                                    color: (_orderPhotos?.length ?? 0) > 0 &&
-                                            (_optionCansel.length > 0)
-                                        ? Color(0xff402CDD)
-                                        : Color(0xffD3D3D3),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
-                                child: Text("${LocaleKeys.return_request.tr()}",
-                                    maxLines: 1,
-                                    style: context.textTheme.bodyMedium?.mr
-                                        .copyWith(
-                                      color: Colors.white,
-                                      letterSpacing: 0.18,
-                                      fontSize: 16,
-                                      height: 1.3,
-                                    )),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                                padding:
+                                    EdgeInsets.only(left: 10.w, right: 10.w),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade50,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade600,
+                                      borderRadius: BorderRadius.circular(15.r),
+                                    ),
+                                    height: 50.h,
+                                    width: 150.w,
+                                  ),
+                                )),
+                            Padding(
+                                padding:
+                                    EdgeInsets.only(left: 10.w, right: 10.w),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade50,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade600,
+                                      borderRadius: BorderRadius.circular(15.r),
+                                    ),
+                                    height: 50.h,
+                                    width: 150.w,
+                                  ),
+                                ))
+                          ],
+                        )
+                      ],
+                    )
+                  : state.getReturnReasonsStatus ==
+                          GetReturnReasonsStatus.failure
+                      ? Container(
+                          width: 120,
+                          height: 50,
+                          child: TryAgainWidget(
+                            tryAgain: () =>
+                                orderBloc.add(GetReturnReasonsEvent()),
+                          ))
+                      : Column(
+                          children: [
+                            for (final row in rows)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 5,
+                                    right: 5,
+                                    bottom: 10), // نفس المسافة بين الصفوف
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    for (ReturnReasonModel reason in row) ...[
+                                      optionReturnOrder(
+                                        "${reason.reasonAeEn ?? '' + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: ((reason.cost ?? 0) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
+                                        reason.id ?? -1, // النص من الـ API
+                                        _calculateButtonWidth(reason
+                                                .reasonAeEn ??
+                                            ''), // يمكنك تعديل العرض حسب الحاجة أو حسب طول النص
+                                        () {
+                                          if (optionReturn.value == reason.id) {
+                                            optionReturn.value = 0;
+                                            return;
+                                          }
+
+                                          optionReturn.value = reason.id ?? 0;
+                                        },
+                                      ),
+                                      SizedBox(width: 5),
+                                    ]
+                                  ],
+                                ),
                               ),
-                            );
-                          });
-                    }),
-                SizedBox(
-                  height: 10.h,
-                )
-              ],
-            ),
-          ),
-        ]);
+                          ],
+                        ),
+
+              SizedBox(
+                height: 10.h,
+              ),
+              Container(
+                width: 1.sw,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                height: 0.5,
+                decoration: BoxDecoration(
+                    color: Color(0xffC4C2C2),
+                    border: Border.all(color: Color(0xffC4C2C2)),
+                    borderRadius: BorderRadius.all(Radius.circular(2))),
+              ),
+              SizedBox(
+                height: 12.h,
+              ),
+              BlocBuilder<OrderBloc, OrderState>(
+                  buildWhen: (previous, current) =>
+                      previous.uploadImagesForReturnProductStatus !=
+                      current.uploadImagesForReturnProductStatus,
+                  builder: (context, state) {
+                    if (state.uploadImagesForReturnProductStatus ==
+                        UploadImagesForReturnProductStatus.success) {
+                      Future.delayed(
+                          Duration(milliseconds: 50),
+                          () => orderPhotos.value = [
+                                ...state.imagesForReturn ?? []
+                              ]);
+                    }
+                    return ValueListenableBuilder<int>(
+                        valueListenable: optionReturn,
+                        builder: (context, _optionReturn, _) {
+                          return _optionReturn == 0
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20), // نفس المسافة بين الصفوف
+                                  child: ValueListenableBuilder<List<String?>?>(
+                                      valueListenable: orderPhotos,
+                                      builder: (context, _orderPhotos, _) {
+                                        return SizedBox(
+                                          height: 198.h,
+                                          width: 1.sw,
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: 1.sw,
+                                                height: 80,
+                                                decoration: BoxDecoration(
+                                                    color: Color(0xffF8F8F8),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                12.r)),
+                                                    border: (_orderPhotos
+                                                                    ?.length ??
+                                                                0) >
+                                                            0
+                                                        ? null
+                                                        : Border.all(
+                                                            color: Color(
+                                                                0xff402CDD))),
+                                                child: (_orderPhotos?.length ??
+                                                                0) >
+                                                            0 ||
+                                                        (state.uploadImagesForReturnProductStatus ==
+                                                            UploadImagesForReturnProductStatus
+                                                                .loading)
+                                                    ? Stack(
+                                                        children: [
+                                                          (state.uploadImagesForReturnProductStatus ==
+                                                                  UploadImagesForReturnProductStatus
+                                                                      .loading)
+                                                              ? ListView
+                                                                  .builder(
+                                                                  scrollDirection:
+                                                                      Axis.horizontal,
+                                                                  itemCount: orderPhotos
+                                                                          .value
+                                                                          .length +
+                                                                      1,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    if (index ==
+                                                                        orderPhotos
+                                                                            .value
+                                                                            .length) {
+                                                                      return Shimmer
+                                                                          .fromColors(
+                                                                        baseColor: Colors
+                                                                            .grey
+                                                                            .shade300,
+                                                                        highlightColor: Colors
+                                                                            .grey
+                                                                            .shade50,
+                                                                        child:
+                                                                            Container(
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                Colors.grey.shade600,
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(15.r),
+                                                                          ),
+                                                                          width:
+                                                                              57,
+                                                                          height:
+                                                                              80,
+                                                                        ),
+                                                                      );
+                                                                    }
+                                                                    return Container(
+                                                                        width:
+                                                                            57,
+                                                                        height:
+                                                                            80,
+                                                                        margin: EdgeInsets.only(
+                                                                            right: LanguageService.languageCode == "ar"
+                                                                                ? 0
+                                                                                : 5,
+                                                                            left: LanguageService.languageCode != "ar"
+                                                                                ? 0
+                                                                                : 5),
+                                                                        child:
+                                                                            ClipRRect(
+                                                                          borderRadius:
+                                                                              BorderRadius.all(
+                                                                            Radius.circular(12),
+                                                                          ),
+                                                                          child:
+                                                                              MyCachedNetworkImage(
+                                                                            imageUrl: (_orderPhotos![index].toString().contains("cloudinary")
+                                                                                ? _orderPhotos[index]!
+                                                                                : ("${dotenv.env['Images_Url']}") + "/return_request_products/" + _orderPhotos[index]!),
+                                                                            imageFit:
+                                                                                BoxFit.fill,
+                                                                            width:
+                                                                                57,
+                                                                            height:
+                                                                                80,
+                                                                          ),
+                                                                        ));
+                                                                  },
+                                                                )
+                                                              : ListView
+                                                                  .builder(
+                                                                  scrollDirection:
+                                                                      Axis.horizontal,
+                                                                  itemCount:
+                                                                      orderPhotos
+                                                                          .value
+                                                                          .length,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    return Container(
+                                                                        width:
+                                                                            57,
+                                                                        height:
+                                                                            80,
+                                                                        margin: EdgeInsets.only(
+                                                                            right: LanguageService.languageCode == "ar"
+                                                                                ? 0
+                                                                                : 5,
+                                                                            left: LanguageService.languageCode != "ar"
+                                                                                ? 0
+                                                                                : 5),
+                                                                        child:
+                                                                            ClipRRect(
+                                                                          borderRadius:
+                                                                              BorderRadius.all(
+                                                                            Radius.circular(12),
+                                                                          ),
+                                                                          child:
+                                                                              MyCachedNetworkImage(
+                                                                            imageUrl: (_orderPhotos![index].toString().contains("cloudinary")
+                                                                                ? _orderPhotos[index]!
+                                                                                : ("${dotenv.env['Images_Url']}") + "/return_request_products/" + _orderPhotos[index]!),
+                                                                            imageFit:
+                                                                                BoxFit.fill,
+                                                                            width:
+                                                                                57,
+                                                                            height:
+                                                                                80,
+                                                                          ),
+                                                                        ));
+                                                                  },
+                                                                ),
+                                                          Positioned(
+                                                            right: LanguageService
+                                                                        .languageCode ==
+                                                                    "ar"
+                                                                ? null
+                                                                : 20,
+                                                            left: LanguageService
+                                                                        .languageCode !=
+                                                                    "ar"
+                                                                ? null
+                                                                : 20,
+                                                            top: 30,
+                                                            child: InkWell(
+                                                              onTap: () async {
+                                                                void _showImagePreview(
+                                                                    File
+                                                                        imageFile) {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    barrierDismissible:
+                                                                        false,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return SearchImagePreviewWidget(
+                                                                        imageFile:
+                                                                            imageFile,
+                                                                        onSend: (File
+                                                                            file) {
+                                                                          orderBloc
+                                                                              .add(UploadImagesForReturnProductEvent(file));
+                                                                        },
+                                                                        onCancel:
+                                                                            () =>
+                                                                                Navigator.of(context).pop(),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                }
+
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (BuildContext
+                                                                          context) {
+                                                                    return GalleryAndCameraDialogWidget(
+                                                                      fromChat:
+                                                                          true, // تفعيل معاينة الصور
+                                                                      onChooseFileFromGalleryAction:
+                                                                          (AssetEntity?
+                                                                              assetEntity) async {
+                                                                        if (assetEntity !=
+                                                                            null) {
+                                                                          File
+                                                                              file =
+                                                                              (await assetEntity.originFile)!;
+                                                                          String
+                                                                              mimeStr =
+                                                                              lookupMimeType(file.absolute.path) ?? '';
+                                                                          var fileType =
+                                                                              mimeStr.split('/');
+
+                                                                          if (fileType[0] !=
+                                                                              'image') {
+                                                                            showErrorMessage(context,
+                                                                                LocaleKeys.video_file_not_supported.tr());
+                                                                          } else {
+                                                                            // إغلاق ديالوج الاختيار
+                                                                            Navigator.of(context).pop();
+                                                                            // تأخير صغير لضمان إغلاق الديالوج
+                                                                            await Future.delayed(Duration(milliseconds: 100));
+                                                                            // عرض معاينة الصورة
+                                                                            _showImagePreview(file);
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      onChooseFileFromCameraAction:
+                                                                          (File?
+                                                                              file) async {
+                                                                        if (file !=
+                                                                            null) {
+                                                                          String
+                                                                              mimeStr =
+                                                                              lookupMimeType(file.absolute.path) ?? '';
+                                                                          var fileType =
+                                                                              mimeStr.split('/');
+                                                                          if (fileType[0] !=
+                                                                              'image') {
+                                                                            showErrorMessage(context,
+                                                                                LocaleKeys.video_file_not_supported.tr());
+                                                                          } else {
+                                                                            // إغلاق ديالوج الاختيار
+                                                                            Navigator.of(context).pop();
+                                                                            // تأخير صغير لضمان إغلاق الديالوج
+                                                                            await Future.delayed(Duration(milliseconds: 100));
+                                                                            // عرض معاينة الصورة
+                                                                            _showImagePreview(file);
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      onImagePreviewAction:
+                                                                          (File
+                                                                              image) {
+                                                                        // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
+                                                                        // عندما fromChat = true
+                                                                        _showImagePreview(
+                                                                            image);
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  SvgPicture
+                                                                      .asset(
+                                                                    AppAssets
+                                                                        .addPhotoSvg,
+                                                                    color: Color(
+                                                                        0xff402CDD),
+                                                                    width: 20,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    : InkWell(
+                                                        onTap: () async {
+                                                          void _showImagePreview(
+                                                              File imageFile) {
+                                                            showDialog(
+                                                              context: context,
+                                                              barrierDismissible:
+                                                                  false,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return SearchImagePreviewWidget(
+                                                                  imageFile:
+                                                                      imageFile,
+                                                                  onSend: (File
+                                                                      file) {
+                                                                    orderBloc.add(
+                                                                        UploadImagesForReturnProductEvent(
+                                                                            file));
+                                                                  },
+                                                                  onCancel: () =>
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(),
+                                                                );
+                                                              },
+                                                            );
+                                                          }
+
+                                                          showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return GalleryAndCameraDialogWidget(
+                                                                fromChat:
+                                                                    true, // تفعيل معاينة الصور
+                                                                onChooseFileFromGalleryAction:
+                                                                    (AssetEntity?
+                                                                        assetEntity) async {
+                                                                  if (assetEntity !=
+                                                                      null) {
+                                                                    File file =
+                                                                        (await assetEntity
+                                                                            .originFile)!;
+                                                                    String
+                                                                        mimeStr =
+                                                                        lookupMimeType(file.absolute.path) ??
+                                                                            '';
+                                                                    var fileType =
+                                                                        mimeStr.split(
+                                                                            '/');
+
+                                                                    if (fileType[
+                                                                            0] !=
+                                                                        'image') {
+                                                                      showErrorMessage(
+                                                                          context,
+                                                                          LocaleKeys
+                                                                              .video_file_not_supported
+                                                                              .tr());
+                                                                    } else {
+                                                                      // إغلاق ديالوج الاختيار
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                      // تأخير صغير لضمان إغلاق الديالوج
+                                                                      await Future.delayed(Duration(
+                                                                          milliseconds:
+                                                                              100));
+                                                                      // عرض معاينة الصورة
+                                                                      _showImagePreview(
+                                                                          file);
+                                                                    }
+                                                                  }
+                                                                },
+                                                                onChooseFileFromCameraAction:
+                                                                    (File?
+                                                                        file) async {
+                                                                  if (file !=
+                                                                      null) {
+                                                                    String
+                                                                        mimeStr =
+                                                                        lookupMimeType(file.absolute.path) ??
+                                                                            '';
+                                                                    var fileType =
+                                                                        mimeStr.split(
+                                                                            '/');
+                                                                    if (fileType[
+                                                                            0] !=
+                                                                        'image') {
+                                                                      showErrorMessage(
+                                                                          context,
+                                                                          LocaleKeys
+                                                                              .video_file_not_supported
+                                                                              .tr());
+                                                                    } else {
+                                                                      // إغلاق ديالوج الاختيار
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                      // تأخير صغير لضمان إغلاق الديالوج
+                                                                      await Future.delayed(Duration(
+                                                                          milliseconds:
+                                                                              100));
+                                                                      // عرض معاينة الصورة
+                                                                      _showImagePreview(
+                                                                          file);
+                                                                    }
+                                                                  }
+                                                                },
+                                                                onImagePreviewAction:
+                                                                    (File
+                                                                        image) {
+                                                                  // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
+                                                                  // عندما fromChat = true
+                                                                  _showImagePreview(
+                                                                      image);
+                                                                },
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            SvgPicture.asset(
+                                                              AppAssets
+                                                                  .addPhotoSvg,
+                                                              color: Color(
+                                                                  0xff402CDD),
+                                                              width: 20,
+                                                            ),
+                                                            SizedBox(
+                                                              height: 5,
+                                                            ),
+                                                            Text(
+                                                                "${LocaleKeys.add_photo.tr()}",
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style: context
+                                                                    .textTheme
+                                                                    .bodyMedium
+                                                                    ?.rr
+                                                                    .copyWith(
+                                                                  color: Color(
+                                                                      0xff402CDD),
+                                                                  letterSpacing:
+                                                                      0.18,
+                                                                  fontSize: 10,
+                                                                  height: 1.3,
+                                                                )),
+                                                          ],
+                                                        ),
+                                                      ),
+                                              ),
+                                              SizedBox(
+                                                height: 2.h,
+                                              ),
+                                              (_orderPhotos?.length ?? 0) > 0
+                                                  ? SizedBox.shrink()
+                                                  : Padding(
+                                                      padding:
+                                                          EdgeInsetsGeometry
+                                                              .symmetric(
+                                                                  horizontal:
+                                                                      20.sp),
+                                                      child: Text(
+                                                          "${LocaleKeys.please_add_photos_of_product_received.tr()}",
+                                                          maxLines: 2,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.rr
+                                                              .copyWith(
+                                                            color: Color(
+                                                                0xff402CDD),
+                                                            letterSpacing: 0.18,
+                                                            fontSize: 10,
+                                                            height: 1.3,
+                                                          )))
+                                            ],
+                                          ),
+                                        );
+                                      }));
+                        });
+                  }),
+              SizedBox(
+                height: 2.h,
+              ),
+              BlocListener<OrderBloc, OrderState>(
+                  listenWhen: (previous, current) =>
+                      previous.storeReturnRequestStatus !=
+                          current.storeReturnRequestStatus ||
+                      previous.orderReturnDetailsStatus !=
+                          current.orderReturnDetailsStatus,
+                  listener: (context, state) {
+                    if (state.storeReturnRequestStatus ==
+                            StoreReturnRequestStatus.success &&
+                        state.orderReturnDetailsStatus ==
+                            OrderReturnDetailsStatus.success) {
+                      showShadowForCanselOrder.value = true;
+                    }
+                  },
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24), // نفس المسافة بين الصفوف
+                      child: ValueListenableBuilder<int>(
+                          valueListenable: qtyOfReturnValueNotifier,
+                          builder: (context, _qtyOfReturnValueNotifier, _) {
+                            return ValueListenableBuilder<int>(
+                                valueListenable: optionReturn,
+                                builder: (context, _optionReturn, _) {
+                                  return ValueListenableBuilder<List<String>>(
+                                      valueListenable: orderPhotos,
+                                      builder: (context, _orderPhotos, _) {
+                                        return BlocBuilder<OrderBloc,
+                                                OrderState>(
+                                            buildWhen: (previous, current) =>
+                                                previous.storeReturnRequestStatus !=
+                                                    current
+                                                        .storeReturnRequestStatus ||
+                                                previous.orderReturnDetailsStatus !=
+                                                    current
+                                                        .orderReturnDetailsStatus,
+                                            builder: (context, state) {
+                                              return state.storeReturnRequestStatus ==
+                                                          StoreReturnRequestStatus
+                                                              .loading ||
+                                                      state.orderReturnDetailsStatus ==
+                                                          OrderReturnDetailsStatus
+                                                              .loading
+                                                  ? Shimmer.fromColors(
+                                                      baseColor:
+                                                          Colors.grey[500]!,
+                                                      highlightColor:
+                                                          Colors.grey[300]!,
+                                                      child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        width: 1.sw,
+                                                        height: 53,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                                color: agreeToPolicies
+                                                                            .value ==
+                                                                        true
+                                                                    ? const Color(
+                                                                        0xff3066CC)
+                                                                    : const Color(
+                                                                        0xffC4C2C2),
+                                                                border: agreeToPolicies
+                                                                            .value ==
+                                                                        true
+                                                                    ? Border
+                                                                        .all(
+                                                                        color: const Color(
+                                                                            0xffF8F8F8),
+                                                                      )
+                                                                    : Border
+                                                                        .all(
+                                                                        color: const Color(
+                                                                            0xffC4C2C2),
+                                                                      ),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15)),
+                                                      ))
+                                                  : InkWell(
+                                                      onTap: () {
+                                                        if ((_orderPhotos
+                                                                    .length) >
+                                                                0 &&
+                                                            _qtyOfReturnValueNotifier >
+                                                                0 &&
+                                                            (_optionReturn !=
+                                                                0)) {
+                                                          orderBloc.add(StoreReturnRequestEvent(
+                                                              params: ReturnRequestParams(
+                                                                  isDraft: "1",
+                                                                  orderId: (order!
+                                                                              .id ??
+                                                                          0)
+                                                                      .toString(),
+                                                                  isForExchange:
+                                                                      "0")));
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        width: 1.sw,
+                                                        height: 53,
+                                                        decoration: BoxDecoration(
+                                                            color: (_orderPhotos
+                                                                            .length) >
+                                                                        0 &&
+                                                                    (_optionReturn !=
+                                                                        0) &&
+                                                                    _qtyOfReturnValueNotifier >
+                                                                        0
+                                                                ? Color(
+                                                                    0xff402CDD)
+                                                                : Color(
+                                                                    0xffD3D3D3),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            20))),
+                                                        child: Text(
+                                                            "${orderDetails?.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_request.tr()}",
+                                                            maxLines: 1,
+                                                            style: context
+                                                                .textTheme
+                                                                .bodyMedium
+                                                                ?.mr
+                                                                .copyWith(
+                                                              color:
+                                                                  Colors.white,
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              fontSize: 16,
+                                                              height: 1.3,
+                                                            )),
+                                                      ));
+                                            });
+                                      });
+                                });
+                          }))),
+              SizedBox(
+                height: 5.h,
+              )
+            ],
+          );
+        });
   }
 
   Widget canselContent() {
@@ -7265,38 +8864,38 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.i_changed_mind.tr(), 130, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
+                    optionOfCanselOrder(LocaleKeys.i_changed_mind.tr(), 130,
+                        () {
+                      List<String> options = optionCansel.value;
+                      if (optionCansel.value
                           .contains(LocaleKeys.i_changed_mind.tr())) {
                         options.remove(LocaleKeys.i_changed_mind.tr());
 
-                        optionCanselOrReturn.value = [...options];
+                        optionCansel.value = [...options];
 
                         return;
                       }
                       options.add(LocaleKeys.i_changed_mind.tr());
 
-                      optionCanselOrReturn.value = [...options];
+                      optionCansel.value = [...options];
                     }),
                     SizedBox(
                       width: 10,
                     ),
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.i_fear_quality.tr(), 100, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
+                    optionOfCanselOrder(LocaleKeys.i_fear_quality.tr(), 100,
+                        () {
+                      List<String> options = optionCansel.value;
+                      if (optionCansel.value
                           .contains(LocaleKeys.i_fear_quality.tr())) {
                         options.remove(LocaleKeys.i_fear_quality.tr());
 
-                        optionCanselOrReturn.value = [...options];
+                        optionCansel.value = [...options];
 
                         return;
                       }
                       options.add(LocaleKeys.i_fear_quality.tr());
 
-                      optionCanselOrReturn.value = [...options];
+                      optionCansel.value = [...options];
                     })
                   ],
                 ),
@@ -7306,38 +8905,38 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    optionOfCanselOrReturnOrder(
+                    optionOfCanselOrder(
                         LocaleKeys.i_fear_delivery_time.tr(), 160, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
+                      List<String> options = optionCansel.value;
+                      if (optionCansel.value
                           .contains(LocaleKeys.i_fear_delivery_time.tr())) {
                         options.remove(LocaleKeys.i_fear_delivery_time.tr());
 
-                        optionCanselOrReturn.value = [...options];
+                        optionCansel.value = [...options];
 
                         return;
                       }
                       options.add(LocaleKeys.i_fear_delivery_time.tr());
 
-                      optionCanselOrReturn.value = [...options];
+                      optionCansel.value = [...options];
                     }),
                     SizedBox(
                       width: 10,
                     ),
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.i_am_afraid_sizes.tr(), 125, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
+                    optionOfCanselOrder(LocaleKeys.i_am_afraid_sizes.tr(), 125,
+                        () {
+                      List<String> options = optionCansel.value;
+                      if (optionCansel.value
                           .contains(LocaleKeys.i_am_afraid_sizes.tr())) {
                         options.remove(LocaleKeys.i_am_afraid_sizes.tr());
 
-                        optionCanselOrReturn.value = [...options];
+                        optionCansel.value = [...options];
 
                         return;
                       }
                       options.add(LocaleKeys.i_am_afraid_sizes.tr());
 
-                      optionCanselOrReturn.value = [...options];
+                      optionCansel.value = [...options];
                     })
                   ],
                 ),
@@ -7347,20 +8946,20 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    optionOfCanselOrReturnOrder(
-                        LocaleKeys.i_saw_better_price.tr(), 135, () {
-                      List<String> options = optionCanselOrReturn.value;
-                      if (optionCanselOrReturn.value
+                    optionOfCanselOrder(LocaleKeys.i_saw_better_price.tr(), 135,
+                        () {
+                      List<String> options = optionCansel.value;
+                      if (optionCansel.value
                           .contains(LocaleKeys.i_saw_better_price.tr())) {
                         options.remove(LocaleKeys.i_saw_better_price.tr());
 
-                        optionCanselOrReturn.value = [...options];
+                        optionCansel.value = [...options];
 
                         return;
                       }
                       options.add(LocaleKeys.i_saw_better_price.tr());
 
-                      optionCanselOrReturn.value = [...options];
+                      optionCansel.value = [...options];
                     }),
                   ],
                 ),
@@ -7387,7 +8986,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               height: 20,
             ),
             ValueListenableBuilder<List<String>?>(
-                valueListenable: optionCanselOrReturn,
+                valueListenable: optionCansel,
                 builder: (context, _optionCanselOrReturn, _) {
                   return InkWell(
                     onTap: () {
@@ -7426,12 +9025,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
     );
   }
 
-  Widget optionOfCanselOrReturnOrder(
+  Widget optionOfCanselOrder(
       String text, double width, void Function()? onTap) {
     return InkWell(
       onTap: onTap,
       child: ValueListenableBuilder<List<String>>(
-          valueListenable: optionCanselOrReturn,
+          valueListenable: optionCansel,
           builder: (context, _optionCansel, _) {
             return Container(
                 alignment: Alignment.center,
@@ -7449,6 +9048,37 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     color: const Color(0xff5D5C5D),
                     letterSpacing: 0.18,
                     fontSize: 12,
+                    height: 1.3,
+                  ),
+                ));
+          }),
+    );
+  }
+
+  Widget optionReturnOrder(
+      String text, int id, double width, void Function()? onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: ValueListenableBuilder<int>(
+          valueListenable: optionReturn,
+          builder: (context, _optionReturn, _) {
+            return Container(
+                alignment: Alignment.center,
+                height: 40,
+                width: width,
+                decoration: BoxDecoration(
+                    border: _optionReturn != id
+                        ? null
+                        : Border.all(color: Color(0xff402CDD)),
+                    color: const Color(0xffF8F8F8),
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.bodyMedium?.rr.copyWith(
+                    color: const Color(0xff5D5C5D),
+                    letterSpacing: 0.18,
+                    fontSize: 11,
                     height: 1.3,
                   ),
                 ));

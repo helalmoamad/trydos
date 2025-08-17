@@ -11,6 +11,7 @@
   "choose_photo_or_video_from_gallery_or_camera": "choose  photo or video from gallery or camera",
   "image_preview": "Image Preview",
   "image_preview_instructions": "Image Preview - Press send, crop, or cancel",
+  "search_image_preview_instructions": "Image Preview - Press search, crop, or cancel",
   "crop_image": "Crop Image",
   "select_image_part": "Select the required part of the image",
   "send": "Send",
@@ -555,4 +556,25 @@
   ,"seconds": "seconds"
   ,"about_change_request_product": "About Change Request Product"
   ,"to_qty": "To Qty ?"
+  ,"otp_error_try_again_later": "An error occurred, try again after the timer ends"
+  ,"info_message": "Information Message"
+  ,"chat_with_delivery_person": "Chat with delivery person"
+  ,"add_comment_for_rating": "Add a comment for your rating"
+  ,"write_your_comment_here": "Write your comment here..."
+  ,"rate_and_get_money": "Rate & Get Money"
+  ,"rating_section_description": "Your accurate rating of the products you receive helps us improve quality and helps other customers purchase."
+  ,"please_login_to_add_comment": "Please login to add a comment"
+  ,"return_pieces_hint": "Enter the number of pieces you want to return"
+  ,"i_want_returm_more_products":"Delay Confirmation. I Want Returm More Products",
+  "cost": "Cost",
+  "confirm_return_request": "Confirm Return Request",
+  "cancel_return_request": "Cancel Return Request",
+  "edit_return_request": "Edit Return Request"
+  ,"i_agree_return": "I Agree & Return"
+  ,  "canceled_status_short": "Canceled",
+  "video_file_not_supported": "The video file is not supported",
+  "new_update_available": "New Update Available",
+  "newer_version_available_message": "There is a newer version of app available please update it now.",
+  "update_now": "Update Now"
+
 }

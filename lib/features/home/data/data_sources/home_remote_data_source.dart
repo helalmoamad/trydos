@@ -1,9 +1,13 @@
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
+import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
+import 'package:trydos/features/home/data/models/create_return_request_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
@@ -26,9 +30,11 @@ import 'package:trydos/features/home/data/models/notificaation_poroduct_types.da
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/data/models/update_confirm_return_request_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
+import 'package:trydos/service/language_service.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
@@ -49,6 +55,12 @@ import '../models/cancel_order_item_model.dart';
 import '../models/cancel_order_model.dart';
 import '../models/change_order_address_model.dart';
 import '../models/color_size_for_product.dart';
+import '../models/order_comment_model.dart';
+import '../models/return_reasons_model.dart';
+import '../models/upload_images_for_return_product_model.dart';
+import '../models/return_request_product_model.dart';
+import 'package:trydos/features/home/data/models/get_order_details_return_model.dart';
+import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
 
 @injectable
 class HomeRemoteDatasource {
@@ -88,6 +100,34 @@ class HomeRemoteDatasource {
     return getProvincesByIso();
   }
 
+  Future<OrderCommentModel> addOrderComment(Map<String, dynamic> params) {
+    PostClient<OrderCommentModel> addOrderComment =
+        PostClient<OrderCommentModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<OrderCommentModel>(
+        endpoint: MarketEndPoints.addOrderCommentEP,
+        data: params,
+        response: ResponseValue<OrderCommentModel>(
+            fromJson: (response) => OrderCommentModel.fromJson(response)),
+      ),
+    );
+    return addOrderComment();
+  }
+
+  Future<OrderCommentModel> updateOrderComment(Map<String, dynamic> params) {
+    PostClient<OrderCommentModel> updateOrderComment =
+        PostClient<OrderCommentModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<OrderCommentModel>(
+        endpoint: MarketEndPoints.updateOrderCommentEP,
+        data: params,
+        response: ResponseValue<OrderCommentModel>(
+            fromJson: (response) => OrderCommentModel.fromJson(response)),
+      ),
+    );
+    return updateOrderComment();
+  }
+
   Future<CountryBoundaryByIsoModel> getCountryBoundaryByIso(String iso) {
     GetClient<CountryBoundaryByIsoModel> getCountryBoundaryByIso =
         GetClient<CountryBoundaryByIsoModel>(
@@ -107,13 +147,11 @@ class HomeRemoteDatasource {
     GetClient<GetProductDetailWithoutRelatedProductsModel>
         getProductDetailWithoutRelatedProducts =
         GetClient<GetProductDetailWithoutRelatedProductsModel>(
-      serverName: ServerName.market,
+      serverName: ServerName.webApp,
       requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
-        endpoint: MarketEndPoints.getProductDetailWithoutSimilarRelatedProducts(
-            productSlug),
+        endpoint: WebAppEndPoints.productDetailsEP(productSlug),
         response: ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
             fromJson: (response) {
-          print('qqqqqqq ${response.toString()}');
           return GetProductDetailWithoutRelatedProductsModel.fromJson(response);
         }),
       ),
@@ -136,12 +174,12 @@ class HomeRemoteDatasource {
     return getColorsAndSizesForSearch();
   }
 
-  Future<GetFullProductDetailsModel> getFullProductDetails(String productId) {
+  Future<GetFullProductDetailsModel> getFullProductDetails(String productSlug) {
     GetClient<GetFullProductDetailsModel> getFullProductDetails =
         GetClient<GetFullProductDetailsModel>(
-      serverName: ServerName.market,
+      serverName: ServerName.webApp,
       requestPrams: RequestConfig<GetFullProductDetailsModel>(
-        endpoint: MarketEndPoints.getFullProductDetailsEP(productId),
+        endpoint: WebAppEndPoints.productDetailsEP(productSlug),
         response:
             ResponseValue<GetFullProductDetailsModel>(fromJson: (response) {
           return GetFullProductDetailsModel.fromJson(response);
@@ -166,7 +204,7 @@ class HomeRemoteDatasource {
     return getNotificationTypeForProduct();
   }
 
-  Future<GetCommentForProductModel> getCommentForProduct(String productId) {
+  /* Future<GetCommentForProductModel> getCommentForProduct(String productId) {
     GetClient<GetCommentForProductModel> getCommentForProduct =
         GetClient<GetCommentForProductModel>(
       serverName: ServerName.market,
@@ -180,7 +218,7 @@ class HomeRemoteDatasource {
       ),
     );
     return getCommentForProduct();
-  }
+  }*/
 
   Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
       Map<String, dynamic> params) {
@@ -422,10 +460,10 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
-      serverName: ServerName.elastic,
+      serverName: ServerName.webApp,
       //ServerName.elastic,
       requestPrams: RequestConfig<MainCategoriesResponseModel>(
-        endpoint: ElasticEndPoints.getMainCategoriesEP,
+        endpoint: WebAppEndPoints.mainCategoriesEP,
         //ElasticEndPoints.getMainCategoriesEP,
         // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
         response: ResponseValue<MainCategoriesResponseModel>(
@@ -442,6 +480,16 @@ class HomeRemoteDatasource {
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetCurrencyForCountryModel>(
         endpoint: MarketEndPoints.getCurrencyEP,
+        queryParameters: {
+          "country": (GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+              ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+              : GetIt.I<PrefsRepository>().countryIso),
+          "lang": (LanguageService.languageCode == 'ar'
+              ? LanguageService.isKurdish
+                  ? "ku"
+                  : 'ar'
+              : LanguageService.languageCode)
+        },
         response: ResponseValue<GetCurrencyForCountryModel>(
             fromJson: (response) =>
                 GetCurrencyForCountryModel.fromJson(response)),
@@ -499,9 +547,9 @@ class HomeRemoteDatasource {
       /*  serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
         endpoint: MarketEndPoints.getProductFiltersEP,*/
-      serverName: ServerName.elastic,
+      serverName: ServerName.webApp,
       requestPrams: RequestConfig<GetProductFiltersModel>(
-        endpoint: ElasticEndPoints.searchWithoutFilterElasticEP,
+        endpoint: WebAppEndPoints.searchProductEP,
         queryParameters: params,
         response: ResponseValue<GetProductFiltersModel>(
             fromJson: (response) => GetProductFiltersModel.fromJson(response)),
@@ -514,9 +562,9 @@ class HomeRemoteDatasource {
       Map<String, dynamic> params) {
     GetClient<GetProductListingWithFiltersModel> getProductsWithFilters =
         GetClient<GetProductListingWithFiltersModel>(
-      serverName: ServerName.elastic,
+      serverName: ServerName.webApp,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-        endpoint: ElasticEndPoints.searchWithFilterElasticEP,
+        endpoint: WebAppEndPoints.searchProductEP,
         /*serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
@@ -534,9 +582,9 @@ class HomeRemoteDatasource {
       Map<String, dynamic> params) {
     GetClient<GetProductListingWithFiltersModel> getFeaturedProducts =
         GetClient<GetProductListingWithFiltersModel>(
-      serverName: ServerName.elastic,
+      serverName: ServerName.webApp,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-        endpoint: ElasticEndPoints.getFeaturedProductEP,
+        endpoint: WebAppEndPoints.productFeaturedEP,
         /*serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
@@ -637,10 +685,10 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
-      serverName: ServerName.elastic,
+      serverName: ServerName.webApp,
       //ServerName.elastic,
       requestPrams: RequestConfig<GetHomeBoutiquesModel>(
-        endpoint: ElasticEndPoints.getHomeBoutiquesEP,
+        endpoint: WebAppEndPoints.homeBoutiquesEP,
         //ElasticEndPoints.getHomeBoutiquesEP,
         // MarketEndPoints.getHomeBoutiqesEP,
         queryParameters: params,
@@ -1111,5 +1159,203 @@ class HomeRemoteDatasource {
       ),
     );
     return changeOrderItemVariant();
+  }
+
+  Future<ReturnReasonsModel> getReturnReasons() {
+    GetClient<ReturnReasonsModel> getReturnReasons =
+        GetClient<ReturnReasonsModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ReturnReasonsModel>(
+        endpoint: MarketEndPoints.getReturnReasonsEP,
+        response: ResponseValue<ReturnReasonsModel>(
+            fromJson: (response) => ReturnReasonsModel.fromJson(response)),
+      ),
+    );
+
+    return getReturnReasons();
+  }
+
+  Future<UploadImagesForReturnProductModel> uploadImagesForReturnProduct(
+      Map<String, dynamic> params) {
+    PostClient<UploadImagesForReturnProductModel> uploadImagesForReturnProduct =
+        PostClient<UploadImagesForReturnProductModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UploadImagesForReturnProductModel>(
+        endpoint: MarketEndPoints.uploadImagesForReturnProductEP,
+        data: params['data'],
+        response: ResponseValue<UploadImagesForReturnProductModel>(
+            fromJson: (response) =>
+                UploadImagesForReturnProductModel.fromJson(response)),
+      ),
+    );
+
+    return uploadImagesForReturnProduct();
+  }
+
+  Future<StoreReturnRequestProductModel> storeReturnRequestProduct(
+      Map<String, dynamic> params) {
+    PostClient<StoreReturnRequestProductModel> storeReturnRequestProduct =
+        PostClient<StoreReturnRequestProductModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<StoreReturnRequestProductModel>(
+        endpoint: MarketEndPoints.storeReturnRequestProductEP,
+        data: params,
+        response: ResponseValue<StoreReturnRequestProductModel>(
+            fromJson: (response) =>
+                StoreReturnRequestProductModel.fromJson(response)),
+      ),
+    );
+
+    return storeReturnRequestProduct();
+  }
+
+  Future<UpdateConfirmCancelReturnRequestModel> updateReturnRequestProduct(
+      Map<String, dynamic> params) {
+    PostClient<UpdateConfirmCancelReturnRequestModel>
+        updateReturnRequestProduct =
+        PostClient<UpdateConfirmCancelReturnRequestModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+        endpoint: MarketEndPoints.updateReturnRequestProductEP,
+        data: params,
+        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+            fromJson: (response) =>
+                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+      ),
+    );
+
+    return updateReturnRequestProduct();
+  }
+
+  Future<UpdateConfirmCancelReturnRequestModel> cancelReturnRequest(
+      Map<String, dynamic> params) {
+    GetClient<UpdateConfirmCancelReturnRequestModel> cancelReturnRequest =
+        GetClient<UpdateConfirmCancelReturnRequestModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+        endpoint: MarketEndPoints.cancelReturnRequestEP,
+        queryParameters: params,
+        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+            fromJson: (response) =>
+                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+      ),
+    );
+
+    return cancelReturnRequest();
+  }
+
+  Future<CreateReturnReqestModel> storeReturnRequest(
+      Map<String, dynamic> params) {
+    GetClient<CreateReturnReqestModel> storeReturnRequest =
+        GetClient<CreateReturnReqestModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<CreateReturnReqestModel>(
+        endpoint: MarketEndPoints.storeReturnRequestEP,
+        queryParameters: params,
+        response: ResponseValue<CreateReturnReqestModel>(
+            fromJson: (response) => CreateReturnReqestModel.fromJson(response)),
+      ),
+    );
+    return storeReturnRequest();
+  }
+
+  Future<UpdateConfirmCancelReturnRequestModel> cancelReturnRequestProduct(
+      Map<String, dynamic> params) {
+    GetClient<UpdateConfirmCancelReturnRequestModel>
+        cancelReturnRequestProduct =
+        GetClient<UpdateConfirmCancelReturnRequestModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+        endpoint: MarketEndPoints.cancelReturnRequestProductEP,
+        queryParameters: params,
+        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+            fromJson: (response) =>
+                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+      ),
+    );
+
+    return cancelReturnRequestProduct();
+  }
+
+  Future<UpdateConfirmCancelReturnRequestModel> confirmReturnRequest(
+      Map<String, dynamic> params) {
+    PostClient<UpdateConfirmCancelReturnRequestModel> confirmReturnRequest =
+        PostClient<UpdateConfirmCancelReturnRequestModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+        endpoint: MarketEndPoints.confirmReturnRequestEP,
+        data: params,
+        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+            fromJson: (response) =>
+                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+      ),
+    );
+
+    return confirmReturnRequest();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> searchByImageFromGemini(
+      Map<String, dynamic> params) {
+    PostClient<ReadOnlyMessageFromApiModel> searchByImageFromGemini =
+        PostClient<ReadOnlyMessageFromApiModel>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+        endpoint: WebAppEndPoints.imageSearchEP,
+        data: params["data"],
+        response: ResponseValue<ReadOnlyMessageFromApiModel>(
+            fromJson: (response) =>
+                ReadOnlyMessageFromApiModel.fromJson(response)),
+      ),
+    );
+
+    return searchByImageFromGemini();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> orderReturnRequestsView(
+      Map<String, dynamic> params) {
+    GetClient<ReadOnlyMessageFromApiModel> orderReturnRequestsView =
+        GetClient<ReadOnlyMessageFromApiModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+        endpoint: MarketEndPoints.orderReturnRequestsViewEP,
+        queryParameters: params,
+        response: ResponseValue<ReadOnlyMessageFromApiModel>(
+            fromJson: (response) =>
+                ReadOnlyMessageFromApiModel.fromJson(response)),
+      ),
+    );
+
+    return orderReturnRequestsView();
+  }
+
+  Future<GetOrderReturntDetailsModel> getOrderReturnDetails(
+      Map<String, dynamic> params) {
+    GetClient<GetOrderReturntDetailsModel> getOrderReturnDetailsClient =
+        GetClient<GetOrderReturntDetailsModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetOrderReturntDetailsModel>(
+        endpoint: MarketEndPoints.orderReturnDetailsEP,
+        queryParameters: params,
+        response: ResponseValue<GetOrderReturntDetailsModel>(
+          fromJson: (response) =>
+              GetOrderReturntDetailsModel.fromJson(response),
+        ),
+      ),
+    );
+    return getOrderReturnDetailsClient();
+  }
+
+  Future<GetAuthProductDetailsModel> getAuthProductDetails(String productSlug) {
+    GetClient<GetAuthProductDetailsModel> client =
+        GetClient<GetAuthProductDetailsModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetAuthProductDetailsModel>(
+        endpoint: MarketEndPoints.getAuthProductDetailsEP(productSlug),
+        response: ResponseValue<GetAuthProductDetailsModel>(
+          fromJson: (response) => GetAuthProductDetailsModel.fromJson(response),
+        ),
+      ),
+    );
+    return client();
   }
 }

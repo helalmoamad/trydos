@@ -104,7 +104,7 @@ class _SplashPageState extends State<SplashPage> {
       Future.delayed(Duration(seconds: 1), () {
         //  homeBloc.add(GeColorsAndSizesForSearchEvent());
         if ((prefsRepository.marketToken?.length ?? 0) > 10) {
-          homeBloc.add(GetProductsListInCartEvent());
+          //.add(GetProductsListInCartEvent());
           homeBloc.add(GetCartItemEvent());
 
           homeBloc.add(GetNotificationTypeProductEvent());

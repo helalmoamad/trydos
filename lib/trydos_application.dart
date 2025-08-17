@@ -13,6 +13,7 @@ import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_ob
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos/service/ku_fallback_localizations.dart';
 import 'package:trydos/service/localization_service.dart';
 import 'package:trydos/service/screen_service.dart';
 import 'package:trydos/service/service_provider.dart';
@@ -90,7 +91,12 @@ class _TrydosApplicationState extends State<TrydosApplication>
                       locale: context.locale,
                       theme: AppTheme.light,
                       supportedLocales: context.supportedLocales,
-                      localizationsDelegates: context.localizationDelegates,
+                      localizationsDelegates: [
+                        ...context.localizationDelegates,
+                        const KuMaterialLocalizationsDelegate(),
+                        const KuWidgetsLocalizationsDelegate(),
+                        const KuCupertinoLocalizationsDelegate(),
+                      ],
                       routerConfig: GRouter.router,
                       builder: (context, child) {
                         LanguageService(context);

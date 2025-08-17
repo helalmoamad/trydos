@@ -70,7 +70,7 @@ class Product {
   final String? priceFormatted;
   final double? offerPrice;
   final String? offerPriceFormatted;
-  final bool? isLiked;
+  final int? commentsCount;
   final int? countOfLikes;
   final int? collectedAfterOrdering;
   final int? countOfPieces;
@@ -85,6 +85,8 @@ class Product {
   final List<SyncColorImage>? syncColorImages;
   final bool? isRedeem;
   final double? redeemPrice;
+  final int? sharedCount;
+  final List<Comment>? comments;
   final List<Color>? colors;
   Product({
     this.id,
@@ -99,7 +101,6 @@ class Product {
     this.syncColorImages,
     this.images,
     this.variation,
-    this.isLiked,
     this.slug,
     this.shippingCostMultiplyWithQuantity,
     this.shippingCost,
@@ -111,17 +112,20 @@ class Product {
     this.offerPrice,
     this.offerPriceFormatted,
     this.maxAllowedQty,
+    this.sharedCount,
     this.deliveryAt,
     this.boutique,
     this.availableQuantity,
     this.leftStock,
     this.labelNames,
     this.flashDealEndDate,
+    this.commentsCount,
     this.shippingDays,
     this.isFeatured,
     this.reviewsCount,
     this.viewsCount,
     this.labels,
+    this.comments,
     required this.isProductNotifiedForUser,
     this.countryIsRestricted,
   });
@@ -159,7 +163,6 @@ class Product {
           dynamic sellerId,
           int? shippingDays,
           BoutiqueForCart? boutique,
-          bool? isLiked,
           int? countOfLikes,
           Seller? seller,
           Shop? shop,
@@ -175,6 +178,9 @@ class Product {
           List<Label>? labels,
           bool? isProductNotifiedForUser,
           bool? countryIsRestricted,
+          List<Comment>? comments,
+          int? commentsCount,
+          int? sharedCount,
           bool? isFeatured}) =>
       Product(
         id: id ?? this.id,
@@ -194,7 +200,6 @@ class Product {
         images: images ?? this.images,
         availableQuantity: availableQuantity ?? this.availableQuantity,
         leftStock: leftStock ?? this.leftStock,
-        isLiked: isLiked ?? this.isLiked,
         shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
             this.shippingCostMultiplyWithQuantity,
         shippingCost: shippingCost ?? this.shippingCost,
@@ -208,9 +213,12 @@ class Product {
             collectedAfterOrdering ?? this.collectedAfterOrdering,
         countOfLikes: countOfLikes ?? this.countOfLikes,
         reviewsCount: reviewsCount ?? this.reviewsCount,
+        sharedCount: sharedCount ?? this.sharedCount,
         countOfPieces: countOfPieces ?? this.countOfPieces,
         boutique: boutique ?? this.boutique,
         viewsCount: viewsCount ?? this.viewsCount,
+        comments: comments ?? this.comments,
+        commentsCount: commentsCount ?? this.commentsCount,
         descriptors: descriptors ?? this.descriptors,
         labels: labels ?? this.labels,
         countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
@@ -220,9 +228,10 @@ class Product {
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-      id: json["id"],
+      id: int.tryParse(json["id"].toString()),
       description: json["description"],
       countOfPieces: json["count_of_pieces"],
+      commentsCount: json["comments_count"],
       slug: json["slug"],
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
@@ -243,6 +252,10 @@ class Product {
           : BoutiqueForCart.fromJson(json["boutique"]),
       collectedAfterOrdering: json["collected_after_ordering"],
       price: (json["price"] ?? 0).toDouble(),
+      comments: json["comments"] == null
+          ? []
+          : List<Comment>.from(
+              json["comments"]!.map((x) => Comment.fromJson(x))),
       labelNames: json["label_names"] == null
           ? []
           : List<String>.from(json["label_names"]!.map((x) => x)),
@@ -263,11 +276,11 @@ class Product {
               json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
       hasDiscount: json["has_discount"],
       isRedeem: json["is_redeem"],
-      redeemPrice: json["redeem_price"].toDouble(),
+      redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
       deliveryAt: json["delivery_at"],
-      isLiked: json["is_liked"],
+      sharedCount: json["shared_count"],
       countOfLikes: json["count_of_likes"],
-      availableQuantity: json["available_quantity"]?.toInt(),
+      availableQuantity: (json["available_quantity"] ?? 0).toInt(),
       leftStock: json["Left_stock"],
       // reviewsCount: json["reviews_count"],
       shippingDays: json["shipping_days"],
@@ -278,9 +291,7 @@ class Product {
           ? []
           : List<DataDescriptor>.from(
               json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
-      labels: json["labels"] == null
-          ? []
-          : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+      labels: json["labels"] == null ? [] : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
       isProductNotifiedForUser: json['is_product_notify_for_user'] ?? false);
 
   Map<String, dynamic> toJson() => {
@@ -289,14 +300,16 @@ class Product {
         "is_active": isActive,
         "boutique": boutique?.toJson(),
         "is_redeem": isRedeem,
+        "comments_count": commentsCount,
         "redeem_price": redeemPrice,
-        "variation": variation == null
-            ? []
-            : List<dynamic>.from(variation!.map((x) => x.toJson())),
+
         "choice_options": choiceOptions == null
             ? []
             : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
         "has_discount": hasDiscount,
+        "variation": variation == null
+            ? []
+            : List<dynamic>.from(variation!.map((x) => x.toJson())),
         "label_names": labelNames == null
             ? []
             : List<dynamic>.from(labelNames!.map((x) => x)),
@@ -307,7 +320,7 @@ class Product {
         "slug": slug,
         "is_country_restricted": countryIsRestricted,
         "shipping_days": shippingDays,
-        "is_liked": isLiked,
+
         "count_of_likes": countOfLikes,
         "available_quantity": availableQuantity,
         "count_of_pieces": countOfPieces,
@@ -316,6 +329,9 @@ class Product {
         "offer_price_formatted": offerPriceFormatted,
         "offer_price": offerPrice,
         "Left_stock": leftStock,
+        "comments": comments == null
+            ? []
+            : List<dynamic>.from(comments!.map((x) => x.toJson())),
         "colors": colors == null
             ? []
             : List<dynamic>.from(colors!.map((x) => x.toJson())),
@@ -331,6 +347,7 @@ class Product {
         "shipping_cost": shippingCost?.toDouble(),
         "max_allowed_qty": maxAllowedQty,
         "is_featured": isFeatured,
+        "shared_count": sharedCount,
 
         // "views_count": viewsCount,
         "descriptors": descriptors == null
@@ -340,6 +357,92 @@ class Product {
             ? []
             : List<dynamic>.from(labels!.map((x) => x.toJson())),
         "is_product_notify_for_user": isProductNotifiedForUser
+      };
+}
+
+class Comment {
+  final String? id;
+  final Customer? customer;
+  final String? productId;
+  final String? comment;
+  final DateTime? createdAt;
+
+  Comment({
+    this.id,
+    this.customer,
+    this.productId,
+    this.comment,
+    this.createdAt,
+  });
+
+  Comment copyWith({
+    String? id,
+    Customer? customer,
+    String? productId,
+    String? comment,
+    DateTime? createdAt,
+  }) =>
+      Comment(
+        id: id ?? this.id,
+        customer: customer ?? this.customer,
+        productId: productId ?? this.productId,
+        comment: comment ?? this.comment,
+        createdAt: createdAt ?? this.createdAt,
+      );
+
+  factory Comment.fromJson(Map<String, dynamic> json) => Comment(
+        id: json["id"].toString(),
+        customer: json["customer"] == null
+            ? null
+            : Customer.fromJson(json["customer"]),
+        productId: json["product_id"].toString(),
+        comment: json["comment"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "customer": customer?.toJson(),
+        "product_id": productId,
+        "comment": comment,
+        "created_at": createdAt?.toIso8601String(),
+      };
+}
+
+class Customer {
+  final String? id;
+  final String? name;
+  final String? image;
+
+  Customer({
+    this.id,
+    this.name,
+    this.image,
+  });
+
+  Customer copyWith({
+    String? id,
+    String? name,
+    String? image,
+  }) =>
+      Customer(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        image: image ?? this.image,
+      );
+
+  factory Customer.fromJson(Map<String, dynamic> json) => Customer(
+        id: json["id"].toString(),
+        name: json["name"],
+        image: json["image"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "image": image,
       };
 }
 
@@ -603,7 +706,7 @@ class Shop {
 }
 
 class Variation {
-  final bool variantNotifyForUser;
+  final bool? variantNotifyForUser;
   final String? type;
   final double? price;
   final String? priceFormated;
@@ -614,7 +717,7 @@ class Variation {
   final double? qty;
 
   Variation({
-    required this.variantNotifyForUser,
+    this.variantNotifyForUser,
     this.type,
     this.price,
     this.redeemPrice,

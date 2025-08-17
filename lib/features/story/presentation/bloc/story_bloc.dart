@@ -17,6 +17,7 @@ import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
@@ -111,15 +112,16 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     // Fluttertoast.showToast(msg: 'tosss');
     response.fold(
       (l) {
+        if (ErrorManager.shouldRetry(
+            'UploadStoryCloudinaryEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('UploadStoryCloudinaryEvent');
+
+          GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
+          return;
+        }
         emit(state.copyWith(
             uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure));
-        if (isFailedTheFirstTime.contains('UploadStoryCloudinaryEvent')) {
-          isFailedTheFirstTime.remove('UploadStoryCloudinaryEvent');
-        } else {
-          isFailedTheFirstTime.insert(
-              isFailedTheFirstTime.length, 'UploadStoryCloudinaryEvent');
-          GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
-        }
+
         ///////////////////////////
         // FirebaseAnalyticsService.logEventForSession(
         //   eventName: AnalyticsEventsConst.programmingEvent,
@@ -131,7 +133,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         //     toastLength: Toast.LENGTH_LONG);
       },
       (r) async {
-        isFailedTheFirstTime.remove('UploadStoryCloudinaryEvent');
+        ErrorManager.resetRetry('UploadStoryCloudinaryEvent');
         String fileName = event.file.path.split('/').last;
         String mimeType = mime(fileName) ?? '';
         String mimee = mimeType.split('/')[0];
@@ -228,8 +230,9 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           url: currentStoryInSelectedCollection.photoPath!,
           collectionId: state.storiesCollections[event.collectionIndex].id!));
       response.fold((l) {
-        if (isFailedTheFirstTime.contains('StorySelectedEvent')) {
-          isFailedTheFirstTime.remove('StorySelectedEvent');
+        if (ErrorManager.shouldRetry('StorySelectedEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('StorySelectedEvent');
+
           emit(state.copyWith(
               storiesCollections: state.storiesCollections.map((e) {
             if (e.id == state.storiesCollections[event.collectionIndex].id) {
@@ -240,8 +243,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
             return e;
           }).toList()));
         } else {
-          isFailedTheFirstTime.insert(
-              isFailedTheFirstTime.length, 'StorySelectedEvent');
+          ErrorManager.incrementRetry('StorySelectedEvent');
           GetIt.I<StoryBloc>().add(StorySelectedEvent(
               collectionIndex: event.collectionIndex,
               selectedStoryIndexInCollection:
@@ -296,19 +298,17 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         StoryRepositoryParams(page: state.currentPage.toString()));
 
     response.fold((l) {
-      if (isFailedTheFirstTime.contains('GetStoryEvent')) {
-        isFailedTheFirstTime.remove('GetStoryEvent');
-        emit(state.copyWith(
-            getStoriesStatus: GetStoriesStatus.failure,
-            getStoryWithPagintionStatusLoading: false));
-      } else {
-        isFailedTheFirstTime.insert(
-            isFailedTheFirstTime.length, 'GetStoryEvent');
+      if (ErrorManager.shouldRetry('GetStoryEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('GetStoryEvent');
         GetIt.I<StoryBloc>()
             .add(GetStoryEvent(withPaginition: event.withPaginition));
+        return;
       }
+      emit(state.copyWith(
+          getStoriesStatus: GetStoriesStatus.failure,
+          getStoryWithPagintionStatusLoading: false));
     }, (r) {
-      apisMustNotToRequest.add('GetStoryEvent');
+      ErrorManager.resetRetry('GetStoryEvent');
       Map<int, int> currentStoryInEachCollection = {};
       int i = 0;
       List<CollectionStoryModel>? collections = r.data!.collections;
@@ -360,9 +360,9 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
 
       showMessage("Faild To Add Your Story",
           hasError: true, showInRelease: true);
-      if (isFailedTheFirstTime.contains('AddStoryToOurServerEvent')) {
+      if (ErrorManager.shouldRetry('AddStoryToOurServerEvent', l.statusCode)) {
       } else {
-        isFailedTheFirstTime.insert(0, 'AddStoryToOurServerEvent');
+        ErrorManager.incrementRetry('AddStoryToOurServerEvent');
         add(AddStoryToOurServerEvent(
             path: event.path,
             isVideo: event.isVideo,
@@ -371,7 +371,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       }
     }, (r) {
       add(GetStoryEvent(withPaginition: false));
-      isFailedTheFirstTime.remove('AddStoryToOurServerEvent');
+      ErrorManager.resetRetry('AddStoryToOurServerEvent');
       String fileName = event.path.split('/').last;
       String mimeType = mime(fileName) ?? '';
       String mimee = mimeType.split('/')[0];

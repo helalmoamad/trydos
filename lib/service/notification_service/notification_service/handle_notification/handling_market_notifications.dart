@@ -130,6 +130,14 @@ class HandlingMarketNotifications {
               orderGroupId: data?["order_group_id"].toString() ?? ""),
         );
       }
+      if (data?["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_availability] &&
+          GetIt.I<HomeBloc>().state.currentSlugToRefreshFromNotification ==
+              data?["product_slug"].toString()) {
+        GetIt.I<HomeBloc>().add(GetProductDatailsWithoutRelatedProductsEvent(
+            productSlug: data?["product_slug"].toString() ?? ""));
+      }
 
       return true;
     }

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 
 import 'package:trydos/features/calls/domain/useCase/delete_Message.dart';
@@ -86,17 +87,15 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     final response = await getMyCallsUseCase(NoParams());
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetMyCall')) {
+        if (ErrorManager.shouldRetry('GetMyCall', l.statusCode)) {
           add(GetMyCallsEvent());
-          isFailedTheFirstTime.add('GetMyCall');
+          ErrorManager.incrementRetry('GetMyCall');
         }
 
         emit(state.copyWith(getMyCallsStatus: GetMyCallsStatus.failure));
       },
       (r) {
-        apisMustNotToRequest.add('GetMyCalls');
-
-        isFailedTheFirstTime.remove('GetMyCalls');
+        ErrorManager.resetRetry('GetMyCalls');
 
         emit(state.copyWith(
             getMyCallsStatus: GetMyCallsStatus.success, callRegister: r.data));

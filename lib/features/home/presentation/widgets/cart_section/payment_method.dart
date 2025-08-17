@@ -144,6 +144,68 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   SizedBox(
                     height: 8,
                   ),
+                  (!(_paymentMethods.contains(PaymentMethods.cod)) &&
+                              (widget.fromPalceOrder)) ||
+                          !widget.availablePaymentMethod
+                              .contains(PaymentMethods.cod)
+                      ? SizedBox.shrink()
+                      : InkWell(
+                          onTap: () {
+                            if (widget.fromPalceOrder ||
+                                widget.fromSuccessOrder) {
+                              return;
+                            }
+                            if (widget.amount >= widget.totalPrice) {
+                              showWarningMessage(
+                                context,
+                                "${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                              );
+                              return;
+                            }
+                            if (widget.amount < widget.totalPrice) {
+                              if (_paymentMethods
+                                  .contains(PaymentMethods.cod)) {
+                                _removeItemFromPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.cod,
+                                );
+                              } else {
+                                widget.paymentMethods.value = List.from(
+                                    widget.paymentMethods.value)
+                                  ..removeWhere(
+                                    (element) =>
+                                        element != PaymentMethods.trydosWallet,
+                                  );
+                                ///////////////
+                                _addItemToPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.cod,
+                                );
+                              }
+                            }
+                          },
+                          child: PaymentMethodCard(
+                            fromPalceOrder: widget.fromPalceOrder,
+                            paymentMethod: _paymentMethods,
+                            fromSuccessOrder: widget.fromSuccessOrder,
+                            currentPaymentMethod: PaymentMethods.cod,
+                            svg: AppAssets.earnMoneySvg,
+                            title: "${LocaleKeys.cod.tr()}",
+                            cardWidgets: buildCodWidget(
+                              fromSuccessOrder: widget.fromSuccessOrder,
+                            ),
+                          ),
+                        ),
+                  /////////////////////
+                  (!(_paymentMethods.contains(PaymentMethods.cod)) &&
+                              (widget.fromPalceOrder)) ||
+                          !widget.availablePaymentMethod
+                              .contains(PaymentMethods.cod)
+                      ? SizedBox.shrink()
+                      : SizedBox(
+                          height: 8,
+                        ),
+                  /////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
@@ -301,67 +363,15 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           ),
                         ),
                   ////////////////////////
-                  (!(_paymentMethods.contains(PaymentMethods.crypto)) &&
+                  /* (!(_paymentMethods.contains(PaymentMethods.crypto)) &&
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.crypto)
                       ? SizedBox.shrink()
                       : SizedBox(
                           height: 12,
-                        ),
+                        ),*/
                   //////////////////////
-                  (!(_paymentMethods.contains(PaymentMethods.cod)) &&
-                              (widget.fromPalceOrder)) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.cod)
-                      ? SizedBox.shrink()
-                      : InkWell(
-                          onTap: () {
-                            if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
-                              return;
-                            }
-                            if (widget.amount >= widget.totalPrice) {
-                              showWarningMessage(
-                                context,
-                                "${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
-                              );
-                              return;
-                            }
-                            if (widget.amount < widget.totalPrice) {
-                              if (_paymentMethods
-                                  .contains(PaymentMethods.cod)) {
-                                _removeItemFromPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.cod,
-                                );
-                              } else {
-                                widget.paymentMethods.value = List.from(
-                                    widget.paymentMethods.value)
-                                  ..removeWhere(
-                                    (element) =>
-                                        element != PaymentMethods.trydosWallet,
-                                  );
-                                ///////////////
-                                _addItemToPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.cod,
-                                );
-                              }
-                            }
-                          },
-                          child: PaymentMethodCard(
-                            fromPalceOrder: widget.fromPalceOrder,
-                            paymentMethod: _paymentMethods,
-                            fromSuccessOrder: widget.fromSuccessOrder,
-                            currentPaymentMethod: PaymentMethods.cod,
-                            svg: AppAssets.earnMoneySvg,
-                            title: "${LocaleKeys.cod.tr()}",
-                            cardWidgets: buildCodWidget(
-                              fromSuccessOrder: widget.fromSuccessOrder,
-                            ),
-                          ),
-                        ),
                 ],
               ),
             );

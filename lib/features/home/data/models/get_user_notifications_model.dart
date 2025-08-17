@@ -198,6 +198,41 @@ class NotificationItemModel {
       };
 }
 
+class Banner {
+  final String? filePath;
+  final String? originalWidth;
+  final String? originalHeight;
+
+  Banner({
+    this.filePath,
+    this.originalWidth,
+    this.originalHeight,
+  });
+
+  Banner copyWith({
+    String? filePath,
+    String? originalWidth,
+    String? originalHeight,
+  }) =>
+      Banner(
+        filePath: filePath ?? this.filePath,
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+      );
+
+  factory Banner.fromJson(Map<String, dynamic> json) => Banner(
+        filePath: json["file_path"],
+        originalWidth: json["original_width"],
+        originalHeight: json["original_height"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "file_path": filePath,
+        "original_width": originalWidth,
+        "original_height": originalHeight,
+      };
+}
+
 class NotificationDescriptionModel {
   String? type;
   String? showedType;
@@ -211,6 +246,7 @@ class NotificationDescriptionModel {
   int? timeLeftInMinutes;
   String? orderGroupId;
   int? userId;
+  List<Banner>? banner;
 
   NotificationDescriptionModel({
     this.type,
@@ -224,6 +260,7 @@ class NotificationDescriptionModel {
     this.cartId,
     this.timeLeftInMinutes,
     this.orderGroupId,
+    this.banner,
     this.userId,
   });
 
@@ -232,6 +269,9 @@ class NotificationDescriptionModel {
       type: json['type'] ?? '',
       showedType: json['showed_type'] ?? '',
       description: json['description'] ?? '',
+      banner: json["banner"] == null
+          ? []
+          : List<Banner>.from(json["banner"]!.map((x) => Banner.fromJson(x))),
       productName: json['product_name'] ?? '',
       productSlug: json['product_slug'] ?? '',
       variant: json['variant'] ?? '',
@@ -253,6 +293,7 @@ class NotificationDescriptionModel {
     String? variant,
     String? image,
     String? customerName,
+    List<Banner>? banner,
     int? cartId,
     int? timeLeftInMinutes,
     String? orderGroupId,
@@ -262,6 +303,7 @@ class NotificationDescriptionModel {
       type: type ?? this.type,
       showedType: showedType ?? this.showedType,
       description: description ?? this.description,
+      banner: banner ?? this.banner,
       productName: productName ?? this.productName,
       productSlug: productSlug ?? this.productSlug,
       variant: variant ?? this.variant,
@@ -280,6 +322,9 @@ class NotificationDescriptionModel {
         'description': description,
         'product_name': productName,
         'product_slug': productSlug,
+        "banner": banner == null
+            ? []
+            : List<dynamic>.from(banner!.map((x) => x.toJson())),
         'variant': variant,
         'image': image,
         'customer_name': customerName,

@@ -28,7 +28,7 @@
        <application
         android:label="Trydos"
         android:usesCleartextTraffic="true"
-        android:enableOnBackInvokedCallback="true"
+        android:enableOnBackInvokedCallback="false"
         android:name="${applicationName}"
         android:exported="true"
         android:icon="@mipmap/ic_launcher"

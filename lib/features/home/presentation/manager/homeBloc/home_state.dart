@@ -29,6 +29,7 @@ import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../../data/models/get_user_notifications_model.dart';
 import '../../../data/models/starting_settings_response_model.dart';
+import '../../../data/models/get_auth_product_details_model.dart';
 
 part 'home_state.g.dart';
 
@@ -47,7 +48,7 @@ enum GetFullProductDetailsStatus { init, loading, success, failure }
 
 enum SelectedVideoStatus { init, loading, success, failure }
 
-enum GetCommentForProductStatus { init, loading, success, failure }
+//enum GetCommentForProductStatus { init, loading, success, failure }
 
 enum GetCartItemsStatus { init, loading, success, available, failure }
 
@@ -106,6 +107,8 @@ enum GetCartOverviewStatus { init, loading, success, failure }
 
 enum UpdateProfileStatus { init, loading, success, failure }
 
+enum AddProductIdToSaveRedeemTimerStatus { init, on, off }
+
 enum EnableAddToCardAfterChangeVariantZero { init, loading, success, failure }
 
 enum CurrentSelectedColorForEveryProductStatus {
@@ -115,95 +118,105 @@ enum CurrentSelectedColorForEveryProductStatus {
   failure
 }
 
+enum AuthProductDetailsStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
-  const HomeState(
-      {this.storiesForProduct,
-      this.getAndAddCountViewOfProductStatus = const {},
-      this.addItemInCartStatus,
-      this.convertItemFromcartToOldCartStatus =
-          ConvertItemFromcartToOldCartStatus.init,
-      this.hideItemInOldCartStatus,
-      this.updateEmailappNotificationStatus,
-      this.updateWhatsappNotificationStatus,
-      this.changeSizesForEveryProduct,
-      this.uploadUserPhotoCloudinaryStatus,
-      this.searchWithOutFilterOffset,
-      this.isChangedColorBeforeOpenPanel,
-      this.updateProfileStatus,
-      this.getAllowedCountriesStatus,
-      this.getProductDetailWithoutSimilarRelatedProductsStatus =
-          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-      this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
-      this.getCommentForProductStatus = GetCommentForProductStatus.init,
-      this.currentSelectedColorForEveryProductStatus,
-      this.isChangedvariationWhenQtyZero = false,
-      this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
-      this.addCommentStatus = AddCommentStatus.init,
-      this.startingSetting,
-      this.sizesForEachColor = const [],
-      this.colorsForEachProduct = const [],
-      this.colorsQuantitiesForEachProduct = const [],
-      this.sizesQuantitiesForEachColor = const [],
-      this.isVariantRequestNotification = const [],
-      this.deleteItemInCartStatus,
-      this.oldcartCollection,
-      this.enableAddToCardAfterChangeVariantZero,
-      this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
-      this.getOldCartModel,
-      this.countryCoordinatesBorders = const [],
-      this.getUserNotificationModel,
-      this.checkAvailabilityProductCartModel,
-      this.currentPage = 0,
-      this.productStatus,
-      this.updateItemInCartStatus,
-      this.productITemForCart = const {},
-      this.getCartShippingItemsModel,
-      this.getCommentForProductModel = const {},
-      this.reRequestTheseProductListingInBoutiques = const {},
-      this.reRequestProductWithFilters = const {},
-      this.getProductListingStatus = GetProductListingStatus.init,
-      this.selectedCollection,
-      this.productContentForStatusOfOpeningProductDetailsDirectly,
-      this.cartCollection = const [],
-      //this.idForRequest,
+  const HomeState({
+    this.storiesForProduct,
+    this.getAndAddCountViewOfProductStatus = const {},
+    this.addItemInCartStatus,
+    this.convertItemFromcartToOldCartStatus =
+        ConvertItemFromcartToOldCartStatus.init,
+    this.hideItemInOldCartStatus,
+    this.updateEmailappNotificationStatus,
+    this.updateWhatsappNotificationStatus,
+    this.changeSizesForEveryProduct,
+    this.uploadUserPhotoCloudinaryStatus,
+    this.searchWithOutFilterOffset,
+    this.isChangedColorBeforeOpenPanel,
+    this.updateProfileStatus,
+    this.addProductIdToSaveRedeemTimerStatus =
+        AddProductIdToSaveRedeemTimerStatus.init,
+    this.getAllowedCountriesStatus,
+    this.getProductDetailWithoutSimilarRelatedProductsStatus =
+        GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+    this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
+    // this.getCommentForProductStatus = GetCommentForProductStatus.init,
+    this.currentSelectedColorForEveryProductStatus,
+    this.isChangedvariationWhenQtyZero = false,
+    this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
+    this.addCommentStatus = AddCommentStatus.init,
+    this.startingSetting,
+    this.sizesForEachColor = const [],
+    this.colorsForEachProduct = const [],
+    this.colorsQuantitiesForEachProduct = const [],
+    this.sizesQuantitiesForEachColor = const [],
+    this.isVariantRequestNotification = const [],
+    this.deleteItemInCartStatus,
+    this.oldcartCollection,
+    this.enableAddToCardAfterChangeVariantZero,
+    this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
+    this.getOldCartModel,
+    this.countryCoordinatesBorders = const [],
+    this.getUserNotificationModel,
+    this.checkAvailabilityProductCartModel,
+    this.currentPage = 0,
+    this.productStatus,
+    this.updateItemInCartStatus,
+    //  this.productITemForCart = const {},
+    this.getCartShippingItemsModel,
+    //this.getCommentForProductModel = const {},
+    this.reRequestTheseProductListingInBoutiques = const {},
+    this.reRequestProductWithFilters = const {},
+    this.getProductListingStatus = GetProductListingStatus.init,
+    this.selectedCollection,
+    this.productContentForStatusOfOpeningProductDetailsDirectly,
+    this.cartCollection = const [],
+    //this.idForRequest,
 
-      this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
-      this.currentColorSizeForCart,
-      this.currentQuantityForCart,
-      this.addVariationToCartId = const {},
-      this.addImagesToProductIdForCart = const {},
-      this.searchHistory,
-      this.getAllowedCountriesModel,
+    this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
+    this.currentColorSizeForCart,
+    this.currentQuantityForCart,
+    this.animatedCartMessage,
+    this.addVariationToCartId = const {},
+    this.addImagesToProductIdForCart = const {},
+    this.searchHistory,
+    this.getAllowedCountriesModel,
 
-      //   this.moveUrlFromElasticToMarketServer = false,
+    //   this.moveUrlFromElasticToMarketServer = false,
 
-      this.cartIdsHurryUPTimerStarted = const {},
-      this.listitemForAddToCart,
-      this.getListOfProductsFoundedInCartStatus =
-          GetListOfProductsFoundedInCartStatus.init,
-      this.getCurrencyForCountryModel,
-      this.popularSearchTerm,
-      this.getCartOverviewStatus = GetCartOverviewStatus.init,
-      this.checkAvailabilityProductCartStatus =
-          CheckAvailabilityProductCartStatus.init,
-      this.getCartItemsStatus = GetCartItemsStatus.init,
-      this.checkWithGetCartStatus = CheckWithGetCartStatus.init,
-      this.getProductDetailWithoutRelatedProductsModel,
-      this.addOrRemoveLikeOfProductStatus = AddOrRemoveLikeOfProductStatus.init,
-      this.getProductListingPaginationWithoutFiltersModel = const {},
-      this.currentSelectedColorForEveryProduct = const {},
-      this.notificationTypeForProductModel,
-      this.getNotificationTypeProductStatus,
-      // this.geColorsAndSizesForSearchModel,
-      this.currentIndexForUpdateCart,
-      this.getCountryBoundaryByIsoStatus,
-      this.userInfo,
-      this.listOfErrorSendedToMobileErrorLog = const [],
-      this.cachedProductWithoutRelatedProductsModel = const {},
-      this.getFirebaseSettingForNotificationStatus,
-      this.firebaseSettingForNotificationModel});
+    this.cartIdsHurryUPTimerStarted = const {},
+    this.listitemForAddToCart,
+//this.getListOfProductsFoundedInCartStatus =
+    //    GetListOfProductsFoundedInCartStatus.init,
+    this.getCurrencyForCountryModel,
+    this.productIdToSaveRedeemTimer = const [],
+    this.popularSearchTerm,
+    this.getCartOverviewStatus = GetCartOverviewStatus.init,
+    this.checkAvailabilityProductCartStatus =
+        CheckAvailabilityProductCartStatus.init,
+    this.currentSlugToRefreshFromNotification,
+    this.getCartItemsStatus = GetCartItemsStatus.init,
+    this.checkWithGetCartStatus = CheckWithGetCartStatus.init,
+    this.getProductDetailWithoutRelatedProductsModel,
+    this.addOrRemoveLikeOfProductStatus = AddOrRemoveLikeOfProductStatus.init,
+    this.getProductListingPaginationWithoutFiltersModel = const {},
+    this.currentSelectedColorForEveryProduct = const {},
+    this.notificationTypeForProductModel,
+    this.getNotificationTypeProductStatus,
+    // this.geColorsAndSizesForSearchModel,
+    this.currentIndexForUpdateCart,
+    this.getCountryBoundaryByIsoStatus,
+    this.userInfo,
+    this.listOfErrorSendedToMobileErrorLog = const [],
+    this.cachedProductWithoutRelatedProductsModel = const {},
+    this.getFirebaseSettingForNotificationStatus,
+    this.firebaseSettingForNotificationModel,
+    this.authProductDetailsStatus = AuthProductDetailsStatus.init,
+    this.authProductDetailsModel,
+  });
 
   final GetFirebaseSettingForNotificationStatus?
       getFirebaseSettingForNotificationStatus;
@@ -214,15 +227,19 @@ class HomeState extends Equatable {
   final GetAllowedCountriesStatus? getAllowedCountriesStatus;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
-  final GetCommentForProductStatus getCommentForProductStatus;
-  final Map<String, product.Products> productITemForCart;
+  // final GetCommentForProductStatus getCommentForProductStatus;
+  final String? currentSlugToRefreshFromNotification;
+  // final Map<String, product.Products> productITemForCart;
   final User? userInfo;
+  final AddProductIdToSaveRedeemTimerStatus?
+      addProductIdToSaveRedeemTimerStatus;
   final CurrentSelectedColorForEveryProductStatus?
       currentSelectedColorForEveryProductStatus;
   final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus;
-
+  final List<String>? productIdToSaveRedeemTimer;
   final EnableAddToCardAfterChangeVariantZero?
       enableAddToCardAfterChangeVariantZero;
+  final String? animatedCartMessage;
   final bool isChangedvariationWhenQtyZero;
   final bool? isChangedColorBeforeOpenPanel;
   final ConvertItemFromcartToOldCartStatus convertItemFromcartToOldCartStatus;
@@ -271,8 +288,8 @@ class HomeState extends Equatable {
   final List<cart.Cart>? cartCollection;
 
   final Map<String, int> cartIdsHurryUPTimerStarted;
-  final GetListOfProductsFoundedInCartStatus
-      getListOfProductsFoundedInCartStatus;
+//  final GetListOfProductsFoundedInCartStatus
+  //  getListOfProductsFoundedInCartStatus;
   final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus;
   final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus;
   final List<oldCart.OldCart>? oldcartCollection;
@@ -303,7 +320,7 @@ class HomeState extends Equatable {
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
   final oldCart.GetOldCartModel? getOldCartModel;
-  final Map<String, GetCommentForProductModel> getCommentForProductModel;
+  // final Map<String, GetCommentForProductModel> getCommentForProductModel;
 
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
@@ -317,16 +334,20 @@ class HomeState extends Equatable {
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
 
+  final AuthProductDetailsStatus authProductDetailsStatus;
+  final GetAuthProductDetailsModel? authProductDetailsModel;
+
   @override
   List<Object?> get props => [
         getStartingSettingsStatus,
         currentSelectedColorForEveryProduct,
-        getListOfProductsFoundedInCartStatus,
-        getCommentForProductStatus,
-        productITemForCart,
+        // getListOfProductsFoundedInCartStatus,
+        //  getCommentForProductStatus,
+        // productITemForCart,
         oldcartCollection,
         convertItemFromcartToOldCartStatus,
         getOldCartModel,
+        animatedCartMessage,
         getOldCartItemsStatus,
         notificationTypeForProductModel,
         updateProfileStatus,
@@ -338,6 +359,7 @@ class HomeState extends Equatable {
         getCurrencyForCountryModel,
         enableAddToCardAfterChangeVariantZero,
         cartIdsHurryUPTimerStarted,
+        currentSlugToRefreshFromNotification,
         addCommentStatus,
         changeSizesForEveryProduct,
         hideItemInOldCartStatus,
@@ -383,7 +405,7 @@ class HomeState extends Equatable {
 
         getProductListingPaginationWithoutFiltersModel,
         getCartShippingItemsModel,
-        getCommentForProductModel,
+        //    getCommentForProductModel,
 
         getProductDetailWithoutRelatedProductsModel,
 
@@ -391,14 +413,14 @@ class HomeState extends Equatable {
         addVariationToCartId,
         deleteItemInCartStatus,
         updateItemInCartStatus,
-        currentSelectedColorForEveryProduct,
+
         isVariantRequestNotification,
         selectedCollection,
         isChangedColorBeforeOpenPanel,
         startingSetting,
         currentIndexForUpdateCart,
         currentColorSizeForCart,
-
+        addProductIdToSaveRedeemTimerStatus,
         isChangedvariationWhenQtyZero,
         getFirebaseSettingForNotificationStatus,
         getCountryBoundaryByIsoStatus,
@@ -407,23 +429,31 @@ class HomeState extends Equatable {
         firebaseSettingForNotificationModel,
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus,
+        productIdToSaveRedeemTimer,
         getAllowedCountriesStatus,
         //   geColorsAndSizesForSearchModel
+        authProductDetailsStatus,
+        authProductDetailsModel,
       ];
 
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetFirebaseSettingForNotificationStatus?
           getFirebaseSettingForNotificationStatus,
+      final String? animatedCartMessage,
       final GetAllowedCountriesStatus? getAllowedCountriesStatus,
       final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
+      final List<String>? productIdToSaveRedeemTimer,
       final bool? isChangedvariationWhenQtyZero,
       final List<geod.LatLng>? countryCoordinatesBorders,
+      final AddProductIdToSaveRedeemTimerStatus?
+          addProductIdToSaveRedeemTimerStatus,
       final EnableAddToCardAfterChangeVariantZero?
           enableAddToCardAfterChangeVariantZero,
       final UpdateProfileStatus? updateProfileStatus,
+      final String? currentSlugToRefreshFromNotification,
       final User? userInfo,
       final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
       final PaginationModel<NotificationItemModel>? getUserNotificationModel,
@@ -446,8 +476,8 @@ class HomeState extends Equatable {
       final UpdateItemInCartStatus? updateItemInCartStatus,
       final List<String>? listOfErrorSendedToMobileErrorLog,
       final NotificationTypeForProductModel? notificationTypeForProductModel,
-      final GetListOfProductsFoundedInCartStatus?
-          getListOfProductsFoundedInCartStatus,
+      //final GetListOfProductsFoundedInCartStatus?
+      //    getListOfProductsFoundedInCartStatus,
       final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,
       final Map<String, String>? searchWithOutFilterOffset,
       final Map<String, GetAndAddCountViewOfProductStatus>?
@@ -461,7 +491,7 @@ class HomeState extends Equatable {
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? listitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
-      final GetCommentForProductStatus? getCommentForProductStatus,
+      //final GetCommentForProductStatus? getCommentForProductStatus,
       final AddOrRemoveLikeOfProductStatus? addOrRemoveLikeOfProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
       final CheckWithGetCartStatus? checkWithGetCartStatus,
@@ -487,7 +517,7 @@ class HomeState extends Equatable {
       List<cart.Cart>? cartCollection,
       List<oldCart.OldCart>? oldCartCollection,
       Map<String, String>? currentColorSizeForCart,
-      final Map<String, product.Products>? productITemForCart,
+      //final Map<String, product.Products>? productITemForCart,
       final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
       final oldCart.GetOldCartModel? getOldCartModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
@@ -507,8 +537,9 @@ class HomeState extends Equatable {
       List<Story>? storiesForProduct,
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel,
-      final Map<String, GetCommentForProductModel>?
-          getCommentForProductModel}) {
+      //final Map<String, GetCommentForProductModel>? getCommentForProductModel,
+      AuthProductDetailsStatus? authProductDetailsStatus,
+      GetAuthProductDetailsModel? authProductDetailsModel}) {
     return HomeState(
       getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,
@@ -523,17 +554,26 @@ class HomeState extends Equatable {
       userInfo: userInfo ?? this.userInfo,
       getCountryBoundaryByIsoStatus:
           getCoutryBoundaryByIsoStatus ?? this.getCountryBoundaryByIsoStatus,
+      currentSlugToRefreshFromNotification:
+          currentSlugToRefreshFromNotification ??
+              this.currentSlugToRefreshFromNotification,
+      productIdToSaveRedeemTimer:
+          productIdToSaveRedeemTimer ?? this.productIdToSaveRedeemTimer,
 
       countryCoordinatesBorders:
           countryCoordinatesBorders ?? this.countryCoordinatesBorders,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
+      animatedCartMessage: animatedCartMessage ?? this.animatedCartMessage,
+      addProductIdToSaveRedeemTimerStatus:
+          addProductIdToSaveRedeemTimerStatus ??
+              this.addProductIdToSaveRedeemTimerStatus,
       getAllowedCountriesStatus:
           getAllowedCountriesStatus ?? this.getAllowedCountriesStatus,
       //  geColorsAndSizesForSearchModel:
       //      geColorsAndSizesForSearchModel ?? this.geColorsAndSizesForSearchModel,
-      getCommentForProductModel:
-          getCommentForProductModel ?? this.getCommentForProductModel,
+      //  getCommentForProductModel:
+      //    getCommentForProductModel ?? this.getCommentForProductModel,
       getFirebaseSettingForNotificationStatus:
           getFirebaseSettingForNotificationStatus ??
               this.getFirebaseSettingForNotificationStatus,
@@ -598,9 +638,9 @@ class HomeState extends Equatable {
 
       // idForRequest: idForRequest ?? this.idForRequest,
 
-      getListOfProductsFoundedInCartStatus:
-          getListOfProductsFoundedInCartStatus ??
-              this.getListOfProductsFoundedInCartStatus,
+      // getListOfProductsFoundedInCartStatus:
+      //    getListOfProductsFoundedInCartStatus ??
+      //      this.getListOfProductsFoundedInCartStatus,
       productContentForStatusOfOpeningProductDetailsDirectly:
           productContentForStatusOfOpeningProductDetailsDirectly ??
               this.productContentForStatusOfOpeningProductDetailsDirectly,
@@ -624,7 +664,7 @@ class HomeState extends Equatable {
       currentQuantityForCart:
           currentQuantityForCart ?? this.currentQuantityForCart,
 
-      productITemForCart: productITemForCart ?? this.productITemForCart,
+      //   productITemForCart: productITemForCart ?? this.productITemForCart,
       currentColorSizeForCart:
           currentColorSizeForCart ?? this.currentColorSizeForCart,
 
@@ -632,8 +672,8 @@ class HomeState extends Equatable {
       getCartShippingItemsModel:
           getCartShippingItemsModel ?? this.getCartShippingItemsModel,
 
-      getCommentForProductStatus:
-          getCommentForProductStatus ?? this.getCommentForProductStatus,
+      //getCommentForProductStatus:
+      //   getCommentForProductStatus ?? this.getCommentForProductStatus,
 
       currentSelectedColorForEveryProduct:
           currentSelectedColorForEveryProduct ??
@@ -681,6 +721,10 @@ class HomeState extends Equatable {
       productStatus: productStatus ?? this.productStatus,
       getAllowedCountriesModel:
           getAllowedCountriesModel ?? this.getAllowedCountriesModel,
+      authProductDetailsStatus:
+          authProductDetailsStatus ?? this.authProductDetailsStatus,
+      authProductDetailsModel:
+          authProductDetailsModel ?? this.authProductDetailsModel,
     );
   }
 

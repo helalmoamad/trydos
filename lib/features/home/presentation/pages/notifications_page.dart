@@ -109,7 +109,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           leading: MyCachedNetworkImage(
                             ordinalHeight: null,
                             ordinalwidth: null,
-                            imageUrl: items[index].description?.image ?? '',
+                            imageUrl: items[index].description?.type ==
+                                    "boutique created"
+                                ? (items[index].description?.banner?.length ??
+                                            0) ==
+                                        0
+                                    ? ""
+                                    : items[index]
+                                            .description
+                                            ?.banner![0]
+                                            .filePath ??
+                                        ''
+                                : items[index].description?.image ?? '',
                             imageWidth: null,
                             imageHeight: null,
                             height: 60,
@@ -119,7 +130,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           title: Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
-                              items[index].body ?? '',
+                              items[index].description?.type ?? '',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: context.textTheme.bodyMedium?.br.copyWith(
@@ -131,7 +142,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             ),
                           ),
                           subtitle: Text(
-                            'Click For Details',
+                            items[index].description?.description ?? '',
                             style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: Colors.grey,
                               letterSpacing: 0.18,

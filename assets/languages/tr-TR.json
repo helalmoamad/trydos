@@ -11,6 +11,7 @@
   "choose_photo_or_video_from_gallery_or_camera": "galeriden veya kameradan fotoğraf veya video seçin",
   "image_preview": "Resim Önizleme",
   "image_preview_instructions": "Resim Önizleme - Gönder, kırp veya iptal et",
+  "search_image_preview_instructions": "Resim Önizleme - Ara, kırp veya iptal et",
   "crop_image": "Resmi Kırp",
   "select_image_part": "Resmin gerekli kısmını seçin",
   "send": "Gönder",
@@ -555,4 +556,24 @@
   ,"seconds": "saniye"
   ,"about_change_request_product": "Ürün Değişiklik Talebi Hakkında"
   ,"to_qty": "Miktara ?"
+  ,"otp_error_try_again_later": "Bir hata oluştu, süre bitince tekrar deneyin"
+  ,"info_message": "Bilgi Mesajı"
+  ,"chat_with_delivery_person": "Teslimatçı ile sohbet"
+  ,"add_comment_for_rating": "Değerlendirmeniz için yorum ekleyin"
+  ,"write_your_comment_here": "Yorumunuzu buraya yazın..."
+  ,"rate_and_get_money": "Değerlendir ve Para Kazan"
+  ,"rating_section_description": "Aldığınız ürünlere verdiğiniz doğru puanlar, kaliteyi artırmamıza ve diğer müşterilerin alışverişine yardımcı olur."
+  ,"please_login_to_add_comment": "Yorum eklemek için lütfen giriş yapın"
+  ,"return_pieces_hint": "İade etmek istediğiniz parça sayısını girin"
+  , "i_want_returm_more_products":"Gecikme Onayı. Daha Fazla Ürün İade Etmek İstiyorum",
+  "cost": "Maliyet"
+  ,"confirm_return_request": "İade Talebini Onayla"
+  ,"cancel_return_request": "İade Talebini İptal Et"
+  ,"edit_return_request": "İade Talebini Düzenle"
+  ,"i_agree_return": "Kabul Ediyorum & İade Ediyorum"
+  ,"canceled_status_short": "İptal",
+  "video_file_not_supported": "Video dosyası desteklenmiyor",
+  "new_update_available": "Yeni Güncelleme Mevcut",
+  "newer_version_available_message": "Uygulamanın daha yeni bir sürümü mevcut, lütfen şimdi güncelleyin.",
+  "update_now": "Şimdi Güncelle"
 }

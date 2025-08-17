@@ -11,6 +11,7 @@
   "choose_photo_or_video_from_gallery_or_camera": "اختر صورة او فيديو من المعرض او الكاميرا",
   "image_preview": "معاينة الصورة",
   "image_preview_instructions": "معاينة الصورة - اضغط إرسال أو قص أو إلغاء",
+  "search_image_preview_instructions": "معاينة الصورة - اضغط بحث أو قص أو إلغاء",
   "crop_image": "قص الصورة",
   "select_image_part": "اختر الجزء المطلوب من الصورة",
   "send": "إرسال",
@@ -556,4 +557,24 @@
   ,"seconds": "ثوانٍ"
   ,"about_change_request_product": "حول طلب تغيير المنتج"
   ,"to_qty": "إلى الكمية؟"
+  ,"otp_error_try_again_later": "حدث خطأ، أعد المحاولة بعد انتهاء الزمن"
+  ,"info_message": "رسالة معلومات"
+  ,"chat_with_delivery_person": "دردشة مع عامل التوصيل"
+  ,"add_comment_for_rating": "أضف تعليق لتقييمك"
+  ,"write_your_comment_here": "اكتب تعليقك هنا..."
+  ,"rate_and_get_money": "قيّم واربح المال"
+  ,"rating_section_description": "تقييمك الدقيق للمنتجات التي تستلمها يساعدنا على تحسين الجودة ويساعد العملاء الآخرين على الشراء."
+  ,"please_login_to_add_comment": "يرجى تسجيل الدخول لإضافة التعليق"
+  ,"return_pieces_hint": "ادخل عدد القطع التي ترغب بإرجاعها",
+  "i_want_returm_more_products":"تأجيل. أرغب في إرجاع المزيد من المنتجات.",
+  "cost": "التكلفة",
+  "confirm_return_request": "تأكيد طلب الإرجاع",
+  "cancel_return_request": "إلغاء طلب الإرجاع",
+  "edit_return_request": "تعديل طلب الإرجاع"
+  ,"i_agree_return": "أوافق وأرجع"
+  ,"canceled_status_short": "ملغي",
+  "video_file_not_supported": "ملف الفيديو غير مدعوم",
+  "new_update_available": "تحديث جديد متاح",
+  "newer_version_available_message": "هناك إصدار أحدث من التطبيق متاح، يرجى تحديثه الآن.",
+  "update_now": "حدث الآن"
 }

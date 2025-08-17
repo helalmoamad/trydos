@@ -84,17 +84,14 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   @override
   void initState() {
-    print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
     scrollController.addListener(_getChatsPaginationListener);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
     callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
-    print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFsssssssssssssWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
 
     chatBloc.add(GetChatsEvent(limit: 10));
+    chatBloc.add(SaveContactsEvent());
     chatPages.insert(
       0,
       ChatPageContent(onSendForwardMessage: widget.onSendForwardMessage),

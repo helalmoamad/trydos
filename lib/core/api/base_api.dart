@@ -29,7 +29,9 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
       }
       headers = client.options.headers
         ..['lang'] = LanguageService.languageCode == 'ar'
-            ? 'ar'
+            ? LanguageService.isKurdish
+                ? "ku"
+                : 'ar'
             : LanguageService.languageCode;
 
       headers.addAll({

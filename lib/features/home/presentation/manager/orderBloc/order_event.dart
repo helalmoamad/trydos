@@ -1,4 +1,13 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
+import 'package:trydos/features/home/data/models/get_orders_model.dart';
+import 'package:trydos/features/home/domain/use_cases/cancel_return_request_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/cancel_return_request_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/confirm_return_request_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/order_return_requests_view_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/store_return_request_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_return_request_product_usecase.dart';
 import '../../../data/models/get_list_of_customer_addresses_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../../domain/use_cases/cancel_order_item_usecase.dart';
@@ -6,6 +15,10 @@ import '../../../domain/use_cases/cancel_order_usecase.dart';
 import '../../../domain/use_cases/change_order_address_usecase.dart';
 import '../../../domain/use_cases/change_order_item_variant_usecase.dart';
 import '../../../domain/use_cases/get_product_color_size_sync_attribute_usecase.dart';
+import '../../../domain/use_cases/add_order_comment_usecase.dart';
+import '../../../domain/use_cases/update_order_comment_usecase.dart';
+import '../../../domain/use_cases/get_return_reasons_usecase.dart';
+import '../../../domain/use_cases/store_return_request_product_usecase.dart';
 
 abstract class OrderEvent extends Equatable {
   const OrderEvent();
@@ -38,9 +51,11 @@ class SaveLastAddress extends OrderEvent {
 class GetOrdersByOrderGroupIDEvent extends OrderEvent {
   final String orderGroupId;
   final bool firstOpenPage;
+  final bool getWithRating;
   GetOrdersByOrderGroupIDEvent({
     required this.orderGroupId,
     this.firstOpenPage = false,
+    this.getWithRating = false,
   });
 
   @override
@@ -93,8 +108,12 @@ class GetCustomerWalletEvent extends OrderEvent {
 class GetOrdersEvent extends OrderEvent {
   final String status;
   final bool getWithPagination;
+  final int index;
+  final List<OrderListModel> orders;
   GetOrdersEvent({
     required this.status,
+    this.index = -1,
+    this.orders = const [],
     required this.getWithPagination,
   });
 
@@ -256,4 +275,141 @@ class ChangeOrderItemVariantEvent extends OrderEvent {
 
   @override
   List<Object?> get props => [params];
+}
+
+class AddOrderCommentEvent extends OrderEvent {
+  final AddOrderCommentParams params;
+
+  const AddOrderCommentEvent({required this.params});
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class UpdateOrderCommentEvent extends OrderEvent {
+  final UpdateOrderCommentParams params;
+
+  const UpdateOrderCommentEvent({required this.params});
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class GetReturnReasonsEvent extends OrderEvent {
+  const GetReturnReasonsEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class StoreReturnRequestProductEvent extends OrderEvent {
+  final ReturnRequestProductParams params;
+  final bool withConfirm;
+  final String returnRequestId;
+  final String orderGroupId;
+  const StoreReturnRequestProductEvent(
+      {required this.params,
+      required this.withConfirm,
+      required this.returnRequestId,
+      required this.orderGroupId});
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class UpdateReturnRequestProductEvent extends OrderEvent {
+  final UpdateReturnRequestProductParams params;
+  final bool withConfirm;
+  final String returnRequestId;
+  final String orderGroupId;
+
+  const UpdateReturnRequestProductEvent(
+      {required this.params,
+      required this.withConfirm,
+      required this.returnRequestId,
+      required this.orderGroupId});
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class CancelReturnRequestEvent extends OrderEvent {
+  final int returnRequestId;
+  final String orderGroupId;
+  const CancelReturnRequestEvent(
+      {required this.returnRequestId, required this.orderGroupId});
+
+  @override
+  List<Object?> get props => [returnRequestId];
+}
+
+class StoreImagesForUpdateReturnEvent extends OrderEvent {
+  final List<String> images;
+  const StoreImagesForUpdateReturnEvent({required this.images});
+
+  @override
+  List<Object?> get props => [images];
+}
+
+class CancelReturnRequestProductEvent extends OrderEvent {
+  final int returnRequestId;
+  final CancelReturnRequestProductParams params;
+
+  const CancelReturnRequestProductEvent(
+      {required this.params, required this.returnRequestId});
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class StoreReturnRequestEvent extends OrderEvent {
+  final ReturnRequestParams params;
+
+  const StoreReturnRequestEvent({required this.params});
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class ResetAllStatusEvent extends OrderEvent {
+  const ResetAllStatusEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ConfirmReturnRequestEvent extends OrderEvent {
+  final String returnRequestId;
+  final String orderGroupId;
+
+  const ConfirmReturnRequestEvent(
+      {required this.returnRequestId, required this.orderGroupId});
+
+  @override
+  List<Object?> get props => [returnRequestId];
+}
+
+class UploadImagesForReturnProductEvent extends OrderEvent {
+  final File file;
+  const UploadImagesForReturnProductEvent(this.file);
+
+  @override
+  List<Object?> get props => [file];
+}
+
+class OrderReturnRequestsViewEvent extends OrderEvent {
+  final OrderReturnRequestsViewParams params;
+
+  const OrderReturnRequestsViewEvent({required this.params});
+
+  @override
+  List<Object?> get props => [params];
+}
+
+class FetchOrderReturnDetailsEvent extends OrderEvent {
+  final int returnRequestId;
+  const FetchOrderReturnDetailsEvent(this.returnRequestId);
+
+  @override
+  List<Object?> get props => [returnRequestId];
 }

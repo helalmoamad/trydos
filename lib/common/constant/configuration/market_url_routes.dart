@@ -69,6 +69,28 @@ abstract class MarketEndPoints {
   static final changeOrderItemVariantEP =
       "order/change-item-variant".customerScope();
 
+  static final getReturnReasonsEP =
+      "order/return_requests/reasons".customerScope();
+
+  static final uploadImagesForReturnProductEP = "storage-upload".storageScope();
+  static final storeReturnRequestProductEP =
+      "order/return_request_products/store".customerScope();
+  static final updateReturnRequestProductEP =
+      "order/return_request_products/update".customerScope();
+  static final cancelReturnRequestEP =
+      "order/return_requests/cancel".customerScope();
+  static final storeReturnRequestEP =
+      "order/return_requests/store".customerScope();
+
+  static final cancelReturnRequestProductEP =
+      "order/return_request_products/cancel".customerScope();
+
+  static final confirmReturnRequestEP =
+      "order/return_requests/confirm_return_request".customerScope();
+
+  static final orderReturnRequestsViewEP =
+      "order/return_requests/view".customerScope();
+
   static String placeOrderEP(String paymentMethod) =>
       "order/checkout/$paymentMethod".customerScope();
 
@@ -127,6 +149,9 @@ abstract class MarketEndPoints {
 
   static final getHomeBoutiqesEP = 'boutiques'.homeScope();
   static final addCommentEP = 'product_comment'.customerScope();
+  static final addOrderCommentEP = 'product_comment/order'.customerScope();
+  static final updateOrderCommentEP =
+      'product_comment/order/update'.customerScope();
   static String getCommentForProductEP(String productId) =>
       'likesCommentsSharesDetails/$productId'.productScope();
   static String getProductColorSizeSyncAttributeEP(String id) =>
@@ -144,6 +169,13 @@ abstract class MarketEndPoints {
   static final applyCouponEP = 'apply'.couponScope();
 
   static final storeFcmEP = ''.firebaseTokensScope();
+  static String getOrderReturnDetailsEP(int returnRequestId) =>
+      "order/return_requests/order_details?return_request_id=$returnRequestId"
+          .customerScope();
+  static final orderReturnDetailsEP =
+      'order/return_requests/order_details'.customerScope();
+  static String getAuthProductDetailsEP(String productSlug) =>
+      'authenticated_details/$productSlug'.productScope();
 }
 
 abstract class MarketUrls {

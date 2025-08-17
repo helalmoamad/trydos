@@ -132,7 +132,6 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
       builder: (context, state) {
         sizes = state.sizesForEachColor ?? [];
         sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
-
         if (sizes.length == 0) {
           return Container(
             color: Colors.white,

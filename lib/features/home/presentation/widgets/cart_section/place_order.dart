@@ -12,6 +12,7 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -217,12 +218,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               cartImages.add(
                                 {
                                   "image": element.image ?? '',
-                                  "size": element.variation == null
+                                  "size": element.variation.isNullOrEmpty
                                       ? ""
-                                      : element.variation?.size ?? "",
-                                  "color": element.variation == null
+                                      : element.variation?[0].size ?? "",
+                                  "color": element.variation.isNullOrEmpty
                                       ? ""
-                                      : element.variation?.color ?? ""
+                                      : element.variation?[0].color ?? ""
                                 },
                               );
                               ////////////////////////////
@@ -232,7 +233,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   "item_name":
                                       element.productDetails!.name.toString(),
                                   "item_variant":
-                                      '${element.variation?.color}-${element.variation?.size}',
+                                      '${element.variation.isNullOrEmpty ? "" : element.variation?[0].color ?? ""}-${element.variation.isNullOrEmpty ? "" : element.variation?[0].size ?? ""}',
                                 },
                               );
                             }
@@ -367,12 +368,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               cartImages.add(
                                 {
                                   "image": element.image ?? '',
-                                  "size": element.variation == null
+                                  "size": element.variation.isNullOrEmpty
                                       ? ""
-                                      : element.variation?.size ?? "",
-                                  "color": element.variation == null
+                                      : element.variation?[0].size ?? "",
+                                  "color": element.variation.isNullOrEmpty
                                       ? ""
-                                      : element.variation?.color ?? ""
+                                      : element.variation?[0].color ?? "",
                                 },
                               );
                             }

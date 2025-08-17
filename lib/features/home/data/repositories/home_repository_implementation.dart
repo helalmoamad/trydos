@@ -26,13 +26,14 @@ import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_
 
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
+import 'package:trydos/features/home/data/models/get_order_details_return_model.dart';
 import 'package:trydos/features/home/data/models/get_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
 import 'package:trydos/features/home/data/models/get_user_notifications_model.dart';
-
+import 'package:trydos/features/home/data/models/create_return_request_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
@@ -43,9 +44,13 @@ import 'package:trydos/features/home/data/models/cancel_order_model.dart';
 import 'package:trydos/features/home/data/models/change_order_address_model.dart';
 import 'package:trydos/features/home/data/models/color_size_for_product.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
+import 'package:trydos/features/home/data/models/update_confirm_return_request_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
+import 'package:trydos/features/home/data/models/upload_images_for_return_product_model.dart';
+import 'package:trydos/features/home/data/models/return_request_product_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
+import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
 
 import '../../../../core/api/handling_exception.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -54,6 +59,8 @@ import '../models/check_availability_product_cart_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_story_for_product_model.dart';
 import '../models/starting_settings_response_model.dart';
+import '../models/order_comment_model.dart';
+import '../models/return_reasons_model.dart';
 
 @LazySingleton(as: HomeRepository)
 class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
@@ -312,12 +319,12 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
         tryCall: () => dataSource.getProductFilters(params));
   }
 
-  @override
+  /* @override
   Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
       String productId) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getCommentForProduct(productId));
-  }
+  }*/
 
   @override
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem() {
@@ -405,15 +412,29 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(
-      String productId) {
+      String productSlug) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getFullProductDetails(productId));
+        tryCall: () => dataSource.getFullProductDetails(productSlug));
   }
 
   @override
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.addComment(params));
+  }
+
+  @override
+  Future<Either<Failure, OrderCommentModel>> addOrderComment(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.addOrderComment(params));
+  }
+
+  @override
+  Future<Either<Failure, OrderCommentModel>> updateOrderComment(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateOrderComment(params));
   }
 
   @override
@@ -545,5 +566,90 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.changeOrderItemVariant(params));
+  }
+
+  @override
+  Future<Either<Failure, ReturnReasonsModel>> getReturnReasons() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getReturnReasons());
+  }
+
+  @override
+  Future<Either<Failure, UploadImagesForReturnProductModel>>
+      uploadImagesForReturnProduct(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.uploadImagesForReturnProduct(params));
+  }
+
+  @override
+  Future<Either<Failure, StoreReturnRequestProductModel>>
+      storeReturnRequestProduct(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.storeReturnRequestProduct(params));
+  }
+
+  @override
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      updateReturnRequestProduct(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateReturnRequestProduct(params));
+  }
+
+  @override
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      cancelReturnRequest(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.cancelReturnRequest(params));
+  }
+
+  @override
+  Future<Either<Failure, CreateReturnReqestModel>> storeReturnRequest(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.storeReturnRequest(params));
+  }
+
+  @override
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      cancelReturnRequestProduct(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.cancelReturnRequestProduct(params));
+  }
+
+  @override
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      confirmReturnRequest(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.confirmReturnRequest(params));
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> orderReturnRequestsView(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.orderReturnRequestsView(params));
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> searchByImageFromGemini(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.searchByImageFromGemini(params));
+  }
+
+  @override
+  Future<Either<Failure, GetOrderReturntDetailsModel>> getOrderReturnDetails(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getOrderReturnDetails(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetAuthProductDetailsModel>> getAuthProductDetails(
+      String productSlug) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getAuthProductDetails(productSlug),
+    );
   }
 }

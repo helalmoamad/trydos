@@ -263,11 +263,8 @@ class _TabsBarState extends State<TabsBar> {
                         GetMainCategoriesStatus.loading &&
                     newState.getMainCategoriesStatus ==
                         GetMainCategoriesStatus.success) ||
-                ((oldState.sendRequestToGeminiStatus !=
-                        newState.sendRequestToGeminiStatus ||
-                    oldState.theReplyFromGemini !=
-                            newState.theReplyFromGemini &&
-                        newState.fromSearchForSearchWithGemini == true)),
+                oldState.sendRequestToGeminiStatus !=
+                    newState.sendRequestToGeminiStatus,
             builder: (context, homeState) {
               if ((homeState.theReplyFromGemini ?? '') != "" &&
                   homeState.fromSearchForSearchWithGemini == true) {
@@ -393,9 +390,9 @@ class _TabsBarState extends State<TabsBar> {
                               onClickClose: () {
                                 if (widget.controller.text.length > 0) {
                                   categoryBloc.add(ReplyFromGeminiEvent(
-                                      fromSearch: true,
-                                      resetTheReply: true,
-                                      theReplyFromGemini: ""));
+                                    fromSearch: true,
+                                    resetTheReply: true,
+                                  ));
                                   Filter filters = boutiqueBloc
                                           .state
                                           .choosedFiltersByUser['search']
@@ -794,9 +791,9 @@ class _TabsBarState extends State<TabsBar> {
                                   }
                                   if (text.length < 3) {
                                     categoryBloc.add(ReplyFromGeminiEvent(
-                                        fromSearch: true,
-                                        resetTheReply: true,
-                                        theReplyFromGemini: ""));
+                                      fromSearch: true,
+                                      resetTheReply: true,
+                                    ));
                                     Filter filters = boutiqueBloc
                                             .state
                                             .choosedFiltersByUser['search']

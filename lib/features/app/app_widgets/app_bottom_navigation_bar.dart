@@ -7,12 +7,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/country_dropdown.dart';
@@ -21,6 +23,10 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart'
+    show ChatBloc;
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
@@ -311,18 +317,66 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           authState.loginToChatStatus ==
                                   LoginToChatStatus.loading
                               ? Container(
-                                  height: 30.h,
-                                  width: 30.h,
+                                  height: 40.h,
+                                  width: 40.h,
                                   child: TrydosLoader(size: 15))
                               : state.currentIndex == 2
                                   ? SvgPicture.asset(
                                       AppAssets.activeChatSvg,
                                       height: 30.h,
                                     )
-                                  : SvgPicture.asset(
-                                      AppAssets.chatSvg,
-                                      height: 30.h,
-                                    ),
+                                  : BlocBuilder<ChatBloc, ChatState>(
+                                      buildWhen: (p, c) =>
+                                          p.unReadMessagesFromAllChats !=
+                                          c.unReadMessagesFromAllChats,
+                                      builder: (context, state) {
+                                        return Container(
+                                            height: 30.h,
+                                            width: 30.h,
+                                            child: Stack(
+                                              children: [
+                                                SvgPicture.asset(
+                                                  AppAssets.chatSvg,
+                                                  height: 30.h,
+                                                ),
+                                                Positioned(
+                                                    top: 0,
+                                                    right: 0,
+                                                    child: Visibility(
+                                                        visible: state
+                                                                .unReadMessagesFromAllChats !=
+                                                            0,
+                                                        child: Positioned(
+                                                          top: 0,
+                                                          right: 0,
+                                                          child: Row(
+                                                            children: [
+                                                              MyTextWidget(
+                                                                state
+                                                                    .unReadMessagesFromAllChats
+                                                                    .toString(),
+                                                                maxLines: 1,
+                                                                style: context
+                                                                    .textTheme
+                                                                    .titleMedium
+                                                                    ?.rr
+                                                                    .copyWith(
+                                                                        color: const Color(
+                                                                            0xff007CFF)),
+                                                              ),
+                                                              2.horizontalSpace,
+                                                              SvgPicture.asset(
+                                                                AppAssets
+                                                                    .chatNotificationSvg,
+                                                                height: 12.h,
+                                                                width: 12.h,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )))
+                                              ],
+                                            ));
+                                      }),
                           10.verticalSpace,
                           MyTextWidget(
                             LocaleKeys.chat.tr(),
@@ -440,7 +494,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                       child: MyTextWidget(
                                                           'files exists'),
                                                     ),
-                                                    TextButton(
+                                                    /*      TextButton(
                                                       onPressed: () {
                                                         Navigator.push(
                                                             context,
@@ -450,6 +504,15 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                       },
                                                       child: MyTextWidget(
                                                           'Edit Urls'),
+                                                    ),*/
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        prefsRepository
+                                                            .resetAllRedeemTimer();
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'ٌReset Redeem Timer'),
                                                     ),
                                                     SizedBox(
                                                       width: 50,
@@ -469,7 +532,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     ),
                                                     //////////////
                                                     TextButton(
-                                                      onPressed: () {
+                                                      onPressed: () async {
                                                         BlocProvider.of<
                                                                     HomeBloc>(
                                                                 context)
@@ -521,26 +584,39 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                         prefsRepository
                                                             .setMyStoriesName(
                                                                 "");
+                                                        prefsRepository
+                                                            .setVerifiedPhonePeforeExpiredToken(
+                                                                false);
 
                                                         prefsRepository
                                                             .setMyProfilePhoto(
                                                                 "");
+                                                        String? deviceId =
+                                                            await HelperFunctions
+                                                                .getDeviceId();
+
+                                                        BlocProvider.of<
+                                                                    AuthBloc>(
+                                                                context)
+                                                            .add(RegisterGuestEvent(
+                                                                deviceId:
+                                                                    deviceId ??
+                                                                        ""));
+                                                        HydratedBloc.storage
+                                                            .clear();
+                                                        BlocProvider.of<
+                                                                    ChatBloc>(
+                                                                context)
+                                                            .add(
+                                                                ClearChatEvent());
+
                                                         Future.delayed(
                                                           Duration(
                                                               microseconds:
                                                                   500),
                                                           () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pushReplacement(
-                                                                    PageRouteBuilder(
-                                                              pageBuilder: (context,
-                                                                      animation,
-                                                                      secondaryAnimation) =>
-                                                                  RegistrationPage(
-                                                                      fromLogOut:
-                                                                          true),
-                                                            ));
+                                                            GoRouter.of(context)
+                                                                .go("/");
                                                           },
                                                         );
                                                       },

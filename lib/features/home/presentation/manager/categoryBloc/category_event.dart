@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -18,15 +20,12 @@ class GetMainCategoriesEvent extends CategoryEvent {
 }
 
 class ReplyFromGeminiEvent extends CategoryEvent {
-  final String theReplyFromGemini;
+  final File? image;
   final bool resetTheReply;
   final bool fromSearch;
-  final SendRequestToGeminiStatus? sendRequestToGeminiStatus;
+
   ReplyFromGeminiEvent(
-      {required this.theReplyFromGemini,
-      required this.fromSearch,
-      this.sendRequestToGeminiStatus,
-      this.resetTheReply = false});
+      {this.image, required this.fromSearch, this.resetTheReply = false});
   @override
   List<Object?> get props => [];
 }

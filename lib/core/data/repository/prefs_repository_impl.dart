@@ -944,7 +944,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setRedeemDateForProduct(String productId, String seconds) {
     Map<String, dynamic> map =
-        _preferences.getString(PrefsKey.redeemDateForProducts) != null
+        _preferences.getString(PrefsKey.redeemDateForProducts) != null &&
+                _preferences.getString(PrefsKey.redeemDateForProducts) != '"{}"'
             ? convert.jsonDecode(
                 _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}')
             : {};
@@ -963,6 +964,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   DateTime? getRedeemDateForProduct(String productId) {
+    if (_preferences.getString(PrefsKey.redeemDateForProducts) == null ||
+        _preferences.getString(PrefsKey.redeemDateForProducts) == '"{}"') {
+      return null;
+    }
     Map<String, dynamic> map = convert.jsonDecode(
         _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
     return map[productId] != null ? DateTime.tryParse(map[productId]!) : null;
@@ -970,6 +975,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> removeRedeemDateForAnyProductFinished() {
+    if (_preferences.getString(PrefsKey.redeemDateForProducts) == null ||
+        _preferences.getString(PrefsKey.redeemDateForProducts) == '"{}"') {
+      return Future.value(true);
+    }
     Map<String, dynamic> map = convert.jsonDecode(
         _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
     Map<String, dynamic> afterRemove = convert.jsonDecode(
@@ -985,6 +994,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   int? getRedeemSecondRemainingForProduct(String productId) {
+    if (_preferences.getString(PrefsKey.redeemSecondRemainForProducts) ==
+            null ||
+        _preferences.getString(PrefsKey.redeemSecondRemainForProducts) ==
+            '"{}"') {
+      return null;
+    }
     Map<String, dynamic> map = convert.jsonDecode(
         _preferences.getString(PrefsKey.redeemSecondRemainForProducts) ?? '{}');
     return map[productId] != null
@@ -995,12 +1010,15 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setRedeemSecondRemainingForProduct(
       String productId, int secondsLeft) {
-    Map<String, dynamic> map =
-        _preferences.getString(PrefsKey.redeemSecondRemainForProducts) != null
-            ? convert.jsonDecode(_preferences
-                    .getString(PrefsKey.redeemSecondRemainForProducts) ??
+    Map<String, dynamic> map = _preferences
+                    .getString(PrefsKey.redeemSecondRemainForProducts) !=
+                null &&
+            _preferences.getString(PrefsKey.redeemSecondRemainForProducts) !=
+                '"{}"'
+        ? convert.jsonDecode(
+            _preferences.getString(PrefsKey.redeemSecondRemainForProducts) ??
                 '{}')
-            : {};
+        : {};
     if (secondsLeft <= 0) {
       map.remove(productId);
     } else {
@@ -1008,6 +1026,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
     }
     return _preferences.setString(
         PrefsKey.redeemSecondRemainForProducts, convert.jsonEncode(map));
+  }
+
+  @override
+  Future<bool> resetAllRedeemTimer() {
+    _preferences.setString(
+        PrefsKey.redeemDateForProducts, convert.jsonEncode("{}"));
+
+    return _preferences.setString(PrefsKey.redeemSecondRemainForProducts, "{}");
   }
 
 // @override

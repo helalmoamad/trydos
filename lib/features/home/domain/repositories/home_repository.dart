@@ -15,6 +15,7 @@ import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
+import 'package:trydos/features/home/data/models/get_order_details_return_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
@@ -24,6 +25,7 @@ import 'package:trydos/features/home/data/models/notificaation_poroduct_types.da
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/data/models/update_confirm_return_request_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
@@ -42,6 +44,12 @@ import '../../data/models/cancel_order_item_model.dart';
 import '../../data/models/cancel_order_model.dart';
 import '../../data/models/change_order_address_model.dart';
 import '../../data/models/color_size_for_product.dart';
+import '../../data/models/order_comment_model.dart';
+import '../../data/models/return_reasons_model.dart';
+import '../../data/models/upload_images_for_return_product_model.dart';
+import '../../data/models/return_request_product_model.dart';
+import 'package:trydos/features/home/data/models/create_return_request_model.dart';
+import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
 
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
@@ -123,9 +131,9 @@ abstract class HomeRepository {
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
       getProductDetailWithoutSimilarRelatedProducts(String productSlug);
   Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(
-      String productId);
-  Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
-      String productId);
+      String productSlug);
+  // Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
+  //     String productId);
   Future<Either<Failure, AddItemToCartModel>> addItemToCart(
       Map<String, dynamic> params);
   Future<Either<Failure, GetOldCartModel>> getOldCartItems();
@@ -143,6 +151,10 @@ abstract class HomeRepository {
       convertItemInCartToOldCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
+  Future<Either<Failure, OrderCommentModel>> addOrderComment(
+      Map<String, dynamic> params);
+  Future<Either<Failure, OrderCommentModel>> updateOrderComment(
+      Map<String, dynamic> params);
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
       requestForNotificationWhenProductBecameAvailable(
           Map<String, dynamic> params);
@@ -194,4 +206,37 @@ abstract class HomeRepository {
 
   Future<Either<Failure, ColorSizeForProductModel>>
       getProductColorSizeSyncAttribute(String id);
+
+  Future<Either<Failure, ReturnReasonsModel>> getReturnReasons();
+
+  Future<Either<Failure, UploadImagesForReturnProductModel>>
+      uploadImagesForReturnProduct(Map<String, dynamic> params);
+
+  Future<Either<Failure, StoreReturnRequestProductModel>>
+      storeReturnRequestProduct(Map<String, dynamic> params);
+
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      updateReturnRequestProduct(Map<String, dynamic> params);
+
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      cancelReturnRequest(Map<String, dynamic> params);
+
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      cancelReturnRequestProduct(Map<String, dynamic> params);
+
+  Future<Either<Failure, CreateReturnReqestModel>> storeReturnRequest(
+      Map<String, dynamic> params);
+  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+      confirmReturnRequest(Map<String, dynamic> params);
+
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> orderReturnRequestsView(
+      Map<String, dynamic> params);
+
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> searchByImageFromGemini(
+      Map<String, dynamic> params);
+
+  Future<Either<Failure, GetOrderReturntDetailsModel>> getOrderReturnDetails(
+      Map<String, dynamic> params);
+  Future<Either<Failure, GetAuthProductDetailsModel>> getAuthProductDetails(
+      String productSlug);
 }

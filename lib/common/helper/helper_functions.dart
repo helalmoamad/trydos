@@ -7,7 +7,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
@@ -143,42 +142,124 @@ class HelperFunctions {
       contacts = await FlutterContacts.getContacts(
           withThumbnail: false, withProperties: true);
     }
+
+    print("🔍 إجمالي جهات الاتصال: ${contacts.length}");
+
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
       if (contact.phones.isNotEmpty) {
+        print("📞 ${contact.displayName}: ${contact.phones.length} رقم");
         contact.phones.forEach((element) {
+          print("   - ${element.number}");
           myContacts.add(
               Contact(phones: [element], displayName: contact.displayName));
         });
+      } else {
+        print("❌ ${contact.displayName}: بدون أرقام هواتف");
       }
     }
-    String myPhoneNumber = '${GetIt.I<PrefsRepository>().myPhoneNumber!}';
+
+    print("📱 جهات الاتصال مع أرقام: ${myContacts.length}");
+
+    String myPhoneNumber = '${GetIt.I<PrefsRepository>().myPhoneNumber ?? ""}';
     if (!(myPhoneNumber.startsWith("+"))) {
       myPhoneNumber = "+" + myPhoneNumber;
     }
-    print(myPhoneNumber);
+    print("📞 رقم المستخدم: $myPhoneNumber");
+    print("📏 طول رقم المستخدم: ${myPhoneNumber.length}");
 
     String dialCode = countries
-        .firstWhere((element) => myPhoneNumber.startsWith(element.dialCode))
+        .firstWhere((element) => myPhoneNumber.startsWith(element.dialCode),
+            orElse: () => defaultCountry)
         .dialCode;
 
-    String myPhoneNumberWithoutDial = myPhoneNumber.contains('+')
-        ? myPhoneNumber.substring(dialCode.length)
-        : myPhoneNumber;
-    return myContacts
-        .map((e) => {
-              "mobile_phone": !e.phones.first.number.contains('+')
-                  ? countries.indexWhere((element) => e.phones.first.number
-                              .startsWith(element.dialCode.substring(1))) ==
-                          -1
-                      ? dialCode + e.phones.first.number
-                      : '+${e.phones.first.number}'
-                  : e.phones.first.number,
-              "name": e.displayName,
-            })
-        .toList()
-      ..removeWhere((element) =>
-          element['mobile_phone']?.endsWith(myPhoneNumberWithoutDial) ?? false);
+    print("🏳️ رمز الدولة: $dialCode");
+    print("📏 طول رمز الدولة: ${dialCode.length}");
+
+    String myPhoneNumberWithoutDial;
+    if (myPhoneNumber.contains('+') && myPhoneNumber.length > dialCode.length) {
+      myPhoneNumberWithoutDial = myPhoneNumber.substring(dialCode.length);
+    } else {
+      myPhoneNumberWithoutDial = myPhoneNumber;
+    }
+
+    // إزالة الأصفار من بداية رقم المستخدم أيضاً
+    while (myPhoneNumberWithoutDial.startsWith('0')) {
+      myPhoneNumberWithoutDial = myPhoneNumberWithoutDial.substring(1);
+    }
+
+    // إزالة الرموز من رقم المستخدم أيضاً
+    myPhoneNumberWithoutDial = myPhoneNumberWithoutDial
+        .replaceAll('-', '')
+        .replaceAll(' ', '')
+        .replaceAll('(', '')
+        .replaceAll(')', '')
+        .replaceAll('.', '');
+
+    print("📱 رقم المستخدم بدون رمز: $myPhoneNumberWithoutDial");
+
+    var result = myContacts.map((e) {
+      String formattedNumber;
+      String cleanNumber = e.phones.first.number;
+
+      // إزالة جميع الرموز والمسافات من الرقم
+      cleanNumber = cleanNumber
+          .replaceAll('-', '')
+          .replaceAll(' ', '')
+          .replaceAll('(', '')
+          .replaceAll(')', '')
+          .replaceAll('+', '')
+          .replaceAll('.', '');
+
+      // إذا كان الرقم يبدأ بـ 00 (رمز الاتصال الدولي)، أضف +
+      if (cleanNumber.startsWith('00')) {
+        cleanNumber = '+' + cleanNumber.substring(2);
+      }
+      // إزالة الأصفار من بداية الرقم (بعد معالجة 00)
+      else if (cleanNumber.startsWith('0')) {
+        while (cleanNumber.startsWith('0')) {
+          cleanNumber = cleanNumber.substring(1);
+        }
+        cleanNumber = dialCode + cleanNumber;
+      }
+
+      print("🧹 تنظيف الرقم: ${e.phones.first.number} -> $cleanNumber");
+
+      if (!cleanNumber.contains('+')) {
+        int countryIndex = countries.indexWhere((element) =>
+            element.dialCode.length > 1 &&
+            cleanNumber.startsWith(element.dialCode.substring(1)));
+        if (countryIndex == -1) {
+          formattedNumber = dialCode + cleanNumber;
+          print("➕ إضافة رمز الدولة: $cleanNumber -> $formattedNumber");
+        } else {
+          formattedNumber = '+$cleanNumber';
+          print("✅ رقم مع رمز: $cleanNumber -> $formattedNumber");
+        }
+      } else {
+        formattedNumber = cleanNumber;
+        print("✅ رقم موجود: $formattedNumber");
+      }
+
+      return {
+        "mobile_phone": formattedNumber,
+        "name": e.displayName,
+      };
+    }).toList();
+
+    print("📋 قبل الاستبعاد: ${result.length}");
+
+    result.removeWhere((element) {
+      bool shouldRemove =
+          element['mobile_phone']?.endsWith(myPhoneNumberWithoutDial) ?? false;
+      if (shouldRemove) {
+        print("🚫 استبعاد: ${element['name']} - ${element['mobile_phone']}");
+      }
+      return shouldRemove;
+    });
+
+    print("✅ النتيجة النهائية: ${result.length}");
+    return result;
   }
 
   static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
@@ -314,64 +395,205 @@ class HelperFunctions {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        String title = 'New Update Available';
-        String message =
-            'There is a newer version of app available please update it now.';
-        String btnLabel = 'Update Now';
+        String title = LocaleKeys.new_update_available.tr();
+        String message = LocaleKeys.newer_version_available_message.tr();
+        String btnLabel1 = LocaleKeys.update_now.tr();
+        String btnLabel2 = LocaleKeys.not_now.tr();
+
         return WillPopScope(
-            onWillPop: () => Future.value(true),
-            child: Platform.isIOS
-                ? CupertinoAlertDialog(
-                    title: MyTextWidget(title,
-                        textDirection: ui.TextDirection.ltr),
-                    content: MyTextWidget(message,
-                        textDirection: ui.TextDirection.ltr),
-                    actions: <Widget>[
-                        Row(
-                          children: [
-                            AppElevatedButton(
-                              onPressed: () => _getFileFromGoogleDrive(),
-                              text: btnLabel,
-                            ),
-                            AppElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              text: 'Not Now',
-                            ),
-                          ],
-                        )
-                      ])
-                : AlertDialog(
-                    title: MyTextWidget(title,
-                        textDirection: ui.TextDirection.ltr),
-                    content: MyTextWidget(message,
-                        textDirection: ui.TextDirection.ltr),
-                    actions: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppElevatedButton(
-                            onPressed: () => _getFileFromGoogleDrive(),
-                            text: btnLabel,
-                          ),
-                          AppElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            text: 'Not Now',
-                          ),
-                        ],
+          onWillPop: () => Future.value(true),
+          child: Platform.isIOS
+              ? CupertinoAlertDialog(
+                  title: Column(
+                    children: [
+                      Icon(
+                        Icons.system_update_rounded,
+                        size: 40,
+                        color: Color(0xFF007AFF),
+                      ),
+                      SizedBox(height: 12),
+                      MyTextWidget(
+                        title,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1D1D1F),
+                        ),
                       ),
                     ],
-                  ));
+                  ),
+                  content: Column(
+                    children: [
+                      MyTextWidget(
+                        message,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF6E6E73),
+                          height: 1.3,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 8),
+                    ],
+                  ),
+                  actions: <Widget>[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CupertinoButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              btnLabel2,
+                              style: TextStyle(
+                                color: Color(0xFF6E6E73),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: CupertinoButton.filled(
+                            onPressed: () {
+                              Navigator.pop(context); // إغلاق الحوار
+                              _openWhatsAppGroup(); // فتح الواتساب
+                            },
+                            child: Text(
+                              btnLabel1,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  title: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF007AFF).withOpacity(0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.system_update_rounded,
+                          size: 40,
+                          color: Color(0xFF007AFF),
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      MyTextWidget(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          color: Color(0xFF1D1D1F),
+                        ),
+                      ),
+                    ],
+                  ),
+                  content: Column(
+                    children: [
+                      MyTextWidget(
+                        message,
+                        style: TextStyle(
+                          color: Color(0xFF6E6E73),
+                          height: 1.4,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 4),
+                    ],
+                  ),
+                  actions: <Widget>[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              btnLabel2,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF6E6E73),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context); // إغلاق الحوار
+                              _openWhatsAppGroup(); // فتح الواتساب
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: Color(0xFF007AFF),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 2,
+                            ),
+                            child: Text(
+                              btnLabel1,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+        );
       },
     );
   }
-
-  static _getFileFromGoogleDrive() {
+  /*static _getFileFromGoogleDrive() {
     urlLauncherBrowser(
         'https://drive.google.com/file/d/1im1-7Bmx5Qi9cTsVIvGnZIvNY7vSKQLj/view?usp=drivesdk');
+  }*/
+
+  static _openWhatsAppGroup() async {
+    try {
+      // رابط مجموعة واتساب - يمكنك تغييره برابط مجموعة الواتساب الخاصة بك
+      String whatsappGroupUrl =
+          'https://chat.whatsapp.com/JVCvHFxKQBM9fQiTAPOsyf?mode=ac_t';
+
+      // محاولة فتح تطبيق واتساب مباشرة مع رابط المجموعة
+      // هذا سيفتح المجموعة مباشرة في التطبيق
+
+      bool launched = await urlLauncherApplication(whatsappGroupUrl);
+
+      // إذا فشل فتح التطبيق، افتح المتصفح
+      if (!launched) {
+        await urlLauncherBrowser(whatsappGroupUrl);
+      }
+    } catch (e) {
+      // في حالة حدوث خطأ، افتح المتصفح مباشرة
+      String whatsappGroupUrl =
+          'https://chat.whatsapp.com/JVCvHFxKQBM9fQiTAPOsyf?mode=ac_t';
+      await urlLauncherBrowser(whatsappGroupUrl);
+    }
   }
 
   _openStoreUrl() {
@@ -563,10 +785,16 @@ class HelperFunctions {
 
     //if (iso == 'SY' || iso == 'LB') {
 
-    String thousand = LanguageService.languageCode != "ar" ? 'K' : 'K';
-    String million = LanguageService.languageCode != "ar" ? 'M' : 'مليون';
+    String thousand =
+        (LanguageService.languageCode != "ar" || LanguageService.isKurdish)
+            ? 'K'
+            : 'الف';
+    String million =
+        (LanguageService.languageCode != "ar" || LanguageService.isKurdish)
+            ? 'M'
+            : 'مليون';
     //if (iso == 'SY') {
-    if (number >= 1e4 && number < 1e6) {
+    if (number >= 1e5 && number < 1e6) {
       String result = (((number + 999) ~/ 1000)).toStringAsFixed(
           GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
 

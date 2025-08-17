@@ -170,7 +170,7 @@ class _ProductCollectionInCartPage1State
                         Positioned(
                           child: InkWell(
                             onTap: () {
-                              int indexess = isOldCart
+                              /*  int indexess = isOldCart
                                   ? state
                                           .productITemForCart[
                                               oldCartCollection![index]
@@ -182,7 +182,7 @@ class _ProductCollectionInCartPage1State
                                       : state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.indexOf(
                                           state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.firstWhere(
                                               (element) =>
-                                                  element.colorName ==
+                                                  element.colorOption ==
                                                   (!oldCartCollection![index]
                                                           .variations
                                                           .isNullOrEmpty
@@ -202,7 +202,7 @@ class _ProductCollectionInCartPage1State
                                           ? -1
                                           : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere(
                                               (element) =>
-                                                  element.colorName ==
+                                                  element.colorOption ==
                                                   (!cartCollection![index]
                                                           .variations
                                                           .isNullOrEmpty
@@ -216,9 +216,9 @@ class _ProductCollectionInCartPage1State
                                                       colorName: "null",
                                                       images: [],
                                                       colorTrend: false),
-                                            ));
+                                            ));*/
 
-                              if (indexess != -1) {
+                              /*  if (indexess != -1) {
                                 GetIt.I<HomeBloc>().add(
                                     ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                         isStatusInitaial: true));
@@ -232,24 +232,59 @@ class _ProductCollectionInCartPage1State
                                             : cartCollection![index]
                                                 .slug
                                                 .toString()));
-                              }
+                              }*/
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  GetFullProductDetailsEvent(
+                                      currentColorName: isOldCart
+                                          ? (!oldCartCollection![index]
+                                                  .variations
+                                                  .isNullOrEmpty
+                                              ? oldCartCollection[index]
+                                                      .variations![0]
+                                                      .colorOption ??
+                                                  ""
+                                              : "")
+                                          : (!cartCollection![index]
+                                                  .variations
+                                                  .isNullOrEmpty
+                                              ? cartCollection[index]
+                                                      .variations![0]
+                                                      .colorOption ??
+                                                  ""
+                                              : ""),
+                                      productSlug: isOldCart
+                                          ? oldCartCollection![index]
+                                              .slug
+                                              .toString()
+                                          : cartCollection![index]
+                                              .slug
+                                              .toString()));
                               Future.delayed(
-                                Duration(milliseconds: 300),
-                                () => HelperFunctions.slidingNavigation(
-                                    context,
-                                    ProductDetailsPage(
-                                      fromCart: true,
-                                      productItem: isOldCart
-                                          ? state.productITemForCart[
-                                              oldCartCollection![index]
-                                                  .productId
-                                                  .toString()]!
-                                          : state.productITemForCart[
-                                              cartCollection![index]
-                                                  .productId
-                                                  .toString()]!,
-                                    )),
-                              );
+                                  Duration(milliseconds: 300),
+                                  () => Navigator.of(context)
+                                          .push(PageRouteBuilder(
+                                        pageBuilder: (context,
+                                                animation, secondaryAnimation) =>
+                                            ProductDetailsPage(
+                                                productSlugForOpeningChatDirectly:
+                                                    isOldCart
+                                                        ? oldCartCollection![index]
+                                                            .slug
+                                                            .toString()
+                                                        : cartCollection![index]
+                                                            .slug
+                                                            .toString(),
+                                                fromNotification: false,
+                                                productIdForOpeningChatDirectly:
+                                                    isOldCart
+                                                        ? oldCartCollection![
+                                                                index]
+                                                            .productId
+                                                            .toString()
+                                                        : cartCollection![index]
+                                                            .productId
+                                                            .toString()),
+                                      )));
                             },
                             child: Container(
                               margin: EdgeInsets.only(top: 10),
@@ -425,6 +460,9 @@ class _ProductCollectionInCartPage1State
                                                                       .color ??
                                                                   ""
                                                               : "",
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: context.textTheme
                                                           .bodyMedium?.mr
                                                           .copyWith(
@@ -562,11 +600,14 @@ class _ProductCollectionInCartPage1State
                                                                       .size ??
                                                                   ""
                                                               : "",
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: context.textTheme
                                                           .bodyMedium?.mr
                                                           .copyWith(
                                                         fontSize: 13,
-                                                        height: 1.33,
+                                                        height: 1.2,
                                                         color: const Color(
                                                             (0xff505050)),
                                                         letterSpacing: 0.18,
@@ -786,7 +827,65 @@ class _ProductCollectionInCartPage1State
                                                             height: 1.33)),
                                                 InkWell(
                                                   onTap: () {
-                                                    print(
+                                                    BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
+                                                        currentColorName: isOldCart
+                                                            ? (!oldCartCollection![index]
+                                                                    .variations
+                                                                    .isNullOrEmpty
+                                                                ? oldCartCollection[index]
+                                                                        .variations![
+                                                                            0]
+                                                                        .colorOption ??
+                                                                    ""
+                                                                : "")
+                                                            : (!cartCollection![
+                                                                        index]
+                                                                    .variations
+                                                                    .isNullOrEmpty
+                                                                ? cartCollection[index]
+                                                                        .variations![
+                                                                            0]
+                                                                        .colorOption ??
+                                                                    ""
+                                                                : ""),
+                                                        productSlug: isOldCart
+                                                            ? oldCartCollection![
+                                                                    index]
+                                                                .slug
+                                                                .toString()
+                                                            : cartCollection![index]
+                                                                .slug
+                                                                .toString()));
+                                                    Future.delayed(
+                                                        Duration(
+                                                            milliseconds: 300),
+                                                        () => Navigator.of(
+                                                                    context)
+                                                                .push(
+                                                                    PageRouteBuilder(
+                                                              pageBuilder: (context, animation, secondaryAnimation) => ProductDetailsPage(
+                                                                  productSlugForOpeningChatDirectly: isOldCart
+                                                                      ? oldCartCollection![
+                                                                              index]
+                                                                          .slug
+                                                                          .toString()
+                                                                      : cartCollection![
+                                                                              index]
+                                                                          .slug
+                                                                          .toString(),
+                                                                  fromNotification:
+                                                                      false,
+                                                                  productIdForOpeningChatDirectly: isOldCart
+                                                                      ? oldCartCollection![
+                                                                              index]
+                                                                          .productId
+                                                                          .toString()
+                                                                      : cartCollection![
+                                                                              index]
+                                                                          .productId
+                                                                          .toString()),
+                                                            )));
+                                                    /* print(
                                                         "2222222222222222222222222222222222222222222222222222");
                                                     int indexess = isOldCart
                                                         ? state
@@ -803,7 +902,7 @@ class _ProductCollectionInCartPage1State
                                                                         .toString()]!
                                                                 .syncColorImages!
                                                                 .firstWhere((element) =>
-                                                                    element.colorName ==
+                                                                    element.colorOption ==
                                                                     (!oldCartCollection![index].variations.isNullOrEmpty
                                                                         ? oldCartCollection[index].variations![0].colorOption ??
                                                                             ""
@@ -816,7 +915,7 @@ class _ProductCollectionInCartPage1State
                                                                 .syncColorImages
                                                                 .isNullOrEmpty
                                                             ? -1
-                                                            : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
+                                                            : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorOption == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                                     if (indexess != -1) {
                                                       GetIt.I<HomeBloc>().add(
                                                           ChangeStatusOFGetProductsDetailsToSuccessEvent(
@@ -857,7 +956,7 @@ class _ProductCollectionInCartPage1State
                                                                               index]
                                                                           .productId
                                                                           .toString()]!,
-                                                                )));
+                                                                )));*/
                                                   },
                                                   child: Container(
                                                     height: 60,
@@ -895,6 +994,8 @@ class _ProductCollectionInCartPage1State
                                                       }
                                                       (cartCollection![index].quantity ?? 0) > 1
                                                           ? GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
+                                                              fromCartPage:
+                                                                  true,
                                                               newQuantity: -1,
                                                               maxAllowed: double.tryParse(
                                                                   cartCollection[index].maxAllowedQty ??
@@ -922,7 +1023,7 @@ class _ProductCollectionInCartPage1State
                                                               image: cartCollection[index].image ?? "",
                                                               cartId: cartCollection[index].id.toString(),
                                                               boutiqueId: cartCollection[index].boutique!.id.toString()))
-                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].sizeOption ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
+                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(fromCartPage: true, image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].sizeOption ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
                                                     },
                                                     child: (cartCollection![
                                                                         index]
@@ -999,6 +1100,7 @@ class _ProductCollectionInCartPage1State
                                                       return;
                                                     }
                                                     GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
+                                                        fromCartPage: true,
                                                         newQuantity: 1,
                                                         maxAllowed: double.tryParse(
                                                             cartCollection![index].maxAllowedQty ??
@@ -1015,9 +1117,10 @@ class _ProductCollectionInCartPage1State
                                                             ? cartCollection[index].variations![0].colorOption ??
                                                                 ""
                                                             : "",
-                                                        productId: cartCollection[index]
-                                                            .productId
-                                                            .toString(),
+                                                        productId:
+                                                            cartCollection[index]
+                                                                .productId
+                                                                .toString(),
                                                         productName:
                                                             cartCollection[index]
                                                                 .name
@@ -1374,7 +1477,7 @@ class _ProductCollectionInCartPage1State
                                             )),
                                         InkWell(
                                           onTap: () {
-                                            print(state.productITemForCart.keys
+                                            /*print(state.productITemForCart.keys
                                                 .toList());
                                             int indexess = isOldCart
                                                 ? state
@@ -1385,28 +1488,27 @@ class _ProductCollectionInCartPage1State
                                                         .syncColorImages
                                                         .isNullOrEmpty
                                                     ? -1
-                                                    : state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.indexOf(
-                                                        state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!
-                                                            .firstWhere((element) =>
-                                                                element.colorName ==
-                                                                (!oldCartCollection![index]
-                                                                        .variations
-                                                                        .isNullOrEmpty
-                                                                    ? oldCartCollection[index].variations![0].colorOption ??
-                                                                        ""
-                                                                    : "")))
-                                                : state
+                                                    : state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state
                                                         .productITemForCart[
-                                                            cartCollection![index]
+                                                            oldCartCollection[index]
                                                                 .productId
                                                                 .toString()]!
+                                                        .syncColorImages!
+                                                        .firstWhere((element) =>
+                                                            element
+                                                                .colorOption ==
+                                                            (!oldCartCollection![index]
+                                                                    .variations
+                                                                    .isNullOrEmpty
+                                                                ? oldCartCollection[index].variations![0].colorOption ??
+                                                                    ""
+                                                                : "")))
+                                                : state
+                                                        .productITemForCart[cartCollection![index].productId.toString()]!
                                                         .syncColorImages
                                                         .isNullOrEmpty
                                                     ? -1
-                                                    : state
-                                                        .productITemForCart[cartCollection[index].productId.toString()]!
-                                                        .syncColorImages!
-                                                        .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
+                                                    : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorOption == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                             if (indexess != -1) {
                                               GetIt.I<HomeBloc>().add(
                                                   ChangeStatusOFGetProductsDetailsToSuccessEvent(
@@ -1443,7 +1545,65 @@ class _ProductCollectionInCartPage1State
                                                                           index]
                                                                       .productId
                                                                       .toString()]!,
-                                                        )));
+                                                        )));*/
+                                            BlocProvider.of<HomeBloc>(context)
+                                                .add(GetFullProductDetailsEvent(
+                                                    currentColorName: isOldCart
+                                                        ? (!oldCartCollection![index]
+                                                                .variations
+                                                                .isNullOrEmpty
+                                                            ? oldCartCollection[
+                                                                        index]
+                                                                    .variations![
+                                                                        0]
+                                                                    .colorOption ??
+                                                                ""
+                                                            : "")
+                                                        : (!cartCollection![index]
+                                                                .variations
+                                                                .isNullOrEmpty
+                                                            ? cartCollection[index]
+                                                                    .variations![
+                                                                        0]
+                                                                    .colorOption ??
+                                                                ""
+                                                            : ""),
+                                                    productSlug: isOldCart
+                                                        ? oldCartCollection![index]
+                                                            .slug
+                                                            .toString()
+                                                        : cartCollection![index]
+                                                            .slug
+                                                            .toString()));
+                                            Future.delayed(
+                                                Duration(milliseconds: 300),
+                                                () => Navigator.of(context)
+                                                        .push(PageRouteBuilder(
+                                                      pageBuilder: (context,
+                                                              animation,
+                                                              secondaryAnimation) =>
+                                                          ProductDetailsPage(
+                                                              productSlugForOpeningChatDirectly: isOldCart
+                                                                  ? oldCartCollection![
+                                                                          index]
+                                                                      .slug
+                                                                      .toString()
+                                                                  : cartCollection![
+                                                                          index]
+                                                                      .slug
+                                                                      .toString(),
+                                                              fromNotification:
+                                                                  false,
+                                                              productIdForOpeningChatDirectly: isOldCart
+                                                                  ? oldCartCollection![
+                                                                          index]
+                                                                      .productId
+                                                                      .toString()
+                                                                  : cartCollection![
+                                                                          index]
+                                                                      .productId
+                                                                      .toString()),
+                                                    )));
                                           },
                                           child: Text(
                                               " | ${LocaleKeys.add_again.tr()}",

@@ -64,16 +64,22 @@ class _CallsCardState extends ThemeState<CallsCard> {
   late CallsBloc callsBloc;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ValueNotifier<int> typingIndicator = ValueNotifier(0);
+  Timer? _typingTimer;
 
   @override
   void initState() {
     callsBloc = BlocProvider.of<CallsBloc>(context);
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (typingIndicator.value == 5) {
-        typingIndicator.value = 0;
+    _typingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        if (typingIndicator.value == 5) {
+          typingIndicator.value = 0;
+        } else {
+          typingIndicator.value++;
+        }
       } else {
-        typingIndicator.value++;
+        // إيقاف الـ Timer إذا تم التخلص من الـ Widget
+        timer.cancel();
       }
     });
     super.initState();
@@ -81,6 +87,10 @@ class _CallsCardState extends ThemeState<CallsCard> {
 
   @override
   void dispose() {
+    // إيقاف الـ Timer
+    _typingTimer?.cancel();
+
+    // تنظيف ValueNotifier
     typingIndicator.dispose();
     super.dispose();
   }

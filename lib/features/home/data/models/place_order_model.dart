@@ -471,7 +471,7 @@ class PlaceOrderDetailsModel {
   final String? paymentStatus;
   final dynamic shippingMethodId;
   final String? variant;
-  final Variation? variation;
+  final List<Variation>? variation;
   final bool? collectProductAfterOrdering;
   final String? discountType;
   final int? isStockDecreased;
@@ -522,7 +522,7 @@ class PlaceOrderDetailsModel {
     String? paymentStatus,
     dynamic shippingMethodId,
     String? variant,
-    Variation? variation,
+    List<Variation>? variation,
     bool? collectProductAfterOrdering,
     String? discountType,
     int? isStockDecreased,
@@ -588,9 +588,12 @@ class PlaceOrderDetailsModel {
         isOdooProduct: json["is_odoo_product"],
         odooId: json["odoo_id"],
         odooOrderId: json["odoo_order_id"],
-        variation: json["variation"] == null
-            ? null
-            : Variation.fromJson(json["variation"]),
+        variation: json["variation"] == null || json["variation"] == []
+            ? []
+            : json["variation"]?[0].isEmpty
+                ? []
+                : List<Variation>.from(
+                    json["variation"].map((x) => Variation.fromJson(x))),
         image: json["image"],
       );
 
@@ -617,36 +620,51 @@ class PlaceOrderDetailsModel {
         "odoo_id": odooId,
         "odoo_order_id": odooOrderId,
         "image": image,
-        "variation": variation?.toJson(),
+        "variation": variation == null || variation == []
+            ? []
+            : variation?[0] == null
+                ? []
+                : List<dynamic>.from(variation!.map((x) => x.toJson())),
       };
 }
 
 class Variation {
-  final String? color;
+  final String? sizeOption;
+  final String? colorOption;
   final String? size;
-
+  final String? color;
   Variation({
-    required this.color,
-    required this.size,
+    this.sizeOption,
+    this.colorOption,
+    this.size,
+    this.color,
   });
 
   Variation copyWith({
-    String? color,
+    String? sizeOption,
+    String? colorOption,
     String? size,
+    String? color,
   }) =>
       Variation(
-        color: color ?? this.color,
+        sizeOption: sizeOption ?? this.sizeOption,
+        colorOption: colorOption ?? this.colorOption,
         size: size ?? this.size,
+        color: color ?? this.color,
       );
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
-        color: json["color"] ?? '',
-        size: json["Size"] ?? '',
+        sizeOption: json["size_options"],
+        colorOption: json["color_options"],
+        size: json["Size"],
+        color: json["color"],
       );
 
   Map<String, dynamic> toJson() => {
-        "color": color,
+        "size_options": sizeOption,
+        "color_options": colorOption,
         "Size": size,
+        "color": color,
       };
 }
 

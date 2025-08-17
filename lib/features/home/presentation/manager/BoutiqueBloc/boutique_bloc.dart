@@ -23,6 +23,8 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/domain/use_cases/get_featured_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/upload_images_product_return_useCase.dart';
+import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
 
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
@@ -34,6 +36,7 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 
 import '../../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../../core/error/error_manager.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -97,6 +100,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetProductFiltersUseCase getProductFiltersUseCase;
   final GetFeaturedProductsUseCase getFeaturedProductsUseCase;
+
   /* PrefetchProductsForFirstFiveFilter(
       {filters_model.Filter? filter,
       String? boutiqueSlug,
@@ -259,8 +263,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels = Map.of(
               state.getProductListingWithFiltersPaginationWithPrefetchModels);
-      if (!isFailedTheFirstTime
-          .contains('GetProductsWithFiltersWithPrefetchForFiveFiltersEvent')) {
+      if (ErrorManager.shouldRetry('GetProductsWithFiltersWithPrefetchForFiveFiltersEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('GetProductsWithFiltersWithPrefetchForFiveFiltersEvent');
         add(GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
           filterSlug: event.filterSlug,
           filterType: event.filterType,
@@ -268,8 +272,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           boutiqueSlug: event.boutiqueSlug,
           category: event.category,
         ));
-        isFailedTheFirstTime
-            .add('GetProductsWithFiltersWithPrefetchForFiveFiltersEvent');
+        return;
       }
       getProductListingWithFiltersPaginationWithPrefetchModels[key] =
           getProductListingWithFiltersPaginationWithPrefetchModels[key]!
@@ -291,8 +294,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       }
 
       //  if (state.idForRequest == idForRequest || state.cashedOrginalBoutique) {
-      isFailedTheFirstTime
-          .remove('GetProductsWithFiltersWithPrefetchForFiveFiltersEvent');
+      ErrorManager.resetRetry('GetProductsWithFiltersWithPrefetchForFiveFiltersEvent');
       try {
         Map<String, PaginationModel<product.Products>?>
             getProductListingWithFiltersPaginationWithPrefetchModel = Map.of(
@@ -408,9 +410,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     }
     if (event.resetAppliedFilters) {
       GetIt.I<CategoryBloc>()
-          .add(ReplyFromGeminiEvent(theReplyFromGemini: "", fromSearch: true));
+          .add(ReplyFromGeminiEvent(resetTheReply: true, fromSearch: true));
       GetIt.I<CategoryBloc>()
-          .add(ReplyFromGeminiEvent(theReplyFromGemini: "", fromSearch: false));
+          .add(ReplyFromGeminiEvent(resetTheReply: true, fromSearch: false));
     }
     emit(
       state.copyWith(
@@ -452,7 +454,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     }
     if (event.resetChoosedFilters) {
       GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
-          theReplyFromGemini: "", fromSearch: event.fromHomePageSearch));
+          resetTheReply: true, fromSearch: event.fromHomePageSearch));
     }
 
     emit(state.copyWith(
@@ -583,7 +585,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     response.fold((l) {
       Map<String, GetProductFiltersStatus> statuses =
           Map.of(state.getProductFiltersStatus);
-      if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
+      if (ErrorManager.shouldRetry('GetProductFiltersEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('GetProductFiltersEvent');
         add(GetFiltersWithPaginatioEvent(
             getProductsFilterPreFetch: event.getProductsFilterPreFetch,
             cashedOrginalBoutique: event.cashedOrginalBoutique,
@@ -596,7 +599,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             forceUpdate: event.forceUpdate,
             fromHomePageSearch: event.fromHomePageSearch,
             searchText: filters.searchText ?? event.searchText));
-        isFailedTheFirstTime.add('GetProductFiltersEvent');
+        return;
       }
       statuses[key] = GetProductFiltersStatus.failure;
       emit(state.copyWith(getProductFiltersStatus: statuses));
@@ -612,7 +615,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             categorySlug: event.category);
       }*/
 
-      isFailedTheFirstTime.remove('GetProductFiltersEvent');
+      ErrorManager.resetRetry('GetProductFiltersEvent');
       statuses[key] = GetProductFiltersStatus.success;
       try {
         Map<String, filters_model.GetProductFiltersModel?> data =
@@ -725,14 +728,15 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       prices: null,
     ));
     response.fold((l) {
-      if (!isFailedTheFirstTime
-          .contains('GetFiltersForNavigatorFromLinkToListingPageEvent')) {
+      if (ErrorManager.shouldRetry(
+          'GetFiltersForNavigatorFromLinkToListingPageEvent', l.statusCode)) {
+        ErrorManager.incrementRetry(
+            'GetFiltersForNavigatorFromLinkToListingPageEvent');
         add(GetFiltersEvent(
           filtersChoosedByUser: event.filtersChoosedByUser,
           boutiqueSlug: event.boutiqueSlug,
         ));
-        isFailedTheFirstTime
-            .add('GetFiltersForNavigatorFromLinkToListingPageEvent');
+        return;
       }
 
       emit(state.copyWith(
@@ -785,8 +789,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           appliedFiltersByUser: appliedFiltersByUser,
           getFiltersForNavigatorFromLinkToListingPageStatus:
               GetFiltersForNavigatorFromLinkToListingPageStatus.success));
-      isFailedTheFirstTime
-          .remove('GetFiltersForNavigatorFromLinkToListingPageEvent');
+      ErrorManager.resetRetry(
+          'GetFiltersForNavigatorFromLinkToListingPageEvent');
     });
   }
 
@@ -904,7 +908,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     response.fold((l) {
       Map<String, GetProductFiltersStatus> statuses =
           Map.of(state.getProductFiltersStatus);
-      if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
+
+      if (ErrorManager.shouldRetry('GetProductFiltersEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('GetProductFiltersEvent');
         add(GetFiltersEvent(
             getProductsFilterPreFetch: event.getProductsFilterPreFetch,
             cashedOrginalBoutique: event.cashedOrginalBoutique,
@@ -917,8 +923,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             forceUpdate: event.forceUpdate,
             fromHomePageSearch: event.fromHomePageSearch,
             searchText: filters.searchText ?? event.searchText));
-        isFailedTheFirstTime.add('GetProductFiltersEvent');
+        return; // لا تحدث الحالة
       }
+
       statuses[key] = GetProductFiltersStatus.failure;
       emit(state.copyWith(getProductFiltersStatus: statuses));
     }, (r) {
@@ -934,7 +941,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       }*/
 
       apisMustNotToRequest.add('GetProductFiltersEvent');
-      isFailedTheFirstTime.remove('GetProductFiltersEvent');
+      ErrorManager.resetRetry('GetProductFiltersEvent');
       try {
         statuses[key] = GetProductFiltersStatus.success;
 
@@ -1123,7 +1130,30 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       boutiquesThatDidPrefetch[key] = false;
 
       emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
+      if (ErrorManager.shouldRetry(
+          'GetWithProductFiltersWithoutCancelingPreviousEvents',
+          l.statusCode)) {
+        ErrorManager.incrementRetry(
+            'GetWithProductFiltersWithoutCancelingPreviousEvents');
+        add(GetProductWithFiltersWithoutCancelingPreviousEvents(
+            boutiqueSlug: event.boutiqueSlug,
+            categorySlugs: event.categorySlugs,
+            fromHomePageSearch: event.fromHomePageSearch,
+            searchText: event.searchText,
+            category: event.category,
+            fromExpandPage: event.fromExpandPage,
+            resetAppliesFilters: event.resetAppliesFilters,
+            getWithoutFilter: event.getWithoutFilter,
+            indexOfCategory: event.indexOfCategory,
+            filtersChoosedByUser: event.filtersChoosedByUser,
+            forceUpdate: event.forceUpdate,
+            cashedOrginalBoutique: event.cashedOrginalBoutique,
+            context: event.context));
+        return;
+      }
     }, (r) async {
+      ErrorManager.resetRetry(
+          'GetWithProductFiltersWithoutCancelingPreviousEvents');
       if (event.boutiqueSlug == "*featured*") {
         Map<String, PaginationModel<product.Products>?>
             getProductListingWithFiltersPaginationModels =
@@ -1352,9 +1382,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       ResetAllSelectedAppliedFilterEvent event,
       Emitter<BoutiqueState> emit) async {
     GetIt.I<CategoryBloc>()
-        .add(ReplyFromGeminiEvent(theReplyFromGemini: "", fromSearch: true));
+        .add(ReplyFromGeminiEvent(resetTheReply: true, fromSearch: true));
     GetIt.I<CategoryBloc>()
-        .add(ReplyFromGeminiEvent(theReplyFromGemini: "", fromSearch: false));
+        .add(ReplyFromGeminiEvent(resetTheReply: true, fromSearch: false));
     emit(state.copyWith(
         choosedFiltersByUser: {},
         appliedFiltersByUser: {},
@@ -1373,8 +1403,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         Map.of(state.getProductFiltersModel);
     //   Map<String, filters_model.GetProductFiltersModel?> dataForFirstFiveFilter =
     //      {};
-    Map<String, PaginationModel<product.Products>?>
-        getProductListingWithFiltersForFirstFiveFilter = {};
+
     String keyWithoutFilter = '${event.boutiqueSlug}' +
         '${(event.getWithPagination) ? ((state.cashedOrginalBoutique) ? 'withoutFilter' : "") : ((event.cashedOrginalBoutique) ? 'withoutFilter' : "")}' +
         '${(event.category ?? '')}';
@@ -1482,8 +1511,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationWithPrefetchModels:
             Map.of(getProductListingWithFiltersForFirstFiveFilter),
       ));*/
-      print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666699999999999988888888888888888666666666FFFFFFF${event.boutiqueSlug}");
 
       if (!data.containsValue(key)) {
         data.addAll({key: filters_model.GetProductFiltersModel()});
@@ -1516,14 +1543,15 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                       20,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
-              paginationStatus: (keyWithoutFilter.contains("withoutFilter") &&
+              paginationStatus: /* (keyWithoutFilter.contains("withoutFilter") &&
                       !keyWithoutFilter.contains("*featured*withoutFilter") &&
                       !keyWithoutFilter.contains("*flashDeal*withoutFilter") &&
                       (getProductListingWithFiltersModel.products?.length ??
                               0) >
                           0)
-                  ? PaginationStatus.success
-                  : PaginationStatus.loading);
+                  ? PaginationStatus.loading
+                  : */
+                  PaginationStatus.loading);
 
       List<filters_model.PriceRange> ranges =
           getProductListingWithFiltersModel.prices?.priceRanges ?? [];
@@ -1774,7 +1802,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       Map<String, PaginationModel<product.Products>?>
           getProductListingWithFiltersPaginationModels =
           Map.of(state.getProductListingWithFiltersPaginationModels);
-      if (!isFailedTheFirstTime.contains('GetProductsWithFiltersEvent')) {
+      if (ErrorManager.shouldRetry(
+          'GetProductsWithFiltersEvent', l.statusCode)) {
         add(GetProductsWithFiltersEvent(
           cashedOrginalBoutique: event.cashedOrginalBoutique,
           offset: event.offset,
@@ -1787,7 +1816,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           limit: event.limit,
           searchText: event.searchText,
         ));
-        isFailedTheFirstTime.add('GetProductsWithFiltersEvent');
+        ErrorManager.incrementRetry('GetProductsWithFiltersEvent');
       }
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
@@ -1861,7 +1890,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           <String, PaginationModel<product.Products>?>{};
 
       //  if (state.idForRequest == idForRequest || state.cashedOrginalBoutique) {
-      isFailedTheFirstTime.remove('GetProductsWithFiltersEvent');
+      ErrorManager.resetRetry('GetProductsWithFiltersEvent');
 
       Map<String, filters_model.GetProductFiltersModel?> data =
           Map.of(state.getProductFiltersModel);
@@ -2432,7 +2461,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       Map<String, PaginationModel<product.Products>?>
           getProductListingWithFiltersPaginationModels =
           Map.of(state.getProductListingWithFiltersPaginationModels);
-      if (!isFailedTheFirstTime.contains('GetProductsWithFiltersEvent')) {
+      if (ErrorManager.shouldRetry(
+          'GetProductsWithFiltersEvent', l.statusCode)) {
         add(GetProductsWithFiltersEvent(
           cashedOrginalBoutique: event.cashedOrginalBoutique,
           offset: event.offset,
@@ -2445,7 +2475,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           limit: event.limit,
           searchText: event.searchText,
         ));
-        isFailedTheFirstTime.add('GetProductsWithFiltersEvent');
+        ErrorManager.incrementRetry('GetProductsWithFiltersEvent');
       }
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
@@ -2519,7 +2549,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           <String, PaginationModel<product.Products>?>{};
 
       //  if (state.idForRequest == idForRequest || state.cashedOrginalBoutique) {
-      isFailedTheFirstTime.remove('GetProductsWithFiltersEvent');
+      ErrorManager.resetRetry('GetProductsWithFiltersEvent');
 
       Map<String, filters_model.GetProductFiltersModel?> data =
           Map.of(state.getProductFiltersModel);

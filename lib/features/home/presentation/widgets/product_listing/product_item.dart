@@ -17,6 +17,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_without_silder.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/language_service.dart';
 
 class ProductItem extends StatefulWidget {
@@ -63,6 +64,8 @@ class _ProductItemState extends State<ProductItem> {
   @override
   void initState() {
     super.initState();
+//    productIdToSaveRedeemTimer.add(widget.productItem.productId.toString());
+
     currentChosenColor =
         ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
     if (widget.productItem.hasRedeemDiscount == true) {
@@ -70,6 +73,12 @@ class _ProductItemState extends State<ProductItem> {
           widget.productItem.productId.toString(), "50");
     }
   }
+/*
+  @override
+  void dispose() {
+    productIdToSaveRedeemTimer.remove(widget.productItem.productId.toString());
+    super.dispose();
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +195,7 @@ class _ProductItemState extends State<ProductItem> {
 
           widget.fromHomePage
               ? ProductListing3DSliderOptimized(
+                  visibleFlashDeal: visibleFlashDeal,
                   finishRedeem: widget.finishRedeem,
                   productIsFlashDeal: widget.productIsFlashDeal,
                   fromFlashDeal: widget.fromFlashDeal,
@@ -197,6 +207,7 @@ class _ProductItemState extends State<ProductItem> {
                   itemIndex: widget.itemIndex,
                 )
               : ProductListingWithoutSlider(
+                  visibleFlashDeal: visibleFlashDeal,
                   tapIndexToShowColorImages: widget.tapIndexToShowColorImages,
                   finishRedeem: widget.finishRedeem,
                   showShadowForColorImages: widget.showShadowForColorImages,
@@ -367,7 +378,7 @@ class _ProductItemState extends State<ProductItem> {
                                 right: LanguageService.languageCode == "ar"
                                     ? 1
                                     : null,
-                                top: widget.fromHomePage ? 0 : -8,
+                                top: 0,
                                 child: Transform(
                                   transform:
                                       Matrix4.skewX(-0.4), // انحراف بسيط للشكل
@@ -456,7 +467,7 @@ class _ProductItemState extends State<ProductItem> {
                     ? Positioned(
                         left: LanguageService.languageCode == "ar" ? null : 1,
                         right: LanguageService.languageCode != "ar" ? null : 1,
-                        top: widget.fromHomePage ? 0 : -8,
+                        top: 0,
                         child: Transform(
                           transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
                           child: Container(

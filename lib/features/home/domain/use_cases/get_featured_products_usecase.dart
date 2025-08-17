@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
@@ -30,7 +31,7 @@ class GetFeaturedProductsParams {
   });
 
   Map<String, dynamic> get map => {
-        "offset": offset.toString(),
+        "offset": offset.isNullOrEmpty ? null : offset.toString(),
         "limit": "20",
-      }..removeWhere((key, value) => value == null);
+      }..removeWhere((key, value) => value == null || value == 'null');
 }

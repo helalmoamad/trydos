@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -38,6 +39,7 @@ class ProductListingWithoutSlider extends StatefulWidget {
     required this.tapIndexToAddProductToCart,
     required this.visibleRedeem,
     required this.productItem,
+    required this.visibleFlashDeal,
     this.productIsFlashDeal,
     this.fromFlashDeal,
     this.fromHomePage = false,
@@ -54,6 +56,7 @@ class ProductListingWithoutSlider extends StatefulWidget {
   // final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final ValueNotifier<bool> finishRedeem;
+  final ValueNotifier<bool> visibleFlashDeal;
   final int itemIndex;
   final ValueNotifier<bool>? showShadowForColorImages;
   final ValueNotifier<int>? tapIndexToShowColorImages;
@@ -486,30 +489,22 @@ class _ProductListingWithoutSliderState
   /// 📝 Product Name Row
   Widget _buildProductCategoryRow() {
     List<String> productCategory = [];
-    if ((widget.productItem.category?.name ?? "").length > 0) {
-      productCategory.add(widget.productItem.category?.name ?? '');
+    if ((widget.productItem.categoryHierarchy?.mainCategory?.name ?? "")
+            .length >
+        0) {
+      productCategory
+          .add(widget.productItem.categoryHierarchy?.mainCategory?.name ?? '');
     }
-    if ((widget.productItem.category?.subCategories?.length ?? 0) > 0) {
-      if (((widget.productItem.category?.subCategories ?? []).first.name ?? "")
-              .length >
-          0) {
-        productCategory
-            .add(widget.productItem.category?.subCategories?.first.name ?? '');
-      }
-      if ((widget.productItem.category?.subCategories?.first.childes?.length ??
-              0) >
-          0) {
-        if ((widget.productItem.category?.subCategories ??
-                    [].first.childes ??
-                    [].first.name ??
-                    "")
-                .length >
-            0) {
-          productCategory.add(widget.productItem.category?.subCategories?.first
-                  .childes?.first.name ??
-              '');
-        }
-      }
+    if ((widget.productItem.categoryHierarchy?.subCategory?.name ?? "").length >
+        0) {
+      productCategory
+          .add(widget.productItem.categoryHierarchy?.subCategory?.name ?? '');
+    }
+    if ((widget.productItem.categoryHierarchy?.subSubCategory?.name ?? "")
+            .length >
+        0) {
+      productCategory.add(
+          widget.productItem.categoryHierarchy?.subSubCategory?.name ?? '');
     }
 
     return Row(
@@ -581,74 +576,111 @@ class _ProductListingWithoutSliderState
                 children: [
                   // Price Row
                   ValueListenableBuilder<bool>(
-                      valueListenable: widget.visibleRedeem,
-                      builder: (context, _visibleRedeem, _) {
-                        bool isRedeem = (GetIt.I<PrefsRepository>()
-                                        .getRedeemDateForProduct(widget
-                                            .productItem.productId
-                                            .toString())
-                                        ?.isAfter(DateTime.now()
-                                            .add(Duration(seconds: 1))) ==
-                                    true &&
-                                widget.productItem.hasRedeemDiscount == true) ||
-                            (GetIt.I<PrefsRepository>()
-                                        .getRedeemSecondRemainingForProduct(
-                                            widget.productItem.productId
-                                                .toString()) ??
-                                    0) >
-                                0;
+                      valueListenable: widget.visibleFlashDeal,
+                      builder: (context, _visibleFlashDeal, _) {
+                        bool isFlashDealEnded = false;
+                        DateTime endDate;
+                        Duration _duration = Duration();
+                        final now = DateTime.now();
+                        try {
+                          endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                              .parse(widget.productItem.flashDealEndDate ?? "");
+                          endDate = endDate.add(Duration(days: 1));
+                        } catch (e) {
+                          endDate = DateTime.now();
+                          print('Error parsing date: $e');
+                        }
+                        _duration = endDate.difference(now);
+                        if (_duration.isNegative || _duration.inSeconds < 1) {
+                          isFlashDealEnded = true;
+                        }
 
-                        return Flexible(
-                          child: Row(mainAxisSize: MainAxisSize.min, children: [
-                            MyTextWidget(
-                              HelperFunctions.formatNumber(
-                                  number: (price * exchangeRate))
-                              /* .toStringAsFixed(state.startingSetting
+                        return ValueListenableBuilder<bool>(
+                            valueListenable: widget.visibleRedeem,
+                            builder: (context, _visibleRedeem, _) {
+                              bool isRedeem = (GetIt.I<PrefsRepository>()
+                                              .getRedeemDateForProduct(widget
+                                                  .productItem.productId
+                                                  .toString())
+                                              ?.isAfter(DateTime.now()
+                                                  .add(Duration(seconds: 1))) ==
+                                          true &&
+                                      widget.productItem.hasRedeemDiscount ==
+                                          true) ||
+                                  (GetIt.I<PrefsRepository>()
+                                              .getRedeemSecondRemainingForProduct(
+                                                  widget.productItem.productId
+                                                      .toString()) ??
+                                          0) >
+                                      0;
+
+                              return Flexible(
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      MyTextWidget(
+                                        HelperFunctions.formatNumber(
+                                            number: (price * exchangeRate))
+                                        /* .toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                              ,
-                              style: textTheme.titleMedium?.lq.copyWith(
-                                fontSize: 9.sp,
-                                color: Color(0xff3c3c3c),
-                                decoration: TextDecoration.lineThrough,
-                                height: 0,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            MyTextWidget(
-                              HelperFunctions.formatNumber(
-                                  number: (offerPrice * exchangeRate))
-                              /*.toStringAsFixed(state.startingSetting
+                                        ,
+                                        style:
+                                            textTheme.titleMedium?.lq.copyWith(
+                                          fontSize: 9.sp,
+                                          color: Color(0xff3c3c3c),
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                          height: 0,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      MyTextWidget(
+                                        HelperFunctions.formatNumber(
+                                            number: (((isFlashDealEnded ||
+                                                        (widget.productItem
+                                                                    .flashDealPrice ??
+                                                                0) ==
+                                                            0)
+                                                    ? offerPrice
+                                                    : widget.productItem
+                                                            .flashDealPrice ??
+                                                        0) *
+                                                exchangeRate))
+                                        /*.toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                              ,
-                              style: textTheme.titleMedium?.mr.copyWith(
-                                fontSize: 9.sp,
-                                decorationColor: Color(0xffFF6200),
-                                decoration: isRedeem
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                color: Color(0xff3c3c3c),
-                                height: 0,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            MyTextWidget(
-                              state.getCurrencyForCountryModel == null
-                                  ? ""
-                                  : state.getCurrencyForCountryModel!.data!
-                                          .currency!.symbol ??
-                                      "",
-                              style: TextStyle(fontSize: 8.sp, height: 0),
-                            ),
-                          ]),
-                        );
+                                        ,
+                                        style:
+                                            textTheme.titleMedium?.mr.copyWith(
+                                          fontSize: 9.sp,
+                                          decorationColor: Color(0xffFF6200),
+                                          decoration: isRedeem
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                          color: Color(0xff3c3c3c),
+                                          height: 0,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      MyTextWidget(
+                                        state.getCurrencyForCountryModel == null
+                                            ? ""
+                                            : state.getCurrencyForCountryModel!
+                                                    .data!.currency!.symbol ??
+                                                "",
+                                        style: TextStyle(
+                                            fontSize: 8.sp, height: 0),
+                                      ),
+                                    ]),
+                              );
+                            });
                       }),
                   // Buy Button
                   _buildCompactBuyButton(state),
