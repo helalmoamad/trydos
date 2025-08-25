@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
+    show Boutique;
 import '../../../data/models/get_product_filters_model.dart' as get_filters;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -32,6 +34,7 @@ class BoutiqueState extends Equatable {
     this.getProductFiltersModel = const {},
     this.getFiltersForNavigatorFromLinkToListingPageStatus,
     this.prefAppliedFilterForExtendFilter,
+    this.boutiquesToNavigatorFromLink,
     this.isGettingProductListingWithPagination = false,
     this.choosedFiltersByUser = const {},
     this.appliedFiltersByUser = const {},
@@ -53,7 +56,7 @@ class BoutiqueState extends Equatable {
   final bool cashedOrginalBoutique;
   final GetFiltersForNavigatorFromLinkToListingPageStatus?
       getFiltersForNavigatorFromLinkToListingPageStatus;
-
+  final List<Boutique>? boutiquesToNavigatorFromLink;
   final bool finishGetAllFilter;
   final bool isGettingProductListingWithPagination;
 
@@ -71,6 +74,7 @@ class BoutiqueState extends Equatable {
   List<Object?> get props => [
         sizeAndColorFilterinTextToSearch,
         countOfProductExpectedByFiltering,
+        boutiquesToNavigatorFromLink,
         //   getProductFiltersWithPrefetchModel,
         prefAppliedFilterForExtendFilter,
         cashedOrginalBoutique,
@@ -97,6 +101,7 @@ class BoutiqueState extends Equatable {
     Map<String, int>? countOfProductExpectedByFiltering,
     final Map<String, get_filters.GetProductFiltersModel?>?
         appliedFiltersByUser,
+    final List<Boutique>? boutiquesToNavigatorFromLink,
     final bool? isGettingProductListingWithPaginationForAppearProduct,
     final Map<String, get_filters.GetProductFiltersModel?>?
         choosedFiltersByUser,
@@ -140,6 +145,8 @@ class BoutiqueState extends Equatable {
             getFiltersForNavigatorFromLinkToListingPageStatus ??
                 this.getFiltersForNavigatorFromLinkToListingPageStatus,
         appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
+        boutiquesToNavigatorFromLink:
+            boutiquesToNavigatorFromLink ?? this.boutiquesToNavigatorFromLink,
         isGettingProductListingWithPagination:
             isGettingProductListingWithPagination ??
                 this.isGettingProductListingWithPagination,

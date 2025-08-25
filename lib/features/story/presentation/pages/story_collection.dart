@@ -741,7 +741,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     }
 
     // دالة لتحويل النص المشفر إلى قائمة نصوص
-    List<String> parseListParam(String? param) {
+    /* List<String> parseListParam(String? param) {
       final decoded = decodeParam(param);
       if (decoded == null) return [];
       try {
@@ -766,9 +766,31 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     final sizes = parseListParam(uri.queryParameters['sizes']);
     final colors = parseListParam(uri.queryParameters['colors']);
     final boutiques = parseListParam(uri.queryParameters['boutiques']);
-    final coupon = decodeParam(uri.queryParameters['coupon']);
-    if (coupon != null) {
-      prefsRepository.setOrderCoupon(coupon);
+    final coupon = decodeParam(uri.queryParameters['coupon']);*/
+    List<String> _extractSection(Uri uri, String section) {
+      final reg = RegExp('$section/([^/]+)');
+      final match = reg.firstMatch(uri.path);
+      if (match != null) {
+        return match.group(1)!.split(',');
+      }
+      return [];
+    }
+
+    final boutiques = _extractSection(uri, 'boutiques');
+    final sizes = _extractSection(uri, 'sizes');
+    final brands = _extractSection(uri, 'brands');
+    final colors = _extractSection(uri, 'colors');
+    final categories = _extractSection(uri, 'categories');
+    final coupon = _extractSection(uri, 'coupon');
+    final tagsNames = _extractSection(uri, 'tags_names');
+
+    print('boutiques: $boutiques');
+    print('sizes: $sizes');
+    print('brands: $brands');
+    print('colors: $colors');
+    print('categories: $categories');
+    if (coupon.isNotEmpty) {
+      prefsRepository.setOrderCoupon(coupon.first);
     }
 
     List<Boutique>? boutiquesFilter = [];
@@ -780,23 +802,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     List<filter.Category>? categoriesFilter = [];
     categories.forEach((element) => categoriesFilter
         .add(filter.Category(id: 0, name: "null", slug: element)));
-    print('الفئات: $categories');
-    print('العلامات: $brands');
-    print('المقاسات: $sizes');
-    print('تاغات: $tagsNames');
-    print('الألوان: $colors');
-    print('البوتيكات: $boutiques');
+
     prefsRepository.setTagsInUrlToFilter(tagsNames);
-    if (!(url.contains("boutique/listing")) && (url.contains("boutique"))) {
-      String boutiueSlug = "";
-      boutiueSlug = url.split("/").toList().last;
-      boutiueSlug = boutiueSlug.split("?").first;
+    if (boutiques.length == 1) {
       fromBoutiqueListing = true;
       BlocProvider.of<BoutiqueBloc>(context)
           .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
               fromHomePageSearch: false,
-              //    tagsNames: tagsNames,
-              boutiqueSlug: boutiueSlug,
+              boutiqueSlug: boutiques.first,
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: Filter(
                 attributes: sizes.isNullOrEmpty
@@ -810,7 +823,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       BlocProvider.of<BoutiqueBloc>(context)
           .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
               fromHomePageSearch: true,
-              //  tagsNames: tagsNames,
               boutiqueSlug: "search",
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: Filter(
@@ -864,7 +876,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       ))));
           return;
         }
-        if (uri.contains("boutique")) {
+        if (uri.contains("filters")) {
           BlocProvider.of<BoutiqueBloc>(context).add(ChangeAppliedFiltersEvent(
               boutiqueSlug: "search", resetAppliedFilters: true));
           BlocProvider.of<BoutiqueBloc>(context).add(ChangeSelectedFiltersEvent(
@@ -907,9 +919,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             if (fromBoutiqueListing) {
               BlocProvider.of<BoutiqueBloc>(context)
                   .add(ChangeAppliedFiltersEvent(
-                boutiqueSlug: boutiqueState.appliedFiltersByUser["link"]
-                        ?.filters?.boutiques?[0].slug ??
-                    "",
+                boutiqueSlug:
+                    boutiqueState.boutiquesToNavigatorFromLink?[0].slug ?? "",
                 filtersAppliedByUser: boutiqueState.appliedFiltersByUser["link"]
                     ?.copyWith(
                         filters: boutiqueState
@@ -921,9 +932,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   GetProductsWithFiltersEvent(
                       getWithoutFilter: true,
                       cashedOrginalBoutique: false,
-                      boutiqueSlug: boutiqueState.appliedFiltersByUser["link"]
-                              ?.filters?.boutiques?[0].slug ??
-                          "",
+                      boutiqueSlug:
+                          boutiqueState.boutiquesToNavigatorFromLink?[0].slug ??
+                              "",
                       fromSearch: false,
                       category: null,
                       context: context,
@@ -937,19 +948,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       ProductListingPage(
                           fromBackground: false,
                           boutiqueSlug: boutiqueState
-                                  .appliedFiltersByUser["link"]
-                                  ?.filters
-                                  ?.boutiques?[0]
-                                  .slug ??
+                                  .boutiquesToNavigatorFromLink?[0].slug ??
                               "",
                           banner: [
-                            (boutiqueState.appliedFiltersByUser["link"]?.filters
-                                ?.boutiques?[0].banner)!
+                            (boutiqueState
+                                .boutiquesToNavigatorFromLink?[0].banner)!
                           ],
                           boutiqueFirstBanner: boutiqueState
-                              .appliedFiltersByUser["link"]
-                              ?.filters
-                              ?.boutiques?[0]
+                              .boutiquesToNavigatorFromLink?[0]
                               .banner
                               ?.filePath),
                 )),
@@ -1007,11 +1013,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             child: Text(
                               url,
                               textAlign: TextAlign.center,
-                              maxLines: 2,
+                              maxLines: 4,
                               style: context.textTheme.bodyMedium?.ba.copyWith(
                                 decorationColor: Colors.blue,
                                 decoration: TextDecoration.underline,
-                                fontSize: 16,
+                                fontSize: 11,
                                 color: Colors.blue,
                                 letterSpacing: 0.18,
                               ),

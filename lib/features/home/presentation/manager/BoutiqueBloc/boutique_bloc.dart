@@ -720,8 +720,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           : [
               {
                 '"id"': filters.attributes![0].id,
-                '"name"': filters.attributes![0].name,
-                '"options"': filters.attributes![0].options,
+                '"name"': '"${filters.attributes![0].name}"',
+                '"options"': filters.attributes![0].options
+                    ?.map((e) => '"${e.toString()}"')
+                    .toList(),
               }
             ],
       colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
@@ -732,7 +734,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           'GetFiltersForNavigatorFromLinkToListingPageEvent', l.statusCode)) {
         ErrorManager.incrementRetry(
             'GetFiltersForNavigatorFromLinkToListingPageEvent');
-        add(GetFiltersEvent(
+        add(GetFiltersForNavigatorFromLinkToListingPageEvent(
+          fromHomePageSearch: event.fromHomePageSearch,
           filtersChoosedByUser: event.filtersChoosedByUser,
           boutiqueSlug: event.boutiqueSlug,
         ));
@@ -756,6 +759,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         brands.add(r.filters!.brands![i]);
       }
       List<filters_model.Boutique>? boutiques = [];
+
       for (var i = 0;
           i < (event.filtersChoosedByUser?.filters?.boutiques?.length ?? 0);
           i++) {
@@ -786,9 +790,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       }
 
       emit(state.copyWith(
+          boutiquesToNavigatorFromLink: r.filters?.boutiques,
           appliedFiltersByUser: appliedFiltersByUser,
           getFiltersForNavigatorFromLinkToListingPageStatus:
               GetFiltersForNavigatorFromLinkToListingPageStatus.success));
+
       ErrorManager.resetRetry(
           'GetFiltersForNavigatorFromLinkToListingPageEvent');
     });
