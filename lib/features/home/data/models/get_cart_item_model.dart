@@ -365,8 +365,14 @@ class Cart {
                 json["choices"]!.map((x) => Choice.fromJson(x))),
         variations: json["variations"] == null
             ? []
-            : List<VariationCart>.from(
-                json["variations"]!.map((x) => VariationCart.fromJson(x))),
+            : (json["variations"] is List)
+                ? (json["variations"] as List).isEmpty
+                    ? []
+                    : json["variations"]?.first.isEmpty
+                        ? []
+                        : List<VariationCart>.from(json["variations"]
+                            .map((x) => VariationCart.fromJson(x)))
+                : [],
         variant: json["variant"],
         availableQuantity: json["available_quantity"],
         maxAllowedQty: json["max_allowed_qty"],

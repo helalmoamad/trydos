@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -91,6 +91,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   final PanelController panelController = PanelController();
   final ValueNotifier<bool> showPanel = ValueNotifier(false);
   final ValueNotifier<bool> showShadowForCanselOrder = ValueNotifier(false);
+  final ValueNotifier<bool> showShadowForConfirmOrder = ValueNotifier(false);
   final ValueNotifier<bool> visiblecamera = ValueNotifier(false);
   final ValueNotifier<List<String>> orderPhotos = ValueNotifier([]);
   final ValueNotifier<String?> optionModifyPanel = ValueNotifier(null);
@@ -107,6 +108,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   final ValueNotifier<int?> colorIndexTap = ValueNotifier(null);
   final ValueNotifier<int?> sizeIndexTap = ValueNotifier(null);
   final ValueNotifier<int> returnBottomIndexTap = ValueNotifier(0);
+  final ValueNotifier<double> reasonCost = ValueNotifier(0);
   final ValueNotifier<int> qtyOfReturnValueNotifier = ValueNotifier(0);
   final ValueNotifier<String?> optionVariant = ValueNotifier(null);
   bool allOrder = false;
@@ -122,7 +124,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   String? firstSizeOption;
   String? firstColorName;
   String? firstSizeName;
-  final TextEditingController qtyController = TextEditingController();
+  final ValueNotifier<int> qtyToChangeController = ValueNotifier(0);
   // TextEditingController qtyOfReturnController = TextEditingController();
   @override
   void initState() {
@@ -143,7 +145,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
 
   @override
   void dispose() {
-    qtyController.dispose();
+    qtyToChangeController.dispose();
     // qtyOfReturnController.dispose();
     super.dispose();
   }
@@ -184,13 +186,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
             showPanel.value = false;
             optionModifyPanel.value = null;
             optionReturn.value = 0;
+            reasonCost.value = 0;
+            reasonCost.value = 0;
             qtyOfReturnValueNotifier.value = 0;
-            qtyController.clear();
+            qtyToChangeController.value = 0;
             //  qtyOfReturnController.clear();
             optionCansel.value = [];
             enableChangeAddress.value = false;
             showShadowForPanel.value = false;
+            showShadowForConfirmOrder.value = false;
             showShadowForChangeAddress.value = false;
+            showShadowForConfirmOrder.value = false;
             showShadowForCanselOrder.value = false;
             shadowForChangeVariant.value = false;
             return false;
@@ -373,17 +379,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       .currency!
                                                       .symbol ??
                                                   "";
-                                              String orderAmount = (order!
-                                                          .orderAmount! *
-                                                      state
-                                                          .getCurrencyForCountryModel!
-                                                          .data!
-                                                          .currency!
-                                                          .exchangeRate!)
-                                                  .toStringAsFixed(state
-                                                          .startingSetting
-                                                          ?.decimalPointSettings ??
-                                                      0);
+                                              String orderAmount =
+                                                  HelperFunctions.formatNumber(
+                                                      number: (order!
+                                                              .orderAmount! *
+                                                          state
+                                                              .getCurrencyForCountryModel!
+                                                              .data!
+                                                              .currency!
+                                                              .exchangeRate!),
+                                                      isNeedRounding: false);
 
                                               return RichText(
                                                 overflow: TextOverflow.ellipsis,
@@ -917,13 +922,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     borderRadius: BorderRadius.circular(15))))
                                                         : InkWell(
                                                             onTap: () {
-                                                              orderBloc.add(ConfirmReturnRequestEvent(
-                                                                  orderGroupId:
-                                                                      order?.orderGroupId ??
-                                                                          "",
-                                                                  returnRequestId:
-                                                                      order?.returnRequestId ??
-                                                                          "".toString()));
+                                                              showShadowForConfirmOrder
+                                                                  .value = true;
                                                             },
                                                             child: Container(
                                                                 alignment: Alignment.center,
@@ -1032,11 +1032,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ValueListenableBuilder<int>(
                             valueListenable: indexTap,
                             builder: (context, _indexTap, _) {
-                              return shadowForCanselOrRutuenOrder(
-                                  _indexTap,
-                                  optionModifyPanel.value ==
-                                      "Return_This_Product");
-                            })
+                              return shadowForCanselOrRutuenOrder(_indexTap);
+                            }),
+                        shadowForConfirmOrder()
                       ],
                     ),
                   ),
@@ -1206,12 +1204,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       width: 5,
                     ),
                     Text(
-                      (order!.orderAmount! *
+                      HelperFunctions.formatNumber(
+                          number: (order!.orderAmount! *
                               homeBloc.state.getCurrencyForCountryModel!.data!
-                                  .currency!.exchangeRate!)
-                          .toStringAsFixed(homeBloc.state.startingSetting
-                                  ?.decimalPointSettings ??
-                              0),
+                                  .currency!.exchangeRate!),
+                          isNeedRounding: false),
                       style: context.textTheme.bodyMedium?.br.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
@@ -1373,7 +1370,6 @@ class _OrderDetails2 extends State<OrderDetails2> {
             orElse: () => OrderDetail(),
           );
           ReturnReasonModel? reason;
-
           if ((state.returnReasonsModel?.data?.returnReasons?.length ?? 0) >
               0) {
             reason = state.returnReasonsModel?.data?.returnReasons!.firstWhere(
@@ -1383,7 +1379,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
           }
 
           return Container(
-            height: orderDetails?.returnRequestProductId == null
+            height: orderDetails?.returnRequestProductId == null ||
+                    order?.returnRequestId == null
                 ? 190
                 : 170 + 100 + 100,
             width: 1.sw,
@@ -1970,7 +1967,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           children: [
                                             TextSpan(
                                               text:
-                                                  '${(((orderListDetailModel.productDetails?.price ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
+                                                  '${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.price ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
                                               style: context
                                                   .textTheme.bodyMedium?.rq
                                                   .copyWith(
@@ -1985,7 +1982,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             ////////////////////////////
                                             TextSpan(
                                               text:
-                                                  ' ${((orderListDetailModel.productDetails?.offerPrice ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
+                                                  ' ${HelperFunctions.formatNumber(number: ((orderListDetailModel.productDetails?.offerPrice ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
                                               style: context
                                                   .textTheme.bodyMedium?.bq
                                                   .copyWith(
@@ -2010,13 +2007,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             ),
                                             orderDetails?.returnRequestProductId ==
                                                         null ||
-                                                    orderListDetailModel
-                                                            .paymentStatus ==
+                                                    order!.paymentStatus ==
                                                         "unpaid"
                                                 ? TextSpan(text: "")
                                                 : TextSpan(
                                                     text:
-                                                        ' ${LocaleKeys.back_to_your_wallet.tr()} ${(((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                                        ' ${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
                                                     style: context.textTheme
                                                         .bodyMedium?.rr
                                                         .copyWith(
@@ -2141,10 +2137,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     LocaleKeys
                                         .product_has_been_returned_successfully
                                         .tr(),
-                                    orderListDetailModel.paymentStatus ==
-                                            "unpaid"
+                                    order?.paymentStatus == "unpaid"
                                         ? ""
-                                        : '${LocaleKeys.back_to_your_wallet.tr()} ${(((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                        : '${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
                                     "3 H",
                                     "00:02:19",
                                     ((orderDetails?.returnRequestProductStatus
@@ -3088,7 +3083,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      order!.paymentStatus == "unpaid"
+                      order?.paymentStatus == "unpaid"
                           ? SizedBox.shrink()
                           : Text(
                               "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
@@ -3184,9 +3179,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 30.h,
                       ),
                       BlocListener<OrderBloc, OrderState>(
+                          listenWhen: (previous, current) =>
+                              previous.cancelOrderItemStatus !=
+                                  current.cancelOrderItemStatus ||
+                              previous.changeOrderItemVariantStatus !=
+                                  current.changeOrderItemVariantStatus,
                           listener: (context, state) {
                             if (state.changeOrderItemVariantStatus ==
-                                ChangeOrderItemVariantStatus.success) {
+                                    ChangeOrderItemVariantStatus.success ||
+                                state.cancelOrderItemStatus ==
+                                    CancelOrderItemStatus.success) {
                               orderBloc.add(
                                 GetOrdersByOrderGroupIDEvent(
                                     orderGroupId: order!.orderGroupId ?? ""),
@@ -3200,6 +3202,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               showShadowForPanel.value = false;
                               showShadowForCanselOrder.value = false;
                               optionReturn.value = 0;
+                              reasonCost.value = 0;
+                              showShadowForConfirmOrder.value = false;
                               optionCansel.value = [];
                               showShadowForChangeAddress.value = false;
                               shadowForChangeVariant.value = false;
@@ -3208,6 +3212,28 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           child: InkWell(
                             onTap: () {
                               if (agreeToPolicies.value == false) {
+                                return;
+                              }
+                              if (order!.details?[indexTap.value].qty!
+                                      .round() !=
+                                  qtyToChangeController.value) {
+                                orderBloc.add(CancelOrderItemEvent(
+                                    cancelOrderItemParams:
+                                        CancelOrderItemParams(
+                                            orderId: order!.id.toString(),
+                                            detailId: order!
+                                                    .details?[indexTap.value].id
+                                                    .toString() ??
+                                                "",
+                                            qty: ((order!
+                                                            .details?[
+                                                                indexTap.value]
+                                                            .qty!
+                                                            .round() ??
+                                                        0) -
+                                                    (qtyToChangeController
+                                                        .value))
+                                                .toString())));
                                 return;
                               }
                               orderBloc.add(ChangeOrderItemVariantEvent(
@@ -3325,7 +3351,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       BlocBuilder<OrderBloc, OrderState>(
                           buildWhen: (previous, current) =>
                               previous.changeOrderItemVariantStatus !=
-                              current.changeOrderItemVariantStatus,
+                                  current.changeOrderItemVariantStatus ||
+                              previous.cancelOrderItemStatus !=
+                                  current.cancelOrderItemStatus,
                           builder: (context, state) {
                             return Container(
                               width: 200,
@@ -3333,18 +3361,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               child: InkWell(
                                 onTap: () {
                                   if (state.changeOrderItemVariantStatus ==
-                                      ChangeOrderItemVariantStatus.loading) {
+                                          ChangeOrderItemVariantStatus
+                                              .loading ||
+                                      state.cancelOrderItemStatus ==
+                                          CancelOrderItemStatus.loading) {
                                     return;
                                   }
                                   agreeToPolicies.value = false;
                                   panelController.close();
                                   showPanel.value = false;
+                                  showShadowForConfirmOrder.value = false;
                                   optionModifyPanel.value = null;
                                   enableChangeAddress.value = false;
                                   showShadowForPanel.value = false;
                                   showShadowForChangeAddress.value = false;
                                   showShadowForCanselOrder.value = false;
                                   optionReturn.value = 0;
+                                  reasonCost.value = 0;
                                   optionCansel.value = [];
                                   shadowForChangeVariant.value = false;
                                 },
@@ -3371,10 +3404,412 @@ class _OrderDetails2 extends State<OrderDetails2> {
         });
   }
 
-  Widget shadowForCanselOrRutuenOrder(int tapIndex, bool isReturn) {
+  Widget shadowForConfirmOrder() {
+    return ValueListenableBuilder<bool>(
+        valueListenable: showShadowForConfirmOrder,
+        builder: (context, _showShadowForConfirmOrder, _) {
+          List<String> images = [];
+
+          orderBloc.state.orderReturnDetailsModel?.data?.orderDetails
+              ?.forEach((element) {
+            if (element.returnRequestProductId != null &&
+                element.returnRequestId != null) {
+              images.add(element.image ?? "");
+            }
+          });
+
+          return !_showShadowForConfirmOrder
+              ? SizedBox.shrink()
+              : Container(
+                  height: 1.sh,
+                  width: 1.sw,
+                  color: Color.fromRGBO(29, 29, 29, 0.95),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Spacer(),
+                      SvgPicture.asset(
+                        AppAssets.clarificationSvg,
+                      ),
+                      SizedBox(height: 20.h),
+                      Text(
+                        LocaleKeys.clarification.tr(),
+                        style: context.textTheme.bodyMedium?.mr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 40,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        LocaleKeys.about_return_your_product.tr(),
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 16,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 45.h,
+                      ),
+                      Text(
+                        LocaleKeys.you_will_not_charged_fees.tr(),
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 16,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      order?.paymentStatus == "unpaid"
+                          ? SizedBox.shrink()
+                          : Text(
+                              "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 0.18,
+                                fontSize: 16,
+                                height: 1.3,
+                              ),
+                            ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          "${LocaleKeys.repeated_cancellations_affect_rating.tr()} \n ",
+                          textAlign: TextAlign.start,
+                          style: context.textTheme.bodyMedium?.rr.copyWith(
+                            color: Colors.white,
+                            letterSpacing: 0.18,
+                            fontSize: 16,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 130.h,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: ListView.builder(
+                            itemCount: images.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) => Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 5),
+                                  height: 130.h,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15))),
+                                  child: ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                    child: MyCachedNetworkImage(
+                                        imageUrl: images[index],
+                                        width: 100,
+                                        imageFit: BoxFit.contain,
+                                        height: 130.h),
+                                  ),
+                                )),
+                      ),
+                      SvgPicture.asset(
+                        AppAssets.termsCanselSvg,
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        "${LocaleKeys.terms_of_cancellation_term.tr()} ",
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.3,
+                        ),
+                      ),
+                      ValueListenableBuilder<bool>(
+                          valueListenable: agreeToPolicies,
+                          builder: (context, _agreeToPolicies, _) {
+                            return Container(
+                                alignment: Alignment.center,
+                                height: 40,
+                                width: 1.sw,
+                                child: InkWell(
+                                  onTap: () =>
+                                      agreeToPolicies.value = !_agreeToPolicies,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SvgPicture.asset(AppAssets.detectedSvg,
+                                          color: _agreeToPolicies
+                                              ? Color(0xff388CFF)
+                                              : Color(0xff8E8E8E)),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
+                                        style: context.textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                          color: Colors.white,
+                                          letterSpacing: 0.18,
+                                          fontSize: 14,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                      Text(
+                                        LocaleKeys.cancellation_term.tr(),
+                                        style: context.textTheme.bodyMedium?.mr
+                                            .copyWith(
+                                          decorationColor: Colors.white,
+                                          decoration: TextDecoration.underline,
+                                          color: Colors.white,
+                                          letterSpacing: 0.18,
+                                          fontSize: 16,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ));
+                          }),
+                      SizedBox(
+                        height: 30.h,
+                      ),
+                      BlocListener<OrderBloc, OrderState>(
+                          listenWhen: (previous, current) =>
+                              previous.confirmReturnRequestStatus !=
+                              current.confirmReturnRequestStatus,
+                          listener: (context, state) {
+                            if (state.confirmReturnRequestStatus ==
+                                ConfirmReturnRequestStatus.success) {
+                              orderBloc.add(
+                                GetOrdersByOrderGroupIDEvent(
+                                    orderGroupId:
+                                        widget.order.orderGroupId ?? ""),
+                              );
+                              agreeToPolicies.value = false;
+                              panelController.close();
+                              showPanel.value = false;
+                              optionModifyPanel.value = null;
+                              enableChangeAddress.value = false;
+                              showShadowForPanel.value = false;
+                              showShadowForCanselOrder.value = false;
+                              showShadowForConfirmOrder.value = false;
+                              optionReturn.value = 0;
+                              reasonCost.value = 0;
+                              optionCansel.value = [];
+                              showShadowForChangeAddress.value = false;
+                              shadowForChangeVariant.value = false;
+                              showShadowForConfirmOrder.value = false;
+                            }
+                          },
+                          child: ValueListenableBuilder<int>(
+                              valueListenable: returnBottomIndexTap,
+                              builder: (context, _returnBottomIndexTap, _) {
+                                return BlocBuilder<OrderBloc, OrderState>(
+                                    buildWhen: (previous, current) =>
+                                        previous.confirmReturnRequestStatus !=
+                                        current.confirmReturnRequestStatus,
+                                    builder: (context, state) {
+                                      return (state
+                                                  .confirmReturnRequestStatus ==
+                                              ConfirmReturnRequestStatus
+                                                  .loading)
+                                          ? Shimmer.fromColors(
+                                              baseColor: Colors.grey[500]!,
+                                              highlightColor: Colors.grey[300]!,
+                                              child: Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 24),
+                                                alignment: Alignment.center,
+                                                width: 1.sw,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                    color:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? const Color(
+                                                                0xff3066CC)
+                                                            : const Color(
+                                                                0xffC4C2C2),
+                                                    border:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? Border.all(
+                                                                color: const Color(
+                                                                    0xffF8F8F8),
+                                                              )
+                                                            : Border.all(
+                                                                color: const Color(
+                                                                    0xffC4C2C2),
+                                                              ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15)),
+                                              ))
+                                          : InkWell(
+                                              onTap: () {
+                                                if (agreeToPolicies.value ==
+                                                    false) {
+                                                  return;
+                                                }
+                                                orderBloc.add(
+                                                    ConfirmReturnRequestEvent(
+                                                        orderGroupId: order
+                                                                ?.orderGroupId ??
+                                                            "",
+                                                        returnRequestId: order
+                                                                ?.returnRequestId ??
+                                                            "".toString()));
+                                              },
+                                              child: ValueListenableBuilder<
+                                                      bool>(
+                                                  valueListenable:
+                                                      agreeToPolicies,
+                                                  builder: (context,
+                                                      _agreeToPolicies, _) {
+                                                    return Container(
+                                                      margin:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 24),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      width: 1.sw,
+                                                      height: 50,
+                                                      decoration: BoxDecoration(
+                                                          color: agreeToPolicies
+                                                                      .value ==
+                                                                  true
+                                                              ? const Color(
+                                                                  0xff3066CC)
+                                                              : const Color(
+                                                                  0xffC4C2C2),
+                                                          border: agreeToPolicies
+                                                                      .value ==
+                                                                  true
+                                                              ? Border.all(
+                                                                  color: const Color(
+                                                                      0xffF8F8F8),
+                                                                )
+                                                              : Border.all(
+                                                                  color: const Color(
+                                                                      0xffC4C2C2),
+                                                                ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      15)),
+                                                      child: Text(
+                                                        LocaleKeys
+                                                            .i_agree_return
+                                                            .tr(),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: context.textTheme
+                                                            .bodyMedium?.br
+                                                            .copyWith(
+                                                          color: Colors.white,
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 16,
+                                                          height: 1.3,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }),
+                                            );
+                                    });
+                              })),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Container(
+                        width: 200,
+                        height: 40,
+                        child: BlocBuilder<OrderBloc, OrderState>(
+                            buildWhen: (previous, current) =>
+                                previous.confirmReturnRequestStatus !=
+                                current.confirmReturnRequestStatus,
+                            builder: (context, state) {
+                              return InkWell(
+                                onTap: () {
+                                  if (state.confirmReturnRequestStatus ==
+                                      ConfirmReturnRequestStatus.loading) {
+                                    return;
+                                  }
+                                  agreeToPolicies.value = false;
+                                  panelController.close();
+                                  showPanel.value = false;
+                                  optionModifyPanel.value = null;
+                                  enableChangeAddress.value = false;
+                                  showShadowForPanel.value = false;
+                                  showShadowForConfirmOrder.value = false;
+                                  showShadowForChangeAddress.value = false;
+                                  showShadowForCanselOrder.value = false;
+                                  optionReturn.value = 0;
+                                  reasonCost.value = 0;
+                                  showShadowForConfirmOrder.value = false;
+                                  optionCansel.value = [];
+                                  shadowForChangeVariant.value = false;
+                                },
+                                child: Text(
+                                  LocaleKeys.i_disagree.tr(),
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      context.textTheme.bodyMedium?.rr.copyWith(
+                                    color: Colors.white,
+                                    letterSpacing: 0.18,
+                                    fontSize: 16,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                    ],
+                  ),
+                );
+        });
+  }
+
+  Widget shadowForCanselOrRutuenOrder(int tapIndex) {
     return ValueListenableBuilder<bool>(
         valueListenable: showShadowForCanselOrder,
         builder: (context, _showShadowForCanselOrder, _) {
+          List<String> images = [];
+          OrderDetail? orderDetails = orderBloc
+              .state.orderReturnDetailsModel?.data?.orderDetails
+              ?.firstWhere(
+            (element) => element.detailId == order?.details?[indexTap.value].id,
+            orElse: () => OrderDetail(),
+          );
+          images.add(orderDetails?.image ?? "");
+          orderBloc.state.orderReturnDetailsModel?.data?.orderDetails
+              ?.forEach((element) {
+            if (element.returnRequestProductId != null &&
+                element.returnRequestId != null &&
+                element.detailId != order?.details?[indexTap.value].id) {
+              images.add(element.image ?? "");
+            }
+          });
+
           return !_showShadowForCanselOrder
               ? SizedBox.shrink()
               : Container(
@@ -3403,7 +3838,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 10.h,
                       ),
                       Text(
-                        isReturn
+                        optionModifyPanel.value == "Return_This_Product"
                             ? LocaleKeys.about_return_your_product.tr()
                             : allOrder
                                 ? LocaleKeys.about_cancel_order.tr()
@@ -3458,7 +3893,38 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ),
                       ),
                       SizedBox(
-                        height: 160.h,
+                        height: optionModifyPanel.value == "Return_This_Product"
+                            ? 0.h
+                            : 160.h,
+                      ),
+                      Container(
+                        height: 130.h,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: ListView.builder(
+                            itemCount: images.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) => Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 5),
+                                  height: 130.h,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15))),
+                                  child: ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                    child: MyCachedNetworkImage(
+                                        imageUrl: images[index],
+                                        width: 100,
+                                        imageFit: BoxFit.contain,
+                                        height: 130.h),
+                                  ),
+                                )),
                       ),
                       SvgPicture.asset(
                         AppAssets.termsCanselSvg,
@@ -3562,9 +4028,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               showPanel.value = false;
                               optionModifyPanel.value = null;
                               enableChangeAddress.value = false;
+                              showShadowForConfirmOrder.value = false;
                               showShadowForPanel.value = false;
                               showShadowForCanselOrder.value = false;
                               optionReturn.value = 0;
+                              reasonCost.value = 0;
                               optionCansel.value = [];
                               showShadowForChangeAddress.value = false;
                               shadowForChangeVariant.value = false;
@@ -3642,7 +4110,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     false) {
                                                   return;
                                                 }
-                                                if (!isReturn) {
+                                                if (!(optionModifyPanel.value ==
+                                                    "Return_This_Product")) {
                                                   if (allOrder) {
                                                     orderBloc
                                                         .add(CancelOrderEvent(
@@ -3795,7 +4264,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                   .circular(
                                                                       15)),
                                                       child: Text(
-                                                        isReturn
+                                                        optionModifyPanel
+                                                                    .value ==
+                                                                "Return_This_Product"
                                                             ? LocaleKeys
                                                                 .i_agree_return
                                                                 .tr()
@@ -3821,7 +4292,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      !isReturn
+                      !(optionModifyPanel.value == "Return_This_Product") ||
+                              (!(orderBloc.state.orderReturnDetailsModel?.data
+                                      ?.status
+                                      ?.contains("draft") ??
+                                  false))
                           ? SizedBox.shrink()
                           : BlocListener<OrderBloc, OrderState>(
                               listenWhen: (previous, current) =>
@@ -3849,8 +4324,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   showShadowForPanel.value = false;
                                   showShadowForCanselOrder.value = false;
                                   optionReturn.value = 0;
+                                  reasonCost.value = 0;
                                   optionCansel.value = [];
                                   showShadowForChangeAddress.value = false;
+                                  showShadowForConfirmOrder.value = false;
                                   shadowForChangeVariant.value = false;
                                 }
                               },
@@ -4101,10 +4578,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   showPanel.value = false;
                                   optionModifyPanel.value = null;
                                   enableChangeAddress.value = false;
+                                  showShadowForConfirmOrder.value = false;
                                   showShadowForPanel.value = false;
                                   showShadowForChangeAddress.value = false;
                                   showShadowForCanselOrder.value = false;
                                   optionReturn.value = 0;
+                                  reasonCost.value = 0;
                                   optionCansel.value = [];
                                   shadowForChangeVariant.value = false;
                                 },
@@ -4753,7 +5232,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   optionModifyPanel.value = null;
                                   showShadowForCanselOrder.value = false;
                                   enableChangeAddress.value = false;
+                                  showShadowForConfirmOrder.value = false;
                                   optionReturn.value = 0;
+                                  reasonCost.value = 0;
                                   optionCansel.value = [];
                                   showShadowForPanel.value = false;
                                   showShadowForChangeAddress.value = false;
@@ -4894,10 +5375,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       showPanel.value = false;
                                       optionModifyPanel.value = null;
                                       optionReturn.value = 0;
+                                      reasonCost.value = 0;
                                       optionCansel.value = [];
                                       enableChangeAddress.value = false;
                                       showShadowForPanel.value = false;
                                       showShadowForChangeAddress.value = false;
+                                      showShadowForConfirmOrder.value = false;
                                       shadowForChangeVariant.value = false;
                                       showShadowForCanselOrder.value = false;
                                     },
@@ -4957,7 +5440,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             topRight: Radius.circular(30.r)),
                         isDraggable: true,
                         onPanelClosed: () {
-                          qtyController.clear();
+                          qtyToChangeController.value = 0;
                           colorIndexTap.value = null;
                           // qtyOfReturnController.clear();
                           sizeIndexTap.value = null;
@@ -4967,8 +5450,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           showPanel.value = false;
                           optionModifyPanel.value = null;
                           enableChangeAddress.value = false;
+                          showShadowForConfirmOrder.value = false;
                           showShadowForPanel.value = false;
                           optionReturn.value = 0;
+                          reasonCost.value = 0;
                           optionCansel.value = [];
                           showShadowForChangeAddress.value = false;
 
@@ -5218,18 +5703,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     width: 5,
                                   ),
                                   Text(
-                                    (order!.orderAmount! *
+                                    HelperFunctions.formatNumber(
+                                        number: (order!.orderAmount! *
                                             homeBloc
                                                 .state
                                                 .getCurrencyForCountryModel!
                                                 .data!
                                                 .currency!
-                                                .exchangeRate!)
-                                        .toStringAsFixed(homeBloc
-                                                .state
-                                                .startingSetting
-                                                ?.decimalPointSettings ??
-                                            0),
+                                                .exchangeRate!),
+                                        isNeedRounding: false),
                                     style: context.textTheme.bodyMedium?.br
                                         .copyWith(
                                       color: const Color(0xff1D1D1D),
@@ -6577,6 +7059,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       } else {
                         optionVariant.value = "qty";
                       }
+                      qtyToChangeController.value =
+                          order!.details?[indexTap.value].qty?.round() ?? 0;
                       optionModifyPanel.value = "Change_Product_Request";
                     }
                   },
@@ -6648,6 +7132,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               optionReturn.value =
                                   orderDetails?.returnRequestProductReasonId ??
                                       0;
+                              ReturnReasonModel? reason = orderBloc.state
+                                  .returnReasonsModel?.data?.returnReasons!
+                                  .firstWhere(
+                                      (element) =>
+                                          element.id ==
+                                          orderDetails
+                                              ?.returnRequestProductReasonId,
+                                      orElse: () => ReturnReasonModel(cost: 0));
+                              reasonCost.value = (reason?.isCostBySystem == 1)
+                                  ? 0
+                                  : reason?.cost ?? 0;
                               orderBloc.add(StoreImagesForUpdateReturnEvent(
                                   images: orderDetails?.img ?? []));
                             } else {
@@ -6897,14 +7392,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               width: 5,
                             ),
                             Text(
-                              (order!.orderAmount! *
+                              HelperFunctions.formatNumber(
+                                  number: (order!.orderAmount! *
                                       homeBloc.state.getCurrencyForCountryModel!
-                                          .data!.currency!.exchangeRate!)
-                                  .toStringAsFixed(homeBloc
-                                          .state
-                                          .startingSetting
-                                          ?.decimalPointSettings ??
-                                      0),
+                                          .data!.currency!.exchangeRate!),
+                                  isNeedRounding: false),
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
@@ -7031,7 +7523,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     fontSize: 12.sp,
                     height: 1.3,
                   )),
-              Text(" 140",
+              Text(
+                  "  ${HelperFunctions.formatNumber(number: (((order!.details?[indexTap.value].productDetails?.offerPrice ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.br.copyWith(
                     color: const Color(0xff8D8D8D),
@@ -7039,7 +7532,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     fontSize: 12.sp,
                     height: 1.3,
                   )),
-              Text(" USD ${LocaleKeys.to_your_account.tr()}",
+              Text(
+                  " ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol} ${LocaleKeys.to_your_account.tr()}",
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.rr.copyWith(
                     color: const Color(0xff8D8D8D),
@@ -7207,54 +7701,54 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       return ValueListenableBuilder<int?>(
                           valueListenable: sizeIndexTap,
                           builder: (context, _sizeIndexTap, _) {
-                            return InkWell(
-                              onTap: () {
-                                if (_sizeIndexTap != null ||
-                                    _colorIndexTap != null ||
-                                    ((qtyController.text !=
-                                            (order!.details?[indexTap.value]
-                                                    .qty!
-                                                    .round())
-                                                .toString()) &&
-                                        qtyController.text.isNotEmpty)) {
-                                  shadowForChangeVariant.value = true;
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  width: 1.sw,
-                                  height: 53,
-                                  decoration: BoxDecoration(
-                                      color: (_sizeIndexTap != null ||
-                                              ((qtyController.text !=
-                                                      (order!
-                                                              .details?[indexTap
-                                                                  .value]
-                                                              .qty!
-                                                              .round())
-                                                          .toString()) &&
-                                                  qtyController
-                                                      .text.isNotEmpty) ||
-                                              _colorIndexTap != null)
-                                          ? Color(0xff402CDD)
-                                          : Color(0xffD3D3D3),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(20))),
-                                  child: Text(
-                                      "${LocaleKeys.change_request.tr()}",
-                                      maxLines: 1,
-                                      style: context.textTheme.bodyMedium?.mr
-                                          .copyWith(
-                                        color: Colors.white,
-                                        letterSpacing: 0.18,
-                                        fontSize: 16,
-                                        height: 1.3,
-                                      )),
-                                ),
-                              ),
-                            );
+                            return ValueListenableBuilder<int>(
+                                valueListenable: qtyToChangeController,
+                                builder: (context, _qtyToChangeController, _) {
+                                  return InkWell(
+                                    onTap: () {
+                                      if (_sizeIndexTap != null ||
+                                          _colorIndexTap != null ||
+                                          ((_qtyToChangeController !=
+                                              (order!
+                                                  .details?[indexTap.value].qty!
+                                                  .round())))) {
+                                        shadowForChangeVariant.value = true;
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24.0),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        width: 1.sw,
+                                        height: 53,
+                                        decoration: BoxDecoration(
+                                            color: (_sizeIndexTap != null ||
+                                                    ((_qtyToChangeController !=
+                                                        (order!
+                                                            .details?[
+                                                                indexTap.value]
+                                                            .qty!
+                                                            .round()))) ||
+                                                    _colorIndexTap != null)
+                                                ? Color(0xff402CDD)
+                                                : Color(0xffD3D3D3),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20))),
+                                        child: Text(
+                                            "${LocaleKeys.change_request.tr()}",
+                                            maxLines: 1,
+                                            style: context
+                                                .textTheme.bodyMedium?.mr
+                                                .copyWith(
+                                              color: Colors.white,
+                                              letterSpacing: 0.18,
+                                              fontSize: 16,
+                                              height: 1.3,
+                                            )),
+                                      ),
+                                    ),
+                                  );
+                                });
                           });
                     });
               }),
@@ -7288,7 +7782,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   onTap: () {
                                     optionVariant.value = "color";
                                     sizeIndexTap.value = null;
-                                    qtyController.clear();
+                                    qtyToChangeController.value = 0;
                                   },
                                   child: Container(
                                     height: 50,
@@ -7323,7 +7817,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                           InkWell(
                             onTap: () {
-                              qtyController.clear();
+                              qtyToChangeController.value = 0;
                               optionVariant.value = "size";
                               colorIndexTap.value = null;
                             },
@@ -7681,32 +8175,134 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   );
                                 })
                             : SizedBox(
-                                width: 75,
+                                width: 100,
                                 height: 40.h,
-                                child: TextFormField(
-                                  controller: qtyController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 2, horizontal: 8),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Color(0xFF8D8D8D)),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Color(0xFF8D8D8D)),
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    color: Color(0xFF1D1D1D),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
+                                child: ValueListenableBuilder<int>(
+                                    valueListenable: qtyToChangeController,
+                                    builder:
+                                        (context, _qtyToChangeController, _) {
+                                      return Container(
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color:
+                                                      const Color(0xFF1D1D1D)),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(15))),
+                                          height: 40.h,
+                                          child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                InkWell(
+                                                    onTap: () {
+                                                      if (order
+                                                              ?.details?[
+                                                                  indexTap
+                                                                      .value]
+                                                              .qty ==
+                                                          qtyToChangeController
+                                                              .value) {
+                                                        return;
+                                                      }
+                                                      qtyToChangeController
+                                                              .value =
+                                                          qtyToChangeController
+                                                                  .value +
+                                                              1;
+                                                    },
+                                                    child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        width: 20,
+                                                        height: 40.h,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.grey,
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  bottomRight: Radius
+                                                                      .circular(
+                                                                          14),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          14)),
+                                                        ),
+                                                        child: Text("+",
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: context
+                                                                .textTheme
+                                                                .bodyMedium
+                                                                ?.rr
+                                                                .copyWith(
+                                                              color:
+                                                                  Colors.white,
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              fontSize: 18.sp,
+                                                            )))),
+                                                Spacer(),
+                                                Text(
+                                                    (_qtyToChangeController)
+                                                        .toString(),
+                                                    style: context.textTheme
+                                                        .bodyMedium?.rr
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xFF1D1D1D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 20.sp,
+                                                    )),
+                                                Spacer(),
+                                                InkWell(
+                                                    onTap: () {
+                                                      if (qtyToChangeController
+                                                              .value ==
+                                                          0) {
+                                                        return;
+                                                      }
+                                                      qtyToChangeController
+                                                              .value =
+                                                          qtyToChangeController
+                                                                  .value -
+                                                              1;
+                                                    },
+                                                    child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        width: 20,
+                                                        height: 40.h,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.grey,
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  bottomLeft: Radius
+                                                                      .circular(
+                                                                          14),
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          14)),
+                                                        ),
+                                                        child: Text("-",
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: context
+                                                                .textTheme
+                                                                .bodyMedium
+                                                                ?.rr
+                                                                .copyWith(
+                                                              color:
+                                                                  Colors.white,
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              fontSize: 18.sp,
+                                                            )))),
+                                              ]));
+                                    }))
                   ],
                 );
               });
@@ -7832,15 +8428,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         fontSize: 12.sp,
                         height: 1.3,
                       )),
-                  Text(" 140",
-                      maxLines: 1,
-                      style: context.textTheme.bodyMedium?.br.copyWith(
-                        color: const Color(0xff8D8D8D),
-                        letterSpacing: 0.18,
-                        fontSize: 12.sp,
-                        height: 1.3,
-                      )),
-                  Text(" USD ${LocaleKeys.to_your_account.tr()}",
+                  ValueListenableBuilder<double>(
+                      valueListenable: reasonCost,
+                      builder: (context, _reasonCost, _) {
+                        return Text(
+                            order!.paymentStatus == "unpaid"
+                                ? " 0"
+                                : "  ${HelperFunctions.formatNumber(number: ((((order!.details?[indexTap.value].productDetails?.offerPrice ?? 0)) - (_reasonCost)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
+                            maxLines: 1,
+                            style: context.textTheme.bodyMedium?.br.copyWith(
+                              color: const Color(0xff8D8D8D),
+                              letterSpacing: 0.18,
+                              fontSize: 12.sp,
+                              height: 1.3,
+                            ));
+                      }),
+                  Text(
+                      " ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol} ${LocaleKeys.to_your_account.tr()}",
                       maxLines: 1,
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                         color: const Color(0xff8D8D8D),
@@ -8155,7 +8759,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   children: [
                                     for (ReturnReasonModel reason in row) ...[
                                       optionReturnOrder(
-                                        "${reason.reasonAeEn ?? '' + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: ((reason.cost ?? 0) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
+                                        "${reason.reasonAeEn ?? '' + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: ((reason.cost ?? 0) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
                                         reason.id ?? -1, // النص من الـ API
                                         _calculateButtonWidth(reason
                                                 .reasonAeEn ??
@@ -8163,10 +8767,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         () {
                                           if (optionReturn.value == reason.id) {
                                             optionReturn.value = 0;
+                                            reasonCost.value = 0;
                                             return;
                                           }
 
                                           optionReturn.value = reason.id ?? 0;
+                                          reasonCost.value =
+                                              (reason.isCostBySystem == 1)
+                                                  ? 0
+                                                  : reason.cost ?? 0;
                                         },
                                       ),
                                       SizedBox(width: 5),

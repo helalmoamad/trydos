@@ -611,14 +611,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? totalCashed.toStringAsFixed(homeState
-                                            .startingSetting
-                                            ?.decimalPointSettings ??
-                                        2)
-                                    : totalPrice.toStringAsFixed(homeState
-                                            .startingSetting
-                                            ?.decimalPointSettings ??
-                                        2),
+                                    ? HelperFunctions.formatNumber(
+                                        number: totalCashed,
+                                        isNeedRounding: false)
+                                    : HelperFunctions.formatNumber(
+                                        number: totalPrice,
+                                        isNeedRounding: false),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),
@@ -773,14 +771,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? totalCashed.toStringAsFixed(homeState
-                                            .startingSetting
-                                            ?.decimalPointSettings ??
-                                        2)
-                                    : totalPrice.toStringAsFixed(homeState
-                                            .startingSetting
-                                            ?.decimalPointSettings ??
-                                        2),
+                                    ? HelperFunctions.formatNumber(
+                                        number: totalCashed,
+                                        isNeedRounding: false)
+                                    : HelperFunctions.formatNumber(
+                                        number: totalPrice,
+                                        isNeedRounding: false),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),

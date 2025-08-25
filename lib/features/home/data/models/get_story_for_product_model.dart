@@ -1,22 +1,24 @@
 // To parse this JSON data, do
 //
-//     final getStoryForProductModel = getStoryForProductModelFromJson(jsonString);
+//     final getStoriesModel = getStoriesModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetStoryForProductModel getStoryForProductModelFromJson(String str) =>
+import 'package:trydos/features/story/data/models/image_detail.dart';
+
+GetStoryForProductModel getStoriesModelFromJson(String str) =>
     GetStoryForProductModel.fromJson(json.decode(str));
 
-String getStoryForProductModelToJson(GetStoryForProductModel data) =>
+String getStoriesModelToJson(GetStoryForProductModel data) =>
     json.encode(data.toJson());
 
 class GetStoryForProductModel {
-  final bool? isSuccessful;
-  final bool? hasContent;
-  final int? code;
-  final dynamic message;
-  final dynamic detailedError;
-  final Data? data;
+  bool? isSuccessful;
+  bool? hasContent;
+  int? code;
+  dynamic message;
+  dynamic detailedError;
+  Data? data;
 
   GetStoryForProductModel({
     this.isSuccessful,
@@ -65,23 +67,23 @@ class GetStoryForProductModel {
 }
 
 class Data {
-  final int? currentPage;
-  final List<Datum>? data;
-  final String? firstPageUrl;
-  final int? from;
-  final int? lastPage;
-  final String? lastPageUrl;
-  final List<Link>? links;
-  final dynamic nextPageUrl;
-  final String? path;
-  final int? perPage;
-  final dynamic prevPageUrl;
-  final int? to;
-  final int? total;
+  int? currentPage;
+  List<CollectionStoryModel>? collections;
+  String? firstPageUrl;
+  int? from;
+  int? lastPage;
+  String? lastPageUrl;
+  List<Link>? links;
+  String? nextPageUrl;
+  String? path;
+  int? perPage;
+  dynamic prevPageUrl;
+  int? to;
+  int? total;
 
   Data({
     this.currentPage,
-    this.data,
+    this.collections,
     this.firstPageUrl,
     this.from,
     this.lastPage,
@@ -97,13 +99,13 @@ class Data {
 
   Data copyWith({
     int? currentPage,
-    List<Datum>? data,
+    List<CollectionStoryModel>? collections,
     String? firstPageUrl,
     int? from,
     int? lastPage,
     String? lastPageUrl,
     List<Link>? links,
-    dynamic nextPageUrl,
+    String? nextPageUrl,
     String? path,
     int? perPage,
     dynamic prevPageUrl,
@@ -112,7 +114,7 @@ class Data {
   }) =>
       Data(
         currentPage: currentPage ?? this.currentPage,
-        data: data ?? this.data,
+        collections: collections ?? this.collections,
         firstPageUrl: firstPageUrl ?? this.firstPageUrl,
         from: from ?? this.from,
         lastPage: lastPage ?? this.lastPage,
@@ -128,9 +130,10 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         currentPage: json["current_page"],
-        data: json["data"] == null
+        collections: json["data"] == null
             ? []
-            : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+            : List<CollectionStoryModel>.from(
+                json["data"]!.map((x) => CollectionStoryModel.fromJson(x))),
         firstPageUrl: json["first_page_url"],
         from: json["from"],
         lastPage: json["last_page"],
@@ -148,9 +151,9 @@ class Data {
 
   Map<String, dynamic> toJson() => {
         "current_page": currentPage,
-        "data": data == null
+        "data": collections == null
             ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
+            : List<dynamic>.from(collections!.map((x) => x.toJson())),
         "first_page_url": firstPageUrl,
         "from": from,
         "last_page": lastPage,
@@ -167,59 +170,80 @@ class Data {
       };
 }
 
-class Datum {
-  final int? id;
-  final String? mobilePhone;
-  final dynamic photoPath;
-  final String? name;
-  final String? username;
-  final int? originalUserId;
-  final String? email;
-  final List<Story>? stories;
+enum SelectedStoriesStatus { init, loading, success, failure }
 
-  Datum({
+class CollectionStoryModel {
+  int? id;
+  String? mobilePhone;
+  dynamic photoPath;
+  String? name;
+  dynamic username;
+  dynamic originalUserId;
+  dynamic email;
+  List<Story>? stories;
+  List<dynamic>? media;
+  SelectedStoriesStatus selectedStoriesStatusForCollection;
+  ImageDetail? imageDetail;
+
+  CollectionStoryModel({
     this.id,
     this.mobilePhone,
     this.photoPath,
     this.name,
+    this.imageDetail,
+    this.selectedStoriesStatusForCollection = SelectedStoriesStatus.init,
     this.username,
     this.originalUserId,
     this.email,
     this.stories,
+    this.media,
   });
 
-  Datum copyWith({
+  CollectionStoryModel copyWith({
     int? id,
     String? mobilePhone,
     dynamic photoPath,
     String? name,
-    String? username,
-    int? originalUserId,
-    String? email,
+    dynamic username,
+    ImageDetail? imageDetail,
+    SelectedStoriesStatus? selectedStoriesStatusForCollection,
+    dynamic originalUserId,
+    dynamic email,
     List<Story>? stories,
+    List<dynamic>? media,
   }) =>
-      Datum(
+      CollectionStoryModel(
         id: id ?? this.id,
         mobilePhone: mobilePhone ?? this.mobilePhone,
+        selectedStoriesStatusForCollection:
+            selectedStoriesStatusForCollection ??
+                this.selectedStoriesStatusForCollection,
+        imageDetail: imageDetail ?? this.imageDetail,
         photoPath: photoPath ?? this.photoPath,
         name: name ?? this.name,
         username: username ?? this.username,
         originalUserId: originalUserId ?? this.originalUserId,
         email: email ?? this.email,
         stories: stories ?? this.stories,
+        media: media ?? this.media,
       );
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory CollectionStoryModel.fromJson(Map<String, dynamic> json) =>
+      CollectionStoryModel(
         id: json["id"],
         mobilePhone: json["mobile_phone"],
-        photoPath: json["photo_path"],
+        photoPath: (json["photo_path"] is String) ? json["photo_path"] : null,
         name: json["name"],
         username: json["username"],
         originalUserId: json["original_user_id"],
         email: json["email"],
         stories: json["stories"] == null
             ? []
-            : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
+            : List<Story>.from(
+                (json["stories"])!.map((x) => Story.fromJson(x))),
+        media: json["media"] == null
+            ? []
+            : List<dynamic>.from(json["media"]!.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -233,46 +257,46 @@ class Datum {
         "stories": stories == null
             ? []
             : List<dynamic>.from(stories!.map((x) => x.toJson())),
+        "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
       };
 }
 
 class Story {
-  final int? id;
-  final dynamic cutVideoName;
-  final dynamic cutVideoPath;
-  final dynamic fullVideoName;
-  final dynamic fullVideoPath;
-  final dynamic storageVideoPath;
-  final dynamic link;
-  final int? userId;
-  final DateTime? createdAt;
-  final int? isPhoto;
-  final int? isVideo;
-  final String? photoPath;
-  final int? productId;
-  final dynamic orderDetailId;
-  final int? status;
-  final dynamic file;
-  final bool? isSeen;
-  final int? viewersCount;
-  final List<dynamic>? media;
-
+  int? height;
+  int? width;
+  int? id;
+  dynamic cutVideoName;
+  dynamic cutVideoPath;
+  dynamic fullVideoName;
+  String? fullVideoPath;
+  dynamic storageVideoPath;
+  int? userId;
+  int? isPhoto;
+  int? isVideo;
+  String? photoPath;
+  String? oneLink;
+  dynamic file;
+  bool? isSeen;
+  String? createdAt;
+  int? viewersCount;
+  List<dynamic>? media;
+  bool isInitialStory;
   Story({
+    this.height,
+    this.width,
+    this.isInitialStory = false,
     this.id,
     this.cutVideoName,
     this.cutVideoPath,
+    this.oneLink,
     this.fullVideoName,
     this.fullVideoPath,
-    this.storageVideoPath,
-    this.link,
-    this.userId,
     this.createdAt,
+    this.storageVideoPath,
+    this.userId,
     this.isPhoto,
     this.isVideo,
     this.photoPath,
-    this.productId,
-    this.orderDetailId,
-    this.status,
     this.file,
     this.isSeen,
     this.viewersCount,
@@ -280,42 +304,42 @@ class Story {
   });
 
   Story copyWith({
+    int? width,
+    int? height,
+    bool? isInitialStory,
     int? id,
     dynamic cutVideoName,
     dynamic cutVideoPath,
     dynamic fullVideoName,
-    dynamic fullVideoPath,
+    String? fullVideoPath,
     dynamic storageVideoPath,
-    dynamic link,
     int? userId,
-    DateTime? createdAt,
     int? isPhoto,
     int? isVideo,
+    String? oneLink,
     String? photoPath,
-    int? productId,
-    dynamic orderDetailId,
-    int? status,
     dynamic file,
     bool? isSeen,
+    String? createdAt,
     int? viewersCount,
     List<dynamic>? media,
   }) =>
       Story(
+        height: height ?? this.height,
+        width: width ?? this.width,
+        isInitialStory: isInitialStory ?? this.isInitialStory,
         id: id ?? this.id,
         cutVideoName: cutVideoName ?? this.cutVideoName,
         cutVideoPath: cutVideoPath ?? this.cutVideoPath,
+        createdAt: createdAt ?? this.createdAt,
         fullVideoName: fullVideoName ?? this.fullVideoName,
         fullVideoPath: fullVideoPath ?? this.fullVideoPath,
         storageVideoPath: storageVideoPath ?? this.storageVideoPath,
-        link: link ?? this.link,
         userId: userId ?? this.userId,
-        createdAt: createdAt ?? this.createdAt,
         isPhoto: isPhoto ?? this.isPhoto,
         isVideo: isVideo ?? this.isVideo,
+        oneLink: oneLink ?? this.oneLink,
         photoPath: photoPath ?? this.photoPath,
-        productId: productId ?? this.productId,
-        orderDetailId: orderDetailId ?? this.orderDetailId,
-        status: status ?? this.status,
         file: file ?? this.file,
         isSeen: isSeen ?? this.isSeen,
         viewersCount: viewersCount ?? this.viewersCount,
@@ -326,22 +350,17 @@ class Story {
         id: json["id"],
         cutVideoName: json["cut_video_name"],
         cutVideoPath: json["cut_video_path"],
+        oneLink: json["link"],
         fullVideoName: json["full_video_name"],
         fullVideoPath: json["full_video_path"],
         storageVideoPath: json["storage_video_path"],
-        link: json["link"],
         userId: json["user_id"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
         isPhoto: json["is_photo"],
         isVideo: json["is_video"],
         photoPath: json["photo_path"],
-        productId: json["product_id"],
-        orderDetailId: json["order_detail_id"],
-        status: json["status"],
         file: json["file"],
         isSeen: json["is_seen"],
+        createdAt: json["created_at"] == null ? null : json["created_at"],
         viewersCount: json["viewers_count"],
         media: json["media"] == null
             ? []
@@ -352,18 +371,15 @@ class Story {
         "id": id,
         "cut_video_name": cutVideoName,
         "cut_video_path": cutVideoPath,
+        "created_at": createdAt,
+        "link": oneLink,
         "full_video_name": fullVideoName,
         "full_video_path": fullVideoPath,
         "storage_video_path": storageVideoPath,
-        "link": link,
         "user_id": userId,
-        "created_at": createdAt?.toIso8601String(),
         "is_photo": isPhoto,
         "is_video": isVideo,
         "photo_path": photoPath,
-        "product_id": productId,
-        "order_detail_id": orderDetailId,
-        "status": status,
         "file": file,
         "is_seen": isSeen,
         "viewers_count": viewersCount,
@@ -372,9 +388,9 @@ class Story {
 }
 
 class Link {
-  final String? url;
-  final String? label;
-  final bool? active;
+  String? url;
+  String? label;
+  bool? active;
 
   Link({
     this.url,

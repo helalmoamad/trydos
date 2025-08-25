@@ -1,17 +1,15 @@
-/*import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/base_page.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/pages/story_collection.dart';
 
 import 'package:flutter_carousel_slider/carousel_slider.dart';
-import 'story_collection.dart';
 
 class StoryCollectionPageView extends StatefulWidget {
   const StoryCollectionPageView({super.key, required this.initialPage});
@@ -29,14 +27,34 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
       CarouselSliderController();
   final ValueNotifier<bool> startStoriesNotifier = ValueNotifier(true);
   final ValueNotifier<int> denyScrollingAtEdgesNotifier = ValueNotifier(0);
-
+  bool canPop = true;
   @override
   void initState() {
+    canPop = true;
     prevPageNumber = widget.initialPage;
     pageController = PageController(initialPage: prevPageNumber);
     super.initState();
   }
 
+  bool _eventLogged = false;
+  /* @override
+  void didChangeDependencies() async {
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: AnalyticsButtonsEventNameConst.VIEW_STORY_BUTTON,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.STORY_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }
+
+    super.didChangeDependencies();
+  }
+*/
   late PageController pageController;
 
   bool stopAnimationAndVideo = false;
@@ -46,6 +64,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
 
   @override
   void dispose() {
+    carouselSliderController.dispose();
     for (int i = 0; i < animationControllers.length; i++)
       animationControllers[i].dispose();
     super.dispose();
@@ -108,6 +127,12 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                             carouselSliderController.jumpToPage(
                                 index: state.storiesCollections.length - 1);
                           }
+                          ///////////////////////////
+                          // FirebaseAnalyticsService.logEventForSession(
+                          //   eventName: AnalyticsEventsConst.buttonClicked,
+                          //   executedEventName: AnalyticsButtonsEventNameConst
+                          //       .changeStoryInStroyScreenEvent,
+                          // );
                         },
                         slideBuilder: (int index) {
                           currentPage = widget.initialPage;
@@ -138,6 +163,12 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                       (state.storiesCollections.length *
                                           100000)) <
                                   (state.storiesCollections.length * 100000)) {
+                            if (canPop) {
+                              Future.delayed(Duration(milliseconds: 300),
+                                  () => Navigator.of(context).pop());
+                            }
+                            canPop = false;
+
                             return Container(
                               color: Colors.black,
                             );
@@ -152,6 +183,11 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                   (state.storiesCollections.length * 100000) +
                                       state.storiesCollections.length -
                                       1) {
+                            if (canPop) {
+                              Future.delayed(Duration(milliseconds: 300),
+                                  () => Navigator.of(context).pop());
+                            }
+                            canPop = false;
                             return Container(
                               color: Colors.black,
                             );
@@ -167,10 +203,11 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                         prevPageNumber != currentPage,
                                     onReachStoryAtEdge: (int collectionIndex,
                                         bool isReachTheLeftMost) {
-                                      GetIt.I<HomeBloc>().add(StorySelectEvent(
-                                          collectionIndex: collectionIndex,
-                                          selectedStoryIndexInCollection: 0,
-                                          currentPage: collectionIndex));
+                                      GetIt.I<HomeBloc>().add(
+                                          StorySelectedEvent(
+                                              collectionIndex: collectionIndex,
+                                              selectedStoryIndexInCollection: 0,
+                                              currentPage: collectionIndex));
                                       if (!isReachTheLeftMost) {
                                         if (collectionIndex ==
                                             state.storiesCollections.length -
@@ -181,7 +218,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                           return;
                                         }
                                         GetIt.I<HomeBloc>().add(
-                                            StorySelectEvent(
+                                            StorySelectedEvent(
                                                 collectionIndex:
                                                     collectionIndex + 1,
                                                 selectedStoryIndexInCollection:
@@ -199,7 +236,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                           return;
                                         }
                                         GetIt.I<HomeBloc>().add(
-                                            StorySelectEvent(
+                                            StorySelectedEvent(
                                                 collectionIndex:
                                                     collectionIndex - 1,
                                                 selectedStoryIndexInCollection:
@@ -242,7 +279,8 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                 state.storiesCollections.length;
                           }
                           if (currentPage != prevPageNumber) {
-                            GetIt.I<HomeBloc>().add(StorySelectEvent(
+                            print("page:************************");
+                            GetIt.I<HomeBloc>().add(StorySelectedEvent(
                                 collectionIndex: currentPage,
                                 currentPage: currentPage,
                                 selectedStoryIndexInCollection: -1));
@@ -311,4 +349,3 @@ class denyScrollingToLeftScrollPhysics extends ScrollPhysics {
     return 0.5;
   }
 }
- */

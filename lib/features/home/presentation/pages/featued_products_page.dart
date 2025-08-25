@@ -95,6 +95,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
       debounce!.cancel();
     }
     debounce = Timer(Duration(milliseconds: 600), () {
+      // videoProductInListingController.forEach((key, value) => value.pause());
       //  if (setThisEnabledNotifier.value.item1 != -1) {
       //    setThisEnabledNotifier.value = Tuple2(-1, -1);
       //  }
@@ -133,6 +134,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     //productIdToSaveRedeemTimer = [];
+
     scrollController.addListener(_listenToScroll);
     // TODO: implement initState
     super.initState();
@@ -140,8 +142,10 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
 
   @override
   void dispose() {
+    productSlugToSaveVideoTimer = [];
     scrollController.removeListener(_listenToScroll);
     scrollController.dispose();
+    clearvideoProductInListingController(productSlug: "");
     super.dispose();
   }
 

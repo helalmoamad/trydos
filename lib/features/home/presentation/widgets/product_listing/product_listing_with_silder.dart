@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +14,10 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
+
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -22,15 +26,17 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/static
 import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:tuple/tuple.dart';
+import 'package:trydos/main.dart';
+
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
+import 'package:video_player/video_player.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 
 /// 🚀 نسخة مبسطة جداً من ProductListing3DSlider - أداء فائق ⚡
-class ProductListingWithoutSlider extends StatefulWidget {
-  const ProductListingWithoutSlider({
+class ProductListingWithSlider extends StatefulWidget {
+  const ProductListingWithSlider({
     super.key,
     // required this.setThisEnabled,
     // required this.slidingModeItem,
@@ -42,6 +48,7 @@ class ProductListingWithoutSlider extends StatefulWidget {
     required this.visibleFlashDeal,
     this.productIsFlashDeal,
     this.fromFlashDeal,
+    this.videoSource,
     this.fromHomePage = false,
     required this.finishRedeem,
     this.tapIndexToShowColorImages,
@@ -66,22 +73,51 @@ class ProductListingWithoutSlider extends StatefulWidget {
   final bool fromHomePage;
   final String? imageSource;
   final bool? fromFlashDeal;
+  final String? videoSource;
   final productListingModel.Products productItem;
   //final ValueNotifier<int> currentChosenColor;
   final ValueNotifier<bool>? productIsFlashDeal;
 
   @override
-  State<ProductListingWithoutSlider> createState() =>
-      _ProductListingWithoutSliderState();
+  State<ProductListingWithSlider> createState() =>
+      _ProductListingWithSliderState();
 }
 
-class _ProductListingWithoutSliderState
-    extends State<ProductListingWithoutSlider> {
+class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
   late HomeBloc _homeBloc;
+  Timer? disDebounce;
+
+  Future<void>? _initializeVideoFuture;
 
   @override
   void initState() {
     super.initState();
+    if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
+      videoProductInListingController[widget.productItem.slug ?? ""]?.dispose();
+      videoProductInListingController.remove(widget.productItem.slug ?? "");
+      videoProductInListingController.addAll({
+        widget.productItem.slug ?? "": VideoPlayerController.networkUrl(
+          Uri.parse(widget.videoSource!),
+          videoPlayerOptions: VideoPlayerOptions(),
+        )..setLooping(true)
+      });
+      _initializeVideoFuture =
+          videoProductInListingController[widget.productItem.slug ?? ""]!
+              .initialize()
+              .then((_) {
+        if (!mounted) return;
+        setState(() {});
+        videoProductInListingController[widget.productItem.slug ?? ""]!
+            .setVolume(0);
+        videoProductInListingController[widget.productItem.slug ?? ""]!.play();
+      });
+
+      videoProductInListingController[widget.productItem.slug ?? ""]!
+          .addListener(() {
+        if (!mounted) return;
+        setState(() {});
+      });
+    }
     _homeBloc = BlocProvider.of<HomeBloc>(context);
   }
 
@@ -91,6 +127,28 @@ class _ProductListingWithoutSliderState
       textDirection: TextDirection.ltr,
       child: _buildSimpleProductCard(),
     );
+  }
+
+  @override
+  void dispose() {
+    if (disDebounce?.isActive ?? false) {
+      disDebounce!.cancel();
+    }
+    disDebounce = Timer(Duration(milliseconds: 2000), () {
+      for (var i = 0;
+          i < videoProductInListingController.keys.toList().length;
+          i++) {
+        if (!productSlugToSaveVideoTimer
+            .contains(videoProductInListingController.keys.toList()[i])) {
+          videoProductInListingController[i]?.pause();
+          videoProductInListingController[i]?.dispose();
+          videoProductInListingController
+              .remove(videoProductInListingController.keys.toList()[i]);
+        }
+      }
+    });
+
+    super.dispose();
   }
 
   /// 🎯 بطاقة منتج بسيطة - أداء ممتاز
@@ -196,6 +254,9 @@ class _ProductListingWithoutSliderState
                           widget.productItem.productId.toString()) ??
                       0) >
                   0;
+          final bool hasVideo =
+              (widget.videoSource != null && widget.videoSource!.isNotEmpty);
+
           return Container(
             width: 200,
             height: 290,
@@ -203,16 +264,18 @@ class _ProductListingWithoutSliderState
             padding: EdgeInsets.zero,
             child: (imageUrl != null
                 ? Stack(alignment: Alignment.bottomCenter, children: [
-                    ProductListingImageWidget(
-                      borderColor: isRedeem ? Color(0xffFF6200) : null,
-                      orginalHeight: imageHeight,
-                      orginalWidth: imageWidth,
-                      width: 200,
-                      imageUrl: imageUrl,
-                      height: 290,
-                      circleShape: false,
-                      innerShadowYOffset: 3,
-                    ),
+                    hasVideo
+                        ? _buildVideoBox(isRedeem, imageUrl)
+                        : ProductListingImageWidget(
+                            borderColor: isRedeem ? Color(0xffFF6200) : null,
+                            orginalHeight: imageHeight,
+                            orginalWidth: imageWidth,
+                            width: 200,
+                            imageUrl: imageUrl,
+                            height: 290,
+                            circleShape: false,
+                            innerShadowYOffset: 3,
+                          ),
                     Positioned(
                         bottom: 0,
                         child: StaticCircleCarousel(
@@ -239,6 +302,105 @@ class _ProductListingWithoutSliderState
                   )),
           );
         });
+  }
+
+  Widget _buildVideoBox(bool isRedeem, String imageUrl) {
+    if (videoProductInListingController[widget.productItem.slug ?? ""] ==
+        null) {
+      return Container(color: Colors.black12);
+    }
+
+    return Container(
+        height: 290,
+        child: FutureBuilder<void>(
+          future: _initializeVideoFuture,
+          builder: (context, snapshot) {
+            final bool initialized =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isInitialized;
+            final bool buffering =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isBuffering;
+            final bool showLoading = !initialized;
+
+            Widget videoChild;
+            if (initialized) {
+              videoChild = FittedBox(
+                  fit: BoxFit.cover,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: SizedBox(
+                        width: 190,
+                        height: 290,
+                        child: VideoPlayer(videoProductInListingController[
+                            widget.productItem.slug ?? ""]!),
+                      )));
+            } else {
+              videoChild = SizedBox.shrink();
+            }
+
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                videoChild,
+                if (showLoading)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: ProductListingImageWidget(
+                      borderColor: isRedeem ? Color(0xffFF6200) : null,
+                      orginalHeight: 200,
+                      orginalWidth: 200,
+                      width: 200,
+                      imageUrl: imageUrl,
+                      height: 290,
+                      circleShape: false,
+                      innerShadowYOffset: 3,
+                    ),
+                  ),
+                buffering
+                    ? TrydosLoader(
+                        size: 20,
+                      )
+                    : /* videoProductInListingController[
+                                widget.productItem.slug ?? ""]!
+                            .value
+                            .isPlaying
+                        ? InkWell(
+                            onTap: () {
+                              videoProductInListingController[
+                                      widget.productItem.slug ?? ""]!
+                                  .pause();
+                            },
+                            child: SizedBox(
+                              width: 60,
+                              height: 60,
+                            ),
+                          )
+                        : Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(1, 1, 0, 0.2),
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(color: Colors.white)),
+                            child: InkWell(
+                              onTap: () {
+                                videoProductInListingController
+                                    .forEach((key, value) => value.pause());
+                                videoProductInListingController[
+                                        widget.productItem.slug ?? ""]!
+                                    .play();
+                              },
+                              child: Icon(Icons.play_arrow,
+                                  size: 30, color: Colors.white),
+                            ))*/
+                    SizedBox.shrink()
+              ],
+            );
+          },
+        ));
   }
 
   /// 💰 معلومات المنتج المبسطة
@@ -532,7 +694,7 @@ class _ProductListingWithoutSliderState
   }
 
   /// 🏷️ Category Icon
-  Widget _buildCategoryIcon() {
+  /* Widget _buildCategoryIcon() {
     final categoryIcon = widget.productItem.category?.flatPhotoPath?.filePath;
     if (categoryIcon == null) return const SizedBox.shrink();
 
@@ -546,7 +708,7 @@ class _ProductListingWithoutSliderState
         ),
       ),
     );
-  }
+  }*/
 
   /// 💰 Price Section - FIXED: أبعاد أصلية
   Widget _buildPriceSection() {
@@ -564,8 +726,6 @@ class _ProductListingWithoutSliderState
             final exchangeRate = state
                     .getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
                 1;
-            final currencySymbol =
-                state.getCurrencyForCountryModel?.data?.currency?.symbol ?? '';
 
             return Directionality(
               textDirection: LanguageService.languageCode == "ar"

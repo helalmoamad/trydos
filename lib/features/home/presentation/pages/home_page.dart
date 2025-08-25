@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,6 +51,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
@@ -124,6 +125,10 @@ class _HomePageState extends State<HomePage> {
     debounce = Timer(
       Duration(milliseconds: 600),
       () {
+        try {
+          videoProductInListingController
+              .forEach((key, value) => value.pause());
+        } catch (e) {}
         int lastIndexSeenByUser = (scrollController.position.pixels +
                 scrollController.position.viewportDimension +
                 235) ~/
@@ -1140,7 +1145,7 @@ class _HomePageState extends State<HomePage> {
                         Duration _duration = Duration();
                         final now = DateTime.now();
                         try {
-                          endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                          endDate = tran.DateFormat('MM/dd/yyyy', 'en_US')
                               .parse(element.flashDealEndDate ?? "");
                           endDate = endDate.add(Duration(days: 1));
                         } catch (e) {
@@ -1884,9 +1889,11 @@ class _HomePageState extends State<HomePage> {
   Widget storySection(Locale currentLocale, BuildContext context) {
     return Stack(
       children: [
-        StoriesList(
-          isShowPanelForVerified: widget.isShowPanelForVerified,
-        ), // height 220
+        Directionality(
+            textDirection: TextDirection.ltr,
+            child: StoriesList(
+              isShowPanelForVerified: widget.isShowPanelForVerified,
+            )), // height 220
         Positioned(
           top: 0,
           right: LanguageService.languageCode == "ar" ? 10 : null,

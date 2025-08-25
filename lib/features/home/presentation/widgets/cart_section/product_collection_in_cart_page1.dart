@@ -1419,8 +1419,8 @@ class _ProductCollectionInCartPage1State
                                                 (state.cartCollection?[index]
                                                         .haveHurryUpNotifyQty ??
                                                     false)
-                                            ? 75
-                                            : 40,
+                                            ? 85
+                                            : 50,
                                 right: LanguageService.languageCode != "ar"
                                     ? 5
                                     : null,

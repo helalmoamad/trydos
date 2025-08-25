@@ -37,6 +37,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:trydos/trydos_application.dart';
+import 'package:video_player/video_player.dart';
 import 'common/helper/helper_functions.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
@@ -274,7 +275,19 @@ bool notificationClicked = false;
 List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
 List<String> productIdToSaveRedeemTimer = [];
-int applicationVersion = 1;
+List<String> productSlugToSaveVideoTimer = [];
+Map<String, VideoPlayerController> videoProductInListingController = {};
+void clearvideoProductInListingController({required String productSlug}) {
+  if (productSlug != "") {
+    videoProductInListingController[productSlug]?.dispose();
+    videoProductInListingController.remove(productSlug);
+  } else {
+    videoProductInListingController.forEach((key, value) => value.dispose());
+    videoProductInListingController = {};
+  }
+}
+
+int applicationVersion = 3;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();

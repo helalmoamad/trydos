@@ -268,47 +268,54 @@ class OldCart {
             flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
       );
 
-  factory OldCart.fromJson(Map<String, dynamic> json) => OldCart(
-        id: json["id"],
-        customerId: json["customer_id"],
-        cartGroupId: json["cart_group_id"],
-        productId: json["product_id"],
-        shippingDays: json["shipping_days"],
-        haveHurryUpNotify: json["have_hurry_up_notify"],
-        timeLeftInMinutes: json["time_left_in_minutes"],
-        choices: json["choices"] == null
-            ? []
-            : List<Choice>.from(
-                json["choices"]!.map((x) => Choice.fromJson(x))),
-        variations: json["variations"] == null
-            ? []
-            : List<VariationCart>.from(
-                json["variations"]!.map((x) => VariationCart.fromJson(x))),
-        variant: json["variant"],
-        availableQuantity:
-            double.tryParse(json["available_quantity"].toString())!.round(),
-        maxAllowedQty: json["max_allowed_qty"],
-        vendorName: json["vendor_name"],
-        quantity: double.tryParse(json["quantity"].toString())!.round(),
-        discount: json["discount"]?.toDouble(),
-        priceOfVariant: double.tryParse(json["price_of_variant"].toString()),
-        tax: json["tax"],
-        slug: json["slug"],
-        name: json["name"],
-        countOfPieces: json["count_of_pieces"],
-        shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
-        boutique: json["boutique"] == null
-            ? null
-            : BoutiquesCart.fromJson(json["boutique"]),
-        thumbnail: json["thumbnail"],
-        image: json["image"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        flashDealDetails: json["flash_deal_details"],
-        flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
-      );
+  factory OldCart.fromJson(Map<String, dynamic> json) {
+    return OldCart(
+      id: json["id"],
+      customerId: json["customer_id"],
+      cartGroupId: json["cart_group_id"],
+      productId: json["product_id"],
+      shippingDays: json["shipping_days"],
+      haveHurryUpNotify: json["have_hurry_up_notify"],
+      timeLeftInMinutes: json["time_left_in_minutes"],
+      choices: json["choices"] == null
+          ? []
+          : List<Choice>.from(json["choices"]!.map((x) => Choice.fromJson(x))),
+      variations: json["variations"] == null
+          ? []
+          : (json["variations"] is List)
+              ? (json["variations"] as List).isEmpty
+                  ? []
+                  : json["variations"]?.first.isEmpty
+                      ? []
+                      : List<VariationCart>.from(json["variations"]
+                          .map((x) => VariationCart.fromJson(x)))
+              : [],
+      variant: json["variant"],
+      availableQuantity:
+          double.tryParse(json["available_quantity"].toString())!.round(),
+      maxAllowedQty: json["max_allowed_qty"],
+      vendorName: json["vendor_name"],
+      quantity: double.tryParse(json["quantity"].toString())!.round(),
+      discount: json["discount"]?.toDouble(),
+      priceOfVariant: double.tryParse(json["price_of_variant"].toString()),
+      tax: json["tax"],
+      slug: json["slug"],
+      name: json["name"],
+      countOfPieces: json["count_of_pieces"],
+      shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
+      brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
+      boutique: json["boutique"] == null
+          ? null
+          : BoutiquesCart.fromJson(json["boutique"]),
+      thumbnail: json["thumbnail"],
+      image: json["image"],
+      createdAt: json["created_at"] == null
+          ? null
+          : DateTime.parse(json["created_at"]),
+      flashDealDetails: json["flash_deal_details"],
+      flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,

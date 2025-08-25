@@ -7,9 +7,6 @@ part of 'home_state.dart';
 // **************************************************************************
 
 HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
-      storiesForProduct: (json['storiesForProduct'] as List<dynamic>?)
-          ?.map((e) => Story.fromJson(e as Map<String, dynamic>))
-          .toList(),
       getAndAddCountViewOfProductStatus:
           (json['getAndAddCountViewOfProductStatus'] as Map<String, dynamic>?)
                   ?.map(
@@ -223,6 +220,24 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetCurrencyForCountryModel.fromJson(
               json['getCurrencyForCountryModel'] as Map<String, dynamic>),
+      storiesCollections: (json['storiesCollections'] as List<dynamic>?)
+              ?.map((e) =>
+                  CollectionStoryModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      selectedVideoStatus: $enumDecodeNullable(
+              _$SelectedVideoStatusEnumMap, json['selectedVideoStatus']) ??
+          SelectedVideoStatus.init,
+      storyLink: json['storyLink'] as String?,
+      finishGetAllStory: json['finishGetAllStory'] as bool? ?? false,
+      storyOffset: (json['storyOffset'] as num?)?.toInt() ?? 0,
+      getStoryWithPagintionStatusLoading:
+          json['getStoryWithPagintionStatusLoading'] as bool? ?? false,
+      currentStoryInEachCollection:
+          (json['currentStoryInEachCollection'] as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(int.parse(k), (e as num?)?.toInt()),
+              ) ??
+              const {},
       productIdToSaveRedeemTimer:
           (json['productIdToSaveRedeemTimer'] as List<dynamic>?)
                   ?.map((e) => e as String)
@@ -345,6 +360,19 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'currentSlugToRefreshFromNotification':
           instance.currentSlugToRefreshFromNotification,
       'userInfo': instance.userInfo?.toJson(),
+      'storiesCollections':
+          instance.storiesCollections.map((e) => e.toJson()).toList(),
+      'currentPage': instance.currentPage,
+      'selectedVideoStatus':
+          _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
+      'storyOffset': instance.storyOffset,
+      'getStoryWithPagintionStatusLoading':
+          instance.getStoryWithPagintionStatusLoading,
+      'finishGetAllStory': instance.finishGetAllStory,
+      'storyLink': instance.storyLink,
+      'selectedCollection': instance.selectedCollection,
+      'currentStoryInEachCollection': instance.currentStoryInEachCollection
+          .map((k, e) => MapEntry(k.toString(), e)),
       'addProductIdToSaveRedeemTimerStatus':
           _$AddProductIdToSaveRedeemTimerStatusEnumMap[
               instance.addProductIdToSaveRedeemTimerStatus],
@@ -400,8 +428,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'addCommentStatus': _$AddCommentStatusEnumMap[instance.addCommentStatus]!,
       'addOrRemoveLikeOfProductStatus': _$AddOrRemoveLikeOfProductStatusEnumMap[
           instance.addOrRemoveLikeOfProductStatus]!,
-      'selectedCollection': instance.selectedCollection,
-      'currentPage': instance.currentPage,
       'countryCoordinatesBorders':
           instance.countryCoordinatesBorders.map((e) => e.toJson()).toList(),
       'searchHistory': instance.searchHistory,
@@ -445,8 +471,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$GetProductListingStatusEnumMap[instance.getProductListingStatus]!,
       'getStoriesForProductStatus': _$GetStoriesForProductStatusEnumMap[
           instance.getStoriesForProductStatus]!,
-      'storiesForProduct':
-          instance.storiesForProduct?.map((e) => e.toJson()).toList(),
       'sizesForEachColor': instance.sizesForEachColor,
       'colorsForEachProduct': instance.colorsForEachProduct,
       'sizesQuantitiesForEachColor': instance.sizesQuantitiesForEachColor,
@@ -628,6 +652,13 @@ const _$GetStoriesForProductStatusEnumMap = {
   GetStoriesForProductStatus.loading: 'loading',
   GetStoriesForProductStatus.success: 'success',
   GetStoriesForProductStatus.failure: 'failure',
+};
+
+const _$SelectedVideoStatusEnumMap = {
+  SelectedVideoStatus.init: 'init',
+  SelectedVideoStatus.loading: 'loading',
+  SelectedVideoStatus.success: 'success',
+  SelectedVideoStatus.failure: 'failure',
 };
 
 const _$GetCartOverviewStatusEnumMap = {

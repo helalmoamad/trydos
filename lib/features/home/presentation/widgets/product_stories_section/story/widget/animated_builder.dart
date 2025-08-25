@@ -1,8 +1,7 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
-
-import '../../../../manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 
 class AnimatedBar extends StatelessWidget {
   final AnimationController animController;
@@ -19,6 +18,11 @@ class AnimatedBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.currentStoryInEachCollection[collectionIndex] !=
+              current.currentStoryInEachCollection[collectionIndex] ||
+          previous.getStoriesForProductStatus !=
+              current.getStoriesForProductStatus,
       builder: (context1, state) {
         return Flexible(
           child: Padding(
@@ -72,4 +76,3 @@ Container _buildContainer(double width, Color color) {
     ),
   );
 }
-*/

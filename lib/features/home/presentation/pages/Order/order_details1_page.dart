@@ -388,11 +388,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                 '') ??
                                                         DateTime.now(),
                                                   ),
-                                                  orderAmount: orderAmount
-                                                      .toStringAsFixed(state
-                                                              .startingSetting
-                                                              ?.decimalPointSettings ??
-                                                          0),
+                                                  orderAmount: HelperFunctions
+                                                      .formatNumber(
+                                                          number: orderAmount,
+                                                          isNeedRounding:
+                                                              false),
                                                   orderCurrency: currencySymbol,
                                                 ),
                                               );
@@ -2209,14 +2209,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               width: 5,
                             ),
                             Text(
-                              (orders[_indexTapPackage].orderAmount! *
-                                      homeBloc.state.getCurrencyForCountryModel!
-                                          .data!.currency!.exchangeRate!)
-                                  .toStringAsFixed(homeBloc
-                                          .state
-                                          .startingSetting
-                                          ?.decimalPointSettings ??
-                                      0),
+                              HelperFunctions.formatNumber(
+                                  number:
+                                      (orders[_indexTapPackage].orderAmount! *
+                                          homeBloc
+                                              .state
+                                              .getCurrencyForCountryModel!
+                                              .data!
+                                              .currency!
+                                              .exchangeRate!),
+                                  isNeedRounding: false),
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
@@ -2847,19 +2849,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           width: 5,
                                         ),
                                         Text(
-                                          (orders[_indexTapPackage]
+                                          HelperFunctions.formatNumber(
+                                              number: (orders[_indexTapPackage]
                                                       .orderAmount! *
                                                   homeBloc
                                                       .state
                                                       .getCurrencyForCountryModel!
                                                       .data!
                                                       .currency!
-                                                      .exchangeRate!)
-                                              .toStringAsFixed(homeBloc
-                                                      .state
-                                                      .startingSetting
-                                                      ?.decimalPointSettings ??
-                                                  0),
+                                                      .exchangeRate!),
+                                              isNeedRounding: false),
                                           style: context
                                               .textTheme.bodyMedium?.br
                                               .copyWith(
@@ -3441,12 +3440,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             width: 5,
                           ),
                           Text(
-                            (orders[_indexTapPackage].orderAmount! *
+                            HelperFunctions.formatNumber(
+                                number: (orders[_indexTapPackage].orderAmount! *
                                     homeBloc.state.getCurrencyForCountryModel!
-                                        .data!.currency!.exchangeRate!)
-                                .toStringAsFixed(homeBloc.state.startingSetting
-                                        ?.decimalPointSettings ??
-                                    0),
+                                        .data!.currency!.exchangeRate!),
+                                isNeedRounding: false),
                             style: context.textTheme.bodyMedium?.br.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,

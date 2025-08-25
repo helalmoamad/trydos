@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +29,10 @@ import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
     as filters_model;
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
-import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
+
 import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
@@ -39,7 +41,7 @@ import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_use
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_auth_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_colors_sizes_for_search_usecase.dart';
+
 import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_country_boundary_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
@@ -342,7 +344,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     /* on<GeColorsAndSizesForSearchEvent>(
       _onGeColorsAndSizesForSearchEvent,
     );*/
-
+    on<LoadFailureEvent>(((event, emit) => emit(state.copyWith(
+            storiesCollections: state.storiesCollections.map((e) {
+          if (e.id == event.collectionId) {
+            return e.copyWith(
+                selectedStoriesStatusForCollection:
+                    SelectedStoriesStatus.failure);
+          }
+          return e;
+        }).toList()))));
+    on<StorySelectedEvent>(_onStorySelectedEvent);
     on<RemoveItemsFromCartAfterOrderSuccessEvent>(
       _onRemoveItemsFromCartAfterOrderSuccessEvent,
     );
@@ -468,6 +479,92 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           countryCoordinatesBorders: countryCoordinatesBorders,
           getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.success));
     });
+  }
+
+  _onStorySelectedEvent(
+      StorySelectedEvent event, Emitter<HomeState> emit) async {
+    //todo make the story seen when he press to show it
+    debugPrint(
+        'currentStoryInEachCollection ${event.selectedStoryIndexInCollection}');
+    debugPrint('selected ${event.collectionIndex}');
+    debugPrint(
+        'state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}');
+
+    Map<int, int?> currentStoryInEachCollection =
+        Map.of(state.currentStoryInEachCollection);
+    currentStoryInEachCollection[event.collectionIndex] =
+        event.selectedStoryIndexInCollection == -1
+            ? currentStoryInEachCollection[event.collectionIndex]
+            : event.selectedStoryIndexInCollection;
+    //todo make  the state loading
+
+    emit(state.copyWith(
+      //selectedStoriesStatus: SelectedStoriesStatus.loading,
+      currentPage:
+          event.currentPage == -1 ? state.currentPage : event.currentPage,
+      selectedCollection: event.collectionIndex,
+      currentStoryInEachCollection: Map.of(currentStoryInEachCollection),
+    ));
+
+    var currentStoryInSelectedCollection =
+        state.storiesCollections[event.collectionIndex].stories![max(
+            state.currentStoryInEachCollection[event.collectionIndex]!,
+            event.selectedStoryIndexInCollection)];
+    if (currentStoryInSelectedCollection.isPhoto == 1) {
+//todo debug
+      //todo bring the real width and height for selected photo
+      final response = await getWidthAndHeightUseCase(widthAndHeightParams(
+          url: currentStoryInSelectedCollection.photoPath!,
+          collectionId: state.storiesCollections[event.collectionIndex].id!));
+      response.fold((l) {
+        if (ErrorManager.shouldRetry('StorySelectedEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('StorySelectedEvent');
+
+          emit(state.copyWith(
+              storiesCollections: state.storiesCollections.map((e) {
+            if (e.id == state.storiesCollections[event.collectionIndex].id) {
+              return e.copyWith(
+                  selectedStoriesStatusForCollection:
+                      SelectedStoriesStatus.failure);
+            }
+            return e;
+          }).toList()));
+        } else {
+          ErrorManager.incrementRetry('StorySelectedEvent');
+          add(StorySelectedEvent(
+              collectionIndex: event.collectionIndex,
+              selectedStoryIndexInCollection:
+                  event.selectedStoryIndexInCollection,
+              currentPage: event.currentPage));
+        }
+      }, (r) {
+//todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
+        emit(state.copyWith(
+            storiesCollections: state.storiesCollections.map((e) {
+          if (e.id == state.storiesCollections[event.collectionIndex].id) {
+            return e.copyWith(
+                selectedStoriesStatusForCollection:
+                    SelectedStoriesStatus.success,
+                imageDetail: r);
+          }
+          return e;
+        }).toList()));
+      });
+    } else {
+      //todo it's a video all what i will do is make it seen
+      emit(state.copyWith(
+        storiesCollections: state.storiesCollections.map((e) {
+          if (e.id == state.storiesCollections[event.collectionIndex].id) {
+            return e.copyWith(
+              selectedStoriesStatusForCollection: SelectedStoriesStatus.success,
+            );
+          }
+          return e;
+        }).toList(),
+        currentStoryInEachCollection: currentStoryInEachCollection,
+        selectedCollection: event.collectionIndex,
+      ));
+    }
   }
 
   FutureOr<void> _onIncreaseCountShareOfProductEvent(
@@ -890,26 +987,69 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   Future<void> _onGetStoryEvent(
       GetStoryForProductEvent event, Emitter<HomeState> emit) async {
+    /*if ((state.finishGetAllStory && event.withPaginition) ||
+        (state.getStoryWithPagintionStatusLoading && event.withPaginition)) {
+      return;
+    }*/
     emit(state.copyWith(
+        getStoryWithPagintionStatusLoading: true,
+        storiesCollections: [],
+        // finishGetAllStory:
+        //   event.withPaginition ? state.finishGetAllStory : false,
+        currentPage: /* event.withPaginition ? state.currentPage + 1 :*/ 1,
         getStoriesForProductStatus: GetStoriesForProductStatus.loading));
-    final response = await getStoryUseCase(event.productId);
+    final response = await getStoryUseCase(
+        /*page: state.currentPage.toString()*/ event.productId);
 
     response.fold((l) {
       if (ErrorManager.shouldRetry('GetStoryEvent', l.statusCode)) {
         ErrorManager.incrementRetry('GetStoryEvent');
-
-        add(GetStoryForProductEvent(productId: event.productId));
+        add(GetStoryForProductEvent(
+            productId:
+                event.productId /*withPaginition: event.withPaginition*/));
         return;
       }
       emit(state.copyWith(
-          getStoriesForProductStatus: GetStoriesForProductStatus.failure));
+          getStoriesForProductStatus: GetStoriesForProductStatus.failure,
+          getStoryWithPagintionStatusLoading: false));
     }, (r) {
       ErrorManager.resetRetry('GetStoryEvent');
+      Map<int, int> currentStoryInEachCollection = {};
+      int i = 0;
+      List<CollectionStoryModel>? collections = r.data!.collections;
+      /*  if (!(event.withPaginition)) {
+        if ((collections?.length ?? 0) > 1) {
+          int myStoriesIndex = collections!.indexWhere((element) =>
+              GetIt.I<PrefsRepository>().myStoriesId ==
+              element.stories![0].userId);
+          if (myStoriesIndex != -1) {
+            CollectionStoryModel collectionStoryModel =
+                collections.removeAt(myStoriesIndex);
+
+            collections.insert(
+                (r.data!.collections!.length), collectionStoryModel);
+          }
+        }
+      }*/
+      r.data?.collections?.forEach((element) {
+        currentStoryInEachCollection[i++] = 0;
+      });
+      /*    if (event.withPaginition) {
+        int i = (state.storiesCollections).length;
+        r.data?.collections?.forEach((element) {
+          currentStoryInEachCollection[i++] = 0;
+        });
+      }*/
 
       emit(state.copyWith(
-        //   storiesForProduct: r.data!.data?.map((e) => e.stories).toList(),
-        getStoriesForProductStatus: GetStoriesForProductStatus.success,
-      ));
+          getStoryWithPagintionStatusLoading: false,
+          finishGetAllStory: (r.data?.collections?.length ?? 0) < 10,
+          getStoriesForProductStatus: GetStoriesForProductStatus.success,
+          storiesCollections: /* event.withPaginition
+              ? [...(state.storiesCollections), ...(collections ?? [])]
+              : */
+              collections,
+          currentStoryInEachCollection: currentStoryInEachCollection));
     });
   }
   /* FutureOr<void> _onGetProductsWithFiltersUsingPaginationEvent(
@@ -1340,14 +1480,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .setRedeemDateForProduct(r.product!.id.toString(), "52");
       }
       if ((event.fromListingPage ?? false) == false) {
-        Future.delayed(Duration(seconds: 2), () {
-          add(GetAndAddCountViewOfProductEvent(
-              productId: r.product!.id.toString()));
-          // add(GetCommentForProductEvent(productId: r.product!.id.toString()));
-          add(GetStoryForProductEvent(productId: r.product!.id.toString()));
-          /*    GetIt.I<ChatBloc>().add(
+        add(GetAndAddCountViewOfProductEvent(
+            productId: r.product!.id.toString()));
+        // add(GetCommentForProductEvent(productId: r.product!.id.toString()));
+        add(GetStoryForProductEvent(productId: r.product!.id.toString()));
+        /*    GetIt.I<ChatBloc>().add(
               GetSharedProductCountEvent(productId: r.product!.id.toString()));*/
-        });
       }
 
       productStatus = Map.from(state.productStatus ?? {});
@@ -2066,8 +2204,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         backGroundColor: Colors.black,
       );
     }, (r) {
-      GetAuthProductDetailsModel? getAuthProductDetailsModel =
-          state.authProductDetailsModel;
       /*add(AddProductItemForCartEvent(
           productId: event.products.productId.toString(),
           product: event.products));*/
@@ -3692,18 +3828,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               currentSelectedColor: index, productSlug: event.productSlug));
         }
       }
-      Future.delayed(Duration(seconds: 2), () {
-        print(
-            "DDDDDDDDDDDDDDSSSSSSSSSSSEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRR${r.productItem!.productId}");
-        add(GetAndAddCountViewOfProductEvent(
-            productId: r.productItem!.productId.toString()));
-        // add(GetCommentForProductEvent(
-        //    productId: r.productItem!.productId.toString()));
-        add(GetStoryForProductEvent(
-            productId: r.productItem!.productId.toString()));
-        /*  GetIt.I<ChatBloc>().add(GetSharedProductCountEvent(
+
+      add(GetAndAddCountViewOfProductEvent(
+          productId: r.productItem!.productId.toString()));
+      // add(GetCommentForProductEvent(
+      //    productId: r.productItem!.productId.toString()));
+      add(GetStoryForProductEvent(
+          productId: r.productItem!.productId.toString()));
+      /*  GetIt.I<ChatBloc>().add(GetSharedProductCountEvent(
             productId: r.productItem!.productId.toString()));*/
-      });
 
       Map<String, GetProductDetailWithoutRelatedProductsModel> cachedData =
           Map.of(state.cachedProductWithoutRelatedProductsModel);

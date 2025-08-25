@@ -1425,7 +1425,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         storeReturnRequestProductStatus: StoreReturnRequestProductStatus.init,
         orderReturnDetailsStatus: OrderReturnDetailsStatus.init,
         updateReturnRequestProductStatus: UpdateReturnRequestProductStatus.init,
-        storeReturnRequestStatus: StoreReturnRequestStatus.init));
+        storeReturnRequestStatus: StoreReturnRequestStatus.loading));
     final result = await storeReturnRequestUseCase(event.params);
     result.fold(
       (failure) {

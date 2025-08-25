@@ -760,12 +760,20 @@ class HelperFunctions {
     );
   }
 
-  static String formatNumber({required double number}) {
-    /*  String iso = (_prefsRepository.userCountryIsAvailable == 1
+  static String formatNumber(
+      {required double number, bool isNeedRounding = true}) {
+    String iso = (_prefsRepository.userCountryIsAvailable == 1
             ? _prefsRepository.userChoosedCountryIso
             : _prefsRepository.countryIso) ??
         "";
-    iso = iso.toUpperCase();*/
+    iso = iso.toUpperCase();
+    if (!isNeedRounding) {
+      if (iso == 'SY') {
+        return number.ceil().toString();
+      } else {
+        return number.toString();
+      }
+    }
 
     // if (number >= 1e9) {
     //   String bilion = LanguageService.languageCode != "ar" ? 'B' : 'بليون';
@@ -795,22 +803,36 @@ class HelperFunctions {
             : 'مليون';
     //if (iso == 'SY') {
     if (number >= 1e5 && number < 1e6) {
-      String result = (((number + 999) ~/ 1000)).toStringAsFixed(
-          GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
+      String? result;
+      if (iso == 'SY') {
+        result = (((number + 999) ~/ 1000)).ceil().toString();
+      } else {
+        result = (((number + 999) ~/ 1000)).toStringAsFixed(
+            GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
+                2);
+      }
 
       return '$result$thousand';
     } else if (number == 0) {
       return '0.0';
     } else if (number < 1e5) {
+      if (iso == 'SY') {
+        return number.ceil().toString();
+      }
       return number.toStringAsFixed(
           GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
 
       //'1$thousand';
     } else {
-      String result = (((number + 999) ~/ 1000) / 1000).toStringAsFixed(
-          (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
-                  2) +
-              3);
+      String? result;
+      if (iso == 'SY') {
+        result = (((number + 999) ~/ 1000) / 1000).ceil().toStringAsFixed(3);
+      } else {
+        result = (((number + 999) ~/ 1000) / 1000).toStringAsFixed(
+            (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
+                    2) +
+                3);
+      }
 
       if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
         result = result.substring(0, (result.lastIndexOf(RegExp(r'.000'))));

@@ -581,14 +581,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             Text(
                               widget.paymentMethods.value
                                       .contains(PaymentMethods.cod)
-                                  ? widget.totalCashed.toStringAsFixed(homeState
-                                          .startingSetting
-                                          ?.decimalPointSettings ??
-                                      2)
-                                  : widget.totalPrice.toStringAsFixed(homeState
-                                          .startingSetting
-                                          ?.decimalPointSettings ??
-                                      2),
+                                  ? HelperFunctions.formatNumber(
+                                      number: widget.totalCashed,
+                                      isNeedRounding: false)
+                                  : HelperFunctions.formatNumber(
+                                      number: widget.totalPrice,
+                                      isNeedRounding: false),
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                   color: const Color(0xffFEFEFE),
                                   letterSpacing: 0.18,
@@ -681,14 +679,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               Text(
                                 widget.paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? widget.totalCashed.toStringAsFixed(
-                                        homeState.startingSetting
-                                                ?.decimalPointSettings ??
-                                            2)
-                                    : widget.totalPrice.toStringAsFixed(
-                                        homeState.startingSetting
-                                                ?.decimalPointSettings ??
-                                            2),
+                                    ? HelperFunctions.formatNumber(
+                                        number: widget.totalCashed,
+                                        isNeedRounding: false)
+                                    : HelperFunctions.formatNumber(
+                                        number: widget.totalPrice,
+                                        isNeedRounding: false),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),

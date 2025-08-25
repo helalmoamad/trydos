@@ -267,7 +267,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                       : language[index].code == "tr"
                           ? "TR"
                           : language[index].code == "ku"
-                              ? "IQ"
+                              ? "KU"
                               : "US",
                   language[index].name ?? "",
                   index);
@@ -312,15 +312,19 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                     ? SvgPicture.asset(
                         AppAssets.syriaFlagSvg,
                       )
-                    : Container(
-                        width: 25,
-                        height: 25,
-                        child: CountryFlag.fromCountryCode(
-                          code,
-                          height: 25,
-                          width: 25,
-                          borderRadius: 4.r,
-                        )),
+                    : code.toUpperCase() == "KU"
+                        ? SvgPicture.asset(
+                            AppAssets.kurdishFlagSvg,
+                          )
+                        : Container(
+                            width: 25,
+                            height: 25,
+                            child: CountryFlag.fromCountryCode(
+                              code,
+                              height: 25,
+                              width: 25,
+                              borderRadius: 4.r,
+                            )),
                 SizedBox(
                   width: 10,
                 ),

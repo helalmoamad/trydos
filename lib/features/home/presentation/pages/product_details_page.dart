@@ -40,6 +40,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_display_
 import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/main.dart';
 
@@ -68,6 +69,7 @@ import '../widgets/product_details_body/sliding_up_panel_for_buyers_camera_shots
 import '../widgets/product_details_body/sliding_up_panel_for_reels.dart';
 import '../widgets/product_stories_section/product_stories_card.dart';
 import '../widgets/product_details_body/buyers_camera_shots.dart';
+import '../widgets/product_stories_section/story/widget/stories_list.dart';
 
 // ignore: must_be_immutable
 class ProductDetailsPage extends StatefulWidget {
@@ -120,8 +122,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   int currentSelectedColor = -1;
   int currentSelectedColorAfterChangeVariant = -1;
+  int indexVedioToPlayer = -1;
   @override
   void initState() {
+    try {
+      videoProductInListingController.forEach((key, value) => value.pause());
+    } catch (e) {}
     changeVariationIfQtyZero = true;
     if (widget.productItem != null) {
       productItem = widget.productItem!;
@@ -1398,7 +1404,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   description: productItem!.details ?? " ",
                                 ),
                                 SizedBox(
-                                  height: 12,
+                                  height: 5,
                                 ),
                                 BadgesList(
                                   lable: state.cachedProductWithoutRelatedProductsModel[
@@ -1423,7 +1429,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ),
                               },
                               SizedBox(
-                                height: 15,
+                                height: 5,
                               ),
                               if (!state
                                       .cachedProductWithoutRelatedProductsModel
@@ -1629,7 +1635,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ),
                               },
                               // ProductStoriesCard(),
-                              ProductStoriesCard(),
+                              storySection(),
                               ProductShippingAndDelivery(
                                 countryName: state.getAllowedCountriesModel
                                         ?.data?.countries
@@ -2411,6 +2417,60 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ),
       ),
     );
+  }
+
+  Widget storySection() {
+    return BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (previous, current) =>
+            previous.getStoryWithPagintionStatusLoading !=
+                current.getStoryWithPagintionStatusLoading ||
+            previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                current.getProductDetailWithoutSimilarRelatedProductsStatus ||
+            previous.getStoriesForProductStatus !=
+                current.getStoriesForProductStatus,
+        builder: (context, state) {
+          return (state.storiesCollections.length) == 0 ||
+                  state.getStoriesForProductStatus !=
+                      GetStoriesForProductStatus.success ||
+                  state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                      GetProductDetailWithoutSimilarRelatedProductsStatus
+                          .loading
+              ? SizedBox.shrink()
+              : Stack(
+                  children: [
+                    StoriesList(), // height 220
+                    Positioned(
+                      top: 0,
+                      right: LanguageService.languageCode == "ar" ? 10 : null,
+                      left: LanguageService.languageCode == "ar" ? null : 10,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            AppAssets.storyFilmSvg,
+                            height: 20,
+                            width: 20,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          MyTextWidget(
+                            '"${LocaleKeys.product_story.tr()}"',
+                            style: context.textTheme.titleLarge?.rq
+                                .copyWith(color: Color(0xff8D8D8D)),
+                          ),
+                          SvgPicture.asset(
+                            AppAssets.registerInfoSvg,
+                            height: 12,
+                            width: 12,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                );
+        });
   }
 
   void changeVariationWhenNotAvailable(

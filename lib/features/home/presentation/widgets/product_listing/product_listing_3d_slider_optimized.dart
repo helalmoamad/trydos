@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +12,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -20,9 +21,10 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
+import 'package:trydos/main.dart';
+import 'package:video_player/video_player.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 
@@ -33,7 +35,6 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
     // required this.setThisEnabled,
     // required this.slidingModeItem,
     required this.itemIndex,
-    this.imageSource,
     required this.tapIndexToAddProductToCart,
     required this.visibleRedeem,
     required this.productItem,
@@ -42,6 +43,7 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
     this.fromFlashDeal,
     this.fromHomePage = false,
     required this.finishRedeem,
+    this.videoSource,
     // جديد: افتراضي false
     //required this.displayImageColors,
     //  required this.currentChosenColor,
@@ -56,7 +58,8 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
   //final bool displayImageColors;
   final ValueNotifier<bool> visibleRedeem;
   final bool fromHomePage;
-  final String? imageSource;
+
+  final String? videoSource;
   final bool? fromFlashDeal;
   final productListingModel.Products productItem;
   //final ValueNotifier<int> currentChosenColor;
@@ -71,11 +74,60 @@ class _ProductListing3DSliderOptimizedState
     extends State<ProductListing3DSliderOptimized> {
   late HomeBloc _homeBloc;
 
+  Future<void>? _initializeVideoFuture;
+
   @override
   void initState() {
     super.initState();
     _homeBloc = BlocProvider.of<HomeBloc>(context);
+    if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
+      videoProductInListingController[widget.productItem.slug ?? ""]?.dispose();
+      videoProductInListingController.remove(widget.productItem.slug ?? "");
+      videoProductInListingController.addAll({
+        widget.productItem.slug ?? "": VideoPlayerController.networkUrl(
+          Uri.parse(widget.videoSource!),
+          videoPlayerOptions: VideoPlayerOptions(),
+        )..setLooping(true)
+      });
+      _initializeVideoFuture =
+          videoProductInListingController[widget.productItem.slug ?? ""]!
+              .initialize()
+              .then((_) {
+        if (!mounted) return;
+        setState(() {});
+        videoProductInListingController[widget.productItem.slug ?? ""]!
+            .setVolume(0);
+        videoProductInListingController[widget.productItem.slug ?? ""]!.play();
+      });
+
+      videoProductInListingController[widget.productItem.slug ?? ""]!
+          .addListener(() {
+        if (!mounted) return;
+        setState(() {});
+      });
+    }
   }
+
+  /* @override
+  void dispose() {
+    if (debounce?.isActive ?? false) {
+      debounce!.cancel();
+    }
+    debounce = Timer(Duration(milliseconds: 2000), () {
+      for (var i = 0;
+          i < videoProductInListingController.keys.toList().length;
+          i++) {
+        if (!productSlugToSaveVideoTimer
+            .contains(videoProductInListingController.keys.toList()[i])) {
+          videoProductInListingController[i]?.pause();
+          videoProductInListingController[i]?.dispose();
+          videoProductInListingController
+              .remove(videoProductInListingController.keys.toList()[i]);
+        }
+      }
+    });
+    super.dispose();
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -186,28 +238,138 @@ class _ProductListing3DSliderOptimizedState
                           widget.productItem.productId.toString()) ??
                       0) >
                   0;
+          final bool hasVideo =
+              (widget.videoSource != null && widget.videoSource!.isNotEmpty);
+
           return Container(
             width: 200,
             height: 250,
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-            child: (imageUrl != null
-                ? ProductListingImageWidget(
-                    borderColor: isRedeem ? Color(0xffFF6200) : null,
-                    orginalHeight: imageHeight,
-                    orginalWidth: imageWidth,
-                    width: 200,
-                    imageUrl: imageUrl,
-                    height: 250,
-                    circleShape: false,
-                    innerShadowYOffset: 3,
-                  )
-                : Container(
-                    color: Colors.grey[200],
-                    child: Icon(Icons.image, size: 50, color: Colors.grey[400]),
-                  )),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              border:
+                  isRedeem ? Border.all(color: const Color(0xffFF6200)) : null,
+            ),
+            child: hasVideo
+                ? _buildVideoBox(isRedeem, imageUrl ?? "")
+                : (imageUrl != null
+                    ? ProductListingImageWidget(
+                        borderColor: null,
+                        orginalHeight: imageHeight,
+                        orginalWidth: imageWidth,
+                        width: 200,
+                        imageUrl: imageUrl,
+                        height: 250,
+                        circleShape: false,
+                        innerShadowYOffset: 3,
+                      )
+                    : Container(
+                        color: Colors.grey[200],
+                        child: Icon(Icons.image,
+                            size: 50, color: Colors.grey[400]),
+                      )),
           );
         });
+  }
+
+  Widget _buildVideoBox(bool isRedeem, String imageUrl) {
+    if (videoProductInListingController[widget.productItem.slug ?? ""] ==
+        null) {
+      return Container(color: Colors.black12);
+    }
+
+    return Container(
+        height: 250,
+        child: FutureBuilder<void>(
+          future: _initializeVideoFuture,
+          builder: (context, snapshot) {
+            final bool initialized =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isInitialized;
+            final bool buffering =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isBuffering;
+            final bool showLoading = !initialized;
+
+            Widget videoChild;
+            if (initialized) {
+              videoChild = FittedBox(
+                  fit: BoxFit.cover,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: SizedBox(
+                        width: 200,
+                        height: 250,
+                        child: VideoPlayer(videoProductInListingController[
+                            widget.productItem.slug ?? ""]!),
+                      )));
+            } else {
+              videoChild = SizedBox.shrink();
+            }
+
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                videoChild,
+                if (showLoading)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: ProductListingImageWidget(
+                      borderColor: isRedeem ? Color(0xffFF6200) : null,
+                      orginalHeight: 250,
+                      orginalWidth: 200,
+                      width: 200,
+                      imageUrl: imageUrl,
+                      height: 250,
+                      circleShape: false,
+                      innerShadowYOffset: 3,
+                    ),
+                  ),
+                buffering
+                    ? TrydosLoader(
+                        size: 20,
+                      )
+                    : /* videoProductInListingController[
+                                widget.productItem.slug ?? ""]!
+                            .value
+                            .isPlaying
+                        ? InkWell(
+                            onTap: () {
+                              videoProductInListingController[
+                                      widget.productItem.slug ?? ""]!
+                                  .pause();
+                            },
+                            child: SizedBox(
+                              width: 60,
+                              height: 60,
+                            ),
+                          )
+                        : Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(1, 1, 0, 0.2),
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(color: Colors.white)),
+                            child: InkWell(
+                              onTap: () {
+                                videoProductInListingController
+                                    .forEach((key, value) => value.pause());
+                                videoProductInListingController[
+                                        widget.productItem.slug ?? ""]!
+                                    .play();
+                              },
+                              child: Icon(Icons.play_arrow,
+                                  size: 30, color: Colors.white),
+                            ))*/
+                    SizedBox.shrink()
+              ],
+            );
+          },
+        ));
   }
 
   /// 💰 معلومات المنتج المبسطة
@@ -500,22 +662,7 @@ class _ProductListing3DSliderOptimizedState
     );
   }
 
-  /// 🏷️ Category Icon
-  Widget _buildCategoryIcon() {
-    final categoryIcon = widget.productItem.category?.flatPhotoPath?.filePath;
-    if (categoryIcon == null) return const SizedBox.shrink();
-
-    return SizedBox(
-      height: 10,
-      child: Transform.translate(
-        offset: const Offset(0, 1),
-        child: SvgNetworkWidget(
-          svgUrl: categoryIcon,
-          height: 10,
-        ),
-      ),
-    );
-  }
+  // _buildCategoryIcon() was removed because it's unused to avoid linter warnings.
 
   /// 💰 Price Section - FIXED: أبعاد أصلية
   Widget _buildPriceSection() {

@@ -1,4 +1,4 @@
-import 'dart:math';
+/*import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart' as trans;
@@ -1554,3 +1554,4 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     threeImagesSlider.value = Tuple2(threeImages, images);
   }
 }
+*/

@@ -17,6 +17,20 @@ class GetStartingSettingsEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class StorySelectedEvent extends HomeEvent {
+  final int collectionIndex;
+  final int selectedStoryIndexInCollection;
+  final int currentPage;
+  const StorySelectedEvent(
+      {required this.collectionIndex,
+      required this.selectedStoryIndexInCollection,
+      required this.currentPage});
+
+  @override
+  List<Object?> get props =>
+      [collectionIndex, selectedStoryIndexInCollection, currentPage];
+}
+
 class GetCoutryBoundaryByIsoEvent extends HomeEvent {
   const GetCoutryBoundaryByIsoEvent();
 

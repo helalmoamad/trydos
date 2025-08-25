@@ -50,7 +50,9 @@ class OrdersGroupModel {
         orders: json["data"] == null
             ? []
             : List<OrderListModel>.from(
-                json["data"]!.map((x) => OrderListModel.fromJson(x))),
+                    json["data"]!.map((x) => OrderListModel.fromJson(x)))
+                .reversed
+                .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -588,12 +590,16 @@ class PlaceOrderDetailsModel {
         isOdooProduct: json["is_odoo_product"],
         odooId: json["odoo_id"],
         odooOrderId: json["odoo_order_id"],
-        variation: json["variation"] == null || json["variation"] == []
+        variation: json["variation"] == null
             ? []
-            : json["variation"]?[0].isEmpty
-                ? []
-                : List<Variation>.from(
-                    json["variation"].map((x) => Variation.fromJson(x))),
+            : (json["variation"] is List)
+                ? (json["variation"] as List).isEmpty
+                    ? []
+                    : json["variation"]?.first.isEmpty
+                        ? []
+                        : List<Variation>.from(
+                            json["variation"].map((x) => Variation.fromJson(x)))
+                : [],
         image: json["image"],
       );
 
@@ -620,9 +626,9 @@ class PlaceOrderDetailsModel {
         "odoo_id": odooId,
         "odoo_order_id": odooOrderId,
         "image": image,
-        "variation": variation == null || variation == []
+        "variation": (variation?.isEmpty ?? false)
             ? []
-            : variation?[0] == null
+            : (variation?.first is List)
                 ? []
                 : List<dynamic>.from(variation!.map((x) => x.toJson())),
       };

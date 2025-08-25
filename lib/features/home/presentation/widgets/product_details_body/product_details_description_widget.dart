@@ -55,6 +55,7 @@ class _ProductDetailsDescriptionWidgetState
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Html(
                 data: widget.description,

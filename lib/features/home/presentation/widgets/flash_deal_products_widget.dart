@@ -1,5 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart' as tran;
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +9,7 @@ import 'package:trydos/common/constant/design/assets_provider.dart';
 
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/memory_management_helper.dart';
+
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -17,18 +17,15 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/pages/flash_deal_products_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:tuple/tuple.dart';
+
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter;
-import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
-
-import '../../../../core/domin/repositories/prefs_repository.dart';
 
 class FlashDealProductsWidget extends StatelessWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
@@ -76,7 +73,7 @@ class FlashDealProductsWidget extends StatelessWidget {
                   Duration _duration = Duration();
                   final now = DateTime.now();
                   try {
-                    endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                    endDate = tran.DateFormat('MM/dd/yyyy', 'en_US')
                         .parse(element.flashDealEndDate ?? "");
                     endDate = endDate.add(Duration(days: 1));
                   } catch (e) {
@@ -121,39 +118,42 @@ class FlashDealProductsWidget extends StatelessWidget {
                         SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          margin: EdgeInsets.only(bottom: 5),
-                          width: 1.sw,
-                          height: 300,
-                          child: ListView.separated(
-                              addAutomaticKeepAlives: false,
-                              addRepaintBoundaries: false,
-                              addSemanticIndexes: false,
-                              cacheExtent: 0,
-                              itemBuilder: (context, index) {
-                                // التحقق من صحة الفهرس
-                                if (index >= products.length) {
-                                  return SizedBox.shrink();
-                                }
+                        Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 5),
+                              width: 1.sw,
+                              height: 300,
+                              child: ListView.separated(
+                                  addAutomaticKeepAlives: false,
+                                  addRepaintBoundaries: false,
+                                  addSemanticIndexes: false,
+                                  cacheExtent: 0,
+                                  itemBuilder: (context, index) {
+                                    // التحقق من صحة الفهرس
+                                    if (index >= products.length) {
+                                      return SizedBox.shrink();
+                                    }
 
-                                if (index == 5 && products.length > 5) {
-                                  return _buildMoreButton(
-                                      context, products, index);
-                                }
-                                return _buildProductItem(
-                                    context, refreshFlashDeal, products, index);
-                              },
-                              physics: const BouncingScrollPhysics(
-                                parent: ClampingScrollPhysics(),
-                              ),
-                              padding: EdgeInsetsDirectional.symmetric(
-                                  horizontal: 10),
-                              scrollDirection: Axis.horizontal,
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(width: 15),
-                              itemCount:
-                                  products.length > 6 ? 6 : products.length),
-                        )
+                                    if (index == 5 && products.length > 5) {
+                                      return _buildMoreButton(
+                                          context, products, index);
+                                    }
+                                    return _buildProductItem(context,
+                                        refreshFlashDeal, products, index);
+                                  },
+                                  physics: const BouncingScrollPhysics(
+                                    parent: ClampingScrollPhysics(),
+                                  ),
+                                  padding: EdgeInsetsDirectional.symmetric(
+                                      horizontal: 10),
+                                  scrollDirection: Axis.horizontal,
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(width: 15),
+                                  itemCount: products.length > 6
+                                      ? 6
+                                      : products.length),
+                            ))
                       ],
                     );
             },

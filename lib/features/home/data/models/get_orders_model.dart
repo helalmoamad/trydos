@@ -1,3 +1,5 @@
+import 'package:trydos/core/utils/extensions/list.dart';
+
 class OrderModel {
   final bool? isSuccessful;
   final bool? hasContent;
@@ -458,6 +460,8 @@ class OrderListDetailModel {
       );
 
   factory OrderListDetailModel.fromJson(Map<String, dynamic> json) {
+    print(
+        "DFDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${json["variation"]}");
     return OrderListDetailModel(
       id: json["id"],
       orderId: json["order_id"],
@@ -484,12 +488,16 @@ class OrderListDetailModel {
       shippingMethodId: json["shipping_method_id"],
       variant: json["variant"],
       collectProductAfterOrdering: json["collect_product_after_ordering"],
-      variation: json["variation"] == null || json["variation"] == []
+      variation: json["variation"] == null
           ? []
-          : json["variation"]?[0].isEmpty
-              ? []
-              : List<GetOrderVariationModel>.from(json["variation"]
-                  .map((x) => GetOrderVariationModel.fromJson(x))),
+          : (json["variation"] is List)
+              ? (json["variation"] as List).isEmpty
+                  ? []
+                  : json["variation"]?.first.isEmpty
+                      ? []
+                      : List<GetOrderVariationModel>.from(json["variation"]
+                          .map((x) => GetOrderVariationModel.fromJson(x)))
+              : [],
       discountType: json["discount_type"],
       isStockDecreased: json["is_stock_decreased"],
       refundRequest: json["refund_request"].toString(),
@@ -520,9 +528,9 @@ class OrderListDetailModel {
             ? []
             : List<dynamic>.from(comments!.map((x) => x.toJson())),
         "collect_product_after_ordering": collectProductAfterOrdering,
-        "variation": variation == null || variation == []
+        "variation": variation.isNullOrEmpty
             ? []
-            : variation?[0] == null
+            : (variation?.first is List)
                 ? []
                 : List<dynamic>.from(variation!.map((x) => x.toJson())),
         "discount_type": discountType,

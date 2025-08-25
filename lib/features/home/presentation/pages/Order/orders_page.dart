@@ -384,8 +384,8 @@ class _OrdersPageState extends State<OrdersPage> {
                               : item[0].orderGroupStatus?.value == 'canceled'
                                   ? AppAssets.orderCanselSvg
                                   : AppAssets.orderPreparingSvg,
-                  amount: orderAmount.toStringAsFixed(
-                      state.startingSetting?.decimalPointSettings ?? 0),
+                  amount: HelperFunctions.formatNumber(
+                      number: orderAmount, isNeedRounding: false),
                   currency: currencySymbol,
                   itemsCount: details.length.toString(),
                 );

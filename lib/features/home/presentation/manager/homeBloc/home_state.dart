@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -124,7 +125,7 @@ enum AuthProductDetailsStatus { init, loading, success, failure }
 @immutable
 class HomeState extends Equatable {
   const HomeState({
-    this.storiesForProduct,
+    // this.storiesForProduct,
     this.getAndAddCountViewOfProductStatus = const {},
     this.addItemInCartStatus,
     this.convertItemFromcartToOldCartStatus =
@@ -192,6 +193,13 @@ class HomeState extends Equatable {
 //this.getListOfProductsFoundedInCartStatus =
     //    GetListOfProductsFoundedInCartStatus.init,
     this.getCurrencyForCountryModel,
+    this.storiesCollections = const [],
+    this.selectedVideoStatus = SelectedVideoStatus.init,
+    this.storyLink,
+    this.finishGetAllStory = false,
+    this.storyOffset = 0,
+    this.getStoryWithPagintionStatusLoading = false,
+    this.currentStoryInEachCollection = const {},
     this.productIdToSaveRedeemTimer = const [],
     this.popularSearchTerm,
     this.getCartOverviewStatus = GetCartOverviewStatus.init,
@@ -231,6 +239,16 @@ class HomeState extends Equatable {
   final String? currentSlugToRefreshFromNotification;
   // final Map<String, product.Products> productITemForCart;
   final User? userInfo;
+  final List<CollectionStoryModel> storiesCollections;
+  final int currentPage;
+  final SelectedVideoStatus selectedVideoStatus;
+  final int storyOffset;
+  final bool getStoryWithPagintionStatusLoading;
+  final bool finishGetAllStory;
+  final String? storyLink;
+  final int? selectedCollection;
+  final Map<int, int?> currentStoryInEachCollection;
+
   final AddProductIdToSaveRedeemTimerStatus?
       addProductIdToSaveRedeemTimerStatus;
   final CurrentSelectedColorForEveryProductStatus?
@@ -273,8 +291,6 @@ class HomeState extends Equatable {
 
   final AddOrRemoveLikeOfProductStatus addOrRemoveLikeOfProductStatus;
 
-  final int? selectedCollection;
-  final int currentPage;
   final List<geod.LatLng> countryCoordinatesBorders;
   // String? idForRequest;
   final List<String>? searchHistory;
@@ -309,7 +325,7 @@ class HomeState extends Equatable {
   final GetProductListingStatus getProductListingStatus;
   final GetStoriesForProductStatus getStoriesForProductStatus;
 
-  final List<Story>? storiesForProduct;
+  //final List<Story>? storiesForProduct;
   final List<String>? sizesForEachColor;
   final List<String>? colorsForEachProduct;
   final List<int>? sizesQuantitiesForEachColor;
@@ -340,6 +356,7 @@ class HomeState extends Equatable {
   @override
   List<Object?> get props => [
         getStartingSettingsStatus,
+        storyLink,
         currentSelectedColorForEveryProduct,
         // getListOfProductsFoundedInCartStatus,
         //  getCommentForProductStatus,
@@ -360,6 +377,7 @@ class HomeState extends Equatable {
         enableAddToCardAfterChangeVariantZero,
         cartIdsHurryUPTimerStarted,
         currentSlugToRefreshFromNotification,
+        currentStoryInEachCollection,
         addCommentStatus,
         changeSizesForEveryProduct,
         hideItemInOldCartStatus,
@@ -399,7 +417,7 @@ class HomeState extends Equatable {
         getProductListingStatus,
         getStoriesForProductStatus,
 
-        storiesForProduct,
+        // storiesForProduct,
         sizesForEachColor,
         getFullProductDetailsStatus,
 
@@ -424,6 +442,7 @@ class HomeState extends Equatable {
         isChangedvariationWhenQtyZero,
         getFirebaseSettingForNotificationStatus,
         getCountryBoundaryByIsoStatus,
+        storiesCollections,
         currentQuantityForCart,
         countryCoordinatesBorders,
         firebaseSettingForNotificationModel,
@@ -434,6 +453,10 @@ class HomeState extends Equatable {
         //   geColorsAndSizesForSearchModel
         authProductDetailsStatus,
         authProductDetailsModel,
+        selectedVideoStatus,
+        finishGetAllStory,
+        storyOffset,
+        getStoryWithPagintionStatusLoading
       ];
 
   HomeState copyWith(
@@ -447,6 +470,15 @@ class HomeState extends Equatable {
           firebaseSettingForNotificationModel,
       final List<String>? productIdToSaveRedeemTimer,
       final bool? isChangedvariationWhenQtyZero,
+      final List<CollectionStoryModel>? storiesCollections,
+      int? currentPage,
+      SelectedVideoStatus? selectedVideoStatus,
+      int? storyOffset,
+      bool? getStoryWithPagintionStatusLoading,
+      bool? finishGetAllStory,
+      String? storyLink,
+      int? selectedCollection,
+      Map<int, int?>? currentStoryInEachCollection,
       final List<geod.LatLng>? countryCoordinatesBorders,
       final AddProductIdToSaveRedeemTimerStatus?
           addProductIdToSaveRedeemTimerStatus,
@@ -498,11 +530,9 @@ class HomeState extends Equatable {
       final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus,
       final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus,
       final GetOLdCartItemsStatus? getOldCartItemsStatus,
-      Map<int, int?>? currentStoryInEachCollection,
       final AddCommentStatus? addCommentStatus,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
-      int? selectedCollection,
       final Products? productContentForStatusOfOpeningProductDetailsDirectly,
       List<String>? sizesForEachColor,
       List<int>? sizesQuantitiesForEachColor,
@@ -526,15 +556,14 @@ class HomeState extends Equatable {
       final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final Map<String, GetProductDetailWithoutRelatedProductsModel>?
           cachedProductWithoutRelatedProductsModel,
-      SelectedVideoStatus? selectedVideoStatus,
       GetStoriesForProductStatus? getStoriesForProductStatus,
       GetFullProductDetailsStatus? getFullProductDetailsStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
       final DeleteItemInCartStatus? deleteItemInCartStatus,
       final Map<String, int>? currentSelectedColorForEveryProduct,
-      int? currentPage,
-      List<Story>? storiesForProduct,
+
+      //List<Story>? storiesForProduct,
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel,
       //final Map<String, GetCommentForProductModel>? getCommentForProductModel,
@@ -557,6 +586,18 @@ class HomeState extends Equatable {
       currentSlugToRefreshFromNotification:
           currentSlugToRefreshFromNotification ??
               this.currentSlugToRefreshFromNotification,
+      selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
+
+      storyLink: storyLink ?? this.storyLink,
+      storiesCollections: storiesCollections ?? this.storiesCollections,
+      currentPage: currentPage ?? this.currentPage,
+      storyOffset: storyOffset ?? this.storyOffset,
+      finishGetAllStory: finishGetAllStory ?? this.finishGetAllStory,
+      getStoryWithPagintionStatusLoading: getStoryWithPagintionStatusLoading ??
+          this.getStoryWithPagintionStatusLoading,
+      currentStoryInEachCollection:
+          currentStoryInEachCollection ?? this.currentStoryInEachCollection,
+      selectedCollection: selectedCollection ?? this.selectedCollection,
       productIdToSaveRedeemTimer:
           productIdToSaveRedeemTimer ?? this.productIdToSaveRedeemTimer,
 
@@ -689,14 +730,12 @@ class HomeState extends Equatable {
           reRequestProductWithFilters ?? this.reRequestProductWithFilters,
       getStoriesForProductStatus:
           getStoriesForProductStatus ?? this.getStoriesForProductStatus,
-      selectedCollection: selectedCollection ?? this.selectedCollection,
+
       getProductDetailWithoutSimilarRelatedProductsStatus:
           getProductDetailWithoutSimilarRelatedProductsStatus ??
               this.getProductDetailWithoutSimilarRelatedProductsStatus,
       getStartingSettingsStatus:
           getStartingSettingsStatus ?? this.getStartingSettingsStatus,
-      currentPage: currentPage ?? this.currentPage,
-      storiesForProduct: storiesForProduct ?? this.storiesForProduct,
 
       startingSetting: startingSetting ?? this.startingSetting,
 

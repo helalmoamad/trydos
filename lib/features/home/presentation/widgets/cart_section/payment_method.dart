@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -395,8 +396,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ),
         Text(
           widget.partialPaymentByWallet > 0
-              ? '${(widget.amount - widget.partialPaymentByWallet).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}'
-              : '${widget.amount.toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}',
+              ? '${HelperFunctions.formatNumber(number: (widget.amount - widget.partialPaymentByWallet), isNeedRounding: false)} ${widget.currencySymbol}'
+              : '${HelperFunctions.formatNumber(number: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
@@ -422,7 +423,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                     height: 1.33),
               ),
               Text(
-                '${((GetIt.I<HomeBloc>().state.getCartShippingItemsModel?.data?.codCost ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}',
+                '${HelperFunctions.formatNumber(number: ((GetIt.I<HomeBloc>().state.getCartShippingItemsModel?.data?.codCost ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1)), isNeedRounding: false)} ${widget.currencySymbol}',
                 style: context.textTheme.bodyMedium?.sbt.copyWith(
                   color: const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
@@ -490,8 +491,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ),
         Text(
           widget.partialPaymentByWallet > 0
-              ? '${widget.partialPaymentByWallet.toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}'
-              : '${widget.amount.toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}',
+              ? '${HelperFunctions.formatNumber(number: widget.partialPaymentByWallet, isNeedRounding: false)} ${widget.currencySymbol}'
+              : '${HelperFunctions.formatNumber(number: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,

@@ -187,6 +187,7 @@ abstract class AppAssets {
   static String get backFromCallSvg => 'back_from_call'.svg;
   static String get backIconArrowSvg => 'back_icon_arrow'.svg;
   static String get syriaFlagSvg => 'syria_flag'.svg;
+  static String get kurdishFlagSvg => 'kurdish_flag'.svg;
   static String get endCallSvg => 'end_call'.svg;
   static String get partyCozSvg => 'party_coz'.svg;
   static String get refundSvg => 'refund'.svg;

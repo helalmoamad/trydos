@@ -114,6 +114,7 @@ class Products {
   // final Thumbnail? thumbnail;
   final List<Thumbnail>? images;
   final List<Category>? categories;
+  final List<String>? videos;
   final Category? category;
   final List<String>? labelNames;
   final String? flashDealEndDate;
@@ -216,6 +217,7 @@ class Products {
     this.slugEnTopic,
     this.shippingCostMultiplyWithQuantity,
     this.shippingCost,
+    this.videos,
     this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
@@ -273,6 +275,7 @@ class Products {
     dynamic flashDealDetails,
     dynamic flashDealMaxAllowedQuantity,
     String? date,
+    List<String>? videos,
     dynamic description,
     dynamic model,
     dynamic features,
@@ -344,6 +347,7 @@ class Products {
         dateNow: date ?? this.dateNow,
         description: description ?? this.description,
         slugEnTopic: slugEnTopic ?? this.slugEnTopic,
+        videos: videos ?? this.videos,
         model: model ?? this.model,
         variation: variation ?? this.variation,
         features: features ?? this.features,
@@ -430,6 +434,9 @@ class Products {
                 .map((x) => SyncColorImage.fromJson(x))),
         price: json["price"].toDouble(),
         priceFormatted: json["price_formatted"],
+        videos: json["videos"] == null
+            ? []
+            : List<String>.from(json["videos"]!.map((x) => x)),
         offerPrice: json["offer_price"].toDouble(),
         maxAllowedQty: json["max_allowed_qty"],
         offerPriceFormatted: json["offer_price_formatted"],
@@ -458,8 +465,7 @@ class Products {
                 json["variation"]!.map((x) => Variation.fromJson(x))),
         choiceOptions: json["choice_options"] == null
             ? []
-            : List<ChoiceOption>.from(
-                json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
+            : List<ChoiceOption>.from(json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
         hasDiscount: json["has_discount"],
         hasTax: json["has_tax"],
         deliveryAt: json["delivery_at"],
@@ -507,6 +513,8 @@ class Products {
         "category_hierarchy": categoryHierarchy?.toJson(),
         "category": category?.toJson(),
         "brand": brand?.toJson(),
+        "videos":
+            videos == null ? [] : List<dynamic>.from(videos!.map((x) => x)),
         "colors": colors == null
             ? []
             : List<dynamic>.from(colors!.map((x) => x.toJson())),

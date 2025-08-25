@@ -47,7 +47,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/item_test.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
-import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_without_silder.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
@@ -182,6 +182,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       debounce!.cancel();
     }
     debounce = Timer(Duration(milliseconds: firstOpenPage ? 600 : 300), () {
+      //videoProductInListingController.forEach((key, value) => value.pause());
       //if (setThisEnabledNotifier.value.item1 != -1) {
       //  setThisEnabledNotifier.value = Tuple2(-1, -1);
       // }
@@ -307,9 +308,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     super.initState();
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
-    print(
-        "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${widget.boutiqueFirstBanner}dddddddddddddd${widget.withSlidingImages}");
-
     // 🔥 FIX: إزالة Timer.periodic الخطير - استخدام WidgetsBinding آمن بدلاً
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
       _setHtmlDescriptionHeight();
@@ -427,8 +425,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void dispose() {
+    productSlugToSaveVideoTimer = [];
     try {
-      // 🚀 تحسين الأداء عند إغلاق الصفحة لتسريع الانتقال
+      clearvideoProductInListingController(
+          productSlug: ""); // 🚀 تحسين الأداء عند إغلاق الصفحة لتسريع الانتقال
       debugPrint('🏁 Product listing dispose started');
 
       // إيقاف الـ listeners أولاً لمنع العمليات غير الضرورية

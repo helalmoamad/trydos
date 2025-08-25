@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'dart:ui' as ui;
 
@@ -92,13 +94,15 @@ class _FlashDealCountdownTimerWidgetState
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
 
-    return '| ${days}d | ${hours}:${minutes}:${seconds}';
+    return '| ${days} ${LocaleKeys.day.tr()} | ${hours}:${minutes}:${seconds}';
   }
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
-        textDirection: ui.TextDirection.ltr,
+        textDirection: LanguageService.languageCode == "ar"
+            ? ui.TextDirection.rtl
+            : ui.TextDirection.ltr,
         child: Container(
           alignment: LanguageService.languageCode == "ar"
               ? Alignment.centerRight
