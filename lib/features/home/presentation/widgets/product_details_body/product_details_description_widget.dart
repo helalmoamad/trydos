@@ -33,8 +33,9 @@ class _ProductDetailsDescriptionWidgetState
       text: TextSpan(
         text: plainText,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 16,
+              fontSize: 11,
               height: 1.5,
+              color: Color(0xff1D1D1D),
             ),
       ),
       maxLines: 2,
@@ -48,7 +49,7 @@ class _ProductDetailsDescriptionWidgetState
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
           needsExpansion = _checkTextOverflow(constraints.maxWidth);
@@ -63,7 +64,8 @@ class _ProductDetailsDescriptionWidgetState
                   "*": Style(
                     margin: Margins.zero,
                     padding: HtmlPaddings.zero,
-                    fontSize: FontSize(16),
+                    fontSize: FontSize(11),
+                    color: Color(0xff1D1D1D),
                     lineHeight: LineHeight(1.5),
                     maxLines: isExpandedNotifier.value ? null : 2,
                     textOverflow:
@@ -83,7 +85,7 @@ class _ProductDetailsDescriptionWidgetState
                         : "${LocaleKeys.read_more.tr()}",
                     style: TextStyle(
                       color: Color(0xff388CFF),
-                      fontSize: 14,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

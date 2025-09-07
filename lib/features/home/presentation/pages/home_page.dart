@@ -1228,6 +1228,9 @@ class _HomePageState extends State<HomePage> {
                                                     previous.getCartOverviewStatus !=
                                                         current
                                                             .getCartOverviewStatus ||
+                                                    previous.authProductDetailsStatus !=
+                                                        current
+                                                            .authProductDetailsStatus ||
                                                     previous.currentSelectedColorForEveryProduct !=
                                                         current
                                                             .currentSelectedColorForEveryProduct ||
@@ -1242,10 +1245,12 @@ class _HomePageState extends State<HomePage> {
                                                 builder: (context, state) {
                                                   List<filter.Color>?
                                                       productColors = [];
-                                                  if (state
-                                                          .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                      GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                          .success) {
+                                                  if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                          GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                              .success &&
+                                                      state.authProductDetailsStatus ==
+                                                          AuthProductDetailsStatus
+                                                              .success) {
                                                     productColors = state
                                                         .cachedProductWithoutRelatedProductsModel[
                                                             products[tapIndex]
@@ -1289,11 +1294,8 @@ class _HomePageState extends State<HomePage> {
 
                                                   productDetail.Variation?
                                                       currentVariation = state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              products[tapIndex]
-                                                                  .productId
-                                                                  .toString()]
-                                                          ?.product
+                                                          .authProductDetailsModel
+                                                          ?.data
                                                           ?.variation
                                                           ?.firstWhere(
                                                     (element) => element.type!
@@ -1328,9 +1330,12 @@ class _HomePageState extends State<HomePage> {
                                                               0) ~/
                                                           2;
 
-                                                  if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                          GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                              .failure &&
+                                                  if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                              GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                  .failure ||
+                                                          state.authProductDetailsStatus ==
+                                                              AuthProductDetailsStatus
+                                                                  .failure) &&
                                                       (prefsRepository
                                                               .isTokenExpired ??
                                                           false ||
@@ -1361,8 +1366,12 @@ class _HomePageState extends State<HomePage> {
                                                       Duration(
                                                           milliseconds: 300),
                                                       () {
-                                                    if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                    if ((state
+                                                                .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                             GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                .success &&
+                                                        state.authProductDetailsStatus ==
+                                                            AuthProductDetailsStatus
                                                                 .success &&
                                                         tapIndex != -1)) {
                                                       if (state
@@ -1403,41 +1412,41 @@ class _HomePageState extends State<HomePage> {
                                                       Duration(
                                                           milliseconds: 300),
                                                       () {
-                                                    if (state
-                                                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                            .failure) {
+                                                    if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                .failure ||
+                                                        state.authProductDetailsStatus ==
+                                                            AuthProductDetailsStatus
+                                                                .failure) {
                                                       tapIndexToAddProductToCart
                                                           .value = -1;
                                                     }
                                                   });
-                                                  homeBloc.add(
-                                                      AddSizesForColorsEvent(
-                                                          currentColorName: !(productColors
+                                                  homeBloc.add(AddSizesForColorsEvent(
+                                                      currentColorName:
+                                                          !(productColors
                                                                   .isNullOrEmpty)
-                                                              ? productColors![currentSelectedColor]
+                                                              ? productColors![
+                                                                          currentSelectedColor]
                                                                       .option ??
                                                                   ""
                                                               : "",
-                                                          variation: state.cachedProductWithoutRelatedProductsModel[
-                                                                      products[tapIndex]
-                                                                          .productId
-                                                                          .toString()] !=
-                                                                  null
-                                                              ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
-                                                                      null
-                                                                  ? state
-                                                                      .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                          .productId
-                                                                          .toString()]!
-                                                                      .product!
-                                                                      .variation
-                                                                  : null
-                                                              : null));
+                                                      variation: state
+                                                                  .authProductDetailsModel
+                                                                  ?.data !=
+                                                              null
+                                                          ? state
+                                                              .authProductDetailsModel
+                                                              ?.data!
+                                                              .variation
+                                                          : null));
                                                   if (productId != "" &&
                                                       tapIndex != -1 &&
                                                       state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                           GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                              .success &&
+                                                      state.authProductDetailsStatus ==
+                                                          AuthProductDetailsStatus
                                                               .success &&
                                                       changeAppearSizeForProduct) {
                                                     if (!state
@@ -1564,6 +1573,9 @@ class _HomePageState extends State<HomePage> {
                                                   return state
                                                                   .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                               GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                  .loading ||
+                                                          state.authProductDetailsStatus ==
+                                                              AuthProductDetailsStatus
                                                                   .loading ||
                                                           state.enableAddToCardAfterChangeVariantZero !=
                                                               EnableAddToCardAfterChangeVariantZero

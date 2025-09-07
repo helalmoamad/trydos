@@ -295,8 +295,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       CancelReturnRequestEvent event, Emitter<OrderState> emit) async {
     emit(state.copyWith(
         cancelReturnRequestStatus: CancelReturnRequestStatus.loading));
-    final response = await cancelReturnRequestUseCase(CancelReturnRequestParams(
-        returnRequestId: event.returnRequestId.toString()));
+    final response = await cancelReturnRequestUseCase(
+        CancelReturnRequestParams(returnRequestId: event.returnRequestId));
     response.fold((l) {
       if (ErrorManager.shouldRetry('CancelReturnRequestEvent', l.statusCode)) {
         ErrorManager.incrementRetry('CancelReturnRequestEvent');
@@ -316,7 +316,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       showMessage(r.message ?? '');
       ErrorManager.resetRetry('CancelReturnRequestEvent');
       emit(state.copyWith(
-          orderReturnDetailsModel: null,
+          orderReturnDetailsModel:
+              GetOrderReturntDetailsModel(data: Data(returnRequestsData: [])),
           cancelReturnRequestStatus: CancelReturnRequestStatus.success));
     });
   }
@@ -332,7 +333,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           'CancelReturnRequestProductEvent', l.statusCode)) {
         ErrorManager.incrementRetry('CancelReturnRequestProductEvent');
         add(CancelReturnRequestProductEvent(
-            params: event.params, returnRequestId: event.returnRequestId));
+            orderGroupId: event.orderGroupId,
+            params: event.params,
+            returnRequestId: event.returnRequestId));
         return;
       }
       showMessage(l.message, hasError: true);
@@ -340,7 +343,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           cancelReturnRequestProductStatus:
               CancelReturnRequestProductStatus.failure));
     }, (r) {
-      add(FetchOrderReturnDetailsEvent(event.returnRequestId));
+      add(FetchOrderReturnDetailsEvent(event.orderGroupId));
       showMessage(r.message ?? '');
       ErrorManager.resetRetry('CancelReturnRequestProductEvent');
       emit(state.copyWith(
@@ -1220,6 +1223,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         emit(state.copyWith(
             changeOrderItemVariantStatus:
                 ChangeOrderItemVariantStatus.failure));
+        showMessage(failure.message, hasError: true);
       },
       (response) {
         ErrorManager.resetRetry('ChangeOrderItemVariantEvent');
@@ -1359,8 +1363,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             returnRequestId: event.returnRequestId,
           ));
         } else {
-          add(FetchOrderReturnDetailsEvent(
-              int.tryParse(event.returnRequestId) ?? 0));
+          add(FetchOrderReturnDetailsEvent(event.orderGroupId));
           showMessage(response.message ?? "", hasError: false);
         }
         emit(state.copyWith(
@@ -1399,11 +1402,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         if (event.withConfirm) {
           add(ConfirmReturnRequestEvent(
             orderGroupId: event.orderGroupId,
-            returnRequestId: event.returnRequestId.toString(),
+            returnRequestId: event.returnRequestId,
           ));
         } else {
-          int returnRequestId = int.parse(event.returnRequestId.toString());
-          add(FetchOrderReturnDetailsEvent(returnRequestId));
+          add(FetchOrderReturnDetailsEvent(event.orderGroupId));
           showMessage(response.message ?? "", hasError: false);
         }
         emit(state.copyWith(
@@ -1433,15 +1435,14 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             'StoreReturnRequestEvent', failure.statusCode)) {
           ErrorManager.incrementRetry('StoreReturnRequestEvent');
           add(StoreReturnRequestEvent(
-            params: event.params,
-          ));
+              params: event.params, orderGroupId: event.orderGroupId));
           return;
         }
         emit(state.copyWith(
             storeReturnRequestStatus: StoreReturnRequestStatus.failure));
       },
       (response) {
-        add(FetchOrderReturnDetailsEvent(response.data?.returnRequestId ?? 0));
+        add(FetchOrderReturnDetailsEvent(event.orderGroupId));
         ErrorManager.resetRetry('StoreReturnRequestEvent');
         emit(state.copyWith(
             storeReturnRequestStatus: StoreReturnRequestStatus.success));
@@ -1551,8 +1552,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             confirmReturnRequestStatus: ConfirmReturnRequestStatus.failure));
       },
       (response) {
-        add(FetchOrderReturnDetailsEvent(
-            int.parse(event.returnRequestId.toString())));
+        add(FetchOrderReturnDetailsEvent(event.orderGroupId));
         add(GetOrdersByOrderGroupIDEvent(
             getWithRating: false,
             firstOpenPage: false,
@@ -1570,17 +1570,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       FetchOrderReturnDetailsEvent event, Emitter<OrderState> emit) async {
     emit(state.copyWith(
       orderReturnDetailsStatus: OrderReturnDetailsStatus.loading,
-      orderReturnDetailsModel: null,
+      orderReturnDetailsModel:
+          GetOrderReturntDetailsModel(data: Data(returnRequestsData: [])),
     ));
     final response = await orderReturnDetailsUseCase(
         GetOrderReturntDetailsParams(
-            returnRequestId: event.returnRequestId.toString()));
+            orderGroupId: event.orderGroupId.toString()));
     response.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
             'FetchOrderReturnDetailsEvent', failure.statusCode)) {
           ErrorManager.incrementRetry('FetchOrderReturnDetailsEvent');
-          add(FetchOrderReturnDetailsEvent(event.returnRequestId));
+          add(FetchOrderReturnDetailsEvent(event.orderGroupId));
 
           return;
         }

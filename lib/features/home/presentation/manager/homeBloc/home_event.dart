@@ -232,9 +232,13 @@ class StoreFcmTokenOfMarketEvent extends HomeEvent {
 class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
   final String? productId;
   final String? productSlug;
+  final String? currentColorOption;
   final bool? fromListingPage;
   const GetProductDatailsWithoutRelatedProductsEvent(
-      {this.productId, this.productSlug, this.fromListingPage});
+      {this.productId,
+      this.productSlug,
+      this.currentColorOption,
+      this.fromListingPage});
 
   @override
   // TODO: implement props
@@ -427,8 +431,10 @@ class CheckWithGetCartEvent extends HomeEvent {
 
 class IsChangedVariationWhenQtyZeroEvent extends HomeEvent {
   final bool isChangedVariationWhenQtyZero;
+  final bool finishLoadingAfterChangedVariationWhenQtyZero;
   const IsChangedVariationWhenQtyZeroEvent(
-      {required this.isChangedVariationWhenQtyZero});
+      {required this.isChangedVariationWhenQtyZero,
+      this.finishLoadingAfterChangedVariationWhenQtyZero = true});
 
   @override
   List<Object?> get props => [isChangedVariationWhenQtyZero];
@@ -445,7 +451,10 @@ class IsChangedColorBeforOpenPanelEvent extends HomeEvent {
 
 class ChangeStatusOFGetProductsDetailsToSuccessEvent extends HomeEvent {
   final bool? isStatusInitaial;
-  const ChangeStatusOFGetProductsDetailsToSuccessEvent({this.isStatusInitaial});
+  final int? index;
+  final String? productSlug;
+  const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+      {this.isStatusInitaial, this.index, this.productSlug});
 
   @override
   List<Object?> get props => [];

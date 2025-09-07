@@ -51,7 +51,7 @@ class Product {
   final dynamic description;
 
   final bool? isActive;
-  final List<Variation>? variation;
+  // final List<Variation>? variation;
   final List<ChoiceOption>? choiceOptions;
   final String? maxAllowedQty;
   final bool? hasDiscount;
@@ -100,7 +100,7 @@ class Product {
     this.colors,
     this.syncColorImages,
     this.images,
-    this.variation,
+    // this.variation,
     this.slug,
     this.shippingCostMultiplyWithQuantity,
     this.shippingCost,
@@ -142,7 +142,7 @@ class Product {
           List<Color>? colors,
           List<Thumbnail>? images,
           List<SyncColorImage>? syncColorImages,
-          List<Variation>? variation,
+          //   List<Variation>? variation,
           List<ChoiceOption>? choiceOptions,
           bool? hasDiscount,
           bool? hasTax,
@@ -187,7 +187,7 @@ class Product {
         description: description ?? this.description,
         slug: slug ?? this.slug,
         isActive: isActive ?? this.isActive,
-        variation: variation ?? this.variation,
+        // variation: variation ?? this.variation,
         choiceOptions: choiceOptions ?? this.choiceOptions,
         hasDiscount: hasDiscount ?? this.hasDiscount,
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
@@ -266,10 +266,10 @@ class Product {
       maxAllowedQty: json["max_allowed_qty"].toString(),
       countryIsRestricted: json["is_country_restricted"],
       isActive: json["is_active"],
-      variation: json["variation"] == null
+      /* variation: json["variation"] == null
           ? []
           : List<Variation>.from(
-              json["variation"]!.map((x) => Variation.fromJson(x))),
+              json["variation"]!.map((x) => Variation.fromJson(x))),*/
       choiceOptions: json["choice_options"] == null
           ? []
           : List<ChoiceOption>.from(
@@ -291,7 +291,9 @@ class Product {
           ? []
           : List<DataDescriptor>.from(
               json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
-      labels: json["labels"] == null ? [] : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+      labels: json["labels"] == null
+          ? []
+          : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
       isProductNotifiedForUser: json['is_product_notify_for_user'] ?? false);
 
   Map<String, dynamic> toJson() => {
@@ -307,9 +309,9 @@ class Product {
             ? []
             : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
         "has_discount": hasDiscount,
-        "variation": variation == null
+        /* "variation": variation == null
             ? []
-            : List<dynamic>.from(variation!.map((x) => x.toJson())),
+            : List<dynamic>.from(variation!.map((x) => x.toJson())),*/
         "label_names": labelNames == null
             ? []
             : List<dynamic>.from(labelNames!.map((x) => x)),

@@ -305,7 +305,7 @@ class GetReturnReasonsEvent extends OrderEvent {
 class StoreReturnRequestProductEvent extends OrderEvent {
   final ReturnRequestProductParams params;
   final bool withConfirm;
-  final String returnRequestId;
+  final List<String> returnRequestId;
   final String orderGroupId;
   const StoreReturnRequestProductEvent(
       {required this.params,
@@ -320,7 +320,7 @@ class StoreReturnRequestProductEvent extends OrderEvent {
 class UpdateReturnRequestProductEvent extends OrderEvent {
   final UpdateReturnRequestProductParams params;
   final bool withConfirm;
-  final String returnRequestId;
+  final List<String> returnRequestId;
   final String orderGroupId;
 
   const UpdateReturnRequestProductEvent(
@@ -334,7 +334,7 @@ class UpdateReturnRequestProductEvent extends OrderEvent {
 }
 
 class CancelReturnRequestEvent extends OrderEvent {
-  final int returnRequestId;
+  final List<String> returnRequestId;
   final String orderGroupId;
   const CancelReturnRequestEvent(
       {required this.returnRequestId, required this.orderGroupId});
@@ -353,10 +353,13 @@ class StoreImagesForUpdateReturnEvent extends OrderEvent {
 
 class CancelReturnRequestProductEvent extends OrderEvent {
   final int returnRequestId;
+  final String orderGroupId;
   final CancelReturnRequestProductParams params;
 
   const CancelReturnRequestProductEvent(
-      {required this.params, required this.returnRequestId});
+      {required this.params,
+      required this.returnRequestId,
+      required this.orderGroupId});
 
   @override
   List<Object?> get props => [params];
@@ -364,8 +367,9 @@ class CancelReturnRequestProductEvent extends OrderEvent {
 
 class StoreReturnRequestEvent extends OrderEvent {
   final ReturnRequestParams params;
-
-  const StoreReturnRequestEvent({required this.params});
+  final String orderGroupId;
+  const StoreReturnRequestEvent(
+      {required this.params, required this.orderGroupId});
 
   @override
   List<Object?> get props => [params];
@@ -379,7 +383,7 @@ class ResetAllStatusEvent extends OrderEvent {
 }
 
 class ConfirmReturnRequestEvent extends OrderEvent {
-  final String returnRequestId;
+  final List<String> returnRequestId;
   final String orderGroupId;
 
   const ConfirmReturnRequestEvent(
@@ -407,9 +411,9 @@ class OrderReturnRequestsViewEvent extends OrderEvent {
 }
 
 class FetchOrderReturnDetailsEvent extends OrderEvent {
-  final int returnRequestId;
-  const FetchOrderReturnDetailsEvent(this.returnRequestId);
+  final String orderGroupId;
+  const FetchOrderReturnDetailsEvent(this.orderGroupId);
 
   @override
-  List<Object?> get props => [returnRequestId];
+  List<Object?> get props => [orderGroupId];
 }

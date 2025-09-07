@@ -420,12 +420,12 @@ class _ProductItemState extends State<ProductItem> {
                                                 LanguageService.languageCode !=
                                                         "ar"
                                                     ? 1
-                                                    : 20,
+                                                    : 10,
                                             right:
                                                 LanguageService.languageCode ==
                                                         "ar"
                                                     ? 1
-                                                    : 20),
+                                                    : 10),
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                               color: Color(0xffFF6200)),
@@ -442,7 +442,7 @@ class _ProductItemState extends State<ProductItem> {
                                                   MainAxisAlignment.start,
                                               children: [
                                                 SizedBox(
-                                                  width: 10,
+                                                  width: 3,
                                                 ),
                                                 SvgPicture.asset(
                                                   AppAssets.flashDealSvg,
@@ -450,7 +450,7 @@ class _ProductItemState extends State<ProductItem> {
                                                   color: Color(0xffFF6200),
                                                 ),
                                                 SizedBox(
-                                                  width: 5,
+                                                  width: 2,
                                                 ),
                                                 Text(
                                                   "${LocaleKeys.flash_deal.tr()}",
@@ -478,7 +478,10 @@ class _ProductItemState extends State<ProductItem> {
                                                           .productItem
                                                           .flashDealEndDate ??
                                                       "",
-                                                )
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
                                               ],
                                             )),
                                       ),
@@ -519,10 +522,10 @@ class _ProductItemState extends State<ProductItem> {
                                 margin: EdgeInsets.only(
                                     left: LanguageService.languageCode != "ar"
                                         ? 1
-                                        : 20,
+                                        : 10,
                                     right: LanguageService.languageCode == "ar"
                                         ? 1
-                                        : 20),
+                                        : 10),
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Color(0xffFF6200)),
                                   color: Color(0xffFFF3E8),
@@ -537,7 +540,7 @@ class _ProductItemState extends State<ProductItem> {
                                           MainAxisAlignment.start,
                                       children: [
                                         SizedBox(
-                                          width: 8,
+                                          width: 3,
                                         ),
                                         SvgPicture.asset(
                                             AppAssets.redeemClockSvg),
@@ -582,6 +585,9 @@ class _ProductItemState extends State<ProductItem> {
                                               fontSize: 9,
                                               color: const Color(0xffFF6200),
                                             )),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
                                       ],
                                     )),
                               ),

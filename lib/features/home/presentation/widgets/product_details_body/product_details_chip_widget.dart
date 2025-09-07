@@ -44,92 +44,82 @@ class ProductDetailsChipWidget extends StatelessWidget {
       onTap: () {
         HelperFunctions.showDescriptionForProductDetails(context: context);
       },
-      child: DottedBorder(
-        radius: Radius.circular(15),
-        borderType: BorderType.RRect,
-        strokeCap: StrokeCap.round,
-        strokeWidth: 0.5,
-        color: Color(0xff707070),
-        dashPattern: [3, 3],
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SvgNetworkWidget(
-              svgUrl: descriptor!.descriptorGroup!.icon!,
-              width: 20,
-              height: 20,
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MyTextWidget(
-                  descriptor!.descriptorGroup!.name!,
-                  style: context.textTheme.titleSmall?.rq
-                      .copyWith(color: Color(0xffC4C2C2), height: 1.3),
+      child: Container(
+          padding: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Color(0xffFCFCFC),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                SvgNetworkWidget(
+                  svgUrl: descriptor!.descriptorGroup!.icon!,
+                  color: Color(0xff1D1D1D),
+                  width: 11,
+                  height: 11,
                 ),
                 SizedBox(
-                  height: 16,
-                  child: ListView.separated(
-                    itemCount: descriptor!.descriptors!.length,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            if (withIcon) ...{
-                              MyTextWidget(
-                                descriptor!.descriptors![index].value!,
-                                style: context.textTheme.titleLarge?.rq
-                                    .copyWith(
-                                        height: 1.23,
-                                        color: Color(0xff505050),
-                                        fontSize: 13.sp),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 5),
-                                child: SvgNetworkWidget(
-                                  svgUrl: descriptor!
-                                      .descriptors![index].descriptor!.icon!,
-                                  width: 15,
-                                  height: 15,
-                                ),
-                              ),
-                            },
+                  width: 5,
+                ),
+                MyTextWidget(
+                  descriptor!.descriptorGroup!.name!,
+                  style: context.textTheme.titleSmall?.ra.copyWith(
+                      color: Color(0xff1D1D1D), fontSize: 9, height: 1.3),
+                ),
+              ]),
+              SizedBox(
+                height: 16,
+                child: ListView.separated(
+                  itemCount: descriptor!.descriptors!.length,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (withIcon) ...{
                             MyTextWidget(
-                              descriptor!.descriptors![index].descriptor!.name!,
-                              style: context.textTheme.titleMedium?.rq.copyWith(
+                              descriptor!.descriptors![index].value!,
+                              style: context.textTheme.titleLarge?.rq.copyWith(
                                   height: 1.23,
-                                  color: Color(0xff8D8D8D),
-                                  fontSize: 13.sp),
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                        width: 1,
-                        decoration: BoxDecoration(
-                            color: Color(0xff8D8D8D),
-                            borderRadius: BorderRadius.circular(2)),
-                      );
-                    },
-                  ),
-                )
-              ],
-            )
-          ],
-        ),
-      ),
+                                  color: Color(0xff1D1D1D),
+                                  fontSize: 11.sp),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              child: SvgNetworkWidget(
+                                svgUrl: descriptor!
+                                    .descriptors![index].descriptor!.icon!,
+                                color: Color(0xff1D1D1D),
+                                width: 11,
+                                height: 11,
+                              ),
+                            ),
+                          },
+                          MyTextWidget(
+                            descriptor!.descriptors![index].descriptor!.name!,
+                            style: context.textTheme.titleMedium?.rq.copyWith(
+                                height: 1.23,
+                                color: Color(0xff1D1D1D),
+                                fontSize: 11.sp),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(
+                      width: 5,
+                    );
+                  },
+                ),
+              )
+            ],
+          )),
     );
   }
 }

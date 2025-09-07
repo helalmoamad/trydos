@@ -79,8 +79,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(Duration(seconds: 10)));
     on<LoginToStoriesEvent>(_onLoginToStoriesEvent,
         transformer: throttleDroppable(Duration(seconds: 10)));
-    on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent,
-        transformer: throttleDroppable(Duration(seconds: 10)));
+    on<StoreFcmTokenEvent>(
+      _onStoreFcmTokenEvent,
+    );
     on<SendOtpEvent>(_onSendOtpEvent,
         transformer: throttleDroppable(Duration(seconds: 10)));
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
@@ -94,7 +95,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UpdateNameEvent>(_onUpdateNameEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: restartable());
     on<GetUserCountryEvent>(
       _onGetUserCountryEvent,
       //transformer: throttleDroppable(throttleDuration)
@@ -196,13 +197,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyChatPhoto(photo);
         }
 
-        add(
-          StoreFcmTokenEvent(
-            userId: id!,
-            fcmToken: event.fcmToken,
-            serverName: ServerName.chat,
-          ),
-        );
+        NotificationProcess().fcmToken(null, null, null, null);
 
         apisMustNotToRequest.remove('GetChatsEvent');
         GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
@@ -212,6 +207,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onStoreFcmTokenEvent(
       StoreFcmTokenEvent event, Emitter<AuthState> emit) async {
+    if (event.serverName == ServerName.chat &&
+        (_prefsRepository.chatToken?.length ?? 0) < 7) {
+      return;
+    }
+    if (event.serverName == ServerName.stories &&
+        (_prefsRepository.storiesToken?.length ?? 0) < 7) {
+      return;
+    }
     final response = await storeFcmUseCase(
       StoreFcmParams(
           userId: event.userId,
@@ -370,6 +373,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyStoriesId(id!);
           _prefsRepository.setMyStoriesName(name ?? 'No Name');
         }
+        NotificationProcess().fcmToken(null, null, null, null);
         apisMustNotToRequest.remove('GetStoryEvent');
         GetIt.I<StoryBloc>().add(GetStoryEvent(withPaginition: false));
       },
@@ -446,6 +450,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
         _prefsRepository
             .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
+        NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
+            r.data!.user!.id!.toString(), r.data!.idToken);
         ////////////////////////
         FirebaseAnalytics.instance.setUserId(
           id: r.data!.user!.id.toString(),
@@ -491,8 +497,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         return;
       }
-      NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
-          r.data!.user!.id!.toString(), r.data!.idToken);
 
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
@@ -564,6 +568,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
       _prefsRepository
           .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
+      NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
+          r.data!.user!.id!.toString(), r.data!.idToken);
       add(LoginToStoriesEvent(
         originalUserId: r.data!.user!.id!.toString(),
         otpIdToken: r.data!.idToken!,
@@ -582,8 +588,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(
           verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
           marketUser: r.data!.user));
-      NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
-          r.data!.user!.id!.toString(), r.data!.idToken);
     });
   }
 
@@ -682,8 +686,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetCustomerInfoEvent(
       GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
-    if (state.getCustomerInfoStatus == GetCustomerInfoStatus.loading) return;
-    emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold((l) {
       if (ErrorManager.shouldRetry('GetCustomerInfoEvent', l.statusCode)) {
@@ -701,6 +703,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setMyChatName(userInfo.name!);
         _prefsRepository.setMyStoriesName(userInfo.name!);
       }
+      _prefsRepository.setPhoneNumber((userInfo.phone).toString());
       emit(state.copyWith(
           getCustomerInfoStatus: GetCustomerInfoStatus.success,
           marketUser: userInfo));

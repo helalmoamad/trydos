@@ -162,6 +162,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
         }
       },
       builder: (context, state) {
+        print(
+            "FFFFFFFFFFFFFFFFFF${widget.createAt}FFDD${widget.createAt!.isUtc}");
         return Padding(
           padding: HWEdgeInsets.only(
               right: widget.isSent ? 25.w : 0, left: widget.isSent ? 0 : 25.w),
@@ -555,15 +557,9 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                     : MainAxisAlignment.end,
                                                 children: [
                                                   MyTextWidget(
-                                                    widget.createAt!.isUtc
-                                                        ? HelperFunctions
-                                                            .getDateInFormat(
-                                                                widget
-                                                                    .createAt!)
-                                                        : HelperFunctions
-                                                            .getZonedDateInFormat(
-                                                                widget
-                                                                    .createAt!),
+                                                    HelperFunctions
+                                                        .getZonedDateInFormat(
+                                                            widget.createAt!),
                                                     style: context.textTheme
                                                         .titleSmall?.rr
                                                         .copyWith(

@@ -30,9 +30,10 @@ import 'package:trydos/features/home/data/models/notificaation_poroduct_types.da
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
-import 'package:trydos/features/home/data/models/update_confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/confirm_return_request_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
+import 'package:trydos/features/home/data/models/update_return_request_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
@@ -1209,35 +1210,34 @@ class HomeRemoteDatasource {
     return storeReturnRequestProduct();
   }
 
-  Future<UpdateConfirmCancelReturnRequestModel> updateReturnRequestProduct(
+  Future<UpdateReturnRequestModel> updateReturnRequestProduct(
       Map<String, dynamic> params) {
-    PostClient<UpdateConfirmCancelReturnRequestModel>
-        updateReturnRequestProduct =
-        PostClient<UpdateConfirmCancelReturnRequestModel>(
+    PostClient<UpdateReturnRequestModel> updateReturnRequestProduct =
+        PostClient<UpdateReturnRequestModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+      requestPrams: RequestConfig<UpdateReturnRequestModel>(
         endpoint: MarketEndPoints.updateReturnRequestProductEP,
         data: params,
-        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+        response: ResponseValue<UpdateReturnRequestModel>(
             fromJson: (response) =>
-                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+                UpdateReturnRequestModel.fromJson(response)),
       ),
     );
 
     return updateReturnRequestProduct();
   }
 
-  Future<UpdateConfirmCancelReturnRequestModel> cancelReturnRequest(
+  Future<ConfirmCancelReturnRequestModel> cancelReturnRequest(
       Map<String, dynamic> params) {
-    GetClient<UpdateConfirmCancelReturnRequestModel> cancelReturnRequest =
-        GetClient<UpdateConfirmCancelReturnRequestModel>(
+    PostClient<ConfirmCancelReturnRequestModel> cancelReturnRequest =
+        PostClient<ConfirmCancelReturnRequestModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+      requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
         endpoint: MarketEndPoints.cancelReturnRequestEP,
-        queryParameters: params,
-        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+        data: params,
+        response: ResponseValue<ConfirmCancelReturnRequestModel>(
             fromJson: (response) =>
-                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+                ConfirmCancelReturnRequestModel.fromJson(response)),
       ),
     );
 
@@ -1259,35 +1259,34 @@ class HomeRemoteDatasource {
     return storeReturnRequest();
   }
 
-  Future<UpdateConfirmCancelReturnRequestModel> cancelReturnRequestProduct(
+  Future<ConfirmCancelReturnRequestModel> cancelReturnRequestProduct(
       Map<String, dynamic> params) {
-    GetClient<UpdateConfirmCancelReturnRequestModel>
-        cancelReturnRequestProduct =
-        GetClient<UpdateConfirmCancelReturnRequestModel>(
+    GetClient<ConfirmCancelReturnRequestModel> cancelReturnRequestProduct =
+        GetClient<ConfirmCancelReturnRequestModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+      requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
         endpoint: MarketEndPoints.cancelReturnRequestProductEP,
         queryParameters: params,
-        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+        response: ResponseValue<ConfirmCancelReturnRequestModel>(
             fromJson: (response) =>
-                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+                ConfirmCancelReturnRequestModel.fromJson(response)),
       ),
     );
 
     return cancelReturnRequestProduct();
   }
 
-  Future<UpdateConfirmCancelReturnRequestModel> confirmReturnRequest(
+  Future<ConfirmCancelReturnRequestModel> confirmReturnRequest(
       Map<String, dynamic> params) {
-    PostClient<UpdateConfirmCancelReturnRequestModel> confirmReturnRequest =
-        PostClient<UpdateConfirmCancelReturnRequestModel>(
+    PostClient<ConfirmCancelReturnRequestModel> confirmReturnRequest =
+        PostClient<ConfirmCancelReturnRequestModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<UpdateConfirmCancelReturnRequestModel>(
+      requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
         endpoint: MarketEndPoints.confirmReturnRequestEP,
         data: params,
-        response: ResponseValue<UpdateConfirmCancelReturnRequestModel>(
+        response: ResponseValue<ConfirmCancelReturnRequestModel>(
             fromJson: (response) =>
-                UpdateConfirmCancelReturnRequestModel.fromJson(response)),
+                ConfirmCancelReturnRequestModel.fromJson(response)),
       ),
     );
 

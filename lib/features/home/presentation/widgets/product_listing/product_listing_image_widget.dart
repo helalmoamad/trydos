@@ -13,6 +13,7 @@ class ProductListingImageWidget extends StatelessWidget {
     this.orginalWidth,
     required this.innerShadowYOffset,
     this.borderColor,
+    this.radius = 12,
     this.withBackGroundShadow = false,
     required this.circleShape,
     required this.imageUrl,
@@ -22,6 +23,7 @@ class ProductListingImageWidget extends StatelessWidget {
   final double? imageHeight;
   final double? width;
   final double? height;
+  final double radius;
   final bool circleShape;
   final double? orginalWidth;
   final double? orginalHeight;
@@ -81,6 +83,7 @@ class ProductListingImageWidget extends StatelessWidget {
                       ordinalHeight: orginalHeight,
                       imageHeight: imageHeight,
                       imageWidth: imageWidth,
+                      radius: radius,
                       imageFit: BoxFit.contain,
                       innerShadowYOffset: innerShadowYOffset,
                       withInnerShadow: true,

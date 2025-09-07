@@ -762,16 +762,18 @@ class HelperFunctions {
 
   static String formatNumber(
       {required double number, bool isNeedRounding = true}) {
+    var formate = NumberFormat("0.######", "en_US");
     String iso = (_prefsRepository.userCountryIsAvailable == 1
             ? _prefsRepository.userChoosedCountryIso
             : _prefsRepository.countryIso) ??
         "";
+
     iso = iso.toUpperCase();
     if (!isNeedRounding) {
       if (iso == 'SY') {
         return number.ceil().toString();
       } else {
-        return number.toString();
+        return formate.format(number).toString();
       }
     }
 
@@ -796,23 +798,23 @@ class HelperFunctions {
     String thousand =
         (LanguageService.languageCode != "ar" || LanguageService.isKurdish)
             ? 'K'
-            : 'الف';
+            : 'أ';
     String million =
         (LanguageService.languageCode != "ar" || LanguageService.isKurdish)
             ? 'M'
-            : 'مليون';
+            : 'م';
     //if (iso == 'SY') {
     if (number >= 1e5 && number < 1e6) {
       String? result;
       if (iso == 'SY') {
-        result = (((number + 999) ~/ 1000)).ceil().toString();
+        result = ((((number.ceil()) / 1000).ceil())).toString();
       } else {
-        result = (((number + 999) ~/ 1000)).toStringAsFixed(
+        result = (((number) / 1000).ceil()).toStringAsFixed(
             GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
                 2);
       }
 
-      return '$result$thousand';
+      return '${formate.format(double.tryParse(result))}$thousand';
     } else if (number == 0) {
       return '0.0';
     } else if (number < 1e5) {
@@ -826,9 +828,10 @@ class HelperFunctions {
     } else {
       String? result;
       if (iso == 'SY') {
-        result = (((number + 999) ~/ 1000) / 1000).ceil().toStringAsFixed(3);
+        result =
+            (((((number.ceil())) / 1000).ceil()) / 1000).toStringAsFixed(3);
       } else {
-        result = (((number + 999) ~/ 1000) / 1000).toStringAsFixed(
+        result = (((((number.ceil())) / 1000).ceil()) / 1000).toStringAsFixed(
             (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
                     2) +
                 3);
@@ -837,7 +840,8 @@ class HelperFunctions {
       if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
         result = result.substring(0, (result.lastIndexOf(RegExp(r'.000'))));
       }
-      return '$result$million';
+
+      return '${formate.format(double.tryParse(result))}$million';
     }
     // }
     /*else if (iso == 'LB') {

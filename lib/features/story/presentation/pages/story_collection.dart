@@ -22,6 +22,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -416,7 +417,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                     null
                                 ? SizedBox.shrink()
                                 : positioned.Positioned(
-                                    bottom: 0,
+                                    bottom: 25,
                                     child: _handleWithUrlWidget((state
                                             .storiesCollections[
                                                 widget.collectionIndex]
@@ -494,41 +495,40 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                       .toString(),
                                   storyId: story.id.toString()));
                             }
-                            return FittedBox(
-                              fit: BoxFit.contain,
-                              child: SizedBox(
-                                width: _videoController!.value.size.width,
-                                height: _videoController!.value.size.height,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    VideoPlayer(
-                                      _videoController!,
-                                    ),
-                                    state
-                                                .storiesCollections[
-                                                    widget.collectionIndex]
-                                                .stories![state
-                                                        .currentStoryInEachCollection[
-                                                    widget.collectionIndex]!]
-                                                .oneLink ==
-                                            null
-                                        ? SizedBox.shrink()
-                                        : positioned.Positioned(
-                                            bottom: 0,
-                                            child: _handleWithUrlWidget(state
-                                                    .storiesCollections[
-                                                        widget.collectionIndex]
-                                                    .stories![state
-                                                            .currentStoryInEachCollection[
-                                                        widget
-                                                            .collectionIndex]!]
-                                                    .oneLink ??
-                                                ""))
-                                  ],
-                                ),
-                              ),
-                            );
+                            return Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: SizedBox(
+                                        width:
+                                            _videoController!.value.size.width,
+                                        height:
+                                            _videoController!.value.size.height,
+                                        child: VideoPlayer(
+                                          _videoController!,
+                                        ),
+                                      )),
+                                  state
+                                              .storiesCollections[
+                                                  widget.collectionIndex]
+                                              .stories![state
+                                                      .currentStoryInEachCollection[
+                                                  widget.collectionIndex]!]
+                                              .oneLink ==
+                                          null
+                                      ? SizedBox.shrink()
+                                      : positioned.Positioned(
+                                          bottom: 25,
+                                          child: _handleWithUrlWidget(state
+                                                  .storiesCollections[
+                                                      widget.collectionIndex]
+                                                  .stories![state
+                                                          .currentStoryInEachCollection[
+                                                      widget.collectionIndex]!]
+                                                  .oneLink ??
+                                              ""))
+                                ]);
                           } else if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return Center(
@@ -658,6 +658,33 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                         .stories![
                                             state.currentStoryInEachCollection[
                                                 widget.collectionIndex]!]
+                                        .userId ==
+                                    prefsRepository.myStoriesId
+                                ? SizedBox.shrink()
+                                : Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                        onTap: () {
+                                          widget.animatedController.stop();
+                                          widget.animatedController.reset();
+                                          Future.delayed(
+                                            Duration(milliseconds: 600),
+                                            () {
+                                              showReportStoryDialog(context);
+                                            },
+                                          );
+                                        },
+                                        child: Icon(
+                                          Icons.error,
+                                          size: 26,
+                                          color: Colors.red,
+                                        ))),
+                            state
+                                        .storiesCollections[
+                                            widget.collectionIndex]
+                                        .stories![
+                                            state.currentStoryInEachCollection[
+                                                widget.collectionIndex]!]
                                         .userId !=
                                     prefsRepository.myStoriesId
                                 ? SizedBox.shrink()
@@ -722,6 +749,109 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           );
         },
       ),
+    );
+  }
+
+  void showReportStoryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // لا يمكن إغلاق الـ Dialog بالضغط خارج النافذة
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // العنوان
+                Text(
+                  LocaleKeys.report_story.tr(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                SizedBox(height: 16),
+
+                // الرسالة
+                Text(
+                  LocaleKeys.confirm_report_story.tr(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                SizedBox(height: 24),
+
+                // الأزرار
+                Row(
+                  children: [
+                    // زر الإلغاء
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // إغلاق الـ Dialog
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[300],
+                          foregroundColor: Colors.black87,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(
+                          LocaleKeys.cancel.tr(),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(width: 12),
+
+                    // زر التأكيد
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // إغلاق الـ Dialog
+                          // هنا يمكنك إضافة الكود الخاص بالإبلاغ عن القصة
+                          //   _reportStory();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(
+                          LocaleKeys.confirm.tr(),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -869,7 +999,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               Duration(milliseconds: 300),
               () => Navigator.of(context).push(PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                      ProductDetailsPage(
+                      ProductDetailsPageNew(
                         productSlugForOpeningChatDirectly:
                             uriWithoutFilter.split("/").toList().last,
                         fromNotification: false,
@@ -985,8 +1115,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                     .getFiltersForNavigatorFromLinkToListingPageStatus ==
                 GetFiltersForNavigatorFromLinkToListingPageStatus.loading) {}
             return Container(
-              width: 300,
-              height: 100,
+              width: 150,
+              height: 35,
               child: InkWell(
                 onTap: () {
                   _videoController?.pause();
@@ -1007,18 +1137,19 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             color: Colors.black,
                           ))
                       : Container(
-                          width: 300,
-                          height: 100,
+                          width: 150,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15)),
                           child: Center(
                             child: Text(
-                              url,
+                              LocaleKeys.press_here_for_more.tr(),
                               textAlign: TextAlign.center,
-                              maxLines: 4,
-                              style: context.textTheme.bodyMedium?.ba.copyWith(
-                                decorationColor: Colors.blue,
-                                decoration: TextDecoration.underline,
-                                fontSize: 11,
-                                color: Colors.blue,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Color(0xff1D1D1D),
+                                fontSize: 10,
                                 letterSpacing: 0.18,
                               ),
                             ),

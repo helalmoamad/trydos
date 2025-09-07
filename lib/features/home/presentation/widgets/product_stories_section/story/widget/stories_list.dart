@@ -131,7 +131,7 @@ class _StoriesListState extends State<StoriesList> {
                                         ? Key(
                                             WidgetsKeys.storiesSuccessStatusKey)
                                         : null,
-                                    height: 220,
+                                    height: 165,
                                     child: ListView.separated(
                                         controller: listViewController,
                                         itemBuilder: (context, index) {

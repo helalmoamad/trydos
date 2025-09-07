@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -31,12 +32,15 @@ class ProductColorPanal extends StatefulWidget {
     super.key,
     // required this.setThisEnabled,
     // required this.slidingModeItem,
-    required this.itemIndex,
-    required this.tapIndexToAddProductToCart,
+    this.itemIndex,
+    this.tapIndexToAddProductToCart,
     required this.visibleRedeem,
     required this.productItem,
+    this.fromDetailsPage = false,
+    this.currentActiveTab,
+    this.panelControllerForCart,
+    this.panelController,
     required this.colorImages,
-    required this.finishRedeem,
 
     // جديد: افتراضي false
     //required this.displayImageColors,
@@ -45,11 +49,13 @@ class ProductColorPanal extends StatefulWidget {
 
   // final Tuple2<int, int> slidingModeItem;
   // final void Function(int, int) setThisEnabled;
-  final ValueNotifier<int> tapIndexToAddProductToCart;
-  final ValueNotifier<bool> finishRedeem;
-  final int itemIndex;
-
+  final ValueNotifier<int>? tapIndexToAddProductToCart;
+  final PanelController? panelControllerForCart;
+  final int? itemIndex;
+  final bool fromDetailsPage;
+  final PanelController? panelController;
   final ValueNotifier<bool> visibleRedeem;
+  final ValueNotifier<int>? currentActiveTab;
   final List<String> colorImages;
   final productListingModel.Products productItem;
 
@@ -402,6 +408,14 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
   Widget _buildCompactBuyButton(HomeState state) {
     return InkWell(
       onTap: () {
+        if (widget.fromDetailsPage) {
+          widget.panelController?.close();
+          Future.delayed(Duration(milliseconds: 600), () {
+            widget.currentActiveTab?.value = 3;
+            widget.panelControllerForCart?.open();
+          });
+          return;
+        }
         Future.delayed(
             Duration(milliseconds: 50),
             () => _homeBloc.add(AddCurrentSelectedColorEvent(
@@ -414,7 +428,8 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
 
         Future.delayed(
           const Duration(milliseconds: 600),
-          () => widget.tapIndexToAddProductToCart.value = widget.itemIndex,
+          () => widget.tapIndexToAddProductToCart?.value =
+              (widget.itemIndex ?? 0),
         );
       },
       child: ValueListenableBuilder<bool>(

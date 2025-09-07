@@ -15,6 +15,7 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.
 import 'package:trydos/features/home/presentation/pages/Order/orders_page.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
 
@@ -233,7 +234,7 @@ class HandlingMarketNotifications {
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPage(
+                        ProductDetailsPageNew(
                             productSlugForOpeningChatDirectly:
                                 data["product_slug"].toString(),
                             fromNotification: fromBackground,
@@ -262,7 +263,7 @@ class HandlingMarketNotifications {
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPage(
+                        ProductDetailsPageNew(
                             productSlugForOpeningChatDirectly:
                                 data["product_slug"].toString(),
                             fromNotification: fromBackground,
@@ -294,7 +295,7 @@ class HandlingMarketNotifications {
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPage(
+                        ProductDetailsPageNew(
                             productSlugForOpeningChatDirectly:
                                 data["product_slug"].toString(),
                             fromNotification: fromBackground,
@@ -323,7 +324,7 @@ class HandlingMarketNotifications {
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPage(
+                        ProductDetailsPageNew(
                             productSlugForOpeningChatDirectly:
                                 data["product_slug"].toString(),
                             fromNotification: fromBackground,
@@ -354,7 +355,7 @@ class HandlingMarketNotifications {
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPage(
+                        ProductDetailsPageNew(
                             fromNotificationComment: true,
                             fromNotification: fromBackground,
                             productSlugForOpeningChatDirectly:

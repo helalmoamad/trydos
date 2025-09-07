@@ -259,7 +259,15 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               Expanded(
                 child: BlocBuilder<AuthBloc, AuthState>(
                   buildWhen: (previous, current) =>
-                      previous.loginToChatStatus != current.loginToChatStatus,
+                      previous.loginToChatStatus != current.loginToChatStatus ||
+                      previous.verifyOtpSignInStatus !=
+                          current.verifyOtpSignInStatus ||
+                      previous.verifyOtpSignUpStatus !=
+                          current.verifyOtpSignUpStatus ||
+                      current.verifyOtpFromGuestStatus !=
+                          previous.verifyOtpFromGuestStatus ||
+                      previous.registerGuestStatus !=
+                          current.registerGuestStatus,
                   builder: (context, authState) {
                     return InkWell(
                       key: TestVariables.kTestMode
@@ -267,7 +275,15 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           : null,
                       onTap: () async {
                         if (authState.loginToChatStatus ==
-                            LoginToChatStatus.loading) {
+                                LoginToChatStatus.loading ||
+                            authState.registerGuestStatus ==
+                                RegisterGuestStatus.loading ||
+                            authState.verifyOtpFromGuestStatus ==
+                                VerifyOtpFromGuestStatus.loading ||
+                            authState.verifyOtpSignInStatus ==
+                                VerifyOtpInProfileStatus.loading ||
+                            authState.verifyOtpSignUpStatus ==
+                                VerifyOtpSignUpStatus.loading) {
                           return;
                         }
 
@@ -315,7 +331,15 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           authState.loginToChatStatus ==
-                                  LoginToChatStatus.loading
+                                      LoginToChatStatus.loading ||
+                                  authState.registerGuestStatus ==
+                                      RegisterGuestStatus.loading ||
+                                  authState.verifyOtpFromGuestStatus ==
+                                      VerifyOtpFromGuestStatus.loading ||
+                                  authState.verifyOtpSignInStatus ==
+                                      VerifyOtpInProfileStatus.loading ||
+                                  authState.verifyOtpSignUpStatus ==
+                                      VerifyOtpSignUpStatus.loading
                               ? Container(
                                   height: 40.h,
                                   width: 40.h,
@@ -344,7 +368,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     right: 0,
                                                     child: Visibility(
                                                         visible: state
-                                                                .unReadMessagesFromAllChats !=
+                                                                .unReadMessagesFromAllChats >
                                                             0,
                                                         child: Positioned(
                                                           top: 0,

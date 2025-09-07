@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -778,54 +779,63 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                 child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      MyTextWidget(
-                                        HelperFunctions.formatNumber(
-                                            number: (price * exchangeRate))
-                                        /* .toStringAsFixed(state.startingSetting
+                                      Container(
+                                          constraints:
+                                              BoxConstraints(maxWidth: 45),
+                                          child: AutoSizeText(
+                                            HelperFunctions.formatNumber(
+                                                number: (price * exchangeRate))
+                                            /* .toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                                        ,
-                                        style:
-                                            textTheme.titleMedium?.lq.copyWith(
-                                          fontSize: 9.sp,
-                                          color: Color(0xff3c3c3c),
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                          height: 0,
-                                        ),
-                                      ),
+                                            ,
+                                            minFontSize: 4,
+                                            style: textTheme.titleMedium?.lq
+                                                .copyWith(
+                                              fontSize: 12.sp,
+                                              color: Color(0xff3c3c3c),
+                                              decoration:
+                                                  TextDecoration.lineThrough,
+                                              height: 0,
+                                            ),
+                                          )),
                                       SizedBox(
                                         width: 2,
                                       ),
-                                      MyTextWidget(
-                                        HelperFunctions.formatNumber(
-                                            number: (((isFlashDealEnded ||
-                                                        (widget.productItem
-                                                                    .flashDealPrice ??
-                                                                0) ==
-                                                            0)
-                                                    ? offerPrice
-                                                    : widget.productItem
-                                                            .flashDealPrice ??
-                                                        0) *
-                                                exchangeRate))
-                                        /*.toStringAsFixed(state.startingSetting
+                                      Container(
+                                          constraints:
+                                              BoxConstraints(maxWidth: 45),
+                                          child: AutoSizeText(
+                                            HelperFunctions.formatNumber(
+                                                number: (((isFlashDealEnded ||
+                                                            (widget.productItem
+                                                                        .flashDealPrice ??
+                                                                    0) ==
+                                                                0)
+                                                        ? offerPrice
+                                                        : widget.productItem
+                                                                .flashDealPrice ??
+                                                            0) *
+                                                    exchangeRate))
+                                            /*.toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                                        ,
-                                        style:
-                                            textTheme.titleMedium?.mr.copyWith(
-                                          fontSize: 9.sp,
-                                          decorationColor: Color(0xffFF6200),
-                                          decoration: isRedeem
-                                              ? TextDecoration.lineThrough
-                                              : null,
-                                          color: Color(0xff3c3c3c),
-                                          height: 0,
-                                        ),
-                                      ),
+                                            ,
+                                            minFontSize: 4,
+                                            style: textTheme.titleMedium?.mr
+                                                .copyWith(
+                                              fontSize: 12.sp,
+                                              decorationColor:
+                                                  Color(0xffFF6200),
+                                              decoration: isRedeem
+                                                  ? TextDecoration.lineThrough
+                                                  : null,
+                                              color: Color(0xff3c3c3c),
+                                              height: 0,
+                                            ),
+                                          )),
                                       SizedBox(
                                         width: 2,
                                       ),
@@ -835,8 +845,12 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                             : state.getCurrencyForCountryModel!
                                                     .data!.currency!.symbol ??
                                                 "",
-                                        style: TextStyle(
-                                            fontSize: 8.sp, height: 0),
+                                        style:
+                                            textTheme.titleMedium?.lr.copyWith(
+                                          fontSize: 10.sp,
+                                          color: Color(0xff1D1D1D),
+                                          height: 0,
+                                        ),
                                       ),
                                     ]),
                               );
@@ -903,8 +917,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                 children: [
                   MyTextWidget(
                     " ${LocaleKeys.buy.tr()} ",
-                    style: textTheme.titleSmall?.rr.copyWith(
-                      fontSize: 9.sp,
+                    style: textTheme.titleSmall?.lr.copyWith(
+                      fontSize: 12.sp,
                       color: isRedeem
                           ? Color(0xffFF6200)
                           : const Color(0xff414141),
@@ -912,16 +926,20 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                     ),
                   ),
                   isRedeem
-                      ? MyTextWidget(
-                          HelperFunctions.formatNumber(
-                              number: redeemPrice * exchangeRate),
-                          //      .toStringAsFixed(widget.decimalPoint),
-                          style: textTheme.headlineMedium?.br.copyWith(
-                            fontSize: 9.sp,
-                            color: Color(0xffFF6200),
-                            height: 1.2,
-                          ),
-                        )
+                      ? Container(
+                          constraints: BoxConstraints(maxWidth: 25),
+                          child: AutoSizeText(
+                            HelperFunctions.formatNumber(
+                                number: redeemPrice * exchangeRate),
+                            maxLines: 1,
+                            minFontSize: 2,
+                            //      .toStringAsFixed(widget.decimalPoint),
+                            style: textTheme.headlineMedium?.br.copyWith(
+                              fontSize: 10.sp,
+                              color: Color(0xffFF6200),
+                              height: 1.2,
+                            ),
+                          ))
                       : const SizedBox.shrink(),
                   SizedBox(
                     width: 2,
@@ -943,8 +961,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                   const SizedBox(width: 3),
                   SvgPicture.asset(
                     AppAssets.bagSvg,
-                    height: 12,
-                    width: 12,
+                    height: 15,
                   ),
                 ],
               ),

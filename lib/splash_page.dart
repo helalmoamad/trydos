@@ -100,7 +100,7 @@ class _SplashPageState extends State<SplashPage> {
               boutiqueSlug: "*flashDeal*",
               category: null,
               searchText: null));
-      homeBloc.add(GetCurrencyForCountryEvent());
+
       Future.delayed(Duration(seconds: 1), () {
         //  homeBloc.add(GeColorsAndSizesForSearchEvent());
         if ((prefsRepository.marketToken?.length ?? 0) > 10) {

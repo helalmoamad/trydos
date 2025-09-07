@@ -41,6 +41,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/shared_pr
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -1145,7 +1146,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               messages[index].shareProductContent?.productSlug.toString() ?? "",
                                                                         ));
                                                                         Navigator.of(context).push(MaterialPageRoute(
-                                                                            builder: (ctx) => ProductDetailsPage(
+                                                                            builder: (ctx) => ProductDetailsPageNew(
                                                                                   productIdForOpeningChatDirectly: messages[index].shareProductContent?.productId.toString(),
                                                                                 )));
                                                                       }

@@ -18,6 +18,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 
@@ -301,7 +302,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                     Navigator.of(context).push(PageRouteBuilder(
                                       pageBuilder: (context, animation,
                                               secondaryAnimation) =>
-                                          ProductDetailsPage(
+                                          ProductDetailsPageNew(
                                               productSlugForOpeningChatDirectly:
                                                   state
                                                       .getProductListingWithFiltersPaginationModels[

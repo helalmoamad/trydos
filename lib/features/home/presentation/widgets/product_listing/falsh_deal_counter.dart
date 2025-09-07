@@ -94,7 +94,7 @@ class _FlashDealCountdownTimerWidgetState
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
 
-    return '| ${days} ${LocaleKeys.day.tr()} | ${hours}:${minutes}:${seconds}';
+    return '|${days} ${LocaleKeys.day.tr()}|${hours}:${minutes}:${seconds}';
   }
 
   @override

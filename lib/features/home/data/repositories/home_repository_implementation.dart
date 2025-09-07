@@ -44,9 +44,10 @@ import 'package:trydos/features/home/data/models/cancel_order_model.dart';
 import 'package:trydos/features/home/data/models/change_order_address_model.dart';
 import 'package:trydos/features/home/data/models/color_size_for_product.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
-import 'package:trydos/features/home/data/models/update_confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/confirm_return_request_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
+import 'package:trydos/features/home/data/models/update_return_request_model.dart';
 import 'package:trydos/features/home/data/models/upload_images_for_return_product_model.dart';
 import 'package:trydos/features/home/data/models/return_request_product_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
@@ -589,15 +590,15 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
-      updateReturnRequestProduct(Map<String, dynamic> params) {
+  Future<Either<Failure, UpdateReturnRequestModel>> updateReturnRequestProduct(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.updateReturnRequestProduct(params));
   }
 
   @override
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
-      cancelReturnRequest(Map<String, dynamic> params) {
+  Future<Either<Failure, ConfirmCancelReturnRequestModel>> cancelReturnRequest(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.cancelReturnRequest(params));
   }
@@ -610,15 +611,15 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+  Future<Either<Failure, ConfirmCancelReturnRequestModel>>
       cancelReturnRequestProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.cancelReturnRequestProduct(params));
   }
 
   @override
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
-      confirmReturnRequest(Map<String, dynamic> params) {
+  Future<Either<Failure, ConfirmCancelReturnRequestModel>> confirmReturnRequest(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.confirmReturnRequest(params));
   }

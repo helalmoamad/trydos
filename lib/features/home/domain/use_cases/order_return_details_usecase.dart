@@ -20,12 +20,12 @@ class OrderReturnDetailsUseCase
 }
 
 class GetOrderReturntDetailsParams {
-  final String returnRequestId;
+  final String orderGroupId;
 
   GetOrderReturntDetailsParams({
-    required this.returnRequestId,
+    required this.orderGroupId,
   });
   Map<String, dynamic> get map => {
-        "return_request_id": returnRequestId,
+        "order_group_id": orderGroupId,
       };
 }

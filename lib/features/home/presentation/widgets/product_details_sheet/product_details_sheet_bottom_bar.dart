@@ -289,11 +289,12 @@ class _ProductDetailsSheetBottomBarState
                                                                     widget
                                                                         .collectedAfterOrder
                                                                 ? (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                                            .failure)
+                                                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                                .failure ||
+                                                                        state.authProductDetailsStatus ==
+                                                                            AuthProductDetailsStatus.failure)
                                                                     ? Container(
-                                                                        width:
-                                                                            120,
+                                                                        width: 120,
                                                                         height: 60,
                                                                         decoration: BoxDecoration(
                                                                           borderRadius:

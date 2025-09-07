@@ -417,16 +417,18 @@ class ShareProductContent {
     this.imageHeight,
   });
 
-  factory ShareProductContent.fromJson(Map<String, dynamic> json) =>
-      ShareProductContent(
+  factory ShareProductContent.fromJson(Map<String, dynamic> json) {
+    return ShareProductContent(
         productId: json["product_id"].toString(),
         productSlug: json["product_slug"],
         productDescription: json["product_description"],
-        productImageUrl: json["product_image_url"],
+        productImageUrl: (json["product_image_url"] is Map)
+            ? json["product_image_url"]["file_path"]
+            : json["product_image_url"],
         productName: json["product_name"],
         imageWidth: double.tryParse(json["product_image_width"].toString()),
-        imageHeight: double.tryParse(json["product_image_height"].toString()),
-      );
+        imageHeight: double.tryParse(json["product_image_height"].toString()));
+  }
 
   Map<String, dynamic> toJson() => {
         "product_id": productId,

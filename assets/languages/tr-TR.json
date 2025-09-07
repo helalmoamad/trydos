@@ -1,5 +1,15 @@
 {
   "information_securely": "Güvenli Bilgi",
+  "all_questions_below_from": "Aşağıdaki Tüm Sorular Şunlardan Gelir",
+  "visitors_not_necessarily_from": "Ziyaretçiler ve Mutlaka Şunlardan Değil",
+  "customers_purchased_before_pre_purchase_questions": "Daha Önce Ürünü Satın Alan Müşteriler. Bunlar Satın Alma Öncesi Sorulardır ve Doğrudan Satıcı Tarafından Cevaplanır",
+  "all_comments_are_genuine_from_customers_who_purchased_and_actually": "Tüm Yorumlar Satın Alan ve Gerçekten Müşterilerden Gelen Orijinal Yorumlardır",
+
+  "shipping_company": "Kargo Şirketi",
+  "based_on_previous_delivery_statistics_below_to_your_area_we_conclude": "Bölgenizdeki Önceki Teslimat İstatistiklerine Dayanarak Sonuçlandırıyoruz",
+  "that_the_expected_delivery_time_for_your_product_is": "Ürününüzün Beklenen Teslimat Süresi",
+  "full": "Tam",
+  "the_product_price_when_returned": "İade Edildiğinde Ürün Fiyatı",
   "alert": "Uyarı",
   "typing": "Yazıyor...",
   "recording": "Kaydediyor...",
@@ -226,7 +236,7 @@
   "notify_me_when_quantity_is_available": "Miktar mevcut olduğunda beni bilin",
   "we_will_inform_you_when_a": "Bir",
   "quantity_is_available": "Miktar mevcut",
-  "send": "Gönder",
+
   "add": "Ekle",
   "bag": "Çanta",
   "comment_about_this_product": "Bu Ürün Hakkında Yorum",
@@ -516,6 +526,9 @@
   "product_return_request_approve": "Ürün İade Talebi Onayla",
   "waiting": "Beklemek…",
   "cancel_return_request_get": "İade Talebini İptal Et ve Al",
+  "return_request_cancelled": "İade Talebi İptal Edildi",
+  "return_request_rejected": "İade Talebi Reddedildi",
+  "in_transit": "Yolda",
   "product_collection_within": "Ürün Koleksiyonu İçinde",
   "back_your_money": "Paranızı Geri Alın",
   "product_has_been_returned_successfully": "Ürün Başarıyla İade Edildi",
@@ -576,4 +589,62 @@
   "new_update_available": "Yeni Güncelleme Mevcut",
   "newer_version_available_message": "Uygulamanın daha yeni bir sürümü mevcut, lütfen şimdi güncelleyin.",
   "update_now": "Şimdi Güncelle"
+  ,"only_this_piece": "Sadece Bu Parça"
+  ,"quick_video": "Hızlı video"
+  ,"buyers_comment": "Alıcı Yorumu"
+  ,"faq_buyer_seller": "SSS Alıcı & Satıcı"
+  ,"buyers_reviews_on_product_sizing": "Ürün Bedenleri Hakkında Alıcı Yorumları"
+  ,"true_size": "Tam Beden"
+  ,"true_label": "Doğru"
+  ,"small": "Küçük"
+  ,"large": "Büyük"
+  ,"standard": "Standart"
+  ,"ask_seller_about_product": "Bu Ürün Hakkında Satıcıya Sorunuzu Sorun…"
+  ,"buyer": "Alıcı"
+  ,"recommend_it": "Öneriyor"
+  ,"dont_recommend_it": "Önermiyor"
+  ,"color_available": "Mevcut Renkler"
+  ,"size_available": "Mevcut Bedenler"
+  ,"answered": "Cevaplandı"
+  ,"get_a": "Alın"
+  ,"get_the_amount_back": "Tutarı Geri Alın"
+  ,"n_buyer_rate": "Alıcı Puanı"
+  ,"good_quality": "İyi Kalite"
+  ,"recommend_it_by": "Şunun Tarafından Öneriliyor"
+  ,"made_in": "Menşei"
+  ,"today_shipping_if_buy_before": "Şu Saatten Önce Alınırsa Bugün Kargo"
+  ,"fast_packing": "Hızlı Paketleme"
+  ,"best_sell": "En Çok Satan"
+  ,"best_price": "En İyi Fiyat"
+  ,"expected_shipping_delivery_date": "Beklenen Kargo ve Teslimat Tarihi"
+  ,"work_days_at_your_address_in": "Adresinizdeki İş Günleri"
+  ,"after_receiving_product_return_without_conditions": "Ürünü aldıktan sonra koşulsuz iade edebilirsiniz"
+  ,"or_reasons_with_complete_ease_and": "veya herhangi bir neden olmadan kolaylıkla"
+
+  ,"buyers_product_rate": "Alıcıların Ürün Puanı"
+  ,"all_reviews_are_genuine_from_customers_who_purchased_and_actually": "Tüm Yorumlar Satın Alan ve Gerçekten"
+  ,"received_the_product_through": "Ürünü Aldıkları Müşterilerden Orijinaldir"
+  ,"buyer_rate": "Alıcı Puanı"
+  ,"overall_good_quality": "Genel İyi Kalite"
+  ,"views_product": "Ürün Görüntüleme"
+  ,"views_product_with_count": "{count} Ürün Görüntüleme"
+  ,"twenty_thousand_views_product": "200K Ürün Görüntüleme"
+  ,"very_bad": "Çok Kötü"
+  ,"bad": "Kötü"
+  ,"normal": "Normal"
+  ,"good": "İyi"
+  ,"very_good": "Çok İyi"
+  ,"buyers_product_recommend_to_buy": "Alıcıların Ürünü Satın Alma Önerisi"
+  ,"all_recommendations_are_genuine_from_customers_who_purchased_and": "Tüm Öneriler Satın Alan"
+  ,"actually_received_the_product_through": "Müşterilerden Orijinaldir ve Gerçekten Ürünü Aldıkları"
+  ,"return_problem_resolved": "İade sorunu çözüldü."
+  ,"out_for_return": "İade için yolda"
+  ,"country_not_available": "Ülkeniz bu uygulamada mevcut değil"
+  ,"choose_a_country": "Bir ülke seçin:"
+  ,"you_have_to_choose_a_country": "Bir ülke seçmelisiniz"
+  ,"ok_and_continue": "Tamam ve Devam"
+  ,"press_here_for_more": "Daha fazlası için buraya tıklayın",
+  "product_shared_successfully": "Ürün başarıyla paylaşıldı",
+  "report_story": "Hikayeyi Bildir",
+  "confirm_report_story": "Bu hikayeyi bildirmek istediğinizden emin misiniz?"
 }

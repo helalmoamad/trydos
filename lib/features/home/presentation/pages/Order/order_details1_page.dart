@@ -97,7 +97,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
   List<OrderListModel> orders = [];
   int firstAddressChoosed = 0;
   bool firstOpenPage = true;
-  bool requestReturnApi = true;
+  bool requestReturnApi = false;
+  bool canFetchReturnDetails = false;
   @override
   void initState() {
     orders = widget.orders;
@@ -133,23 +134,38 @@ class _OrderDetails1State extends State<OrderDetails1> {
           orderGroupId: orders[indexTapPackage.value].orderGroupId ?? "",
           firstOpenPage: true),
     );
+    orders.forEach(
+      (element) {
+        if (element.returnRequestId != null) {
+          canFetchReturnDetails = true;
+        }
+      },
+    );
+    if (canFetchReturnDetails) {
+      orderBloc.add(FetchOrderReturnDetailsEvent(
+        orders[indexTapPackage.value].orderGroupId ?? "",
+      ));
+    }
+
     indexTapAddress.value = orderBloc.state.listOfAddressInfoClassToSave
             ?.indexWhere((element) =>
                 element.id ==
                 orders[indexTapPackage.value].shippingAddressData?.id) ??
         -1;
+
     firstAddressChoosed = indexTapAddress.value;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool _isLoading = false;
-
     Future<void> _refreshData() async {
-      setState(() {
-        _isLoading = true; // بدء التحميل
-      });
+      if (canFetchReturnDetails) {
+        orderBloc.add(FetchOrderReturnDetailsEvent(
+          orders[indexTapPackage.value].orderGroupId ?? "",
+        ));
+      }
+
       orderBloc.add(
         GetOrdersByOrderGroupIDEvent(
             orderGroupId: widget.orders[0].orderGroupId ?? ""),
@@ -157,10 +173,6 @@ class _OrderDetails1State extends State<OrderDetails1> {
 
       // 🚀 إزالة التأخير المصطنع - دع البيانات تحدد سرعة التحميل!
       await Future.delayed(Duration(seconds: 3)); // ❌ تم حذف التأخير المصطنع
-
-      setState(() {
-        _isLoading = false; // إنهاء التحميل
-      });
     }
 
     return WillPopScope(
@@ -197,6 +209,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     state.getOrdersByOrderGroupIDModel
                         ?.orders?[indexTapPackage.value].orderGroupId) {
                   orders = state.getOrdersByOrderGroupIDModel?.orders ?? [];
+                  orders.forEach(
+                    (element) {
+                      if (element.returnRequestId != null) {
+                        canFetchReturnDetails = true;
+                      }
+                    },
+                  );
                 }
                 if (!firstOpenPage) {
                   indexTapAddress.value = orderBloc
@@ -651,7 +670,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                             alignment: Alignment
                                                                 .center,
                                                             child: Text(
-                                                              "Pack ${index + 1}",
+                                                              "Pack ${orders[index].id}",
                                                               style: index !=
                                                                       _indexTapPackage
                                                                   ? context
@@ -781,56 +800,93 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   );
                                                 }
                                               },
-                                              child: GestureDetector(
-                                                onTapUp: (details) {
-                                                  final double dx =
-                                                      details.localPosition.dx;
-                                                  print(dx);
+                                              child: BlocBuilder<OrderBloc,
+                                                      OrderState>(
+                                                  buildWhen: (previous,
+                                                          current) =>
+                                                      previous
+                                                          .orderReturnDetailsStatus !=
+                                                      current
+                                                          .orderReturnDetailsStatus,
+                                                  builder: (context, state) {
+                                                    return GestureDetector(
+                                                      onTapUp: (details) {
+                                                        final double dx =
+                                                            details
+                                                                .localPosition
+                                                                .dx;
+                                                        print(dx);
 
-                                                  if ((dx > (1.sw - 75) &&
-                                                      orders[_indexTapPackage]
-                                                              .orderStatus
-                                                              ?.value ==
-                                                          "out_for_delivery")) {
-                                                    return;
-                                                  }
-                                                  if (orders[_indexTapPackage]
-                                                          .orderHasReturnRequest ??
-                                                      false) {
-                                                    requestReturnApi = true;
-                                                    orderBloc.add(
-                                                        FetchOrderReturnDetailsEvent(
-                                                            int.parse(orders[
-                                                                    _indexTapPackage]
-                                                                .returnRequestId
-                                                                .toString())));
-                                                    return;
-                                                  } else {
-                                                    requestReturnApi = false;
-                                                  }
-                                                  HelperFunctions
-                                                      .slidingNavigation(
-                                                    context,
-                                                    OrderDetails2(
-                                                      indexGroupe:
-                                                          widget.indexGroupe,
-                                                      indexPackage:
-                                                          _indexTapPackage,
-                                                      fromNotification: widget
-                                                          .fromNotification,
-                                                      order: orders[
-                                                          _indexTapPackage],
-                                                    ),
-                                                  );
-                                                },
-                                                child: buildFourthSection(
-                                                    context: context,
-                                                    itemsCount:
-                                                        orders[_indexTapPackage]
-                                                            .details!
-                                                            .length
-                                                            .toString()),
-                                              )),
+                                                        if ((dx > (1.sw - 75) &&
+                                                            orders[_indexTapPackage]
+                                                                    .orderStatus
+                                                                    ?.value ==
+                                                                "out_for_delivery")) {
+                                                          return;
+                                                        }
+                                                        if (state
+                                                                .orderReturnDetailsStatus ==
+                                                            OrderReturnDetailsStatus
+                                                                .success) {
+                                                          HelperFunctions
+                                                              .slidingNavigation(
+                                                            context,
+                                                            OrderDetails2(
+                                                              indexGroupe: widget
+                                                                  .indexGroupe,
+                                                              indexPackage:
+                                                                  _indexTapPackage,
+                                                              fromNotification:
+                                                                  widget
+                                                                      .fromNotification,
+                                                              order: orders[
+                                                                  _indexTapPackage],
+                                                            ),
+                                                          );
+                                                          return;
+                                                        }
+                                                        if (orders[_indexTapPackage]
+                                                                .orderHasReturnRequest ??
+                                                            false) {
+                                                          requestReturnApi =
+                                                              true;
+                                                          if (canFetchReturnDetails) {
+                                                            orderBloc.add(
+                                                                FetchOrderReturnDetailsEvent(
+                                                                    orders[_indexTapPackage]
+                                                                            .orderGroupId ??
+                                                                        ""));
+                                                          }
+
+                                                          return;
+                                                        } else {
+                                                          requestReturnApi =
+                                                              false;
+                                                        }
+                                                        HelperFunctions
+                                                            .slidingNavigation(
+                                                          context,
+                                                          OrderDetails2(
+                                                            indexGroupe: widget
+                                                                .indexGroupe,
+                                                            indexPackage:
+                                                                _indexTapPackage,
+                                                            fromNotification: widget
+                                                                .fromNotification,
+                                                            order: orders[
+                                                                _indexTapPackage],
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: buildFourthSection(
+                                                          context: context,
+                                                          itemsCount: orders[
+                                                                  _indexTapPackage]
+                                                              .details!
+                                                              .length
+                                                              .toString()),
+                                                    );
+                                                  })),
                                           ///////////////////
                                           SizedBox(
                                             height: 8.h,

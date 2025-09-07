@@ -15,6 +15,7 @@ import 'package:trydos/config/theme/typography.dart';
 
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/state_ext.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
@@ -112,11 +113,21 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                           : InkWell(
                               onTap: () {
                                 showDialog(
+                                  barrierColor: Color.fromRGBO(0, 0, 0, 0.3),
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                      title: Text(LocaleKeys
-                                          .are_you_sure_you_want_to_change_your_country
-                                          .tr()),
+                                      backgroundColor: Color(0xffCEFFE6),
+                                      title: Text(
+                                        LocaleKeys
+                                            .are_you_sure_you_want_to_change_your_country
+                                            .tr(),
+                                        style:
+                                            textTheme.titleMedium?.rr.copyWith(
+                                          fontSize: 12.sp,
+                                          color: Color(0xff1D1D1D),
+                                          height: 0,
+                                        ),
+                                      ),
                                       actions: [
                                         MaterialButton(
                                           onPressed: () {
@@ -160,16 +171,33 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                               },
                                             );
                                           },
-                                          child: Text(LocaleKeys.yes.tr()),
+                                          child: Text(
+                                            LocaleKeys.yes.tr(),
+                                            style: textTheme.titleMedium?.rr
+                                                .copyWith(
+                                              fontSize: 16.sp,
+                                              color: Color(0xff1D1D1D),
+                                              height: 0,
+                                            ),
+                                          ),
                                         ),
                                         SizedBox(
-                                          width: 20.w,
+                                          width: 40.w,
                                         ),
                                         MaterialButton(
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
-                                          child: Text(LocaleKeys.cansel.tr()),
+                                          elevation: 2,
+                                          child: Text(
+                                            LocaleKeys.cansel.tr(),
+                                            style: textTheme.titleMedium?.rr
+                                                .copyWith(
+                                              fontSize: 16.sp,
+                                              color: Color(0xff1D1D1D),
+                                              height: 0,
+                                            ),
+                                          ),
                                         )
                                       ]),
                                 );

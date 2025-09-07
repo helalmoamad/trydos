@@ -1,5 +1,15 @@
 {
   "information_securely": "Information Securely",
+  "all_questions_below_from": "All The Questions Below Are From",
+  "visitors_not_necessarily_from": "Visitors And Not Necessarily From",
+  "customers_purchased_before_pre_purchase_questions": "Customers Who Have Purchased The Product Before. These Are Pre-Purchase Questions, And They Are Answered Directly By The Seller",
+  "all_comments_are_genuine_from_customers_who_purchased_and_actually": "All Comment Are Genuine From Customers Who Purchased And Actually",
+ 
+  "shipping_company": "Shipping Company",
+  "based_on_previous_delivery_statistics_below_to_your_area_we_conclude": "Based On The Previous Delivery Statistics Below To Your Area, We Conclude",
+  "that_the_expected_delivery_time_for_your_product_is": "That The Expected Delivery Time For Your Product Is",
+  "full": "Full",
+  "the_product_price_when_returned": "The Product Price When Returned",
   "alert": "Alert",
   "typing": "Typing...",
   "recording": "Recording...",
@@ -37,6 +47,9 @@
   "save_to_gallery": "Save To Gallery",
   "contacts_list": "Contact List",
   "search_chat_contact_startNewChat": "Search,Chat,Contact,StartNewChat",
+  "product_shared_successfully": "Product shared successfully",
+  "report_story": "Report Story",
+  "confirm_report_story": "Are you sure you want to report this story?",
   "agree_continue": "Agree&Continue",
   "trems_of_services": "Trems Of Services",
   "to": "To",
@@ -226,7 +239,7 @@
   "notify_me_when_quantity_is_available": "Notify Me When Quantity Is Available",
   "we_will_inform_you_when_a": "We Will Inform You When A",
   "quantity_is_available": "Quantity Is Available",
-  "send": "Send",
+
   "add": "Add",
   "bag": "Bag",
   "comment_about_this_product": "Comment About This Product",
@@ -516,6 +529,9 @@
   "product_return_request_approve": "Product Return Request Approve",
   "waiting": "Waiting…",
   "cancel_return_request_get": "Cancel Return Request & Get",
+  "return_request_cancelled": "Return Request Cancelled",
+  "return_request_rejected": "Return Request Rejected",
+  "in_transit": "In Transit",
   "product_collection_within": "Product Collection Within",
   "back_your_money": "Back Your Money",
   "product_has_been_returned_successfully": "Product Has Been Returned Successfully",
@@ -577,4 +593,57 @@
   "newer_version_available_message": "There is a newer version of app available please update it now.",
   "update_now": "Update Now"
 
+  ,"only_this_piece": "Only This Piece"
+  ,"quick_video": "Quick video"
+  ,"buyers_comment": "Buyers Comment"
+  ,"faq_buyer_seller": "FAQ Buyer & Seller"
+  ,"buyers_reviews_on_product_sizing": "Buyers Reviews On Product Sizing"
+  ,"true_size": "True Size"
+  ,"buyers_product_rate": "Buyers Product Rate"
+  ,"all_reviews_are_genuine_from_customers_who_purchased_and_actually": "All Reviews Are Genuine From Customers Who Purchased And Actually"
+  ,"received_the_product_through": "Received The Product Through"
+  ,"buyer_rate": "Buyer Rate"
+  ,"overall_good_quality": "Overall Good Quality"
+  ,"views_product": "Views Product"
+  ,"views_product_with_count": "{count} Views Product"
+  ,"twenty_thousand_views_product": "200K Views Product"
+  ,"very_bad": "Very Bad"
+  ,"bad": "Bad"
+  ,"normal": "Normal"
+  ,"good": "Good"
+  ,"very_good": "Very Good"
+  ,"buyers_product_recommend_to_buy": "Buyers Product Recommend To Buy"
+  ,"all_recommendations_are_genuine_from_customers_who_purchased_and": "All Recommendations Are Genuine From Customers Who Purchased And"
+  ,"actually_received_the_product_through": "Actually Received The Product Through"
+  ,"true_label": "True"
+  ,"small": "Small"
+  ,"large": "Large"
+  ,"standard": "Standard"
+  ,"ask_seller_about_product": "Ask Seller Your Question About This Product…"
+  ,"buyer": "Buyer"
+  ,"recommend_it": "Recommend It"
+  ,"dont_recommend_it": "Don’t Recommend It"
+  ,"color_available": "Color Available"
+  ,"size_available": "Size Available"
+  ,"answered": "Answered"
+  ,"get_a": "Get A"  ,"get_the_amount_back": "Get The Amount Back"
+  ,"n_buyer_rate": "Buyer Rate"
+  ,"good_quality": "Good Quality"
+  ,"recommend_it_by": "Recommend It By"
+  ,"made_in": "Made In"
+  ,"today_shipping_if_buy_before": "Today Shipping If Buy Before"
+  ,"fast_packing": "Fast Packing"
+  ,"best_sell": "Best Sell"
+  ,"best_price": "Best Price"
+  ,"expected_shipping_delivery_date": "Expected Shipping & Delivery Date"
+  ,"work_days_at_your_address_in": "Work Days At Your Address In"
+  ,"after_receiving_product_return_without_conditions": "After Receiving The Product, You Can Return It Without Conditions"
+  ,"or_reasons_with_complete_ease_and": "Or Reasons With Complete Ease And",
+  "return_problem_resolved": "Return problem has been resolved."
+  ,"out_for_return": "Out For Return"
+  ,"country_not_available": "Your country is not available in this application"
+  ,"choose_a_country": "Choose a country:"
+  ,"you_have_to_choose_a_country": "You have to choose a country"
+  ,"ok_and_continue": "OK & Continue"
+  ,"press_here_for_more": "Press here for more"
 }

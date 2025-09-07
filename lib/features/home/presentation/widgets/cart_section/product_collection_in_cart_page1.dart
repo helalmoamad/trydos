@@ -20,6 +20,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
@@ -265,7 +266,7 @@ class _ProductCollectionInCartPage1State
                                           .push(PageRouteBuilder(
                                         pageBuilder: (context,
                                                 animation, secondaryAnimation) =>
-                                            ProductDetailsPage(
+                                            ProductDetailsPageNew(
                                                 productSlugForOpeningChatDirectly:
                                                     isOldCart
                                                         ? oldCartCollection![index]
@@ -863,7 +864,7 @@ class _ProductCollectionInCartPage1State
                                                                     context)
                                                                 .push(
                                                                     PageRouteBuilder(
-                                                              pageBuilder: (context, animation, secondaryAnimation) => ProductDetailsPage(
+                                                              pageBuilder: (context, animation, secondaryAnimation) => ProductDetailsPageNew(
                                                                   productSlugForOpeningChatDirectly: isOldCart
                                                                       ? oldCartCollection![
                                                                               index]
@@ -1579,10 +1580,9 @@ class _ProductCollectionInCartPage1State
                                                 Duration(milliseconds: 300),
                                                 () => Navigator.of(context)
                                                         .push(PageRouteBuilder(
-                                                      pageBuilder: (context,
-                                                              animation,
+                                                      pageBuilder: (context, animation,
                                                               secondaryAnimation) =>
-                                                          ProductDetailsPage(
+                                                          ProductDetailsPageNew(
                                                               productSlugForOpeningChatDirectly: isOldCart
                                                                   ? oldCartCollection![
                                                                           index]

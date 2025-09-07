@@ -31,6 +31,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
+import 'package:trydos/features/home/domain/use_cases/get_auth_product_details_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
@@ -400,9 +401,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         )),
                                       ));
                             }*/
-                            if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                    GetProductDetailWithoutSimilarRelatedProductsStatus
-                                        .failure &&
+                            if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                                            .failure ||
+                                    state.authProductDetailsStatus ==
+                                        AuthProductDetailsStatus.failure) &&
                                 (prefsRepository.isTokenExpired ??
                                     false ||
                                         prefsRepository.marketToken == "" ||
@@ -848,12 +851,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             c.currentSelectedColorForEveryProduct[
                                 productItem?.slug.toString()] ||
                         p.cachedProductWithoutRelatedProductsModel !=
-                            c.cachedProductWithoutRelatedProductsModel,
+                            c.cachedProductWithoutRelatedProductsModel ||
+                        p.authProductDetailsStatus !=
+                            c.authProductDetailsStatus,
                     builder: (context, state) {
                       if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                               GetProductDetailWithoutSimilarRelatedProductsStatus
                                   .success &&
-                          getAllDataForProductForFirst) {
+                          getAllDataForProductForFirst &&
+                          state.authProductDetailsStatus ==
+                              AuthProductDetailsStatus.success) {
                         if (state.cachedProductWithoutRelatedProductsModel[
                                 productItem?.productId.toString()] !=
                             null) {
@@ -1002,7 +1009,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                               GetProductDetailWithoutSimilarRelatedProductsStatus
                                   .success &&
-                          widget.productSlugForOpeningChatDirectly == null)) {
+                          widget.productSlugForOpeningChatDirectly == null &&
+                          state.authProductDetailsStatus ==
+                              AuthProductDetailsStatus.success)) {
                         if (state
                                 .cachedProductWithoutRelatedProductsModel[
                                     widget.productItem?.productId.toString()]
@@ -1025,14 +1034,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           productNotAvailableNotifier.value = null;
                         }
                       }
-                      state
-                          .cachedProductWithoutRelatedProductsModel[
-                              productItem?.productId.toString()]
-                          ?.product
-                          ?.variation
-                          ?.forEach(
-                        (element) {},
-                      );
+
                       String productId = widget
                               .productIdForOpeningChatDirectly ??
                           (state.cachedProductWithoutRelatedProductsModel[
@@ -1128,30 +1130,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         Duration(milliseconds: 600),
                         () {
                           homeBloc.add(AddSizesForColorsEvent(
-                              currentColorName:
-                                  !productItem!.colors.isNullOrEmpty
-                                      ? productItem!
-                                              .colors![currentSelectedColor]
-                                              .option ??
-                                          ""
-                                      : "",
-                              variation: state.cachedProductWithoutRelatedProductsModel[
-                                          productItem?.productId.toString()] !=
-                                      null
-                                  ? state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  productItem?.productId
-                                                      .toString()]!
-                                              .product !=
-                                          null
-                                      ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productItem?.productId
-                                                  .toString()]!
-                                          .product!
-                                          .variation
-                                      : null
-                                  : null));
+                              currentColorName: !productItem!
+                                      .colors.isNullOrEmpty
+                                  ? productItem!.colors![currentSelectedColor]
+                                          .option ??
+                                      ""
+                                  : "",
+                              variation:
+                                  state.authProductDetailsModel?.data == null
+                                      ? []
+                                      : state.authProductDetailsModel?.data!
+                                          .variation));
                         },
                       );
 
@@ -1268,14 +1257,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             },
                                             child: ProductDetailsImageWidget(
                                               index: index,
-                                              productNotAvailableNotifier:
-                                                  productNotAvailableNotifier,
+                                              //     productNotAvailableNotifier:
+                                              //         productNotAvailableNotifier,
                                               flashDealEndDate: productItem
                                                       ?.flashDealEndDate ??
                                                   "",
                                               productId:
                                                   productItem?.productId ?? 0,
-                                              visibleRedeem: visibleRedeem,
+                                              //   visibleRedeem: visibleRedeem,
                                               isRedeem: state.cachedProductWithoutRelatedProductsModel[
                                                           productItem?.productId
                                                               .toString()] !=
@@ -1622,11 +1611,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 currentSelectedColor,
                                             scrollController: scrollController,
                                             variation: state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    productItem!.productId
-                                                        .toString()]!
-                                                .product!
-                                                .variation,
+                                                        .authProductDetailsModel
+                                                        ?.data ==
+                                                    null
+                                                ? []
+                                                : state.authProductDetailsModel
+                                                    ?.data!.variation,
                                           );
                                   },
                                 ),
@@ -1636,7 +1626,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               },
                               // ProductStoriesCard(),
                               storySection(),
-                              ProductShippingAndDelivery(
+                              /*ProductShippingAndDelivery(
                                 countryName: state.getAllowedCountriesModel
                                         ?.data?.countries
                                         ?.firstWhere((element) {
@@ -1692,7 +1682,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         (state.startingSetting?.shippingDay ??
                                             0))
                                     .toString(),
-                              ),
+                              ),*/
                               SizedBox(
                                 height: 15,
                               ),
@@ -1837,10 +1827,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && state.currentColorSizeForCart?["choiceOption"] != "") && (currentSelectedColorOption != "") ? "-" : ""}" +
                             "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && state.currentColorSizeForCart?["choiceOption"] != "") ? "${state.currentColorSizeForCart?["choiceOption"]}" : ""}";
                     Variation? currentVariation = state
-                        .cachedProductWithoutRelatedProductsModel[
-                            productItem?.productId.toString()]
-                        ?.product
-                        ?.variation
+                        .authProductDetailsModel?.data?.variation
                         ?.firstWhere(
                       (element) => element.type!.contains(currentVariantType),
                       orElse: () {
@@ -1857,7 +1844,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             null &&
                         state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                             GetProductDetailWithoutSimilarRelatedProductsStatus
-                                .success)) {
+                                .success &&
+                        state.authProductDetailsStatus ==
+                            AuthProductDetailsStatus.success)) {
                       Future.delayed(Duration(seconds: 2),
                           () => visibleSizeAndColorCard.value = true);
                       Future.delayed(
@@ -1867,19 +1856,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             isChangedvariationWhenQtyZeroForFirst = true;
                             changeVariationWhenNotAvailable(
                                 currentVariation: currentVariation,
-                                variation:
-                                    state.cachedProductWithoutRelatedProductsModel[
-                                                productItem?.productId
-                                                    .toString()] ==
-                                            null
-                                        ? []
-                                        : state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    productItem?.productId
-                                                        .toString()]!
-                                                .product
-                                                ?.variation ??
-                                            [],
+                                variation: state.authProductDetailsModel?.data
+                                        ?.variation ??
+                                    [],
                                 productSlug: productSlug,
                                 productId: productId);
                             changeVariationIfQtyZero = false;
@@ -1933,10 +1912,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         },
                       );
                     }
-                    if (state
-                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                            .loading) {
+                    if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                .loading ||
+                        state.authProductDetailsStatus ==
+                            AuthProductDetailsStatus.loading) {
                       return Container(
                         height: 120.h, // ارتفاع الـ panel المغلقة
                         decoration: BoxDecoration(

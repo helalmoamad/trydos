@@ -25,9 +25,10 @@ import 'package:trydos/features/home/data/models/notificaation_poroduct_types.da
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
-import 'package:trydos/features/home/data/models/update_confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/confirm_return_request_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
+import 'package:trydos/features/home/data/models/update_return_request_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import '../../../../core/error/failures.dart';
 import '../../data/models/apply_coupon_model.dart';
@@ -215,19 +216,19 @@ abstract class HomeRepository {
   Future<Either<Failure, StoreReturnRequestProductModel>>
       storeReturnRequestProduct(Map<String, dynamic> params);
 
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
-      updateReturnRequestProduct(Map<String, dynamic> params);
+  Future<Either<Failure, UpdateReturnRequestModel>> updateReturnRequestProduct(
+      Map<String, dynamic> params);
 
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
-      cancelReturnRequest(Map<String, dynamic> params);
+  Future<Either<Failure, ConfirmCancelReturnRequestModel>> cancelReturnRequest(
+      Map<String, dynamic> params);
 
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
+  Future<Either<Failure, ConfirmCancelReturnRequestModel>>
       cancelReturnRequestProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, CreateReturnReqestModel>> storeReturnRequest(
       Map<String, dynamic> params);
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>>
-      confirmReturnRequest(Map<String, dynamic> params);
+  Future<Either<Failure, ConfirmCancelReturnRequestModel>> confirmReturnRequest(
+      Map<String, dynamic> params);
 
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> orderReturnRequestsView(
       Map<String, dynamic> params);

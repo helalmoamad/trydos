@@ -1,5 +1,15 @@
 {
   "information_securely": "معلومات بأمان",
+  "all_questions_below_from": "جميع الأسئلة أدناه من",
+  "visitors_not_necessarily_from": "زوار وليس بالضرورة من",
+  "customers_purchased_before_pre_purchase_questions": "العملاء الذين اشتروا المنتج من قبل. هذه أسئلة ما قبل الشراء، ويتم الرد عليها مباشرة من قبل البائع",
+  "all_comments_are_genuine_from_customers_who_purchased_and_actually": "جميع التعليقات أصلية من العملاء الذين اشتروا وبالفعل",
+
+  "shipping_company": "شركة الشحن",
+  "based_on_previous_delivery_statistics_below_to_your_area_we_conclude": "بناءً على إحصائيات التوصيل السابقة أدناه لمنطقتك، نستنتج",
+  "that_the_expected_delivery_time_for_your_product_is": "أن وقت التوصيل المتوقع لمنتجك هو",
+  "full": "كامل",
+  "the_product_price_when_returned": "سعر المنتج عند الإرجاع",
   "alert": "تنبيه",
   "typing": "يكتب...",
   "recording": "يسجل مقطع صوتي...",
@@ -14,7 +24,7 @@
   "search_image_preview_instructions": "معاينة الصورة - اضغط بحث أو قص أو إلغاء",
   "crop_image": "قص الصورة",
   "select_image_part": "اختر الجزء المطلوب من الصورة",
-  "send": "إرسال",
+
   "cancel_preview": "إلغاء المعاينة",
   "welcome_page_description": "للاستفادة من جميع مزايا التطبيق، يرجى الانضمام إلينا بخطوات سريعة وسهلة ولمرة واحدة فقط",
   "why_we_know_you_label": "لماذا نعرفك ؟",
@@ -517,6 +527,9 @@
   "product_return_request_approve": "الموافقة على طلب إرجاع المنتج",
   "waiting": "انتظار…",
   "cancel_return_request_get": "إلغاء طلب الإرجاع والحصول على",
+  "return_request_cancelled": "تم إالغاء طلب الإرجاع",
+  "return_request_rejected": "تم رفض طلب الإرجاع",
+  "in_transit": "في الطريق",
   "product_collection_within": "استلام المنتج خلال ",
   "back_your_money": "استعادة أموالك",
   "product_has_been_returned_successfully": "تم إرجاع المنتج بنجاح",
@@ -577,4 +590,61 @@
   "new_update_available": "تحديث جديد متاح",
   "newer_version_available_message": "هناك إصدار أحدث من التطبيق متاح، يرجى تحديثه الآن.",
   "update_now": "حدث الآن"
+  ,"only_this_piece": "هذه القطعة فقط"
+  ,"quick_video": "فيديو سريع"
+  ,"buyers_comment": "تعليق المشترين"
+  ,"faq_buyer_seller": "الأسئلة الشائعة للمشتري والبائع"
+  ,"buyers_reviews_on_product_sizing": "تقييمات المشترين حول مقاسات المنتج"
+  ,"true_size": "المقاس مطابق"
+  ,"buyers_product_rate": "تقييم المشترين للمنتج"
+  ,"all_reviews_are_genuine_from_customers_who_purchased_and_actually": "جميع التقييمات أصلية من العملاء الذين اشتروا وفعلاً"
+  ,"received_the_product_through": "استلموا المنتج من خلال"
+  ,"buyer_rate": "تقييم المشتري"
+  ,"overall_good_quality": "جودة عامة جيدة"
+  ,"views_product": "مشاهدات المنتج"
+  ,"views_product_with_count": "{count} مشاهدة للمنتج"
+  ,"twenty_thousand_views_product": "200 ألف مشاهدة للمنتج"
+  ,"very_bad": "سيء جداً"
+  ,"bad": "سيء"
+  ,"normal": "عادي"
+  ,"good": "جيد"
+  ,"very_good": "جيد جداً"
+  ,"buyers_product_recommend_to_buy": "توصية المشترين بشراء المنتج"
+  ,"all_recommendations_are_genuine_from_customers_who_purchased_and": "جميع التوصيات أصلية من العملاء الذين اشتروا"
+  ,"actually_received_the_product_through": "وفعلاً استلموا المنتج من خلال"
+  ,"true_label": "صحيح"
+  ,"small": "صغير"
+  ,"large": "كبير"
+  ,"standard": "قياسي"
+  ,"ask_seller_about_product": "اسأل البائع سؤالك حول هذا المنتج..."
+  ,"buyer": "مشتري"
+  ,"recommend_it": "أوصي به"
+  ,"dont_recommend_it": "لا أوصي به"
+  ,"color_available": "اللون متوفر"
+  ,"size_available": "المقاس متوفر"
+  ,"answered": "تم الرد"
+  ,"get_a": "احصل على"
+  ,"get_the_amount_back": "احصل على المبلغ مرة أخرى"
+  ,"n_buyer_rate": "تقييم المشتري"
+  ,"good_quality": "جودة جيدة"
+  ,"recommend_it_by": "أوصى به"
+  ,"made_in": "صنع في"
+  ,"today_shipping_if_buy_before": "شحن اليوم إذا اشتريت قبل"
+  ,"fast_packing": "تعبئة سريعة"
+  ,"best_sell": "الأكثر مبيعاً"
+  ,"best_price": "أفضل سعر"
+  ,"expected_shipping_delivery_date": "تاريخ الشحن والتوصيل المتوقع"
+  ,"work_days_at_your_address_in": "أيام العمل في عنوانك في"
+  ,"after_receiving_product_return_without_conditions": "بعد استلام المنتج يمكنك إرجاعه بدون شروط"
+  ,"or_reasons_with_complete_ease_and": "أو أسباب بسهولة تامة و"
+  ,"return_problem_resolved": "تم حل مشكلة الإرجاع"
+  ,"out_for_return": "في طريقه للإرجاع"
+  ,"country_not_available": "بلدك غير متاح في هذا التطبيق"
+  ,"choose_a_country": "اختر دولة:"
+  ,"you_have_to_choose_a_country": "يجب أن تختار دولة"
+  ,"ok_and_continue": "حسناً، تابع"
+  ,"press_here_for_more": "اضغط هنا للمزيد",
+  "product_shared_successfully": "تمت مشاركة المنتج بنجاح",
+  "report_story": "الإبلاغ عن القصة",
+  "confirm_report_story": "هل أنت متأكد أنك تريد الإبلاغ عن هذه القصة؟"
 }

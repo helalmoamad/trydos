@@ -29,6 +29,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -197,6 +198,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                   previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                                       current
                                           .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                                  previous.authProductDetailsStatus !=
+                                      current.authProductDetailsStatus ||
                                   previous.updateItemInCartStatus !=
                                       current.updateItemInCartStatus ||
                                   previous.addItemInCartStatus !=
@@ -405,7 +408,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                   .push(
                                                                 MaterialPageRoute(
                                                                   builder: (ctx) =>
-                                                                      ProductDetailsPage(
+                                                                      ProductDetailsPageNew(
                                                                     productItem:
                                                                         products[
                                                                             index],
@@ -536,6 +539,9 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                               previous.getCartOverviewStatus !=
                                                   current
                                                       .getCartOverviewStatus ||
+                                              previous.authProductDetailsStatus !=
+                                                  current
+                                                      .authProductDetailsStatus ||
                                               previous.currentSelectedColorForEveryProduct !=
                                                   current
                                                       .currentSelectedColorForEveryProduct ||
@@ -550,10 +556,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                           builder: (context, state) {
                                             List<filter.Color>? productColors =
                                                 [];
-                                            if (state
-                                                    .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                    .success) {
+                                            if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                    GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                        .success &&
+                                                state.authProductDetailsStatus ==
+                                                    AuthProductDetailsStatus
+                                                        .success) {
                                               productColors = state
                                                   .cachedProductWithoutRelatedProductsModel[
                                                       products[tapIndex]
@@ -602,11 +610,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                     "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["choiceOption"] != "") ? "${state.currentColorSizeForCart?["choiceOption"]}" : ""}";
 
                                             Variation? currentVariation = state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    products[tapIndex]
-                                                        .productId
-                                                        .toString()]
-                                                ?.product
+                                                .authProductDetailsModel
+                                                ?.data
                                                 ?.variation
                                                 ?.firstWhere(
                                               (element) => element.type!
@@ -677,9 +682,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                             0) ~/
                                                         2;
 
-                                            if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                    GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                        .failure &&
+                                            if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                            .failure ||
+                                                    state.authProductDetailsStatus ==
+                                                        AuthProductDetailsStatus
+                                                            .failure) &&
                                                 (prefsRepository
                                                         .isTokenExpired ??
                                                     false ||
@@ -710,6 +718,9 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                 () {
                                               if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                       GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                          .success &&
+                                                  state.authProductDetailsStatus ==
+                                                      AuthProductDetailsStatus
                                                           .success &&
                                                   tapIndex != -1)) {
                                                 if (state
@@ -747,10 +758,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                             Future.delayed(
                                                 Duration(milliseconds: 300),
                                                 () {
-                                              if (state
-                                                      .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                  GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                      .failure) {
+                                              if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                      GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                          .failure ||
+                                                  state.authProductDetailsStatus ==
+                                                      AuthProductDetailsStatus
+                                                          .failure) {
                                                 tapIndexToAddProductToCart
                                                     .value = -1;
                                               }
@@ -758,35 +771,27 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                             homeBloc.add(AddSizesForColorsEvent(
                                                 currentColorName: !(productColors
                                                         .isNullOrEmpty)
-                                                    ? productColors![currentSelectedColor]
+                                                    ? productColors![
+                                                                currentSelectedColor]
                                                             .option ??
                                                         ""
                                                     : "",
-                                                variation: state.cachedProductWithoutRelatedProductsModel[
-                                                            products[tapIndex]
-                                                                .productId
-                                                                .toString()] !=
+                                                variation: state
+                                                            .authProductDetailsModel
+                                                            ?.data !=
                                                         null
                                                     ? state
-                                                                .cachedProductWithoutRelatedProductsModel[
-                                                                    products[tapIndex]
-                                                                        .productId
-                                                                        .toString()]!
-                                                                .product !=
-                                                            null
-                                                        ? state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                products[tapIndex]
-                                                                    .productId
-                                                                    .toString()]!
-                                                            .product!
-                                                            .variation
-                                                        : null
+                                                        .authProductDetailsModel
+                                                        ?.data!
+                                                        .variation
                                                     : null));
                                             if (productId != "" &&
                                                 tapIndex != -1 &&
                                                 state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                     GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                        .success &&
+                                                state.authProductDetailsStatus ==
+                                                    AuthProductDetailsStatus
                                                         .success &&
                                                 changeAppearSizeForProduct) {
                                               if (!state
@@ -909,6 +914,9 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                             return state
                                                             .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                         GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                            .loading ||
+                                                    state.authProductDetailsStatus ==
+                                                        AuthProductDetailsStatus
                                                             .loading ||
                                                     state.enableAddToCardAfterChangeVariantZero !=
                                                         EnableAddToCardAfterChangeVariantZero
@@ -1393,7 +1401,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                             () => Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                     builder: (ctx) =>
-                                                        ProductDetailsPage(
+                                                        ProductDetailsPageNew(
                                                       productItem: products[
                                                           _tapIndexToShowColorImages],
                                                     ),
@@ -1409,7 +1417,6 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                         (e) => e.filePath ?? "")
                                                     .toList() ??
                                                 [],
-                                        finishRedeem: finishRedeem,
                                         visibleRedeem: visibleRedeem,
                                         productItem: products[
                                             _tapIndexToShowColorImages],

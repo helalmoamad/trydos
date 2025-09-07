@@ -3,18 +3,19 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/home/data/models/return_request_product_model.dart';
-import 'package:trydos/features/home/data/models/update_confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/update_return_request_model.dart';
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
 @injectable
 class UpdateReturnRequestProductUseCase extends UseCase<
-    UpdateConfirmCancelReturnRequestModel, UpdateReturnRequestProductParams> {
+    UpdateReturnRequestModel, UpdateReturnRequestProductParams> {
   final HomeRepository _homeRepository;
 
   UpdateReturnRequestProductUseCase(this._homeRepository);
 
   @override
-  Future<Either<Failure, UpdateConfirmCancelReturnRequestModel>> call(
+  Future<Either<Failure, UpdateReturnRequestModel>> call(
       UpdateReturnRequestProductParams params) {
     return _homeRepository.updateReturnRequestProduct(params.map);
   }

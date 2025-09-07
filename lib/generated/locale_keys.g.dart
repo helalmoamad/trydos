@@ -4,6 +4,21 @@
 
 abstract class LocaleKeys {
   static const information_securely = 'information_securely';
+  static const all_questions_below_from = 'all_questions_below_from';
+  static const visitors_not_necessarily_from = 'visitors_not_necessarily_from';
+  static const customers_purchased_before_pre_purchase_questions =
+      'customers_purchased_before_pre_purchase_questions';
+  static const all_comments_are_genuine_from_customers_who_purchased_and_actually =
+      'all_comments_are_genuine_from_customers_who_purchased_and_actually';
+
+  static const shipping_company = 'shipping_company';
+  static const based_on_previous_delivery_statistics_below_to_your_area_we_conclude =
+      'based_on_previous_delivery_statistics_below_to_your_area_we_conclude';
+  static const that_the_expected_delivery_time_for_your_product_is =
+      'that_the_expected_delivery_time_for_your_product_is';
+  static const full = 'full';
+  static const the_product_price_when_returned =
+      'the_product_price_when_returned';
   static const alert = 'alert';
   static const typing = 'typing';
   static const recording = 'recording';
@@ -584,6 +599,9 @@ abstract class LocaleKeys {
       'product_return_request_approve';
   static const waiting = 'waiting';
   static const cancel_return_request_get = 'cancel_return_request_get';
+  static const return_request_cancelled = 'return_request_cancelled';
+  static const return_request_rejected = 'return_request_rejected';
+  static const in_transit = 'in_transit';
   static const product_collection_within = 'product_collection_within';
   static const back_your_money = 'back_your_money';
   static const product_has_been_returned_successfully =
@@ -652,4 +670,69 @@ abstract class LocaleKeys {
   static const newer_version_available_message =
       'newer_version_available_message';
   static const update_now = 'update_now';
+  static const only_this_piece = 'only_this_piece';
+  static const quick_video = 'quick_video';
+  static const buyers_comment = 'buyers_comment';
+  static const faq_buyer_seller = 'faq_buyer_seller';
+  static const buyers_reviews_on_product_sizing =
+      'buyers_reviews_on_product_sizing';
+  static const true_size = 'true_size';
+  static const buyers_product_rate = 'buyers_product_rate';
+  static const all_reviews_are_genuine_from_customers_who_purchased_and_actually =
+      'all_reviews_are_genuine_from_customers_who_purchased_and_actually';
+  static const received_the_product_through = 'received_the_product_through';
+  static const buyer_rate = 'buyer_rate';
+  static const overall_good_quality = 'overall_good_quality';
+  static const views_product = 'views_product';
+  static const views_product_with_count = 'views_product_with_count';
+  static const twenty_thousand_views_product = 'twenty_thousand_views_product';
+  static const very_bad = 'very_bad';
+  static const bad = 'bad';
+  static const normal = 'normal';
+  static const good = 'good';
+  static const very_good = 'very_good';
+  static const buyers_product_recommend_to_buy =
+      'buyers_product_recommend_to_buy';
+  static const all_recommendations_are_genuine_from_customers_who_purchased_and =
+      'all_recommendations_are_genuine_from_customers_who_purchased_and';
+  static const actually_received_the_product_through =
+      'actually_received_the_product_through';
+  static const true_label = 'true_label';
+  static const small = 'small';
+  static const large = 'large';
+  static const standard = 'standard';
+  static const ask_seller_about_product = 'ask_seller_about_product';
+  static const buyer = 'buyer';
+  static const recommend_it = 'recommend_it';
+  static const dont_recommend_it = 'dont_recommend_it';
+  static const color_available = 'color_available';
+  static const size_available = 'size_available';
+  static const answered = 'answered';
+  static const get_a = 'get_a';
+  static const get_the_amount_back = 'get_the_amount_back';
+  static const n_buyer_rate = 'n_buyer_rate';
+  static const good_quality = 'good_quality';
+  static const recommend_it_by = 'recommend_it_by';
+  static const made_in = 'made_in';
+  static const today_shipping_if_buy_before = 'today_shipping_if_buy_before';
+  static const fast_packing = 'fast_packing';
+  static const best_sell = 'best_sell';
+  static const best_price = 'best_price';
+  static const expected_shipping_delivery_date =
+      'expected_shipping_delivery_date';
+  static const work_days_at_your_address_in = 'work_days_at_your_address_in';
+  static const after_receiving_product_return_without_conditions =
+      'after_receiving_product_return_without_conditions';
+  static const or_reasons_with_complete_ease_and =
+      'or_reasons_with_complete_ease_and';
+  static const return_problem_resolved = 'return_problem_resolved';
+  static const out_for_return = 'out_for_return';
+  static const country_not_available = 'country_not_available';
+  static const choose_a_country = 'choose_a_country';
+  static const you_have_to_choose_a_country = 'you_have_to_choose_a_country';
+  static const ok_and_continue = 'ok_and_continue';
+  static const press_here_for_more = 'press_here_for_more';
+  static const product_shared_successfully = 'product_shared_successfully';
+  static const report_story = 'report_story';
+  static const confirm_report_story = 'confirm_report_story';
 }

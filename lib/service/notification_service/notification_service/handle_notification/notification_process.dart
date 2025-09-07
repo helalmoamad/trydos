@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as fln;
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -52,8 +53,8 @@ class NotificationProcess {
   Future fcmToken(String? mobilePhone, String? name, String? originalUserId,
       String? otpIdToken) async {
     await FirebaseMessaging.instance.deleteToken();
-
     myFcmToken = await FirebaseMessaging.instance.getToken();
+
     if (otpIdToken != null) {
       GetIt.I<AuthBloc>().add(LoginToChatEvent(
           fcmToken: myFcmToken!,
@@ -64,6 +65,20 @@ class NotificationProcess {
     }
     print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
+      GetIt.I<AuthBloc>().add(
+        StoreFcmTokenEvent(
+          userId: GetIt.I<PrefsRepository>().myStoriesId ?? 0,
+          fcmToken: myFcmToken!,
+          serverName: ServerName.stories,
+        ),
+      );
+      GetIt.I<AuthBloc>().add(
+        StoreFcmTokenEvent(
+          userId: GetIt.I<PrefsRepository>().myChatId ?? 0,
+          fcmToken: myFcmToken!,
+          serverName: ServerName.chat,
+        ),
+      );
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
       if (GetIt.I<PrefsRepository>().myMarketId != null) {
         GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(

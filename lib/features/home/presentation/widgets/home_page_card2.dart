@@ -234,9 +234,9 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                         ),
                         MyTextWidget(
                           boutique.name!,
-                          style: context.textTheme.titleMedium?.rd.copyWith(
-                            fontSize: 16,
-                            color: ui.Color.fromARGB(255, 15, 15, 15),
+                          style: context.textTheme.titleMedium?.rr.copyWith(
+                            fontSize: 12,
+                            color: Color(0xff505050),
                           ),
                         ),
                         /*Html(

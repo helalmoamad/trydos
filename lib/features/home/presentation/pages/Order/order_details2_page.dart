@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,10 +34,10 @@ import 'package:trydos/features/home/data/models/return_reasons_model.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_return_request_product_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/cancel_return_request_usecase.dart';
+
 import 'package:trydos/features/home/domain/use_cases/change_order_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_order_item_variant_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/confirm_return_request_usecase.dart';
+
 import 'package:trydos/features/home/domain/use_cases/store_return_request_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/store_return_request_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_return_request_product_usecase.dart';
@@ -46,12 +46,12 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.d
     show OrderBloc;
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
-import 'package:trydos/features/home/presentation/widgets/profile_section/crope_image.dart'
-    show CopperImage;
+
 import 'package:trydos/features/search/presentation/widgets/search_image_preview_widget.dart';
-import 'package:trydos/features/home/presentation/widgets/star_rating_widget.dart';
+
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
@@ -92,6 +92,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   final ValueNotifier<bool> showPanel = ValueNotifier(false);
   final ValueNotifier<bool> showShadowForCanselOrder = ValueNotifier(false);
   final ValueNotifier<bool> showShadowForConfirmOrder = ValueNotifier(false);
+  final ValueNotifier<bool> showShadowForCancelAllOrder = ValueNotifier(false);
   final ValueNotifier<bool> visiblecamera = ValueNotifier(false);
   final ValueNotifier<List<String>> orderPhotos = ValueNotifier([]);
   final ValueNotifier<String?> optionModifyPanel = ValueNotifier(null);
@@ -124,6 +125,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
   String? firstSizeOption;
   String? firstColorName;
   String? firstSizeName;
+  ReturnRequestsDatum? returnRequestsData;
+  List<ReturnOrderDetail> orderDetails = [];
+  List<String> returnRequestIdsToConfirm = [];
+  List<String> returnRequestIdsToCancel = [];
   final ValueNotifier<int> qtyToChangeController = ValueNotifier(0);
   // TextEditingController qtyOfReturnController = TextEditingController();
   @override
@@ -194,8 +199,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
             optionCansel.value = [];
             enableChangeAddress.value = false;
             showShadowForPanel.value = false;
-            showShadowForConfirmOrder.value = false;
+
             showShadowForChangeAddress.value = false;
+            showShadowForCancelAllOrder.value = false;
             showShadowForConfirmOrder.value = false;
             showShadowForCanselOrder.value = false;
             shadowForChangeVariant.value = false;
@@ -771,11 +777,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             height: 12,
                                           ),
                                           ///////////////////
-                                          Container(
-                                            width: double.infinity,
-                                            height: 1,
-                                            color: const Color(0xffC4C2C2),
-                                          ),
+                                          (order?.canReturnOrder ?? false)
+                                              ? Container(
+                                                  width: double.infinity,
+                                                  height: 1,
+                                                  color:
+                                                      const Color(0xffC4C2C2),
+                                                )
+                                              : SizedBox.shrink(),
                                           ///////////////////
 
                                           BlocBuilder<OrderBloc, OrderState>(
@@ -787,90 +796,67 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       current
                                                           .getOrdersByOrderGroupIDStatus,
                                               builder: (context, state) {
-                                                return order?.returnRequestId ==
-                                                        null
+                                                returnRequestIdsToCancel = [];
+                                                state
+                                                    .getOrdersByOrderGroupIDModel
+                                                    ?.orders
+                                                    ?.forEach((element) {
+                                                  if (element.returnRequestId !=
+                                                          null &&
+                                                      (element.canReturnOrder ??
+                                                          false)) {
+                                                    returnRequestIdsToCancel.add(
+                                                        element.returnRequestId ??
+                                                            "");
+                                                  }
+                                                });
+                                                return returnRequestIdsToCancel
+                                                        .isEmpty
                                                     ? SizedBox.shrink()
-                                                    : state.cancelReturnRequestStatus ==
-                                                                CancelReturnRequestStatus
-                                                                    .loading ||
-                                                            state.getOrdersByOrderGroupIDStatus ==
-                                                                GetOrdersByOrderGroupIDStatus
-                                                                    .loading
-                                                        ? Shimmer.fromColors(
-                                                            baseColor: Colors
-                                                                .grey[300]!,
-                                                            highlightColor:
-                                                                Colors
-                                                                    .grey[100]!,
-                                                            child: Container(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        top:
-                                                                            10),
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                width: 1.sw,
-                                                                height: 30,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                        color: const Color(
-                                                                            0xffC4C2C2),
-                                                                        border: Border
-                                                                            .all(
-                                                                          color:
-                                                                              const Color(0xffC4C2C2),
-                                                                        ),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(15))))
-                                                        : InkWell(
-                                                            onTap: () {
-                                                              orderBloc.add(CancelReturnRequestEvent(
-                                                                  orderGroupId:
-                                                                      order?.orderGroupId ??
-                                                                          "",
-                                                                  returnRequestId:
-                                                                      int.parse(order!
-                                                                          .returnRequestId
-                                                                          .toString())));
-                                                            },
-                                                            child: Container(
-                                                                alignment: Alignment.center,
-                                                                margin: EdgeInsets.only(top: 10),
-                                                                decoration: BoxDecoration(
-                                                                  color: Colors
-                                                                      .red,
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              15)),
-                                                                ),
-                                                                width: 1.sw,
-                                                                height: 30,
-                                                                child: Text(
-                                                                  LocaleKeys
-                                                                      .cancel_return_request
-                                                                      .tr(),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style: context
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.rq
-                                                                      .copyWith(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    letterSpacing:
-                                                                        0.24,
-                                                                    fontSize:
-                                                                        14,
-                                                                    height: 1.3,
-                                                                  ),
-                                                                )));
+                                                    : InkWell(
+                                                        onTap: () {
+                                                          showShadowForCancelAllOrder
+                                                              .value = true;
+                                                        },
+                                                        child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    top: 10),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          15)),
+                                                            ),
+                                                            width: 1.sw,
+                                                            height: 30,
+                                                            child: Text(
+                                                              LocaleKeys
+                                                                  .cancel_return_request
+                                                                  .tr(),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.rq
+                                                                  .copyWith(
+                                                                color: Colors
+                                                                    .white,
+                                                                letterSpacing:
+                                                                    0.24,
+                                                                fontSize: 14,
+                                                                height: 1.3,
+                                                              ),
+                                                            )));
                                               }),
 
                                           BlocBuilder<OrderBloc, OrderState>(
@@ -883,15 +869,48 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       current
                                                           .orderReturnDetailsStatus,
                                               builder: (context, state) {
-                                                return order?.returnRequestId ==
-                                                            null ||
-                                                        (!(state.orderReturnDetailsModel
-                                                                ?.data?.status
-                                                                ?.contains(
-                                                                    "draft") ??
-                                                            false))
+                                                returnRequestIdsToConfirm = [];
+                                                bool appearConfirm = false;
+                                                returnRequestsData = state
+                                                    .orderReturnDetailsModel
+                                                    ?.data
+                                                    ?.returnRequestsData!
+                                                    .firstWhere(
+                                                  (element) =>
+                                                      element.orderId ==
+                                                      order?.id,
+                                                  orElse: () =>
+                                                      ReturnRequestsDatum(),
+                                                );
+                                                orderDetails =
+                                                    returnRequestsData
+                                                            ?.orderDetails ??
+                                                        [];
+
+                                                state.orderReturnDetailsModel
+                                                    ?.data?.returnRequestsData
+                                                    ?.forEach((element) {
+                                                  if (element.status?.value ==
+                                                          null &&
+                                                      element.status?.name !=
+                                                          null) {
+                                                    element.orderDetails
+                                                        ?.forEach((element) {
+                                                      returnRequestIdsToConfirm
+                                                          .add(element
+                                                              .returnRequestId
+                                                              .toString());
+                                                      appearConfirm = true;
+                                                    });
+                                                  }
+                                                });
+
+                                                return !appearConfirm
                                                     ? SizedBox.shrink()
-                                                    : state.confirmReturnRequestStatus == ConfirmReturnRequestStatus.loading ||
+                                                    : state
+                                                                    .confirmReturnRequestStatus ==
+                                                                ConfirmReturnRequestStatus
+                                                                    .loading ||
                                                             state.orderReturnDetailsStatus ==
                                                                 OrderReturnDetailsStatus
                                                                     .loading ||
@@ -913,20 +932,25 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                         .center,
                                                                 width: 1.sw,
                                                                 height: 30,
-                                                                decoration: BoxDecoration(
-                                                                    color: const Color(0xffC4C2C2),
-                                                                    border: Border.all(
-                                                                      color: const Color(
-                                                                          0xffC4C2C2),
-                                                                    ),
-                                                                    borderRadius: BorderRadius.circular(15))))
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                        color: const Color(
+                                                                            0xffC4C2C2),
+                                                                        border: Border
+                                                                            .all(
+                                                                          color:
+                                                                              const Color(0xffC4C2C2),
+                                                                        ),
+                                                                        borderRadius: BorderRadius.circular(
+                                                                            15))))
                                                         : InkWell(
                                                             onTap: () {
                                                               showShadowForConfirmOrder
                                                                   .value = true;
                                                             },
                                                             child: Container(
-                                                                alignment: Alignment.center,
+                                                                alignment:
+                                                                    Alignment.center,
                                                                 margin: EdgeInsets.only(top: 5),
                                                                 decoration: BoxDecoration(
                                                                   color: const Color
@@ -1034,7 +1058,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             builder: (context, _indexTap, _) {
                               return shadowForCanselOrRutuenOrder(_indexTap);
                             }),
-                        shadowForConfirmOrder()
+                        shadowForConfirmOrder(),
+                        shadowForCancelAllOrder()
                       ],
                     ),
                   ),
@@ -1364,22 +1389,28 @@ class _OrderDetails2 extends State<OrderDetails2> {
             previous.storeReturnRequestProductStatus !=
                 current.storeReturnRequestProductStatus,
         builder: (context, state) {
-          OrderDetail? orderDetails =
-              state.orderReturnDetailsModel?.data?.orderDetails?.firstWhere(
+          returnRequestsData = state
+              .orderReturnDetailsModel?.data?.returnRequestsData!
+              .firstWhere(
+            (element) => element.orderId == order?.id,
+            orElse: () => ReturnRequestsDatum(),
+          );
+          orderDetails = returnRequestsData?.orderDetails ?? [];
+          ReturnOrderDetail? orderDetail = orderDetails.firstWhere(
             (element) => element.detailId == orderListDetailModel.id,
-            orElse: () => OrderDetail(),
+            orElse: () => ReturnOrderDetail(),
           );
           ReturnReasonModel? reason;
           if ((state.returnReasonsModel?.data?.returnReasons?.length ?? 0) >
               0) {
             reason = state.returnReasonsModel?.data?.returnReasons!.firstWhere(
                 (element) =>
-                    element.id == orderDetails?.returnRequestProductReasonId,
+                    element.id == orderDetail.returnRequestProductReasonId,
                 orElse: () => ReturnReasonModel(cost: 0));
           }
 
           return Container(
-            height: orderDetails?.returnRequestProductId == null ||
+            height: orderDetail.returnRequestProductId == null ||
                     order?.returnRequestId == null
                 ? 190
                 : 170 + 100 + 100,
@@ -1416,7 +1447,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             .push(PageRouteBuilder(
                                           pageBuilder: (context, animation,
                                                   secondaryAnimation) =>
-                                              ProductDetailsPage(
+                                              ProductDetailsPageNew(
                                                   productSlugForOpeningChatDirectly:
                                                       orderListDetailModel
                                                               .productSlug ??
@@ -1472,7 +1503,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 .push(PageRouteBuilder(
                                               pageBuilder: (context, animation,
                                                       secondaryAnimation) =>
-                                                  ProductDetailsPage(
+                                                  ProductDetailsPageNew(
                                                       productSlugForOpeningChatDirectly:
                                                           orderListDetailModel
                                                                   .productSlug ??
@@ -1832,7 +1863,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             ////////////////////////////
                                                             TextSpan(
                                                               text:
-                                                                  ("${(orderListDetailModel.qty ?? 0) == 0 ? LocaleKeys.canceled_status_short.tr() : order!.orderStatus?.label ?? ""} ${orderDetails?.returnRequestProductId == null ? "" : "- ${LocaleKeys.return_request.tr()}"}"),
+                                                                  ("${(orderListDetailModel.qty ?? 0) == 0 ? LocaleKeys.canceled_status_short.tr() : order!.orderStatus?.label ?? ""} ${orderDetail.returnRequestProductId == null ? "" : "- ${LocaleKeys.return_request.tr()}"}"),
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium
@@ -2005,7 +2036,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 height: 1.3,
                                               ),
                                             ),
-                                            orderDetails?.returnRequestProductId ==
+                                            orderDetail.returnRequestProductId ==
                                                         null ||
                                                     order!.paymentStatus ==
                                                         "unpaid"
@@ -2078,7 +2109,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 SizedBox(
                   height: 10,
                 ),
-                orderDetails?.returnRequestProductId == null ||
+                orderDetail.returnRequestProductId == null ||
                         order?.returnRequestId == null
                     ? SizedBox.shrink()
                     : state.cancelReturnRequestProductStatus ==
@@ -2092,14 +2123,59 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             width: 1.sw,
                             padding:
                                 EdgeInsets.only(left: 10, right: 10, top: 5),
-                            height: 53 + 100,
+                            height: (returnRequestsData!.status?.value
+                                            ?.contains("rejected") ??
+                                        false) ||
+                                    (returnRequestsData!.status?.value
+                                            ?.contains("cancelled") ??
+                                        false) ||
+                                    (returnRequestsData!.status?.value
+                                            ?.contains("resolved") ??
+                                        false)
+                                ? 30
+                                : (53 + 100),
                             decoration: BoxDecoration(
                                 color: Color(0xffFFFCF0),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10))),
-                            child: Column(
-                              children: [
-                                /*  SuccessFulOfReturned(
+                            child: (returnRequestsData!.status?.value
+                                        ?.contains("resolved") ??
+                                    false)
+                                ? statusOfReturned(
+                                    AppAssets.returnedBlacSvg,
+                                    LocaleKeys.return_problem_resolved.tr(),
+                                    "",
+                                    "",
+                                    "",
+                                    true,
+                                    true)
+                                : (returnRequestsData!.status?.value
+                                            ?.contains("cancelled") ??
+                                        false)
+                                    ? statusOfReturned(
+                                        AppAssets.returnedBlacSvg,
+                                        LocaleKeys.return_request_cancelled
+                                            .tr(),
+                                        "",
+                                        "",
+                                        "",
+                                        true,
+                                        true)
+                                    : (returnRequestsData!.status?.value
+                                                ?.contains("rejected") ??
+                                            false)
+                                        ? statusOfReturned(
+                                            AppAssets.returnedBlacSvg,
+                                            LocaleKeys.return_request_rejected
+                                                .tr(),
+                                            "",
+                                            "",
+                                            "",
+                                            true,
+                                            true)
+                                        : Column(
+                                            children: [
+                                              /*  SuccessFulOfReturned(
                     AppAssets.returnedBlacSvg,
                     LocaleKeys.product_has_been_returned_successfully.tr(),
                     LocaleKeys.back_to_your_wallet.tr(),
@@ -2108,54 +2184,83 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     "2 h ago",
                     true,
                     true),*/
-                                statusOfReturned(
-                                    AppAssets.returnedBlacSvg,
-                                    LocaleKeys.product_return_has_been_requested
-                                        .tr(),
-                                    LocaleKeys.product_return_request_approve
-                                        .tr(),
-                                    "3 H",
-                                    "00:02:19",
-                                    true,
-                                    true),
-                                statusOfReturned(
-                                    AppAssets.returnedBlacSvg,
-                                    LocaleKeys.product_return_request_approve
-                                        .tr(),
-                                    "${LocaleKeys.product_collection_within.tr()}" +
-                                        "  1 ${LocaleKeys.day.tr()}",
-                                    "3 H",
-                                    "00:02:19",
-                                    orderDetails?.returnRequestProductStatus
-                                            ?.contains("approved") ??
-                                        false,
-                                    orderDetails?.returnRequestProductStatus
-                                            ?.contains("approved") ??
-                                        false),
-                                statusOfReturned(
-                                    AppAssets.returnedBlacSvg,
-                                    LocaleKeys
-                                        .product_has_been_returned_successfully
-                                        .tr(),
-                                    order?.paymentStatus == "unpaid"
-                                        ? ""
-                                        : '${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
-                                    "3 H",
-                                    "00:02:19",
-                                    ((orderDetails?.returnRequestProductStatus
-                                                ?.contains("returned") ??
-                                            false) ||
-                                        (orderDetails
-                                                ?.returnRequestProductStatus
-                                                ?.contains("resolved") ??
-                                            false)),
-                                    ((orderDetails?.returnRequestProductStatus
-                                                ?.contains("returned") ??
-                                            false) ||
-                                        (orderDetails
-                                                ?.returnRequestProductStatus
-                                                ?.contains("resolved") ??
-                                            false))) /*,
+                                              statusOfReturned(
+                                                  AppAssets.returnedBlacSvg,
+                                                  LocaleKeys
+                                                      .product_return_has_been_requested
+                                                      .tr(),
+                                                  LocaleKeys
+                                                      .product_return_request_approve
+                                                      .tr(),
+                                                  "3 H",
+                                                  "00:02:19",
+                                                  returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "pending") ??
+                                                      false,
+                                                  returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "pending") ??
+                                                      false),
+                                              statusOfReturned(
+                                                  AppAssets.returnedBlacSvg,
+                                                  LocaleKeys
+                                                      .product_return_request_approve
+                                                      .tr(),
+                                                  "${LocaleKeys.product_collection_within.tr()}" +
+                                                      "  1 ${LocaleKeys.day.tr()}",
+                                                  "3 H",
+                                                  "00:02:19",
+                                                  returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "approved") ??
+                                                      false,
+                                                  returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "approved") ??
+                                                      false),
+                                              statusOfReturned(
+                                                  AppAssets.returnedBlacSvg,
+                                                  LocaleKeys.out_for_return
+                                                      .tr(),
+                                                  "",
+                                                  "3 H",
+                                                  "00:02:19",
+                                                  returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "out_for_return") ??
+                                                      false,
+                                                  returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "out_for_return") ??
+                                                      false),
+                                              statusOfReturned(
+                                                  AppAssets.returnedBlacSvg,
+                                                  LocaleKeys
+                                                      .product_has_been_returned_successfully
+                                                      .tr(),
+                                                  order?.paymentStatus ==
+                                                          "unpaid"
+                                                      ? ""
+                                                      : '${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                                  "3 H",
+                                                  "00:02:19",
+                                                  ((returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "returned_to_location") ??
+                                                      false)),
+                                                  ((returnRequestsData!
+                                                          .status?.value
+                                                          ?.contains(
+                                                              "returned_to_location") ??
+                                                      false))) /*,
                                 statusOfReturned(
                                     AppAssets.returnedBlacSvg,
                                     LocaleKeys.product_return_has_been_requested
@@ -2166,14 +2271,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     "",
                                     false,
                                     false)*/
-                              ],
-                            ),
+                                            ],
+                                          ),
                           ),
                 SizedBox(
                   height: 10,
                 ),
-                orderDetails?.returnRequestProductId == null ||
-                        order?.returnRequestId == null
+                ((orderDetail.returnRequestProductId == null ||
+                            order?.returnRequestId == null) ||
+                        (!(order?.canReturnOrder ?? false)))
                     ? SizedBox.shrink()
                     : state.cancelReturnRequestProductStatus ==
                                 CancelReturnRequestProductStatus.loading ||
@@ -2185,13 +2291,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         : InkWell(
                             onTap: () {
                               orderBloc.add(CancelReturnRequestProductEvent(
+                                  orderGroupId: order?.orderGroupId ?? "",
                                   returnRequestId:
-                                      orderDetails?.returnRequestId ?? 0,
+                                      orderDetail.returnRequestId ?? 0,
                                   params: CancelReturnRequestProductParams(
-                                      returnRequestProductId: (orderDetails
-                                                  ?.returnRequestProductId ??
-                                              "")
-                                          .toString())));
+                                      returnRequestProductId:
+                                          (orderDetail.returnRequestProductId ??
+                                                  "")
+                                              .toString())));
                             },
                             child: Center(
                               child: Row(
@@ -2231,8 +2338,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
   Widget statusOfReturned(String svg, String tilte, String body, String time,
       String timer, bool isBlak, bool isTextBlak) {
     return Container(
+      margin: EdgeInsets.only(bottom: 4),
       width: 1.sw,
-      height: 45,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -3202,6 +3309,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               showShadowForPanel.value = false;
                               showShadowForCanselOrder.value = false;
                               optionReturn.value = 0;
+                              showShadowForCancelAllOrder.value = false;
                               reasonCost.value = 0;
                               showShadowForConfirmOrder.value = false;
                               optionCansel.value = [];
@@ -3260,13 +3368,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 builder: (context, _agreeToPolicies, _) {
                                   return BlocBuilder<OrderBloc, OrderState>(
                                       buildWhen: (previous, current) =>
-                                          previous
-                                              .changeOrderItemVariantStatus !=
-                                          current.changeOrderItemVariantStatus,
+                                          previous.changeOrderItemVariantStatus !=
+                                              current
+                                                  .changeOrderItemVariantStatus ||
+                                          previous.cancelOrderItemStatus !=
+                                              current.cancelOrderItemStatus,
                                       builder: (context, state) {
-                                        return state.changeOrderItemVariantStatus ==
-                                                ChangeOrderItemVariantStatus
-                                                    .loading
+                                        return (state.changeOrderItemVariantStatus ==
+                                                    ChangeOrderItemVariantStatus
+                                                        .loading ||
+                                                state.cancelOrderItemStatus ==
+                                                    CancelOrderItemStatus
+                                                        .loading)
                                             ? Shimmer.fromColors(
                                                 baseColor: Colors.grey[500]!,
                                                 highlightColor:
@@ -3374,6 +3487,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   optionModifyPanel.value = null;
                                   enableChangeAddress.value = false;
                                   showShadowForPanel.value = false;
+                                  showShadowForCancelAllOrder.value = false;
                                   showShadowForChangeAddress.value = false;
                                   showShadowForCanselOrder.value = false;
                                   optionReturn.value = 0;
@@ -3410,13 +3524,20 @@ class _OrderDetails2 extends State<OrderDetails2> {
         builder: (context, _showShadowForConfirmOrder, _) {
           List<String> images = [];
 
-          orderBloc.state.orderReturnDetailsModel?.data?.orderDetails
-              ?.forEach((element) {
-            if (element.returnRequestProductId != null &&
-                element.returnRequestId != null) {
-              images.add(element.image ?? "");
-            }
-          });
+          orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData!
+              .forEach(
+            (element) {
+              if (element.status?.value == null &&
+                  element.status?.name != null) {
+                element.orderDetails?.forEach((element) {
+                  if (element.returnRequestProductId != null &&
+                      element.returnRequestId != null) {
+                    images.add(element.image ?? "");
+                  }
+                });
+              }
+            },
+          );
 
           return !_showShadowForConfirmOrder
               ? SizedBox.shrink()
@@ -3609,12 +3730,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               enableChangeAddress.value = false;
                               showShadowForPanel.value = false;
                               showShadowForCanselOrder.value = false;
-                              showShadowForConfirmOrder.value = false;
+
                               optionReturn.value = 0;
                               reasonCost.value = 0;
                               optionCansel.value = [];
                               showShadowForChangeAddress.value = false;
                               shadowForChangeVariant.value = false;
+                              showShadowForCancelAllOrder.value = false;
                               showShadowForConfirmOrder.value = false;
                             }
                           },
@@ -3673,9 +3795,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         orderGroupId: order
                                                                 ?.orderGroupId ??
                                                             "",
-                                                        returnRequestId: order
-                                                                ?.returnRequestId ??
-                                                            "".toString()));
+                                                        returnRequestId:
+                                                            returnRequestIdsToConfirm));
                                               },
                                               child: ValueListenableBuilder<
                                                       bool>(
@@ -3757,11 +3878,404 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   optionModifyPanel.value = null;
                                   enableChangeAddress.value = false;
                                   showShadowForPanel.value = false;
-                                  showShadowForConfirmOrder.value = false;
+
                                   showShadowForChangeAddress.value = false;
                                   showShadowForCanselOrder.value = false;
                                   optionReturn.value = 0;
                                   reasonCost.value = 0;
+                                  showShadowForConfirmOrder.value = false;
+                                  showShadowForCancelAllOrder.value = false;
+                                  optionCansel.value = [];
+                                  shadowForChangeVariant.value = false;
+                                },
+                                child: Text(
+                                  LocaleKeys.i_disagree.tr(),
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      context.textTheme.bodyMedium?.rr.copyWith(
+                                    color: Colors.white,
+                                    letterSpacing: 0.18,
+                                    fontSize: 16,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                    ],
+                  ),
+                );
+        });
+  }
+
+  Widget shadowForCancelAllOrder() {
+    return ValueListenableBuilder<bool>(
+        valueListenable: showShadowForCancelAllOrder,
+        builder: (context, _showShadowForCancelAllOrder, _) {
+          List<String> images = [];
+
+          orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData!
+              .forEach(
+            (element) {
+              element.orderDetails?.forEach((element) {
+                if (element.returnRequestProductId != null &&
+                    element.returnRequestId != null) {
+                  images.add(element.image ?? "");
+                }
+              });
+            },
+          );
+
+          return !_showShadowForCancelAllOrder
+              ? SizedBox.shrink()
+              : Container(
+                  height: 1.sh,
+                  width: 1.sw,
+                  color: Color.fromRGBO(29, 29, 29, 0.95),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Spacer(),
+                      SvgPicture.asset(
+                        AppAssets.clarificationSvg,
+                      ),
+                      SizedBox(height: 20.h),
+                      Text(
+                        LocaleKeys.clarification.tr(),
+                        style: context.textTheme.bodyMedium?.mr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 40,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        LocaleKeys.about_return_your_product.tr(),
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 16,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 45.h,
+                      ),
+                      Text(
+                        LocaleKeys.you_will_not_charged_fees.tr(),
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 16,
+                          height: 1.3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      order?.paymentStatus == "unpaid"
+                          ? SizedBox.shrink()
+                          : Text(
+                              "${LocaleKeys.you_will_receive_your_refund_within.tr()} 12 ${LocaleKeys.hours.tr()}",
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 0.18,
+                                fontSize: 16,
+                                height: 1.3,
+                              ),
+                            ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          "${LocaleKeys.repeated_cancellations_affect_rating.tr()} \n ",
+                          textAlign: TextAlign.start,
+                          style: context.textTheme.bodyMedium?.rr.copyWith(
+                            color: Colors.white,
+                            letterSpacing: 0.18,
+                            fontSize: 16,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                      images.isEmpty
+                          ? SizedBox.shrink()
+                          : Container(
+                              height: 130.h,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 24),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                              ),
+                              child: ListView.builder(
+                                  itemCount: images.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) => Container(
+                                        margin:
+                                            EdgeInsets.symmetric(horizontal: 5),
+                                        height: 130.h,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15)),
+                                          child: MyCachedNetworkImage(
+                                              imageUrl: images[index],
+                                              width: 100,
+                                              imageFit: BoxFit.contain,
+                                              height: 130.h),
+                                        ),
+                                      )),
+                            ),
+                      SvgPicture.asset(
+                        AppAssets.termsCanselSvg,
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        "${LocaleKeys.terms_of_cancellation_term.tr()} ",
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.3,
+                        ),
+                      ),
+                      ValueListenableBuilder<bool>(
+                          valueListenable: agreeToPolicies,
+                          builder: (context, _agreeToPolicies, _) {
+                            return Container(
+                                alignment: Alignment.center,
+                                height: 40,
+                                width: 1.sw,
+                                child: InkWell(
+                                  onTap: () =>
+                                      agreeToPolicies.value = !_agreeToPolicies,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SvgPicture.asset(AppAssets.detectedSvg,
+                                          color: _agreeToPolicies
+                                              ? Color(0xff388CFF)
+                                              : Color(0xff8E8E8E)),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
+                                        style: context.textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                          color: Colors.white,
+                                          letterSpacing: 0.18,
+                                          fontSize: 14,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                      Text(
+                                        LocaleKeys.cancellation_term.tr(),
+                                        style: context.textTheme.bodyMedium?.mr
+                                            .copyWith(
+                                          decorationColor: Colors.white,
+                                          decoration: TextDecoration.underline,
+                                          color: Colors.white,
+                                          letterSpacing: 0.18,
+                                          fontSize: 16,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ));
+                          }),
+                      SizedBox(
+                        height: 30.h,
+                      ),
+                      BlocListener<OrderBloc, OrderState>(
+                          listenWhen: (previous, current) =>
+                              previous.cancelReturnRequestStatus !=
+                              current.cancelReturnRequestStatus,
+                          listener: (context, state) {
+                            if (state.cancelReturnRequestStatus ==
+                                CancelReturnRequestStatus.success) {
+                              orderBloc.add(
+                                GetOrdersByOrderGroupIDEvent(
+                                    orderGroupId:
+                                        widget.order.orderGroupId ?? ""),
+                              );
+                              agreeToPolicies.value = false;
+                              panelController.close();
+                              showPanel.value = false;
+                              optionModifyPanel.value = null;
+                              enableChangeAddress.value = false;
+                              showShadowForPanel.value = false;
+                              showShadowForCanselOrder.value = false;
+
+                              optionReturn.value = 0;
+                              reasonCost.value = 0;
+                              optionCansel.value = [];
+                              showShadowForChangeAddress.value = false;
+                              shadowForChangeVariant.value = false;
+                              showShadowForCancelAllOrder.value = false;
+                              showShadowForConfirmOrder.value = false;
+                            }
+                          },
+                          child: ValueListenableBuilder<int>(
+                              valueListenable: returnBottomIndexTap,
+                              builder: (context, _returnBottomIndexTap, _) {
+                                return BlocBuilder<OrderBloc, OrderState>(
+                                    buildWhen: (previous, current) =>
+                                        previous.cancelReturnRequestStatus !=
+                                        current.cancelReturnRequestStatus,
+                                    builder: (context, state) {
+                                      return (state.cancelReturnRequestStatus ==
+                                              CancelReturnRequestStatus.loading)
+                                          ? Shimmer.fromColors(
+                                              baseColor: Colors.grey[500]!,
+                                              highlightColor: Colors.grey[300]!,
+                                              child: Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 24),
+                                                alignment: Alignment.center,
+                                                width: 1.sw,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                    color:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? const Color(
+                                                                0xff3066CC)
+                                                            : const Color(
+                                                                0xffC4C2C2),
+                                                    border:
+                                                        agreeToPolicies.value ==
+                                                                true
+                                                            ? Border.all(
+                                                                color: const Color(
+                                                                    0xffF8F8F8),
+                                                              )
+                                                            : Border.all(
+                                                                color: const Color(
+                                                                    0xffC4C2C2),
+                                                              ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15)),
+                                              ))
+                                          : InkWell(
+                                              onTap: () {
+                                                if (agreeToPolicies.value ==
+                                                    false) {
+                                                  return;
+                                                }
+                                                orderBloc.add(
+                                                    CancelReturnRequestEvent(
+                                                        orderGroupId: order
+                                                                ?.orderGroupId ??
+                                                            "",
+                                                        returnRequestId:
+                                                            returnRequestIdsToCancel));
+                                              },
+                                              child: ValueListenableBuilder<
+                                                      bool>(
+                                                  valueListenable:
+                                                      agreeToPolicies,
+                                                  builder: (context,
+                                                      _agreeToPolicies, _) {
+                                                    return Container(
+                                                      margin:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 24),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      width: 1.sw,
+                                                      height: 50,
+                                                      decoration: BoxDecoration(
+                                                          color: agreeToPolicies
+                                                                      .value ==
+                                                                  true
+                                                              ? const Color(
+                                                                  0xff3066CC)
+                                                              : const Color(
+                                                                  0xffC4C2C2),
+                                                          border: agreeToPolicies
+                                                                      .value ==
+                                                                  true
+                                                              ? Border.all(
+                                                                  color: const Color(
+                                                                      0xffF8F8F8),
+                                                                )
+                                                              : Border.all(
+                                                                  color: const Color(
+                                                                      0xffC4C2C2),
+                                                                ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      15)),
+                                                      child: Text(
+                                                        LocaleKeys
+                                                            .cancel_return_request
+                                                            .tr(),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: context.textTheme
+                                                            .bodyMedium?.br
+                                                            .copyWith(
+                                                          color: Colors.white,
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 16,
+                                                          height: 1.3,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }),
+                                            );
+                                    });
+                              })),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Container(
+                        width: 200,
+                        height: 40,
+                        child: BlocBuilder<OrderBloc, OrderState>(
+                            buildWhen: (previous, current) =>
+                                previous.cancelReturnRequestStatus !=
+                                current.cancelReturnRequestStatus,
+                            builder: (context, state) {
+                              return InkWell(
+                                onTap: () {
+                                  if (state.cancelReturnRequestStatus ==
+                                      CancelReturnRequestStatus.loading) {
+                                    return;
+                                  }
+                                  agreeToPolicies.value = false;
+                                  panelController.close();
+                                  showPanel.value = false;
+                                  optionModifyPanel.value = null;
+                                  enableChangeAddress.value = false;
+                                  showShadowForPanel.value = false;
+
+                                  showShadowForChangeAddress.value = false;
+                                  showShadowForCanselOrder.value = false;
+                                  optionReturn.value = 0;
+                                  reasonCost.value = 0;
+                                  showShadowForCancelAllOrder.value = false;
                                   showShadowForConfirmOrder.value = false;
                                   optionCansel.value = [];
                                   shadowForChangeVariant.value = false;
@@ -3794,21 +4308,31 @@ class _OrderDetails2 extends State<OrderDetails2> {
         valueListenable: showShadowForCanselOrder,
         builder: (context, _showShadowForCanselOrder, _) {
           List<String> images = [];
-          OrderDetail? orderDetails = orderBloc
-              .state.orderReturnDetailsModel?.data?.orderDetails
-              ?.firstWhere(
-            (element) => element.detailId == order?.details?[indexTap.value].id,
-            orElse: () => OrderDetail(),
+          returnRequestsData = orderBloc
+              .state.orderReturnDetailsModel?.data?.returnRequestsData!
+              .firstWhere(
+            (element) => element.orderId == order?.id,
+            orElse: () => ReturnRequestsDatum(),
           );
-          images.add(orderDetails?.image ?? "");
-          orderBloc.state.orderReturnDetailsModel?.data?.orderDetails
-              ?.forEach((element) {
-            if (element.returnRequestProductId != null &&
-                element.returnRequestId != null &&
-                element.detailId != order?.details?[indexTap.value].id) {
-              images.add(element.image ?? "");
-            }
-          });
+          orderDetails = returnRequestsData?.orderDetails ?? [];
+          ReturnOrderDetail? orderDetail = orderDetails.firstWhere(
+            (element) => element.detailId == order?.details?[indexTap.value].id,
+            orElse: () => ReturnOrderDetail(),
+          );
+
+          orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData!
+              .forEach(
+            (element) {
+              element.orderDetails?.forEach((element) {
+                if (element.returnRequestProductId != null &&
+                    element.returnRequestId != null &&
+                    element.detailId != order?.details?[indexTap.value].id) {
+                  images.add(element.image ?? "");
+                }
+              });
+            },
+          );
+          images.add(orderDetail.image ?? "");
 
           return !_showShadowForCanselOrder
               ? SizedBox.shrink()
@@ -4031,6 +4555,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               showShadowForConfirmOrder.value = false;
                               showShadowForPanel.value = false;
                               showShadowForCanselOrder.value = false;
+                              showShadowForCancelAllOrder.value = false;
                               optionReturn.value = 0;
                               reasonCost.value = 0;
                               optionCansel.value = [];
@@ -4145,33 +4670,74 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     ));
                                                   }
                                                 } else {
+                                                  returnRequestIdsToConfirm =
+                                                      [];
+                                                  state.orderReturnDetailsModel
+                                                      ?.data?.returnRequestsData
+                                                      ?.forEach(
+                                                    (element) {
+                                                      if ((element.status
+                                                                  ?.name !=
+                                                              null &&
+                                                          element.status
+                                                                  ?.value ==
+                                                              null)) {
+                                                        returnRequestIdsToConfirm
+                                                            .add(element
+                                                                .returnRequestId
+                                                                .toString());
+                                                      }
+                                                    },
+                                                  );
+
                                                   returnBottomIndexTap.value =
                                                       0;
-                                                  OrderDetail? orderDetails =
-                                                      state
-                                                          .orderReturnDetailsModel
-                                                          ?.data
-                                                          ?.orderDetails
-                                                          ?.firstWhere(
+                                                  returnRequestsData = state
+                                                      .orderReturnDetailsModel
+                                                      ?.data
+                                                      ?.returnRequestsData!
+                                                      .firstWhere(
+                                                    (element) =>
+                                                        element.orderId ==
+                                                        order?.id,
+                                                    orElse: () =>
+                                                        ReturnRequestsDatum(),
+                                                  );
+                                                  orderDetails =
+                                                      returnRequestsData
+                                                              ?.orderDetails ??
+                                                          [];
+                                                  ReturnOrderDetail?
+                                                      orderDetail =
+                                                      orderDetails.firstWhere(
                                                     (element) =>
                                                         element.detailId ==
                                                         order
                                                             ?.details?[
                                                                 indexTap.value]
                                                             .id,
-                                                    orElse: () => OrderDetail(),
+                                                    orElse: () =>
+                                                        ReturnOrderDetail(),
                                                   );
-                                                  if (!(orderDetails
-                                                          ?.alreadyReturn ??
+                                                  if (!(returnRequestIdsToConfirm
+                                                      .contains(orderDetail
+                                                          .returnRequestId
+                                                          .toString()))) {
+                                                    returnRequestIdsToConfirm
+                                                        .add(orderDetail
+                                                            .returnRequestId
+                                                            .toString());
+                                                  }
+                                                  if (!(orderDetail
+                                                          .alreadyReturn ??
                                                       false)) {
                                                     orderBloc.add(StoreReturnRequestProductEvent(
-                                                        orderGroupId:
-                                                            order?.orderGroupId ??
-                                                                "",
+                                                        orderGroupId: order
+                                                                ?.orderGroupId ??
+                                                            "",
                                                         withConfirm: true,
-                                                        returnRequestId: orderDetails!
-                                                            .returnRequestId
-                                                            .toString(),
+                                                        returnRequestId:
+                                                            returnRequestIdsToConfirm,
                                                         params: ReturnRequestProductParams(
                                                             details: "",
                                                             images: orderPhotos
@@ -4184,15 +4750,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             returnRequestReasonId:
                                                                 optionReturn.value
                                                                     .toString(),
-                                                            productId: orderDetails
+                                                            productId: orderDetail
                                                                 .productId
                                                                 .toString(),
-                                                            returnRequestId: orderDetails
-                                                                .returnRequestId
-                                                                .toString(),
-                                                            orderDetailId: orderDetails
-                                                                .detailId
-                                                                .toString())));
+                                                            returnRequestId:
+                                                                orderDetail
+                                                                    .returnRequestId
+                                                                    .toString(),
+                                                            orderDetailId:
+                                                                orderDetail
+                                                                    .detailId
+                                                                    .toString())));
                                                   } else {
                                                     orderBloc.add(
                                                         UpdateReturnRequestProductEvent(
@@ -4201,13 +4769,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                 "",
                                                             withConfirm: true,
                                                             returnRequestId:
-                                                                orderDetails!
-                                                                    .returnRequestId
-                                                                    .toString(),
+                                                                returnRequestIdsToConfirm,
                                                             params:
                                                                 UpdateReturnRequestProductParams(
                                                               details: "",
-                                                              id: (orderDetails
+                                                              id: (orderDetail
                                                                           .returnRequestProductId ??
                                                                       0)
                                                                   .toString(),
@@ -4293,10 +4859,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 20.h,
                       ),
                       !(optionModifyPanel.value == "Return_This_Product") ||
-                              (!(orderBloc.state.orderReturnDetailsModel?.data
-                                      ?.status
-                                      ?.contains("draft") ??
-                                  false))
+                              (!(returnRequestsData?.status?.name != null &&
+                                  returnRequestsData?.status?.value == null))
                           ? SizedBox.shrink()
                           : BlocListener<OrderBloc, OrderState>(
                               listenWhen: (previous, current) =>
@@ -4328,6 +4892,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   optionCansel.value = [];
                                   showShadowForChangeAddress.value = false;
                                   showShadowForConfirmOrder.value = false;
+                                  showShadowForCancelAllOrder.value = false;
                                   shadowForChangeVariant.value = false;
                                 }
                               },
@@ -4343,6 +4908,29 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 current
                                                     .updateReturnRequestProductStatus,
                                         builder: (context, state) {
+                                          returnRequestIdsToConfirm = [];
+                                          state.orderReturnDetailsModel?.data
+                                              ?.returnRequestsData
+                                              ?.forEach(
+                                            (element) {
+                                              if ((element.status?.name !=
+                                                      null &&
+                                                  element.status?.value ==
+                                                      null)) {
+                                                returnRequestIdsToConfirm.add(
+                                                    element.returnRequestId
+                                                        .toString());
+                                              }
+                                            },
+                                          );
+                                          if (!(returnRequestIdsToConfirm
+                                              .contains(orderDetail
+                                                  .returnRequestId
+                                                  .toString()))) {
+                                            returnRequestIdsToConfirm.add(
+                                                orderDetail.returnRequestId
+                                                    .toString());
+                                          }
                                           return (state.storeReturnRequestProductStatus ==
                                                           StoreReturnRequestProductStatus
                                                               .loading ||
@@ -4393,12 +4981,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     returnBottomIndexTap.value =
                                                         1;
 
-                                                    OrderDetail? orderDetails =
-                                                        state
-                                                            .orderReturnDetailsModel
-                                                            ?.data
-                                                            ?.orderDetails
-                                                            ?.firstWhere(
+                                                    ReturnOrderDetail?
+                                                        orderDetail =
+                                                        orderDetails.firstWhere(
                                                       (element) =>
                                                           element.detailId ==
                                                           order
@@ -4407,40 +4992,43 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                       .value]
                                                               .id,
                                                       orElse: () =>
-                                                          OrderDetail(),
+                                                          ReturnOrderDetail(),
                                                     );
-                                                    if (!(orderDetails
-                                                            ?.alreadyReturn ??
+                                                    if (!(orderDetail
+                                                            .alreadyReturn ??
                                                         false)) {
                                                       orderBloc.add(StoreReturnRequestProductEvent(
                                                           orderGroupId:
                                                               order?.orderGroupId ??
                                                                   "",
                                                           withConfirm: false,
-                                                          returnRequestId: orderDetails!
-                                                              .returnRequestId
-                                                              .toString(),
+                                                          returnRequestId:
+                                                              returnRequestIdsToConfirm,
                                                           params: ReturnRequestProductParams(
                                                               details: "",
                                                               images: orderPhotos
                                                                   .value,
                                                               isForExchange:
                                                                   '0',
-                                                              quantity: qtyOfReturnValueNotifier
-                                                                  .value
-                                                                  .toString(),
-                                                              returnRequestReasonId:
-                                                                  optionReturn.value
+                                                              quantity:
+                                                                  qtyOfReturnValueNotifier
+                                                                      .value
                                                                       .toString(),
-                                                              productId: orderDetails
+                                                              returnRequestReasonId:
+                                                                  optionReturn
+                                                                      .value
+                                                                      .toString(),
+                                                              productId: orderDetail
                                                                   .productId
                                                                   .toString(),
-                                                              returnRequestId: orderDetails
-                                                                  .returnRequestId
-                                                                  .toString(),
-                                                              orderDetailId: orderDetails
-                                                                  .detailId
-                                                                  .toString())));
+                                                              returnRequestId:
+                                                                  orderDetail
+                                                                      .returnRequestId
+                                                                      .toString(),
+                                                              orderDetailId:
+                                                                  orderDetail
+                                                                      .detailId
+                                                                      .toString())));
                                                     } else {
                                                       orderBloc.add(
                                                           UpdateReturnRequestProductEvent(
@@ -4450,13 +5038,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                               withConfirm:
                                                                   false,
                                                               returnRequestId:
-                                                                  orderDetails!
-                                                                      .returnRequestId
-                                                                      .toString(),
+                                                                  returnRequestIdsToConfirm,
                                                               params:
                                                                   UpdateReturnRequestProductParams(
                                                                 details: "",
-                                                                id: (orderDetails
+                                                                id: (orderDetail
                                                                             .returnRequestProductId ??
                                                                         0)
                                                                     .toString(),
@@ -4580,6 +5166,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   enableChangeAddress.value = false;
                                   showShadowForConfirmOrder.value = false;
                                   showShadowForPanel.value = false;
+                                  showShadowForCancelAllOrder.value = false;
                                   showShadowForChangeAddress.value = false;
                                   showShadowForCanselOrder.value = false;
                                   optionReturn.value = 0;
@@ -5232,6 +5819,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   optionModifyPanel.value = null;
                                   showShadowForCanselOrder.value = false;
                                   enableChangeAddress.value = false;
+                                  showShadowForCancelAllOrder.value = false;
                                   showShadowForConfirmOrder.value = false;
                                   optionReturn.value = 0;
                                   reasonCost.value = 0;
@@ -5380,6 +5968,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       enableChangeAddress.value = false;
                                       showShadowForPanel.value = false;
                                       showShadowForChangeAddress.value = false;
+                                      showShadowForCancelAllOrder.value = false;
                                       showShadowForConfirmOrder.value = false;
                                       shadowForChangeVariant.value = false;
                                       showShadowForCanselOrder.value = false;
@@ -5451,6 +6040,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           optionModifyPanel.value = null;
                           enableChangeAddress.value = false;
                           showShadowForConfirmOrder.value = false;
+                          showShadowForCancelAllOrder.value = false;
                           showShadowForPanel.value = false;
                           optionReturn.value = 0;
                           reasonCost.value = 0;
@@ -6904,10 +7494,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
     if (_option == "Change_Product_Request") {
       return panelVaraintContent(sc);
     }
-    OrderDetail? orderDetails =
-        orderBloc.state.orderReturnDetailsModel?.data?.orderDetails?.firstWhere(
+    ReturnOrderDetail? orderDetail = orderDetails.firstWhere(
       (element) => element.detailId == order!.details?[indexTap.value].id,
-      orElse: () => OrderDetail(),
+      orElse: () => ReturnOrderDetail(),
     );
     return Container(
         decoration: BoxDecoration(
@@ -7055,7 +7644,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       if (productColors.isNotEmpty) {
                         optionVariant.value = "color";
                       } else if (productChoiceOptions.isNotEmpty) {
-                        optionVariant.value = "size";
+                        if ((productChoiceOptions[0].options?.length ?? 0) >
+                            0) {
+                          optionVariant.value = "size";
+                        } else {
+                          optionVariant.value = "qty";
+                        }
                       } else {
                         optionVariant.value = "qty";
                       }
@@ -7123,28 +7717,27 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           onTap: () {
                             orderBloc.add(ResetAllStatusEvent());
                             optionModifyPanel.value = "Return_This_Product";
-                            if (orderDetails?.returnRequestProductId != null &&
+                            if (orderDetail.returnRequestProductId != null &&
                                 order?.returnRequestId != null) {
                               //      qtyOfReturnController.text =
                               //    (orderDetails?.quantity ?? "").toString();
                               qtyOfReturnValueNotifier.value =
-                                  orderDetails?.quantity ?? 0;
+                                  orderDetail.quantity ?? 0;
                               optionReturn.value =
-                                  orderDetails?.returnRequestProductReasonId ??
-                                      0;
+                                  orderDetail.returnRequestProductReasonId ?? 0;
                               ReturnReasonModel? reason = orderBloc.state
                                   .returnReasonsModel?.data?.returnReasons!
                                   .firstWhere(
                                       (element) =>
                                           element.id ==
-                                          orderDetails
-                                              ?.returnRequestProductReasonId,
+                                          orderDetail
+                                              .returnRequestProductReasonId,
                                       orElse: () => ReturnReasonModel(cost: 0));
                               reasonCost.value = (reason?.isCostBySystem == 1)
                                   ? 0
                                   : reason?.cost ?? 0;
                               orderBloc.add(StoreImagesForUpdateReturnEvent(
-                                  images: orderDetails?.img ?? []));
+                                  images: orderDetail.img ?? []));
                             } else {
                               qtyOfReturnValueNotifier.value =
                                   (order?.details?[indexTap.value].qty ?? 0)
@@ -7156,7 +7749,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           svg: AppAssets.returnThisProductSvg,
                           image2: "",
                           tiltle:
-                              "${orderDetails?.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_this_product.tr()}",
+                              "${orderDetail.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_this_product.tr()}",
                           body:
                               "${LocaleKeys.return_this_product_in_24_hours_and_back_your_money.tr()}"),
                     )
@@ -7782,7 +8375,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   onTap: () {
                                     optionVariant.value = "color";
                                     sizeIndexTap.value = null;
-                                    qtyToChangeController.value = 0;
+                                    qtyToChangeController.value = order!
+                                            .details?[indexTap.value].qty
+                                            ?.round() ??
+                                        0;
                                   },
                                   child: Container(
                                     height: 50,
@@ -7815,18 +8411,21 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               )),
                                   ),
                                 ),
-                          InkWell(
-                            onTap: () {
-                              qtyToChangeController.value = 0;
-                              optionVariant.value = "size";
-                              colorIndexTap.value = null;
-                            },
-                            child: (productChoiceOptions.isEmpty)
-                                ? SizedBox.shrink()
-                                : (productChoiceOptions[0].options?.isEmpty ??
-                                        false)
-                                    ? SizedBox.shrink()
-                                    : Container(
+                          (productChoiceOptions.isEmpty)
+                              ? SizedBox.shrink()
+                              : (productChoiceOptions[0].options?.isEmpty ??
+                                      false)
+                                  ? SizedBox.shrink()
+                                  : InkWell(
+                                      onTap: () {
+                                        qtyToChangeController.value = order!
+                                                .details?[indexTap.value].qty
+                                                ?.round() ??
+                                            0;
+                                        optionVariant.value = "size";
+                                        colorIndexTap.value = null;
+                                      },
+                                      child: Container(
                                         height: 50,
                                         alignment: Alignment.center,
                                         width: (1.sw - 48) / 3,
@@ -7860,7 +8459,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     height: 1.3,
                                                   )),
                                       ),
-                          ),
+                                    ),
                           InkWell(
                             onTap: () {
                               optionVariant.value = "qty";
@@ -8175,133 +8774,153 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   );
                                 })
                             : SizedBox(
-                                width: 100,
-                                height: 40.h,
+                                width: 130,
+                                height: 50.h,
                                 child: ValueListenableBuilder<int>(
                                     valueListenable: qtyToChangeController,
                                     builder:
                                         (context, _qtyToChangeController, _) {
                                       return Container(
-                                          width: 100,
+                                          width: 130,
                                           decoration: BoxDecoration(
                                               border: Border.all(
                                                   color:
                                                       const Color(0xFF1D1D1D)),
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(15))),
-                                          height: 40.h,
-                                          child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                InkWell(
-                                                    onTap: () {
-                                                      if (order
-                                                              ?.details?[
-                                                                  indexTap
-                                                                      .value]
-                                                              .qty ==
-                                                          qtyToChangeController
-                                                              .value) {
-                                                        return;
-                                                      }
-                                                      qtyToChangeController
-                                                              .value =
-                                                          qtyToChangeController
-                                                                  .value +
-                                                              1;
-                                                    },
-                                                    child: Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        width: 20,
-                                                        height: 40.h,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.grey,
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                                  bottomRight: Radius
-                                                                      .circular(
-                                                                          14),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          14)),
-                                                        ),
-                                                        child: Text("+",
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.rr
-                                                                .copyWith(
-                                                              color:
-                                                                  Colors.white,
-                                                              letterSpacing:
-                                                                  0.18,
-                                                              fontSize: 18.sp,
-                                                            )))),
-                                                Spacer(),
-                                                Text(
-                                                    (_qtyToChangeController)
-                                                        .toString(),
-                                                    style: context.textTheme
-                                                        .bodyMedium?.rr
-                                                        .copyWith(
-                                                      color: const Color(
-                                                          0xFF1D1D1D),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 20.sp,
-                                                    )),
-                                                Spacer(),
-                                                InkWell(
-                                                    onTap: () {
-                                                      if (qtyToChangeController
-                                                              .value ==
-                                                          0) {
-                                                        return;
-                                                      }
-                                                      qtyToChangeController
-                                                              .value =
-                                                          qtyToChangeController
-                                                                  .value -
-                                                              1;
-                                                    },
-                                                    child: Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        width: 20,
-                                                        height: 40.h,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.grey,
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                                  bottomLeft: Radius
-                                                                      .circular(
-                                                                          14),
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          14)),
-                                                        ),
-                                                        child: Text("-",
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.rr
-                                                                .copyWith(
-                                                              color:
-                                                                  Colors.white,
-                                                              letterSpacing:
-                                                                  0.18,
-                                                              fontSize: 18.sp,
-                                                            )))),
-                                              ]));
+                                          height: 50.h,
+                                          child: Directionality(
+                                              textDirection: TextDirection.rtl,
+                                              child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    (order
+                                                                ?.details?[
+                                                                    indexTap
+                                                                        .value]
+                                                                .qty ==
+                                                            qtyToChangeController
+                                                                .value)
+                                                        ? SizedBox.shrink()
+                                                        : InkWell(
+                                                            onTap: () {
+                                                              if (order
+                                                                      ?.details?[
+                                                                          indexTap
+                                                                              .value]
+                                                                      .qty ==
+                                                                  qtyToChangeController
+                                                                      .value) {
+                                                                return;
+                                                              }
+                                                              qtyToChangeController
+                                                                      .value =
+                                                                  qtyToChangeController
+                                                                          .value +
+                                                                      1;
+                                                            },
+                                                            child: Container(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 30,
+                                                                height: 50.h,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  borderRadius: BorderRadius.only(
+                                                                      bottomRight:
+                                                                          Radius.circular(
+                                                                              14),
+                                                                      topRight:
+                                                                          Radius.circular(
+                                                                              14)),
+                                                                ),
+                                                                child: Text("+",
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                    style: context
+                                                                        .textTheme
+                                                                        .bodyMedium
+                                                                        ?.rr
+                                                                        .copyWith(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      letterSpacing:
+                                                                          0.18,
+                                                                      fontSize:
+                                                                          18.sp,
+                                                                    )))),
+                                                    Spacer(),
+                                                    Text(
+                                                        (_qtyToChangeController)
+                                                            .toString(),
+                                                        style: context.textTheme
+                                                            .bodyMedium?.rr
+                                                            .copyWith(
+                                                          color: const Color(
+                                                              0xFF1D1D1D),
+                                                          letterSpacing: 0.18,
+                                                          fontSize: 20.sp,
+                                                        )),
+                                                    Spacer(),
+                                                    (qtyToChangeController
+                                                                .value ==
+                                                            0)
+                                                        ? SizedBox.shrink()
+                                                        : InkWell(
+                                                            onTap: () {
+                                                              if (qtyToChangeController
+                                                                      .value ==
+                                                                  0) {
+                                                                return;
+                                                              }
+                                                              qtyToChangeController
+                                                                      .value =
+                                                                  qtyToChangeController
+                                                                          .value -
+                                                                      1;
+                                                            },
+                                                            child: Container(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 30,
+                                                                height: 50.h,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  borderRadius: BorderRadius.only(
+                                                                      bottomLeft:
+                                                                          Radius.circular(
+                                                                              14),
+                                                                      topLeft: Radius
+                                                                          .circular(
+                                                                              14)),
+                                                                ),
+                                                                child: Text("-",
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                    style: context
+                                                                        .textTheme
+                                                                        .bodyMedium
+                                                                        ?.rr
+                                                                        .copyWith(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      letterSpacing:
+                                                                          0.18,
+                                                                      fontSize:
+                                                                          18.sp,
+                                                                    )))),
+                                                  ])));
                                     }))
                   ],
                 );
@@ -8345,11 +8964,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
             currentWidth += btnWidth + (currentRow.length > 1 ? spacing : 0);
           }
           if (currentRow.isNotEmpty) rows.add(currentRow);
-          OrderDetail? orderDetails = orderBloc
-              .state.orderReturnDetailsModel?.data?.orderDetails
-              ?.firstWhere(
+          ReturnOrderDetail? orderDetail = orderDetails.firstWhere(
             (element) => element.detailId == order!.details?[indexTap.value].id,
-            orElse: () => OrderDetail(),
+            orElse: () => ReturnOrderDetail(),
           );
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -8475,112 +9092,168 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     return ValueListenableBuilder<int>(
                         valueListenable: optionReturn,
                         builder: (context, _optionReturn, _) {
-                          return Container(
-                              width: 220,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: const Color(0xFF1D1D1D)),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15))),
-                              height: _optionReturn == 0 ? 60.h : 30.h,
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                        onTap: () {
-                                          if (order?.details?[indexTap.value]
-                                                  .qty ==
-                                              _qtyOfReturnValueNotifier) {
-                                            return;
-                                          }
-                                          qtyOfReturnValueNotifier.value =
-                                              qtyOfReturnValueNotifier.value +
-                                                  1;
-                                        },
-                                        child: Container(
-                                            alignment: Alignment.center,
-                                            width: 20,
-                                            height: _optionReturn == 0
-                                                ? 60.h
-                                                : 30.h,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey,
-                                              borderRadius: BorderRadius.only(
-                                                  bottomRight:
-                                                      Radius.circular(14),
-                                                  topRight:
-                                                      Radius.circular(14)),
-                                            ),
-                                            child: Text("+",
-                                                textAlign: TextAlign.center,
+                          return Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: Container(
+                                  width: 280,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: const Color(0xFF1D1D1D)),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15))),
+                                  height: _optionReturn == 0 ? 60.h : 30.h,
+                                  child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        (order?.details?[indexTap.value].qty ==
+                                                _qtyOfReturnValueNotifier)
+                                            ? SizedBox.shrink()
+                                            : InkWell(
+                                                onTap: () {
+                                                  if (order
+                                                          ?.details?[
+                                                              indexTap.value]
+                                                          .qty ==
+                                                      _qtyOfReturnValueNotifier) {
+                                                    return;
+                                                  }
+                                                  qtyOfReturnValueNotifier
+                                                          .value =
+                                                      qtyOfReturnValueNotifier
+                                                              .value +
+                                                          1;
+                                                },
+                                                child: Container(
+                                                    alignment: Alignment.center,
+                                                    width: 20,
+                                                    height: _optionReturn == 0
+                                                        ? 60.h
+                                                        : 30.h,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          14),
+                                                              topRight: Radius
+                                                                  .circular(
+                                                                      14)),
+                                                    ),
+                                                    child: Text("+",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: context.textTheme
+                                                            .bodyMedium?.rr
+                                                            .copyWith(
+                                                          color: Colors.white,
+                                                          letterSpacing: 0.18,
+                                                          fontSize:
+                                                              _optionReturn == 0
+                                                                  ? 18.sp
+                                                                  : 16.sp,
+                                                        )))),
+                                        Spacer(),
+                                        LanguageService.languageCode == "ar"
+                                            ? SizedBox.shrink()
+                                            : Text(
+                                                (_qtyOfReturnValueNotifier)
+                                                    .toString(),
                                                 style: context
                                                     .textTheme.bodyMedium?.rr
                                                     .copyWith(
-                                                  color: Colors.white,
+                                                  color:
+                                                      const Color(0xFF1D1D1D),
                                                   letterSpacing: 0.18,
                                                   fontSize: _optionReturn == 0
                                                       ? 18.sp
                                                       : 16.sp,
-                                                )))),
-                                    Spacer(),
-                                    Text(LocaleKeys.return_pieces_hint.tr(),
-                                        style: context.textTheme.bodyMedium?.rr
-                                            .copyWith(
-                                          color: const Color(0xFF1D1D1D),
-                                          letterSpacing: 0.18,
-                                          fontSize: _optionReturn == 0
-                                              ? 12.sp
-                                              : 11.sp,
-                                        )),
-                                    SizedBox(
-                                      width: 10.h,
-                                    ),
-                                    Text((_qtyOfReturnValueNotifier).toString(),
-                                        style: context.textTheme.bodyMedium?.rr
-                                            .copyWith(
-                                          color: const Color(0xFF1D1D1D),
-                                          letterSpacing: 0.18,
-                                          fontSize: _optionReturn == 0
-                                              ? 18.sp
-                                              : 16.sp,
-                                        )),
-                                    Spacer(),
-                                    InkWell(
-                                        onTap: () {
-                                          if (qtyOfReturnValueNotifier.value ==
-                                              1) {
-                                            return;
-                                          }
-                                          qtyOfReturnValueNotifier.value =
-                                              qtyOfReturnValueNotifier.value -
-                                                  1;
-                                        },
-                                        child: Container(
-                                            alignment: Alignment.center,
-                                            width: 20,
-                                            height: _optionReturn == 0
-                                                ? 60.h
-                                                : 30.h,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey,
-                                              borderRadius: BorderRadius.only(
-                                                  bottomLeft:
-                                                      Radius.circular(14),
-                                                  topLeft: Radius.circular(14)),
-                                            ),
-                                            child: Text("-",
-                                                textAlign: TextAlign.center,
+                                                )),
+                                        LanguageService.languageCode == "ar"
+                                            ? SizedBox.shrink()
+                                            : SizedBox(
+                                                width: 10.h,
+                                              ),
+                                        Text(LocaleKeys.return_pieces_hint.tr(),
+                                            style: context
+                                                .textTheme.bodyMedium?.rr
+                                                .copyWith(
+                                              color: const Color(0xFF1D1D1D),
+                                              letterSpacing: 0.18,
+                                              fontSize: _optionReturn == 0
+                                                  ? 12.sp
+                                                  : 11.sp,
+                                            )),
+                                        LanguageService.languageCode != "ar"
+                                            ? SizedBox.shrink()
+                                            : SizedBox(
+                                                width: 10.h,
+                                              ),
+                                        LanguageService.languageCode != "ar"
+                                            ? SizedBox.shrink()
+                                            : Text(
+                                                (_qtyOfReturnValueNotifier)
+                                                    .toString(),
                                                 style: context
                                                     .textTheme.bodyMedium?.rr
                                                     .copyWith(
-                                                  color: Colors.white,
+                                                  color:
+                                                      const Color(0xFF1D1D1D),
                                                   letterSpacing: 0.18,
                                                   fontSize: _optionReturn == 0
                                                       ? 18.sp
                                                       : 16.sp,
-                                                )))),
-                                  ]) /*TextFormField(
+                                                )),
+                                        Spacer(),
+                                        (qtyOfReturnValueNotifier.value == 1)
+                                            ? SizedBox.shrink()
+                                            : InkWell(
+                                                onTap: () {
+                                                  if (qtyOfReturnValueNotifier
+                                                          .value ==
+                                                      1) {
+                                                    return;
+                                                  }
+                                                  qtyOfReturnValueNotifier
+                                                          .value =
+                                                      qtyOfReturnValueNotifier
+                                                              .value -
+                                                          1;
+                                                },
+                                                child: Container(
+                                                    alignment: Alignment.center,
+                                                    width: 20,
+                                                    height: _optionReturn == 0
+                                                        ? 60.h
+                                                        : 30.h,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              bottomLeft: Radius
+                                                                  .circular(14),
+                                                              topLeft: Radius
+                                                                  .circular(
+                                                                      14)),
+                                                    ),
+                                                    child: Text("-",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: context.textTheme
+                                                            .bodyMedium?.rr
+                                                            .copyWith(
+                                                          color: Colors.white,
+                                                          letterSpacing: 0.18,
+                                                          fontSize:
+                                                              _optionReturn == 0
+                                                                  ? 18.sp
+                                                                  : 16.sp,
+                                                        )))),
+                                      ]) /*TextFormField(
                         onChanged: (value) {
                           qtyOfReturnValueNotifier.value =
                               int.tryParse(value) ?? 0;
@@ -8611,7 +9284,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ),
                         textAlign: TextAlign.center,
                       ),*/
-                              );
+                                  ));
                         });
                   }),
               SizedBox(
@@ -8759,7 +9432,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   children: [
                                     for (ReturnReasonModel reason in row) ...[
                                       optionReturnOrder(
-                                        "${reason.reasonAeEn ?? '' + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: ((reason.cost ?? 0) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
+                                        "${(reason.reasonAeEn ?? '') + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: ((reason.cost ?? 0) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
                                         reason.id ?? -1, // النص من الـ API
                                         _calculateButtonWidth(reason
                                                 .reasonAeEn ??
@@ -9398,6 +10071,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             (_optionReturn !=
                                                                 0)) {
                                                           orderBloc.add(StoreReturnRequestEvent(
+                                                              orderGroupId:
+                                                                  order?.orderGroupId ??
+                                                                      "",
                                                               params: ReturnRequestParams(
                                                                   isDraft: "1",
                                                                   orderId: (order!
@@ -9431,7 +10107,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                         .circular(
                                                                             20))),
                                                         child: Text(
-                                                            "${orderDetails?.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_request.tr()}",
+                                                            "${orderDetail.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_request.tr()}",
                                                             maxLines: 1,
                                                             style: context
                                                                 .textTheme

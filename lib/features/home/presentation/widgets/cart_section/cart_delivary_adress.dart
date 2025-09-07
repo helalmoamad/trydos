@@ -54,7 +54,8 @@ class CartDelivaryAddress extends StatefulWidget {
   State<CartDelivaryAddress> createState() => _CartDelivaryAddressState();
 }
 
-class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
+class _CartDelivaryAddressState extends State<CartDelivaryAddress>
+    with SingleTickerProviderStateMixin {
   final ValueNotifier<bool> isExpanded = ValueNotifier(false);
   final ValueNotifier<int> indexTap = ValueNotifier(0);
   final ValueNotifier<bool> showDeleteAddress = ValueNotifier(false);
@@ -63,17 +64,20 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   final PanelController panelController = PanelController();
   late HomeBloc homeBloc;
   late OrderBloc orderBloc;
+  final ValueNotifier<bool> validateBox = ValueNotifier(false);
   bool showDialogToResetSession = true;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   int indexToDelete = 0;
 
   final ValueNotifier<bool> isExpandedCoupon = ValueNotifier(false);
-
+  late AnimationController animationController;
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController couponKey = TextEditingController();
   List<Map<String, String>> cartImages = [];
   @override
   void initState() {
+    animationController =
+        AnimationController(duration: Duration(seconds: 1), vsync: this);
     cartImages = widget.cartItems;
     // homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -115,6 +119,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     }*/
 
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -560,6 +571,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           return (orderState.applyCouponStatus == ApplyCouponStatus.loading ||
                   orderState.setCustomerAddressDefaultStatus ==
                       SetCustomerAddressDefaultStatus.loading ||
+                  orderState.addAddressToOrderStatus ==
+                      AddAddressToOrderStatus.loading ||
+                  orderState.editAddressToOrderStatus ==
+                      EditAddressToOrderStatus.loading ||
+                  orderState.removeAddressToOrderStatus ==
+                      RemoveAddressToOrderStatus.loading ||
                   homeState.getCartOverviewStatus ==
                       GetCartOverviewStatus.loading)
               ? Shimmer.fromColors(
@@ -645,6 +662,16 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     if (homeState.getCartOverviewStatus ==
                         GetCartOverviewStatus.failure) {
                       homeBloc.add(GetCartOverviewEvent());
+                      return;
+                    }
+                    if ((orderState
+                        .listOfAddressInfoClassToSave.isNullOrEmpty)) {
+                      validateBox.value = true;
+                      animationController.forward();
+                      Future.delayed(
+                        Duration(seconds: 2),
+                        () => animationController.reset(),
+                      );
                       return;
                     }
                     if (check) {
@@ -1182,278 +1209,342 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           previous.getCountryBoundaryByIsoStatus !=
           current.getCountryBoundaryByIsoStatus,
       builder: (context, boundaryState) {
-        return Container(
-            // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
-            width: 1.sw,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: Color(0xffC4C2C2),
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
-                      child: Row(children: [
-                        SvgPicture.asset(
-                          AppAssets.deliveryAddressSvg,
-                          height: 16,
-                        ),
-                        SizedBox(
-                          width: 7.w,
-                        ),
-                        Text(
-                          "${LocaleKeys.shipping_delivery_address.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                              color: const Color(0xff1D1D1D),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                        SizedBox(
-                          width: 5.w,
-                        ),
-                        SvgPicture.asset(
-                          AppAssets.freeShippingSvg,
-                        )
-                      ])),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 35.w),
-                    child: Text(
-                      !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                          ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
-                          : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
-                      style: context.textTheme.bodyMedium?.ra.copyWith(
-                          color: const Color(0xff8D8D8D),
-                          letterSpacing: 0.18,
-                          fontSize: 12,
-                          height: 0.8),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 12.h,
-                  ),
-                  !state.listOfAddressInfoClassToSave.isNullOrEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: addressInfoWithContactInfoCart(
-                            cartChoosed: true,
-                            shippingDays: widget.maxShippingDay,
-                            isDelete: false,
-                            customerAddressesInfo: (state
-                                            .listOfAddressInfoClassToSave
-                                            ?.length ??
-                                        0) <
-                                    _indexTap + 1
-                                ? state.listOfAddressInfoClassToSave![0]
-                                : state
-                                    .listOfAddressInfoClassToSave![_indexTap],
-                            context: context,
-                            index: -1,
-                            indexTap: _indexTap,
-                            onTapDelete: () {},
-                            onTapEdit: () {
-                              ;
-                            },
-                          ),
-                        )
-                      : Container(
-                          height: 85.h,
+        return ValueListenableBuilder<bool>(
+            valueListenable: validateBox,
+            builder: (context, isValidateBox, _) {
+              return AnimatedBuilder(
+                  animation: animationController,
+                  builder: (context, child) => Transform.translate(
+                      offset: Offset(
+                          !(state.listOfAddressInfoClassToSave?.length == 0)
+                              ? 0
+                              : sin(3 * 2 * pi * animationController.value) * 5,
+                          0),
+                      child: Container(
+                          // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
                           width: 1.sw,
-                          padding: EdgeInsets.symmetric(horizontal: 0),
-                          margin: EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                              color: Color(0xffF8F8F8),
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(
-                                  color: !state.listOfAddressInfoClassToSave
-                                          .isNullOrEmpty
-                                      ? Color(0xff388CFF)
-                                      : Color(0xffF8F8F8))),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                height: 8.h,
-                              ),
-                              SvgPicture.asset(
-                                AppAssets.chatWithQuestionSvg,
-                              ),
-                              SizedBox(
-                                height: 18.h,
-                              ),
-                              Text(
-                                "${LocaleKeys.your_address_list_is_empty.tr()} ",
-                                style: context.textTheme.bodyMedium?.ra
-                                    .copyWith(
-                                        color: const Color(0xffC4C2C2),
-                                        letterSpacing: 0.18,
-                                        fontSize: 12,
-                                        height: 0.8),
-                              ),
-                              SizedBox(
-                                height: 8.h,
-                              ),
-                              Text(
-                                "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
-                                style: context.textTheme.bodyMedium?.ra
-                                    .copyWith(
-                                        color: const Color(0xffC4C2C2),
-                                        letterSpacing: 0.18,
-                                        fontSize: 12,
-                                        height: 0.8),
-                              )
-                            ],
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              color:
+                                  (state.listOfAddressInfoClassToSave?.length ==
+                                              0) &&
+                                          isValidateBox
+                                      ? Colors.red
+                                      : Color(0xffC4C2C2),
+                            ),
                           ),
-                        ),
-                  SizedBox(
-                    height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                        ? 10
-                        : 20.h,
-                  ),
-                  !state.listOfAddressInfoClassToSave.isNullOrEmpty
-                      ? InkWell(
-                          onTap: () {
-                            print(
-                                "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${boundaryState.getCountryBoundaryByIsoStatus}");
-                            if (boundaryState.getCountryBoundaryByIsoStatus !=
-                                GetCountryBoundaryByIsoStatus.success) {
-                              return;
-                            }
-                            panelController.open();
-                          },
-                          child: (boundaryState.getCountryBoundaryByIsoStatus ==
-                                  GetCountryBoundaryByIsoStatus.failure)
-                              ? TryAgainWidget(
-                                  tryAgain: () => homeBloc
-                                      .add(GetCoutryBoundaryByIsoEvent()),
-                                )
-                              : (boundaryState.getCountryBoundaryByIsoStatus ==
-                                      GetCountryBoundaryByIsoStatus.loading)
-                                  ? TrydosShimmerLoading(
-                                      width: 1.sw,
-                                      logoTextWidth: 15,
-                                      height: 16.w,
-                                      logoTextHeight: 15,
-                                    )
-                                  : Container(
-                                      height: 16.h,
-                                      width: 1.sw,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Center(
-                                            child: SvgPicture.asset(
-                                              AppAssets.deliveryAddressSvg,
-                                              width: 15,
-                                              height: 15,
-                                              color: Color(0xff8D8D8D),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 3,
-                                          ),
-                                          Text(
-                                            "${LocaleKeys.show_address_list.tr()} ",
-                                            style: context
-                                                .textTheme.bodyMedium?.mr
-                                                .copyWith(
-                                                    color:
-                                                        const Color(0xff8D8D8D),
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 12,
-                                                    height: 1),
-                                          ),
-                                        ],
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    margin: EdgeInsets.only(
+                                        top: 10, left: 10, right: 10),
+                                    child: Row(children: [
+                                      SvgPicture.asset(
+                                        AppAssets.deliveryAddressSvg,
+                                        height: 16,
                                       ),
-                                    ),
-                        )
-                      : InkWell(
-                          onTap: () {
-                            if (boundaryState.getCountryBoundaryByIsoStatus !=
-                                GetCountryBoundaryByIsoStatus.success) {
-                              return;
-                            }
-                            HelperFunctions.slidingNavigation(
-                                context, AddShippingAdress());
-                          },
-                          child: (boundaryState.getCountryBoundaryByIsoStatus ==
-                                  GetCountryBoundaryByIsoStatus.failure)
-                              ? TryAgainWidget(
-                                  tryAgain: () => homeBloc
-                                      .add(GetCoutryBoundaryByIsoEvent()),
-                                )
-                              : (boundaryState.getCountryBoundaryByIsoStatus ==
-                                      GetCountryBoundaryByIsoStatus.loading)
-                                  ? TrydosShimmerLoading(
-                                      width: 1.sw,
-                                      logoTextWidth: 15,
-                                      height: 40,
-                                      logoTextHeight: 15,
-                                    )
-                                  : Container(
-                                      height: 40,
-                                      width: 1.sw,
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 10),
-                                      decoration: BoxDecoration(
-                                          color: Color(0xffE8FFED),
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          border: Border.all(
-                                              color: Color(0xffC4C2C2))),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Center(
-                                            child: Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  AppAssets
-                                                      .addShippingAddressSvg,
-                                                ),
-                                                Positioned(
-                                                  top: 2,
-                                                  child: SvgPicture.asset(
-                                                    AppAssets
-                                                        .addShippingAddressWhiteSvg,
+                                      SizedBox(
+                                        width: 7.w,
+                                      ),
+                                      Text(
+                                        "${LocaleKeys.shipping_delivery_address.tr()} ",
+                                        style: context.textTheme.bodyMedium?.ra
+                                            .copyWith(
+                                                color: const Color(0xff1D1D1D),
+                                                letterSpacing: 0.18,
+                                                fontSize: 14,
+                                                height: 0.8),
+                                      ),
+                                      SizedBox(
+                                        width: 5.w,
+                                      ),
+                                      SvgPicture.asset(
+                                        AppAssets.freeShippingSvg,
+                                      )
+                                    ])),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                Container(
+                                  margin:
+                                      EdgeInsets.symmetric(horizontal: 35.w),
+                                  child: Text(
+                                    !(state.listOfAddressInfoClassToSave
+                                            .isNullOrEmpty)
+                                        ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
+                                        : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
+                                    style: context.textTheme.bodyMedium?.ra
+                                        .copyWith(
+                                            color: const Color(0xff8D8D8D),
+                                            letterSpacing: 0.18,
+                                            fontSize: 12,
+                                            height: 0.8),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 12.h,
+                                ),
+                                !state.listOfAddressInfoClassToSave
+                                        .isNullOrEmpty
+                                    ? Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: addressInfoWithContactInfoCart(
+                                          cartChoosed: true,
+                                          shippingDays: widget.maxShippingDay,
+                                          isDelete: false,
+                                          customerAddressesInfo: (state
+                                                          .listOfAddressInfoClassToSave
+                                                          ?.length ??
+                                                      0) <
+                                                  _indexTap + 1
+                                              ? state.listOfAddressInfoClassToSave![
+                                                  0]
+                                              : state.listOfAddressInfoClassToSave![
+                                                  _indexTap],
+                                          context: context,
+                                          index: -1,
+                                          indexTap: _indexTap,
+                                          onTapDelete: () {},
+                                          onTapEdit: () {
+                                            ;
+                                          },
+                                        ),
+                                      )
+                                    : Container(
+                                        height: 85.h,
+                                        width: 1.sw,
+                                        padding:
+                                            EdgeInsets.symmetric(horizontal: 0),
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        decoration: BoxDecoration(
+                                            color: Color(0xffF8F8F8),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            border: Border.all(
+                                                color: !state
+                                                        .listOfAddressInfoClassToSave
+                                                        .isNullOrEmpty
+                                                    ? Color(0xff388CFF)
+                                                    : Color(0xffF8F8F8))),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 8.h,
+                                            ),
+                                            SvgPicture.asset(
+                                              AppAssets.chatWithQuestionSvg,
+                                            ),
+                                            SizedBox(
+                                              height: 18.h,
+                                            ),
+                                            Text(
+                                              "${LocaleKeys.your_address_list_is_empty.tr()} ",
+                                              style: context
+                                                  .textTheme.bodyMedium?.ra
+                                                  .copyWith(
+                                                      color: const Color(
+                                                          0xffC4C2C2),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 12,
+                                                      height: 0.8),
+                                            ),
+                                            SizedBox(
+                                              height: 8.h,
+                                            ),
+                                            Text(
+                                              "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
+                                              style: context
+                                                  .textTheme.bodyMedium?.ra
+                                                  .copyWith(
+                                                      color: const Color(
+                                                          0xffC4C2C2),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 12,
+                                                      height: 0.8),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                SizedBox(
+                                  height: !(state.listOfAddressInfoClassToSave
+                                          .isNullOrEmpty)
+                                      ? 10
+                                      : 20.h,
+                                ),
+                                !state.listOfAddressInfoClassToSave
+                                        .isNullOrEmpty
+                                    ? InkWell(
+                                        onTap: () {
+                                          if (boundaryState
+                                                  .getCountryBoundaryByIsoStatus !=
+                                              GetCountryBoundaryByIsoStatus
+                                                  .success) {
+                                            return;
+                                          }
+                                          panelController.open();
+                                        },
+                                        child: (boundaryState
+                                                    .getCountryBoundaryByIsoStatus ==
+                                                GetCountryBoundaryByIsoStatus
+                                                    .failure)
+                                            ? TryAgainWidget(
+                                                tryAgain: () => homeBloc.add(
+                                                    GetCoutryBoundaryByIsoEvent()),
+                                              )
+                                            : (boundaryState
+                                                        .getCountryBoundaryByIsoStatus ==
+                                                    GetCountryBoundaryByIsoStatus
+                                                        .loading)
+                                                ? TrydosShimmerLoading(
+                                                    width: 1.sw,
+                                                    logoTextWidth: 15,
+                                                    height: 16.w,
+                                                    logoTextHeight: 15,
+                                                  )
+                                                : Container(
+                                                    height: 16.h,
+                                                    width: 1.sw,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Center(
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            AppAssets
+                                                                .deliveryAddressSvg,
+                                                            width: 15,
+                                                            height: 15,
+                                                            color: Color(
+                                                                0xff8D8D8D),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 3,
+                                                        ),
+                                                        Text(
+                                                          "${LocaleKeys.show_address_list.tr()} ",
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.mr
+                                                              .copyWith(
+                                                                  color: const Color(
+                                                                      0xff8D8D8D),
+                                                                  letterSpacing:
+                                                                      0.18,
+                                                                  fontSize: 12,
+                                                                  height: 1),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 3,
-                                          ),
-                                          Text(
-                                            "${LocaleKeys.add_shipping_address.tr()} ",
-                                            style: context
-                                                .textTheme.bodyMedium?.mr
-                                                .copyWith(
-                                                    color:
-                                                        const Color(0xff1D1D1D),
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 12,
-                                                    height: 1.33),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                        )
-                ],
-              ),
-            ));
+                                      )
+                                    : InkWell(
+                                        onTap: () {
+                                          if (boundaryState
+                                                  .getCountryBoundaryByIsoStatus !=
+                                              GetCountryBoundaryByIsoStatus
+                                                  .success) {
+                                            return;
+                                          }
+                                          HelperFunctions.slidingNavigation(
+                                              context, AddShippingAdress());
+                                        },
+                                        child: (boundaryState
+                                                    .getCountryBoundaryByIsoStatus ==
+                                                GetCountryBoundaryByIsoStatus
+                                                    .failure)
+                                            ? TryAgainWidget(
+                                                tryAgain: () => homeBloc.add(
+                                                    GetCoutryBoundaryByIsoEvent()),
+                                              )
+                                            : (boundaryState
+                                                        .getCountryBoundaryByIsoStatus ==
+                                                    GetCountryBoundaryByIsoStatus
+                                                        .loading)
+                                                ? TrydosShimmerLoading(
+                                                    width: 1.sw,
+                                                    logoTextWidth: 15,
+                                                    height: 40,
+                                                    logoTextHeight: 15,
+                                                  )
+                                                : Container(
+                                                    height: 40,
+                                                    width: 1.sw,
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 10),
+                                                    decoration: BoxDecoration(
+                                                        color:
+                                                            Color(0xffE8FFED),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                        border: Border.all(
+                                                            color: Color(
+                                                                0xffC4C2C2))),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Center(
+                                                          child: Stack(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            children: [
+                                                              SvgPicture.asset(
+                                                                AppAssets
+                                                                    .addShippingAddressSvg,
+                                                              ),
+                                                              Positioned(
+                                                                top: 2,
+                                                                child:
+                                                                    SvgPicture
+                                                                        .asset(
+                                                                  AppAssets
+                                                                      .addShippingAddressWhiteSvg,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 3,
+                                                        ),
+                                                        Text(
+                                                          "${LocaleKeys.add_shipping_address.tr()} ",
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.mr
+                                                              .copyWith(
+                                                                  color: const Color(
+                                                                      0xff1D1D1D),
+                                                                  letterSpacing:
+                                                                      0.18,
+                                                                  fontSize: 12,
+                                                                  height: 1.33),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                      )
+                              ],
+                            ),
+                          ))));
+            });
       },
     );
   }

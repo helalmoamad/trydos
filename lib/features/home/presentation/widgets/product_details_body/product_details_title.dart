@@ -73,7 +73,7 @@ class ProductDetailsTitle extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   brand != null
                       ? brand!.icon != null
@@ -85,7 +85,94 @@ class ProductDetailsTitle extends StatelessWidget {
                               : SizedBox.shrink()
                           : SizedBox.shrink()
                       : SizedBox.shrink(),
-                  state.getAndAddCountViewOfProductStatus[productId] == null ||
+                  SizedBox(
+                    width: 10,
+                  ),
+                  SvgPicture.asset(AppAssets.productVerifySvg),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Container(
+                width: 1.sw - 20,
+                height: 20.h,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    MyTextWidget(
+                      productName,
+                      style: context.textTheme.bodyMedium?.mq.copyWith(
+                          color: Color(0xff5D5C5D),
+                          height: 1.26,
+                          fontSize: 13.sp),
+                    ),
+                    /*  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: MyCachedNetworkImage(
+                        ordinalHeight: orginalHeight,
+                        ordinalwidth: orginalWidth,
+                        imageFit: BoxFit.cover,
+                        imageUrl: thumbnail,
+                        height: 15,
+                        width: 15,
+                        circleDimensions: 7,
+                        logoTextHeight: 7,
+                        logoTextWidth: 12,
+                      ),
+                    ),*/
+                    /*   Container(
+                      width: 1,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: Color(0xff8D8D8D),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),*/
+                    colorName == ""
+                        ? SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: MyTextWidget(
+                              " | ${colorName}",
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                  color: Color(0xff404E68),
+                                  height: 1.26,
+                                  fontSize: 13.sp),
+                            ),
+                          )
+                  ],
+                ),
+              ),
+            ),
+            /* (state.cachedProductWithoutRelatedProductsModel[productId]?.product
+                            ?.labelNames?.length ??
+                        0) ==
+                    0
+                ? SizedBox(
+                    height: 10,
+                  )
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: RotatingTextWidget(
+                      texts: state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  productId]
+                              ?.product
+                              ?.labelNames ??
+                          [],
+                      rotationDuration: Duration(seconds: 5),
+                      textStyle: context.textTheme.titleMedium?.rr.copyWith(
+                        fontSize: 9.sp,
+                        color: Color(0xff388CFF),
+                        height: 0,
+                      ),
+                    )),*/
+
+            /*state.getAndAddCountViewOfProductStatus[productId] == null ||
                           state.cachedProductWithoutRelatedProductsModel[
                                   productId] ==
                               null
@@ -152,87 +239,7 @@ class ProductDetailsTitle extends StatelessWidget {
                                           height: 1.26),
                                 )
                               ],
-                            )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Container(
-                width: 1.sw - 20,
-                height: 40.h,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    MyTextWidget(
-                      productName,
-                      style: context.textTheme.bodyMedium?.mq.copyWith(
-                          color: Color(0xff5D5C5D),
-                          height: 1.26,
-                          fontSize: 15.sp),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: MyCachedNetworkImage(
-                        ordinalHeight: orginalHeight,
-                        ordinalwidth: orginalWidth,
-                        imageFit: BoxFit.cover,
-                        imageUrl: thumbnail,
-                        height: 15,
-                        width: 15,
-                        circleDimensions: 7,
-                        logoTextHeight: 7,
-                        logoTextWidth: 12,
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Color(0xff8D8D8D),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: MyTextWidget(
-                        colorName,
-                        style: context.textTheme.bodyMedium?.rq.copyWith(
-                            color: Color(0xff404E68),
-                            height: 1.26,
-                            fontSize: 15.sp),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            (state.cachedProductWithoutRelatedProductsModel[productId]?.product
-                            ?.labelNames?.length ??
-                        0) ==
-                    0
-                ? SizedBox(
-                    height: 10,
-                  )
-                : Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: RotatingTextWidget(
-                      texts: state
-                              .cachedProductWithoutRelatedProductsModel[
-                                  productId]
-                              ?.product
-                              ?.labelNames ??
-                          [],
-                      rotationDuration: Duration(seconds: 5),
-                      textStyle: context.textTheme.titleMedium?.rr.copyWith(
-                        fontSize: 9.sp,
-                        color: Color(0xff388CFF),
-                        height: 0,
-                      ),
-                    )),
+                            )*/
           ],
         );
       },

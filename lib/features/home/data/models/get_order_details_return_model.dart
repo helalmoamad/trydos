@@ -65,13 +65,57 @@ class GetOrderReturntDetailsModel {
 }
 
 class Data {
+  final String? orderGroupId;
+  final int? totalReturnRequests;
+  final List<ReturnRequestsDatum>? returnRequestsData;
+
+  Data({
+    this.orderGroupId,
+    this.totalReturnRequests,
+    this.returnRequestsData,
+  });
+
+  Data copyWith({
+    String? orderGroupId,
+    int? totalReturnRequests,
+    List<ReturnRequestsDatum>? returnRequestsData,
+  }) =>
+      Data(
+        orderGroupId: orderGroupId ?? this.orderGroupId,
+        totalReturnRequests: totalReturnRequests ?? this.totalReturnRequests,
+        returnRequestsData: returnRequestsData ?? this.returnRequestsData,
+      );
+
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+        orderGroupId: json["order_group_id"],
+        totalReturnRequests: json["total_return_requests"],
+        returnRequestsData: json["return_requests_data"] == null
+            ? []
+            : List<ReturnRequestsDatum>.from(json["return_requests_data"]!
+                .map((x) => ReturnRequestsDatum.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "order_group_id": orderGroupId,
+        "total_return_requests": totalReturnRequests,
+        "return_requests_data": returnRequestsData == null
+            ? []
+            : List<dynamic>.from(returnRequestsData!.map((x) => x.toJson())),
+      };
+}
+
+class ReturnRequestsDatum {
+  final int? orderId;
+  final int? returnRequestId;
   final double? totalReturnableAmount;
   final String? descriptionReturnableAmountLessThan0;
   final dynamic returnRequestDestinationId;
-  final String? status;
-  final List<OrderDetail>? orderDetails;
+  final Status? status;
+  final List<ReturnOrderDetail>? orderDetails;
 
-  Data({
+  ReturnRequestsDatum({
+    this.orderId,
+    this.returnRequestId,
     this.totalReturnableAmount,
     this.descriptionReturnableAmountLessThan0,
     this.returnRequestDestinationId,
@@ -79,14 +123,18 @@ class Data {
     this.orderDetails,
   });
 
-  Data copyWith({
+  ReturnRequestsDatum copyWith({
+    int? orderId,
+    int? returnRequestId,
     double? totalReturnableAmount,
     String? descriptionReturnableAmountLessThan0,
     dynamic returnRequestDestinationId,
-    String? status,
-    List<OrderDetail>? orderDetails,
+    Status? status,
+    List<ReturnOrderDetail>? orderDetails,
   }) =>
-      Data(
+      ReturnRequestsDatum(
+        orderId: orderId ?? this.orderId,
+        returnRequestId: returnRequestId ?? this.returnRequestId,
         totalReturnableAmount:
             totalReturnableAmount ?? this.totalReturnableAmount,
         descriptionReturnableAmountLessThan0:
@@ -98,32 +146,37 @@ class Data {
         orderDetails: orderDetails ?? this.orderDetails,
       );
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory ReturnRequestsDatum.fromJson(Map<String, dynamic> json) =>
+      ReturnRequestsDatum(
+        orderId: json["order_id"],
+        returnRequestId: json["return_request_id"],
         totalReturnableAmount:
             double.tryParse(json["total_returnable_amount"].toString()),
         descriptionReturnableAmountLessThan0:
             json["description_returnable_amount_less_than_0"],
         returnRequestDestinationId: json["return_request_destination_id"],
-        status: json["status"],
+        status: json["status"] == null ? null : Status.fromJson(json["status"]),
         orderDetails: json["order_details"] == null
             ? []
-            : List<OrderDetail>.from(
-                json["order_details"]!.map((x) => OrderDetail.fromJson(x))),
+            : List<ReturnOrderDetail>.from(json["order_details"]!
+                .map((x) => ReturnOrderDetail.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "total_returnable_amount": totalReturnableAmount ?? 0.toDouble(),
+        "order_id": orderId,
+        "return_request_id": returnRequestId,
+        "total_returnable_amount": totalReturnableAmount?.toDouble(),
         "description_returnable_amount_less_than_0":
             descriptionReturnableAmountLessThan0,
         "return_request_destination_id": returnRequestDestinationId,
-        "status": status,
+        "status": status?.toJson(),
         "order_details": orderDetails == null
             ? []
             : List<dynamic>.from(orderDetails!.map((x) => x.toJson())),
       };
 }
 
-class OrderDetail {
+class ReturnOrderDetail {
   final int? detailId;
   final int? productId;
   final int? returnRequestId;
@@ -138,11 +191,11 @@ class OrderDetail {
   final String? returnRequestProductQuantity;
   final int? returnRequestProductReasonId;
   final dynamic returnRequestProductDetails;
-  final String? returnRequestProductStatus;
+  final Status? returnRequestProductStatus;
   final List<String>? imagesUrl;
   final List<String>? img;
 
-  OrderDetail({
+  ReturnOrderDetail({
     this.detailId,
     this.productId,
     this.returnRequestId,
@@ -162,7 +215,7 @@ class OrderDetail {
     this.img,
   });
 
-  OrderDetail copyWith({
+  ReturnOrderDetail copyWith({
     int? detailId,
     int? productId,
     int? returnRequestId,
@@ -177,11 +230,11 @@ class OrderDetail {
     String? returnRequestProductQuantity,
     int? returnRequestProductReasonId,
     dynamic returnRequestProductDetails,
-    String? returnRequestProductStatus,
+    Status? returnRequestProductStatus,
     List<String>? imagesUrl,
     List<String>? img,
   }) =>
-      OrderDetail(
+      ReturnOrderDetail(
         detailId: detailId ?? this.detailId,
         productId: productId ?? this.productId,
         returnRequestId: returnRequestId ?? this.returnRequestId,
@@ -206,7 +259,8 @@ class OrderDetail {
         img: img ?? this.img,
       );
 
-  factory OrderDetail.fromJson(Map<String, dynamic> json) => OrderDetail(
+  factory ReturnOrderDetail.fromJson(Map<String, dynamic> json) =>
+      ReturnOrderDetail(
         detailId: json["detail_id"],
         productId: json["product_id"],
         returnRequestId: json["return_request_id"],
@@ -214,14 +268,17 @@ class OrderDetail {
         image: json["image"],
         name: json["name"],
         variant: json["variant"],
-        productPrice: double.tryParse(json["product_price"].toString()),
+        productPrice: json["product_price"]?.toDouble(),
         subtotal: double.tryParse(json["subtotal"].toString()),
         alreadyReturn: json["already_return"],
         returnRequestProductId: json["return_request_product_id"],
         returnRequestProductQuantity: json["return_request_product_quantity"],
         returnRequestProductReasonId: json["return_request_product_reason_id"],
         returnRequestProductDetails: json["return_request_product_details"],
-        returnRequestProductStatus: json["return_request_product_status"],
+        returnRequestProductStatus:
+            json["return_request_product_status"] == null
+                ? null
+                : Status.fromJson(json["return_request_product_status"]),
         imagesUrl: json["images_url"] == null
             ? []
             : List<String>.from(json["images_url"]!.map((x) => x)),
@@ -245,10 +302,39 @@ class OrderDetail {
         "return_request_product_quantity": returnRequestProductQuantity,
         "return_request_product_reason_id": returnRequestProductReasonId,
         "return_request_product_details": returnRequestProductDetails,
-        "return_request_product_status": returnRequestProductStatus,
+        "return_request_product_status": returnRequestProductStatus?.toJson(),
         "images_url": imagesUrl == null
             ? []
-            : List<String>.from(imagesUrl!.map((x) => x)),
-        "img": img == null ? [] : List<String>.from(img!.map((x) => x)),
+            : List<dynamic>.from(imagesUrl!.map((x) => x)),
+        "img": img == null ? [] : List<dynamic>.from(img!.map((x) => x)),
+      };
+}
+
+class Status {
+  final String? name;
+  final String? value;
+
+  Status({
+    this.name,
+    this.value,
+  });
+
+  Status copyWith({
+    String? name,
+    String? value,
+  }) =>
+      Status(
+        name: name ?? this.name,
+        value: value ?? this.value,
+      );
+
+  factory Status.fromJson(Map<String, dynamic> json) => Status(
+        name: json["name"],
+        value: json["value"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "value": value,
       };
 }

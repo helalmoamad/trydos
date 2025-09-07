@@ -218,6 +218,7 @@ class HomeState extends Equatable {
     this.currentIndexForUpdateCart,
     this.getCountryBoundaryByIsoStatus,
     this.userInfo,
+    this.finishLoadingAfterChangedVariationWhenQtyZero,
     this.listOfErrorSendedToMobileErrorLog = const [],
     this.cachedProductWithoutRelatedProductsModel = const {},
     this.getFirebaseSettingForNotificationStatus,
@@ -331,7 +332,7 @@ class HomeState extends Equatable {
   final List<int>? sizesQuantitiesForEachColor;
   final List<int>? colorsQuantitiesForEachProduct;
   final List<String> isVariantRequestNotification;
-
+  final bool? finishLoadingAfterChangedVariationWhenQtyZero;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
@@ -378,6 +379,7 @@ class HomeState extends Equatable {
         cartIdsHurryUPTimerStarted,
         currentSlugToRefreshFromNotification,
         currentStoryInEachCollection,
+        finishLoadingAfterChangedVariationWhenQtyZero,
         addCommentStatus,
         changeSizesForEveryProduct,
         hideItemInOldCartStatus,
@@ -469,7 +471,8 @@ class HomeState extends Equatable {
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
       final List<String>? productIdToSaveRedeemTimer,
-      final bool? isChangedvariationWhenQtyZero,
+      final bool? isChangedVariationWhenQtyZero,
+      final bool? finishLoadingAfterChangedVariationWhenQtyZero,
       final List<CollectionStoryModel>? storiesCollections,
       int? currentPage,
       SelectedVideoStatus? selectedVideoStatus,
@@ -634,7 +637,7 @@ class HomeState extends Equatable {
           firebaseSettingForNotificationModel ??
               this.firebaseSettingForNotificationModel,
       isChangedvariationWhenQtyZero:
-          isChangedvariationWhenQtyZero ?? this.isChangedvariationWhenQtyZero,
+          isChangedVariationWhenQtyZero ?? this.isChangedvariationWhenQtyZero,
 
       changeSizesForEveryProduct:
           changeSizesForEveryProduct ?? this.changeSizesForEveryProduct,
@@ -654,7 +657,9 @@ class HomeState extends Equatable {
           this.checkAvailabilityProductCartModel,
       checkAvailabilityProductCartStatus: checkAvailabilityProductCartStatus ??
           this.checkAvailabilityProductCartStatus,
-
+      finishLoadingAfterChangedVariationWhenQtyZero:
+          finishLoadingAfterChangedVariationWhenQtyZero ??
+              this.finishLoadingAfterChangedVariationWhenQtyZero,
       addOrRemoveLikeOfProductStatus:
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
       convertItemFromcartToOldCartStatus: convertItemFromcartToOldCartStatus ??

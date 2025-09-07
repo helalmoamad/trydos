@@ -158,6 +158,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
       ...syncColorImageList,
     ];
     images = syncColorImageList.map((e) => e.images![0].filePath!).toList();
+
     orginalHeight = syncColorImageList
         .map((e) => double.tryParse(e.images![0].originalHeight!) ?? 0)
         .toList();
@@ -236,7 +237,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     requestToNotifyMeFormFirstSize = true;
                   }
 
-                  if (sizesForEachProduct.length == 0) {
+                  if (sizesForEachProduct.length == 0 &&
+                      colorsQuantityForEachProduct.length > 0) {
                     if (colorsQuantityForEachProduct[widget.currentColor] ==
                             0 &&
                         !widget.collectedAfterOrdering) {
@@ -268,6 +270,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
           if (state.isChangedvariationWhenQtyZero &&
               (widget.fromListingPage ?? false)) {
             homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                finishLoadingAfterChangedVariationWhenQtyZero: true,
                 isChangedVariationWhenQtyZero: false));
             gallery3dControllerForCircles = syncColorImageList.isNullOrEmpty ||
                     syncColorImageList.length < 3
@@ -294,6 +297,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     widget.productItem.slug.toString()] ??
                 0;
           }
+          print(
+              "DDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE${state.isChangedvariationWhenQtyZero}${widget.currentSelectedColorAfterChangeVariant}${!(widget.fromListingPage ?? false)}");
 
           if (state.isChangedvariationWhenQtyZero &&
               widget.currentSelectedColorAfterChangeVariant != -1 &&

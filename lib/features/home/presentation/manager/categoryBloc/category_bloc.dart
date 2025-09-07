@@ -494,6 +494,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           () => GetIt.I<AuthBloc>().add(GetCustomerInfoEvent()));
     }
     GetIt.I<HomeBloc>().add(GetStartingSettingsEvent());
+    GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
     if (GetIt.I<ChatBloc>().state.firstRequestForGetChats) {
       if (prefsRepository.chatToken != null) {
         GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));

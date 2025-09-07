@@ -31,6 +31,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -857,7 +858,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               Duration(milliseconds: 300),
               () => Navigator.of(context).push(PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                      ProductDetailsPage(
+                      ProductDetailsPageNew(
                         productSlugForOpeningChatDirectly:
                             uriWithoutFilter.split("/").toList().last,
                         fromNotification: false,

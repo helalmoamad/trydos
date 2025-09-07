@@ -565,9 +565,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                 )
                                               : GestureDetector(
                                                   onTap: () {
-                                                    print(
-                                                        "FFFFdddddddFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-
                                                     if (displayMode.value ==
                                                         1) {
                                                       displayMode.value = 2;

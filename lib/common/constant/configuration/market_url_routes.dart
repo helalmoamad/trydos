@@ -78,7 +78,7 @@ abstract class MarketEndPoints {
   static final updateReturnRequestProductEP =
       "order/return_request_products/update".customerScope();
   static final cancelReturnRequestEP =
-      "order/return_requests/cancel".customerScope();
+      "order/return_requests/bulk_cancel".customerScope();
   static final storeReturnRequestEP =
       "order/return_requests/store".customerScope();
 
@@ -173,7 +173,7 @@ abstract class MarketEndPoints {
       "order/return_requests/order_details?return_request_id=$returnRequestId"
           .customerScope();
   static final orderReturnDetailsEP =
-      'order/return_requests/order_details'.customerScope();
+      'order/return_requests/order_details_by_group'.customerScope();
   static String getAuthProductDetailsEP(String productSlug) =>
       'authenticated_details/$productSlug'.productScope();
 }

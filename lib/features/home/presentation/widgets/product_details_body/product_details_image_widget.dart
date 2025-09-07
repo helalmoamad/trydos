@@ -31,25 +31,29 @@ class ProductDetailsImageWidget extends StatelessWidget {
       this.imageHeight,
       this.isRedeem = false,
       this.productId,
-      this.visibleRedeem,
       this.flashDealEndDate,
       this.lableNames,
       this.orginalHeight,
-      this.index = 0,
+      this.index = -1,
       this.blurRadius = 10,
       this.imageWidth,
+      this.visibleRedeemNotifier,
       this.orginalWidth,
+      this.isFlashDealEnded,
+      this.visibleFlashDeal,
       this.height,
-      this.productNotAvailableNotifier,
+      this.visibleRedeem,
       this.radius});
 
   final double? width;
 
   final List<String>? lableNames;
-  final ValueNotifier<bool>? visibleRedeem;
-  final ValueNotifier<String?>? productNotAvailableNotifier;
+
   final String? flashDealEndDate;
   final bool? isRedeem;
+
+  final bool? isFlashDealEnded;
+  final bool? visibleRedeem;
   final int? productId;
   final int index;
   final double? height;
@@ -61,15 +65,15 @@ class ProductDetailsImageWidget extends StatelessWidget {
   final double? radius;
   final String? imageUrl;
   final BoxFit? imageFit;
+  final ValueNotifier<bool>? visibleRedeemNotifier;
   final Color? borderColor;
   final BorderRadiusGeometry? borderRadius;
   final bool withBackGroundShadow;
-
+  final ValueNotifier<bool>? visibleFlashDeal;
   final bool withInnerShadow;
 
   @override
   Widget build(BuildContext context) {
-    final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
     FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
@@ -82,7 +86,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    print(imageUrl);
+
     return InteractiveViewer(
       panEnabled: true,
       minScale: 0.1,
@@ -93,8 +97,21 @@ class ProductDetailsImageWidget extends StatelessWidget {
             height: (height ?? 464),
             width: (width ?? 320),
             decoration: BoxDecoration(
-              borderRadius:
-                  borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+              borderRadius: index == 0
+                  ? BorderRadius.only(
+                      bottomRight: LanguageService.languageCode != "ar"
+                          ? Radius.circular(0)
+                          : Radius.circular(15),
+                      topRight: LanguageService.languageCode != "ar"
+                          ? Radius.circular(0)
+                          : Radius.circular(15),
+                      topLeft: LanguageService.languageCode == "ar"
+                          ? Radius.circular(0)
+                          : Radius.circular(15),
+                      bottomLeft: LanguageService.languageCode == "ar"
+                          ? Radius.circular(0)
+                          : Radius.circular(15))
+                  : borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
               border: Border.all(
                   width: 0.5, color: borderColor ?? context.colorScheme.white),
               boxShadow: withBackGroundShadow
@@ -108,8 +125,21 @@ class ProductDetailsImageWidget extends StatelessWidget {
                   : null,
             ),
             child: ClipRRect(
-                borderRadius:
-                    borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+                borderRadius: index == 0
+                    ? BorderRadius.only(
+                        bottomRight: LanguageService.languageCode != "ar"
+                            ? Radius.circular(0)
+                            : Radius.circular(15),
+                        topRight: LanguageService.languageCode != "ar"
+                            ? Radius.circular(0)
+                            : Radius.circular(15),
+                        topLeft: LanguageService.languageCode == "ar"
+                            ? Radius.circular(0)
+                            : Radius.circular(15),
+                        bottomLeft: LanguageService.languageCode == "ar"
+                            ? Radius.circular(0)
+                            : Radius.circular(15))
+                    : borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
                 child: (imageUrl?.contains('assets') ?? true)
                     ? Image.asset('assets/images/address2.png',
                         fit: imageFit ?? BoxFit.cover)
@@ -117,6 +147,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                         ordinalHeight: orginalHeight,
                         ordinalwidth: orginalWidth,
                         imageUrl: imageUrl!,
+                        radius: index != -1 ? 0 : 12,
                         imageWidth: imageWidth,
                         imageHeight: imageHeight,
                         height: height ?? 464,
@@ -141,291 +172,204 @@ class ProductDetailsImageWidget extends StatelessWidget {
                   : null,
             ),
           ),
-          (flashDealEndDate ?? "") == ""
+          index != 0
               ? SizedBox.shrink()
-              : ValueListenableBuilder<String?>(
-                  valueListenable:
-                      productNotAvailableNotifier ?? ValueNotifier(null),
-                  builder: (context, _productNotAvailableNotifier, _) {
-                    return _productNotAvailableNotifier != null
-                        ? SizedBox.shrink()
-                        : ValueListenableBuilder<bool>(
-                            valueListenable: visibleFlashDeal,
-                            builder: (context, _visibleFlashDeal, _) {
-                              bool isFlashDealEnded = false;
-                              DateTime endDate;
-                              Duration _duration = Duration();
-                              final now = DateTime.now();
-                              try {
-                                endDate = DateFormat('MM/dd/yyyy', 'en_US')
-                                    .parse(flashDealEndDate ?? "");
-                                endDate = endDate.add(Duration(days: 1));
-                              } catch (e) {
-                                endDate = DateTime.now();
-                                print('Error parsing date: $e');
-                              }
-                              _duration = endDate.difference(now);
-                              if (_duration.isNegative ||
-                                  _duration.inSeconds < 1) {
-                                isFlashDealEnded = true;
-                              }
-
-                              return !isFlashDealEnded
-                                  ? Positioned(
-                                      left: 7,
-                                      right: 7,
-                                      top: 0,
-                                      child: Transform(
-                                        transform: Matrix4.skewX(
-                                            -0.4), // انحراف بسيط للشكل
-                                        child: Container(
-                                          width: 150,
-                                          margin: EdgeInsets.only(
-                                              left: LanguageService
-                                                          .languageCode !=
-                                                      "ar"
-                                                  ? 1
-                                                  : 120.w,
-                                              right: LanguageService
-                                                          .languageCode ==
-                                                      "ar"
-                                                  ? 1
-                                                  : 120.w),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Color(0xffFF6200)),
-                                            color: Color(0xffFFF3E8),
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                          ),
-                                          height: 20,
-                                          child: Transform(
-                                              transform: Matrix4.skewX(
-                                                  0.4), // انحراف بسيط للشكل
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  SvgPicture.asset(
-                                                    AppAssets.flashDealSvg,
-                                                    height: 12,
-                                                    color: Color(0xffFF6200),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    "${LocaleKeys.flash_deal.tr()}",
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: context.textTheme
-                                                        .bodyMedium?.br
-                                                        .copyWith(
-                                                      color: Color(0xffFF6200),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 9,
-                                                      height: 1.3,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  FlashDealCountdownTimerWidget(
-                                                    visibleFlashDeal:
-                                                        visibleFlashDeal,
-                                                    endDateString:
-                                                        flashDealEndDate ?? "",
-                                                  )
-                                                ],
-                                              )),
-                                        ),
-                                      ))
-                                  : SizedBox.shrink();
-                            });
-                  }),
-          visibleRedeem != null && index == 0
-              ? ValueListenableBuilder<String?>(
-                  valueListenable:
-                      productNotAvailableNotifier ?? ValueNotifier(null),
-                  builder: (context, _productNotAvailableNotifier, _) {
-                    return _productNotAvailableNotifier != null
-                        ? SizedBox.shrink()
-                        : ValueListenableBuilder<bool>(
-                            valueListenable: visibleRedeem!,
-                            builder: (context, _visibleRedeem, _) {
-                              return (GetIt.I<PrefsRepository>()
-                                                  .getRedeemDateForProduct(
-                                                      productId.toString())
-                                                  ?.isAfter(DateTime.now().add(
-                                                      Duration(seconds: 1))) ==
-                                              true &&
-                                          isRedeem == true) ||
-                                      (GetIt.I<PrefsRepository>()
-                                                  .getRedeemSecondRemainingForProduct(
-                                                      productId.toString()) ??
-                                              0) >
-                                          0
-                                  ? Positioned(
-                                      left: 7,
-                                      right: 7,
-                                      top: 0,
-                                      child: Transform(
-                                        transform: Matrix4.skewX(
-                                            -0.4), // انحراف بسيط للشكل
-                                        child: Container(
-                                          width: 150,
-                                          margin: EdgeInsets.only(
-                                              left: LanguageService
-                                                          .languageCode !=
-                                                      "ar"
-                                                  ? 1
-                                                  : 120.w,
-                                              right: LanguageService
-                                                          .languageCode ==
-                                                      "ar"
-                                                  ? 1
-                                                  : 120.w),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Color(0xffFF6200)),
-                                            color: Color(0xffFFF3E8),
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                          ),
-                                          height: 20,
-                                          child: Transform(
-                                              transform: Matrix4.skewX(
-                                                  0.4), // انحراف بسيط للشكل
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 8,
-                                                  ),
-                                                  SvgPicture.asset(
-                                                      AppAssets.redeemClockSvg),
-                                                  SizedBox(
-                                                    width: 3,
-                                                  ),
-                                                  Text(LocaleKeys.luck.tr(),
-                                                      style: context.textTheme
-                                                          .bodyMedium?.br
-                                                          .copyWith(
-                                                        fontSize: 9,
-                                                        color: const Color(
-                                                            0xffFF6200),
-                                                      )),
-                                                  SizedBox(
-                                                    width: 1,
-                                                  ),
-                                                  Text(
-                                                      " ${LocaleKeys.add_to_bag_within.tr()} ",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.mr
-                                                          .copyWith(
-                                                        fontSize: 9,
-                                                        color: const Color(
-                                                            0xffFF6200),
-                                                      )),
-                                                  SecondsCountdown(
-                                                    denyStopTimer: true,
-                                                    productId:
-                                                        productId.toString(),
-                                                    //   finishRedeem: widget.finishRedeem,
-                                                    visibleRedeem:
-                                                        visibleRedeem!,
-                                                    endTime: GetIt.I<
-                                                                PrefsRepository>()
-                                                            .getRedeemDateForProduct(
-                                                                productId
-                                                                    .toString()) ??
-                                                        DateTime.now(),
-                                                  ),
-                                                  Text(
-                                                      " ${LocaleKeys.seconds.tr()} ",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.br
-                                                          .copyWith(
-                                                        fontSize: 9,
-                                                        color: const Color(
-                                                            0xffFF6200),
-                                                      )),
-                                                ],
-                                              )),
-                                        ),
-                                      ))
-                                  : SizedBox.shrink();
-                            });
-                  })
-              : SizedBox.shrink()
-          /*  Positioned(
-              left: LanguageService.languageCode != "ar" ? null : 5,
-              right: LanguageService.languageCode == "ar" ? null : 5,
-              top: (flashDealTime == null || flashDealTime == "") ? 10 : 55,
-              child: Column(
-                children: [
-                  ...List.generate(
-                      (lableNames?.length ?? 0) > 3
-                          ? 3
-                          : (lableNames?.length ?? 0),
-                      (index) => Container(
-                            margin: EdgeInsets.symmetric(vertical: 2),
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(horizontal: 5),
-                            height: 30,
-                            constraints: BoxConstraints(maxWidth: 160),
-                            decoration: BoxDecoration(
-                              gradient: ((index % 2) == 0)
-                                  ? LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                          Color.fromARGB(255, 255, 119, 40),
-                                          Color.fromARGB(162, 255, 119, 40)
-                                        ])
-                                  : LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                          Color.fromARGB(255, 79, 40, 255),
-                                          Color.fromARGB(106, 79, 40, 255)
-                                        ]),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SvgPicture.asset(
-                                  AppAssets.lableSvg,
-                                  height: 16,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 2,
-                                ),
-                                Text(
-                                  lableNames?[index] ?? "",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      context.textTheme.bodyMedium?.rr.copyWith(
-                                    color: Colors.white,
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
+              : Positioned(
+                  bottom: 0,
+                  right: LanguageService.languageCode != "ar" ? null : 0,
+                  left: LanguageService.languageCode == "ar" ? null : 0,
+                  child: Stack(alignment: Alignment.center, children: [
+                    Container(
+                        width: 25,
+                        height: 25,
+                        decoration: BoxDecoration(
+                            color: Color(0xff513AAF),
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(6),
+                                bottomRight: Radius.circular(
+                                    LanguageService.languageCode == "ar"
+                                        ? 15
+                                        : 6),
+                                bottomLeft: Radius.circular(
+                                    LanguageService.languageCode != "ar"
+                                        ? 15
+                                        : 6),
+                                topRight: Radius.circular(6)))),
+                    SvgPicture.asset(
+                      AppAssets.malekanSvg,
+                    ),
+                  ])),
+          (flashDealEndDate ?? "") == "" || index != 0
+              ? SizedBox.shrink()
+              : !(isFlashDealEnded ?? true)
+                  ? Positioned(
+                      left: 4,
+                      right: 4,
+                      top: 0,
+                      child: Transform(
+                        transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
+                        child: Container(
+                          margin: EdgeInsets.only(
+                              left: LanguageService.languageCode != "ar"
+                                  ? 1
+                                  : 170.w,
+                              right: LanguageService.languageCode == "ar"
+                                  ? 1
+                                  : 170.w),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Color(0xffFF6200)),
+                            color: Color(0xffFFF3E8),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          height: 20,
+                          child: Transform(
+                              transform:
+                                  Matrix4.skewX(0.4), // انحراف بسيط للشكل
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 5,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ))
-                ],
-              )),*/
+                                  SvgPicture.asset(
+                                    AppAssets.flashDealSvg,
+                                    height: 12,
+                                    color: Color(0xffFF6200),
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Text(
+                                    "${LocaleKeys.flash_deal.tr()}",
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context.textTheme.bodyMedium?.br
+                                        .copyWith(
+                                      color: Color(0xffFF6200),
+                                      letterSpacing: 0.18,
+                                      fontSize: 9,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  FlashDealCountdownTimerWidget(
+                                    visibleFlashDeal: visibleFlashDeal,
+                                    endDateString: flashDealEndDate ?? "",
+                                  )
+                                ],
+                              )),
+                        ),
+                      ))
+                  : SizedBox.shrink(),
+          visibleRedeem == true && index == 0
+              ? Positioned(
+                  left: 4,
+                  right: 4,
+                  top: 0,
+                  child: Transform(
+                    transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
+                    child: Container(
+                      width: 150,
+                      margin: EdgeInsets.only(
+                          left:
+                              LanguageService.languageCode != "ar" ? 1 : 130.w,
+                          right:
+                              LanguageService.languageCode == "ar" ? 1 : 130.w),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xffFF6200)),
+                        color: Color(0xffFFF3E8),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      height: 20,
+                      child: Transform(
+                          transform: Matrix4.skewX(0.4), // انحراف بسيط للشكل
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 8,
+                              ),
+                              SvgPicture.asset(AppAssets.redeemClockSvg),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Text(LocaleKeys.luck.tr(),
+                                  style:
+                                      context.textTheme.bodyMedium?.br.copyWith(
+                                    fontSize: 9,
+                                    color: const Color(0xffFF6200),
+                                  )),
+                              SizedBox(
+                                width: 1,
+                              ),
+                              Text(" ${LocaleKeys.add_to_bag_within.tr()} ",
+                                  style:
+                                      context.textTheme.bodyMedium?.mr.copyWith(
+                                    fontSize: 9,
+                                    color: const Color(0xffFF6200),
+                                  )),
+                              SecondsCountdown(
+                                denyStopTimer: true,
+                                productId: productId.toString(),
+                                //   finishRedeem: widget.finishRedeem,
+                                visibleRedeem: visibleRedeemNotifier!,
+                                endTime: GetIt.I<PrefsRepository>()
+                                        .getRedeemDateForProduct(
+                                            productId.toString()) ??
+                                    DateTime.now(),
+                              ),
+                              Text(" ${LocaleKeys.seconds.tr()} ",
+                                  style:
+                                      context.textTheme.bodyMedium?.br.copyWith(
+                                    fontSize: 9,
+                                    color: const Color(0xffFF6200),
+                                  )),
+                            ],
+                          )),
+                    ),
+                  ))
+              : SizedBox.shrink(),
+          ((visibleRedeem == true || !(isFlashDealEnded ?? true)) && index == 0)
+              ? Positioned(
+                  left: LanguageService.languageCode == "ar" ? null : 35.w,
+                  right: LanguageService.languageCode != "ar" ? null : 35.w,
+                  top: 80.h,
+                  child: Container(
+                    width: 97,
+                    height: 20,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                            alignment: Alignment.center,
+                            width: 76,
+                            height: 20,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8)),
+                                color: Color(0xff1D1D1D)),
+                            child: Text("${LocaleKeys.only_this_piece.tr()}",
+                                textAlign: TextAlign.center,
+                                style:
+                                    context.textTheme.bodyMedium?.mr.copyWith(
+                                  fontSize: 9,
+                                  color: const Color(0xffFFFFFF),
+                                ))),
+                        Container(
+                          width: 15,
+                          height: 15,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xffFFFFFF)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              color: Color(0xff1D1D1D)),
+                        )
+                      ],
+                    ),
+                  ))
+              : SizedBox.shrink()
         ],
       ),
     );

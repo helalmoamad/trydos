@@ -75,6 +75,8 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
     android: const AndroidParams(
         isCustomNotification: true,
+        isImportant: true,
+        isShowFullLockedScreen: true,
         isShowLogo: false,
         ringtonePath: 'system_ringtone_default',
         backgroundColor: '#0955fa',
@@ -287,7 +289,7 @@ void clearvideoProductInListingController({required String productSlug}) {
   }
 }
 
-int applicationVersion = 4;
+int applicationVersion = 8;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
@@ -353,7 +355,7 @@ void main() async {
 
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
-
+  NotificationProcess().fcmToken(null, null, null, null);
   gemini.Gemini.init(
     apiKey: dotenv.env['Gemini']!,
   );

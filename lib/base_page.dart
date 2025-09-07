@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,16 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 
+import 'package:easy_localization/easy_localization.dart' as transform;
+import 'package:trydos/features/app/available_countries_list.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:flutter/services.dart';
-import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/home/domain/use_cases/get_colors_sizes_for_search_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
@@ -35,8 +36,7 @@ import 'package:trydos/service/notification_service/notification_service/handle_
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter/services.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -410,7 +410,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     appBloc = BlocProvider.of<AppBloc>(context);
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     if (!(prefsRepository.isFoundDataCashed ?? false)) {
-      homeBloc.add(GetCurrencyForCountryEvent());
       Future.delayed(Duration(seconds: 1), () {
         //  homeBloc.add(GeColorsAndSizesForSearchEvent());
         if ((prefsRepository.marketToken?.length ?? 0) > 10) {
@@ -461,7 +460,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN${event.data}");
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
         LocalNotificationService()
@@ -830,14 +828,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                       return !visible
                                           ? Padding(
                                               padding: EdgeInsets.only(
-                                                  top: 1.sh / 2.5),
+                                                  top: 1.sh / 3),
                                               child: Directionality(
                                                 textDirection:
                                                     TextDirection.ltr,
                                                 child: Column(
                                                   children: [
                                                     MyTextWidget(
-                                                      "your country is not available in this application",
+                                                      LocaleKeys
+                                                          .country_not_available
+                                                          .tr(),
                                                       style: TextStyle(
                                                           fontSize: 14,
                                                           fontWeight:
@@ -847,7 +847,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                       height: 10,
                                                     ),
                                                     MyTextWidget(
-                                                      "choose a country :",
+                                                      LocaleKeys
+                                                          .choose_a_country
+                                                          .tr(),
                                                       style: TextStyle(
                                                           fontSize: 18,
                                                           fontWeight:
@@ -857,22 +859,17 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                       height: 10,
                                                     ),
                                                     Center(
-                                                        child: CountryDropdown(
-                                                      fromHomepage: false,
-                                                      key: TestVariables
-                                                              .kTestMode
-                                                          ? Key(WidgetsKeys
-                                                              .countryDropDownKey)
-                                                          : null,
-                                                      countries: homestate
-                                                                  .getAllowedCountriesModel !=
-                                                              null
-                                                          ? homestate
-                                                                  .getAllowedCountriesModel!
-                                                                  .data!
-                                                                  .countries ??
-                                                              []
-                                                          : [],
+                                                        child: SizedBox(
+                                                      width: 1.sw,
+                                                      child:
+                                                          AvailableCountriesList(
+                                                        fromHomepage: false,
+                                                        key: TestVariables
+                                                                .kTestMode
+                                                            ? Key(WidgetsKeys
+                                                                .countryDropDownKey)
+                                                            : null,
+                                                      ),
                                                     )),
                                                     SizedBox(height: 80),
                                                     ElevatedButton(
@@ -908,7 +905,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                           );
                                                         } else {
                                                           showMessage(
-                                                              "you have to choose a country",
+                                                              LocaleKeys
+                                                                  .you_have_to_choose_a_country
+                                                                  .tr(),
                                                               backGroundColor:
                                                                   Colors.black,
                                                               foreGroundColor:
@@ -916,7 +915,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                         }
                                                       },
                                                       child: MyTextWidget(
-                                                          " ok && countinue"),
+                                                          LocaleKeys
+                                                              .ok_and_continue
+                                                              .tr()),
                                                     )
                                                   ],
                                                 ),

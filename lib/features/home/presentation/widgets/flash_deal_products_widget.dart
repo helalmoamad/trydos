@@ -16,6 +16,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 
 import 'package:trydos/features/home/presentation/pages/flash_deal_products_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:get_it/get_it.dart';
@@ -247,7 +248,7 @@ class FlashDealProductsWidget extends StatelessWidget {
               Duration(milliseconds: 300),
               () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (ctx) => ProductDetailsPage(
+                      builder: (ctx) => ProductDetailsPageNew(
                         productItem: products[index],
                       ),
                     ),

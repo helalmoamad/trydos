@@ -460,8 +460,6 @@ class OrderListDetailModel {
       );
 
   factory OrderListDetailModel.fromJson(Map<String, dynamic> json) {
-    print(
-        "DFDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${json["variation"]}");
     return OrderListDetailModel(
       id: json["id"],
       orderId: json["order_id"],

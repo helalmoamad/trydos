@@ -291,9 +291,9 @@ class LocalNotificationService {
         AndroidNotificationDetails(channel.id, channel.name,
             channelDescription: channel.description,
             ticker: 'ticker',
-            importance: Importance.high,
+            importance: Importance.max,
             tag: tag,
-            priority: Priority.high,
+            priority: Priority.max,
             playSound: channel.playSound,
             enableVibration: channel.enableVibration,
             autoCancel: true,
@@ -313,7 +313,7 @@ class LocalNotificationService {
       AndroidNotificationChannel(
         _androidChannelId,
         _androidChannelName, // title
-        importance: Importance.high,
+        importance: Importance.max,
         playSound: true,
         enableVibration: true,
       );
