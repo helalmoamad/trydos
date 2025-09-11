@@ -40,7 +40,7 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
       textDirection: TextDirection.ltr,
       child: DropdownButtonHideUnderline(
         child: DropdownButton2(
-          hint: Text('Language'),
+          hint: const Text('Language'),
           items: widget.language.map((lang) {
             return DropdownMenuItem<String>(
               value: lang.code,
@@ -50,7 +50,8 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
           value: selectedlang,
           onChanged: (String? newValue) async {
             selectedlang = newValue;
-            BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
+            BlocProvider.of<HomeBloc>(context)
+                .add(const ClearAllAppCashEvent());
             _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
             _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
 
@@ -70,7 +71,7 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
                     country: _prefsRepository.countryIso!.toLowerCase(),
                     languageCode: newValue ?? ""));
             Future.delayed(
-              Duration(microseconds: 500),
+              const Duration(microseconds: 500),
               () {
                 context.go("/");
               },

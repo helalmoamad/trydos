@@ -43,7 +43,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
 
   @override
   void didChangeDependencies() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffF4FFF4),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
@@ -65,7 +65,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
     super.didChangeDependencies();
   }
 
-  GlobalKey<FormState> _formkey = GlobalKey();
+  final GlobalKey<FormState> _formkey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     bool updateNameLoading = false;
@@ -112,30 +112,26 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
           }
         },
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 40.0),
               child: Column(children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SvgPicture.asset(AppAssets.verifiedNumberSvg,
                         width: 15, height: 15),
                     10.horizontalSpace,
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         MyTextWidget(
                           LocaleKeys.the_number_verifieds_successfully.tr(),
-                          style: context.textTheme.titleMedium?.ra
-                              .copyWith(color: Color(0xff5D5C5D), height: 1.42),
+                          style: context.textTheme.titleMedium?.ra.copyWith(
+                              color: const Color(0xff5D5C5D), height: 1.42),
                         ),
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
                               padding: HWEdgeInsets.only(top: 3.0),
@@ -147,13 +143,12 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                               LocaleKeys.last_step.tr(),
                               textAlign: TextAlign.start,
                               style: context.textTheme.titleMedium?.ra.copyWith(
-                                  color: Color(0xffC4C2C2), height: 1.25),
+                                  color: const Color(0xffC4C2C2), height: 1.25),
                             ),
                           ],
                         ),
                         5.verticalSpace,
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SvgPicture.asset(AppAssets.privacySvg,
                                 width: 10, height: 10),
@@ -161,7 +156,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                             MyTextWidget(
                               LocaleKeys.your_Privacy.tr(),
                               style: context.textTheme.titleMedium?.ra.copyWith(
-                                  color: Color(0xffC4C2C2), height: 1.25),
+                                  color: const Color(0xffC4C2C2), height: 1.25),
                             )
                           ],
                         ),
@@ -211,7 +206,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                             }
                           },
                           key: TestVariables.kTestMode
-                              ? Key(WidgetsKeys.nameFormFieldKey)
+                              ? const Key(WidgetsKeys.nameFormFieldKey)
                               : null,
                           validator: ((value) {
                             if (value!.length < 8) {
@@ -220,7 +215,6 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                             }
                             return null;
                           }),
-                          autoFocus: true,
                           ready: display,
                           onChange: (String? text) {
                             _formkey.currentState!.validate();
@@ -231,13 +225,14 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                           suffixIcon: Padding(
                             padding: HWEdgeInsets.only(right: 20.0, top: 22),
                             child: !display
-                                ? SizedBox(
+                                ? const SizedBox(
                                     width: 22,
                                     height: 15,
                                   )
                                 : InkWell(
                                     key: TestVariables.kTestMode
-                                        ? Key(WidgetsKeys.confirmNameButtonKey)
+                                        ? const Key(
+                                            WidgetsKeys.confirmNameButtonKey)
                                         : null,
                                     onTap: () {
                                       if (!widget.fromLogin) {

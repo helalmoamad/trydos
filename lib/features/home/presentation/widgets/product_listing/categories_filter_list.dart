@@ -13,9 +13,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_with_filters_model.dart';
 import '../../manager/homeBloc/home_event.dart';
@@ -90,7 +88,7 @@ class CategoriesFilterList extends StatelessWidget {
 
         return ListView.builder(
           scrollDirection: Axis.horizontal,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: filters.categories?.length ?? 0,
           itemBuilder: (ctx, index) {
@@ -164,21 +162,20 @@ class CategoriesFilterList extends StatelessWidget {
                     print("${isChildCategorySlug}");
                     return AnimatedContainer(
                       curve: Curves.fastEaseInToSlowEaseOut,
-                      duration: Duration(milliseconds: 300),
-                      margin: EdgeInsetsDirectional.only(end: 5),
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsetsDirectional.only(end: 5),
                       width:
                           (currentExpandedIndex == index) || isChildCategorySlug
                               ? (75 + subCategories.length * 55)
                               : 80.0,
                       height: 70.0,
                       child: Stack(
-                        alignment: AlignmentDirectional.topStart,
                         children: [
                           ...List.generate(
                             subCategories.length,
                             (innerIndex) => AnimatedPositionedDirectional(
                                 curve: Curves.fastEaseInToSlowEaseOut,
-                                duration: Duration(milliseconds: 300),
+                                duration: const Duration(milliseconds: 300),
                                 top: (currentExpandedIndex == index ||
                                         isChildCategorySlug)
                                     ? subCategories[innerIndex]
@@ -201,7 +198,6 @@ class CategoriesFilterList extends StatelessWidget {
                                             subCategories[innerIndex]
                                                     .isSubSubCategory ??
                                                 false,
-                                        isSvg: false,
                                         width: subCategories[innerIndex]
                                                     .isSubSubCategory ??
                                                 false
@@ -411,7 +407,7 @@ class CategoriesFilterList extends StatelessWidget {
                                             (currentExpandedIndex == index) ||
                                                 isChildCategorySlug,
                                       )
-                                    : SizedBox.shrink()),
+                                    : const SizedBox.shrink()),
                           ),
                           ValueListenableBuilder<bool>(
                               valueListenable: scaleTheTopItemInFiltersStack,
@@ -424,7 +420,6 @@ class CategoriesFilterList extends StatelessWidget {
                                             ? null
                                             : Key(
                                                 '${WidgetsKeys.categoryCircleWithSubProductListingFilterKey}$index'),
-                                        isSvg: false,
                                         width: 70,
                                         height: 70,
                                         isTopItem: true,
@@ -607,7 +602,7 @@ class CategoriesFilterList extends StatelessWidget {
                                             ));
                                           }
                                         })
-                                    : SizedBox.shrink();
+                                    : const SizedBox.shrink();
                               }),
                         ],
                       ),
@@ -623,14 +618,12 @@ class CategoriesFilterList extends StatelessWidget {
                           ? null
                           : Key(
                               '${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}$index'),
-                      isSvg: false,
                       width: 70,
                       height: 70,
                       imageUrl: filters.categories![index]
                           .mostViewedProductThumbnail!.filePath
                           .toString(),
                       categoryName: filters.categories![index].name.toString(),
-                      withBackGroundShadow: true,
                       displayFilterMark: isChildCategorySlug ||
                               !workWithChoosedFilter
                           ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
@@ -732,7 +725,7 @@ class CategoriesFilterList extends StatelessWidget {
                         }
                       },
                     )
-                  : SizedBox.shrink();
+                  : const SizedBox.shrink();
             }
           },
         );

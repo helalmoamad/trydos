@@ -62,7 +62,6 @@ class _VerificationMethodsState extends State<VerificationMethods> {
       // Reset to initial state
       authBloc.emit(authBloc.state.copyWith(
         sendOtpStatus: SendOtpStatus.init,
-        sendOtpError: null,
       ));
     }
 
@@ -110,7 +109,6 @@ class _VerificationMethodsState extends State<VerificationMethods> {
     if (authBloc.state.sendOtpStatus == SendOtpStatus.failure) {
       authBloc.emit(authBloc.state.copyWith(
         sendOtpStatus: SendOtpStatus.init,
-        sendOtpError: null,
       ));
     }
 
@@ -119,7 +117,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
 
   void startRetryTimer() {
     remainingSeconds = 60;
-    retryTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (remainingSeconds > 0) {
         setState(() {
           remainingSeconds--;
@@ -144,7 +142,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
     if (status == SendOtpStatus.loading) {
       return Container(
         height: 40,
-        child: Center(
+        child: const Center(
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Color(0xff388cff)),
           ),
@@ -158,7 +156,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
             child: MyTextWidget(
               '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()} ${remainingSeconds}s',
               style: context.textTheme.titleMedium?.ra.copyWith(
-                color: Color(0xff5D5C5D),
+                color: const Color(0xff5D5C5D),
               ),
             ),
           ),
@@ -174,9 +172,10 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                 }
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Color(0xff388cff),
+                  color: const Color(0xff388cff),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: MyTextWidget(
@@ -192,7 +191,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
       }
     }
     // For init, success, or any other status, show empty space
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   @override
@@ -232,30 +231,26 @@ class _VerificationMethodsState extends State<VerificationMethods> {
         bloc: authBloc,
         builder: (context, state) {
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
                 padding: HWEdgeInsets.symmetric(horizontal: 40.0),
                 child: Column(children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SvgPicture.asset(AppAssets.phoneOtpSvg,
                           width: 15, height: 15),
                       10.horizontalSpace,
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MyTextWidget(
                             LocaleKeys.we_will_send_code.tr(),
                             style: context.textTheme.titleMedium?.ra.copyWith(
-                                color: Color(0xff5D5C5D), height: 1.42),
+                                color: const Color(0xff5D5C5D), height: 1.42),
                           ),
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Padding(
                                 padding: HWEdgeInsets.only(top: 3.0),
@@ -268,18 +263,19 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 textAlign: TextAlign.start,
                                 style: context.textTheme.titleMedium?.ra
                                     .copyWith(
-                                        color: Color(0xffC4C2C2), height: 1.25),
+                                        color: const Color(0xffC4C2C2),
+                                        height: 1.25),
                               ),
                               InkWell(
                                 onTap: widget.goBackToPhone,
                                 child: Row(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 4,
                                     ),
                                     SvgPicture.asset(AppAssets.editPenSvg,
                                         width: 10, height: 10),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     )
                                   ],
@@ -287,11 +283,10 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                               )
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 5,
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SvgPicture.asset(AppAssets.registerInfoSvg,
                                   width: 10, height: 10),
@@ -300,11 +295,12 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 LocaleKeys.choose_verification.tr(),
                                 style: context.textTheme.titleMedium?.ra
                                     .copyWith(
-                                        color: Color(0xffC4C2C2), height: 1.25),
+                                        color: const Color(0xffC4C2C2),
+                                        height: 1.25),
                               )
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 3,
                           ),
                         ],
@@ -313,11 +309,11 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                   ),
                 ]),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               buildLoadingOrTimer(state.sendOtpStatus),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Padding(
@@ -327,7 +323,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                       Expanded(
                         child: InkWell(
                           key: TestVariables.kTestMode
-                              ? Key(WidgetsKeys.chooseWhatsappButtonKey)
+                              ? const Key(WidgetsKeys.chooseWhatsappButtonKey)
                               : null,
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
@@ -340,7 +336,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                               : () {
                                   clickButton.value = 0;
                                   Future.delayed(
-                                    Duration(milliseconds: 100),
+                                    const Duration(milliseconds: 100),
                                     () {
                                       clickButton.value = -1;
                                       sendOtp('whatsapp');
@@ -374,13 +370,12 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 return Opacity(
                                   opacity: isDisabled ? 0.5 : 1.0,
                                   child: DottedBorder(
-                                    borderPadding: EdgeInsets.zero,
                                     padding: EdgeInsets.zero,
                                     borderType: BorderType.RRect,
                                     strokeCap: StrokeCap.round,
                                     strokeWidth: 0.5,
-                                    dashPattern: [3, 3],
-                                    radius: Radius.circular(20.0),
+                                    dashPattern: const [3, 3],
+                                    radius: const Radius.circular(20.0),
                                     color: index == 0
                                         ? const Color(0xff388cff)
                                         : const Color(0xffF5F5F5),
@@ -407,7 +402,8 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                             style: context
                                                 .textTheme.titleLarge?.ra
                                                 .copyWith(
-                                                    color: Color(0xff5D5C5D),
+                                                    color:
+                                                        const Color(0xff5D5C5D),
                                                     height: 1.42),
                                           ),
                                         ],
@@ -432,7 +428,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                               : () {
                                   clickButton.value = 1;
                                   Future.delayed(
-                                    Duration(milliseconds: 100),
+                                    const Duration(milliseconds: 100),
                                     () {
                                       clickButton.value = -1;
                                       sendOtp('sms');
@@ -466,13 +462,12 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 return Opacity(
                                   opacity: isDisabled ? 0.5 : 1.0,
                                   child: DottedBorder(
-                                    borderPadding: EdgeInsets.zero,
                                     padding: EdgeInsets.zero,
                                     borderType: BorderType.RRect,
                                     strokeCap: StrokeCap.round,
                                     strokeWidth: 0.5,
-                                    dashPattern: [3, 3],
-                                    radius: Radius.circular(20.0),
+                                    dashPattern: const [3, 3],
+                                    radius: const Radius.circular(20.0),
                                     color: index == 1
                                         ? const Color(0xff388cff)
                                         : const Color(0xffF5F5F5),
@@ -497,7 +492,8 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                             style: context
                                                 .textTheme.titleLarge?.ra
                                                 .copyWith(
-                                                    color: Color(0xff5D5C5D),
+                                                    color:
+                                                        const Color(0xff5D5C5D),
                                                     height: 1.42),
                                           ),
                                         ],

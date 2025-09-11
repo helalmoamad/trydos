@@ -36,7 +36,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
     super.initState();
   }
 
-  bool _eventLogged = false;
+  final bool _eventLogged = false;
   /* @override
   void didChangeDependencies() async {
     if (!_eventLogged) {
@@ -164,7 +164,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                           100000)) <
                                   (state.storiesCollections.length * 100000)) {
                             if (canPop) {
-                              Future.delayed(Duration(milliseconds: 300),
+                              Future.delayed(const Duration(milliseconds: 300),
                                   () => Navigator.of(context).pop());
                             }
                             canPop = false;
@@ -184,7 +184,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                       state.storiesCollections.length -
                                       1) {
                             if (canPop) {
-                              Future.delayed(Duration(milliseconds: 300),
+                              Future.delayed(const Duration(milliseconds: 300),
                                   () => Navigator.of(context).pop());
                             }
                             canPop = false;
@@ -226,7 +226,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                                 currentPage:
                                                     collectionIndex + 1));
                                         carouselSliderController.nextPage(
-                                            Duration(milliseconds: 200));
+                                            const Duration(milliseconds: 200));
                                         prevPageNumber = collectionIndex + 1;
                                       } else {
                                         if (collectionIndex == 0) {
@@ -244,7 +244,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                                 currentPage:
                                                     collectionIndex - 1));
                                         carouselSliderController.previousPage(
-                                            Duration(milliseconds: 200));
+                                            const Duration(milliseconds: 200));
                                         prevPageNumber = collectionIndex - 1;
                                       }
                                     },
@@ -291,11 +291,11 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                         controller: carouselSliderController,
                         unlimitedMode: true,
                         scrollPhysics: value == 1
-                            ? denyScrollingToLeftScrollPhysics()
+                            ? const denyScrollingToLeftScrollPhysics()
                             : value == 2
-                                ? denyScrollingToRightScrollPhysics()
-                                : ClampingScrollPhysics(),
-                        slideTransform: CubeTransform(),
+                                ? const denyScrollingToRightScrollPhysics()
+                                : const ClampingScrollPhysics(),
+                        slideTransform: const CubeTransform(),
                         initialPage: widget.initialPage,
                         itemCount: state.storiesCollections.length);
                   }));

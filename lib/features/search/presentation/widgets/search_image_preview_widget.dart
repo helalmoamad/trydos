@@ -157,7 +157,7 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
                             )
                           : Container(
                               color: Colors.grey[800],
-                              child: Center(
+                              child: const Center(
                                 child: CircularProgressIndicator(
                                   color: Colors.white,
                                 ),
@@ -165,7 +165,7 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
                             )
                       : Container(
                           color: Colors.grey[800],
-                          child: Center(
+                          child: const Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -197,8 +197,8 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
               child: FloatingActionButton(
                 backgroundColor: Colors.green,
                 child: _isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Icon(Icons.send, color: Colors.white),
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Icon(Icons.send, color: Colors.white),
                 onPressed: _isLoading ? null : _sendImage,
               ),
             ),
@@ -213,7 +213,7 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
                 height: 50,
                 child: MyTextWidget(
                   LocaleKeys.select_image_part.tr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     height: 1.2,
@@ -234,12 +234,12 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.close, color: Colors.white, size: 28),
+                  icon: const Icon(Icons.close, color: Colors.white, size: 28),
                   onPressed: widget.onCancel,
                 ),
               ),

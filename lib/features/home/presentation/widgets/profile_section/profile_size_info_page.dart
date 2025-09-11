@@ -62,7 +62,7 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
     weightController.text = (homeBloc.state.userInfo?.weight ?? "").toString();
     tallController.text = (homeBloc.state.userInfo?.tall ?? "").toString();
     animationController =
-        AnimationController(duration: Duration(seconds: 1), vsync: this);
+        AnimationController(duration: const Duration(seconds: 1), vsync: this);
     super.initState();
   }
 
@@ -94,11 +94,11 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
           return Scaffold(
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
-                    backgroundColor: Color(0x000000),
+                    backgroundColor: const Color(0x000000),
                     action: [
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : SizedBox(
                               width: 55.w,
                             ),
@@ -110,9 +110,9 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                             fontSize: 14,
                             height: 1.3),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : BlocBuilder<HomeBloc, HomeState>(
                               buildWhen: (previous, current) =>
                                   previous.updateProfileStatus !=
@@ -120,7 +120,8 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                               builder: (context, state) {
                                 if (state.updateProfileStatus ==
                                     UpdateProfileStatus.success) {
-                                  Future.delayed(Duration(milliseconds: 300),
+                                  Future.delayed(
+                                      const Duration(milliseconds: 300),
                                       () => visibleSave.value = false);
                                   homeBloc.add(UpdateProfileEvent(
                                       changeStatusToInit: true));
@@ -155,7 +156,7 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                                 );
                               }),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : SizedBox(
                               width: 15.w,
                             )
@@ -173,17 +174,17 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                           height: 50,
                           width: 1.sw,
                           decoration: BoxDecoration(
-                              color: Color(0xffF8F8F8),
-                              border: Border.all(color: Color(0xffD3D3D3))),
+                              color: const Color(0xffF8F8F8),
+                              border:
+                                  Border.all(color: const Color(0xffD3D3D3))),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SizedBox(
                                 width: 10.w,
                               ),
                               SvgPicture.asset(
                                 AppAssets.infoSvg,
-                                color: Color(0xff402CDD),
+                                color: const Color(0xff402CDD),
                                 width: 25.w,
                               ),
                               SizedBox(
@@ -201,20 +202,20 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                               ),
                             ],
                           )),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Container(
                         height: 15,
                         width: 160,
-                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SvgPicture.asset(
                               AppAssets.sizeLineSvg,
                               height: 15,
-                              color: Color(0xff707070),
+                              color: const Color(0xff707070),
                             ),
                             Text(
                               LocaleKeys.your_size_info.tr(),
@@ -226,13 +227,13 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                             ),
                             SvgPicture.asset(
                               AppAssets.chatWithQuestionSvg,
-                              color: Color(0xffD3D3D3),
+                              color: const Color(0xffD3D3D3),
                               height: 15,
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Padding(
@@ -245,7 +246,7 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                             title: LocaleKeys.how_tall_are_you.tr(),
                             hint: "000 ${LocaleKeys.cm.tr()}"),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Padding(
@@ -279,7 +280,7 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
           if (isValidateBox && controller.text.isNullOrEmpty) {
             animationController.forward();
             Future.delayed(
-              Duration(seconds: 2),
+              const Duration(seconds: 2),
               () => animationController.reset(),
             );
           }
@@ -299,16 +300,15 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                     border: Border.all(
                         color: (isValidateBox && controller.text.isNullOrEmpty)
                             ? Colors.red
-                            : Color(0xffD3D3D3))),
+                            : const Color(0xffD3D3D3))),
                 child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.only(top: 5, left: 8, right: 8),
+                        padding:
+                            const EdgeInsets.only(top: 5, left: 8, right: 8),
                         height: 18,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               title,
@@ -361,7 +361,6 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                                     end: 1,
                                     bottom: 1,
                                     top: 1),
-                                textAlign: TextAlign.start,
                                 maxLines: 1,
                                 minLines: 1,
                                 textStyle: context.textTheme.bodyMedium?.mr

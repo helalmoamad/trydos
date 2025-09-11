@@ -94,9 +94,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
             color: colorScheme.white,
             boxShadow: [
               BoxShadow(
-                  offset: const Offset(0, 0),
-                  color: colorScheme.black.withOpacity(0.1),
-                  blurRadius: 6)
+                  color: colorScheme.black.withOpacity(0.1), blurRadius: 6)
             ],
           ),
           child: Row(
@@ -122,7 +120,6 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         context: context,
                         categorySlug: "Empty",
                         offset: "1",
-                        getWithPagination: false,
                       ),
                     );
 
@@ -238,7 +235,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                             ? 1
                                             : 5,
                                   )
-                                : SizedBox.shrink()
+                                : const SizedBox.shrink()
                           ]),
                           10.verticalSpace,
                           MyTextWidget(
@@ -271,7 +268,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   builder: (context, authState) {
                     return InkWell(
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKeys.chatNavBarKey)
+                          ? const Key(WidgetsKeys.chatNavBarKey)
                           : null,
                       onTap: () async {
                         if (authState.loginToChatStatus ==
@@ -291,7 +288,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             (prefsRepository.isLogInToChat ?? false) != true ||
                             (prefsRepository.chatToken?.length ?? 0) < 7) {
                           appBloc.add(ChangeBasePage(0));
-                          Future.delayed(Duration(milliseconds: 300),
+                          Future.delayed(const Duration(milliseconds: 300),
                               () => widget.isShowPanelForVerified.value = true);
                         } else if ((prefsRepository.myMarketName?.length ?? 0) <
                             3) {
@@ -432,7 +429,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  content: MyTextWidget('Dev tools'),
+                                  content: const MyTextWidget('Dev tools'),
                                   actions: [
                                     BlocBuilder<HomeBloc, HomeState>(
                                       buildWhen: (p, c) =>
@@ -451,8 +448,6 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                               Positioned(
                                                 left: 10,
                                                 child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
                                                           .spaceAround,
@@ -468,7 +463,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                           true,
                                                                     )));
                                                       },
-                                                      child: MyTextWidget(
+                                                      child: const MyTextWidget(
                                                           'requests'),
                                                     ),
                                                     TextButton(
@@ -479,7 +474,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                 builder: (_) =>
                                                                     SharedPreferencePage()));
                                                       },
-                                                      child: MyTextWidget(
+                                                      child: const MyTextWidget(
                                                           'shared preferences'),
                                                     ),
                                                     TextButton(
@@ -488,9 +483,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                             context,
                                                             MaterialPageRoute(
                                                                 builder: (_) =>
-                                                                    SwitchListForNotification()));
+                                                                    const SwitchListForNotification()));
                                                       },
-                                                      child: MyTextWidget(
+                                                      child: const MyTextWidget(
                                                           'Firebase Setting'),
                                                     ),
                                                     TextButton(
@@ -504,7 +499,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                           false,
                                                                     )));
                                                       },
-                                                      child: MyTextWidget(
+                                                      child: const MyTextWidget(
                                                           'flutter errors'),
                                                     ),
                                                     TextButton(
@@ -515,7 +510,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                 builder: (_) =>
                                                                     FilesExistPage()));
                                                       },
-                                                      child: MyTextWidget(
+                                                      child: const MyTextWidget(
                                                           'files exists'),
                                                     ),
                                                     /*      TextButton(
@@ -535,21 +530,21 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                             .resetAllRedeemTimer();
                                                         Navigator.pop(context);
                                                       },
-                                                      child: MyTextWidget(
+                                                      child: const MyTextWidget(
                                                           'ٌReset Redeem Timer'),
                                                     ),
                                                     SizedBox(
                                                       width: 50,
                                                       height: 50,
                                                       child: IconButton(
-                                                        icon: Icon(Icons
+                                                        icon: const Icon(Icons
                                                             .notifications),
                                                         color: Colors.red,
                                                         onPressed: () {
                                                           HelperFunctions
                                                               .slidingNavigation(
                                                             context,
-                                                            NotificationsPage(),
+                                                            const NotificationsPage(),
                                                           );
                                                         },
                                                       ),
@@ -561,7 +556,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                     HomeBloc>(
                                                                 context)
                                                             .add(
-                                                                ClearAllAppCashEvent());
+                                                                const ClearAllAppCashEvent());
                                                         clearCustomCashe();
                                                         prefsRepository
                                                             .setIsFoundDataCashed(
@@ -580,15 +575,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                         User(
                                                           alternativePhone: "",
                                                           email: "",
-                                                          gender: null,
-                                                          id: null,
                                                           image: "",
                                                           isPhoneVerified: 0,
                                                           lastOtpIdToken: "",
                                                           name: "",
                                                           phone: "",
-                                                          tall: null,
-                                                          weight: null,
                                                         )));
                                                         prefsRepository
                                                             .setVerifiedPhone(
@@ -632,10 +623,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                     ChatBloc>(
                                                                 context)
                                                             .add(
-                                                                ClearChatEvent());
+                                                                const ClearChatEvent());
 
                                                         Future.delayed(
-                                                          Duration(
+                                                          const Duration(
                                                               microseconds:
                                                                   500),
                                                           () {
@@ -644,7 +635,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                           },
                                                         );
                                                       },
-                                                      child: MyTextWidget(
+                                                      child: const MyTextWidget(
                                                           'log out'),
                                                     ),
                                                   ],
@@ -730,10 +721,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                           borderRadius:
                                               BorderRadius.circular(15.0),
                                           border: Border.all(
-                                            width: 1.0,
                                             color: (state.currentIndex == 3)
                                                 ? const Color(0xfff53c3c)
-                                                : Color(0xfffff),
+                                                : const Color(0xfffff),
                                           ),
                                         ))
                                     : Container(
@@ -743,10 +733,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                           borderRadius:
                                               BorderRadius.circular(15.0),
                                           border: Border.all(
-                                            width: 1.0,
                                             color: (state.currentIndex == 3)
                                                 ? const Color(0xfff53c3c)
-                                                : Color(0xfffff),
+                                                : const Color(0xfffff),
                                           ),
                                         ),
                                         child: MyCachedNetworkImage(

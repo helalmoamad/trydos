@@ -21,7 +21,8 @@ class CameraProfile extends StatefulWidget {
   List<CameraDescription> cameras;
 
   CameraProfile(this.cameras, this.visiblePersonPhoto, this.visiblecamera,
-      this.visibleNewImage, this.visibleSave);
+      this.visibleNewImage, this.visibleSave,
+      {super.key});
 
   @override
   _CameraProfileState createState() => _CameraProfileState();
@@ -33,7 +34,7 @@ class _CameraProfileState extends State<CameraProfile>
 
   //todo start timer for recording video
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;
       });
@@ -197,7 +198,7 @@ class _CameraProfileState extends State<CameraProfile>
                       });
                       onNewCameraSelected(controller!.description);
                     },
-                    hint: MyTextWidget("Select item"),
+                    hint: const MyTextWidget("Select item"),
                   ),
                 ),
 
@@ -235,7 +236,7 @@ class _CameraProfileState extends State<CameraProfile>
                               padding: const EdgeInsets.all(5.0),
                               child: MyTextWidget(
                                 _currentZoomLevel.toStringAsFixed(1) + 'x',
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
                           ),
@@ -267,7 +268,7 @@ class _CameraProfileState extends State<CameraProfile>
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.circle,
                                 color: Colors.black38,
                                 size: 60,
@@ -305,7 +306,7 @@ class _CameraProfileState extends State<CameraProfile>
                                       visiblecamera: widget.visiblecamera,
                                     )));
                           },
-                          child: Stack(
+                          child: const Stack(
                             alignment: Alignment.center,
                             children: [
                               // Icon(Icons.circle,

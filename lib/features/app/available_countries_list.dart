@@ -63,7 +63,8 @@ class _AvailableCountriesListState extends State<AvailableCountriesList> {
               setState(() => _selectedIndex = index);
               if (widget.fromHomepage) {
                 _prefsRepository.setUserCountryIsAvailable(1);
-                BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
+                BlocProvider.of<HomeBloc>(context)
+                    .add(const ClearAllAppCashEvent());
                 _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
                 _prefsRepository
                     .removeMainCategoryHasPerfechedWhenOpenApp(true);
@@ -81,7 +82,7 @@ class _AvailableCountriesListState extends State<AvailableCountriesList> {
             },
             child: Container(
               height: 53,
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: isSelected ? const Color(0xffF8F8F8) : Colors.white,
                 borderRadius: BorderRadius.circular(15.r),
@@ -114,8 +115,8 @@ class _AvailableCountriesListState extends State<AvailableCountriesList> {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: const Color(0xff1D1D1D),
+                      style: const TextStyle(
+                        color: Color(0xff1D1D1D),
                         letterSpacing: 0.18,
                         fontSize: 14,
                         height: 1.3,

@@ -15,7 +15,7 @@ class SharedPreferencePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: context.colorScheme.background,
+        backgroundColor: context.colorScheme.surface,
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView(
@@ -86,6 +86,11 @@ class SharedPreferencePage extends StatelessWidget {
                 value: prefsRepository.fcmTokenId.toString(),
               ),
               10.verticalSpace,
+              SharedPreferenceCard(
+                title: 'Contact',
+                value: prefsRepository.myContactDetails.toString(),
+              ),
+              10.verticalSpace,
             ],
           ),
         ));
@@ -102,11 +107,11 @@ class SharedPreferenceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [BoxShadow(color: Colors.black, blurRadius: 5)]),
+          boxShadow: const [BoxShadow(blurRadius: 5)]),
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Column(

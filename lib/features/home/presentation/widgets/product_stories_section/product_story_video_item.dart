@@ -35,7 +35,7 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
 
   void initializeController() {
     initializeVideo = _controller!.initialize().then((value) {
-      Timer.periodic(Duration(seconds: 3), (timer) {
+      Timer.periodic(const Duration(seconds: 3), (timer) {
         _controller!.setVolume(0);
         _controller!.seekTo(Duration.zero);
         _controller!.play();
@@ -81,7 +81,7 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
                       boxShadow: [
                         BoxShadow(
                           color: colorScheme.black.withOpacity(0.1),
-                          offset: Offset(0, 3),
+                          offset: const Offset(0, 3),
                           blurRadius: 6,
                         ),
                       ],
@@ -98,7 +98,7 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
                       boxShadow: [
                         BoxShadow(
                             color: colorScheme.white,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                             blurRadius: 3,
                             inset: true),
                       ],

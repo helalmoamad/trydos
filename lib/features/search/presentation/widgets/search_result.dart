@@ -83,18 +83,18 @@ class _SearchResultState extends ThemeState<SearchResult> {
                   ?.paginationStatus ==
               PaginationStatus.loading) {
             return Column(children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Padding(
                 padding: const EdgeInsetsDirectional.only(start: 20.0),
                 child: MyTextWidget(
                   LocaleKeys.find_products.tr(),
-                  style: textTheme.titleMedium?.rq
-                      .copyWith(height: 15 / 12, color: Color(0xff505050)),
+                  style: textTheme.titleMedium?.rq.copyWith(
+                      height: 15 / 12, color: const Color(0xff505050)),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Container(
@@ -113,7 +113,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                   PaginationStatus.success ||
               state.getProductListingWithFiltersPaginationModels[key] == null ||
               !value) {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
           /* Column(
               children: [
@@ -204,12 +204,12 @@ class _SearchResultState extends ThemeState<SearchResult> {
             );*/
 
           if (state.getProductListingWithFiltersPaginationModels[key] == null) {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
           if (state.getProductListingWithFiltersPaginationModels[key]!.items
               .isNullOrEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(10),
+            return const Padding(
+              padding: EdgeInsets.all(10),
               child: Center(
                 child: MyTextWidget(
                   "No Products Found",
@@ -221,26 +221,26 @@ class _SearchResultState extends ThemeState<SearchResult> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Padding(
                 padding: const EdgeInsetsDirectional.only(start: 20.0),
                 child: MyTextWidget(
                   LocaleKeys.find_products.tr(),
-                  style: textTheme.titleMedium?.rq
-                      .copyWith(height: 15 / 12, color: Color(0xff505050)),
+                  style: textTheme.titleMedium?.rq.copyWith(
+                      height: 15 / 12, color: const Color(0xff505050)),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               ScrollConfiguration(
-                behavior: CupertinoScrollBehavior(),
+                behavior: const CupertinoScrollBehavior(),
                 child: ListView.separated(
                   shrinkWrap: true,
-                  physics: ClampingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  physics: const ClampingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   itemBuilder: (ctx, index) {
                     String filePath = ((state
                                     .getProductListingWithFiltersPaginationModels[
@@ -297,7 +297,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                             .slug ??
                                         ""));
                             Future.delayed(
-                                Duration(milliseconds: 300),
+                                const Duration(milliseconds: 300),
                                 () =>
                                     Navigator.of(context).push(PageRouteBuilder(
                                       pageBuilder: (context, animation,
@@ -309,7 +309,6 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                                           key]!
                                                       .items[index]
                                                       .slug,
-                                              fromNotification: false,
                                               productIdForOpeningChatDirectly: state
                                                   .getProductListingWithFiltersPaginationModels[
                                                       key]!
@@ -321,14 +320,15 @@ class _SearchResultState extends ThemeState<SearchResult> {
                           child: Container(
                               height: 50,
                               width: 1.sw,
-                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               decoration: BoxDecoration(
-                                  color: Color(0xffF8F8F8),
+                                  color: const Color(0xffF8F8F8),
                                   borderRadius: BorderRadius.circular(15)),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 35,
                                   ),
                                   Flexible(
@@ -344,10 +344,10 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                       style: context.textTheme.titleLarge?.lq
                                           .copyWith(
                                               height: 15 / 12,
-                                              color: Color(0xffC4C2C2)),
+                                              color: const Color(0xffC4C2C2)),
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                 ],
                               )),
                         ),
@@ -357,8 +357,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                  color: Color(0xff388CFF), width: 0.3),
-                              borderRadius: BorderRadius.only(
+                                  color: const Color(0xff388CFF), width: 0.3),
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(15),
                                 topRight: Radius.circular(5),
                                 bottomLeft: Radius.circular(15),
@@ -366,7 +366,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               ),
                             ),
                             child: ClipRRect(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(15),
                                   topRight: Radius.circular(5),
                                   bottomLeft: Radius.circular(15),
@@ -385,7 +385,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                       .getProductListingWithFiltersPaginationModels[key]!
                       .items
                       .length,
-                  separatorBuilder: (ctx, index) => SizedBox(
+                  separatorBuilder: (ctx, index) => const SizedBox(
                     height: 5,
                   ),
                 ),

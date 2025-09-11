@@ -74,6 +74,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     orderBloc.add(
       GetCustomerWalletEvent(limit: 10, offset: 1),
     );
+    authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(
       GetOrdersEvent(
         status: "",
@@ -176,11 +177,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
               valueListenable: isVerified,
               builder: (context, _isverified, _) {
                 return _isverified
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : Container(
                         width: 1.sw,
                         height: 1.sh,
-                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                        color: const Color.fromRGBO(0, 0, 0, 0.5),
                       );
               }),
           Positioned(
@@ -188,7 +189,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
               child: ValueListenableBuilder<bool>(
                   valueListenable: isVerified,
                   builder: (context, _isverified, _) {
-                    return _isverified ? SizedBox.shrink() : _veryfiedOtp();
+                    return _isverified
+                        ? const SizedBox.shrink()
+                        : _veryfiedOtp();
                   }))
         ],
       ),
@@ -199,7 +202,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     final TextPainter textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
-    )..layout(minWidth: 0, maxWidth: 130);
+    )..layout(maxWidth: 130);
     return textPainter.size.width;
   }
 
@@ -210,7 +213,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       width: 1.sw,
       child: Stack(children: [
         PageView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             controller: pageController,
             children:
                 (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
@@ -236,12 +239,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ]
                     : [
                         InsertPhoneTab(
-                          fromLogin: false,
                           focusNode: focusNode,
                           moveToNextStep: (String phoneNumber) {
                             this.phoneNumber = phoneNumber.replaceAll(' ', '');
                             pageController.animateToPage(1,
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 curve: Curves.easeInOut);
                             setState(() {});
                           },
@@ -253,7 +255,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                             isVisWhatsApp = 1;
                             print("###################33333#${isVisWhatsApp}");
                             pageController.animateToPage(2,
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 curve: Curves.easeInOut);
 
                             if (prefsRepository.isTimerForOtpRunning ?? false) {
@@ -268,13 +270,13 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           },
                           goBackToPhone: () {
                             pageController.animateToPage(0,
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 curve: Curves.easeInOut);
                           },
                           onChooseSms: () {
                             isVisWhatsApp = 0;
                             pageController.animateToPage(3,
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 curve: Curves.easeInOut);
                             /* authBloc.add(
                             SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
@@ -301,12 +303,12 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                             fromLogin: false,
                             onLoginFailed: () {
                               pageController.animateToPage(3,
-                                  duration: Duration(milliseconds: 500),
+                                  duration: const Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
                             },
                             goBack: () {
                               pageController.animateToPage(1,
-                                  duration: Duration(milliseconds: 500),
+                                  duration: const Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
                             },
                             methodIcon: isVisWhatsApp == 1
@@ -319,7 +321,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           left: LanguageService.languageCode != "ar" ? null : 0,
           right: LanguageService.languageCode != "ar" ? 0 : null,
           child: Container(
-            margin: EdgeInsets.all(10),
+            margin: const EdgeInsets.all(10),
             height: 20,
             width: 40,
             child: InkWell(
@@ -328,7 +330,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                   AppAssets.closeSvg,
                   height: 15,
                   width: 30,
-                  color: Color(0xffFF5F61),
+                  color: const Color(0xffFF5F61),
                 )),
           ),
         )
@@ -369,22 +371,22 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         ))))
             : InkWell(
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ProfileLanguagePage())),
+                    builder: (context) => const ProfileLanguagePage())),
                 child: Container(
                     decoration: BoxDecoration(
-                        color: Color(0xffF8F8F8),
+                        color: const Color(0xffF8F8F8),
                         borderRadius: BorderRadius.circular(15.r)),
                     width: 195.w,
                     height: 53,
                     child: Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         SvgPicture.asset(
                           AppAssets.languageSvg,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
@@ -438,16 +440,16 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         ))))
             : InkWell(
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ProfileCountryPage())),
+                    builder: (context) => const ProfileCountryPage())),
                 child: Container(
                     decoration: BoxDecoration(
-                        color: Color(0xffF8F8F8),
+                        color: const Color(0xffF8F8F8),
                         borderRadius: BorderRadius.circular(15.r)),
                     width: 195.w,
                     height: 53,
                     child: Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Container(
@@ -463,7 +465,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                     width: 25,
                                     borderRadius: 4.r,
                                   )),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
@@ -487,15 +489,14 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         height: 53,
         width: 1.sw,
         decoration: BoxDecoration(
-            color: Color(0xffF8F8F8),
+            color: const Color(0xffF8F8F8),
             borderRadius: BorderRadius.circular(15.r)),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(
               svgUrl,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(
@@ -524,10 +525,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             current.getOrdersModel?[""]?.paginationStatus,
         builder: (context, state) {
           return Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             width: 195.w,
             decoration: BoxDecoration(
-                color: Color(0xffF8F8F8),
+                color: const Color(0xffF8F8F8),
                 borderRadius: BorderRadius.circular(15.r)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -583,10 +584,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             ? ''
             : state.customerWalletModel!.data.currencySymbol ?? '';
         return Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           width: 195.w,
           decoration: BoxDecoration(
-              color: Color(0xffF8F8F8),
+              color: const Color(0xffF8F8F8),
               borderRadius: BorderRadius.circular(15.r)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -636,15 +637,17 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       buildWhen: (previous, current) =>
           previous.verifyOtpSignInStatus != current.verifyOtpSignInStatus ||
           previous.verifyOtpSignUpStatus != current.verifyOtpSignUpStatus ||
-          previous.verifyOtpFromGuestStatus != current.verifyOtpFromGuestStatus,
+          previous.verifyOtpFromGuestStatus !=
+              current.verifyOtpFromGuestStatus ||
+          previous.getCustomerInfoStatus != current.getCustomerInfoStatus,
       builder: (context, state) {
         return InkWell(
-          onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => UserInformationPage())),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const UserInformationPage())),
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-                color: Color(0xffF8F8F8),
+                color: const Color(0xffF8F8F8),
                 borderRadius: BorderRadius.circular(15.r)),
             width: 1.sw,
             height: 138,
@@ -660,7 +663,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         SvgPicture.asset(
                           AppAssets.parcodeSvg,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Container(
@@ -674,7 +677,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 height: 1.3),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         Directionality(
@@ -697,7 +700,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         Container(
@@ -730,7 +733,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                             null ||
                                         prefsRepository.myProfilePhoto == "")
                                     ? Colors.white
-                                    : Color(0xff1D1D1D))),
+                                    : const Color(0xff1D1D1D))),
                         child: !(prefsRepository.myProfilePhoto == null ||
                                 prefsRepository.myProfilePhoto == "")
                             ? ClipRRect(
@@ -804,7 +807,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 }
                               },
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 15),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 height: 35,
                                 width: 72,
                                 child: Column(
@@ -814,17 +818,17 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                       children: [
                                         SvgPicture.asset(
                                           AppAssets.succuessProfileSvg,
-                                          color: Color(0xff707070),
+                                          color: const Color(0xff707070),
                                           height: 16,
                                           width: 16,
                                         ),
                                         SvgPicture.asset(AppAssets.success2Svg,
-                                            color: Color(0xff707070),
+                                            color: const Color(0xff707070),
                                             height: 5,
                                             width: 5),
                                       ],
                                     ),
-                                    Spacer(),
+                                    const Spacer(),
                                     Text(
                                       (prefsRepository.isVerifiedPhone ?? false)
                                           ? '${LocaleKeys.verified.tr()}'

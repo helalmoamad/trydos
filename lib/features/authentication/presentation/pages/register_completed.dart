@@ -35,7 +35,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
 
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffBCFFDF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
@@ -53,10 +53,9 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
           Positioned(top: 50, left: 40, right: 40, child: logo),
           Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
                 SizedBox(
                   height: 1.sh / 8,
                 ),
@@ -70,48 +69,48 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         child: MyTextWidget(LocaleKeys.hello.tr(),
                             textAlign: TextAlign.start,
                             style: textTheme.headlineMedium?.ba.copyWith(
-                                color: Color(0xff5D5C5D), height: 1.25)),
+                                color: const Color(0xff5D5C5D), height: 1.25)),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 17,
                       ),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           MyTextWidget(',' + widget.userName,
                               textAlign: TextAlign.start,
                               style: textTheme.headlineMedium?.la.copyWith(
-                                color: Color(0xff5D5C5D),
+                                color: const Color(0xff5D5C5D),
                                 letterSpacing: 0.3,
                                 height: 0.67,
                               )),
-                          SizedBox(
+                          const SizedBox(
                             height: 18,
                           ),
                           MyTextWidget(LocaleKeys.enjoy_with_our_services.tr(),
                               textAlign: TextAlign.center,
                               style: textTheme.bodyMedium?.la.copyWith(
-                                  color: Color(0xff5D5C5D), height: 1.25)),
+                                  color: const Color(0xff5D5C5D),
+                                  height: 1.25)),
                         ],
                       ),
                     ],
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 MyTextWidget(LocaleKeys.we_recommend.tr(),
                     textAlign: TextAlign.center,
                     style: textTheme.titleLarge?.la.copyWith(
-                      color: Color(0xff5D5C5D),
+                      color: const Color(0xff5D5C5D),
                       letterSpacing: 0.14,
                       height: 1.43,
                     )),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 InkWell(
                   onTap: () {
                     context.go(GRouter.config.applicationRoutes.kBasePage);
-                    Future.delayed(Duration(milliseconds: 300),
+                    Future.delayed(const Duration(milliseconds: 300),
                         () => appBloc.add(ChangeBasePage(3)));
                   },
                   child: Container(
@@ -128,7 +127,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         MyTextWidget(
                           LocaleKeys.complete_my_profile.tr(),
                           style: textTheme.displayMedium?.ra.copyWith(
-                            color: Color(0xff5D5C5D),
+                            color: const Color(0xff5D5C5D),
                             letterSpacing: 0.16,
                             height: 1.25,
                           ),
@@ -137,12 +136,12 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 InkWell(
                   key: TestVariables.kTestMode
-                      ? Key(WidgetsKeys.skipForNowKey)
+                      ? const Key(WidgetsKeys.skipForNowKey)
                       : null,
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
@@ -154,7 +153,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     child: MyTextWidget(
                       LocaleKeys.skip_for_now.tr(),
                       style: textTheme.titleLarge?.ra.copyWith(
-                        color: Color(0xff4d84ff),
+                        color: const Color(0xff4d84ff),
                         letterSpacing: 0.14,
                         height: 1.43,
                       ),
@@ -162,7 +161,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 44,
                 ),
               ]),

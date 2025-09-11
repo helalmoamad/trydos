@@ -133,8 +133,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   bool? changeVariationIfQtyZero;
 
   bool getAllDataForProductForFirst = true;
-
-  int currentSelectedColor = -1;
+  bool changeAppearSizeForProduct = true;
+  int currentSelectedColor = 0;
   int currentSelectedColorAfterChangeVariant = -1;
   List<String> productSlugToOnVoideo = [];
 
@@ -154,18 +154,19 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     }
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    homeBloc.add(AddCurrentColorSizeEvent());
     productIdToSaveRedeemTimer.remove(productItem?.productId.toString());
     //homeBloc.add(AddProductIdToSaveRedeemTimerEvent(
     //   on: false, productIdToSaveRedeemTimer: productIdToSaveRedeemTimer));
-    homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+    homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
         iChangedColorBeforOpenPanelEvent: false));
     initialColor = homeBloc.state.currentSelectedColorForEveryProduct[
             widget.productItem?.slug.toString()] ??
         -1;
     currentSelectedColor = homeBloc.state.currentSelectedColorForEveryProduct[
             widget.productItem?.slug.toString()] ??
-        -1;
-    homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+        0;
+    homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
         finishLoadingAfterChangedVariationWhenQtyZero: false,
         isChangedVariationWhenQtyZero: false));
 
@@ -257,10 +258,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     };
     return WillPopScope(
       onWillPop: () {
-        homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+        homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
             iChangedColorBeforOpenPanelEvent: false));
         if (widget.fromCart ?? false) {
-          homeBloc.add(GetCartItemEvent());
+          homeBloc.add(const GetCartItemEvent());
         }
         if (panelControllerForCart.isPanelOpen) {
           panelControllerForCart.close();
@@ -300,7 +301,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
         try {
           productSlugToOnVoideo.forEach((key) {
             Future.delayed(
-              Duration(milliseconds: 300),
+              const Duration(milliseconds: 300),
               () => videoProductInListingController[key]?.play(),
             );
           });
@@ -331,12 +332,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       try {
                         productSlugToOnVoideo.forEach((key) {
                           Future.delayed(
-                            Duration(milliseconds: 300),
+                            const Duration(milliseconds: 300),
                             () => videoProductInListingController[key]?.play(),
                           );
                         });
                       } catch (e) {}
-                      homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+                      homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
                           iChangedColorBeforOpenPanelEvent: false));
                       if (widget.productItem != null && initialColor != -1) {
                         homeBloc.add(AddCurrentSelectedColorEvent(
@@ -346,8 +347,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     },
                     scrolledUnderElevation: 0,
                     backIconColor: Colors.black,
-                    action: appBarActionList(),
-                    withShadow: true),
+                    action: appBarActionList()),
               ),
               backgroundColor: Colors.white,
               body: BlocBuilder<HomeBloc, HomeState>(
@@ -639,42 +639,99 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       if (productSlug == "") {
                         productSlug = widget.productItem?.slug.toString() ?? '';
                       }
-                      /*     if (state
-                                .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                            GetProductDetailWithoutSimilarRelatedProductsStatus
-                                .failure) {
-                          return Center(
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  homeBloc.add(
-                                      GetProductDatailsWithoutRelatedProductsEvent(
-                                          productId:
-                                              productItem.id.toString()));
-                                },
-                                child: MyTextWidget(LocaleKeys.try_again.tr())),
-                          );
-                        }*/
-                      if (!state.cachedProductWithoutRelatedProductsModel
-                              .containsKey(productItem!.productId.toString()) ||
-                          (state.cachedProductWithoutRelatedProductsModel[
-                                      productItem!.productId.toString()] !=
-                                  null
-                              ? state
+
+                      if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                              GetProductDetailWithoutSimilarRelatedProductsStatus
+                                  .success &&
+                          state.authProductDetailsStatus ==
+                              AuthProductDetailsStatus.success &&
+                          changeAppearSizeForProduct) {
+                        changeAppearSizeForProduct = false;
+                        if (!state.cachedProductWithoutRelatedProductsModel
+                                .containsKey(
+                                    productItem!.productId.toString()) ||
+                            (state.cachedProductWithoutRelatedProductsModel[
+                                        productItem!.productId.toString()] !=
+                                    null
+                                ? state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!.product !=
+                                        null
+                                    ? state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productItem!.productId.toString()]!
+                                        .product!
+                                        .choiceOptions
+                                        .isNullOrEmpty
+                                    : true
+                                : true)) {
+                          homeBloc.add(AddCurrentColorSizeEvent());
+                        } else if (!(state.cachedProductWithoutRelatedProductsModel[productId] !=
+                                null
+                            ? state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            productId]!
+                                        .product !=
+                                    null
+                                ? state
+                                    .cachedProductWithoutRelatedProductsModel[productId]!
+                                    .product!
+                                    .choiceOptions
+                                    .isNullOrEmpty
+                                : true
+                            : true)) {
+                          String sizeSelect = (state
                                           .cachedProductWithoutRelatedProductsModel[
-                                              productItem!.productId
-                                                  .toString()]!
-                                          .product !=
-                                      null
-                                  ? state
+                                              productId]!
+                                          .product!
+                                          .choiceOptions
+                                          ?.length ??
+                                      0) ==
+                                  0
+                              ? ""
+                              : state
                                       .cachedProductWithoutRelatedProductsModel[
-                                          productItem!.productId.toString()]!
+                                          productId]!
                                       .product!
-                                      .choiceOptions
-                                      .isNullOrEmpty
-                                  : true
-                              : true)) {
-                        homeBloc.add(AddCurrentColorSizeEvent(
-                            choice_1: null, choiceOption: null));
+                                      .choiceOptions![0]
+                                      .options?[(state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productId]!
+                                                  .product
+                                                  ?.choiceOptions?[0]
+                                                  .options
+                                                  ?.length ??
+                                              0) ~/
+                                          2]
+                                      .name ??
+                                  "";
+                          String sizeOptionSelect = (state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productId]!
+                                          .product!
+                                          .choiceOptions
+                                          ?.length ??
+                                      0) ==
+                                  0
+                              ? ""
+                              : state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productId]!
+                                      .product!
+                                      .choiceOptions![0]
+                                      .options?[(state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productId]!
+                                                  .product
+                                                  ?.choiceOptions?[0]
+                                                  .options
+                                                  ?.length ??
+                                              0) ~/
+                                          2]
+                                      .option ??
+                                  "";
+                          homeBloc.add(AddCurrentColorSizeEvent(
+                              choice_1: sizeSelect,
+                              choiceOption: sizeOptionSelect));
+                        }
                       }
                       if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                               GetProductDetailWithoutSimilarRelatedProductsStatus
@@ -690,7 +747,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           currentSelectedColor = 0;
                         }
                         Future.delayed(
-                          Duration(milliseconds: 600),
+                          const Duration(milliseconds: 600),
                           () {
                             homeBloc.add(AddSizesForColorsEvent(
                                 currentColorName:
@@ -790,7 +847,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   .cachedProductWithoutRelatedProductsModel
                                   .containsKey(
                                       productItem!.productId.toString())) ...{
-                                SizedBox.shrink()
+                                const SizedBox.shrink()
                               } else ...{
                                 ProductDetailsDescriptionWidget(
                                   description: productItem!.details ?? " ",
@@ -822,7 +879,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   panelController: panelBuyersProductRate,
                                   productId: (productItem?.productId ?? "")
                                       .toString()),
-                              lableInfoProduct(),
+                              const lableInfoProduct(),
 
                               if (!state
                                       .cachedProductWithoutRelatedProductsModel
@@ -847,7 +904,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                               .isNullOrEmpty
                                           : true
                                       : true)) ...{
-                                SizedBox.shrink()
+                                const SizedBox.shrink()
                               } else ...{
                                 SizedBox(
                                     height: 52,
@@ -864,7 +921,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                         physics: const ClampingScrollPhysics(),
                                         shrinkWrap: true,
                                         scrollDirection: Axis.horizontal,
-                                        padding: EdgeInsets.only(
+                                        padding: const EdgeInsets.only(
                                             left: 10, right: 10),
                                         itemBuilder: (context, index) {
                                           return ProductDetailsChipWidget(
@@ -886,25 +943,25 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                           );
                                         },
                                         separatorBuilder: (context, index) {
-                                          return SizedBox(
+                                          return const SizedBox(
                                             width: 5,
                                           );
                                         },
                                       ),
                                     )),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 )
                               },
 
-                              if (!productItem!
-                                  .syncColorImages.isNullOrEmpty) ...{
+                              if ((productItem!.syncColorImages?.length ?? 0) >
+                                  1) ...{
                                 ValueListenableBuilder<bool>(
                                   valueListenable: visibleSizeAndColorCard,
                                   builder:
                                       (context, _visibleSizeAndColorCard, _) {
                                     return !_visibleSizeAndColorCard
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : InkWell(
                                             onTap: () =>
                                                 panelColorImages.open(),
@@ -1097,12 +1154,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   onTap: () {
                                     panelBuyersComments.open();
                                   },
-                                  child: BuyerComment()),
+                                  child: const BuyerComment()),
                               InkWell(
                                   onTap: () {
                                     panelBuyersSeller.open();
                                   },
-                                  child: BuyerSellerChat()),
+                                  child: const BuyerSellerChat()),
                               if (!state
                                       .cachedProductWithoutRelatedProductsModel
                                       .containsKey(
@@ -1126,14 +1183,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                               .isNullOrEmpty
                                           : true
                                       : true)) ...{
-                                SizedBox.shrink()
+                                const SizedBox.shrink()
                               } else ...{
                                 ValueListenableBuilder<bool>(
                                     valueListenable: visibleSizeAndColorCard,
                                     builder:
                                         (context, _visibleSizeAndColorCard, _) {
                                       return !_visibleSizeAndColorCard
-                                          ? SizedBox.shrink()
+                                          ? const SizedBox.shrink()
                                           : DisplaySizesCardNew(
                                               productItem: productItem!
                                                   .copyWith(
@@ -1240,11 +1297,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           state.getFullProductDetailsStatus ==
                               GetFullProductDetailsStatus.success)*/
                       ) {
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
                   productItem = state
                       .productContentForStatusOfOpeningProductDetailsDirectly!;
-                  Future.delayed(Duration(seconds: 1), () {
+                  Future.delayed(const Duration(seconds: 1), () {
                     if (widget.fromNotificationComment) {
                       panelControllerForCart.open();
                       currentActiveTab.value = 0;
@@ -1439,8 +1496,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
                       currentVariantType =
                           "${currentSelectedColorOption != "" ? currentSelectedColorOption : ""}" +
-                              "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && state.currentColorSizeForCart?["choiceOption"] != "") && (currentSelectedColorOption != "") ? "-" : ""}" +
-                              "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && state.currentColorSizeForCart?["choiceOption"] != "") ? "${state.currentColorSizeForCart?["choiceOption"]}" : ""}";
+                              "${!(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && (currentSelectedColorOption != "") ? "-" : ""}" +
+                              "${!(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) ? "${(state.currentColorSizeForCart?["choiceOption"] == null || state.currentColorSizeForCart?["choiceOption"] == "") ? state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions![0].options![(state.cachedProductWithoutRelatedProductsModel[productId]!.product?.choiceOptions?[0].options?.length ?? 0) ~/ 2].option : state.currentColorSizeForCart?["choiceOption"]}" : ""}";
                       currentVariation = state
                           .authProductDetailsModel?.data?.variation
                           ?.firstWhere(
@@ -1449,12 +1506,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           return Variation(variantNotifyForUser: false);
                         },
                       );
+                      print(
+                          "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${currentVariation?.type}");
                       print(currentVariation?.type);
 
-                      Future.delayed(Duration(milliseconds: 600),
+                      Future.delayed(const Duration(milliseconds: 600),
                           () => visibleSizeAndColorCard.value = true);
                       Future.delayed(
-                        Duration(milliseconds: 1200),
+                        const Duration(milliseconds: 1200),
                         () {
                           if (!isChangedvariationWhenQtyZeroForFirst) {
                             isChangedvariationWhenQtyZeroForFirst = true;
@@ -1520,7 +1579,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                       width: 100.w,
                                       height: 70.h,
                                       decoration: BoxDecoration(
-                                        border: Border.all(width: 1),
+                                        border: Border.all(),
                                         borderRadius:
                                             BorderRadius.circular(25.r),
                                       ),
@@ -1698,8 +1757,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                             .getRedeemDateForProduct(
                                                 productItem!.productId
                                                     .toString())
-                                            ?.isAfter(DateTime.now()
-                                                .add(Duration(seconds: 1))) ==
+                                            ?.isAfter(DateTime.now().add(
+                                                const Duration(seconds: 1))) ==
                                         true &&
                                     state
                                             .cachedProductWithoutRelatedProductsModel[
@@ -1991,7 +2050,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
   List<Widget> appBarActionList() {
     return [
-      LanguageService.rtl ? Spacer() : SizedBox.shrink(),
+      LanguageService.rtl ? const Spacer() : const SizedBox.shrink(),
       Padding(
         padding: const EdgeInsetsDirectional.only(end: 10.0),
         child: BlocBuilder<HomeBloc, HomeState>(
@@ -2018,7 +2077,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         prefsRepository.marketToken == "" ||
                         prefsRepository.marketToken == null)) {
               Future.delayed(
-                Duration(seconds: 5),
+                const Duration(seconds: 5),
                 () {
                   if (widget.productItem != null) {
                     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
@@ -2049,31 +2108,28 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     state.deleteItemInCartStatus ==
                         DeleteItemInCartStatus.loading ||
                     state.addItemInCartStatus == AddItemInCartStatus.loading
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                        Shimmer.fromColors(
-                          baseColor: Colors.grey.shade100,
-                          highlightColor: Colors.grey.shade300,
-                          child: Container(
-                            height: 25.h,
-                            width: 75,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
+                ? Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                    Shimmer.fromColors(
+                      baseColor: Colors.grey.shade100,
+                      highlightColor: Colors.grey.shade300,
+                      child: Container(
+                        height: 25.h,
+                        width: 75,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        SvgPicture.asset(
-                          AppAssets.bagsOrderSvg,
-                          width: 20,
-                          color: const Color(0xff513AAF),
-                        ),
-                      ])
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    SvgPicture.asset(
+                      AppAssets.bagsOrderSvg,
+                      width: 20,
+                      color: const Color(0xff513AAF),
+                    ),
+                  ])
                 : Container(
                     alignment: Alignment.center,
                     height: 35,
@@ -2081,7 +2137,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => CartPage(
+                              builder: (context) => const CartPage(
                                 fromeFilters: true,
                               ),
                             ),
@@ -2096,7 +2152,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           // );
                         },
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
@@ -2123,19 +2178,19 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   letterSpacing: 0.18,
                                   height: 1.4),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 2,
                             ),
                             Text(
                               priceSymbol,
                               style: context.textTheme.bodyMedium?.ra.copyWith(
-                                decorationColor: Color(0xffFEFEFE),
+                                decorationColor: const Color(0xffFEFEFE),
                                 fontSize: 11.sp,
                                 height: 1.4,
-                                color: Color(0xff8D8D8D),
+                                color: const Color(0xff8D8D8D),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             SvgPicture.asset(
@@ -2168,47 +2223,47 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                   state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                       GetProductDetailWithoutSimilarRelatedProductsStatus
                           .loading
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Padding(
-                        padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+                        padding:
+                            const EdgeInsetsGeometry.symmetric(horizontal: 20),
                         child: SvgPicture.asset(
                           AppAssets.productStorySvg,
                         )),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Padding(
-                        padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+                        padding:
+                            const EdgeInsetsGeometry.symmetric(horizontal: 20),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             MyTextWidget(
                               '${LocaleKeys.product_story.tr()}',
                               style: context.textTheme.titleLarge?.rr.copyWith(
-                                  color: Color(0xff1D1D1D), fontSize: 11),
+                                  color: const Color(0xff1D1D1D), fontSize: 11),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 12,
                             ),
                             SvgPicture.asset(
                               AppAssets.registerInfoSvg,
                               height: 10,
                               width: 10,
-                              color: Color(0xffC4C2C2),
+                              color: const Color(0xffC4C2C2),
                             ),
                           ],
                         )),
-                    StoriesList(), //
+                    const StoriesList(), //
                   ],
                 );
         });
@@ -2216,7 +2271,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
   Widget productDetailsLoading() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
@@ -2256,7 +2310,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 color: Colors.grey.shade600,
               ),
             )),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Padding(
@@ -2270,7 +2324,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 color: Colors.grey.shade600,
               ),
             )),
-        Spacer(),
+        const Spacer(),
         Container(
           height: 120.h, // ارتفاع الـ panel المغلقة
           decoration: BoxDecoration(
@@ -2307,7 +2361,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         width: 100.w,
                         height: 70.h,
                         decoration: BoxDecoration(
-                          border: Border.all(width: 1),
+                          border: Border.all(),
                           borderRadius: BorderRadius.circular(25.r),
                         ),
                         child: Column(
@@ -2464,18 +2518,17 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     return Container(
       width: 1.sw,
       height: 50,
-      color: Color(0xffFCFCFC),
-      margin: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 20),
+      color: const Color(0xffFCFCFC),
+      margin: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 20),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MyTextWidget(
             '${LocaleKeys.buyers_reviews_on_product_sizing.tr()}',
             style: context.textTheme.titleLarge?.rr
-                .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+                .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
           ),
-          Spacer(),
+          const Spacer(),
           SizedBox(
             height: 25,
             width: 1.sw,
@@ -2501,40 +2554,39 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
       width: 120.w,
       height: 25,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
             MyTextWidget(
               text,
               style: context.textTheme.titleLarge?.rr
-                  .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+                  .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             MyTextWidget(
               "${numOfPercent}%",
               style: context.textTheme.titleLarge?.br
-                  .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+                  .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
             )
           ]),
-          Spacer(),
+          const Spacer(),
           Stack(
             children: [
               Container(
                 height: 5,
                 width: 120.w,
                 decoration: BoxDecoration(
-                    color: Color(0xffFCFCFC),
+                    color: const Color(0xffFCFCFC),
                     borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: Color(0xffD3D3D3))),
+                    border: Border.all(color: const Color(0xffD3D3D3))),
               ),
               Container(
                 height: 5,
                 width: (numOfPercent / 100) * 120.w,
                 decoration: BoxDecoration(
-                    color: Color(0xff1D1D1D),
+                    color: const Color(0xff1D1D1D),
                     borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: Color(0xff1D1D1D))),
+                    border: Border.all(color: const Color(0xff1D1D1D))),
               )
             ],
           )
@@ -2564,7 +2616,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
             shrinkWrap: true,
             physics: const ClampingScrollPhysics(),
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 15),
+            padding:
+                const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 15),
             itemBuilder: (context, index) {
               return GestureDetector(
                   onTap: () {
@@ -2593,19 +2646,20 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       valueListenable: productNotAvailableNotifier,
                       builder: (context, _productNotAvailableNotifier, _) {
                         return _productNotAvailableNotifier != null
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : ValueListenableBuilder<bool>(
                                 valueListenable: visibleFlashDeal,
                                 builder: (context, _visibleFlashDeal, _) {
                                   bool isFlashDealEnded = false;
                                   DateTime endDate;
-                                  Duration _duration = Duration();
+                                  Duration _duration = const Duration();
                                   final now = DateTime.now();
                                   try {
                                     endDate = DateFormat('MM/dd/yyyy', 'en_US')
                                         .parse(
                                             productItem.flashDealEndDate ?? "");
-                                    endDate = endDate.add(Duration(days: 1));
+                                    endDate =
+                                        endDate.add(const Duration(days: 1));
                                   } catch (e) {
                                     endDate = DateTime.now();
                                     print('Error parsing date: $e');
@@ -2629,7 +2683,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                                       .toString())
                                                               ?.isAfter(DateTime
                                                                       .now()
-                                                                  .add(Duration(
+                                                                  .add(const Duration(
                                                                       seconds:
                                                                           1))) ==
                                                           true &&
@@ -2642,7 +2696,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                           0) >
                                                       0 ||
                                                   (!isFlashDealEnded)
-                                              ? Color(0xffFF6200)
+                                              ? const Color(0xffFF6200)
                                               : null,
                                           visibleRedeemNotifier: visibleRedeem,
                                           visibleRedeem: (GetIt.I<
@@ -2653,7 +2707,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                                   .toString())
                                                           ?.isAfter(DateTime
                                                                   .now()
-                                                              .add(Duration(
+                                                              .add(const Duration(
                                                                   seconds:
                                                                       1))) ==
                                                       true &&
@@ -2736,12 +2790,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
           ),
         ),
         productItem.videos.isNullOrEmpty
-            ? SizedBox.shrink()
+            ? const SizedBox.shrink()
             : ValueListenableBuilder<bool>(
                 valueListenable: visibleVedio,
                 builder: (context, _visibleVedio, _) {
                   return !_visibleVedio
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : Positioned(
                           bottom: 20,
                           right:
@@ -2757,11 +2811,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   width: 140,
                                   height: 200,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(
+                                      borderRadius: const BorderRadius.all(
                                         Radius.circular(15),
                                       ),
-                                      border:
-                                          Border.all(color: Color(0xff513AAF))),
+                                      border: Border.all(
+                                          color: const Color(0xff513AAF))),
                                   child: ProductVedio(
                                     imageSource: productItem
                                             .syncColorImages.isNullOrEmpty
@@ -2786,12 +2840,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           ));
                 }),
         productItem.videos.isNullOrEmpty
-            ? SizedBox.shrink()
+            ? const SizedBox.shrink()
             : ValueListenableBuilder<bool>(
                 valueListenable: visibleVedio,
                 builder: (context, _visibleVedio, _) {
                   return !_visibleVedio
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : Positioned(
                           bottom: 207,
                           right:
@@ -2806,15 +2860,15 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 height: 20,
                                 decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
+                                    borderRadius: const BorderRadius.all(
                                       Radius.circular(15),
                                     ),
-                                    border:
-                                        Border.all(color: Color(0xffFF5F61))),
+                                    border: Border.all(
+                                        color: const Color(0xffFF5F61))),
                                 child: SvgPicture.asset(
                                   AppAssets.cancelSvg,
                                   width: 10,
-                                  color: Color(0xffFF5F61),
+                                  color: const Color(0xffFF5F61),
                                 ),
                               )));
                 })
@@ -2849,13 +2903,13 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
         currentSelectedColorAfterChangeVariant = index;
 
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
                 productSlug: productSlug)));
 
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?[0].options
                     ?.firstWhere((element) =>
@@ -2877,7 +2931,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
         currentSelectedColorAfterChangeVariant = index;
 
         await Future.delayed(
-            Duration(milliseconds: 50),
+            const Duration(milliseconds: 50),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
                 productSlug: productSlug)));
@@ -2887,7 +2941,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
             (element) => (element.qty ?? 0) > 0,
             orElse: () => currentVariation!);
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?[0].options
                     ?.firstWhere(
@@ -2898,7 +2952,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     } else {
       if ((currentVariation?.type ?? "").contains("-")) {
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?[0].options
                     ?.firstWhere((element) =>
@@ -2909,7 +2963,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     (currentVariation!.type!.split("-").toList()[1]))));
       } else if (((productItem?.syncColorImages?.length ?? 0) == 0)) {
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?.length == 0
                     ? ""
@@ -2923,9 +2977,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
       currentSelectedColorAfterChangeVariant = currentSelectedColor;
     }
     await Future.delayed(
-        Duration(milliseconds: 300),
-        () => homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
-            finishLoadingAfterChangedVariationWhenQtyZero: true,
+        const Duration(milliseconds: 300),
+        () => homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
             isChangedVariationWhenQtyZero: true)));
   }
 }

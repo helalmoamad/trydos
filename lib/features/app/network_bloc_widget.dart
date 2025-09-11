@@ -31,7 +31,6 @@ class NetworkBlocSensitive extends StatelessWidget {
             duration: const Duration(milliseconds: 300),
             opacity: 0.3,
             child: IgnorePointer(
-              ignoring: true,
               child: child,
             ),
           );

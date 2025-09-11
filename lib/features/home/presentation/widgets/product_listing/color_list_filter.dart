@@ -62,7 +62,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
         }
-        debounce = Timer(Duration(milliseconds: 600), () {
+        debounce = Timer(const Duration(milliseconds: 600), () {
           if (scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
             BlocProvider.of<BoutiqueBloc>(context)
@@ -101,7 +101,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
           error: error.toString());
     };
     if (widget.colors.isNullOrEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Padding(
       padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.0),
@@ -111,21 +111,21 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
           if (!widget.hideTitle) ...{
             Row(
               children: [
-                FilterSelectedMark(width: 20, height: 20),
-                SizedBox(
+                const FilterSelectedMark(width: 20, height: 20),
+                const SizedBox(
                   width: 10,
                 ),
                 MyTextWidget(
                   '${LocaleKeys.filter_by_color.tr()}',
-                  style: context.textTheme.titleMedium?.rq
-                      .copyWith(color: Color(0xff505050), height: 15 / 12),
+                  style: context.textTheme.titleMedium?.rq.copyWith(
+                      color: const Color(0xff505050), height: 15 / 12),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
-                  color: Color(0xffD3D3D3),
+                  color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
                     builder: (context, state) {
@@ -133,7 +133,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                       GetProductFiltersStatus.loading) {
                     return Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         TrydosLoader(
@@ -142,11 +142,11 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                       ],
                     );
                   }
-                  return SizedBox.shrink();
+                  return const SizedBox.shrink();
                 })
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           },
@@ -171,7 +171,6 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                     element == widget.colors[index]) ??
                             false);
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         GestureDetector(
                           key: TestVariables.kTestMode == false
@@ -255,7 +254,6 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                             } else {
                               boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                 fromHomePageSearch: widget.fromHomeSearch,
-                                requestToUpdateFilters: true,
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: GetProductFiltersModel(
@@ -277,22 +275,23 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                     BoxShadow(
                                         color: Colors.black.withOpacity(0.05),
                                         blurRadius: 3,
-                                        offset: Offset(0, 3))
+                                        offset: const Offset(0, 3))
                                   ],
-                                  border: Border.all(color: Color(0xffC4C2C2)),
+                                  border: Border.all(
+                                      color: const Color(0xffC4C2C2)),
                                 ),
                               ),
                               Visibility(
                                   visible: isSelected,
-                                  child:
-                                      FilterSelectedMark(width: 20, height: 20))
+                                  child: const FilterSelectedMark(
+                                      width: 20, height: 20))
                             ],
                           ),
                         ),
                       ],
                     );
                   },
-                  separatorBuilder: (ctx, index) => SizedBox(
+                  separatorBuilder: (ctx, index) => const SizedBox(
                         width: 10,
                       ),
                   itemCount: widget.colors.length)),

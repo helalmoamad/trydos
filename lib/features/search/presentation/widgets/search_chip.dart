@@ -33,11 +33,11 @@ class SearchChip extends StatelessWidget {
           error: error.toString());
     };
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
-      padding: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
+          border: Border.all(color: const Color(0xffC4C2C2), width: 0.3)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,41 +48,41 @@ class SearchChip extends StatelessWidget {
               children: [
                 MyTextWidget(
                   title,
-                  style: context.textTheme.titleMedium?.rq
-                      .copyWith(color: Color(0xff505050), height: 15 / 12),
+                  style: context.textTheme.titleMedium?.rq.copyWith(
+                      color: const Color(0xff505050), height: 15 / 12),
                 ),
                 SvgPicture.asset(
                   AppAssets.backArrowArabic,
-                  color: Color(0xffC4C2C2),
+                  color: const Color(0xffC4C2C2),
                   width: 10,
                   height: 10,
                 )
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           SizedBox(
             height: 30,
             child: ScrollConfiguration(
-              behavior: CupertinoScrollBehavior(),
+              behavior: const CupertinoScrollBehavior(),
               child: Stack(
                 alignment: Alignment.centerRight,
                 children: [
                   ListView.separated(
                       shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
+                      physics: const ClampingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         return Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: Color(0xffF8F8F8),
+                            color: const Color(0xffF8F8F8),
                           ),
-                          padding:
-                              EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 10),
                           child: Center(
                             child: justLogo
                                 ? SvgPicture.asset(
@@ -90,15 +90,13 @@ class SearchChip extends StatelessWidget {
                                     height: 10,
                                   )
                                 : Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.qualityBadgeSvg,
                                         width: 15,
                                         height: 15,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       MyTextWidget(
@@ -106,7 +104,7 @@ class SearchChip extends StatelessWidget {
                                         style: context.textTheme.titleLarge?.rq
                                             .copyWith(
                                                 height: 18 / 14,
-                                                color: Color(0xff8D8D8D)),
+                                                color: const Color(0xff8D8D8D)),
                                       )
                                     ],
                                   ),
@@ -114,7 +112,7 @@ class SearchChip extends StatelessWidget {
                         );
                       },
                       separatorBuilder: (context, index) {
-                        return SizedBox(
+                        return const SizedBox(
                           width: 10,
                         );
                       },

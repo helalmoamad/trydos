@@ -114,7 +114,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       storageDirectory: await getApplicationDocumentsDirectory(),
     );
     if (!isLoadDotenvFile) {
-      await dotenv.load(fileName: ".env");
+      await dotenv.load();
     }
     HttpOverrides.global = MyHttpOverrides();
 
@@ -289,7 +289,7 @@ void clearvideoProductInListingController({required String productSlug}) {
   }
 }
 
-int applicationVersion = 8;
+int applicationVersion = 12;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
@@ -325,7 +325,7 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
-    dotenv.load(fileName: ".env"),
+    dotenv.load(),
     configureDependencies(),
     NotificationProcess().init(),
   ]);
@@ -348,7 +348,8 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-  FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
+  FirebaseAnalytics.instance
+      .setSessionTimeoutDuration(const Duration(seconds: 20));
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
   // GetIt.I<PrefsRepository>().removeRedeemDateForAnyProductFinished();

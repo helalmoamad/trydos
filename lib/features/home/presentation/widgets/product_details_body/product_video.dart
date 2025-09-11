@@ -93,7 +93,7 @@ class _ProductVedioState extends State<ProductVedio> {
                         child: VideoPlayer(videoProductInListingController),
                       )));
             } else {
-              videoChild = SizedBox.shrink();
+              videoChild = const SizedBox.shrink();
             }
 
             return Stack(
@@ -126,7 +126,7 @@ class _ProductVedioState extends State<ProductVedio> {
                     ? TrydosLoader(
                         size: 20,
                       )
-                    : SizedBox.shrink()
+                    : const SizedBox.shrink()
               ],
             );
           },

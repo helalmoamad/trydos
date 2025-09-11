@@ -33,12 +33,12 @@ class _CountryDropdownState extends State<NotificationFrequencyDropdown> {
         child: DropdownButton2(
           hint: Text(
             widget.selectedNotificationFrequency,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
           items: widget.notificationFrequency.map((e) {
             return DropdownMenuItem<String>(
               value: e,
-              child: Text(e, style: TextStyle(fontSize: 16)),
+              child: Text(e, style: const TextStyle(fontSize: 16)),
             );
           }).toList(),
           value: widget.selectedNotificationFrequency,

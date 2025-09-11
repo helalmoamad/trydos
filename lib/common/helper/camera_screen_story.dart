@@ -19,7 +19,7 @@ import '../../features/app/my_text_widget.dart';
 class CameraScreenStory extends StatefulWidget {
   List<CameraDescription> cameras;
 
-  CameraScreenStory(this.cameras);
+  CameraScreenStory(this.cameras, {super.key});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -33,7 +33,7 @@ class _CameraScreenState extends State<CameraScreenStory>
   ValueNotifier<bool> addUrlToStory = ValueNotifier(false);
   //todo start timer for recording video
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;
       });
@@ -84,7 +84,7 @@ class _CameraScreenState extends State<CameraScreenStory>
   @override
   void initState() {
     storyBloc = BlocProvider.of<StoryBloc>(context);
-    storyBloc.add(SetStoryLinkEvent(""));
+    storyBloc.add(const SetStoryLinkEvent(""));
 // Hide the status bar
 //    SystemChrome.setEnabledSystemUIOverlays([]);
 //;
@@ -118,7 +118,7 @@ class _CameraScreenState extends State<CameraScreenStory>
   //todo exposure values
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
-  double _currentExposureOffset = 0.0;
+  final double _currentExposureOffset = 0.0;
   XFile? rawImage;
   File? videoFile;
   //todo zoom values
@@ -191,7 +191,7 @@ class _CameraScreenState extends State<CameraScreenStory>
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {
-          Future.delayed(Duration(milliseconds: 300),
+          Future.delayed(const Duration(milliseconds: 300),
               () => FocusScope.of(context).unfocus());
           return Future.value(false);
         }
@@ -231,7 +231,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                 child: Stack(children: [
                                   //todo show a live camera
                                   videoFile != null || imageFile != null
-                                      ? SizedBox.shrink()
+                                      ? const SizedBox.shrink()
                                       : controller!.buildPreview(),
 
                                   _isVideoCameraSelected
@@ -242,7 +242,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                 .only(top: 55.0),
                                             child: MyTextWidget(
                                               '0 : $_seconds',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.bold),
@@ -281,7 +281,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                         onNewCameraSelected(
                                             controller!.description);
                                       },
-                                      hint: MyTextWidget("Select item"),
+                                      hint: const MyTextWidget("Select item"),
                                     ),
                                   ),
 
@@ -294,7 +294,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                         width: double.infinity,
                                         height: 30,
                                         child: _addUrlToStory
-                                            ? SizedBox.shrink()
+                                            ? const SizedBox.shrink()
                                             : Row(
                                                 children: [
                                                   Expanded(
@@ -332,7 +332,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                                 .toStringAsFixed(
                                                                     1) +
                                                             'x',
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             color:
                                                                 Colors.white),
                                                       ),
@@ -350,7 +350,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                       padding: const EdgeInsetsDirectional.only(
                                           bottom: 12, start: 16),
                                       child: _addUrlToStory
-                                          ? SizedBox.shrink()
+                                          ? const SizedBox.shrink()
                                           : Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceAround,
@@ -374,7 +374,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                   child: Stack(
                                                     alignment: Alignment.center,
                                                     children: [
-                                                      Icon(
+                                                      const Icon(
                                                         Icons.circle,
                                                         color: Colors.black38,
                                                         size: 60,
@@ -390,7 +390,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                   ),
                                                 ),
                                                 _addUrlToStory
-                                                    ? SizedBox.shrink()
+                                                    ? const SizedBox.shrink()
                                                     : _isVideoCameraSelected
                                                         ? GestureDetector(
                                                             onLongPress:
@@ -412,7 +412,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                               children: [
                                                                 Container(
                                                                   decoration:
-                                                                      BoxDecoration(
+                                                                      const BoxDecoration(
                                                                           shape:
                                                                               BoxShape.circle),
                                                                   width: 50,
@@ -434,13 +434,13 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                                     ),
                                                                   ),
                                                                 ),
-                                                                Icon(
+                                                                const Icon(
                                                                     Icons
                                                                         .circle,
                                                                     color: Colors
                                                                         .white38,
                                                                     size: 80),
-                                                                Icon(
+                                                                const Icon(
                                                                     Icons
                                                                         .circle,
                                                                     color: Colors
@@ -457,7 +457,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                                                 Colors.red,
                                                                             borderRadius: BorderRadius.circular(4)),
                                                                       )
-                                                                    : Icon(
+                                                                    : const Icon(
                                                                         Icons
                                                                             .circle,
                                                                         color: Colors
@@ -496,7 +496,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                                   .dispose();
 
                                                               Future.delayed(
-                                                                  Duration(
+                                                                  const Duration(
                                                                       milliseconds:
                                                                           600),
                                                                   () {
@@ -506,7 +506,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                                               });
                                                               //                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ShowMessage(imageFile)));
                                                             },
-                                                            child: Stack(
+                                                            child: const Stack(
                                                               alignment:
                                                                   Alignment
                                                                       .center,
@@ -534,7 +534,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                 ]),
                               ),
                         _addUrlToStory
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -608,7 +608,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                 ],
                               ),
                         !_addUrlToStory
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : Padding(
                                 padding: const EdgeInsets.all(10),
                                 child: AppTextField(
@@ -618,11 +618,13 @@ class _CameraScreenState extends State<CameraScreenStory>
                                   },
                                   textInputAction: TextInputAction.done,
                                   onEditingComplete: () {
-                                    Future.delayed(Duration(milliseconds: 300),
+                                    Future.delayed(
+                                        const Duration(milliseconds: 300),
                                         () => FocusScope.of(context).unfocus());
                                   },
                                   onFieldSubmitted: (val) {
-                                    Future.delayed(Duration(milliseconds: 300),
+                                    Future.delayed(
+                                        const Duration(milliseconds: 300),
                                         () => FocusScope.of(context).unfocus());
                                   },
                                   hintText:
@@ -630,12 +632,12 @@ class _CameraScreenState extends State<CameraScreenStory>
                                 ),
                               ),
                         _addUrlToStory
-                            ? SizedBox.shrink()
-                            : SizedBox(
+                            ? const SizedBox.shrink()
+                            : const SizedBox(
                                 height: 20,
                               ),
                         !_addUrlToStory
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : Container(
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
@@ -672,7 +674,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                     child: Text("${LocaleKeys.send.tr()}")),
                               ),
                         _addUrlToStory
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -823,7 +825,7 @@ class _CameraScreenState extends State<CameraScreenStory>
 
 class VideoPlayerWidget extends StatefulWidget {
   final File file;
-  VideoPlayerWidget(this.file);
+  VideoPlayerWidget(this.file, {super.key});
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
@@ -871,7 +873,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   if (!_controller.value.isPlaying)
                     Container(
                       color: Colors.black26,
-                      child: Icon(
+                      child: const Icon(
                         Icons.play_arrow,
                         color: Colors.white,
                         size: 64,
@@ -881,6 +883,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               ),
             ),
           )
-        : Center(child: CircularProgressIndicator());
+        : const Center(child: CircularProgressIndicator());
   }
 }

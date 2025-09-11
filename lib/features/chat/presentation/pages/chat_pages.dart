@@ -79,7 +79,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     //     .request();
     //todo debug
 //    Fluttertoast.showToast(msg: contacts.toString(),toastLength: Toast.LENGTH_LONG);
-    chatBloc.add(SaveContactsEvent());
+    chatBloc.add(const SaveContactsEvent());
   }
 
   @override
@@ -90,8 +90,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
 
-    chatBloc.add(GetChatsEvent(limit: 10));
-    chatBloc.add(SaveContactsEvent());
+    chatBloc.add(const GetChatsEvent(limit: 10));
+    chatBloc.add(const SaveContactsEvent());
     chatPages.insert(
       0,
       ChatPageContent(onSendForwardMessage: widget.onSendForwardMessage),
@@ -127,11 +127,11 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     if (debounce?.isActive ?? false) {
       debounce!.cancel();
     }
-    debounce = Timer(Duration(milliseconds: 600), () {
+    debounce = Timer(const Duration(milliseconds: 600), () {
       if ((scrollController.offset >=
               scrollController.position.maxScrollExtent * 0.7) &&
           BlocProvider.of<AppBloc>(context).state.tabIndexInChat == 0) {
-        chatBloc.add(GetChatsEvent(limit: 10, getWithPagination: true));
+        chatBloc.add(const GetChatsEvent(limit: 10, getWithPagination: true));
       }
     });
   }
@@ -188,7 +188,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
             child: Scaffold(
               floatingActionButton: FloatingActionButton(
                 key: TestVariables.kTestMode
-                    ? Key(
+                    ? const Key(
                         WidgetsKeys.myContactsFloatingActionKey,
                       )
                     : null,
@@ -205,14 +205,11 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               appBar: widget.hideCallsAndStories
                   ? TrydosAppBar(
                       appBarParams: AppBarParams(
-                          dividerBottom: false,
                           hasLeading: false,
                           surfaceTintColor: Colors.transparent,
                           elevation: 0,
                           child: SafeArea(
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 InkWell(
                                   onTap: () {
@@ -288,7 +285,6 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                           boxShadow: [
                             BoxShadow(
                               color: Color(0x1a000000),
-                              offset: Offset(0, 0),
                               blurRadius: 6,
                             ),
                           ],

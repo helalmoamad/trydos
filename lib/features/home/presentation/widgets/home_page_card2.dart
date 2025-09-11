@@ -19,18 +19,15 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
-import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
-import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
 
 class HomePageCard2 extends cupertino.StatelessWidget {
   HomePageCard2({
@@ -80,16 +77,11 @@ class HomePageCard2 extends cupertino.StatelessWidget {
           onTap: () {
             boutiqueBloc.add(ChangeAppliedFiltersEvent(
               boutiqueSlug: boutique.slug!,
-              category: null,
-              filtersAppliedByUser: null,
               resetAppliedFilters: true,
             ));
             boutiqueBloc.add(ChangeSelectedFiltersEvent(
               requestToUpdateFilters: false,
-              fromHomePageSearch: false,
               boutiqueSlug: boutique.slug!,
-              category: null,
-              filtersChoosedByUser: null,
             ));
 
             boutiqueBloc.add(GetProductsWithFiltersEvent(
@@ -97,23 +89,21 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                 cashedOrginalBoutique: true,
                 boutiqueSlug: boutique.slug!,
                 fromSearch: false,
-                category: null,
                 context: context,
-                searchText: null,
                 offset: 1));
-            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
-            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
 
             boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
-                sizeAndColorFilterinTextToSearch: {}));
+                sizeAndColorFilterinTextToSearch: const {}));
             appBloc.add(HideBottomNavigationBar(false));
             appBloc.add(ShowOrHideBars(true));
             appBloc.add(ChangeIndexForSearch(1));
 
             Future.delayed(
-                Duration(milliseconds: 300),
+                const Duration(milliseconds: 300),
                 () => Navigator.push(
                       context,
                       PageRouteBuilder(
@@ -162,7 +152,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xff000000).withOpacity(0.1),
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                       blurRadius: 10,
                     ),
                   ],
@@ -228,15 +218,15 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                 height: 20,
                                 width: 40,
                               )
-                            : cupertino.SizedBox.shrink(),
-                        SizedBox(
+                            : const cupertino.SizedBox.shrink(),
+                        const SizedBox(
                           height: 5,
                         ),
                         MyTextWidget(
                           boutique.name!,
                           style: context.textTheme.titleMedium?.rr.copyWith(
                             fontSize: 12,
-                            color: Color(0xff505050),
+                            color: const Color(0xff505050),
                           ),
                         ),
                         /*Html(
@@ -251,7 +241,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                           },
                         ),*/
                         if (!withSlidingImages)
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                       ],
@@ -268,8 +258,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                 itemCount: boutique.banners!.length,
                                 itemBuilder: (context, index, _) {
                                   // 🔧 إضافة lazy loading للصور
-                                  bool isVisible =
-                                      index <= 2; // عرض أول 3 صور فقط
 
                                   print(
                                       "🖼️ Banner $index URL: ${boutique.banners?[index].filePath ?? 'null'}");
@@ -289,7 +277,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                             border: Border.all(
                                                 width: 0.5,
                                                 color: const Color(0xfffafafa)),
-                                            boxShadow: [
+                                            boxShadow: const [
                                               BoxShadow(
                                                 color: Colors.white,
                                                 offset: Offset(0, 3),
@@ -303,7 +291,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                             imageFit: BoxFit.contain,
                                             width: 1.sw,
                                             innerShadowYOffset: 3,
-                                            withInnerShadow: false,
                                             height: 155,
                                             imageSource: 'home_page_card2',
                                           ),
@@ -318,7 +305,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                               BoxShadow(
                                                   color: Colors.white
                                                       .withOpacity(0.7),
-                                                  offset: Offset(0, 3),
+                                                  offset: const Offset(0, 3),
                                                   blurRadius: 6,
                                                   inset: true),
                                             ],
@@ -329,11 +316,9 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                   );
                                 },
                                 options: CarouselOptions(
-                                  autoPlay: false,
-                                  autoPlayInterval: Duration(seconds: 30),
+                                  autoPlayInterval: const Duration(seconds: 30),
                                   autoPlayAnimationDuration:
-                                      Duration(milliseconds: 300),
-                                  initialPage: 0,
+                                      const Duration(milliseconds: 300),
                                   /*  onPageChanged: (int index, _) {
                                     Future.delayed(Duration(milliseconds: 100),
                                         () {
@@ -345,8 +330,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                   height: 155,
                                   enableInfiniteScroll: false,
                                   viewportFraction: 1.0,
-                                  pauseAutoPlayOnTouch: true,
-                                  pauseAutoPlayOnManualNavigate: true,
                                   pauseAutoPlayInFiniteScroll: true,
                                 )))
                         : Stack(
@@ -359,7 +342,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                   border: Border.all(
                                       width: 0.5,
                                       color: const Color(0xfffafafa)),
-                                  boxShadow: [
+                                  boxShadow: const [
                                     BoxShadow(
                                       color: Colors.white,
                                       offset: Offset(0, 3),
@@ -371,7 +354,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                     borderRadius: BorderRadius.circular(15),
                                     child: ((boutique.banners?.length ?? 0) ==
                                             0)
-                                        ? cupertino.SizedBox.shrink()
+                                        ? const cupertino.SizedBox.shrink()
                                         : MyCachedNetworkImage(
                                             imageSource: 'home_page_card2',
                                             imageUrl:
@@ -391,7 +374,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                   boxShadow: [
                                     BoxShadow(
                                         color: Colors.white.withOpacity(0.7),
-                                        offset: Offset(0, 3),
+                                        offset: const Offset(0, 3),
                                         blurRadius: 6,
                                         inset: true),
                                   ],
@@ -403,7 +386,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                 ],
               )),
               PositionedDirectional(
-                child: cupertino.Container(
+                child: cupertino.SizedBox(
                   height: 12,
                   child: cupertino.ListView.separated(
                     separatorBuilder: (context, index) => 13.horizontalSpace,
@@ -414,14 +397,10 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                           onTap: () {
                             boutiqueBloc.add(ChangeAppliedFiltersEvent(
                               boutiqueSlug: boutique.slug!,
-                              category: null,
-                              filtersAppliedByUser: null,
                               resetAppliedFilters: true,
                             ));
                             boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                              fromHomePageSearch: false,
                               boutiqueSlug: boutique.slug!,
-                              category: null,
                             ));
 
                             boutiqueBloc.add(GetProductsWithFiltersEvent(
@@ -429,24 +408,24 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                 cashedOrginalBoutique: true,
                                 boutiqueSlug: boutique.slug!,
                                 fromSearch: false,
-                                category: null,
                                 context: context,
-                                searchText: null,
                                 offset: 1));
-                            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
-                                isChangedVariationWhenQtyZero: false));
-                            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
-                                isChangedVariationWhenQtyZero: false));
+                            homeBloc.add(
+                                const IsChangedVariationWhenQtyZeroEvent(
+                                    isChangedVariationWhenQtyZero: false));
+                            homeBloc.add(
+                                const IsChangedVariationWhenQtyZeroEvent(
+                                    isChangedVariationWhenQtyZero: false));
 
                             boutiqueBloc.add(
                                 AddSizeAndColorFilterinTextToSearchEvent(
-                                    sizeAndColorFilterinTextToSearch: {}));
+                                    sizeAndColorFilterinTextToSearch: const {}));
                             appBloc.add(HideBottomNavigationBar(false));
                             appBloc.add(ShowOrHideBars(true));
                             appBloc.add(ChangeIndexForSearch(1));
 
                             Future.delayed(
-                                Duration(milliseconds: 300),
+                                const Duration(milliseconds: 300),
                                 () => Navigator.push(
                                       context,
                                       PageRouteBuilder(
@@ -457,7 +436,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                           banner: boutique.banners,
                                           withSlidingImages: withSlidingImages,
                                           boutiqueSlug: boutique.slug!,
-                                          category: null,
                                           boutiqueName: boutique.name,
                                           boutiqueFirstBanner:
                                               boutique.banners![0].filePath!,
@@ -568,7 +546,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                         height: 10.w,
                       ),
                       Transform.translate(
-                        offset: Offset(10, 0),
+                        offset: const Offset(10, 0),
                         child: SizedBox(
                           width: 340.w,
                           height: focused != -1 ? 100.w : 60.w,
@@ -612,15 +590,11 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                             boutiqueBloc
                                                 .add(ChangeAppliedFiltersEvent(
                                               boutiqueSlug: boutique.slug!,
-                                              category: null,
-                                              filtersAppliedByUser: null,
                                               resetAppliedFilters: true,
                                             ));
                                             boutiqueBloc
                                                 .add(ChangeSelectedFiltersEvent(
-                                              fromHomePageSearch: false,
                                               boutiqueSlug: boutique.slug!,
-                                              category: null,
                                             ));
 
                                             boutiqueBloc
@@ -632,12 +606,10 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                                       .childCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
-                                              filtersAppliedByUser: null,
                                               resetAppliedFilters: true,
                                             ));
                                             boutiqueBloc
                                                 .add(ChangeSelectedFiltersEvent(
-                                              fromHomePageSearch: false,
                                               boutiqueSlug: boutique.slug!,
                                               category: index == 7
                                                   ? null
@@ -645,7 +617,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                                       .childCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
-                                              filtersChoosedByUser: null,
                                             ));
 
                                             boutiqueBloc.add(
@@ -662,21 +633,20 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                                                 index]
                                                             .categorySlug,
                                                     context: context,
-                                                    searchText: null,
                                                     offset: 1));
 
                                             homeBloc.add(
-                                                IsChangedVariationWhenQtyZeroEvent(
+                                                const IsChangedVariationWhenQtyZeroEvent(
                                                     isChangedVariationWhenQtyZero:
                                                         false));
                                             homeBloc.add(
-                                                IsChangedVariationWhenQtyZeroEvent(
+                                                const IsChangedVariationWhenQtyZeroEvent(
                                                     isChangedVariationWhenQtyZero:
                                                         false));
 
                                             boutiqueBloc.add(
                                                 AddSizeAndColorFilterinTextToSearchEvent(
-                                                    sizeAndColorFilterinTextToSearch: {}));
+                                                    sizeAndColorFilterinTextToSearch: const {}));
                                             appBloc.add(
                                                 HideBottomNavigationBar(false));
                                             appBloc.add(ShowOrHideBars(true));
@@ -684,7 +654,8 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                                 .add(ChangeIndexForSearch(1));
 
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
+                                                const Duration(
+                                                    milliseconds: 300),
                                                 () => Navigator.push(
                                                       context,
                                                       PageRouteBuilder(
@@ -795,38 +766,36 @@ class ProductItemCircle extends StatelessWidget {
         alignment: Alignment.bottomCenter,
         children: [
           AnimatedOpacity(
-            duration: Duration(milliseconds: 150),
+            duration: const Duration(milliseconds: 150),
             opacity: isFocused ? 1 : 0,
             curve: Curves.easeInOut,
             child: Transform.translate(
               offset: Offset(0, isFocused ? 35.w : 0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    MyTextWidget(
-                      name,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleMedium?.rr.copyWith(
-                          color: Color(0xff8E8E8E),
-                          letterSpacing: 0,
-                          height: 1.43),
-                    ),
-                    MyTextWidget(
-                      countProducts,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleMedium?.rr.copyWith(
-                          color: Color(0xff8E8E8E),
-                          fontSize: 8.sp,
-                          letterSpacing: 0,
-                          height: 1.375),
-                    )
-                  ]),
+              child:
+                  Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+                MyTextWidget(
+                  name,
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.titleMedium?.rr.copyWith(
+                      color: const Color(0xff8E8E8E),
+                      letterSpacing: 0,
+                      height: 1.43),
+                ),
+                MyTextWidget(
+                  countProducts,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.titleMedium?.rr.copyWith(
+                      color: const Color(0xff8E8E8E),
+                      fontSize: 8.sp,
+                      letterSpacing: 0,
+                      height: 1.375),
+                )
+              ]),
             ),
           ),
           AnimatedScale(
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             scale: isFocused ? 1.25 : 1,
             child: Stack(
               alignment: Alignment.center,
@@ -840,7 +809,7 @@ class ProductItemCircle extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xff000000).withOpacity(0.16),
-                        offset: Offset(0, 3),
+                        offset: const Offset(0, 3),
                         blurRadius: 3,
                       ),
                     ],
@@ -864,7 +833,7 @@ class ProductItemCircle extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                           color: Colors.white.withOpacity(0.7),
-                          offset: Offset(0, 4),
+                          offset: const Offset(0, 4),
                           blurRadius: 6,
                           inset: true),
                     ],
@@ -878,15 +847,15 @@ class ProductItemCircle extends StatelessWidget {
                           color: const Color(0x98000000),
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(
-                              color: const Color(0x29000000),
+                            const BoxShadow(
+                              color: Color(0x29000000),
                               offset: Offset(0, 3),
                               blurRadius: 3,
                             ),
                             BoxShadow(
                               color: Colors.white.withOpacity(0.5),
                               inset: true,
-                              offset: Offset(0, 4),
+                              offset: const Offset(0, 4),
                               blurRadius: 6,
                             ),
                           ],

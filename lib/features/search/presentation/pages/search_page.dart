@@ -68,9 +68,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
   @override
   void initState() {
     BlocProvider.of<BoutiqueBloc>(context).add(ChangeSelectedFiltersEvent(
-        fromHomePageSearch: true,
-        boutiqueSlug: 'search',
-        filtersChoosedByUser: null));
+        fromHomePageSearch: true, boutiqueSlug: 'search'));
     widget.appearTrendingAndHistory.value = true;
     widget.controller.addListener(() {
       if (widget.controller.text.length > 2) {
@@ -110,13 +108,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
   @override
   void dispose() {
     boutiqueBloc.add(ChangeAppliedFiltersEvent(
-        boutiqueSlug: 'search',
-        filtersAppliedByUser: null,
-        resetAppliedFilters: true));
+        boutiqueSlug: 'search', resetAppliedFilters: true));
     boutiqueBloc.add(ChangeSelectedFiltersEvent(
       fromHomePageSearch: true,
       boutiqueSlug: 'search',
-      filtersChoosedByUser: null,
     ));
 
     super.dispose();
@@ -199,7 +194,9 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                 ),
                                 builder: (context, appear, child) {
                                   return SliverToBoxAdapter(
-                                    child: appear ? child! : SizedBox.shrink(),
+                                    child: appear
+                                        ? child!
+                                        : const SizedBox.shrink(),
                                   );
                                 }),
                             ValueListenableBuilder<bool>(
@@ -367,10 +364,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                       (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice == null) &&
                                       (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice == null)) &&
                                   widget.controller.text.length < 3
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : Container(
-                                  padding: EdgeInsets.all(8),
-                                  margin: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.all(8),
+                                  margin: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 10),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
@@ -381,7 +378,6 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     controller: widget.controller,
                                     boutiqueSlug: 'search',
                                     context: context,
-                                    choosedFilter: true,
                                     fromSearch: true,
                                   ),
                                 ),
@@ -394,7 +390,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                             state.choosedFiltersByUser[key]?.filters;
                         if (choosedFilterToAddToIt == null &&
                             widget.controller.text.length < 3) {
-                          return SliverToBoxAdapter(child: SizedBox.shrink());
+                          return const SliverToBoxAdapter(
+                              child: SizedBox.shrink());
                         }
                         return SliverToBoxAdapter(
                           child: Container(
@@ -440,24 +437,24 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                             (text.length) > 2 ? text : null,
                                       ));
                                       homeBloc.add(
-                                          IsChangedVariationWhenQtyZeroEvent(
+                                          const IsChangedVariationWhenQtyZeroEvent(
                                               isChangedVariationWhenQtyZero:
                                                   false));
                                       homeBloc.add(
-                                          IsChangedVariationWhenQtyZeroEvent(
+                                          const IsChangedVariationWhenQtyZeroEvent(
                                               isChangedVariationWhenQtyZero:
                                                   false));
 
                                       boutiqueBloc.add(
                                           AddSizeAndColorFilterinTextToSearchEvent(
-                                              sizeAndColorFilterinTextToSearch: {}));
+                                              sizeAndColorFilterinTextToSearch: const {}));
                                       appBloc
                                           .add(HideBottomNavigationBar(false));
                                       appBloc.add(ShowOrHideBars(true));
                                       appBloc.add(ChangeIndexForSearch(1));
 
                                       Future.delayed(
-                                          Duration(milliseconds: 600),
+                                          const Duration(milliseconds: 600),
                                           () =>
                                               HelperFunctions.slidingNavigation(
                                                 context,
@@ -468,7 +465,6 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                       widget.controller,
                                                   boutiqueIcon: "",
                                                   fromSearch: true,
-                                                  withSlidingImages: false,
                                                   boutiqueSlug: key,
                                                 ),
                                               ));
@@ -486,22 +482,22 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                       height: 65,
                                       width: 300,
                                       key: TestVariables.kTestMode
-                                          ? Key(WidgetsKeys
+                                          ? const Key(WidgetsKeys
                                               .searchButtonInSearchPageKey)
                                           : null,
                                       decoration: BoxDecoration(
-                                          color: Color(0xffFF5F61),
+                                          color: const Color(0xffFF5F61),
                                           boxShadow: [
                                             BoxShadow(
                                                 color: Colors.black
                                                     .withOpacity(0.1),
                                                 blurRadius: 6,
-                                                offset: Offset(0, 3)),
+                                                offset: const Offset(0, 3)),
                                             BoxShadow(
                                               color:
                                                   Colors.white.withOpacity(0.4),
                                               blurRadius: 6,
-                                              offset: Offset(0, 3),
+                                              offset: const Offset(0, 3),
                                             )
                                           ],
                                           borderRadius:
@@ -515,7 +511,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                               '${LocaleKeys.search.tr()} ',
                                               style: textTheme.bodyLarge?.rq
                                                   .copyWith(
-                                                      color: Color(0xffFEFEFE),
+                                                      color: const Color(
+                                                          0xffFEFEFE),
                                                       height: 23 / 18),
                                             ),
                                             state.countOfProductExpectedByFiltering?[
@@ -527,32 +524,29 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                         .bodyMedium?.rq
                                                         .copyWith(
                                                             fontSize: 12,
-                                                            color: Color(
+                                                            color: const Color(
                                                                 0xffFEFEFE),
                                                             height: 1.2),
                                                   )
-                                                : SizedBox.shrink()
+                                                : const SizedBox.shrink()
                                           ],
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 15),
+                                const SizedBox(width: 15),
                                 Expanded(
-                                  flex: 1,
                                   child: InkWell(
                                     onTap: () {
                                       boutiqueBloc.add(
                                           ChangeAppliedFiltersEvent(
                                               boutiqueSlug: key,
-                                              filtersAppliedByUser: null,
                                               resetAppliedFilters: true));
                                       boutiqueBloc
                                           .add(ChangeSelectedFiltersEvent(
                                         boutiqueSlug: key,
                                         fromHomePageSearch: true,
-                                        filtersChoosedByUser: null,
                                       ));
                                       widget.controller.clear();
                                       /////////////////////////////////
@@ -576,22 +570,23 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                 color: Colors.black
                                                     .withOpacity(0.1),
                                                 blurRadius: 6,
-                                                offset: Offset(0, 3)),
+                                                offset: const Offset(0, 3)),
                                             BoxShadow(
                                               color:
                                                   Colors.white.withOpacity(0.4),
                                               blurRadius: 6,
-                                              offset: Offset(0, 3),
+                                              offset: const Offset(0, 3),
                                             )
                                           ],
                                           border: Border.all(
-                                              color: Color(0xff388CFF))),
+                                              color: const Color(0xff388CFF))),
                                       child: Center(
                                         child: MyTextWidget(
                                           '${LocaleKeys.reset.tr()}',
                                           style: textTheme.bodyLarge?.rq
                                               .copyWith(
-                                                  color: Color(0xff388CFF),
+                                                  color:
+                                                      const Color(0xff388CFF),
                                                   height: 23 / 18),
                                         ),
                                       ),

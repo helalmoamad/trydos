@@ -55,11 +55,11 @@ class ProductDetailsSheetHeader extends StatefulWidget {
 }
 
 class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   Timer? _timer;
   Timer? _recallForAutoScroll;
   double _scrollOffset = 0.0;
-  double _scrollSpeed = 0.25;
+  final double _scrollSpeed = 0.25;
 
   @override
   void initState() {
@@ -83,14 +83,14 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
             ScrollDirection.forward) {
       _stopAutoScroll();
       _recallForAutoScroll?.cancel();
-      _recallForAutoScroll = Timer(Duration(seconds: 2), () {
+      _recallForAutoScroll = Timer(const Duration(seconds: 2), () {
         _startAutoScroll();
       });
     }
   }
 
   void _startAutoScroll() {
-    _timer = Timer.periodic(Duration(milliseconds: 50), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (_) {
       setState(() {
         _scrollOffset += _scrollSpeed;
         if (_scrollOffset >= _scrollController.position.maxScrollExtent) {
@@ -145,13 +145,12 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 0, top: 15),
+                  padding: const EdgeInsets.only(top: 15),
                   child: Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             MyTextWidget(
                               HelperFunctions.formatNumber(
@@ -160,13 +159,13 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                       : widget.initPrice)),
                               //  .toStringAsFixed(widget.decimalPoint),
                               style: textTheme.headlineMedium?.rq.copyWith(
-                                color: Color(0xffC4C2C2),
+                                color: const Color(0xffC4C2C2),
                                 fontSize: 20.sp,
                                 decoration: TextDecoration.lineThrough,
                                 height: 0,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             MyTextWidget(
@@ -180,24 +179,24 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                 decoration: widget.isRedeem
                                     ? TextDecoration.lineThrough
                                     : null,
-                                color: Color(0xff505050),
+                                color: const Color(0xff505050),
                                 height: 0,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 4,
                             ),
                             widget.isRedeem
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : MyTextWidget(
                                     widget.priceSymbol,
                                     style: textTheme.titleMedium?.rq.copyWith(
                                       fontSize: 16.sp,
-                                      color: Color(0xffC4C2C2),
+                                      color: const Color(0xffC4C2C2),
                                       height: 0,
                                     ),
                                   ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             widget.isRedeem
@@ -215,7 +214,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                     ),
                                   )
                                 : const SizedBox.shrink(),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             widget.isRedeem
@@ -264,7 +263,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
                           children: [
                             Padding(
@@ -272,12 +271,12 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                               child: MyTextWidget(
                                 '${LocaleKeys.all_inclusive_without_additions.tr()}',
                                 style: textTheme.titleMedium?.rq.copyWith(
-                                  color: Color(0xff8D8D8D),
+                                  color: const Color(0xff8D8D8D),
                                   height: 0,
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 11,
                             ),
                             Flexible(
@@ -296,18 +295,18 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                           svg[index],
                                           height: 15,
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         ),
                                         MyTextWidget(
                                           texts[index],
                                           style: textTheme.titleMedium?.rq
                                               .copyWith(
-                                            color: Color(0xff8D8D8D),
+                                            color: const Color(0xff8D8D8D),
                                             height: 0,
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         )
                                       ],

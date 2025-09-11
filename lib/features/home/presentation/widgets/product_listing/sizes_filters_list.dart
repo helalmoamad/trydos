@@ -71,7 +71,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
         }
-        debounce = Timer(Duration(milliseconds: 600), () {
+        debounce = Timer(const Duration(milliseconds: 600), () {
           if (scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
             BlocProvider.of<BoutiqueBloc>(context)
@@ -121,21 +121,21 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
           if (!widget.hideTitle) ...{
             Row(
               children: [
-                FilterSelectedMark(width: 20, height: 20),
-                SizedBox(
+                const FilterSelectedMark(width: 20, height: 20),
+                const SizedBox(
                   width: 10,
                 ),
                 MyTextWidget(
                   '${LocaleKeys.filter_by.tr()} ${LocaleKeys.sizes.tr()}',
-                  style: context.textTheme.titleMedium?.rq
-                      .copyWith(color: Color(0xff505050), height: 15 / 12),
+                  style: context.textTheme.titleMedium?.rq.copyWith(
+                      color: const Color(0xff505050), height: 15 / 12),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
-                  color: Color(0xffD3D3D3),
+                  color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
                     builder: (context, state) {
@@ -143,7 +143,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                       GetProductFiltersStatus.loading) {
                     return Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         TrydosLoader(
@@ -152,11 +152,11 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                       ],
                     );
                   }
-                  return SizedBox.shrink();
+                  return const SizedBox.shrink();
                 })
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           },
@@ -170,7 +170,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                     itemCount: widget.attribute.options?.length ?? 0,
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
-                    separatorBuilder: (ctx, index) => SizedBox(
+                    separatorBuilder: (ctx, index) => const SizedBox(
                       width: 10,
                     ),
                     itemBuilder: (ctx, index) {
@@ -284,8 +284,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                 if (sizes[0].options!.length == 0) {
                                   prevChoosedOrAppliedFilterToAddToIt =
                                       prevChoosedOrAppliedFilterToAddToIt
-                                          .changeAttributesAndSaveOthers(
-                                              attributes: null);
+                                          .changeAttributesAndSaveOthers();
                                 }
                               }
                               if (widget.hideTitle) {
@@ -305,7 +304,6 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                               } else {
                                 boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                   fromHomePageSearch: widget.fromHomeSearch,
-                                  requestToUpdateFilters: true,
                                   category: widget.category,
                                   boutiqueSlug: widget.boutiqueSlug,
                                   filtersChoosedByUser: GetProductFiltersModel(
@@ -318,14 +316,14 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                               height: 70,
                               width: 70,
                               child: DottedBorder(
-                                  radius: Radius.circular(180),
+                                  radius: const Radius.circular(180),
                                   borderType: BorderType.RRect,
                                   strokeCap: StrokeCap.round,
                                   strokeWidth: 0.5,
                                   color: isSelected
-                                      ? Color(0xffFF5F61)
-                                      : Color(0xff6B6B6B),
-                                  dashPattern: [3, 3],
+                                      ? const Color(0xffFF5F61)
+                                      : const Color(0xff6B6B6B),
+                                  dashPattern: const [3, 3],
                                   child: Center(
                                     child: Text(
                                       widget.attribute.options![index],
@@ -349,7 +347,8 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                           ),
                           Visibility(
                               visible: isSelected,
-                              child: FilterSelectedMark(width: 20, height: 20))
+                              child: const FilterSelectedMark(
+                                  width: 20, height: 20))
                         ],
                       );
                     },

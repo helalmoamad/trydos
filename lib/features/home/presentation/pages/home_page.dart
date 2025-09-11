@@ -123,7 +123,7 @@ class _HomePageState extends State<HomePage> {
       debounce!.cancel();
     }
     debounce = Timer(
-      Duration(milliseconds: 600),
+      const Duration(milliseconds: 600),
       () {
         try {
           videoProductInListingController
@@ -165,7 +165,6 @@ class _HomePageState extends State<HomePage> {
             (scrollController.position.maxScrollExtent * 0.6)) {
           categoryBloc.add(GetHomeBoutiqesEvent(
               getWithPrefetchToStoreInMemory: false,
-              getWithOutPrefetchForEachBoutiques: false,
               categorySlug: selectedCategorySlug,
               offset: categoryBloc
                       .state
@@ -217,7 +216,7 @@ class _HomePageState extends State<HomePage> {
   /// 🚀 تحميل العمليات في الخلفية دون تأثير على العرض
   void _initializeBackgroundOperations() {
     if (!(prefsRepository.isFoundDataCashed ?? false)) {
-      Future.delayed(Duration(seconds: 10),
+      Future.delayed(const Duration(seconds: 10),
           () => prefsRepository.setIsFoundDataCashed(true));
       Future.microtask(() {
         if (!mounted) return;
@@ -226,18 +225,13 @@ class _HomePageState extends State<HomePage> {
             boutiqueSlug: "search",
             cashedOrginalBoutique: true,
             fromSearch: true,
-            getWithPagination: false,
             offset: 1));
         boutiqueBloc.add(ChangeAppliedFiltersEvent(
-            boutiqueSlug: 'search',
-            filtersAppliedByUser: null,
-            resetAppliedFilters: true));
+            boutiqueSlug: 'search', resetAppliedFilters: true));
         boutiqueBloc.add(ChangeSelectedFiltersEvent(
           resetChoosedFilters: true,
-          requestToUpdateFilters: true,
           fromHomePageSearch: true,
           boutiqueSlug: 'search',
-          filtersChoosedByUser: null,
         ));
         if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
             (prefsRepository.myChatName != prefsRepository.myMarketName &&
@@ -256,7 +250,7 @@ class _HomePageState extends State<HomePage> {
     // تحميل بيانات البحث في الخلفية
 
     // العمليات الثقيلة تتم في الخلفية
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       if (!mounted) return;
       _handleDeferredNotifications();
     });
@@ -372,21 +366,17 @@ class _HomePageState extends State<HomePage> {
         _isLoading = true; // بدء التحميل
       });
       boutiqueBloc.add(GetProductsWithFiltersEvent(
-          fromNotification: false,
           limit: 10,
           cashedOrginalBoutique: true,
           boutiqueSlug: "*featured*",
-          getWithPagination: false,
           offset: 1));
       boutiqueBloc.add(GetProductsWithFiltersEvent(
-          fromNotification: false,
           limit: 10,
           cashedOrginalBoutique: true,
           boutiqueSlug: "*flashDeal*",
-          getWithPagination: false,
           offset: 1));
       BlocProvider.of<StoryBloc>(context)
-          .add(GetStoryEvent(withPaginition: false));
+          .add(const GetStoryEvent(withPaginition: false));
       categoryBloc.add(GetMainCategoriesEvent(
         getWithPrefech: false,
         context: context,
@@ -616,7 +606,7 @@ class _HomePageState extends State<HomePage> {
             CustomScrollView(
               cacheExtent: 0, // قيمة ثابتة فعالة لجميع الأجهزة
               key: TestVariables.kTestMode
-                  ? Key(WidgetsKeys.homepageScrollKey)
+                  ? const Key(WidgetsKeys.homepageScrollKey)
                   : null,
               controller: scrollController,
               physics: const ClampingScrollPhysics(
@@ -628,10 +618,10 @@ class _HomePageState extends State<HomePage> {
                 // 🚨 عرض مؤشر التحميل فقط في البداية
                 SliverToBoxAdapter(
                   child: _isLoading
-                      ? Center(
+                      ? const Center(
                           child:
                               CircularProgressIndicator()) // إظهار مؤشر التحميل
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink(),
                 ),
 
                 // 🚀 جميع الأقسام تظهر فوراً - تحميل كامل فوري
@@ -711,7 +701,8 @@ class _HomePageState extends State<HomePage> {
                           return sliverListSeparated(
                             addAutomaticKeepAlives: false,
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKeys.boutiquesFailureStatusKey)
+                                ? const Key(
+                                    WidgetsKeys.boutiquesFailureStatusKey)
                                 : null,
                             itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
@@ -720,7 +711,6 @@ class _HomePageState extends State<HomePage> {
                                 child: Shimmer.fromColors(
                                   baseColor: Colors.grey.shade300,
                                   highlightColor: Colors.grey.shade100,
-                                  enabled: true,
                                   child: Stack(
                                     alignment: Alignment.center,
                                     children: [
@@ -734,13 +724,13 @@ class _HomePageState extends State<HomePage> {
                                               BoxShadow(
                                                 color: const Color(0xff000000)
                                                     .withOpacity(0.4),
-                                                offset: Offset(0, 3),
+                                                offset: const Offset(0, 3),
                                                 blurRadius: 6,
                                               )
                                             ],
                                           )),
                                       Container(
-                                          margin: EdgeInsets.symmetric(
+                                          margin: const EdgeInsets.symmetric(
                                               horizontal: 20),
                                           width: 1.sw,
                                           height: 135,
@@ -751,7 +741,7 @@ class _HomePageState extends State<HomePage> {
                                               BoxShadow(
                                                 color: const Color(0xff000000)
                                                     .withOpacity(0.6),
-                                                offset: Offset(0, 3),
+                                                offset: const Offset(0, 3),
                                                 blurRadius: 6,
                                               )
                                             ],
@@ -761,7 +751,7 @@ class _HomePageState extends State<HomePage> {
                                         child: Row(
                                           children: List.generate(
                                               5,
-                                              (index) => CircleAvatar(
+                                              (index) => const CircleAvatar(
                                                     radius: 20,
                                                   )),
                                         ),
@@ -772,7 +762,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             //HomePageCard(showWhite: index % 2 == 0),
-                            separator: SizedBox(
+                            separator: const SizedBox(
                               height: 20,
                             ),
                             childCount: 10,
@@ -780,7 +770,7 @@ class _HomePageState extends State<HomePage> {
                         }
                         return sliverListSeparated(
                           key: TestVariables.kTestMode
-                              ? Key(WidgetsKeys.boutiquesSuccessStatusKey)
+                              ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
                               : reRenderingListViewKey[currentSlug],
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
@@ -790,7 +780,7 @@ class _HomePageState extends State<HomePage> {
                                       .items[index]
                                       .banners
                                       .isNullOrEmpty
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : HomePageCard2(
                                       isShowPanelForVerified:
                                           widget.isShowPanelForVerified,
@@ -815,7 +805,7 @@ class _HomePageState extends State<HomePage> {
 
                               //HomePageCard(showWhite: index % 2 == 0),
                               ),
-                          separator: SizedBox(
+                          separator: const SizedBox(
                             height: 20,
                           ),
                           childCount: categoryState
@@ -878,7 +868,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       }
-                      return SliverToBoxAdapter();
+                      return const SliverToBoxAdapter();
                     });
                   },
                 ),
@@ -903,12 +893,12 @@ class _HomePageState extends State<HomePage> {
 
                       ;
                       Future.delayed(
-                        Duration(milliseconds: 500),
+                        const Duration(milliseconds: 500),
                         () => panelController.open(),
                       );
                     }
                     return !_isShowPanelForVerified
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20)),
@@ -920,20 +910,20 @@ class _HomePageState extends State<HomePage> {
                               controller: panelController,
                               onPanelClosed: () {
                                 Future.delayed(
-                                    Duration(milliseconds: 300),
+                                    const Duration(milliseconds: 300),
                                     () => widget.isShowPanelForVerified.value =
                                         false);
                               },
-                              isDraggable: true,
                               panelBuilder: (sc) {
                                 return Container(
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20)),
-                                  margin: EdgeInsets.only(top: 20),
+                                  margin: const EdgeInsets.only(top: 20),
                                   height: 200,
                                   child: Stack(children: [
                                     PageView(
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         controller: pageController,
                                         children: (prefsRepository
                                                     .isVerifiedPhonePeforeExpiredToken ??
@@ -948,7 +938,8 @@ class _HomePageState extends State<HomePage> {
                                                     navigateTocartOrProfile:
                                                         () {
                                                       Future.delayed(
-                                                          Duration(seconds: 3),
+                                                          const Duration(
+                                                              seconds: 3),
                                                           () => panelController
                                                               .close());
                                                     },
@@ -966,20 +957,20 @@ class _HomePageState extends State<HomePage> {
                                               ]
                                             : [
                                                 InsertPhoneTab(
-                                                  fromLogin: false,
                                                   focusNode: focusNode,
                                                   moveToNextStep:
                                                       (String phoneNumber) {
                                                     this.phoneNumber =
                                                         phoneNumber.replaceAll(
                                                             ' ', '');
-                                                    pageController
-                                                        .animateToPage(1,
-                                                            duration: Duration(
+                                                    pageController.animateToPage(
+                                                        1,
+                                                        duration:
+                                                            const Duration(
                                                                 milliseconds:
                                                                     500),
-                                                            curve: Curves
-                                                                .easeInOut);
+                                                        curve:
+                                                            Curves.easeInOut);
                                                     setState(() {});
                                                   },
                                                 ),
@@ -988,13 +979,14 @@ class _HomePageState extends State<HomePage> {
                                                   isFromLogin: true,
                                                   onChooseWhatsapp: () {
                                                     isVisWhatsApp = 1;
-                                                    pageController
-                                                        .animateToPage(2,
-                                                            duration: Duration(
+                                                    pageController.animateToPage(
+                                                        2,
+                                                        duration:
+                                                            const Duration(
                                                                 milliseconds:
                                                                     100),
-                                                            curve: Curves
-                                                                .easeInOut);
+                                                        curve:
+                                                            Curves.easeInOut);
 
                                                     if (prefsRepository
                                                             .isTimerForOtpRunning ??
@@ -1009,23 +1001,25 @@ class _HomePageState extends State<HomePage> {
                                                         isViaWhatsApp: 1));*/
                                                   },
                                                   goBackToPhone: () {
-                                                    pageController
-                                                        .animateToPage(0,
-                                                            duration: Duration(
+                                                    pageController.animateToPage(
+                                                        0,
+                                                        duration:
+                                                            const Duration(
                                                                 milliseconds:
                                                                     500),
-                                                            curve: Curves
-                                                                .easeInOut);
+                                                        curve:
+                                                            Curves.easeInOut);
                                                   },
                                                   onChooseSms: () {
                                                     isVisWhatsApp = 0;
-                                                    pageController
-                                                        .animateToPage(3,
-                                                            duration: Duration(
+                                                    pageController.animateToPage(
+                                                        3,
+                                                        duration:
+                                                            const Duration(
                                                                 milliseconds:
                                                                     500),
-                                                            curve: Curves
-                                                                .easeInOut);
+                                                        curve:
+                                                            Curves.easeInOut);
                                                     /*  authBloc.add(SendOtpEvent(
                                                         phone: phoneNumber,
                                                         isViaWhatsApp: 0));*/
@@ -1044,7 +1038,7 @@ class _HomePageState extends State<HomePage> {
                                                           .addPostFrameCallback(
                                                               (_) {
                                                         Future.delayed(
-                                                            Duration(
+                                                            const Duration(
                                                                 seconds: 3),
                                                             () =>
                                                                 panelController
@@ -1053,22 +1047,24 @@ class _HomePageState extends State<HomePage> {
                                                     },
                                                     fromLogin: false,
                                                     onLoginFailed: () {
-                                                      pageController
-                                                          .animateToPage(3,
-                                                              duration: Duration(
+                                                      pageController.animateToPage(
+                                                          3,
+                                                          duration:
+                                                              const Duration(
                                                                   milliseconds:
                                                                       500),
-                                                              curve: Curves
-                                                                  .easeInOut);
+                                                          curve:
+                                                              Curves.easeInOut);
                                                     },
                                                     goBack: () {
-                                                      pageController
-                                                          .animateToPage(1,
-                                                              duration: Duration(
+                                                      pageController.animateToPage(
+                                                          1,
+                                                          duration:
+                                                              const Duration(
                                                                   milliseconds:
                                                                       500),
-                                                              curve: Curves
-                                                                  .easeInOut);
+                                                          curve:
+                                                              Curves.easeInOut);
                                                     },
                                                     methodIcon: isVisWhatsApp ==
                                                             1
@@ -1086,7 +1082,7 @@ class _HomePageState extends State<HomePage> {
                                               ? 0
                                               : null,
                                       child: Container(
-                                        margin: EdgeInsets.all(10),
+                                        margin: const EdgeInsets.all(10),
                                         height: 20,
                                         width: 40,
                                         child: InkWell(
@@ -1096,7 +1092,7 @@ class _HomePageState extends State<HomePage> {
                                               AppAssets.closeSvg,
                                               height: 15,
                                               width: 30,
-                                              color: Color(0xffFF5F61),
+                                              color: const Color(0xffFF5F61),
                                             )),
                                       ),
                                     )
@@ -1142,12 +1138,12 @@ class _HomePageState extends State<HomePage> {
                       List<filter.Products> productWithFlashDealEndDate = [];
                       products.forEach((element) {
                         DateTime endDate;
-                        Duration _duration = Duration();
+                        Duration _duration = const Duration();
                         final now = DateTime.now();
                         try {
                           endDate = tran.DateFormat('MM/dd/yyyy', 'en_US')
                               .parse(element.flashDealEndDate ?? "");
-                          endDate = endDate.add(Duration(days: 1));
+                          endDate = endDate.add(const Duration(days: 1));
                         } catch (e) {
                           endDate = DateTime.now();
                           print('Error parsing date: $e');
@@ -1176,8 +1172,9 @@ class _HomePageState extends State<HomePage> {
                         builder: (context, tapIndex, _) {
                           if (tapIndex != -1) {
                             appBloc.add(HideBottomNavigationBar(true));
-                            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
-                                isChangedVariationWhenQtyZero: false));
+                            homeBloc.add(
+                                const IsChangedVariationWhenQtyZeroEvent(
+                                    isChangedVariationWhenQtyZero: false));
 
                             /* homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
                                           isChangedvariationWhenQtyZero: false));
@@ -1194,14 +1191,14 @@ class _HomePageState extends State<HomePage> {
 
                             loadingForRquestProductDetails.value = true;
                             Future.delayed(
-                                Duration(milliseconds: 600),
+                                const Duration(milliseconds: 600),
                                 () => loadingForRquestProductDetails.value =
                                     false);
                           } else {
                             appBloc.add(HideBottomNavigationBar(false));
                             currentActiveTab.value = 0;
 
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           }
                           return ValueListenableBuilder<bool>(
                               valueListenable: loadingForRquestProductDetails,
@@ -1210,14 +1207,14 @@ class _HomePageState extends State<HomePage> {
                                 return Positioned(
                                     bottom: -20.h,
                                     child: _loadingForRquestProductDetails
-                                        ? Container(
+                                        ? SizedBox(
                                             width: 20,
                                             height: 20,
                                             child: TrydosLoader(
                                               size: 15,
                                             ),
                                           )
-                                        : Container(
+                                        : SizedBox(
                                             height: tapIndex == -1 ? 0 : 1.sh,
                                             width: 1.sw,
                                             child: BlocBuilder<HomeBloc,
@@ -1346,7 +1343,8 @@ class _HomePageState extends State<HomePage> {
                                                                       .marketToken ==
                                                                   null)) {
                                                     Future.delayed(
-                                                      Duration(seconds: 5),
+                                                      const Duration(
+                                                          seconds: 5),
                                                       () {
                                                         homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
                                                             fromListingPage:
@@ -1363,7 +1361,7 @@ class _HomePageState extends State<HomePage> {
                                                     );
                                                   }
                                                   Future.delayed(
-                                                      Duration(
+                                                      const Duration(
                                                           milliseconds: 300),
                                                       () {
                                                     if ((state
@@ -1409,7 +1407,7 @@ class _HomePageState extends State<HomePage> {
                                                     }
                                                   });
                                                   Future.delayed(
-                                                      Duration(
+                                                      const Duration(
                                                           milliseconds: 300),
                                                       () {
                                                     if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
@@ -1470,10 +1468,7 @@ class _HomePageState extends State<HomePage> {
                                                                 : true
                                                             : true)) {
                                                       homeBloc.add(
-                                                          AddCurrentColorSizeEvent(
-                                                              choice_1: null,
-                                                              choiceOption:
-                                                                  null));
+                                                          AddCurrentColorSizeEvent());
                                                     } else if (!(state
                                                                     .cachedProductWithoutRelatedProductsModel[
                                                                 productId] !=
@@ -1550,13 +1545,13 @@ class _HomePageState extends State<HomePage> {
                                                                   sizeOptionSelect));
                                                     }
                                                     homeBloc.add(
-                                                        IsChangedVariationWhenQtyZeroEvent(
+                                                        const IsChangedVariationWhenQtyZeroEvent(
                                                             isChangedVariationWhenQtyZero:
                                                                 true));
 
                                                     currentActiveTab.value = 3;
                                                     Future.delayed(
-                                                        Duration(
+                                                        const Duration(
                                                             milliseconds: 600),
                                                         () {
                                                       WidgetsBinding.instance
@@ -1589,7 +1584,8 @@ class _HomePageState extends State<HomePage> {
                                                       ? Container(
                                                           width: 1.sw,
                                                           height: 1.sh,
-                                                          color: Color.fromRGBO(
+                                                          color: const Color
+                                                              .fromRGBO(
                                                               0, 0, 0, 0.3),
                                                           child: TrydosLoader(
                                                             size: 25,
@@ -1616,7 +1612,7 @@ class _HomePageState extends State<HomePage> {
                                                                           ?.product
                                                                           ?.redeemPrice ??
                                                                       0,
-                                                              isRedeem: (prefsRepository.getRedeemDateForProduct(products[tapIndex].productId.toString())?.isAfter(DateTime.now().add(Duration(
+                                                              isRedeem: (prefsRepository.getRedeemDateForProduct(products[tapIndex].productId.toString())?.isAfter(DateTime.now().add(const Duration(
                                                                               seconds:
                                                                                   1))) ==
                                                                           true &&
@@ -1912,20 +1908,19 @@ class _HomePageState extends State<HomePage> {
           left: LanguageService.languageCode == "ar" ? null : 10,
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SvgPicture.asset(
                 AppAssets.storyFilmSvg,
                 width: 20,
                 height: 20,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
               MyTextWidget(
                 LocaleKeys.story.tr(),
                 style: context.textTheme.titleLarge?.rr
-                    .copyWith(height: 0.86, color: Color(0xff3C3C3C)),
+                    .copyWith(height: 0.86, color: const Color(0xff3C3C3C)),
               )
             ],
           ),

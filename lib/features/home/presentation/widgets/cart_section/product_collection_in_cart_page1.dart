@@ -90,11 +90,11 @@ class _ProductCollectionInCartPage1State
               current.convertItemFromcartToOldCartStatus,
       builder: (context, state) {
         return Container(
-          padding: EdgeInsets.all(1),
+          padding: const EdgeInsets.all(1),
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 0),
+            padding: const EdgeInsets.symmetric(),
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount:
                 isOldCart ? oldCartCollection?.length : cartCollection?.length,
             itemBuilder: (context, index) {
@@ -132,11 +132,11 @@ class _ProductCollectionInCartPage1State
                                 ? 260
                                 : 0),
                 child: Container(
-                  margin: EdgeInsets.only(bottom: 7, right: 5, left: 5),
+                  margin: const EdgeInsets.only(bottom: 7, right: 5, left: 5),
                   width: 1.sw,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                           offset: Offset(0, 5),
                           blurRadius: 5,
@@ -151,9 +151,10 @@ class _ProductCollectionInCartPage1State
                     width: 400.w,
                     decoration: BoxDecoration(
                       border: Border.all(
-                          color: isOldCart ? Color(0xffFF5F61) : Colors.white),
+                          color: isOldCart
+                              ? const Color(0xffFF5F61)
+                              : Colors.white),
                       color: Colors.white,
-                      shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.circular(15),
                     ),
                     height: isOldCart
@@ -261,7 +262,7 @@ class _ProductCollectionInCartPage1State
                                               .slug
                                               .toString()));
                               Future.delayed(
-                                  Duration(milliseconds: 300),
+                                  const Duration(milliseconds: 300),
                                   () => Navigator.of(context)
                                           .push(PageRouteBuilder(
                                         pageBuilder: (context,
@@ -275,7 +276,6 @@ class _ProductCollectionInCartPage1State
                                                         : cartCollection![index]
                                                             .slug
                                                             .toString(),
-                                                fromNotification: false,
                                                 productIdForOpeningChatDirectly:
                                                     isOldCart
                                                         ? oldCartCollection![
@@ -288,15 +288,14 @@ class _ProductCollectionInCartPage1State
                                       )));
                             },
                             child: Container(
-                              margin: EdgeInsets.only(top: 10),
+                              margin: const EdgeInsets.only(top: 10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                color: Color(0x707070),
+                                color: const Color(0x707070),
                               ),
                               width: 110,
                               height: 130,
                               child: ProductDetailsImageWidget(
-                                withBackGroundShadow: true,
                                 withInnerShadow: false,
                                 imageFit: BoxFit.cover,
                                 blurRadius: 0,
@@ -315,11 +314,10 @@ class _ProductCollectionInCartPage1State
                         ),
                         Positioned(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                margin: EdgeInsets.only(top: 10),
+                                margin: const EdgeInsets.only(top: 10),
                                 alignment: LanguageService.languageCode != "ar"
                                     ? Alignment.topLeft
                                     : Alignment.topRight,
@@ -333,9 +331,8 @@ class _ProductCollectionInCartPage1State
                                                     .icon
                                                     ?.filePath ??
                                                 "",
-                                            fit: BoxFit.contain,
                                           )
-                                        : SizedBox.shrink()
+                                        : const SizedBox.shrink()
                                     : cartCollection![index].brand != null
                                         ? SvgPicture.network(
                                             cartCollection[index]
@@ -343,11 +340,10 @@ class _ProductCollectionInCartPage1State
                                                     .icon
                                                     ?.filePath ??
                                                 "",
-                                            fit: BoxFit.contain,
                                           )
-                                        : SizedBox.shrink()),
+                                        : const SizedBox.shrink()),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 2,
                               ),
                               Container(
@@ -367,13 +363,12 @@ class _ProductCollectionInCartPage1State
                                             letterSpacing: 0.18,
                                             height: 1.33)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 2,
                               ),
                               Container(
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     isOldCart &&
                                                 oldCartCollection![index]
@@ -383,7 +378,7 @@ class _ProductCollectionInCartPage1State
                                                 cartCollection![index]
                                                     .variations
                                                     .isNullOrEmpty)
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : !isOldCart &&
                                                     (cartCollection![index]
                                                                 .variations![0]
@@ -402,9 +397,10 @@ class _ProductCollectionInCartPage1State
                                                                 .variations![0]
                                                                 .colorOption ==
                                                             null)
-                                            ? SizedBox.shrink()
+                                            ? const SizedBox.shrink()
                                             : Container(
-                                                margin: EdgeInsets.only(top: 5),
+                                                margin: const EdgeInsets.only(
+                                                    top: 5),
                                                 alignment: LanguageService
                                                             .languageCode !=
                                                         "ar"
@@ -412,14 +408,12 @@ class _ProductCollectionInCartPage1State
                                                     : Alignment.centerRight,
                                                 height: 17,
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
                                                   children: [
                                                     SvgPicture.asset(
                                                       AppAssets.colorPickerSvg,
                                                       height: 12,
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 5,
                                                     ),
                                                     Text(
@@ -521,7 +515,7 @@ class _ProductCollectionInCartPage1State
                                                 oldCartCollection![index]
                                                     .variations
                                                     .isNullOrEmpty
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : (!isOldCart &&
                                                     (cartCollection![index]
                                                                 .variations![0]
@@ -540,9 +534,10 @@ class _ProductCollectionInCartPage1State
                                                                 .variations![0]
                                                                 .sizeOption ==
                                                             null))
-                                            ? SizedBox.shrink()
+                                            ? const SizedBox.shrink()
                                             : Container(
-                                                margin: EdgeInsets.only(top: 5),
+                                                margin: const EdgeInsets.only(
+                                                    top: 5),
                                                 alignment: LanguageService
                                                             .languageCode !=
                                                         "ar"
@@ -551,15 +546,14 @@ class _ProductCollectionInCartPage1State
                                                 width: 100,
                                                 height: 15,
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
                                                   children: [
                                                     SvgPicture.asset(
                                                       AppAssets.sizeIconSvg,
                                                       height: 12,
-                                                      color: Color(0xff48C8A8),
+                                                      color: const Color(
+                                                          0xff48C8A8),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 5,
                                                     ),
                                                     Text(
@@ -620,7 +614,7 @@ class _ProductCollectionInCartPage1State
                                   ],
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 2,
                               ),
                               Container(
@@ -631,14 +625,13 @@ class _ProductCollectionInCartPage1State
                                   width: 200,
                                   height: 17,
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       SvgPicture.asset(
-                                        color: Color(0xff8D8D8D),
+                                        color: const Color(0xff8D8D8D),
                                         AppAssets.dressSvg,
                                         height: 12,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       Text(
@@ -667,7 +660,7 @@ class _ProductCollectionInCartPage1State
                                       ),
                                     ],
                                   )),
-                              SizedBox(
+                              const SizedBox(
                                 height: 2,
                               ),
                               (isOldCart &&
@@ -675,13 +668,13 @@ class _ProductCollectionInCartPage1State
                                               .isNullOrEmpty) ||
                                       (!isOldCart &&
                                           state.cartCollection.isNullOrEmpty)
-                                  ? SizedBox()
+                                  ? const SizedBox()
                                   : isOldCart &&
                                           (state.oldcartCollection?[index]
                                                       .shippingDays ??
                                                   0) ==
                                               0
-                                      ? SizedBox()
+                                      ? const SizedBox()
                                       : !isOldCart &&
                                               ((state.cartCollection?[index]
                                                               .shippingDays ??
@@ -690,7 +683,7 @@ class _ProductCollectionInCartPage1State
                                                               ?.shippingDay ??
                                                           0)) ==
                                                   0
-                                          ? SizedBox()
+                                          ? const SizedBox()
                                           : Container(
                                               alignment: LanguageService
                                                           .languageCode !=
@@ -700,15 +693,14 @@ class _ProductCollectionInCartPage1State
                                               width: 200,
                                               height: 17,
                                               child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
                                                 children: [
                                                   SvgPicture.asset(
-                                                    color: Color(0xff8D8D8D),
+                                                    color:
+                                                        const Color(0xff8D8D8D),
                                                     AppAssets.shappingCartNew,
                                                     height: 12,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 5,
                                                   ),
                                                   Text(
@@ -750,7 +742,7 @@ class _ProductCollectionInCartPage1State
                                                                 .languageCode !=
                                                             "ar"
                                                         ? null
-                                                        : StrutStyle(
+                                                        : const StrutStyle(
                                                             height: 0.8,
                                                             leading: 0.6),
                                                     style: context.textTheme
@@ -769,7 +761,7 @@ class _ProductCollectionInCartPage1State
                                                   ),
                                                 ],
                                               )),
-                              SizedBox(
+                              const SizedBox(
                                 height: 14,
                               ),
                               Container(
@@ -858,7 +850,7 @@ class _ProductCollectionInCartPage1State
                                                                 .slug
                                                                 .toString()));
                                                     Future.delayed(
-                                                        Duration(
+                                                        const Duration(
                                                             milliseconds: 300),
                                                         () => Navigator.of(
                                                                     context)
@@ -874,8 +866,6 @@ class _ProductCollectionInCartPage1State
                                                                               index]
                                                                           .slug
                                                                           .toString(),
-                                                                  fromNotification:
-                                                                      false,
                                                                   productIdForOpeningChatDirectly: isOldCart
                                                                       ? oldCartCollection![
                                                                               index]
@@ -1159,8 +1149,6 @@ class _ProductCollectionInCartPage1State
                                       margin:
                                           EdgeInsets.symmetric(horizontal: 5.w),
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Container(
@@ -1207,7 +1195,8 @@ class _ProductCollectionInCartPage1State
                                                       .textTheme.bodyMedium?.ra
                                                       .copyWith(
                                                           decorationColor:
-                                                              Color(0xffC4C2C2),
+                                                              const Color(
+                                                                  0xffC4C2C2),
                                                           fontSize: 12.sp,
                                                           color: isOldCart ||
                                                                   cartCollection![
@@ -1216,9 +1205,9 @@ class _ProductCollectionInCartPage1State
                                                                       cartCollection[
                                                                               index]
                                                                           .price
-                                                              ? Color(
+                                                              ? const Color(
                                                                   0xff505050)
-                                                              : Color(
+                                                              : const Color(
                                                                   0xffC4C2C2),
                                                           decoration: isOldCart
                                                               ? null
@@ -1232,7 +1221,7 @@ class _ProductCollectionInCartPage1State
                                                                   : TextDecoration
                                                                       .lineThrough),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 5,
                                                 ),
                                                 Text(
@@ -1251,17 +1240,19 @@ class _ProductCollectionInCartPage1State
                                                         .bodyMedium?.br
                                                         .copyWith(
                                                       decorationColor:
-                                                          Color(0xff505050),
+                                                          const Color(
+                                                              0xff505050),
                                                       fontSize: 14.sp,
                                                       color: isOldCart
-                                                          ? Color(0xff505050)
+                                                          ? const Color(
+                                                              0xff505050)
                                                           : cartCollection![
                                                                           index]
                                                                       .isRedeem ==
                                                                   true
                                                               ? Colors
                                                                   .deepOrangeAccent
-                                                              : Color(
+                                                              : const Color(
                                                                   0xff505050),
                                                     )),
                                                 Text(
@@ -1270,23 +1261,25 @@ class _ProductCollectionInCartPage1State
                                                       .textTheme.bodyMedium?.ra
                                                       .copyWith(
                                                     decorationColor:
-                                                        Color(0xffc4c2c2),
+                                                        const Color(0xffc4c2c2),
                                                     fontSize: 9.sp,
                                                     color: isOldCart
-                                                        ? Color(0xff505050)
+                                                        ? const Color(
+                                                            0xff505050)
                                                         : cartCollection![index]
                                                                     .isRedeem ==
                                                                 true
                                                             ? Colors
                                                                 .deepOrangeAccent
-                                                            : Color(0xffc4c2c2),
+                                                            : const Color(
+                                                                0xffc4c2c2),
                                                   ),
                                                 )
                                               ],
                                             ),
                                           ),
                                           isOldCart
-                                              ? SizedBox.shrink()
+                                              ? const SizedBox.shrink()
                                               : Row(
                                                   children: [
                                                     Container(
@@ -1296,7 +1289,7 @@ class _ProductCollectionInCartPage1State
                                                           AppAssets
                                                               .countItemSvg),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 5,
                                                     ),
                                                     Text(
@@ -1305,8 +1298,8 @@ class _ProductCollectionInCartPage1State
                                                             .bodyMedium?.ra
                                                             .copyWith(
                                                           fontSize: 7,
-                                                          color:
-                                                              Color(0xff388CFF),
+                                                          color: const Color(
+                                                              0xff388CFF),
                                                         ))
                                                   ],
                                                 )
@@ -1330,15 +1323,15 @@ class _ProductCollectionInCartPage1State
                             height: 30,
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    width: 0.5, color: Color(0xff8D8D8D)),
+                                    width: 0.5, color: const Color(0xff8D8D8D)),
                                 borderRadius:
                                     BorderRadiusDirectional.circular(20)),
                             child: Text(
                               isOldCart ? "${index + 1}" : "${index + 1}",
                               style: context.textTheme.bodyMedium?.ra.copyWith(
-                                decorationColor: Color(0xff8D8D8D),
+                                decorationColor: const Color(0xff8D8D8D),
                                 fontSize: 14,
-                                color: Color(0xff8D8D8D),
+                                color: const Color(0xff8D8D8D),
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -1349,7 +1342,7 @@ class _ProductCollectionInCartPage1State
                           left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
                         isOldCart
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : Positioned(
                                 child: InkWell(
                                   onTap: () {
@@ -1396,14 +1389,14 @@ class _ProductCollectionInCartPage1State
                                                       .textTheme.bodyMedium?.ba
                                                       .copyWith(
                                                     fontSize: 12,
-                                                    color: Color.fromARGB(
+                                                    color: const Color.fromARGB(
                                                         255, 42, 39, 228),
                                                   )),
                                               SvgPicture.asset(
                                                 AppAssets.orderClockSvg,
                                                 width: 15,
                                                 height: 15,
-                                                color: Color.fromARGB(
+                                                color: const Color.fromARGB(
                                                     255, 42, 39, 228),
                                               ),
                                             ],
@@ -1438,19 +1431,19 @@ class _ProductCollectionInCartPage1State
                                   width: 310,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: Color(0xffF8F8F8),
+                                    color: const Color(0xffF8F8F8),
                                   ),
-                                  margin: EdgeInsets.only(
+                                  margin: const EdgeInsets.only(
                                       bottom: 20, left: 20, right: 20),
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
-                                      color: Color(0xffF8F8F8),
+                                      color: const Color(0xffF8F8F8),
                                     ),
                                     height: 32,
                                     child: Row(
                                       children: [
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         SvgPicture.asset(AppAssets.towCartSvg),
@@ -1459,7 +1452,7 @@ class _ProductCollectionInCartPage1State
                                                 .textTheme.bodyMedium?.ba
                                                 .copyWith(
                                               fontSize: 12,
-                                              color: Color(0xff8D8D8D),
+                                              color: const Color(0xff8D8D8D),
                                             )),
                                         Text(
                                             "${LocaleKeys.time_running_out.tr()} ",
@@ -1467,14 +1460,14 @@ class _ProductCollectionInCartPage1State
                                                 .textTheme.bodyMedium?.ra
                                                 .copyWith(
                                               fontSize: 12,
-                                              color: Color(0xff8D8D8D),
+                                              color: const Color(0xff8D8D8D),
                                             )),
                                         Text(" -30:00",
                                             style: context
                                                 .textTheme.bodyMedium?.ba
                                                 .copyWith(
                                               fontSize: 12,
-                                              color: Color(0xff8D8D8D),
+                                              color: const Color(0xff8D8D8D),
                                             )),
                                         InkWell(
                                           onTap: () {
@@ -1577,7 +1570,8 @@ class _ProductCollectionInCartPage1State
                                                             .slug
                                                             .toString()));
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
+                                                const Duration(
+                                                    milliseconds: 300),
                                                 () => Navigator.of(context)
                                                         .push(PageRouteBuilder(
                                                       pageBuilder: (context, animation,
@@ -1592,8 +1586,6 @@ class _ProductCollectionInCartPage1State
                                                                           index]
                                                                       .slug
                                                                       .toString(),
-                                                              fromNotification:
-                                                                  false,
                                                               productIdForOpeningChatDirectly: isOldCart
                                                                   ? oldCartCollection![
                                                                           index]
@@ -1611,13 +1603,13 @@ class _ProductCollectionInCartPage1State
                                                   .textTheme.bodyMedium?.ra
                                                   .copyWith(
                                                 fontSize: 12,
-                                                color: Color(0xff8D8D8D),
+                                                color: const Color(0xff8D8D8D),
                                               )),
                                         ),
-                                        Spacer(),
+                                        const Spacer(),
                                         SvgPicture.asset(
                                             AppAssets.chatWithQuestionSvg),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         )
                                       ],
@@ -1635,29 +1627,30 @@ class _ProductCollectionInCartPage1State
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(20),
-                                            color: Color(0xffFDFDEF),
+                                            color: const Color(0xffFDFDEF),
                                           ),
-                                          margin: EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                               bottom: 20, left: 20, right: 20),
                                           child: DottedBorder(
-                                              borderPadding: EdgeInsets.zero,
                                               padding: EdgeInsets.zero,
                                               borderType: BorderType.RRect,
                                               strokeCap: StrokeCap.round,
                                               strokeWidth: 0.5,
-                                              dashPattern: [3, 3],
-                                              radius: Radius.circular(20.0),
+                                              dashPattern: const [3, 3],
+                                              radius:
+                                                  const Radius.circular(20.0),
                                               color: const Color(0xffD3D3D3),
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(20),
-                                                  color: Color(0xffFDFDEF),
+                                                  color:
+                                                      const Color(0xffFDFDEF),
                                                 ),
                                                 height: 32,
                                                 child: Row(
                                                   children: [
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 10,
                                                     ),
                                                     SvgPicture.asset(AppAssets
@@ -1668,8 +1661,8 @@ class _ProductCollectionInCartPage1State
                                                             .bodyMedium?.ba
                                                             .copyWith(
                                                           fontSize: 12,
-                                                          color:
-                                                              Color(0xffA28E5B),
+                                                          color: const Color(
+                                                              0xffA28E5B),
                                                         )),
                                                     Text(
                                                         "${LocaleKeys.quantity_running_out.tr()} ",
@@ -1677,8 +1670,8 @@ class _ProductCollectionInCartPage1State
                                                             .bodyMedium?.ra
                                                             .copyWith(
                                                           fontSize: 12,
-                                                          color:
-                                                              Color(0xffA28E5B),
+                                                          color: const Color(
+                                                              0xffA28E5B),
                                                         )),
                                                     Text(
                                                         " ${state.cartCollection?[index].qtyLeft}",
@@ -1686,8 +1679,8 @@ class _ProductCollectionInCartPage1State
                                                             .bodyMedium?.ba
                                                             .copyWith(
                                                           fontSize: 12,
-                                                          color:
-                                                              Color(0xffA28E5B),
+                                                          color: const Color(
+                                                              0xffA28E5B),
                                                         )),
                                                     Text(
                                                         " ${LocaleKeys.piece.tr()}",
@@ -1695,8 +1688,8 @@ class _ProductCollectionInCartPage1State
                                                             .bodyMedium?.ba
                                                             .copyWith(
                                                           fontSize: 12,
-                                                          color:
-                                                              Color(0xffA28E5B),
+                                                          color: const Color(
+                                                              0xffA28E5B),
                                                         )),
                                                     /*    CountDownTimer(
                                                     cartId: state
@@ -1708,34 +1701,33 @@ class _ProductCollectionInCartPage1State
                                                 ),
                                               )),
                                         )
-                                      : SizedBox.shrink()
+                                      : const SizedBox.shrink()
                                   : Container(
                                       width: 315,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
-                                        color: Color(0xffFDFDEF),
+                                        color: const Color(0xffFDFDEF),
                                       ),
-                                      margin: EdgeInsets.only(
+                                      margin: const EdgeInsets.only(
                                           bottom: 20, left: 20, right: 20),
                                       child: DottedBorder(
-                                          borderPadding: EdgeInsets.zero,
                                           padding: EdgeInsets.zero,
                                           borderType: BorderType.RRect,
                                           strokeCap: StrokeCap.round,
                                           strokeWidth: 0.5,
-                                          dashPattern: [3, 3],
-                                          radius: Radius.circular(20.0),
+                                          dashPattern: const [3, 3],
+                                          radius: const Radius.circular(20.0),
                                           color: const Color(0xffD3D3D3),
                                           child: Container(
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(20),
-                                              color: Color(0xffFDFDEF),
+                                              color: const Color(0xffFDFDEF),
                                             ),
                                             height: 32,
                                             child: Row(
                                               children: [
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 10,
                                                 ),
                                                 SvgPicture.asset(
@@ -1746,7 +1738,8 @@ class _ProductCollectionInCartPage1State
                                                         .bodyMedium?.ba
                                                         .copyWith(
                                                       fontSize: 12,
-                                                      color: Color(0xffA28E5B),
+                                                      color: const Color(
+                                                          0xffA28E5B),
                                                     )),
                                                 Text(
                                                     "${LocaleKeys.the_time_will_end.tr()} ",
@@ -1754,7 +1747,8 @@ class _ProductCollectionInCartPage1State
                                                         .bodyMedium?.ra
                                                         .copyWith(
                                                       fontSize: 12,
-                                                      color: Color(0xffA28E5B),
+                                                      color: const Color(
+                                                          0xffA28E5B),
                                                     )),
                                                 Text(
                                                     " ${(state.cartCollection?[index].timeLeftInMinutes ?? 0) ~/ 60}:${(state.cartCollection?[index].timeLeftInMinutes ?? 0) % 60}:00",
@@ -1762,7 +1756,8 @@ class _ProductCollectionInCartPage1State
                                                         .bodyMedium?.ba
                                                         .copyWith(
                                                       fontSize: 12,
-                                                      color: Color(0xffA28E5B),
+                                                      color: const Color(
+                                                          0xffA28E5B),
                                                     )),
 
                                                 /*    CountDownTimer(
@@ -1813,7 +1808,7 @@ class _ProductCollectionInCartPage1State
                                       ),
                                     )),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                         // Positioned(
                         //   top: 5,
                         //   right:

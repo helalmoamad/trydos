@@ -138,12 +138,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     productIdToSaveRedeemTimer.remove(productItem?.productId.toString());
     //homeBloc.add(AddProductIdToSaveRedeemTimerEvent(
     //   on: false, productIdToSaveRedeemTimer: productIdToSaveRedeemTimer));
-    homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+    homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
         iChangedColorBeforOpenPanelEvent: false));
     initialColor = homeBloc.state.currentSelectedColorForEveryProduct[
             widget.productItem?.slug.toString()] ??
         -1;
-    homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+    homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
         isChangedVariationWhenQtyZero: false));
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -230,10 +230,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     };
     return WillPopScope(
       onWillPop: () {
-        homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+        homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
             iChangedColorBeforOpenPanelEvent: false));
         if (widget.fromCart ?? false) {
-          homeBloc.add(GetCartItemEvent());
+          homeBloc.add(const GetCartItemEvent());
         }
         if (panelControllerForCart.isPanelOpen) {
           panelControllerForCart.close();
@@ -267,7 +267,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
                     onBack: () {
-                      homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+                      homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
                           iChangedColorBeforOpenPanelEvent: false));
                       if (widget.productItem != null && initialColor != -1) {
                         homeBloc.add(AddCurrentSelectedColorEvent(
@@ -278,7 +278,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     scrolledUnderElevation: 0,
                     backIconColor: Colors.black,
                     action: [
-                      LanguageService.rtl ? Spacer() : SizedBox.shrink(),
+                      LanguageService.rtl
+                          ? const Spacer()
+                          : const SizedBox.shrink(),
                       Padding(
                         padding: const EdgeInsetsDirectional.only(end: 10.0),
                         child: BlocBuilder<HomeBloc, HomeState>(
@@ -411,7 +413,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         prefsRepository.marketToken == "" ||
                                         prefsRepository.marketToken == null)) {
                               Future.delayed(
-                                Duration(seconds: 5),
+                                const Duration(seconds: 5),
                                 () {
                                   if (widget.productItem != null) {
                                     homeBloc.add(
@@ -449,7 +451,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   onTap: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => CartPage(
+                                        builder: (context) => const CartPage(
                                           fromeFilters: true,
                                         ),
                                       ),
@@ -517,7 +519,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     ],
                     withShadow: false),
               ),
-              backgroundColor: Color(0xffF4F4F4),
+              backgroundColor: const Color(0xffF4F4F4),
               body: BlocBuilder<HomeBloc, HomeState>(
                 buildWhen: (p, c) =>
                     p.getFullProductDetailsStatus !=
@@ -527,7 +529,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     if (state.getFullProductDetailsStatus ==
                         GetFullProductDetailsStatus.loading) {
                       return Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
@@ -571,7 +572,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   color: Colors.grey.shade600,
                                 ),
                               )),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           Padding(
@@ -585,7 +586,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   color: Colors.grey.shade600,
                                 ),
                               )),
-                          Spacer(),
+                          const Spacer(),
                           Container(
                             height: 120.h, // ارتفاع الـ panel المغلقة
                             decoration: BoxDecoration(
@@ -623,7 +624,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           width: 100.w,
                                           height: 70.h,
                                           decoration: BoxDecoration(
-                                            border: Border.all(width: 1),
+                                            border: Border.all(),
                                             borderRadius:
                                                 BorderRadius.circular(25.r),
                                           ),
@@ -1114,8 +1115,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       .isNullOrEmpty
                                   : true
                               : true)) {
-                        homeBloc.add(AddCurrentColorSizeEvent(
-                            choice_1: null, choiceOption: null));
+                        homeBloc.add(AddCurrentColorSizeEvent());
                       }
 
                       int currentSelectedColor =
@@ -1127,7 +1127,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         currentSelectedColor = 0;
                       }
                       Future.delayed(
-                        Duration(milliseconds: 600),
+                        const Duration(milliseconds: 600),
                         () {
                           homeBloc.add(AddSizesForColorsEvent(
                               currentColorName: !productItem!
@@ -1203,7 +1203,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         shrinkWrap: true,
                                         physics: const ClampingScrollPhysics(),
                                         scrollDirection: Axis.horizontal,
-                                        padding: EdgeInsets.only(
+                                        padding: const EdgeInsets.only(
                                             left: 10,
                                             right: 10,
                                             top: 10,
@@ -1387,12 +1387,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   .cachedProductWithoutRelatedProductsModel
                                   .containsKey(
                                       productItem!.productId.toString())) ...{
-                                SizedBox.shrink()
+                                const SizedBox.shrink()
                               } else ...{
                                 ProductDetailsDescriptionWidget(
                                   description: productItem!.details ?? " ",
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 BadgesList(
@@ -1417,7 +1417,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       : [],
                                 ),
                               },
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
                               if (!state
@@ -1443,7 +1443,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               .isNullOrEmpty
                                           : true
                                       : true)) ...{
-                                SizedBox.shrink()
+                                const SizedBox.shrink()
                               } else ...{
                                 SizedBox(
                                     height: 52,
@@ -1460,7 +1460,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         physics: const ClampingScrollPhysics(),
                                         shrinkWrap: true,
                                         scrollDirection: Axis.horizontal,
-                                        padding: EdgeInsets.only(
+                                        padding: const EdgeInsets.only(
                                             left: 20, right: 20),
                                         itemBuilder: (context, index) {
                                           return ProductDetailsChipWidget(
@@ -1482,14 +1482,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           );
                                         },
                                         separatorBuilder: (context, index) {
-                                          return SizedBox(
+                                          return const SizedBox(
                                             width: 8,
                                           );
                                         },
                                       ),
                                     )),
                               },
-                              SizedBox(
+                              const SizedBox(
                                 height: 15,
                               ),
                               if (!productItem!
@@ -1499,7 +1499,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   builder:
                                       (context, _visibleSizeAndColorCard, _) {
                                     return !_visibleSizeAndColorCard
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : DisplayColorsCard(
                                             productItem: productItem!.copyWith(
                                                 syncColorImages: state
@@ -1539,7 +1539,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           );
                                   },
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 15,
                                 ),
                               },
@@ -1566,14 +1566,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               .isNullOrEmpty
                                           : true
                                       : true)) ...{
-                                SizedBox.shrink()
+                                const SizedBox.shrink()
                               } else ...{
                                 ValueListenableBuilder<bool>(
                                   valueListenable: visibleSizeAndColorCard,
                                   builder:
                                       (context, _visibleSizeAndColorCard, _) {
                                     return !_visibleSizeAndColorCard
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : DisplaySizesCard(
                                             productItem: productItem!.copyWith(
                                                 syncColorImages: state
@@ -1620,7 +1620,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           );
                                   },
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 15,
                                 ),
                               },
@@ -1683,7 +1683,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             0))
                                     .toString(),
                               ),*/
-                              SizedBox(
+                              const SizedBox(
                                 height: 15,
                               ),
                               BuyersCameraShots(
@@ -1709,7 +1709,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 panelControllerForBuyersCameraShots:
                                     panelControllerForBuyersCameraShots,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               SizedBox(
@@ -1739,11 +1739,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           state.getFullProductDetailsStatus ==
                               GetFullProductDetailsStatus.success)*/
                       ) {
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
                   productItem = state
                       .productContentForStatusOfOpeningProductDetailsDirectly!;
-                  Future.delayed(Duration(seconds: 1), () {
+                  Future.delayed(const Duration(seconds: 1), () {
                     if (widget.fromNotificationComment) {
                       panelControllerForCart.open();
                       currentActiveTab.value = 0;
@@ -1847,10 +1847,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 .success &&
                         state.authProductDetailsStatus ==
                             AuthProductDetailsStatus.success)) {
-                      Future.delayed(Duration(seconds: 2),
+                      Future.delayed(const Duration(seconds: 2),
                           () => visibleSizeAndColorCard.value = true);
                       Future.delayed(
-                        Duration(milliseconds: 1200),
+                        const Duration(milliseconds: 1200),
                         () {
                           if (!isChangedvariationWhenQtyZeroForFirst) {
                             isChangedvariationWhenQtyZeroForFirst = true;
@@ -1954,7 +1954,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       width: 100.w,
                                       height: 70.h,
                                       decoration: BoxDecoration(
-                                        border: Border.all(width: 1),
+                                        border: Border.all(),
                                         borderRadius:
                                             BorderRadius.circular(25.r),
                                       ),
@@ -2132,8 +2132,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             .getRedeemDateForProduct(
                                                 productItem!.productId
                                                     .toString())
-                                            ?.isAfter(DateTime.now()
-                                                .add(Duration(seconds: 1))) ==
+                                            ?.isAfter(DateTime.now().add(
+                                                const Duration(seconds: 1))) ==
                                         true &&
                                     state
                                             .cachedProductWithoutRelatedProductsModel[
@@ -2415,30 +2415,29 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                       GetProductDetailWithoutSimilarRelatedProductsStatus
                           .loading
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Stack(
                   children: [
-                    StoriesList(), // height 220
+                    const StoriesList(), // height 220
                     Positioned(
                       top: 0,
                       right: LanguageService.languageCode == "ar" ? 10 : null,
                       left: LanguageService.languageCode == "ar" ? null : 10,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SvgPicture.asset(
                             AppAssets.storyFilmSvg,
                             height: 20,
                             width: 20,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5,
                           ),
                           MyTextWidget(
                             '"${LocaleKeys.product_story.tr()}"',
                             style: context.textTheme.titleLarge?.rq
-                                .copyWith(color: Color(0xff8D8D8D)),
+                                .copyWith(color: const Color(0xff8D8D8D)),
                           ),
                           SvgPicture.asset(
                             AppAssets.registerInfoSvg,
@@ -2481,13 +2480,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         currentSelectedColorAfterChangeVariant = index;
 
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
                 productSlug: productSlug)));
 
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?[0].options
                     ?.firstWhere((element) =>
@@ -2512,7 +2511,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             "DFDFEDFEWFEFEFEWFEWF++++.........******//////${currentSelectedColorAfterChangeVariant}");
 
         await Future.delayed(
-            Duration(milliseconds: 50),
+            const Duration(milliseconds: 50),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
                 productSlug: productSlug)));
@@ -2522,7 +2521,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             (element) => (element.qty ?? 0) > 0,
             orElse: () => currentVariation!);
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?[0].options
                     ?.firstWhere(
@@ -2533,7 +2532,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     } else {
       if ((currentVariation?.type ?? "").contains("-")) {
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?[0].options
                     ?.firstWhere((element) =>
@@ -2544,7 +2543,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     (currentVariation!.type!.split("-").toList()[1]))));
       } else if (((productItem?.syncColorImages?.length ?? 0) == 0)) {
         await Future.delayed(
-            Duration(milliseconds: 300),
+            const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(
                 choice_1: productItem?.choiceOptions?.length == 0
                     ? ""
@@ -2559,8 +2558,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     await Future.delayed(
-        Duration(seconds: 1),
-        () => homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+        const Duration(seconds: 1),
+        () => homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
             isChangedVariationWhenQtyZero: true)));
   }
 }

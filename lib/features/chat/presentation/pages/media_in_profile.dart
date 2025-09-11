@@ -90,7 +90,6 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
       appBar: TrydosAppBar(
         appBarParams: AppBarParams(
             backIconColor: Colors.black38,
-            dividerBottom: false,
             hasLeading: false,
             surfaceTintColor: Colors.transparent,
             elevation: 1,
@@ -99,7 +98,6 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
                 padding: const EdgeInsets.only(top: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     InkWell(
                       onTap: () {
@@ -119,7 +117,6 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
                       margin: EdgeInsets.symmetric(vertical: 8.h),
                       width: 400.w,
                       child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           BlocBuilder<ChatBloc, ChatState>(
@@ -148,7 +145,7 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
             )),
       ),
       body: Container(
-        color: Color.fromARGB(255, 216, 214, 210),
+        color: const Color.fromARGB(255, 216, 214, 210),
         width: 1.sw,
         height: 1.sh,
         child: BlocBuilder<AppBloc, AppState>(
@@ -226,12 +223,10 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
     };
 
     return widget.files == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
-            shrinkWrap: false,
-            scrollDirection: Axis.vertical,
             itemCount: images.length,
             itemBuilder: (context, index) {
               File file = File(images[index]);
@@ -292,12 +287,10 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
     };
 
     return widget.files == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, crossAxisSpacing: 2, mainAxisSpacing: 2),
-            shrinkWrap: false,
-            scrollDirection: Axis.vertical,
             itemCount: videos.length,
             itemBuilder: (context, index) {
               return Container(
@@ -310,7 +303,7 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
                   ),
                 ),
                 color: Colors.black,
-                margin: EdgeInsets.all(2),
+                margin: const EdgeInsets.all(2),
               );
             },
           );
@@ -346,9 +339,9 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
     };
 
     return widget.files == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : ListView.separated(
-            separatorBuilder: (context, index) => Divider(),
+            separatorBuilder: (context, index) => const Divider(),
             itemCount: files.length,
             itemBuilder: (context, index) {
               return InkWell(
@@ -365,8 +358,6 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SvgPicture.asset(
                               AppAssets.documentSvg,

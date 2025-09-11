@@ -173,7 +173,6 @@ class _PaymentWebviewState extends State<PaymentWebview> {
         mediaPlaybackRequiresUserGesture: false,
         allowsInlineMediaPlayback: true,
         iframeAllow: "camera; microphone",
-        javaScriptEnabled: true,
         iframeAllowFullscreen: true,
       ),
       onLoadStart: (controller, url) {

@@ -92,16 +92,16 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
           currentIndexInSlider = 0;
         }
         return Container(
-            margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+            margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
             height: 75,
             width: 1.sw,
             decoration: BoxDecoration(
-                color: Color(0xffFCFCFC),
+                color: const Color(0xffFCFCFC),
                 borderRadius: BorderRadius.circular(15)),
             child: Row(children: [
               Container(
                 width: 120,
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 height: 75,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,9 +139,9 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                           ? ui.TextDirection.ltr
                           : ui.TextDirection.rtl,
                       child: ListView.separated(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          padding: const EdgeInsets.symmetric(),
                           itemBuilder: (ctx, index) {
                             return GestureDetector(
                                 onTap: () {
@@ -197,7 +197,7 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                                     imageUrl: images[index],
                                     innerShadowYOffset: 4,
                                     borderColor: index == currentIndexInSlider
-                                        ? Color(0xff513AAF)
+                                        ? const Color(0xff513AAF)
                                         /*? isColorWhite
                                           ? Colors.black
                                           : Color(int.parse(
@@ -207,7 +207,7 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                                   ),
                                   !(syncColorImageList?[index].colorTrend ??
                                           false)
-                                      ? SizedBox.shrink()
+                                      ? const SizedBox.shrink()
                                       : Positioned(
                                           top: 0,
                                           left: 0,
@@ -218,7 +218,7 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                                 ]));
                           },
                           separatorBuilder: (context, index) {
-                            return SizedBox(
+                            return const SizedBox(
                               width: 2,
                             );
                           },

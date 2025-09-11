@@ -67,7 +67,7 @@ class _ProductDetailsDisplayPicturesPageState
                 backIconColor: Colors.black,
                 withShadow: false),
           ),
-          backgroundColor: Color(0xffF4F4F4),
+          backgroundColor: const Color(0xffF4F4F4),
           body: SingleChildScrollView(
             child: ValueListenableBuilder<int>(
               valueListenable: selectedPicture,
@@ -100,7 +100,7 @@ class _ProductDetailsDisplayPicturesPageState
                                   shrinkWrap: true,
                                   physics: const ClampingScrollPhysics(),
                                   scrollDirection: Axis.horizontal,
-                                  padding: EdgeInsets.only(
+                                  padding: const EdgeInsets.only(
                                       left: 10, right: 10, top: 10, bottom: 10),
                                   itemBuilder: (context, index) {
                                     return GestureDetector(
@@ -116,14 +116,14 @@ class _ProductDetailsDisplayPicturesPageState
                                         radius: 15,
                                         width: 100,
                                         borderColor: index == selectedIndex
-                                            ? Color(0xff388CFF)
+                                            ? const Color(0xff388CFF)
                                             : null,
                                         imageUrl: widget.images[index].filePath,
                                       ),
                                     );
                                   },
                                   separatorBuilder: (context, index) {
-                                    return SizedBox(
+                                    return const SizedBox(
                                       width: 5,
                                     );
                                   }),

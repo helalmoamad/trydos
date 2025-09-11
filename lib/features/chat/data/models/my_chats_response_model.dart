@@ -291,11 +291,8 @@ class Message {
         "message_type": messageType?.toJson(),
         "parent_message_id": parentMessageId,
         "is_forward": isForward,
-        "message_content": messageType == null
-            ? null
-            : messageType!.name == "TextMessage"
-                ? messageContent?.toJson()
-                : null,
+        "message_content":
+            messageType == null ? null : messageContent?.toJson(),
         "message_status": messageStatus == null
             ? []
             : List<dynamic>.from(messageStatus!.map((x) => x.toJson())),

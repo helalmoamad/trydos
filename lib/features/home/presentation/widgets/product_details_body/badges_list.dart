@@ -31,35 +31,34 @@ class BadgesList extends StatelessWidget {
           error: error.toString());
     };
     return lable.isNullOrEmpty
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : SizedBox(
             height: 14,
             child: ListView.separated(
-                padding: EdgeInsets.only(right: 20, left: 20),
+                padding: const EdgeInsets.only(right: 20, left: 20),
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
                   return Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SvgPicture.network(
                         lable![index].icon!.filePath!,
                         width: 12,
                         height: 12,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       MyTextWidget(
                         lable![index].label!,
-                        style: context.textTheme.titleMedium?.rq
-                            .copyWith(height: 1.27, color: Color(0xff8D8D8D)),
+                        style: context.textTheme.titleMedium?.rq.copyWith(
+                            height: 1.27, color: const Color(0xff8D8D8D)),
                       )
                     ],
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return SizedBox(
+                  return const SizedBox(
                     width: 9,
                   );
                 },

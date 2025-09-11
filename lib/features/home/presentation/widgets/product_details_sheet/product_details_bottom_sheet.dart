@@ -1,25 +1,22 @@
 import 'package:easy_localization/easy_localization.dart' as translate;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
-import 'package:local_hero/local_hero.dart';
+
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
+
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
-import 'package:trydos/features/app/app_elvated_button.dart';
+
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
+
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -33,12 +30,10 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/select_size_sheet.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/routes/router.dart';
+
 import 'package:trydos/service/language_service.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 import '../../../../../trydos_application.dart';
 import '../../manager/homeBloc/home_bloc.dart';
 import '../product_details_body/product_details_image_widget.dart';
@@ -215,7 +210,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
       listener: (context, state) {
         if (state.isChangedColorBeforeOpenPanel == true) {
           Future.delayed(
-            Duration(milliseconds: 100),
+            const Duration(milliseconds: 100),
             () {
               colorsQuantityForEachProduct =
                   state.colorsQuantitiesForEachProduct ?? [];
@@ -231,7 +226,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               colorIsNotAvailableNotifier.value = null;
 
               Future.delayed(
-                Duration(milliseconds: 300),
+                const Duration(milliseconds: 300),
                 () {
                   if (sizesForEachProduct.length != 0) {
                     requestToNotifyMeFormFirstSize = true;
@@ -269,8 +264,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
         builder: (context, state) {
           if (state.isChangedvariationWhenQtyZero &&
               (widget.fromListingPage ?? false)) {
-            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
-                finishLoadingAfterChangedVariationWhenQtyZero: true,
+            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
             gallery3dControllerForCircles = syncColorImageList.isNullOrEmpty ||
                     syncColorImageList.length < 3
@@ -303,7 +297,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
           if (state.isChangedvariationWhenQtyZero &&
               widget.currentSelectedColorAfterChangeVariant != -1 &&
               !(widget.fromListingPage ?? false)) {
-            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
 
             gallery3dControllerForCircles = syncColorImageList.isNullOrEmpty ||
@@ -384,9 +378,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           minHeight: (widget.fromListingPage ?? false) ? 0 : 78,
                           onPanelClosed: () {
                             BlocProvider.of<HomeBloc>(context).add(
-                                IsChangedColorBeforOpenPanelEvent(
+                                const IsChangedColorBeforOpenPanelEvent(
                                     iChangedColorBeforOpenPanelEvent: false));
-                            Future.delayed(Duration(milliseconds: 300), () {
+                            Future.delayed(const Duration(milliseconds: 300),
+                                () {
                               widget.tapIndexToAddProductToCart?.value = -1;
                             });
                             widget.addToBagButtonShapeNotifier.value = 0;
@@ -512,9 +507,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           },
                           onPanelOpened: () {
                             Future.delayed(
-                                Duration(milliseconds: 50),
+                                const Duration(milliseconds: 50),
                                 () => BlocProvider.of<HomeBloc>(context).add(
-                                    IsChangedColorBeforOpenPanelEvent(
+                                    const IsChangedColorBeforOpenPanelEvent(
                                         iChangedColorBeforOpenPanelEvent:
                                             true)));
                             if (sizesForEachProduct.length == 0) {
@@ -524,7 +519,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                         0 &&
                                     !widget.collectedAfterOrdering) {
                                   Future.delayed(
-                                      Duration(milliseconds: 300),
+                                      const Duration(milliseconds: 300),
                                       () => colorIsNotAvailableNotifier.value =
                                           colorsForEachProduct[
                                               widget.currentColor]);
@@ -540,7 +535,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                         0 &&
                                     !widget.collectedAfterOrdering) {
                                   Future.delayed(
-                                      Duration(milliseconds: 300),
+                                      const Duration(milliseconds: 300),
                                       () => colorIsNotAvailableNotifier.value =
                                           colorsForEachProduct[
                                               widget.currentColor]);
@@ -557,7 +552,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           color: currentTab == 3
                               ? Colors.transparent
                               : Colors.white,
-                          boxShadow: [
+                          boxShadow: const [
                             CustomBoxShadow(
                                 color: Colors.transparent,
                                 offset: Offset(10.0, 10.0),
@@ -629,8 +624,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             ),
                                           ),
                                           AnimatedPositioned(
-                                              duration:
-                                                  Duration(milliseconds: 1700),
+                                              duration: const Duration(
+                                                  milliseconds: 1700),
                                               top: isMoving ? -300 : 0,
                                               left: LanguageService
                                                           .languageCode ==
@@ -647,7 +642,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                       : (1.sw / 2) - 100.w
                                                   : null,
                                               child: AnimatedOpacity(
-                                                duration: Duration(seconds: 0),
+                                                duration: const Duration(),
                                                 opacity: isMoving ? 1 : 0,
                                                 child:
                                                     ProductDetailsImageWidget(
@@ -701,7 +696,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                 // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
                                                 controller:
                                                     gallery3dControllerForCircles!,
-                                                denyScrolling: false,
                                                 width: 200,
                                                 stopScrollingOnEdges:
                                                     (double primaryDelta) {
@@ -726,7 +720,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                       .value = null;
 
                                                   Future.delayed(
-                                                    Duration(milliseconds: 300),
+                                                    const Duration(
+                                                        milliseconds: 300),
                                                     () {
                                                       if (sizesForEachProduct
                                                               .length !=
@@ -892,8 +887,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                             }
                                                             return AnimatedSlide(
                                                               offset: show
-                                                                  ? Offset(0, 0)
-                                                                  : Offset(
+                                                                  ? const Offset(
+                                                                      0, 0)
+                                                                  : const Offset(
                                                                       0, -1),
                                                               duration:
                                                                   const Duration(
@@ -918,7 +914,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                   height: 38.h,
                                                                   decoration:
                                                                       BoxDecoration(
-                                                                    color: Color(
+                                                                    color: const Color(
                                                                         0xffCEFFE6),
                                                                     borderRadius:
                                                                         BorderRadius
@@ -939,7 +935,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                           Text(
                                                                             msg,
                                                                             style:
-                                                                                context.textTheme.bodySmall?.rr.copyWith(color: Color(0xff3C3C3C), fontSize: 14),
+                                                                                context.textTheme.bodySmall?.rr.copyWith(color: const Color(0xff3C3C3C), fontSize: 14),
                                                                             textAlign:
                                                                                 TextAlign.center,
                                                                           ),
@@ -1411,13 +1407,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                         ),
                                       );*/
                                     Future.delayed(
-                                        Duration(milliseconds: 300),
+                                        const Duration(milliseconds: 300),
                                         () => setState(() {
                                               isMoving = true;
                                             }));
 
                                     Future.delayed(
-                                        Duration(seconds: 2),
+                                        const Duration(seconds: 2),
                                         () => setState(() {
                                               isMoving = false;
                                             }));
@@ -1482,9 +1478,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     if (GetIt.I<PrefsRepository>().chatToken !=
                                         null) {
                                       BlocProvider.of<ChatBloc>(context)
-                                          .add(GetChatsEvent());
+                                          .add(const GetChatsEvent());
                                       BlocProvider.of<ChatBloc>(context)
-                                          .add(SaveContactsEvent());
+                                          .add(const SaveContactsEvent());
                                     }
                                     //////////////////////////////
                                     // FirebaseAnalyticsService.logEventForSession(

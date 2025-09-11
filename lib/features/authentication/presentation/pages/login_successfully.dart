@@ -30,14 +30,14 @@ class LoginSuccessfully extends StatefulWidget {
 class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffE0FFEE),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ));
 
     Future.delayed(
-      Duration(seconds: 1),
+      const Duration(seconds: 1),
       () {
         if (mounted) context.go(GRouter.config.applicationRoutes.kBasePage);
       },
@@ -61,35 +61,31 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
           Positioned(top: 50, left: 40, right: 40, child: logo),
           Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
                 Padding(
                   padding: HWEdgeInsets.symmetric(horizontal: 40.0),
                   child: Column(children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SvgPicture.asset(
                           AppAssets.enterSvg,
                           width: 15,
                           height: 15,
-                          color: Color(0xff388CFF),
+                          color: const Color(0xff388CFF),
                         ),
                         10.horizontalSpace,
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             MyTextWidget(
                               LocaleKeys.logged_in_successfully.tr(),
                               style: context.textTheme.titleLarge?.ra.copyWith(
-                                  color: Color(0xff5D5C5D), height: 1.42),
+                                  color: const Color(0xff5D5C5D), height: 1.42),
                             ),
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Padding(
                                   padding: HWEdgeInsets.only(top: 3.0),
@@ -104,7 +100,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                   textAlign: TextAlign.start,
                                   style: context.textTheme.titleMedium?.ra
                                       .copyWith(
-                                          color: Color(0xff8D8D8D),
+                                          color: const Color(0xff8D8D8D),
                                           height: 1.25),
                                 ),
                               ],
@@ -121,13 +117,11 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                         textAlign: TextAlign.start,
                                         style: textTheme.headlineMedium?.ba
                                             .copyWith(
-                                                color: Color(0xff5D5C5D),
+                                                color: const Color(0xff5D5C5D),
                                                 height: 1.25)),
                                   ),
                                   17.verticalSpace,
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
                                     children: [
                                       BlocBuilder<AuthBloc, AuthState>(
                                         builder: (context, state) {
@@ -143,7 +137,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                               style: textTheme
                                                   .headlineMedium?.la
                                                   .copyWith(
-                                                color: Color(0xff5D5C5D),
+                                                color: const Color(0xff5D5C5D),
                                                 letterSpacing: 0.3,
                                                 height: 0.67,
                                               ));
@@ -156,7 +150,8 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                           textAlign: TextAlign.center,
                                           style: textTheme.bodyMedium?.la
                                               .copyWith(
-                                                  color: Color(0xff5D5C5D),
+                                                  color:
+                                                      const Color(0xff5D5C5D),
                                                   height: 1.25)),
                                     ],
                                   ),
@@ -169,7 +164,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                     ),
                   ]),
                 ),
-                Spacer(),
+                const Spacer(),
               ]),
         ],
       ),

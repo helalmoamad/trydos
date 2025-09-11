@@ -61,9 +61,9 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
     return Scaffold(
         appBar: TrydosAppBar(
           appBarParams: AppBarParams(
-              backgroundColor: Color(0x000000),
+              backgroundColor: const Color(0x000000),
               action: [
-                Spacer(),
+                const Spacer(),
                 Text(
                   LocaleKeys.profile_bank_cards.tr(),
                   style: context.textTheme.bodyMedium?.mr.copyWith(
@@ -72,7 +72,7 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                       fontSize: 14,
                       height: 1.3),
                 ),
-                Spacer(),
+                const Spacer(),
               ],
               scrolledUnderElevation: 0,
               backIconColor: Colors.black,
@@ -87,17 +87,16 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                   height: 50,
                   width: 1.sw,
                   decoration: BoxDecoration(
-                      color: Color(0xffF8F8F8),
-                      border: Border.all(color: Color(0xffD3D3D3))),
+                      color: const Color(0xffF8F8F8),
+                      border: Border.all(color: const Color(0xffD3D3D3))),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(
                         width: 10.w,
                       ),
                       SvgPicture.asset(
                         AppAssets.infoSvg,
-                        color: Color(0xff402CDD),
+                        color: const Color(0xff402CDD),
                         width: 25.w,
                       ),
                       SizedBox(
@@ -113,22 +112,22 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                       ),
                     ],
                   )),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(
                 height: 15,
                 width: 170,
-                margin: EdgeInsets.symmetric(horizontal: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SvgPicture.asset(
                       AppAssets.bankCardSvg,
                       height: 15,
-                      color: Color(0xff707070),
+                      color: const Color(0xff707070),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     Text(
@@ -139,12 +138,12 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                           fontSize: 12,
                           height: 1.2),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     SvgPicture.asset(
                       AppAssets.chatWithQuestionSvg,
-                      color: Color(0xffD3D3D3),
+                      color: const Color(0xffD3D3D3),
                       height: 15,
                     ),
                   ],

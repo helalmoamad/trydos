@@ -51,7 +51,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
       if (debounce?.isActive ?? false) {
         debounce!.cancel();
       }
-      debounce = Timer(Duration(milliseconds: 600), () {
+      debounce = Timer(const Duration(milliseconds: 600), () {
         if (scrollController.offset >=
             (scrollController.position.maxScrollExtent * 0.6)) {
           boutiqueBloc.add(GetFiltersWithPaginatioEvent(
@@ -88,12 +88,13 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
         int visible = filters.brands?.length ?? 0;
         return visible > 0
             ? Container(
-                margin:
-                    EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
-                padding: EdgeInsets.symmetric(vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 10)
+                    .copyWith(bottom: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
+                    border:
+                        Border.all(color: const Color(0xffC4C2C2), width: 0.3)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -104,9 +105,10 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                           MyTextWidget(
                             widget.title,
                             style: context.textTheme.titleMedium?.rq.copyWith(
-                                color: Color(0xff505050), height: 15 / 12),
+                                color: const Color(0xff505050),
+                                height: 15 / 12),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5,
                           ),
                           widget.isLoading
@@ -119,29 +121,29 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                       size: 15,
                                     ),
                                   ))
-                              : SizedBox.shrink(),
-                          Spacer(),
+                              : const SizedBox.shrink(),
+                          const Spacer(),
                           SvgPicture.asset(
                             AppAssets.backArrowArabic,
                             matchTextDirection: true,
-                            color: Color(0xffC4C2C2),
+                            color: const Color(0xffC4C2C2),
                             width: 10,
                             height: 10,
                           )
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     SizedBox(
                       height: 30,
                       child: ScrollConfiguration(
-                        behavior: CupertinoScrollBehavior(),
+                        behavior: const CupertinoScrollBehavior(),
                         child: ListView.separated(
                             controller: scrollController,
                             shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
+                            physics: const ClampingScrollPhysics(),
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 10.0),
                             scrollDirection: Axis.horizontal,
@@ -219,19 +221,17 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.all(8),
+                                      padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(12),
-                                          color: Color(0xffF8F8F8),
+                                          color: const Color(0xffF8F8F8),
                                           border: Border.all(
                                               color: isSelected
-                                                  ? Color(0xffFF5F61)
-                                                  : Color(0xffF8F8F8))),
+                                                  ? const Color(0xffFF5F61)
+                                                  : const Color(0xffF8F8F8))),
                                       child: Center(
                                         child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
                                           children: [
                                             filters.brands![index].icon != null
                                                 ? filters.brands![index].icon!
@@ -244,22 +244,22 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                             .filePath!,
                                                         width: 40,
                                                       )
-                                                    : SizedBox.shrink()
-                                                : SizedBox.shrink(),
+                                                    : const SizedBox.shrink()
+                                                : const SizedBox.shrink(),
                                           ],
                                         ),
                                       ),
                                     ),
                                     Visibility(
                                         visible: isSelected,
-                                        child: FilterSelectedMark(
+                                        child: const FilterSelectedMark(
                                             width: 12, height: 12))
                                   ],
                                 ),
                               );
                             },
                             separatorBuilder: (context, index) {
-                              return SizedBox(
+                              return const SizedBox(
                                 width: 10,
                               );
                             },
@@ -268,7 +268,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                     ),
                   ],
                 ))
-            : SizedBox.shrink();
+            : const SizedBox.shrink();
       },
     );
   }

@@ -87,8 +87,8 @@ class _ChatImagePreviewWidgetState extends State<ChatImagePreviewWidget> {
                 child: FloatingActionButton(
                   backgroundColor: Colors.blue,
                   child: _isLoading
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : Icon(Icons.crop, color: Colors.white),
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Icon(Icons.crop, color: Colors.white),
                   onPressed: _isLoading ? null : _cropImage,
                 ),
               ),
@@ -99,7 +99,7 @@ class _ChatImagePreviewWidgetState extends State<ChatImagePreviewWidget> {
                 right: 20,
                 child: FloatingActionButton(
                   backgroundColor: Colors.green,
-                  child: Icon(Icons.send, color: Colors.white),
+                  child: const Icon(Icons.send, color: Colors.white),
                   onPressed: () => widget.onSend(widget.imageFile),
                 ),
               ),
@@ -114,7 +114,7 @@ class _ChatImagePreviewWidgetState extends State<ChatImagePreviewWidget> {
                   height: 50,
                   child: MyTextWidget(
                     LocaleKeys.image_preview_instructions.tr(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       height: 1.2,
@@ -135,12 +135,13 @@ class _ChatImagePreviewWidgetState extends State<ChatImagePreviewWidget> {
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 8,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.white, size: 28),
+                    icon:
+                        const Icon(Icons.close, color: Colors.white, size: 28),
                     onPressed: widget.onCancel,
                   ),
                 ),
@@ -205,17 +206,17 @@ class _CropImageScreenState extends State<_CropImageScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.close, color: Colors.white),
+          icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           LocaleKeys.crop_image.tr(),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
-        child: Icon(Icons.check, color: Colors.white),
+        child: const Icon(Icons.check, color: Colors.white),
         onPressed: () async {
           Image? image = await cropKey.currentState?.cropImage();
           if (image != null) {
@@ -248,7 +249,7 @@ class _CropImageScreenState extends State<_CropImageScreen> {
               height: 50,
               child: Text(
                 LocaleKeys.select_image_part.tr(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   height: 1.2,

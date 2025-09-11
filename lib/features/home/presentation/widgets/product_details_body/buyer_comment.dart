@@ -54,33 +54,32 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
     };
 
     return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: SvgPicture.asset(
                 AppAssets.buyersCommentSvg,
               )),
           Padding(
-              padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
               child: Row(
                 children: [
                   MyTextWidget(
                     '${LocaleKeys.buyers_comment.tr()}',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   SvgPicture.asset(
                     AppAssets.registerInfoSvg,
                     height: 10,
                     width: 10,
-                    color: Color(0xffC4C2C2),
+                    color: const Color(0xffC4C2C2),
                   ),
                 ],
               )),
@@ -88,7 +87,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
               height: 125,
               width: 1.sw,
               child: ListView.separated(
-                separatorBuilder: (context, index) => SizedBox(
+                separatorBuilder: (context, index) => const SizedBox(
                   width: 5,
                 ),
                 scrollDirection: Axis.horizontal,
@@ -98,68 +97,70 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                 itemCount: 3,
               )),
           Padding(
-              padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
               child: Row(
                 children: [
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
-                    color: Color(0xff068D06),
+                    color: const Color(0xff068D06),
                     width: 12,
                   ),
                   MyTextWidget(
                     ' 215 ',
                     style: context.textTheme.titleLarge?.br
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   MyTextWidget(
                     '${LocaleKeys.buyer.tr()}',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   MyTextWidget(
                     ' ${LocaleKeys.recommend_it.tr()}',
                     style: context.textTheme.titleLarge?.br
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
-                    color: Color(0xffFF6200),
+                    color: const Color(0xffFF6200),
                     width: 12,
                   ),
                   MyTextWidget(
                     ' 15 ',
                     style: context.textTheme.titleLarge?.br
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   MyTextWidget(
                     '${LocaleKeys.buyer.tr()}',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   MyTextWidget(
                     ' ${LocaleKeys.dont_recommend_it.tr()}',
                     style: context.textTheme.titleLarge?.br
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   )
                 ],
               )),
           Stack(children: [
             Container(
-              margin: EdgeInsets.only(left: 8, right: 8, top: 10, bottom: 10),
+              margin:
+                  const EdgeInsets.only(left: 8, right: 8, top: 10, bottom: 10),
               height: 4,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: Color(0xffFF6200),
+                color: const Color(0xffFF6200),
               ),
             ),
             Container(
               width: (1.sw - 36) * (215 / (215 + 15)),
-              margin: EdgeInsets.only(left: 8, right: 8, top: 10, bottom: 10),
+              margin:
+                  const EdgeInsets.only(left: 8, right: 8, top: 10, bottom: 10),
               height: 4,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: Color(0xff068D06),
+                color: const Color(0xff068D06),
               ),
             )
           ])
@@ -171,13 +172,12 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
   Widget _commentWidget() {
     return Container(
       width: 388.w,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Color(0xffF8F8F8),
+        color: const Color(0xffF8F8F8),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -185,43 +185,43 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
             width: 1.sw,
             child: Row(
               children: [
-                MyCachedNetworkImage(
+                const MyCachedNetworkImage(
                     imageUrl:
                         "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/2025-08-26-68ae378e796d0.png",
                     width: 20,
                     imageFit: BoxFit.cover,
                     height: 20),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 MyTextWidget(
                   'Yxxx Oxxxx',
                   style: context.textTheme.titleLarge?.rr
-                      .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                      .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                 ),
-                Spacer(),
+                const Spacer(),
                 MyTextWidget(
                   '18 feb',
                   style: context.textTheme.titleLarge?.rr
-                      .copyWith(color: Color(0xff8D8D8D), fontSize: 9),
+                      .copyWith(color: const Color(0xff8D8D8D), fontSize: 9),
                 )
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           MyTextWidget(
             'Medium | Bule',
             style: context.textTheme.titleLarge?.mr
-                .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           MyTextWidget(
             'Amazing Product I Buy It And I Saw It Is Good Quality Regarding Price Amazing Product I Buy It And I Saw It Is Good Quality Regardin',
             maxLines: 10,
             style: context.textTheme.titleLarge?.rr
-                .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+                .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
           ),
-          Spacer(),
+          const Spacer(),
           Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
+              padding: const EdgeInsets.only(left: 10, right: 10),
               child: Row(
                 children: [
                   SvgPicture.asset(
@@ -231,9 +231,9 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   MyTextWidget(
                     '  110k',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   StarRatingProductWidget(
                     itemHeight: 13,
                     itemSize: 14,
@@ -242,23 +242,23 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                     widgetWidth: 71,
                     svgWidth: 12,
                     onRatingChanged: (p0) {},
-                    starColor: Color(0xff1D1D1D),
+                    starColor: const Color(0xff1D1D1D),
                     initialRating: 3,
                   ),
                   MyTextWidget(
                     ' ${LocaleKeys.good_quality.tr()}  ${LocaleKeys.true_size.tr()}  ',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
-                    color: Color(0xff068D06),
+                    color: const Color(0xff068D06),
                     width: 12,
                   ),
                   MyTextWidget(
                     '${LocaleKeys.recommend_it.tr()}',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                 ],
               )),

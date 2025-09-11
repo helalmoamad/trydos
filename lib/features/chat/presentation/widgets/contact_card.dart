@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -90,55 +91,54 @@ class ContactCard extends StatelessWidget {
                   Container(
                     padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
                     color: context.colorScheme.white,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          // receiver?.photoPath != null
-                          //     ? BlocBuilder<AppBloc, AppState>(
-                          //   builder: (context, state) {
-                          //     return Container(
-                          //       decoration: BoxDecoration(
-                          //         borderRadius:
-                          //         BorderRadius.circular(12.0),
-                          //       ),
-                          //       child: MyCachedNetworkImage(
-                          //           imageUrl: ChatUrls.baseUrl +
-                          //               receiver?.photoPath,
-                          //           imageFit: BoxFit.cover,
-                          //           height: 80.h,
-                          //           width: 60.w),
-                          //     );
-                          //   },
-                          // )
-                          NoImageWidget(
-                              width: 60.w,
-                              height: 80.h,
-                              textStyle: context.textTheme.bodyMedium?.br
-                                  .copyWith(
-                                      color: const Color(0xff6638FF),
-                                      letterSpacing: 0.18,
-                                      height: 1.33),
-                              name: receiverName),
-                          18.horizontalSpace,
-                          Flexible(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                    child: Row(children: [
+                      // receiver?.photoPath != null
+                      //     ? BlocBuilder<AppBloc, AppState>(
+                      //   builder: (context, state) {
+                      //     return Container(
+                      //       decoration: BoxDecoration(
+                      //         borderRadius:
+                      //         BorderRadius.circular(12.0),
+                      //       ),
+                      //       child: MyCachedNetworkImage(
+                      //           imageUrl: ChatUrls.baseUrl +
+                      //               receiver?.photoPath,
+                      //           imageFit: BoxFit.cover,
+                      //           height: 80.h,
+                      //           width: 60.w),
+                      //     );
+                      //   },
+                      // )
+                      NoImageWidget(
+                          width: 60.w,
+                          height: 80.h,
+                          textStyle: context.textTheme.bodyMedium?.br.copyWith(
+                              color: const Color(0xff6638FF),
+                              letterSpacing: 0.18,
+                              height: 1.33),
+                          name: receiverName),
+                      18.horizontalSpace,
+                      Flexible(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                                child: Row(
                               children: [
-                                Flexible(
-                                    child: Row(
-                                  children: [
-                                    MyTextWidget(
-                                      fullReceiverName,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: context.textTheme.bodyMedium?.rr
-                                          .copyWith(
-                                              height: 1.33,
-                                              color: const Color(0xff505050)),
-                                    ),
-                                    const Spacer(),
-                                    if (contact.contactUserId == null) ...{
-                                      MyTextWidget(
+                                MyTextWidget(
+                                  fullReceiverName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: context.textTheme.bodyMedium?.rr
+                                      .copyWith(
+                                          height: 1.33,
+                                          color: const Color(0xff505050)),
+                                ),
+                                const Spacer(),
+                                if (contact.contactUserId == null) ...{
+                                  InkWell(
+                                      onTap: () => shareAppLink(),
+                                      child: MyTextWidget(
                                         LocaleKeys.invite.tr(),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -146,18 +146,24 @@ class ContactCard extends StatelessWidget {
                                             .copyWith(
                                                 height: 1.33,
                                                 color: const Color(0xff388cff)),
-                                      ),
-                                      25.horizontalSpace,
-                                    }
-                                  ],
-                                ))
+                                      )),
+                                  25.horizontalSpace,
+                                }
                               ],
-                            ),
-                          ),
-                        ]),
+                            ))
+                          ],
+                        ),
+                      ),
+                    ]),
                   )
                 ],
               )))
     ]);
+  }
+
+  void shareAppLink() {
+    final String appLink =
+        'https://trydos-front-git-alaa-dev-trydos-front-team.vercel.app/${(GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso)?.toLowerCase()}-${LanguageService.isKurdish ? "ku" : LanguageService.languageCode}'; // رابط التطبيق الخاص بك
+    Share.share('${LocaleKeys.download_the_app_here.tr()}:$appLink');
   }
 }

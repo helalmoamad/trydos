@@ -105,8 +105,8 @@ class _AnswerCallState extends State<AnswerCall> {
                               width: 200.w,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12.0),
-                                border: Border.all(
-                                    width: 1.0, color: const Color(0xff388cff)),
+                                border:
+                                    Border.all(color: const Color(0xff388cff)),
                                 boxShadow: [
                                   BoxShadow(
                                       color:
@@ -152,7 +152,7 @@ class _AnswerCallState extends State<AnswerCall> {
                   ),
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -173,7 +173,7 @@ class _AnswerCallState extends State<AnswerCall> {
                         },
                         child: MyTextWidget(
                           LocaleKeys.answer.tr(),
-                          style: TextStyle(color: Colors.green),
+                          style: const TextStyle(color: Colors.green),
                         ),
                       )),
                   TextButton(
@@ -190,7 +190,7 @@ class _AnswerCallState extends State<AnswerCall> {
                           child: Center(
                               child: MyTextWidget(
                             LocaleKeys.reject.tr(),
-                            style: TextStyle(color: Colors.red),
+                            style: const TextStyle(color: Colors.red),
                           ))))
                 ],
               )

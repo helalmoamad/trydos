@@ -67,13 +67,11 @@ class ProductDetailsTitle extends StatelessWidget {
               c.getAndAddCountViewOfProductStatus[productId],
       builder: (context, state) {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   brand != null
                       ? brand!.icon != null
@@ -82,34 +80,37 @@ class ProductDetailsTitle extends StatelessWidget {
                                   svgUrl: brand!.icon!.filePath!,
                                   height: 18,
                                 )
-                              : SizedBox.shrink()
-                          : SizedBox.shrink()
-                      : SizedBox.shrink(),
-                  SizedBox(
+                              : const SizedBox.shrink()
+                          : const SizedBox.shrink()
+                      : const SizedBox.shrink(),
+                  const SizedBox(
                     width: 10,
                   ),
                   SvgPicture.asset(AppAssets.productVerifySvg),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Container(
+              child: SizedBox(
                 width: 1.sw - 20,
                 height: 20.h,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
+                child: Row(
                   children: [
-                    MyTextWidget(
-                      productName,
-                      style: context.textTheme.bodyMedium?.mq.copyWith(
-                          color: Color(0xff5D5C5D),
-                          height: 1.26,
-                          fontSize: 13.sp),
-                    ),
+                    Flexible(
+                        flex: 4,
+                        child: MyTextWidget(
+                          productName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                              color: const Color(0xff5D5C5D),
+                              height: 1.26,
+                              fontSize: 13.sp),
+                        )),
                     /*  Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5.0),
                       child: MyCachedNetworkImage(
@@ -133,17 +134,21 @@ class ProductDetailsTitle extends StatelessWidget {
                       ),
                     ),*/
                     colorName == ""
-                        ? SizedBox.shrink()
-                        : Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: MyTextWidget(
-                              " | ${colorName}",
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                  color: Color(0xff404E68),
-                                  height: 1.26,
-                                  fontSize: 13.sp),
-                            ),
-                          )
+                        ? const SizedBox.shrink()
+                        : Flexible(
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: MyTextWidget(
+                                  " | ${colorName}",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: context.textTheme.bodyMedium?.rq
+                                      .copyWith(
+                                          color: const Color(0xff404E68),
+                                          height: 1.26,
+                                          fontSize: 13.sp),
+                                )))
                   ],
                 ),
               ),

@@ -25,7 +25,7 @@ Widget buildSocialButtons(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         buildSocialButton(
-          icon: FaIcon(
+          icon: const FaIcon(
             FontAwesomeIcons.squareFacebook,
             color: Color(0xff0075fc),
             size: 40,
@@ -46,7 +46,7 @@ Widget buildSocialButtons(
           },
         ),
         buildSocialButton(
-          icon: FaIcon(
+          icon: const FaIcon(
             FontAwesomeIcons.whatsapp,
             color: Color(0xff00d856),
             size: 40,
@@ -74,7 +74,7 @@ Widget buildSocialButtons(
               ),
               onClick: () => share(SocialMediaType.messanger, text, urlShare)),*/
         buildSocialButton(
-          icon: FaIcon(
+          icon: const FaIcon(
             FontAwesomeIcons.telegram,
             color: Color.fromARGB(255, 121, 175, 236),
             size: 40,
@@ -95,7 +95,7 @@ Widget buildSocialButtons(
           },
         ),
         buildSocialButton(
-          icon: FaIcon(
+          icon: const FaIcon(
             FontAwesomeIcons.twitter,
             color: Color.fromARGB(255, 8, 229, 245),
             size: 40,
@@ -116,7 +116,7 @@ Widget buildSocialButtons(
           },
         ),
         buildSocialButton(
-          icon: FaIcon(
+          icon: const FaIcon(
             FontAwesomeIcons.envelope,
             color: Color.fromARGB(255, 15, 15, 15),
             size: 40,

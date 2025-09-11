@@ -79,11 +79,10 @@ Widget get logo {
         AppAssets.logoTextSvg,
       ),
       Transform.translate(
-          offset: Offset(-108, 0),
+          offset: const Offset(-108, 0),
           child: SimpleShadow(
             opacity: 0.2,
-            color: Colors.black,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
             sigma: 3,
             child: SvgPicture.asset(
               AppAssets.logoActiveSvg,
@@ -187,10 +186,10 @@ handleOpenChatPageFromNotificationInBackground(
   DealWithMessageReceivedStatusStoredFromBackground();
   DealWithMessageWatchStatusStoredFromBackground();
   if (orderId != "" && orderGroupID != "") {
-    Future.delayed(Duration(milliseconds: 600),
+    Future.delayed(const Duration(milliseconds: 600),
         () => navigationToOrderPageForChat(orderGroupID!, orderId!));
   } else {
-    Future.delayed(Duration(milliseconds: 600),
+    Future.delayed(const Duration(milliseconds: 600),
         () => navigationToSinglePageChat(message.channel!));
   }
 }
@@ -239,8 +238,7 @@ void DealWithMessagesStoredFromBackground() async {
     for (int i = 0; i < (messages?.length ?? 0); i++) {
       print(messages![i].messageContent?.content);
       GetIt.I<ChatBloc>().add(AddChannelToChannels(message: messages[i]));
-      GetIt.I<ChatBloc>()
-          .add(ReceiveMessageEvent(message: messages[i], prevMessageId: null));
+      GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: messages[i]));
     }
     GetIt.I<PrefsRepository>().removeMessageFromBackground();
   }
@@ -410,15 +408,15 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     appBloc = BlocProvider.of<AppBloc>(context);
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     if (!(prefsRepository.isFoundDataCashed ?? false)) {
-      Future.delayed(Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), () {
         //  homeBloc.add(GeColorsAndSizesForSearchEvent());
         if ((prefsRepository.marketToken?.length ?? 0) > 10) {
 //homeBloc.add(GetProductsListInCartEvent());
-          homeBloc.add(GetCartItemEvent());
+          homeBloc.add(const GetCartItemEvent());
 
-          homeBloc.add(GetNotificationTypeProductEvent());
-          homeBloc.add(GetFirebaseSettingForNotificationEvent());
-          homeBloc.add(GetPopularSearchItemEvent());
+          homeBloc.add(const GetNotificationTypeProductEvent());
+          homeBloc.add(const GetFirebaseSettingForNotificationEvent());
+          homeBloc.add(const GetPopularSearchItemEvent());
         }
       });
     }
@@ -450,7 +448,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
@@ -704,7 +702,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                   return true;
                 },
                 child: Scaffold(
-                    backgroundColor: colorScheme.background,
+                    backgroundColor: colorScheme.surface,
                     bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
                         buildWhen: (p, c) => p.showBars != c.showBars,
                         builder: (context, state) {
@@ -750,11 +748,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                           homeBloc
                                               .add(GetAllowedCountriesEvent());
                                           GetIt.I<StoryBloc>().add(
-                                              GetStoryEvent(
+                                              const GetStoryEvent(
                                                   withPaginition: false));
                                           GetIt.I<AuthBloc>()
                                               .add(GetUserCountryEvent());
-                                          Future.delayed(Duration(seconds: 3),
+                                          Future.delayed(
+                                              const Duration(seconds: 3),
                                               () => context.go("/"));
                                         }),
                                       ),
@@ -791,24 +790,17 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                             false)) {
                                           categoryBloc.add(
                                               GetMainCategoriesEvent(
-                                                  getWithPrefech: true,
                                                   context: context));
                                           GetIt.I<BoutiqueBloc>().add(
-                                              GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
                                                   categorySlugs: [],
                                                   cashedOrginalBoutique: true,
-                                                  fromHomePageSearch: false,
-                                                  boutiqueSlug: "*featured*",
-                                                  category: null,
-                                                  searchText: null));
+                                                  boutiqueSlug: "*featured*"));
                                           GetIt.I<BoutiqueBloc>().add(
-                                              GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
                                                   categorySlugs: [],
                                                   cashedOrginalBoutique: true,
-                                                  fromHomePageSearch: false,
-                                                  boutiqueSlug: "*flashDeal*",
-                                                  category: null,
-                                                  searchText: null));
+                                                  boutiqueSlug: "*flashDeal*"));
                                         }
 
                                         /* if (prefsRepository.marketToken != null) {
@@ -838,24 +830,24 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                       LocaleKeys
                                                           .country_not_available
                                                           .tr(),
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 10,
                                                     ),
                                                     MyTextWidget(
                                                       LocaleKeys
                                                           .choose_a_country
                                                           .tr(),
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontSize: 18,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 10,
                                                     ),
                                                     Center(
@@ -866,16 +858,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                         fromHomepage: false,
                                                         key: TestVariables
                                                                 .kTestMode
-                                                            ? Key(WidgetsKeys
+                                                            ? const Key(WidgetsKeys
                                                                 .countryDropDownKey)
                                                             : null,
                                                       ),
                                                     )),
-                                                    SizedBox(height: 80),
+                                                    const SizedBox(height: 80),
                                                     ElevatedButton(
                                                       key: TestVariables
                                                               .kTestMode
-                                                          ? Key(WidgetsKeys
+                                                          ? const Key(WidgetsKeys
                                                               .chooseCountryButtonKey)
                                                           : null,
                                                       onPressed: () {
@@ -953,8 +945,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                         return TrydosAppBar(
                                                           appBarParams:
                                                               AppBarParams(
-                                                                  automaticallyImplyLeading:
-                                                                      false,
                                                                   hasLeading:
                                                                       false,
                                                                   scrolledUnderElevation:
@@ -962,8 +952,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                   action: [
                                                                     LanguageService
                                                                             .rtl
-                                                                        ? Spacer()
-                                                                        : SizedBox
+                                                                        ? const Spacer()
+                                                                        : const SizedBox
                                                                             .shrink(),
                                                                     Padding(
                                                                       padding: const EdgeInsetsDirectional
@@ -1007,7 +997,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                                 onTap: () {
                                                                                   Navigator.of(context).push(
                                                                                     MaterialPageRoute(
-                                                                                      builder: (context) => CartPage(
+                                                                                      builder: (context) => const CartPage(
                                                                                         fromeFilters: true,
                                                                                       ),
                                                                                     ),

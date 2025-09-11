@@ -233,7 +233,8 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                                   currentPage:
                                                       collectionIndex + 1));
                                           carouselSliderController.nextPage(
-                                              Duration(milliseconds: 200));
+                                              const Duration(
+                                                  milliseconds: 200));
                                           prevPageNumber = collectionIndex + 1;
                                         } else {
                                           if (collectionIndex == 0) {
@@ -251,7 +252,8 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                                   currentPage:
                                                       collectionIndex - 1));
                                           carouselSliderController.previousPage(
-                                              Duration(milliseconds: 200));
+                                              const Duration(
+                                                  milliseconds: 200));
                                           prevPageNumber = collectionIndex - 1;
                                         }
                                       },
@@ -300,11 +302,11 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                           controller: carouselSliderController,
                           unlimitedMode: true,
                           scrollPhysics: value == 1
-                              ? denyScrollingToLeftScrollPhysics()
+                              ? const denyScrollingToLeftScrollPhysics()
                               : value == 2
-                                  ? denyScrollingToRightScrollPhysics()
-                                  : ClampingScrollPhysics(),
-                          slideTransform: CubeTransform(),
+                                  ? const denyScrollingToRightScrollPhysics()
+                                  : const ClampingScrollPhysics(),
+                          slideTransform: const CubeTransform(),
                           initialPage: widget.initialPage,
                           itemCount: state.storiesCollections.length);
                     }));

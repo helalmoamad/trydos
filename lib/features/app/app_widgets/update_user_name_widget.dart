@@ -54,7 +54,6 @@ class UpdateUserNameWidget extends StatelessWidget {
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   MyTextWidget(
                     LocaleKeys.insert_name_to_continue.tr(),
@@ -75,6 +74,7 @@ class UpdateUserNameWidget extends StatelessWidget {
                                         .must_be_at_least_8_characters
                                         .tr();
                                   }
+                                  return null;
                                 }),
                                 autoFocus: false,
                                 ready: display,
@@ -87,7 +87,7 @@ class UpdateUserNameWidget extends StatelessWidget {
                                   padding:
                                       HWEdgeInsets.only(right: 20.0, top: 22),
                                   child: !display
-                                      ? SizedBox(
+                                      ? const SizedBox(
                                           width: 22,
                                           height: 15,
                                         )
@@ -114,12 +114,12 @@ class UpdateUserNameWidget extends StatelessWidget {
                 ],
               ),
               Transform.translate(
-                  offset: Offset(10, -10),
+                  offset: const Offset(10, -10),
                   child: GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(Icons.cancel_outlined)))
+                      child: const Icon(Icons.cancel_outlined)))
             ],
           );
         },

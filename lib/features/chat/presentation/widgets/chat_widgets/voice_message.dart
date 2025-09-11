@@ -96,7 +96,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           timer = true;
@@ -184,7 +184,6 @@ class _VoiceMessageState extends State<VoiceMessage> {
                     message: 'Voice'));
               } else {}
             },
-            animationDuration: const Duration(milliseconds: 150),
             offsetDx: 0.15,
             iconSize: 0,
             onRightSwipe: () {
@@ -223,7 +222,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                 state.slopMessageId!
                                     .contains(widget.messageId) &&
                                 (widget.isReceived || widget.isRead))
-                            ? Offset(0, 0)
+                            ? const Offset(0, 0)
                             : widget.senderId ==
                                     widget._prefsRepository.myChatId
                                 ? Offset(100.w, 0)
@@ -241,14 +240,14 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                       ? const Color(0xffFFF9B4)
                                       : const Color(0xffB4FED9),
                                   borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
+                                  boxShadow: const [
                                     BoxShadow(
                                         //todo change the commented opacity to fromARGB for better performance
                                         color: Color.fromARGB(50, 0, 0, 0)
                                         //                                      context.colorScheme.black
                                         //                                          .withOpacity(0.05)
                                         ,
-                                        offset: const Offset(0, 3),
+                                        offset: Offset(0, 3),
                                         blurRadius: 6)
                                   ]),
                               child: Padding(
@@ -547,8 +546,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                 ],
                                               )),
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 0),
+                                            padding: const EdgeInsets.only(),
                                             child: Directionality(
                                               textDirection: TextDirection.ltr,
                                               child: Row(
@@ -715,7 +713,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                       watchedAt: widget.watchedAt,
                                     ),
                                   )
-                                : SizedBox.shrink(),
+                                : const SizedBox.shrink(),
                           ],
                         ),
                       ),

@@ -71,12 +71,12 @@ class FlashDealProductsWidget extends StatelessWidget {
                 List<filter.Products> productWithFlashDealEndDate = [];
                 products.forEach((element) {
                   DateTime endDate;
-                  Duration _duration = Duration();
+                  Duration _duration = const Duration();
                   final now = DateTime.now();
                   try {
                     endDate = tran.DateFormat('MM/dd/yyyy', 'en_US')
                         .parse(element.flashDealEndDate ?? "");
-                    endDate = endDate.add(Duration(days: 1));
+                    endDate = endDate.add(const Duration(days: 1));
                   } catch (e) {
                     endDate = DateTime.now();
                     print('Error parsing date: $e');
@@ -93,16 +93,15 @@ class FlashDealProductsWidget extends StatelessWidget {
               }
 
               return products.isNullOrEmpty
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           width: 250,
                           height: 20,
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SvgPicture.asset(
                                 AppAssets.flashDealSvg,
@@ -110,19 +109,19 @@ class FlashDealProductsWidget extends StatelessWidget {
                               ),
                               MyTextWidget(
                                 " ${LocaleKeys.flash_deal.tr()}",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.black, fontSize: 14),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Directionality(
                             textDirection: TextDirection.ltr,
                             child: Container(
-                              margin: EdgeInsets.only(bottom: 5),
+                              margin: const EdgeInsets.only(bottom: 5),
                               width: 1.sw,
                               height: 300,
                               child: ListView.separated(
@@ -133,7 +132,7 @@ class FlashDealProductsWidget extends StatelessWidget {
                                   itemBuilder: (context, index) {
                                     // التحقق من صحة الفهرس
                                     if (index >= products.length) {
-                                      return SizedBox.shrink();
+                                      return const SizedBox.shrink();
                                     }
 
                                     if (index == 5 && products.length > 5) {
@@ -146,11 +145,12 @@ class FlashDealProductsWidget extends StatelessWidget {
                                   physics: const BouncingScrollPhysics(
                                     parent: ClampingScrollPhysics(),
                                   ),
-                                  padding: EdgeInsetsDirectional.symmetric(
-                                      horizontal: 10),
+                                  padding:
+                                      const EdgeInsetsDirectional.symmetric(
+                                          horizontal: 10),
                                   scrollDirection: Axis.horizontal,
                                   separatorBuilder: (context, index) =>
-                                      SizedBox(width: 15),
+                                      const SizedBox(width: 15),
                                   itemCount: products.length > 6
                                       ? 6
                                       : products.length),
@@ -169,17 +169,15 @@ class FlashDealProductsWidget extends StatelessWidget {
         try {
           GetIt.I<BoutiqueBloc>().add(GetProductsWithFiltersEvent(
               context: context,
-              fromNotification: false,
               limit: 10,
               cashedOrginalBoutique: true,
               boutiqueSlug: "*flashDeal*",
-              getWithPagination: false,
               offset: 1));
           Future.delayed(
-              Duration(milliseconds: 300),
+              const Duration(milliseconds: 300),
               () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (ctx) => FlashDealProductsPage(),
+                      builder: (ctx) => const FlashDealProductsPage(),
                     ),
                   ));
         } catch (e) {
@@ -202,7 +200,7 @@ class FlashDealProductsWidget extends StatelessWidget {
             itemIndex: index,
           ),
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 color: Color.fromRGBO(0, 0, 0, 0.4),
                 borderRadius: BorderRadius.all(Radius.circular(12))),
             width: 200,
@@ -213,7 +211,7 @@ class FlashDealProductsWidget extends StatelessWidget {
             left: 75,
             child: Container(
               alignment: Alignment.center,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(30))),
               width: 60,
@@ -221,7 +219,7 @@ class FlashDealProductsWidget extends StatelessWidget {
               child: MyTextWidget(
                 textAlign: TextAlign.center,
                 "${LocaleKeys.more.tr()}",
-                style: TextStyle(color: Colors.black, fontSize: 18),
+                style: const TextStyle(color: Colors.black, fontSize: 18),
               ),
             ),
           )
@@ -239,13 +237,13 @@ class FlashDealProductsWidget extends StatelessWidget {
       onTap: () {
         try {
           GetIt.I<HomeBloc>().add(
-              ChangeStatusOFGetProductsDetailsToSuccessEvent(
+              const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                   isStatusInitaial: true));
           GetIt.I<HomeBloc>().add(AddCurrentSelectedColorEvent(
               currentSelectedColor: 0,
               productSlug: products[index].slug.toString()));
           Future.delayed(
-              Duration(milliseconds: 300),
+              const Duration(milliseconds: 300),
               () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (ctx) => ProductDetailsPageNew(

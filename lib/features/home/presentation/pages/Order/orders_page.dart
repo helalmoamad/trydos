@@ -5,20 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:shimmer/shimmer.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
-import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
-import 'package:trydos/routes/router.dart';
+
 import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';

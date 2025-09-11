@@ -95,7 +95,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
     if (debounce?.isActive ?? false) {
       debounce!.cancel();
     }
-    debounce = Timer(Duration(milliseconds: 600), () {
+    debounce = Timer(const Duration(milliseconds: 600), () {
       // videoProductInListingController.forEach((key, value) => value.pause());
       //  if (setThisEnabledNotifier.value.item1 != -1) {
       //    setThisEnabledNotifier.value = Tuple2(-1, -1);
@@ -118,7 +118,6 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
 
         boutiqueBloc.add(GetProductsWithFiltersEvent(
             context: context,
-            fromNotification: false,
             limit: 10,
             cashedOrginalBoutique: true,
             boutiqueSlug: "*featured*",
@@ -183,13 +182,14 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                 ? null
                 : TrydosAppBar(
                     appBarParams: AppBarParams(
-                        automaticallyImplyLeading: false,
                         hasLeading: false,
-                        leading: SizedBox.shrink(),
+                        leading: const SizedBox.shrink(),
                         scrolledUnderElevation: 0,
                         backIconColor: Colors.black,
                         action: [
-                          LanguageService.rtl ? Spacer() : SizedBox.shrink(),
+                          LanguageService.rtl
+                              ? const Spacer()
+                              : const SizedBox.shrink(),
                           Padding(
                             padding:
                                 const EdgeInsetsDirectional.only(end: 10.0),
@@ -228,7 +228,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                       onTap: () {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => CartPage(
+                                            builder: (context) =>
+                                                const CartPage(
                                               fromeFilters: true,
                                             ),
                                           ),
@@ -303,13 +304,14 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                     children: [
                       Container(
                         alignment: Alignment.bottomRight,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         width: 150,
                         height: 30,
                         child: MyTextWidget(
                           textAlign: TextAlign.start,
                           "${LocaleKeys.feature_product.tr()}",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 14),
                         ),
                       ),
                       BlocBuilder<BoutiqueBloc, BoutiqueState>(
@@ -335,7 +337,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                             "*featured*withoutFilter"]!
                                         .items;
                             return products.isNullOrEmpty
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : Container(
                                     width: 1.sw,
                                     height: state
@@ -351,15 +353,15 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                         print(
                                             "DDDDDDDDDDDDDD................${products.length}");
                                         // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)
-                                        final double spacing = 5;
-                                        final int crossAxisCount = 2;
-                                        final double totalSpacing =
+                                        const double spacing = 5;
+                                        const int crossAxisCount = 2;
+                                        const double totalSpacing =
                                             spacing * (crossAxisCount + 1);
                                         final double itemWidth =
                                             (constraints.maxWidth -
                                                     totalSpacing) /
                                                 crossAxisCount;
-                                        final double itemHeight = 375;
+                                        const double itemHeight = 375;
 
                                         return Column(
                                           children: [
@@ -368,7 +370,6 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                 addRepaintBoundaries: false,
                                                 addAutomaticKeepAlives: false,
                                                 addSemanticIndexes: false,
-                                                shrinkWrap: false,
                                                 cacheExtent: 0,
                                                 controller: scrollController,
                                                 gridDelegate:
@@ -387,7 +388,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                   return InkWell(
                                                     onTap: () {
                                                       GetIt.I<HomeBloc>().add(
-                                                          ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                          const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                               isStatusInitaial:
                                                                   true));
                                                       homeBloc.add(
@@ -400,7 +401,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                   .toString()));
 
                                                       Future.delayed(
-                                                          Duration(
+                                                          const Duration(
                                                               milliseconds:
                                                                   300),
                                                           () => Navigator.of(
@@ -425,7 +426,6 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                           tapIndexToShowColorImages,
                                                       finishRedeem:
                                                           finishRedeem,
-                                                      fromHomePage: false,
                                                       tapIndexToAddProductToCart:
                                                           tapIndexToAddProductToCart,
                                                       key: TestVariables
@@ -468,7 +468,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                 child: TrydosLoader(),
                               );
                             }
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           })
                     ],
                   ),
@@ -496,7 +496,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                 .items;
 
                     if (tapIndex != -1) {
-                      homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                      homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                           isChangedVariationWhenQtyZero: false));
 
                       /* homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
@@ -510,12 +510,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                           productId: products[tapIndex].productId.toString()));
 
                       loadingForRquestProductDetails.value = true;
-                      Future.delayed(Duration(milliseconds: 600),
+                      Future.delayed(const Duration(milliseconds: 600),
                           () => loadingForRquestProductDetails.value = false);
                     } else {
                       currentActiveTab.value = 0;
 
-                      return SizedBox.shrink();
+                      return const SizedBox.shrink();
                     }
                     return ValueListenableBuilder<bool>(
                         valueListenable: loadingForRquestProductDetails,
@@ -698,7 +698,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                 .marketToken ==
                                                             null)) {
                                               Future.delayed(
-                                                Duration(seconds: 5),
+                                                const Duration(seconds: 5),
                                                 () {
                                                   homeBloc.add(
                                                       GetProductDatailsWithoutRelatedProductsEvent(
@@ -714,8 +714,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                               );
                                             }
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
-                                                () {
+                                                const Duration(
+                                                    milliseconds: 300), () {
                                               if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                       GetProductDetailWithoutSimilarRelatedProductsStatus
                                                           .success &&
@@ -756,8 +756,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                               }
                                             });
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
-                                                () {
+                                                const Duration(
+                                                    milliseconds: 300), () {
                                               if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                       GetProductDetailWithoutSimilarRelatedProductsStatus
                                                           .failure ||
@@ -814,9 +814,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                           : true
                                                       : true)) {
                                                 homeBloc.add(
-                                                    AddCurrentColorSizeEvent(
-                                                        choice_1: null,
-                                                        choiceOption: null));
+                                                    AddCurrentColorSizeEvent());
                                               } else if (!(state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                           productId] !=
@@ -894,14 +892,14 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                             sizeOptionSelect));
                                               }
                                               homeBloc.add(
-                                                  IsChangedVariationWhenQtyZeroEvent(
+                                                  const IsChangedVariationWhenQtyZeroEvent(
                                                       isChangedVariationWhenQtyZero:
                                                           true));
 
                                               currentActiveTab.value = 3;
                                               Future.delayed(
-                                                  Duration(milliseconds: 600),
-                                                  () {
+                                                  const Duration(
+                                                      milliseconds: 600), () {
                                                 WidgetsBinding.instance
                                                     .addPostFrameCallback((_) {
                                                   panelControllerForCart.open();
@@ -929,7 +927,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                 ? Container(
                                                     width: 1.sw,
                                                     height: 1.sh - 150,
-                                                    color: Color.fromRGBO(
+                                                    color: const Color.fromRGBO(
                                                         0, 0, 0, 0.3),
                                                     child: TrydosLoader(
                                                       size: 25,
@@ -959,7 +957,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                         .getRedeemDateForProduct(products[tapIndex]
                                                                             .productId
                                                                             .toString())
-                                                                        ?.isAfter(DateTime.now().add(Duration(
+                                                                        ?.isAfter(DateTime.now().add(const Duration(
                                                                             seconds:
                                                                                 1))) ==
                                                                     true &&
@@ -1288,12 +1286,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
         valueListenable: showShadowForColorImages,
         builder: (context, isShowShadowForPanel, _) {
           return !isShowShadowForPanel
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : InkWell(
                   onTap: () {
                     showShadowForColorImages.value = false;
                     Future.delayed(
-                      Duration(microseconds: 300),
+                      const Duration(microseconds: 300),
                       () {
                         colorImagesPanelController.close();
                         showShadowForColorImages.value = false;
@@ -1303,7 +1301,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                   child: Container(
                     height: 1.sh,
                     width: 1.sw,
-                    color: Color.fromRGBO(29, 29, 29, 0.6),
+                    color: const Color.fromRGBO(29, 29, 29, 0.6),
                   ),
                 );
         });
@@ -1327,7 +1325,6 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30.r),
                       topRight: Radius.circular(30.r)),
-                  isDraggable: true,
                   onPanelClosed: () {
                     showShadowForColorImages.value = false;
                   },
@@ -1350,15 +1347,14 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
       child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 height: 2,
                 width: 40,
-                decoration: BoxDecoration(color: Color(0xffC4C2C2)),
+                decoration: const BoxDecoration(color: Color(0xffC4C2C2)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               ValueListenableBuilder<bool>(
@@ -1387,7 +1383,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                   itemBuilder: (context, index) => InkWell(
                                       onTap: () {
                                         GetIt.I<HomeBloc>().add(
-                                            ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                            const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                 isStatusInitaial: true));
                                         homeBloc.add(AddCurrentSelectedColorEvent(
                                             currentSelectedColor: index,
@@ -1397,7 +1393,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                 .toString()));
 
                                         Future.delayed(
-                                            Duration(milliseconds: 300),
+                                            const Duration(milliseconds: 300),
                                             () => Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                     builder: (ctx) =>

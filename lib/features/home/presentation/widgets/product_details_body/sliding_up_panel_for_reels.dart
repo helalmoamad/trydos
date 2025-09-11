@@ -58,7 +58,6 @@ class SlidingUpPanelForReels extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
                         AppAssets.chromeIconSvg,
@@ -94,7 +93,7 @@ class SlidingUpPanelForReels extends StatelessWidget {
                         '${LocaleKeys.these_shots_are_made_by_users.tr()}',
                         style: context.textTheme.titleMedium?.rq.copyWith(
                             height: 1.23,
-                            color: Color(0xffC4C2C2),
+                            color: const Color(0xffC4C2C2),
                             fontSize: 11.sp),
                       ),
                     ],

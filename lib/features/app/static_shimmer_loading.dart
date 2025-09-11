@@ -30,7 +30,6 @@ class StaticShimmerLoading extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: highlightColor,
-            width: 1,
           ),
         ),
         child: showTrydosLogo ? _buildTrydosContent() : null,
@@ -59,7 +58,7 @@ class StaticShimmerLoading extends StatelessWidget {
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFFFF6B6B), // أحمر trydos
                 shape: BoxShape.circle,
               ),
@@ -72,7 +71,7 @@ class StaticShimmerLoading extends StatelessWidget {
                     child: Container(
                       width: 4,
                       height: 4,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.black,
                         shape: BoxShape.circle,
                       ),
@@ -84,7 +83,7 @@ class StaticShimmerLoading extends StatelessWidget {
                     child: Container(
                       width: 4,
                       height: 4,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.black,
                         shape: BoxShape.circle,
                       ),
@@ -94,7 +93,7 @@ class StaticShimmerLoading extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             // نص trydos ثابت
             _buildStaticTrydosText(),
@@ -107,12 +106,12 @@ class StaticShimmerLoading extends StatelessWidget {
   /// نص trydos ثابت
   Widget _buildStaticTrydosText() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
+      child: const Text(
         'trydos',
         style: TextStyle(
           fontSize: 16,
@@ -144,10 +143,10 @@ class SimpleStaticShimmer extends StatelessWidget {
       width: width ?? 100,
       height: height ?? 100,
       decoration: BoxDecoration(
-        color: Color(0xFFF5F5F5),
+        color: const Color(0xFFF5F5F5),
         borderRadius: borderRadius ?? BorderRadius.circular(8),
         border: Border.all(
-          color: Color(0xFFE0E0E0),
+          color: const Color(0xFFE0E0E0),
           width: 0.5,
         ),
       ),
@@ -179,7 +178,7 @@ class TextStaticShimmer extends StatelessWidget {
           height: height,
           margin: EdgeInsets.only(bottom: lines > 1 ? 8 : 0),
           decoration: BoxDecoration(
-            color: Color(0xFFE8E8E8),
+            color: const Color(0xFFE8E8E8),
             borderRadius: BorderRadius.circular(4),
           ),
         ),
@@ -205,11 +204,10 @@ class CardStaticShimmer extends StatelessWidget {
       width: width ?? 200,
       height: height ?? 280,
       decoration: BoxDecoration(
-        color: Color(0xFFF8F8F8),
+        color: const Color(0xFFF8F8F8),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Color(0xFFE0E0E0),
-          width: 1,
+          color: const Color(0xFFE0E0E0),
         ),
       ),
       child: Column(
@@ -220,13 +218,13 @@ class CardStaticShimmer extends StatelessWidget {
             flex: 3,
             child: Container(
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFFEEEEEE),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(12),
                 ),
               ),
-              child: Center(
+              child: const Center(
                 child: Icon(
                   Icons.image_outlined,
                   size: 40,
@@ -237,7 +235,7 @@ class CardStaticShimmer extends StatelessWidget {
           ),
 
           // معلومات المنتج
-          Expanded(
+          const Expanded(
             flex: 2,
             child: Padding(
               padding: EdgeInsets.all(12),
@@ -248,7 +246,7 @@ class CardStaticShimmer extends StatelessWidget {
                   TextStaticShimmer(height: 14, lines: 2),
                   SizedBox(height: 8),
                   // السعر
-                  TextStaticShimmer(width: 80, height: 16),
+                  TextStaticShimmer(width: 80),
                   SizedBox(height: 4),
                   // تقييم
                   TextStaticShimmer(width: 60, height: 12),

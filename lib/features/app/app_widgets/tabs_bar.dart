@@ -72,7 +72,7 @@ class _TabsBarState extends State<TabsBar> {
   Timer? debounce;
   late CategoryBloc categoryBloc;
   late final geminis.Gemini gemini;
-  SpeechToText _speechToText = SpeechToText();
+  final SpeechToText _speechToText = SpeechToText();
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
   bool _speechEnabled = false;
   //List<String> sizesForSearch = [];
@@ -95,7 +95,7 @@ class _TabsBarState extends State<TabsBar> {
     }
 
     await _speechToText.listen(
-      pauseFor: Duration(seconds: 5),
+      pauseFor: const Duration(seconds: 5),
       onResult: (result) async {
         if (result.recognizedWords.replaceAll(" ", "").length > 2) {
           resetSearchAfterSearchingWhileRemoveSearch = true;
@@ -164,7 +164,7 @@ class _TabsBarState extends State<TabsBar> {
 
     isRecordeForSearchWithMic.value = true;
     Future.delayed(
-      Duration(seconds: 8),
+      const Duration(seconds: 8),
       () => isRecordeForSearchWithMic.value = false,
     );
   }
@@ -204,7 +204,7 @@ class _TabsBarState extends State<TabsBar> {
     if (categoryDebounce?.isActive ?? false) {
       categoryDebounce!.cancel();
     }
-    categoryDebounce = Timer(Duration(milliseconds: 600), () {
+    categoryDebounce = Timer(const Duration(milliseconds: 600), () {
       scrollController.addListener(() {
         if (categorySlugs.isEmpty) {
           categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories
@@ -230,7 +230,6 @@ class _TabsBarState extends State<TabsBar> {
             categoryBloc.add(GetHomeBoutiqesEvent(
               withSemaphore: true,
               getWithPrefetchToStoreInMemory: true,
-              getWithOutPrefetchForEachBoutiques: false,
               context: context,
               categorySlug: categorySlugs[i],
               offset: "1",
@@ -337,14 +336,13 @@ class _TabsBarState extends State<TabsBar> {
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0x1a000000),
-                        offset: Offset(0, 0),
                         blurRadius: 6,
                       ),
                     ],
                   ),
                   child: Row(
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKeys.mainCategoriesTabNullKey)
+                          ? const Key(WidgetsKeys.mainCategoriesTabNullKey)
                           : null,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
@@ -363,7 +361,6 @@ class _TabsBarState extends State<TabsBar> {
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0x1a000000),
-                        offset: Offset(0, 0),
                         blurRadius: 6,
                       ),
                     ],
@@ -412,7 +409,6 @@ class _TabsBarState extends State<TabsBar> {
                                       prices: appliedFilters.prices,
                                       colors: [],
                                       attributes: [],
-                                      searchText: null,
                                     )),
                                   ));
                                   boutiqueBloc.add(ChangeSelectedFiltersEvent(
@@ -424,8 +420,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 .copyWithSaveOtherField(
                                                     colors: [],
                                                     attributes: [],
-                                                    prices: filters.prices,
-                                                    searchText: null)),
+                                                    prices: filters.prices)),
                                   ));
                                   widget.buildSearchResult.value = 0;
                                   widget.controller.clear();
@@ -465,7 +460,8 @@ class _TabsBarState extends State<TabsBar> {
                                 widget.buildSearchResult.value = 1;
                                 widget.appearTrendingAndHistory.value = true;
                                 //////////////////////////////////
-                                Future.delayed(Duration(milliseconds: 300), () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 300), () {
                                   appBloc.add(ChangeBasePage(4));
                                   appBloc.add(HideBottomNavigationBar(true));
                                 });
@@ -479,13 +475,13 @@ class _TabsBarState extends State<TabsBar> {
                               },
                               suffixWidget: Center(
                                 key: TestVariables.kTestMode
-                                    ? Key(WidgetsKeys.homeSearchIconKey)
+                                    ? const Key(WidgetsKeys.homeSearchIconKey)
                                     : null,
                                 child: SvgPicture.asset(
                                   AppAssets.searchOutlinedSvg,
                                   height: 20,
                                   width: 40,
-                                  color: Color(0xff388CFF),
+                                  color: const Color(0xff388CFF),
                                 ),
                               ),
                               prefixWidget: Padding(
@@ -553,8 +549,8 @@ class _TabsBarState extends State<TabsBar> {
                                 border: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
+                                          ? const Color(0xffE6E6E6)
+                                          : const Color(0xffF8F8F8),
                                       width: 0.4),
                                   borderRadius:
                                       BorderRadius.circular(kbrBorderTextField),
@@ -562,8 +558,8 @@ class _TabsBarState extends State<TabsBar> {
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
+                                          ? const Color(0xffE6E6E6)
+                                          : const Color(0xffF8F8F8),
                                       width: 0.4),
                                   borderRadius:
                                       BorderRadius.circular(kbrBorderTextField),
@@ -571,8 +567,8 @@ class _TabsBarState extends State<TabsBar> {
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
+                                          ? const Color(0xffE6E6E6)
+                                          : const Color(0xffF8F8F8),
                                       width: 0.4),
                                   borderRadius:
                                       BorderRadius.circular(kbrBorderTextField),
@@ -580,8 +576,8 @@ class _TabsBarState extends State<TabsBar> {
                                 disabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
+                                          ? const Color(0xffE6E6E6)
+                                          : const Color(0xffF8F8F8),
                                       width: 0.4),
                                   borderRadius:
                                       BorderRadius.circular(kbrBorderTextField),
@@ -603,7 +599,7 @@ class _TabsBarState extends State<TabsBar> {
                                 filled: true,
                                 fillColor: focusNode.hasFocus
                                     ? colorScheme.white
-                                    : Color(0xffF8F8F8),
+                                    : const Color(0xffF8F8F8),
                                 prefixIcon: Padding(
                                   padding: const EdgeInsets.only(
                                       top: 12, bottom: 12),
@@ -611,7 +607,7 @@ class _TabsBarState extends State<TabsBar> {
                                     AppAssets.searchOutlinedSvg,
                                     height: 20,
                                     width: 40,
-                                    color: Color(0xff388CFF),
+                                    color: const Color(0xff388CFF),
                                   ),
                                 ),
                                 suffixIcon: Padding(
@@ -649,7 +645,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 width: 20,
                                               ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
                                       ValueListenableBuilder<bool>(
@@ -703,7 +699,7 @@ class _TabsBarState extends State<TabsBar> {
                                     start: 20, end: 10, bottom: 12, top: 12),
                                 hintText: 'Search',
                                 hintStyle: context.textTheme.bodyMedium?.lq
-                                    .copyWith(color: Color(0xffC4C2C2)),
+                                    .copyWith(color: const Color(0xffC4C2C2)),
                                 labelStyle: context.textTheme.titleLarge
                                     ?.copyWith(color: context.colorScheme.hint),
                               ),
@@ -711,7 +707,8 @@ class _TabsBarState extends State<TabsBar> {
                                 if (debounce?.isActive ?? false) {
                                   debounce!.cancel();
                                 }
-                                debounce = Timer(Duration(seconds: 1), () {
+                                debounce =
+                                    Timer(const Duration(seconds: 1), () {
                                   //  List<String>? colorsFilter = [];
                                   //  List<String> listSearchTextWithoutConstWord =
                                   //    text.split(" ").toList();
@@ -765,7 +762,6 @@ class _TabsBarState extends State<TabsBar> {
                                     //   print(sizesFilter.isEmpty);
                                     boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                       boutiqueSlug: 'search',
-                                      requestToUpdateFilters: true,
                                       fromHomePageSearch: true,
                                       filtersChoosedByUser:
                                           GetProductFiltersModel(
@@ -809,7 +805,6 @@ class _TabsBarState extends State<TabsBar> {
                                               filters: filters
                                                   .copyWithSaveOtherField(
                                         prices: filters.prices,
-                                        searchText: null,
                                       )),
                                     ));
                                   }
@@ -836,19 +831,16 @@ class _TabsBarState extends State<TabsBar> {
                                         prices: appliedFilters.prices,
                                         colors: [],
                                         attributes: [],
-                                        searchText: null,
                                       )),
                                     ));
                                     boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                       boutiqueSlug: 'search',
-                                      requestToUpdateFilters: true,
                                       fromHomePageSearch: true,
                                       filtersChoosedByUser:
                                           GetProductFiltersModel(
                                               filters: filters
                                                   .copyWithSaveOtherField(
                                         prices: filters.prices,
-                                        searchText: null,
                                       )),
                                     ));
                                   }
@@ -876,11 +868,11 @@ class _TabsBarState extends State<TabsBar> {
                                     height: 80,
                                     child: ListView.builder(
                                       controller: scrollController,
-                                      padding: EdgeInsets.only(
+                                      padding: const EdgeInsets.only(
                                         right: 15,
                                       ),
                                       key: TestVariables.kTestMode
-                                          ? Key(
+                                          ? const Key(
                                               WidgetsKeys.mainCategoriesTabKey)
                                           : null,
                                       scrollDirection: Axis.horizontal,
@@ -918,7 +910,6 @@ class _TabsBarState extends State<TabsBar> {
                                                           false,
                                                       getWithOutPrefetchForEachBoutiques:
                                                           true,
-                                                      getWithPagination: false,
                                                       offset: "1",
                                                       categorySlug: homeState
                                                           .mainCategoriesResponseModel!
@@ -937,7 +928,8 @@ class _TabsBarState extends State<TabsBar> {
                                                   );
                                                   ///////////////////////////
                                                   Future.delayed(
-                                                    Duration(milliseconds: 500),
+                                                    const Duration(
+                                                        milliseconds: 500),
                                                     () {
                                                       Map<
                                                               String,
@@ -1019,7 +1011,6 @@ class _TabsBarState extends State<TabsBar> {
                                                       context: context,
                                                       categorySlug: "Empty",
                                                       offset: "1",
-                                                      getWithPagination: false,
                                                     ),
                                                   );
                                                   categoryBloc.add(
@@ -1029,8 +1020,6 @@ class _TabsBarState extends State<TabsBar> {
                                                 }
                                               },
                                               child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.end,
                                                 children: [
@@ -1068,7 +1057,7 @@ class _TabsBarState extends State<TabsBar> {
                                                                     visible: state
                                                                             .tabIndex ==
                                                                         index,
-                                                                    child: FilterSelectedMark(
+                                                                    child: const FilterSelectedMark(
                                                                         width:
                                                                             12,
                                                                         height:
@@ -1089,7 +1078,8 @@ class _TabsBarState extends State<TabsBar> {
                                                         .titleSmall?.lr
                                                         .copyWith(
                                                       letterSpacing: 0,
-                                                      color: Color(0xff505050),
+                                                      color: const Color(
+                                                          0xff505050),
                                                       // color: state.tabIndex !=
                                                       //         index
                                                       //     ? Color(
@@ -1105,7 +1095,7 @@ class _TabsBarState extends State<TabsBar> {
                                     ),
                                   );
                                 }
-                                return SizedBox.shrink();
+                                return const SizedBox.shrink();
                               },
                             )
                           ])));

@@ -7,9 +7,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 import '../../my_text_widget.dart';
 import 'app_bar_params.dart';
 
@@ -33,7 +31,6 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ? [
                       BoxShadow(
                           color: context.colorScheme.black.withOpacity(0.1),
-                          offset: Offset(0, 0),
                           blurRadius: 6)
                     ]
                   : null),
@@ -43,7 +40,9 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Theme.of(context).colorScheme.surface,
             leading: LanguageService.rtl ? null : leadingAppBar(context),
             actions: [
-              LanguageService.rtl ? leadingAppBar(context) : SizedBox.shrink(),
+              LanguageService.rtl
+                  ? leadingAppBar(context)
+                  : const SizedBox.shrink(),
               ...appBarParams.action ?? [],
             ],
             centerTitle: appBarParams.centerTitle,
@@ -103,7 +102,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 InkWell(
                   key: TestVariables.kTestMode
-                      ? Key(WidgetsKeys.appBarGoBackArrowKey)
+                      ? const Key(WidgetsKeys.appBarGoBackArrowKey)
                       : null,
                   onTap: () {
                     appBarParams.onBack?.call();
@@ -127,7 +126,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
                 if (leading != null) ...{
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   leading

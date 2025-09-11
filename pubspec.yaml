@@ -73,7 +73,7 @@ dependencies:
   sentry_flutter: ^8.14.2
   #contacts_service: ^0.6.3
   mime: ^1.0.4
-  flutter_contacts: ^1.1.9+2
+  fast_contacts: ^4.0.0
   cupertino_back_gesture: ^0.1.0
   inview_notifier_list: ^3.0.0
   audioplayers:

@@ -35,7 +35,7 @@ class _ProductDetailsDescriptionWidgetState
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontSize: 11,
               height: 1.5,
-              color: Color(0xff1D1D1D),
+              color: const Color(0xff1D1D1D),
             ),
       ),
       maxLines: 2,
@@ -65,8 +65,8 @@ class _ProductDetailsDescriptionWidgetState
                     margin: Margins.zero,
                     padding: HtmlPaddings.zero,
                     fontSize: FontSize(11),
-                    color: Color(0xff1D1D1D),
-                    lineHeight: LineHeight(1.5),
+                    color: const Color(0xff1D1D1D),
+                    lineHeight: const LineHeight(1.5),
                     maxLines: isExpandedNotifier.value ? null : 2,
                     textOverflow:
                         isExpandedNotifier.value ? null : TextOverflow.ellipsis,
@@ -83,7 +83,7 @@ class _ProductDetailsDescriptionWidgetState
                     isExpandedNotifier.value
                         ? "${LocaleKeys.read_less.tr()}"
                         : "${LocaleKeys.read_more.tr()}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color(0xff388CFF),
                       fontSize: 11,
                       fontWeight: FontWeight.w600,

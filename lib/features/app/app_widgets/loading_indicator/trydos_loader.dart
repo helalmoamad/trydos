@@ -16,7 +16,7 @@ class TrydosLoader extends StatelessWidget {
           size: size,
           color: color,
           key: TestVariables.kTestMode
-              ? Key(WidgetsKeys.loadingAfterSearchKey)
+              ? const Key(WidgetsKeys.loadingAfterSearchKey)
               : null,
         ),
         super(key: key);

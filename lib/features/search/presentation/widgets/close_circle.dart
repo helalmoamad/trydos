@@ -23,7 +23,7 @@ class CloseCircle extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Color(0xffF8F8F8),
+          color: const Color(0xffF8F8F8),
           border: Border.all(width: 0.5, color: borderColor)),
       child: Center(
         child: SvgPicture.asset(

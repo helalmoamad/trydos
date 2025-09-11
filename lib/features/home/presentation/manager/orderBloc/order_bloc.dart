@@ -117,8 +117,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     this.cancelReturnRequestProductUseCase,
     this.updateReturnRequestProductUseCase,
     this.orderReturnDetailsUseCase,
-  ) : super(OrderState(
-            orderReturnDetailsStatus: OrderReturnDetailsStatus.init)) {
+  ) : super(const OrderState()) {
     on<PlaceOrderEvent>(
       _onPlaceOrderEvent,
     );
@@ -261,7 +260,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     emit(state.copyWith(
-        getOrdersByOrderGroupIDModel: null,
         getOrdersByOrderGroupIDStatus: event.getWithRating
             ? GetOrdersByOrderGroupIDStatus.loadingForRating
             : event.firstOpenPage
@@ -309,10 +307,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       emit(state.copyWith(
           cancelReturnRequestStatus: CancelReturnRequestStatus.failure));
     }, (r) {
-      add(GetOrdersByOrderGroupIDEvent(
-          getWithRating: false,
-          firstOpenPage: false,
-          orderGroupId: event.orderGroupId));
+      add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
       showMessage(r.message ?? '');
       ErrorManager.resetRetry('CancelReturnRequestEvent');
       emit(state.copyWith(
@@ -391,7 +386,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       (l) {
         if (ErrorManager.shouldRetry('GetProvincesByIsoEvent', l.statusCode)) {
           ErrorManager.incrementRetry('GetProvincesByIsoEvent');
-          add(GetProvincesByIsoEvent());
+          add(const GetProvincesByIsoEvent());
           return;
         }
       },
@@ -485,7 +480,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ///////////////////////////
     emit(
       state.copyWith(
-        getOrdersByOrderGroupIDModel: null,
         getOrdersByOrderGroupIDStatus: event.loading
             ? GetOrdersByOrderGroupIDStatus.loading
             : GetOrdersByOrderGroupIDStatus.init,
@@ -742,8 +736,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           hasError: true,
           backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
+          showInRelease: true);
       final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
           List.of(state.listOfAddressInfoClassToSave ?? []);
       listOfAddressInfoClassToSave.insert(index, preCustomerAddress);
@@ -755,8 +748,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       showMessage(r.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
+          showInRelease: true);
       ErrorManager.resetRetry('deleteCustomerAddress');
 
       emit(state.copyWith(
@@ -813,8 +805,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           hasError: true,
           backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
+          showInRelease: true);
       final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
           List.of(state.listOfAddressInfoClassToSave ?? []);
       listOfAddressInfoClassToSave.removeAt(0);
@@ -827,8 +818,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       showMessage(r.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
+          showInRelease: true);
       ErrorManager.resetRetry('addCustomerAddress');
 
       emit(state.copyWith(
@@ -895,8 +885,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           hasError: true,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
+          showInRelease: true);
       final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
           List.of(state.listOfAddressInfoClassToSave ?? []);
       listOfAddressInfoClassToSave.insert(index, preCustomerAddresses);
@@ -908,8 +897,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       showMessage(r.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
+          showInRelease: true);
       ErrorManager.resetRetry('updateCustomerAddress');
 
       emit(state.copyWith(
@@ -963,7 +951,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       },
     );
     await Future.delayed(
-      Duration(seconds: 5),
+      const Duration(seconds: 5),
       () {
         emit(state.copyWith(
           getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.failure,
@@ -1039,7 +1027,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG,
           );
         } else {
           debugPrint('ApplyCouponEvent success');
@@ -1051,7 +1038,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG,
           );
         }
       },
@@ -1080,7 +1066,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.red,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
       },
       (r) async {
@@ -1091,7 +1076,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
         emit(state.copyWith(
             cancelOrderItemStatus: CancelOrderItemStatus.success));
@@ -1123,7 +1107,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
         emit(state.copyWith(cancelOrderStatus: CancelOrderStatus.success));
       },
@@ -1154,7 +1137,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.red,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
       },
       (r) async {
@@ -1165,7 +1147,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
         emit(state.copyWith(
             changeOrderAddressStatus: ChangeOrderAddressStatus.success));
@@ -1232,7 +1213,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
         emit(state.copyWith(
             changeOrderItemVariantStatus:
@@ -1264,7 +1244,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
         emit(state.copyWith(
             addOrderCommentStatus: AddOrderCommentStatus.success));
@@ -1296,7 +1275,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG,
         );
         emit(state.copyWith(
           updateOrderCommentStatus: UpdateOrderCommentStatus.success,
@@ -1315,7 +1293,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         if (ErrorManager.shouldRetry(
             'GetReturnReasonsEvent', failure.statusCode)) {
           ErrorManager.incrementRetry('GetReturnReasonsEvent');
-          add(GetReturnReasonsEvent());
+          add(const GetReturnReasonsEvent());
           return;
         }
         emit(state.copyWith(
@@ -1357,14 +1335,14 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       (response) {
         ErrorManager.resetRetry('StoreReturnRequestProductEvent');
         if (event.withConfirm) {
-          showMessage(response.message ?? "", hasError: false);
+          showMessage(response.message ?? "");
           add(ConfirmReturnRequestEvent(
             orderGroupId: event.orderGroupId,
             returnRequestId: event.returnRequestId,
           ));
         } else {
           add(FetchOrderReturnDetailsEvent(event.orderGroupId));
-          showMessage(response.message ?? "", hasError: false);
+          showMessage(response.message ?? "");
         }
         emit(state.copyWith(
             storeReturnRequestProductStatus:
@@ -1406,7 +1384,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ));
         } else {
           add(FetchOrderReturnDetailsEvent(event.orderGroupId));
-          showMessage(response.message ?? "", hasError: false);
+          showMessage(response.message ?? "");
         }
         emit(state.copyWith(
             updateReturnRequestProductStatus:
@@ -1553,11 +1531,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       },
       (response) {
         add(FetchOrderReturnDetailsEvent(event.orderGroupId));
-        add(GetOrdersByOrderGroupIDEvent(
-            getWithRating: false,
-            firstOpenPage: false,
-            orderGroupId: event.orderGroupId));
-        showMessage(response.message ?? "", hasError: false);
+        add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
+        showMessage(response.message ?? "");
         ErrorManager.resetRetry('ConfirmReturnRequestEvent');
         emit(state.copyWith(
             confirmReturnRequestStatus: ConfirmReturnRequestStatus.success));
@@ -1587,7 +1562,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         }
         if (failure.statusCode == 400) {
           emit(state.copyWith(
-            orderReturnDetailsModel: null,
             orderReturnDetailsStatus: OrderReturnDetailsStatus.failure,
           ));
           return;

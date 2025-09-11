@@ -41,7 +41,7 @@ import 'package:geodesy/geodesy.dart' as geod;
 
 class AddShippingAdress extends StatefulWidget {
   const AddShippingAdress(
-      {Key? key, this.addressInfoClassToEdid, this.fromEdid = false});
+      {super.key, this.addressInfoClassToEdid, this.fromEdid = false});
   final address.CustomerAddressesInfo? addressInfoClassToEdid;
   final bool? fromEdid;
   @override
@@ -106,7 +106,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
         _currentLocation = latlng!;
       } else {
         currentLocation =
-            await location.getLocation().timeout(Duration(seconds: 15));
+            await location.getLocation().timeout(const Duration(seconds: 15));
         _currentLocation =
             LatLng(currentLocation.latitude!, currentLocation.longitude!);
       }
@@ -119,7 +119,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           // عرض رسالة
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                duration: Duration(seconds: 2),
+                duration: const Duration(seconds: 2),
                 content: Text('${LocaleKeys.outside_available_area.tr()}')),
           );
           _currentLocation = null;
@@ -128,12 +128,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
         }
       }
 
-      await Future.delayed(Duration(seconds: 2), () {
+      await Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           _markers.add(Marker(
-            markerId: MarkerId('current_location'),
+            markerId: const MarkerId('current_location'),
             position: _currentLocation!,
-            infoWindow: InfoWindow(title: 'موقعي الحالي'),
+            infoWindow: const InfoWindow(title: 'موقعي الحالي'),
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueRed), // علامة حمراء
           ));
@@ -160,11 +160,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
   List<geod.LatLng> countryBorders = [];
 
   final List<LatLng> worldRect = [
-    LatLng(20, 20),
-    LatLng(50, 20),
-    LatLng(50, 50),
-    LatLng(20, 50),
-    LatLng(20, 20),
+    const LatLng(20, 20),
+    const LatLng(50, 20),
+    const LatLng(50, 50),
+    const LatLng(20, 50),
+    const LatLng(20, 20),
   ];
   Set<Polygon> polygons = {};
 
@@ -172,8 +172,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     return LatLng(point.latitude, point.longitude);
   }
 
-  LatLngBounds? bounds =
-      LatLngBounds(southwest: LatLng(30, 30), northeast: LatLng(40, 40));
+  LatLngBounds? bounds = LatLngBounds(
+      southwest: const LatLng(30, 30), northeast: const LatLng(40, 40));
   List<LatLng> mapSyriaBorders = [];
   @override
   void initState() {
@@ -184,14 +184,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
       mapSyriaBorders = countryBorders.map((p) => convertToLatLng(p)).toList();
       polygons = {
         Polygon(
-          polygonId: PolygonId('mask'),
+          polygonId: const PolygonId('mask'),
           points: worldRect,
           holes: [mapSyriaBorders],
           fillColor: Colors.black.withOpacity(0.3), // تظليل أسود مع شفافية
           strokeWidth: 0,
         ),
         Polygon(
-          polygonId: PolygonId('border'),
+          polygonId: const PolygonId('border'),
           points: mapSyriaBorders,
 
           fillColor: Colors.transparent,
@@ -220,7 +220,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
 
     _markersInSmallMap = [
       Marker(
-          markerId: MarkerId("initial"),
+          markerId: const MarkerId("initial"),
           position: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
               double.tryParse(country?.longitude ?? "0") ?? 0))
     ];
@@ -235,15 +235,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                 widget.addressInfoClassToEdid!.location!.latitude!)!,
             double.tryParse(
                 widget.addressInfoClassToEdid!.location!.longitude!)!);
-        _kinitialPosition = CameraPosition(
-            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 14);
+        _kinitialPosition = CameraPosition(target: _currentLocation!, zoom: 14);
         _goToCurrentLocation(latlng: _currentLocation);
       } else {
         _kinitialPosition = CameraPosition(
-            bearing: 0,
             target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
                 double.tryParse(country?.longitude ?? "0") ?? 0),
-            tilt: 0,
             zoom: 14);
       }
 
@@ -320,15 +317,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                 .state.lastAdressInfoClassToSave!.location!.latitude!)!,
             double.tryParse(orderBloc
                 .state.lastAdressInfoClassToSave!.location!.longitude!)!);
-        _kinitialPosition = CameraPosition(
-            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 14);
+        _kinitialPosition = CameraPosition(target: _currentLocation!, zoom: 14);
         _goToCurrentLocation(latlng: _currentLocation);
       } else {
         _kinitialPosition = CameraPosition(
-            bearing: 0,
             target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
                 double.tryParse(country?.longitude ?? "0") ?? 0),
-            tilt: 0,
             zoom: 14);
       }
 
@@ -407,7 +401,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
 
     super.initState();
     animationController =
-        AnimationController(duration: Duration(seconds: 1), vsync: this);
+        AnimationController(duration: const Duration(seconds: 1), vsync: this);
   }
 
   @override
@@ -476,7 +470,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             if (isValidateBox && controller.text.isNullOrEmpty) {
               animationController.forward();
               Future.delayed(
-                Duration(seconds: 2),
+                const Duration(seconds: 2),
                 () => animationController.reset(),
               );
             }
@@ -500,17 +494,15 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                 color: (isValidateBox &&
                                         controller.text.isNullOrEmpty)
                                     ? Colors.red
-                                    : Color(0xffD3D3D3))),
+                                    : const Color(0xffD3D3D3))),
                         child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                padding:
-                                    EdgeInsets.only(top: 5, left: 8, right: 8),
+                                padding: const EdgeInsets.only(
+                                    top: 5, left: 8, right: 8),
                                 height: 18,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
                                       title,
@@ -526,7 +518,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                   : 0.8),
                                     ),
                                     title2 == ""
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : Text(
                                             " (${LocaleKeys.optional.tr()})",
                                             style: context
@@ -562,7 +554,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     0.18,
                                                                 fontSize: 16,
                                                                 height: 0.8))
-                                                    : SizedBox.shrink(),
+                                                    : const SizedBox.shrink(),
                                                 textInputType:
                                                     TextInputType.phone,
                                                 bordersColor: Colors.white,
@@ -591,13 +583,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               .startsWith(element
                                                                   .dialCode
                                                                   .toLowerCase()),
-                                                      orElse: () => Country(
-                                                          name: '',
-                                                          flag: '',
-                                                          code: '',
-                                                          dialCode: '',
-                                                          minLength: 0,
-                                                          maxLength: 0));
+                                                      orElse: () =>
+                                                          const Country(
+                                                              name: '',
+                                                              flag: '',
+                                                              code: '',
+                                                              dialCode: '',
+                                                              minLength: 0,
+                                                              maxLength: 0));
                                                   if (newCountry.code != "") {
                                                     String formattedText =
                                                         _formatNumber(
@@ -654,7 +647,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                         end: 1,
                                                         bottom: 1,
                                                         top: 1),
-                                                textAlign: TextAlign.start,
                                                 maxLines: hint2 == "" ? 1 : 2,
                                                 minLines: 1,
                                                 textStyle: context
@@ -722,7 +714,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                 end: 1,
                                                 bottom: 1,
                                                 top: 1),
-                                        textAlign: TextAlign.start,
                                         maxLines: hint2 == "" ? 1 : 2,
                                         minLines: 1,
                                         textStyle: context
@@ -832,7 +823,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             if (isValidateBox && controller.text.isNullOrEmpty) {
               animationController.forward();
               Future.delayed(
-                Duration(seconds: 2),
+                const Duration(seconds: 2),
                 () => animationController.reset(),
               );
             }
@@ -844,16 +835,15 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                     width: 1.sw,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15.r),
-                        border: Border.all(color: Color(0xffD3D3D3))),
+                        border: Border.all(color: const Color(0xffD3D3D3))),
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: EdgeInsets.only(top: 5, left: 8, right: 8),
+                            padding: const EdgeInsets.only(
+                                top: 5, left: 8, right: 8),
                             height: 18,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
                                   title,
@@ -869,7 +859,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                   : 0.8),
                                 ),
                                 title2 == ""
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : Text(
                                         " (${LocaleKeys.optional.tr()})",
                                         style: context.textTheme.bodyMedium?.rr
@@ -901,9 +891,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       letterSpacing: 0.18,
                                                       fontSize: 16,
                                                       height: 0.8))
-                                          : SizedBox.shrink(),
+                                          : const SizedBox.shrink(),
                                       textInputType: isPhone
-                                          ? TextInputType.numberWithOptions()
+                                          ? const TextInputType
+                                              .numberWithOptions()
                                           : TextInputType.text,
                                       bordersColor: Colors.white,
                                       isErrorBorder: false,
@@ -936,7 +927,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                         .startsWith(element
                                                             .dialCode
                                                             .toLowerCase()),
-                                                orElse: () => Country(
+                                                orElse: () => const Country(
                                                     name: '',
                                                     flag: '',
                                                     code: '',
@@ -987,7 +978,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                               end: 1,
                                               bottom: 1,
                                               top: 1),
-                                      textAlign: TextAlign.start,
                                       maxLines: hint2 == "" ? 1 : 2,
                                       minLines: 1,
                                       textStyle: context
@@ -1288,7 +1278,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                     ),
                                                   )),
                                             ),
-                                            Spacer(),
+                                            const Spacer(),
                                             Center(
                                               child: Stack(
                                                 alignment: Alignment.center,
@@ -1337,8 +1327,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                               resizeToAvoidBottomInset: false,
                                               body: SingleChildScrollView(
                                                   physics: isShowFulMap
-                                                      ? NeverScrollableScrollPhysics()
-                                                      : ClampingScrollPhysics(),
+                                                      ? const NeverScrollableScrollPhysics()
+                                                      : const ClampingScrollPhysics(),
                                                   child: Container(
                                                       alignment:
                                                           Alignment.topCenter,
@@ -1347,10 +1337,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               children: [
                                                             Container(
                                                               decoration: BoxDecoration(
-                                                                  color: Color(
+                                                                  color: const Color(
                                                                       0xffF8F8F8),
                                                                   border: Border.all(
-                                                                      color: Color(
+                                                                      color: const Color(
                                                                           0xffD3D3D3))),
                                                               height: 50,
                                                               child: Row(
@@ -1402,9 +1392,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               ),
                                                             ),
                                                             isShowFulMap
-                                                                ? SizedBox
+                                                                ? const SizedBox
                                                                     .shrink()
-                                                                : SizedBox(
+                                                                : const SizedBox(
                                                                     height: 10,
                                                                   ),
                                                             isShowFulMap
@@ -1415,9 +1405,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             .sw,
                                                                         height: 1.sh /
                                                                             1.7,
-                                                                        margin: EdgeInsets.only(
-                                                                            bottom:
-                                                                                0,
+                                                                        margin: const EdgeInsets
+                                                                            .only(
                                                                             left:
                                                                                 15,
                                                                             right:
@@ -1427,7 +1416,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         decoration: BoxDecoration(
                                                                             borderRadius:
                                                                                 BorderRadius.circular(15.r),
-                                                                            border: Border.all(color: Color(0xffD3D3D3))),
+                                                                            border: Border.all(color: const Color(0xffD3D3D3))),
                                                                         child:
                                                                             Container(
                                                                           clipBehavior:
@@ -1436,11 +1425,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               1.sw,
                                                                           height:
                                                                               1.sh / 1.7,
-                                                                          margin:
-                                                                              EdgeInsets.all(10),
+                                                                          margin: const EdgeInsets
+                                                                              .all(
+                                                                              10),
                                                                           decoration: BoxDecoration(
                                                                               borderRadius: BorderRadius.circular(15.r),
-                                                                              border: Border.all(color: Color(0xffD3D3D3))),
+                                                                              border: Border.all(color: const Color(0xffD3D3D3))),
                                                                           child:
                                                                               GoogleMap(
                                                                             onCameraMove:
@@ -1450,19 +1440,13 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             cameraTargetBounds:
                                                                                 CameraTargetBounds(bounds),
                                                                             minMaxZoomPreference:
-                                                                                MinMaxZoomPreference(5, 24),
+                                                                                const MinMaxZoomPreference(5, 24),
                                                                             polygons:
-                                                                                polygons!,
-                                                                            buildingsEnabled:
-                                                                                true,
-                                                                            mapType:
-                                                                                MapType.normal,
+                                                                                polygons,
                                                                             initialCameraPosition:
                                                                                 _kinitialPosition,
                                                                             markers:
                                                                                 _markers.toSet(),
-                                                                            myLocationButtonEnabled:
-                                                                                true,
                                                                             onTap:
                                                                                 (argument) {
                                                                               _markers = [];
@@ -1472,19 +1456,19 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                 if (!inside) {
                                                                                   // عرض رسالة
                                                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                                                    SnackBar(duration: Duration(seconds: 2), content: Text("${LocaleKeys.outside_available_area.tr()}")),
+                                                                                    SnackBar(duration: const Duration(seconds: 2), content: Text("${LocaleKeys.outside_available_area.tr()}")),
                                                                                   );
                                                                                   return;
                                                                                 }
                                                                               }
                                                                               if (currentZoom < 14) {
                                                                                 ScaffoldMessenger.of(context).showSnackBar(
-                                                                                  SnackBar(duration: Duration(seconds: 2), content: Text("${LocaleKeys.you_must_zoom_on_map_dd_location.tr()}")),
+                                                                                  SnackBar(duration: const Duration(seconds: 2), content: Text("${LocaleKeys.you_must_zoom_on_map_dd_location.tr()}")),
                                                                                 );
                                                                                 return;
                                                                               }
 
-                                                                              _markers.add(Marker(markerId: MarkerId('current_location'), position: LatLng(argument.latitude, argument.longitude)));
+                                                                              _markers.add(Marker(markerId: const MarkerId('current_location'), position: LatLng(argument.latitude, argument.longitude)));
                                                                               _currentLocation = LatLng(argument.latitude, argument.longitude);
                                                                               setState(() {});
                                                                             },
@@ -1511,9 +1495,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                     ? Container(
                                                                                         width: 50,
                                                                                         height: 50,
-                                                                                        color: Color(0xffFFFFFF),
+                                                                                        color: const Color(0xffFFFFFF),
                                                                                         child: TrydosLoader(
-                                                                                          color: Color(0xff1D1D1D),
+                                                                                          color: const Color(0xff1D1D1D),
                                                                                           size: 15,
                                                                                         ),
                                                                                       )
@@ -1540,7 +1524,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                           alignment: Alignment.center,
                                                                                           width: 50,
                                                                                           height: 50,
-                                                                                          child: Icon(Icons.my_location),
+                                                                                          child: const Icon(Icons.my_location),
                                                                                         ),
                                                                                       ));
                                                                           })
@@ -1562,7 +1546,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                   .w),
                                                                           decoration: BoxDecoration(
                                                                               borderRadius: BorderRadius.circular(15.r),
-                                                                              border: Border.all(color: Color(0xffD3D3D3))),
+                                                                              border: Border.all(color: const Color(0xffD3D3D3))),
                                                                           height: 118,
                                                                           child: Column(
                                                                             children: [
@@ -1573,15 +1557,13 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                     clipBehavior: Clip.antiAlias,
                                                                                     height: 80,
                                                                                     margin: EdgeInsets.all(10.w),
-                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: Color(0xffD3D3D3))),
+                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: const Color(0xffD3D3D3))),
                                                                                     child: IgnorePointer(
-                                                                                      ignoring: true,
                                                                                       child: GoogleMap(
                                                                                         zoomControlsEnabled: false,
                                                                                         compassEnabled: false,
                                                                                         markers: _markersInSmallMap.toSet(),
                                                                                         zoomGesturesEnabled: false,
-                                                                                        mapType: MapType.normal,
                                                                                         initialCameraPosition: _kinitialPosition,
                                                                                         onMapCreated: (GoogleMapController controller) {
                                                                                           mapController = controller;
@@ -1614,7 +1596,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                       width: 210.w,
                                                                                       margin: EdgeInsets.all(10.w),
                                                                                       decoration: BoxDecoration(
-                                                                                        color: Color.fromRGBO(43, 44, 44, 0.7),
+                                                                                        color: const Color.fromRGBO(43, 44, 44, 0.7),
                                                                                         borderRadius: BorderRadius.circular(15.r),
                                                                                       ),
                                                                                     ),
@@ -1631,7 +1613,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                             isShowFulMap
                                                                 ? SizedBox
                                                                     .fromSize()
-                                                                : SizedBox(
+                                                                : const SizedBox(
                                                                     height: 28,
                                                                   ),
                                                             isShowFulMap
@@ -1645,9 +1627,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             15.w),
                                                                     child:
                                                                         Column(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
                                                                       crossAxisAlignment:
                                                                           CrossAxisAlignment
                                                                               .start,
@@ -1673,12 +1652,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               ),
                                                                               SvgPicture.asset(
                                                                                 AppAssets.chatWithQuestionSvg,
-                                                                                color: Color(0xffD3D3D3),
+                                                                                color: const Color(0xffD3D3D3),
                                                                               ),
                                                                             ],
                                                                           ),
                                                                         ),
-                                                                        SizedBox(
+                                                                        const SizedBox(
                                                                             height:
                                                                                 10),
                                                                         Container(
@@ -1688,7 +1667,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               1.sw,
                                                                           decoration: BoxDecoration(
                                                                               borderRadius: BorderRadius.circular(15.r),
-                                                                              border: Border.all(color: Color(0xffD3D3D3))),
+                                                                              border: Border.all(color: const Color(0xffD3D3D3))),
                                                                           child:
                                                                               Padding(
                                                                             padding:
@@ -1702,7 +1681,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                   LocaleKeys.countr_region.tr(),
                                                                                   style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 0.8),
                                                                                 ),
-                                                                                SizedBox(
+                                                                                const SizedBox(
                                                                                   height: 5,
                                                                                 ),
                                                                                 Container(
@@ -1746,7 +1725,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               if (isValidateBox && (finishSelectedByUserToAppear.length == 0)) {
                                                                                 animationController.forward();
                                                                                 Future.delayed(
-                                                                                  Duration(seconds: 2),
+                                                                                  const Duration(seconds: 2),
                                                                                   () => animationController.reset(),
                                                                                 );
                                                                               }
@@ -1786,9 +1765,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                       margin: EdgeInsets.symmetric(vertical: 10.h),
                                                                                                       width: 1.sw,
                                                                                                       height: 53.h,
-                                                                                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))),
-                                                                                                      child: Padding(
-                                                                                                        padding: const EdgeInsets.all(8.0),
+                                                                                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : const Color(0xffD3D3D3))),
+                                                                                                      child: const Padding(
+                                                                                                        padding: EdgeInsets.all(8.0),
                                                                                                       ),
                                                                                                     ),
                                                                                                   )
@@ -1796,7 +1775,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                     margin: EdgeInsets.symmetric(vertical: 10.h),
                                                                                                     width: 1.sw,
                                                                                                     height: 53,
-                                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))),
+                                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : const Color(0xffD3D3D3))),
                                                                                                     child: Padding(
                                                                                                       padding: const EdgeInsets.all(8.0),
                                                                                                       child: Column(
@@ -1813,7 +1792,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                               children: [
                                                                                                                 SvgPicture.asset(
                                                                                                                   AppAssets.detectedSvg,
-                                                                                                                  color: finishSelectedByUserToAppear.length > 0 ? Color(0xff1D1D1D) : Color(0xffD3D3D3),
+                                                                                                                  color: finishSelectedByUserToAppear.length > 0 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3),
                                                                                                                   height: 16,
                                                                                                                 ),
                                                                                                                 SizedBox(
@@ -1864,7 +1843,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             title:
                                                                                 LocaleKeys.detailed_address_note.tr(),
                                                                             hint: '${LocaleKeys.write_the_address_clearly_including.tr()}'),
-                                                                        SizedBox(
+                                                                        const SizedBox(
                                                                             height:
                                                                                 10),
                                                                         AddressInfoWidget(
@@ -1891,7 +1870,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                             isShowFulMap
                                                                 ? SizedBox
                                                                     .fromSize()
-                                                                : SizedBox(
+                                                                : const SizedBox(
                                                                     height: 20,
                                                                   ),
                                                             isShowFulMap
@@ -1905,9 +1884,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             15.w),
                                                                     child:
                                                                         Column(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
                                                                       crossAxisAlignment:
                                                                           CrossAxisAlignment
                                                                               .start,
@@ -1933,12 +1909,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               ),
                                                                               SvgPicture.asset(
                                                                                 AppAssets.chatWithQuestionSvg,
-                                                                                color: Color(0xffD3D3D3),
+                                                                                color: const Color(0xffD3D3D3),
                                                                               ),
                                                                             ],
                                                                           ),
                                                                         ),
-                                                                        SizedBox(
+                                                                        const SizedBox(
                                                                             height:
                                                                                 10),
                                                                         AddressInfoWidget(
@@ -1959,7 +1935,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             title:
                                                                                 LocaleKeys.recipient_name.tr(),
                                                                             hint: '${LocaleKeys.enter_ful_recipient_name.tr()}'),
-                                                                        SizedBox(
+                                                                        const SizedBox(
                                                                             height:
                                                                                 10),
                                                                         AddressInfoWidget(
@@ -1980,7 +1956,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             title:
                                                                                 LocaleKeys.contact_phone.tr(),
                                                                             hint: "${LocaleKeys.county_code.tr()} + " + '${LocaleKeys.enter_recipient_phone.tr()}'),
-                                                                        SizedBox(
+                                                                        const SizedBox(
                                                                             height:
                                                                                 10),
                                                                         AddressInfoWidgetOptional(
@@ -2003,7 +1979,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       ],
                                                                     ),
                                                                   ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 20,
                                                             ),
                                                           ])))),
@@ -2020,10 +1996,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                 height: 92,
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
-                                                    color: Color.fromRGBO(
+                                                    color: const Color.fromRGBO(
                                                         255, 255, 255, 1),
                                                   ),
-                                                  boxShadow: [
+                                                  boxShadow: const [
                                                     BoxShadow(
                                                       blurRadius: 10,
                                                       blurStyle:
@@ -2031,7 +2007,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       color: Color(0xffF1F1F1),
                                                     )
                                                   ],
-                                                  color: Color.fromRGBO(
+                                                  color: const Color.fromRGBO(
                                                       255, 255, 255, 1),
                                                 ),
                                                 width: 1.sw,
@@ -2043,7 +2019,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                     FocusScope.of(context)
                                                         .unfocus();
                                                     Future.delayed(
-                                                      Duration(seconds: 2),
+                                                      const Duration(
+                                                          seconds: 2),
                                                       () => validateBox.value =
                                                           false,
                                                     );
@@ -2093,7 +2070,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     Container(
                                                                   height: 70,
                                                                   width: 280.w,
-                                                                  margin: EdgeInsets.symmetric(
+                                                                  margin: const EdgeInsets
+                                                                      .symmetric(
                                                                       horizontal:
                                                                           20,
                                                                       vertical:
@@ -2103,7 +2081,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     borderRadius:
                                                                         BorderRadius.circular(
                                                                             20.r),
-                                                                    color: Color(
+                                                                    color: const Color(
                                                                         0xff346BFF),
                                                                   ),
                                                                   child: Center(
@@ -2176,7 +2154,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         context)
                                                                     .unfocus();
                                                                 Future.delayed(
-                                                                  Duration(
+                                                                  const Duration(
                                                                       seconds:
                                                                           2),
                                                                   () => validateBox
@@ -2341,12 +2319,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               },
                                                               child: Container(
                                                                 height: 70,
-                                                                margin: EdgeInsets
+                                                                margin: const EdgeInsets
                                                                     .symmetric(
-                                                                        horizontal:
-                                                                            20,
-                                                                        vertical:
-                                                                            10),
+                                                                    horizontal:
+                                                                        20,
+                                                                    vertical:
+                                                                        10),
                                                                 decoration:
                                                                     BoxDecoration(
                                                                   borderRadius:
@@ -2362,9 +2340,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               0 &&
                                                                           contactPhoneController.text.length >
                                                                               0)
-                                                                      ? Color(
+                                                                      ? const Color(
                                                                           0xff346BFF)
-                                                                      : Color(
+                                                                      : const Color(
                                                                           0xffC4C2C2),
                                                                 ),
                                                                 child: Center(
@@ -2404,13 +2382,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                     builder:
                                         (context, isShowShadowForPanel, _) {
                                       return !isShowShadowForPanel
-                                          ? SizedBox.shrink()
+                                          ? const SizedBox.shrink()
                                           : InkWell(
                                               onTap: () {
                                                 showShadowForPanel.value =
                                                     false;
                                                 Future.delayed(
-                                                  Duration(microseconds: 300),
+                                                  const Duration(
+                                                      microseconds: 300),
                                                   () {
                                                     panelController.close();
                                                     showShadowForPanel.value =
@@ -2421,7 +2400,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                               child: Container(
                                                 height: 1.sh,
                                                 width: 1.sw,
-                                                color: Color.fromRGBO(
+                                                color: const Color.fromRGBO(
                                                     29, 29, 29, 0.6),
                                               ),
                                             );
@@ -2503,9 +2482,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               topRight: Radius
                                                                   .circular(
                                                                       30.r)),
-                                                      isDraggable: true,
-                                                      slideDirection:
-                                                          SlideDirection.UP,
                                                       onPanelClosed: () {
                                                         finishSelectedByUser = [
                                                           address.RegionDetails(
@@ -2570,14 +2546,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                         height: 400,
                                                         width: 1.sw,
                                                         child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 20,
                                                             ),
                                                             Center(
@@ -2593,7 +2566,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         .asset(
                                                                       AppAssets
                                                                           .detectedSvg,
-                                                                      color: Color(
+                                                                      color: const Color(
                                                                           0xff1D1D1D),
                                                                     ),
                                                                     Text(
@@ -2612,11 +2585,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                 ),
                                                               ),
                                                             ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                                 height: 10),
                                                             Container(
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
                                                                       horizontal:
                                                                           10),
                                                               child: Row(
@@ -2733,15 +2707,17 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                 ],
                                                               ),
                                                             ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                                 height: 20),
                                                             Container(
-                                                              padding: EdgeInsets
-                                                                  .symmetric(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
                                                                       horizontal:
                                                                           10),
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
                                                                       horizontal:
                                                                           15),
                                                               height: 40,
@@ -2751,7 +2727,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       BorderRadius
                                                                           .circular(12
                                                                               .r),
-                                                                  color: Color(
+                                                                  color: const Color(
                                                                       0xffF8F8F8)),
                                                               child:
                                                                   AppTextField(
@@ -2785,14 +2761,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       .unfocus();
                                                                 },
                                                                 contentPadding:
-                                                                    EdgeInsets.only(
-                                                                        left: 0,
-                                                                        right:
-                                                                            0),
-                                                                filledColor: Color(
-                                                                    0xffF8F8F8),
-                                                                bordersColor: Color(
-                                                                    0xffF8F8F8),
+                                                                    const EdgeInsets
+                                                                        .only(),
+                                                                filledColor:
+                                                                    const Color(
+                                                                        0xffF8F8F8),
+                                                                bordersColor:
+                                                                    const Color(
+                                                                        0xffF8F8F8),
                                                                 icon: orderState
                                                                             .getAddressByTextStatus ==
                                                                         GetAddressByTextStatus
@@ -2816,7 +2792,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             18,
                                                                         width:
                                                                             18,
-                                                                        color: Color(
+                                                                        color: const Color(
                                                                             0xff388CFF),
                                                                       ),
                                                                 hintText:
@@ -2836,14 +2812,16 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             0.8),
                                                               ),
                                                             ),
-                                                            SizedBox(height: 5),
+                                                            const SizedBox(
+                                                                height: 5),
                                                             Container(
                                                               alignment:
                                                                   Alignment
                                                                       .topCenter,
                                                               height: 260,
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
                                                                       horizontal:
                                                                           15),
                                                               child: ListView
@@ -2851,7 +2829,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       controller:
                                                                           sc,
                                                                       padding:
-                                                                          EdgeInsets.all(
+                                                                          const EdgeInsets
+                                                                              .all(
                                                                               0),
                                                                       itemBuilder:
                                                                           (context,
@@ -2894,7 +2873,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           child:
                                                                               Container(
                                                                             padding:
-                                                                                EdgeInsets.symmetric(horizontal: 35),
+                                                                                const EdgeInsets.symmetric(horizontal: 35),
                                                                             alignment: LanguageService.languageCode == "ar"
                                                                                 ? Alignment.centerRight
                                                                                 : Alignment.centerLeft,
@@ -2905,16 +2884,15 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               ]),
                                                                             ),
                                                                             decoration:
-                                                                                BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12.r)),
+                                                                                BoxDecoration(color: const Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12.r)),
                                                                             height:
                                                                                 50,
                                                                           ),
                                                                         );
                                                                       },
                                                                       separatorBuilder:
-                                                                          (context,
-                                                                                  index) =>
-                                                                              SizedBox(
+                                                                          (context, index) =>
+                                                                              const SizedBox(
                                                                                 height: 2,
                                                                               ),
                                                                       itemCount: (searchController.text.length) >

@@ -66,7 +66,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
         }
-        debounce = Timer(Duration(milliseconds: 600), () {
+        debounce = Timer(const Duration(milliseconds: 600), () {
           if (scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
             BlocProvider.of<BoutiqueBloc>(context)
@@ -99,7 +99,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
           error: error.toString());
     };
     if (widget.filters.isNullOrEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Padding(
       padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.0),
@@ -109,24 +109,24 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
           if (!widget.hideTitle) ...{
             Row(
               key: TestVariables.kTestMode
-                  ? Key(WidgetsKeys.filterByBrandHeadKey)
+                  ? const Key(WidgetsKeys.filterByBrandHeadKey)
                   : null,
               children: [
-                FilterSelectedMark(width: 20, height: 20),
-                SizedBox(
+                const FilterSelectedMark(width: 20, height: 20),
+                const SizedBox(
                   width: 10,
                 ),
                 MyTextWidget(
                   widget.filterListTitle,
-                  style: context.textTheme.titleMedium?.rq
-                      .copyWith(color: Color(0xff505050), height: 15 / 12),
+                  style: context.textTheme.titleMedium?.rq.copyWith(
+                      color: const Color(0xff505050), height: 15 / 12),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
-                  color: Color(0xffD3D3D3),
+                  color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
                     builder: (context, state) {
@@ -134,10 +134,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       GetProductFiltersStatus.loading) {
                     return Row(
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKeys.getBrandsLoadingKey)
+                          ? const Key(WidgetsKeys.getBrandsLoadingKey)
                           : null,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         TrydosLoader(
@@ -146,11 +146,11 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       ],
                     );
                   }
-                  return SizedBox.shrink();
+                  return const SizedBox.shrink();
                 })
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           },
@@ -181,7 +181,6 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 false)
                             : false;
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         GestureDetector(
                           onTap: () {
@@ -302,12 +301,12 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                     BoxShadow(
                                         color: Colors.black.withOpacity(0.05),
                                         blurRadius: 3,
-                                        offset: Offset(0, 3))
+                                        offset: const Offset(0, 3))
                                   ],
                                   border: Border.all(
                                     color: isSelected
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xffC4C2C2),
+                                        ? const Color(0xffFF5F61)
+                                        : const Color(0xffC4C2C2),
                                   ),
                                 ),
                                 child: Center(
@@ -317,7 +316,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                       .filePath !=
                                                   null
                                               ? Padding(
-                                                  padding: EdgeInsets.symmetric(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
                                                       horizontal: 5.0),
                                                   child: SvgNetworkWidget(
                                                     //  width: 70,
@@ -328,19 +328,19 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                         .filePath!,
                                                   ),
                                                 )
-                                              : SizedBox.shrink()
-                                          : SizedBox.shrink()
-                                      : SizedBox.shrink(),
+                                              : const SizedBox.shrink()
+                                          : const SizedBox.shrink()
+                                      : const SizedBox.shrink(),
                                 ),
                               ),
                               Visibility(
                                   visible: isSelected,
-                                  child:
-                                      FilterSelectedMark(width: 20, height: 20))
+                                  child: const FilterSelectedMark(
+                                      width: 20, height: 20))
                             ],
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         MyTextWidget(
                           key: TestVariables.kTestMode == false
                               ? null
@@ -352,14 +352,14 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: context.textTheme.titleMedium?.rq.copyWith(
-                              color: Color(0xff8E8E8E),
+                              color: const Color(0xff8E8E8E),
                               letterSpacing: 0,
                               height: 1.25),
                         ),
                       ],
                     );
                   },
-                  separatorBuilder: (ctx, index) => SizedBox(
+                  separatorBuilder: (ctx, index) => const SizedBox(
                         width: 10,
                       ),
                   itemCount: widget.filters.length)),

@@ -73,80 +73,75 @@ class StoryCard extends StatelessWidget {
                 padding:
                     HWEdgeInsets.only(left: 15, right: 10, top: 5, bottom: 5),
                 color: context.colorScheme.white,
-                child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircularStepProgressIndicator(
-                        totalSteps: collectionStoryModel.stories!.length,
-                        startingAngle: pi,
-                        child: Padding(
-                          padding: const EdgeInsets.all(1.0),
-                          child: collectionStoryModel.photoPath == null
-                              ? NoImageWidget(
-                                  width: 60.r,
-                                  height: 60.r,
-                                  radius: 180,
-                                  textStyle: context.textTheme.bodyMedium?.br
-                                      .copyWith(
-                                          color: const Color(0xff6638FF),
-                                          letterSpacing: 0.18,
-                                          height: 1.33),
-                                  name: collectionStoryModel.name == null
-                                      ? LocaleKeys.uk.tr()
-                                      : HelperFunctions
-                                          .getTheFirstTwoLettersOfName(
-                                              collectionStoryModel.name!))
-                              : MyCachedNetworkImage(
-                                  height: 60.r,
-                                  width: 60.r,
-                                  imageUrl: (collectionStoryModel.photoPath
-                                              .toString()
-                                              .contains("cloudinary")
-                                          ? collectionStoryModel.photoPath
-                                          : "${dotenv.env['Images_Url']}") +
-                                      collectionStoryModel.photoPath,
-                                  imageFit: BoxFit.cover,
-                                ),
-                        ),
-                        width: 70.r,
-                        height: 90.r,
-                        stepSize: 5.r,
-                        customColor: (index) {
-                          if (collectionStoryModel.stories![index].isSeen ??
-                              false) return Colors.grey;
-                          return Colors.green;
-                        },
-                        roundedCap: (index, isSelected) => true,
-                      ),
-                      18.horizontalSpace,
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                child: Row(children: [
+                  CircularStepProgressIndicator(
+                    totalSteps: collectionStoryModel.stories!.length,
+                    startingAngle: pi,
+                    child: Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: collectionStoryModel.photoPath == null
+                          ? NoImageWidget(
+                              width: 60.r,
+                              height: 60.r,
+                              radius: 180,
+                              textStyle: context.textTheme.bodyMedium?.br
+                                  .copyWith(
+                                      color: const Color(0xff6638FF),
+                                      letterSpacing: 0.18,
+                                      height: 1.33),
+                              name: collectionStoryModel.name == null
+                                  ? LocaleKeys.uk.tr()
+                                  : HelperFunctions.getTheFirstTwoLettersOfName(
+                                      collectionStoryModel.name!))
+                          : MyCachedNetworkImage(
+                              height: 60.r,
+                              width: 60.r,
+                              imageUrl: (collectionStoryModel.photoPath
+                                          .toString()
+                                          .contains("cloudinary")
+                                      ? collectionStoryModel.photoPath
+                                      : "${dotenv.env['Images_Url']}") +
+                                  collectionStoryModel.photoPath,
+                              imageFit: BoxFit.cover,
+                            ),
+                    ),
+                    width: 70.r,
+                    height: 90.r,
+                    stepSize: 5.r,
+                    customColor: (index) {
+                      if (collectionStoryModel.stories![index].isSeen ?? false)
+                        return Colors.grey;
+                      return Colors.green;
+                    },
+                    roundedCap: (index, isSelected) => true,
+                  ),
+                  18.horizontalSpace,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Column(
+                        children: [
+                          Flexible(
+                              child: Row(
                             children: [
-                              Flexible(
-                                  child: Row(
-                                children: [
-                                  MyTextWidget(
-                                    collectionStoryModel.name ??
-                                        LocaleKeys.unknown_user.tr(),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.bodyMedium?.rr
-                                        .copyWith(
-                                            height: 1.33,
-                                            color: const Color(0xff505050)),
-                                  ),
-                                  const Spacer(),
-                                ],
-                              ))
+                              MyTextWidget(
+                                collectionStoryModel.name ??
+                                    LocaleKeys.unknown_user.tr(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        height: 1.33,
+                                        color: const Color(0xff505050)),
+                              ),
+                              const Spacer(),
                             ],
-                          ),
-                        ),
+                          ))
+                        ],
                       ),
-                    ]),
+                    ),
+                  ),
+                ]),
               )
             ],
           )),

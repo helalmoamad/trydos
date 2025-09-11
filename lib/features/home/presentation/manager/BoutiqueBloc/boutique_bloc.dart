@@ -52,7 +52,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     this.getFeaturedProductsUseCase,
     this.getProductsWithFiltersUseCase,
     this.getProductFiltersUseCase,
-  ) : super(BoutiqueState()) {
+  ) : super(const BoutiqueState()) {
     on<BoutiqueEvent>((event, emit) {});
 
     on<GetProductsWithFiltersEvent>(_onGetProductsWithFiltersEvent,
@@ -552,7 +552,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = await getProductFiltersUseCase(GetProductsFiltersParams(
       offsetFilter: "${(state.filterOffset ?? 1)}",
       limit: 20,
-      scroll_id: null,
       searchText: filters.searchText ?? event.searchText,
       brandSlugs: filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
       categorySlugs: event.category != null && event.category != ""
@@ -705,8 +704,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = await getProductFiltersUseCase(GetProductsFiltersParams(
       offsetFilter: "1",
       limit: 20,
-      scroll_id: null,
-      searchText: null,
       brandSlugs: event.filtersChoosedByUser?.filters?.brands
           ?.map((e) => '"${e.slug.toString()}"')
           .toList(),
@@ -727,7 +724,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               }
             ],
       colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
-      prices: null,
     ));
     response.fold((l) {
       if (ErrorManager.shouldRetry(
@@ -881,7 +877,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = await getProductFiltersUseCase(GetProductsFiltersParams(
       offsetFilter: "1",
       limit: 20,
-      scroll_id: null,
       searchText: filters.searchText ?? event.searchText,
       brandSlugs: filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
       categorySlugs: event.category != null && event.category != ""
@@ -1105,29 +1100,14 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           ))
         : event.boutiqueSlug == "*flashDeal*"
             ? await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
-                scroll_id: null,
                 offset: [],
                 limit: 20,
-                searchText: null,
-                brandSlugs: null,
                 flashDeal: true,
-                categorySlugs: null,
-                boutiqueSlugs: null,
-                attributes: null,
-                colors: null,
-                prices: null,
               ))
             : await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
-                scroll_id: null,
                 offset: [],
                 limit: 20,
-                searchText: null,
-                brandSlugs: null,
-                categorySlugs: null,
                 boutiqueSlugs: ['"${event.boutiqueSlug}"'],
-                attributes: null,
-                colors: null,
-                prices: null,
               ));
     response.fold((l) {
       //   prefechBoutiques.release();
@@ -1524,7 +1504,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       if (!getProductListingWithFiltersPaginationModels
           .containsValue(event.boutiqueSlug)) {
         getProductListingWithFiltersPaginationModels
-            .addAll({keyWithoutFilter: PaginationModel.init()});
+            .addAll({keyWithoutFilter: const PaginationModel.init()});
       }
       data.removeWhere((key, value) =>
           !(key.contains(event.boutiqueSlug)) && !(key.contains("search")));
@@ -1571,7 +1551,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             ?.copyWith(priceRanges: ranges),
         boutiques: getProductListingWithFiltersModel.boutiques,
         colors: getProductListingWithFiltersModel.colors,
-        searchText: null,
         categories: getProductListingWithFiltersModel.categories,
       ));
     }
@@ -1584,7 +1563,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     if (getProductListingWithFiltersPaginationModels[keyWithoutFilter] ==
         null) {
       getProductListingWithFiltersPaginationModels
-          .addAll({keyWithoutFilter: PaginationModel.init()});
+          .addAll({keyWithoutFilter: const PaginationModel.init()});
     }
 
     if (!((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) &&
@@ -1723,23 +1702,15 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*flashDeal*"
             ? await getProductsWithFiltersUseCase(
                 GetProductsWithFiltersParams(
-                  scroll_id: null,
                   flashDeal: true,
-                  brandSlugs: null,
-                  boutiqueSlugs: null,
-                  attributes: null,
-                  colors: null,
                   limit: 20,
                   offset: !event.getWithPagination
                       ? null
                       : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
-                  prices: null,
-                  searchText: null,
                 ),
               )
             : await getProductsWithFiltersUseCase(
                 GetProductsWithFiltersParams(
-                  scroll_id: null,
                   brandSlugs: filters.brands
                       ?.map((e) => '"${e.slug.toString()}"')
                       .toList(),
@@ -2184,7 +2155,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       if (!getProductListingWithFiltersPaginationModels
           .containsValue(event.boutiqueSlug)) {
         getProductListingWithFiltersPaginationModels
-            .addAll({keyWithoutFilter: PaginationModel.init()});
+            .addAll({keyWithoutFilter: const PaginationModel.init()});
       }
       data.removeWhere((key, value) =>
           !(key.contains(event.boutiqueSlug)) && !(key.contains("search")));
@@ -2230,7 +2201,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             ?.copyWith(priceRanges: ranges),
         boutiques: getProductListingWithFiltersModel.boutiques,
         colors: getProductListingWithFiltersModel.colors,
-        searchText: null,
         categories: getProductListingWithFiltersModel.categories,
       ));
     }
@@ -2243,7 +2213,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     if (getProductListingWithFiltersPaginationModels[keyWithoutFilter] ==
         null) {
       getProductListingWithFiltersPaginationModels
-          .addAll({keyWithoutFilter: PaginationModel.init()});
+          .addAll({keyWithoutFilter: const PaginationModel.init()});
     }
 
     if (!((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) &&
@@ -2309,7 +2279,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             filters_model.GetProductFiltersModel(filters: filters);
         ///////////////////////////////
         Future.delayed(
-          Duration(milliseconds: 100),
+          const Duration(milliseconds: 100),
           () => FirebaseAnalyticsService.logEventForSession(
             eventName: AnalyticsEventsConst.PROGRAMMING_EVENT,
             executedEventName:
@@ -2330,7 +2300,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       if (!checkForFilter) {
         ///////////////////////////////
         Future.delayed(
-          Duration(milliseconds: 100),
+          const Duration(milliseconds: 100),
           () => FirebaseAnalyticsService.logEventForSession(
             eventName: AnalyticsEventsConst.PROGRAMMING_EVENT,
             executedEventName:
@@ -2382,23 +2352,15 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*flashDeal*"
             ? await getProductsWithFiltersUseCase(
                 GetProductsWithFiltersParams(
-                  scroll_id: null,
                   flashDeal: true,
-                  brandSlugs: null,
-                  boutiqueSlugs: null,
-                  attributes: null,
-                  colors: null,
                   limit: 20,
                   offset: !event.getWithPagination
                       ? null
                       : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
-                  prices: null,
-                  searchText: null,
                 ),
               )
             : await getProductsWithFiltersUseCase(
                 GetProductsWithFiltersParams(
-                  scroll_id: null,
                   brandSlugs: filters.brands
                       ?.map((e) => '"${e.slug.toString()}"')
                       .toList(),

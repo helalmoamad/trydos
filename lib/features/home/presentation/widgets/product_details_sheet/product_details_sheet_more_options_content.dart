@@ -71,7 +71,7 @@ class _ProductDetailsSheetMoreOptionsContentState
         return SingleChildScrollView(
           child: ListView(
             controller: widget.scrollController,
-            physics: cupertino.ClampingScrollPhysics(),
+            physics: const cupertino.ClampingScrollPhysics(),
             padding: EdgeInsets.zero,
             shrinkWrap: true,
             children: [
@@ -79,40 +79,38 @@ class _ProductDetailsSheetMoreOptionsContentState
               MyTextWidget('${LocaleKeys.more_options.tr()}',
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyMedium?.mq.copyWith(
-                    color: Color(0xff505050),
+                    color: const Color(0xff505050),
                   )),
               10.verticalSpace,
               (state.notificationTypeForProductModel?.data?.notificationTypes
                               ?.length ??
                           0) ==
                       0
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Container(
-                      padding: EdgeInsets.only(top: 20),
-                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.only(top: 20),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
                       height: 106,
                       width: 1.sw,
                       decoration: BoxDecoration(
-                          color: Color(0xffF8F8F8),
+                          color: const Color(0xffF8F8F8),
                           borderRadius: BorderRadius.circular(30)),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             width: 1.sw,
                             height: 25,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
                                 SvgPicture.asset(
                                   AppAssets.notificationOutlinedIconSvg,
                                   height: 25,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
                                 Container(
@@ -145,7 +143,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                               return Container(
                                 width: 1.sw,
                                 height: 50.h,
-                                margin: EdgeInsets.only(
+                                margin: const EdgeInsets.only(
                                     top: 15, left: 20, right: 20),
                                 child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
@@ -177,7 +175,8 @@ class _ProductDetailsSheetMoreOptionsContentState
                                             children: [
                                               Container(
                                                   decoration: BoxDecoration(
-                                                      color: Color(0xffEFEFEF),
+                                                      color: const Color(
+                                                          0xffEFEFEF),
                                                       border: Border.all(
                                                           color: notificationISSubsecribe.contains((state
                                                                           .notificationTypeForProductModel
@@ -188,7 +187,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                                       "") +
                                                                   "_${widget.productId}")
                                                               ? Colors.red
-                                                              : Color(
+                                                              : const Color(
                                                                   0xffEFEFEF)),
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -225,10 +224,9 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                           Colors.grey.shade300,
                                                       highlightColor:
                                                           Colors.grey.shade100,
-                                                      enabled: true,
                                                       child: Container(
                                                           decoration: BoxDecoration(
-                                                              color: Color(
+                                                              color: const Color(
                                                                   0xffEFEFEF),
                                                               border: Border.all(
                                                                   color: notificationISSubsecribe.contains(
@@ -236,7 +234,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                                               "_${widget.productId}")
                                                                       ? Colors
                                                                           .red
-                                                                      : Color(
+                                                                      : const Color(
                                                                           0xffEFEFEF)),
                                                               borderRadius:
                                                                   BorderRadius.circular(
@@ -268,12 +266,12 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                                           0.8),
                                                             ),
                                                           )))
-                                                  : SizedBox.shrink()
+                                                  : const SizedBox.shrink()
                                             ],
                                           ),
                                         ),
                                     separatorBuilder: (context, index) =>
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         ),
                                     itemCount: (state
@@ -290,21 +288,21 @@ class _ProductDetailsSheetMoreOptionsContentState
                     ),
               10.verticalSpace,
               Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   height: 65,
                   decoration: BoxDecoration(
-                      color: Color(0xffF8F8F8),
+                      color: const Color(0xffF8F8F8),
                       borderRadius: BorderRadius.circular(30)),
                   child: Row(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       SvgPicture.asset(
                         AppAssets.checklistSvg,
                         height: 25,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       Text(
@@ -319,20 +317,20 @@ class _ProductDetailsSheetMoreOptionsContentState
                   )),
               10.verticalSpace,
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 height: 65,
                 decoration: BoxDecoration(
-                    color: Color(0xffF8F8F8),
+                    color: const Color(0xffF8F8F8),
                     borderRadius: BorderRadius.circular(30)),
                 child: Row(children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
                   SvgPicture.asset(
                     AppAssets.compareSvg,
                     height: 25,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
                   Text(

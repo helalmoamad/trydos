@@ -86,9 +86,9 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                   : Container(
                       height: 65,
                       decoration: BoxDecoration(
-                          color: Color(0xffF8F8F8),
+                          color: const Color(0xffF8F8F8),
                           borderRadius: BorderRadius.circular(30)),
-                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
                       alignment: Alignment.center,
                       child: cupertino.Directionality(
                         textDirection: cupertino.TextDirection.ltr,
@@ -132,9 +132,10 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                   child: IconButton(
                                     icon: (state.addCommentStatus ==
                                             AddCommentStatus.loading)
-                                        ? Icon(Icons.hourglass_bottom_rounded,
+                                        ? const Icon(
+                                            Icons.hourglass_bottom_rounded,
                                             color: Colors.blue)
-                                        : Icon(
+                                        : const Icon(
                                             Icons.send,
                                             color: Colors.blue,
                                           ),
@@ -160,7 +161,8 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                       //       AnalyticsButtonsEventNameConst
                                       //           .confirmCommentButton,
                                       // );
-                                      Future.delayed(Duration(seconds: 2), () {
+                                      Future.delayed(const Duration(seconds: 2),
+                                          () {
                                         addCommentController.clear();
                                         cupertino.FocusScope.of(context)
                                             .unfocus();
@@ -203,11 +205,11 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                   ),
                   MyTextWidget('${LocaleKeys.comment_about_this_product.tr()}',
                       style: context.textTheme.bodyMedium?.mq.copyWith(
-                        color: Color(0xff505050),
+                        color: const Color(0xff505050),
                       )),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               ...List.generate(
@@ -248,7 +250,7 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                     .createdAt ??
                                 DateTime.now()),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 5,
                           )
                         ],
@@ -289,16 +291,16 @@ class CommentCard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
-                  color: const Color(0x29000000),
+                  color: Color(0x29000000),
                   offset: Offset(0, 3),
                   blurRadius: 6,
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
               child: Stack(
                 children: [
                   Container(
@@ -316,7 +318,7 @@ class CommentCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20.0),
                       boxShadow: [
                         BoxShadow(
-                          offset: Offset(0, 3),
+                          offset: const Offset(0, 3),
                           blurRadius: 6,
                           color: Colors.white.withOpacity(0.5),
                           inset: true,
@@ -328,7 +330,7 @@ class CommentCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Expanded(
@@ -341,12 +343,12 @@ class CommentCard extends StatelessWidget {
                     MyTextWidget(
                       names,
                       style: context.textTheme.bodySmall?.rq
-                          .copyWith(color: Color(0xff969696)),
+                          .copyWith(color: const Color(0xff969696)),
                     ),
                     MyTextWidget(
                       date,
                       style: context.textTheme.titleSmall?.rq
-                          .copyWith(color: Color(0xff969696)),
+                          .copyWith(color: const Color(0xff969696)),
                     ),
                   ],
                 ),
@@ -354,7 +356,7 @@ class CommentCard extends StatelessWidget {
                   child: MyTextWidget(
                     comment,
                     style: context.textTheme.bodySmall?.rq
-                        .copyWith(color: Color(0xff5D5C5D)),
+                        .copyWith(color: const Color(0xff5D5C5D)),
                     maxLines: 5,
                   ),
                 ),

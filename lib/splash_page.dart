@@ -51,24 +51,19 @@ class _SplashPageState extends State<SplashPage> {
     appBloc.add(ChangeTab(-1));
     GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
     BlocProvider.of<StoryBloc>(context)
-        .add(GetStoryEvent(withPaginition: false));
+        .add(const GetStoryEvent(withPaginition: false));
     if ((prefsRepository.isFoundDataCashed ?? false)) {
       boutiqueBloc.add(GetProductsWithFiltersEvent(
           boutiqueSlug: "search",
           cashedOrginalBoutique: true,
           fromSearch: true,
-          getWithPagination: false,
           offset: 1));
       boutiqueBloc.add(ChangeAppliedFiltersEvent(
-          boutiqueSlug: 'search',
-          filtersAppliedByUser: null,
-          resetAppliedFilters: true));
+          boutiqueSlug: 'search', resetAppliedFilters: true));
       boutiqueBloc.add(ChangeSelectedFiltersEvent(
         resetChoosedFilters: true,
-        requestToUpdateFilters: true,
         fromHomePageSearch: true,
         boutiqueSlug: 'search',
-        filtersChoosedByUser: null,
       ));
       if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
           (prefsRepository.myChatName != prefsRepository.myMarketName &&
@@ -82,34 +77,27 @@ class _SplashPageState extends State<SplashPage> {
         authBloc.add(
             UpdateStoriesUserEvent(name: prefsRepository.myMarketName ?? ""));
       }
-      categoryBloc
-          .add(GetMainCategoriesEvent(getWithPrefech: true, context: context));
+      categoryBloc.add(GetMainCategoriesEvent(context: context));
       GetIt.I<BoutiqueBloc>().add(
-          GetProductWithFiltersWithoutCancelingPreviousEvents(
+          const GetProductWithFiltersWithoutCancelingPreviousEvents(
               categorySlugs: [],
               cashedOrginalBoutique: true,
-              fromHomePageSearch: false,
-              boutiqueSlug: "*featured*",
-              category: null,
-              searchText: null));
+              boutiqueSlug: "*featured*"));
       GetIt.I<BoutiqueBloc>().add(
-          GetProductWithFiltersWithoutCancelingPreviousEvents(
+          const GetProductWithFiltersWithoutCancelingPreviousEvents(
               categorySlugs: [],
               cashedOrginalBoutique: true,
-              fromHomePageSearch: false,
-              boutiqueSlug: "*flashDeal*",
-              category: null,
-              searchText: null));
+              boutiqueSlug: "*flashDeal*"));
 
-      Future.delayed(Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), () {
         //  homeBloc.add(GeColorsAndSizesForSearchEvent());
         if ((prefsRepository.marketToken?.length ?? 0) > 10) {
           //.add(GetProductsListInCartEvent());
-          homeBloc.add(GetCartItemEvent());
+          homeBloc.add(const GetCartItemEvent());
 
-          homeBloc.add(GetNotificationTypeProductEvent());
-          homeBloc.add(GetFirebaseSettingForNotificationEvent());
-          homeBloc.add(GetPopularSearchItemEvent());
+          homeBloc.add(const GetNotificationTypeProductEvent());
+          homeBloc.add(const GetFirebaseSettingForNotificationEvent());
+          homeBloc.add(const GetPopularSearchItemEvent());
         }
       });
     }
@@ -123,7 +111,7 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
   }
 
-  bool _eventLogged = false;
+  final bool _eventLogged = false;
 
   @override
   void didChangeDependencies() async {

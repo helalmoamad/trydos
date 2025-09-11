@@ -121,7 +121,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ChangeChatPropertyEvent>(_onChangeChatPropertyEvent);
     on<GetMessagesForChatEvent>(_onGetMessagesForChatEvent);
     on<GetAllMessagesBetweenEvent>(_onGetAllMessagesBetweenEvent,
-        transformer: throttleDroppable(Duration(seconds: 2)));
+        transformer: throttleDroppable(const Duration(seconds: 2)));
     on<SaveContactsEvent>(_onSaveContactsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetChatsEvent>(
@@ -180,8 +180,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       currentFailedMessage: [],
       chats: [],
       pinnedChats: [],
-      channelId: null,
-      currentOpenedChatId: null,
       createAnewChat: false,
     ));
   }
@@ -408,7 +406,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       ShareProductWithContactsOrChannelsEvent event,
       Emitter<ChatState> emit) async {
     //todo waiting messages and not sent yet
-    final String messageId = Uuid().v4();
+    final String messageId = const Uuid().v4();
     List<Chat> chats = List.of(state.chats);
     List<Chat> pinnedChats = List.of(state.pinnedChats);
     List<String> ids = List.of(state.currentMessage);
@@ -606,7 +604,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('SaveContactsEvent', l.statusCode)) {
-          add(SaveContactsEvent());
+          add(const SaveContactsEvent());
           ErrorManager.incrementRetry('SaveContactsEvent');
         }
         apisMustNotToRequest.remove('SaveContactsEvent');
@@ -647,7 +645,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('GetChatsEvent', l.statusCode)) {
-          add(GetChatsEvent(limit: 10));
+          add(const GetChatsEvent(limit: 10));
           ErrorManager.incrementRetry('GetChatsEvent');
         }
 
@@ -738,7 +736,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         // apisMustNotToRequest.remove('GetContactsEvent');
 
         if (ErrorManager.shouldRetry('GetContactsEvent', l.statusCode)) {
-          add(GetContactsEvent());
+          add(const GetContactsEvent());
           ErrorManager.incrementRetry('GetContactsEvent');
         }
         emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));
@@ -774,7 +772,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     id: uuid,
                     localId: uuid,
                     messages: [],
-                    paginationStatus: PaginationStatus.initial,
                     channelName: contact.name,
                     channelMembers: [
                       ChannelMember(
@@ -852,7 +849,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     id: uuid,
                     localId: uuid,
                     messages: [],
-                    paginationStatus: PaginationStatus.initial,
                     channelName: "recipient",
                     channelMembers: [
                       ChannelMember(
@@ -1120,8 +1116,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     final response = await readAllMessagesUseCase(
         ReadAllMessagesParams(channelId: id ?? ""));
     response.fold((l) {
-      showMessage('This Channel was deleted',
-          hasError: true, showInRelease: true);
+      //  showMessage('This Channel was deleted',
+      //     hasError: true, showInRelease: true);
       if (ErrorManager.shouldRetry('ReadAllMessagesEvent', l.statusCode)) {
         add(ReadAllMessagesEvent(event.channelId));
         ErrorManager.incrementRetry('ReadAllMessagesEvent');
@@ -1687,7 +1683,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   getContactsAfterSavingItAndGettingChannels() {
     if (state.getChatsStatus == GetChatsStatus.success &&
         state.saveContactsStatus == SaveContactsStatus.success) {
-      add(GetContactsEvent());
+      add(const GetContactsEvent());
     }
   }
 
@@ -1998,7 +1994,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               : null,
           messageId: id,
           content: message.messageContent!.content!,
-          createNewChat: false,
           isForward: message.isForward == 1,
           messageType: message.messageType!.name,
           receiverUserId: message.receiverUserId,
@@ -2205,7 +2200,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     String currentRequestIdForAvoidPreRequest = const Uuid().v4();
     if (event.clearSearch) {
       emit(state.copyWith(
-        resultOfSearchTextInChat: PaginationModel.init(),
+        resultOfSearchTextInChat: const PaginationModel.init(),
       ));
       return;
     }
@@ -2216,7 +2211,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       return;
     }
     if (!event.getWithPagination) {
-      resultOfSearch = PaginationModel.init();
+      resultOfSearch = const PaginationModel.init();
 
       List<Message> messages =
           List.of(state.newSortedChatsByDate![event.channel_id]!)
@@ -2248,7 +2243,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     final response = await searchForMessageTextInChatUseCase(
         SearchForMessageTextInChatParams(
             offset:
-                (event.getWithPagination) ? resultOfSearch?.offset ?? "0" : "0",
+                (event.getWithPagination) ? resultOfSearch.offset ?? "0" : "0",
             searchText: event.searchText,
             channeltId: event.channel_id));
 

@@ -48,7 +48,7 @@ class ProductDetailsChipWidget extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: Color(0xffFCFCFC),
+            color: const Color(0xffFCFCFC),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,17 +56,17 @@ class ProductDetailsChipWidget extends StatelessWidget {
               Row(children: [
                 SvgNetworkWidget(
                   svgUrl: descriptor!.descriptorGroup!.icon!,
-                  color: Color(0xff1D1D1D),
+                  color: const Color(0xff1D1D1D),
                   width: 11,
                   height: 11,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 MyTextWidget(
                   descriptor!.descriptorGroup!.name!,
                   style: context.textTheme.titleSmall?.ra.copyWith(
-                      color: Color(0xff1D1D1D), fontSize: 9, height: 1.3),
+                      color: const Color(0xff1D1D1D), fontSize: 9, height: 1.3),
                 ),
               ]),
               SizedBox(
@@ -86,15 +86,16 @@ class ProductDetailsChipWidget extends StatelessWidget {
                               descriptor!.descriptors![index].value!,
                               style: context.textTheme.titleLarge?.rq.copyWith(
                                   height: 1.23,
-                                  color: Color(0xff1D1D1D),
+                                  color: const Color(0xff1D1D1D),
                                   fontSize: 11.sp),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
                               child: SvgNetworkWidget(
                                 svgUrl: descriptor!
                                     .descriptors![index].descriptor!.icon!,
-                                color: Color(0xff1D1D1D),
+                                color: const Color(0xff1D1D1D),
                                 width: 11,
                                 height: 11,
                               ),
@@ -104,7 +105,7 @@ class ProductDetailsChipWidget extends StatelessWidget {
                             descriptor!.descriptors![index].descriptor!.name!,
                             style: context.textTheme.titleMedium?.rq.copyWith(
                                 height: 1.23,
-                                color: Color(0xff1D1D1D),
+                                color: const Color(0xff1D1D1D),
                                 fontSize: 11.sp),
                           )
                         ],
@@ -112,7 +113,7 @@ class ProductDetailsChipWidget extends StatelessWidget {
                     );
                   },
                   separatorBuilder: (context, index) {
-                    return SizedBox(
+                    return const SizedBox(
                       width: 5,
                     );
                   },

@@ -35,7 +35,7 @@ class AppTextView extends StatelessWidget {
       translation ? text.tr() : text,
       textAlign: textAlign,
       style: Theme.of(context).brightness == Brightness.dark && adaptiveColor
-          ? style?.copyWith(color: Theme.of(context).colorScheme.onBackground)
+          ? style?.copyWith(color: Theme.of(context).colorScheme.onSurface)
           : style,
       overflow: textOverflow,
       maxLines: maxLines,

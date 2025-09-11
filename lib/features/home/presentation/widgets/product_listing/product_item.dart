@@ -314,7 +314,7 @@ class _ProductItemState extends State<ProductItem> {
               )),*/
           (widget.productItem.flashDealEndDate == null ||
                   widget.productItem.flashDealEndDate == "")
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               :
 
               /* Positioned(
@@ -375,7 +375,7 @@ class _ProductItemState extends State<ProductItem> {
                     ),
                   ))*/
               (widget.productItem.flashDealEndDate ?? "") == ""
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Directionality(
                       textDirection: LanguageService.languageCode == "ar"
                           ? TextDirection.rtl
@@ -385,13 +385,13 @@ class _ProductItemState extends State<ProductItem> {
                           builder: (context, _visibleFlashDeal, _) {
                             bool isFlashDealEnded = false;
                             DateTime endDate;
-                            Duration _duration = Duration();
+                            Duration _duration = const Duration();
                             final now = DateTime.now();
                             try {
                               endDate = tran.DateFormat('MM/dd/yyyy', 'en_US')
                                   .parse(widget.productItem.flashDealEndDate ??
                                       "");
-                              endDate = endDate.add(Duration(days: 1));
+                              endDate = endDate.add(const Duration(days: 1));
                             } catch (e) {
                               endDate = DateTime.now();
                               print('Error parsing date: $e');
@@ -428,8 +428,8 @@ class _ProductItemState extends State<ProductItem> {
                                                     : 10),
                                         decoration: BoxDecoration(
                                           border: Border.all(
-                                              color: Color(0xffFF6200)),
-                                          color: Color(0xffFFF3E8),
+                                              color: const Color(0xffFF6200)),
+                                          color: const Color(0xffFFF3E8),
                                           borderRadius:
                                               BorderRadius.circular(15),
                                         ),
@@ -438,18 +438,17 @@ class _ProductItemState extends State<ProductItem> {
                                             transform: Matrix4.skewX(
                                                 0.4), // انحراف بسيط للشكل
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
                                               children: [
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 3,
                                                 ),
                                                 SvgPicture.asset(
                                                   AppAssets.flashDealSvg,
                                                   height: 12,
-                                                  color: Color(0xffFF6200),
+                                                  color:
+                                                      const Color(0xffFF6200),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 2,
                                                 ),
                                                 Text(
@@ -460,13 +459,14 @@ class _ProductItemState extends State<ProductItem> {
                                                   style: context
                                                       .textTheme.bodyMedium?.br
                                                       .copyWith(
-                                                    color: Color(0xffFF6200),
+                                                    color:
+                                                        const Color(0xffFF6200),
                                                     letterSpacing: 0.18,
                                                     fontSize: 9,
                                                     height: 1.3,
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 5,
                                                 ),
                                                 FlashDealCountdownTimerWidget(
@@ -479,14 +479,14 @@ class _ProductItemState extends State<ProductItem> {
                                                           .flashDealEndDate ??
                                                       "",
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 5,
                                                 ),
                                               ],
                                             )),
                                       ),
                                     ))
-                                : SizedBox.shrink();
+                                : const SizedBox.shrink();
                           })),
           Directionality(
               textDirection: LanguageService.languageCode == "ar"
@@ -500,7 +500,7 @@ class _ProductItemState extends State<ProductItem> {
                                             .productItem.productId
                                             .toString())
                                         ?.isAfter(DateTime.now()
-                                            .add(Duration(seconds: 1))) ==
+                                            .add(const Duration(seconds: 1))) ==
                                     true &&
                                 widget.productItem.hasRedeemDiscount == true) ||
                             (GetIt.I<PrefsRepository>()
@@ -527,8 +527,9 @@ class _ProductItemState extends State<ProductItem> {
                                         ? 1
                                         : 10),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xffFF6200)),
-                                  color: Color(0xffFFF3E8),
+                                  border: Border.all(
+                                      color: const Color(0xffFF6200)),
+                                  color: const Color(0xffFFF3E8),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 height: 20,
@@ -536,15 +537,13 @@ class _ProductItemState extends State<ProductItem> {
                                     transform:
                                         Matrix4.skewX(0.4), // انحراف بسيط للشكل
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       children: [
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 3,
                                         ),
                                         SvgPicture.asset(
                                             AppAssets.redeemClockSvg),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 3,
                                         ),
                                         Text(LocaleKeys.luck.tr(),
@@ -554,7 +553,7 @@ class _ProductItemState extends State<ProductItem> {
                                               fontSize: 9,
                                               color: const Color(0xffFF6200),
                                             )),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 1,
                                         ),
                                         Text(
@@ -585,14 +584,14 @@ class _ProductItemState extends State<ProductItem> {
                                               fontSize: 9,
                                               color: const Color(0xffFF6200),
                                             )),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         ),
                                       ],
                                     )),
                               ),
                             ))
-                        : SizedBox.shrink();
+                        : const SizedBox.shrink();
                   }))
         ]);
   }

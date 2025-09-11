@@ -31,7 +31,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
     super.initState();
   }
 
-  bool _eventLogged = false;
+  final bool _eventLogged = false;
 
   @override
   void didChangeDependencies() async {
@@ -44,7 +44,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
       textDirection: TextDirection.ltr,
       child: DropdownButtonHideUnderline(
         child: DropdownButton2(
-          hint: Text('Country'),
+          hint: const Text('Country'),
           items: widget.countries.map((country) {
             return DropdownMenuItem<String>(
               value: country.iso,
@@ -59,7 +59,8 @@ class _CountryDropdownState extends State<CountryDropdown> {
               _prefsRepository.setUserCountryIsAvailable(1);
               print(
                   "@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!${newValue}!!!!!!111111111111111");
-              BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
+              BlocProvider.of<HomeBloc>(context)
+                  .add(const ClearAllAppCashEvent());
               _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
               _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
 
@@ -81,7 +82,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
                       languageCode: LanguageService.languageCode));
 
               Future.delayed(
-                Duration(microseconds: 500),
+                const Duration(microseconds: 500),
                 () {
                   context.go("/");
                 },

@@ -104,15 +104,15 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
     };
     return Container(
       height: 50,
-      margin: EdgeInsets.only(left: 20, right: 10),
+      margin: const EdgeInsets.only(left: 20, right: 10),
       decoration: BoxDecoration(
-          color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(15)),
+          color: const Color(0xffF8F8F8),
+          borderRadius: BorderRadius.circular(15)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               left: 10,
             ),
             child: GestureDetector(
@@ -134,15 +134,15 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                     AppAssets.chromeIconSvg,
                     height: 20,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   MyTextWidget(
                     '${LocaleKeys.buyers_camera.tr()} 12 ${LocaleKeys.shot.tr()}',
                     style: context.textTheme.titleLarge?.rq
-                        .copyWith(color: Color(0xff8D8D8D)),
+                        .copyWith(color: const Color(0xff8D8D8D)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   SvgPicture.asset(
@@ -153,16 +153,16 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Container(
             width: 100,
             child: GestureDetector(
               onTap: () {
                 scaleAnimationOnImages.value = false;
-                Future.delayed(Duration(milliseconds: 150), () {
+                Future.delayed(const Duration(milliseconds: 150), () {
                   scaleAnimationOnImages.value = true;
                 });
-                Future.delayed(Duration(milliseconds: 300), () {
+                Future.delayed(const Duration(milliseconds: 300), () {
                   widget.panelControllerForBuyersCameraShots.open();
                 });
               },
@@ -171,14 +171,13 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                   builder: (context, oneValue, _) {
                     return AnimatedScale(
                       scale: oneValue ? 1 : 0.9,
-                      duration: Duration(milliseconds: 150),
+                      duration: const Duration(milliseconds: 150),
                       curve: Curves.fastLinearToSlowEaseIn,
                       child: (syncColorImageList?.length ?? 0) <= 8
                           ? SizedBox(
                               height: 40,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: List.generate(
                                     3,
                                     (index) => GestureDetector(
@@ -215,7 +214,6 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                                                 .currentIndex ==
                                             0);
                               },
-                              height: null,
                               changingPagesScrollOffset: 0.1,
                               isClip: false,
                               onItemChanged: (index) {
@@ -223,15 +221,17 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                               },
                               onClickItem: (index) {
                                 scaleAnimationOnImages.value = false;
-                                Future.delayed(Duration(milliseconds: 150), () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 150), () {
                                   scaleAnimationOnImages.value = true;
                                 });
-                                Future.delayed(Duration(milliseconds: 300), () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 300), () {
                                   widget.panelControllerForBuyersCameraShots
                                       .open();
                                 });
                               },
-                              itemConfig: GalleryItemConfig(
+                              itemConfig: const GalleryItemConfig(
                                   width: 40,
                                   height: 40,
                                   radius: 180,
@@ -247,7 +247,7 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                                 return Visibility(
                                   visible:
                                       index < (syncColorImageList!.length ~/ 2),
-                                  child: ProductListingImageWidget(
+                                  child: const ProductListingImageWidget(
                                     width: 40,
                                     height: 40,
                                     imageUrl:

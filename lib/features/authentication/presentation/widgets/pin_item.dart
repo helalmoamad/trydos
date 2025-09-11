@@ -47,19 +47,20 @@ class PinItem extends StatefulWidget {
 
 class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
   bool withBorder = true;
-  TextEditingValue zwspEditingValue = TextEditingValue(
+  TextEditingValue zwspEditingValue = const TextEditingValue(
       text: '\u200b', selection: TextSelection(baseOffset: 1, extentOffset: 1));
   late final AnimationController animationController;
   late final AnimationController fadingController;
 
   @override
   void initState() {
-    animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
     fadingController =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
     animationController.addStatusListener(_updateStatus);
-    Future.delayed(Duration(seconds: 1), () => focusNodes[0].requestFocus());
+    Future.delayed(
+        const Duration(seconds: 1), () => focusNodes[0].requestFocus());
     widget.controller.value = zwspEditingValue;
     currentToType = 0;
     super.initState();
@@ -137,19 +138,18 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                             height: 70.h,
                             width: 50.w,
                             child: DottedBorder(
-                              borderPadding: EdgeInsets.zero,
                               padding: EdgeInsets.zero,
                               borderType: BorderType.RRect,
                               strokeCap: StrokeCap.round,
                               strokeWidth: 1 - fadingController.value,
-                              dashPattern: [3, 3],
-                              radius: Radius.circular(15.0),
+                              dashPattern: const [3, 3],
+                              radius: const Radius.circular(15.0),
                               color: withBorder
                                   ? widget.borderColor
-                                  : Color(0xffF5F5F5),
+                                  : const Color(0xffF5F5F5),
                               child: ClipRRect(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
+                                    const BorderRadius.all(Radius.circular(15)),
                                 child: TextFormField(
                                   controller: widget.controller,
                                   enabled: (state.verifyOtpSignInStatus !=
@@ -211,7 +211,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                   keyboardType: TextInputType.number,
                                   textDirection: TextDirection.ltr,
                                   autocorrect: false,
-                                  cursorColor: Color(0xff5D5C5D),
+                                  cursorColor: const Color(0xff5D5C5D),
                                   cursorHeight: 0,
                                   enableInteractiveSelection: widget.index == 0,
                                   cursorWidth: 0,
@@ -233,8 +233,8 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                     focusedBorder: InputBorder.none,
                                     filled: true,
                                     fillColor: !withBorder
-                                        ? Color(0xffF5F5F5)
-                                        : Color(0xffFAFAFA),
+                                        ? const Color(0xffF5F5F5)
+                                        : const Color(0xffFAFAFA),
                                   ),
                                 ),
                               ),

@@ -53,11 +53,11 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
     '${LocaleKeys.purchase_protection.tr()}',
     '${LocaleKeys.earn_money_with_this_order.tr()}',
   ];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   Timer? _timer;
   Timer? _recallForAutoScroll;
   double _scrollOffset = 0.0;
-  double _scrollSpeed = 0.25;
+  final double _scrollSpeed = 0.25;
 
   @override
   void initState() {
@@ -81,14 +81,14 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
             ScrollDirection.forward) {
       _stopAutoScroll();
       _recallForAutoScroll?.cancel();
-      _recallForAutoScroll = Timer(Duration(seconds: 2), () {
+      _recallForAutoScroll = Timer(const Duration(seconds: 2), () {
         _startAutoScroll();
       });
     }
   }
 
   void _startAutoScroll() {
-    _timer = Timer.periodic(Duration(milliseconds: 50), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (_) {
       setState(() {
         _scrollOffset += _scrollSpeed;
         if (_scrollOffset >= _scrollController.position.maxScrollExtent) {
@@ -122,12 +122,12 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
           error: error.toString());
     };
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
           color: colorScheme.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [
             Flexible(
@@ -146,25 +146,25 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
                           svg[index],
                           height: 15,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         index == 0
                             ? MyTextWidget(
                                 '2 June',
                                 style: textTheme.titleMedium?.ba.copyWith(
-                                    color: Color(0xff505050),
+                                    color: const Color(0xff505050),
                                     height: 0,
                                     fontSize: 11),
                               )
                             : MyTextWidget(
                                 texts[index],
                                 style: textTheme.titleMedium?.rq.copyWith(
-                                    color: Color(0xff505050),
+                                    color: const Color(0xff505050),
                                     height: 0,
                                     fontSize: 11),
                               ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         )
                       ],

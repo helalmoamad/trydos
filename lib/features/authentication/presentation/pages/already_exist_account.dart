@@ -43,7 +43,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
 
   @override
   void didChangeDependencies() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffF4F8FF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
@@ -77,35 +77,31 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
           Positioned(top: 50, left: 40, right: 40, child: logo),
           Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
                 Padding(
                   padding: HWEdgeInsets.symmetric(horizontal: 40.0),
                   child: Column(children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SvgPicture.asset(
                           AppAssets.registerInfoSvg,
                           width: 15,
                           height: 15,
-                          color: Color(0xff388CFF),
+                          color: const Color(0xff388CFF),
                         ),
                         10.horizontalSpace,
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             MyTextWidget(
                               LocaleKeys.this_numbber_already.tr(),
                               style: context.textTheme.titleLarge?.ra.copyWith(
-                                  color: Color(0xff5D5C5D), height: 1.42),
+                                  color: const Color(0xff5D5C5D), height: 1.42),
                             ),
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Padding(
                                   padding: HWEdgeInsets.only(top: 3.0),
@@ -120,21 +116,20 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                   textAlign: TextAlign.start,
                                   style: context.textTheme.titleMedium?.ra
                                       .copyWith(
-                                          color: Color(0xff8D8D8D),
+                                          color: const Color(0xff8D8D8D),
                                           height: 1.25),
                                 ),
                               ],
                             ),
                             10.verticalSpace,
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 15.horizontalSpace,
                                 MyTextWidget(
                                   LocaleKeys.you_can_login_now.tr(),
                                   style: context.textTheme.titleMedium?.ra
                                       .copyWith(
-                                          color: Color(0xffC4C2C2),
+                                          color: const Color(0xffC4C2C2),
                                           height: 1.25),
                                 )
                               ],
@@ -145,7 +140,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                     ),
                   ]),
                 ),
-                Spacer(),
+                const Spacer(),
                 BlocBuilder<AuthBloc, AuthState>(
                   buildWhen: (previous, current) =>
                       previous.verifyOtpSignInStatus !=
@@ -156,7 +151,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                         verifiedBySignIn) {
                       verifiedBySignIn = false;
                       Future.delayed(
-                        Duration(seconds: 2),
+                        const Duration(seconds: 2),
                         () {
                           context.go(GRouter.config.applicationRoutes
                                   .kRegistrationCompletedPage +
@@ -166,7 +161,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                     }
                     return InkWell(
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKeys.loginContinueButtonKey)
+                          ? const Key(WidgetsKeys.loginContinueButtonKey)
                           : null,
                       onTap: () {
                         BlocProvider.of<AuthBloc>(context)
@@ -218,7 +213,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                   MyTextWidget(
                                     LocaleKeys.login_continue.tr(),
                                     style: textTheme.displayMedium?.ra.copyWith(
-                                      color: Color(0xff5D5C5D),
+                                      color: const Color(0xff5D5C5D),
                                       letterSpacing: 0.16,
                                       height: 1.25,
                                     ),
@@ -232,13 +227,13 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 20.verticalSpace,
                 InkWell(
                   key: TestVariables.kTestMode
-                      ? Key(WidgetsKeys.takeLookButtonKey)
+                      ? const Key(WidgetsKeys.takeLookButtonKey)
                       : null,
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onTap: () async {
                     Future.delayed(
-                      Duration(milliseconds: 100),
+                      const Duration(milliseconds: 100),
                       () async {
                         /*    if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
                                 false ||
@@ -275,7 +270,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                           " , " +
                           LocaleKeys.take_look.tr(),
                       style: textTheme.titleLarge?.ra.copyWith(
-                        color: Color(0xff4d84ff),
+                        color: const Color(0xff4d84ff),
                         letterSpacing: 0.14,
                         height: 1.43,
                       ),

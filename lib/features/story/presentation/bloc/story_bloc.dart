@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dartz/dartz.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:equatable/equatable.dart';
 
@@ -308,6 +309,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           getStoriesStatus: GetStoriesStatus.failure,
           getStoryWithPagintionStatusLoading: false));
     }, (r) {
+      List<CollectionStoryModel> storiesCollections =
+          List.of(state.storiesCollections);
       ErrorManager.resetRetry('GetStoryEvent');
       Map<int, int> currentStoryInEachCollection = {};
       int i = 0;
@@ -330,7 +333,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         currentStoryInEachCollection[i++] = 0;
       });
       if (event.withPaginition) {
-        int i = (state.storiesCollections).length;
+        int i = (storiesCollections).length;
         r.data?.collections?.forEach((element) {
           currentStoryInEachCollection[i++] = 0;
         });
@@ -341,7 +344,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           finishGetAllStory: (r.data?.collections?.length ?? 0) < 10,
           getStoriesStatus: GetStoriesStatus.success,
           storiesCollections: event.withPaginition
-              ? [...(state.storiesCollections), ...(collections ?? [])]
+              ? [...(storiesCollections), ...(collections ?? [])]
               : collections,
           currentStoryInEachCollection: currentStoryInEachCollection));
     });
@@ -370,7 +373,9 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
             height: event.height));
       }
     }, (r) {
-      add(GetStoryEvent(withPaginition: false));
+      List<CollectionStoryModel> storiesCollections =
+          List.of(state.storiesCollections);
+      //  add(const GetStoryEvent(withPaginition: false));
       ErrorManager.resetRetry('AddStoryToOurServerEvent');
       String fileName = event.path.split('/').last;
       String mimeType = mime(fileName) ?? '';
@@ -381,20 +386,28 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       } else {
         isVideoFile = true;
       }
+      DateTime now = DateTime.now().toUtc();
+
+      // التاريخ والوقت الحالي بالتوقيت المحلي
+      String formattedYear = DateFormat('yyyy-MM-dd', "en").format(now);
+      String formattedDay = DateFormat('HH:mm:ss', "en").format(now);
+      String formattedDate = "$formattedYear $formattedDay";
+
       Story story = Story(
           isSeen: false,
           userId: GetIt.I<PrefsRepository>().myStoriesId,
           height: event.height,
           width: event.width,
+          createdAt: formattedDate,
           oneLink: state.storyLink,
           isVideo: isVideoFile ? 1 : 0,
           isPhoto: !isVideoFile ? 1 : 0,
           photoPath: !isVideoFile ? event.path : null,
           fullVideoPath: isVideoFile ? event.path : null);
       r.fold((id) {
-        if (state.storiesCollections.first.stories?[0].userId !=
+        if (storiesCollections.first.stories?[0].userId !=
             GetIt.I<PrefsRepository>().myStoriesId) {
-          state.storiesCollections.insert(
+          storiesCollections.insert(
               0,
               CollectionStoryModel(
                   id: GetIt.I<PrefsRepository>().myStoriesId,
@@ -403,13 +416,13 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
                   stories: [story.copyWith(id: id)]));
         } else {
           List<Story> currentUserStories =
-              List.of(state.storiesCollections.first.stories ?? []);
+              List.of(storiesCollections.first.stories ?? []);
           currentUserStories.insert(
               currentUserStories.length, story.copyWith(id: id));
-          state.storiesCollections.first.stories = currentUserStories;
+          storiesCollections.first.stories = currentUserStories;
         }
       }, (collection) {
-        state.storiesCollections.insert(0, collection);
+        storiesCollections.insert(0, collection);
       });
       // if (GetIt.I<PrefsRepository>().myStoriesId ==
       //     state.storiesCollections.first.stories![0].userId) {
@@ -422,14 +435,15 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       // }
       Map<int, int?> currentStoryInEachCollection =
           Map.of(state.currentStoryInEachCollection);
-      if (state.storiesCollections.first
-              .stories![currentStoryInEachCollection[0]!].isSeen ??
+      if (storiesCollections
+              .first.stories![currentStoryInEachCollection[0]!].isSeen ??
           false) {
         currentStoryInEachCollection[0] =
-            state.storiesCollections.first.stories!.length - 1;
+            storiesCollections.first.stories!.length - 1;
       }
+      storiesCollections.removeLast();
       emit(state.copyWith(
-          storiesCollections: state.storiesCollections,
+          storiesCollections: storiesCollections,
           currentStoryInEachCollection: currentStoryInEachCollection,
           uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
     });

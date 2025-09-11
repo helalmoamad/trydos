@@ -49,7 +49,7 @@ class _RegistrationPageState extends State<RegistrationPage>
   String phoneNumber = '';
   String verificationId = '';
   String otp = '';
-  Duration animationDuration = Duration(milliseconds: 500);
+  Duration animationDuration = const Duration(milliseconds: 500);
   final FocusNode focusNode = FocusNode();
   late AuthBloc authBloc;
   int isVisWhatsApp = 0;
@@ -83,7 +83,7 @@ class _RegistrationPageState extends State<RegistrationPage>
 
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
@@ -103,10 +103,11 @@ class _RegistrationPageState extends State<RegistrationPage>
       canPop: (widget.fromLogOut ?? false) ? false : true,
       onPopInvokedWithResult: (didPop, result) {
         if (widget.fromLogOut ?? false) {}
-        Future.delayed(Duration(milliseconds: 100), () {
+        Future.delayed(const Duration(milliseconds: 100), () {
           if (pageController.page == 2 || pageController.page == 1) {
             pageController.animateToPage(0,
-                duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut);
             pageContent.value = 0;
             return;
           }
@@ -114,7 +115,8 @@ class _RegistrationPageState extends State<RegistrationPage>
               (pageController.page ?? 0) < 5) {
             pageContent.value = 2;
             pageController.animateToPage(2,
-                duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut);
             return;
           }
           context.go(GRouter.config.applicationRoutes.kBasePage);
@@ -122,7 +124,8 @@ class _RegistrationPageState extends State<RegistrationPage>
       },
       child: ValueListenableBuilder<int>(
           child: ValueListenableBuilder<bool>(
-              child: Container(margin: EdgeInsets.only(top: 20), child: logo),
+              child: Container(
+                  margin: const EdgeInsets.only(top: 20), child: logo),
               valueListenable: animate,
               builder: (context, yes, child) {
                 return Directionality(
@@ -144,8 +147,9 @@ class _RegistrationPageState extends State<RegistrationPage>
               focusNode.requestFocus();
             }
             return Scaffold(
-              backgroundColor:
-                  index != 6 ? context.colorScheme.surface : Color(0xffF4FFF4),
+              backgroundColor: index != 6
+                  ? context.colorScheme.surface
+                  : const Color(0xffF4FFF4),
               body: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
@@ -158,7 +162,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                         builder: (context, index, _) {
                           return InkWell(
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKeys.registerCancelKey)
+                                ? const Key(WidgetsKeys.registerCancelKey)
                                 : null,
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
@@ -167,11 +171,12 @@ class _RegistrationPageState extends State<RegistrationPage>
                                 return;
                               }
                               Future.delayed(
-                                Duration(milliseconds: 100),
+                                const Duration(milliseconds: 100),
                                 () {
                                   if (index == 2 || index == 1) {
                                     pageController.animateToPage(0,
-                                        duration: Duration(milliseconds: 500),
+                                        duration:
+                                            const Duration(milliseconds: 500),
                                         curve: Curves.easeInOut);
                                     pageContent.value = 0;
                                     return;
@@ -179,7 +184,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   if (index >= 3 && index <= 5) {
                                     pageContent.value = 2;
                                     pageController.animateToPage(2,
-                                        duration: Duration(milliseconds: 500),
+                                        duration:
+                                            const Duration(milliseconds: 500),
                                         curve: Curves.easeInOut);
                                     return;
                                   }
@@ -202,7 +208,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     deviceId: deviceId!));
                                 // }
                                 Future.delayed(
-                                    Duration(microseconds: 300),
+                                    const Duration(microseconds: 300),
                                     () => context.go(GRouter
                                         .config.applicationRoutes.kBasePage));
                               }
@@ -238,7 +244,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                         width: 1.sw,
                         child: WillPopScope(
                             child: PageView(
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 onPageChanged: (value) => setState(() {
                                       PopScopeValue = value;
                                     }),
@@ -247,11 +253,13 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   WelcomeSection(
                                     goToLoginSection: () {
                                       fromLogin = true;
-                                      animationDuration = Duration(seconds: 1);
+                                      animationDuration =
+                                          const Duration(seconds: 1);
                                       animate.value = true;
                                       pageContent.value = 2;
                                       pageController.animateToPage(2,
-                                          duration: Duration(milliseconds: 100),
+                                          duration:
+                                              const Duration(milliseconds: 100),
                                           curve: Curves.easeInOut);
                                     },
                                     goToCreateAccount: () {
@@ -259,7 +267,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       animate.value = true;
                                       pageContent.value = 1;
                                       pageController.animateToPage(1,
-                                          duration: Duration(milliseconds: 500),
+                                          duration:
+                                              const Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
                                       //_animationController.forward();
                                     },
@@ -268,7 +277,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     moveToNextStep: () {
                                       pageContent.value = 2;
                                       pageController.animateToPage(2,
-                                          duration: Duration(milliseconds: 500),
+                                          duration:
+                                              const Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
                                     },
                                   ),
@@ -280,7 +290,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                           phoneNumber.replaceAll(' ', '');
                                       pageContent.value = 3;
                                       pageController.animateToPage(3,
-                                          duration: Duration(milliseconds: 500),
+                                          duration:
+                                              const Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
                                     },
                                   ),
@@ -291,7 +302,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       isVisWhatsApp = 1;
                                       pageContent.value = 4;
                                       pageController.animateToPage(4,
-                                          duration: Duration(milliseconds: 500),
+                                          duration:
+                                              const Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
 
                                       if (prefsRepository
@@ -309,14 +321,16 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     },
                                     goBackToPhone: () {
                                       pageController.animateToPage(2,
-                                          duration: Duration(milliseconds: 500),
+                                          duration:
+                                              const Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
                                       pageContent.value = 2;
                                     },
                                     onChooseSms: () {
                                       isVisWhatsApp = 0;
                                       pageController.animateToPage(4,
-                                          duration: Duration(milliseconds: 500),
+                                          duration:
+                                              const Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
                                       pageContent.value = 5;
                                       /*   authBloc.add(SendOtpEvent(
@@ -341,8 +355,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                         }
                                         fromLogin = false;
                                         pageController.animateToPage(5,
-                                            duration:
-                                                Duration(milliseconds: 500),
+                                            duration: const Duration(
+                                                milliseconds: 500),
                                             curve: Curves.easeInOut);
                                         pageContent.value = 6;
                                       },
@@ -351,15 +365,15 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       onLoginFailed: () {
                                         fromLogin = true;
                                         pageController.animateToPage(5,
-                                            duration:
-                                                Duration(milliseconds: 500),
+                                            duration: const Duration(
+                                                milliseconds: 500),
                                             curve: Curves.easeInOut);
                                         pageContent.value = 6;
                                       },
                                       goBack: () {
                                         pageController.animateToPage(3,
-                                            duration:
-                                                Duration(milliseconds: 500),
+                                            duration: const Duration(
+                                                milliseconds: 500),
                                             curve: Curves.easeInOut);
                                         pageContent.value = 3;
                                       },
@@ -386,13 +400,14 @@ class _RegistrationPageState extends State<RegistrationPage>
                                 if (PopScopeValue == 2 && fromLogin) {
                                   await pageController.animateToPage(
                                       PopScopeValue - 2,
-                                      duration: Duration(milliseconds: 500),
+                                      duration:
+                                          const Duration(milliseconds: 500),
                                       curve: Curves.easeInOut);
                                   return false;
                                 }
                                 await pageController.animateToPage(
                                     PopScopeValue - 1,
-                                    duration: Duration(milliseconds: 500),
+                                    duration: const Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
                                 return false;
                               }

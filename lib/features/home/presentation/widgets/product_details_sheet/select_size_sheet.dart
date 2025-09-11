@@ -150,7 +150,6 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
             ],
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
@@ -169,7 +168,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                         .copyWith(height: 0.86, color: const Color(0xff505050)),
                   ),
                   LanguageService.languageCode == "ar"
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : MyTextWidget(
                           '${LocaleKeys.size.tr()}',
                           style: textTheme.titleLarge?.mq.copyWith(
@@ -264,7 +263,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               itemBuilder: (ctx, index, _) {
                                 if (widget.requestToNotifyMeFormFirstSize) {
                                   Future.delayed(
-                                    Duration(milliseconds: 300),
+                                    const Duration(milliseconds: 300),
                                     () {
                                       if (sizesQuantities[currentIndex] == 0 &&
                                           !widget.collectedAfterOrdering) {

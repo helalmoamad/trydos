@@ -91,11 +91,11 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
           return Scaffold(
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
-                    backgroundColor: Color(0x000000),
+                    backgroundColor: const Color(0x000000),
                     action: [
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : SizedBox(
                               width: 55.w,
                             ),
@@ -107,16 +107,17 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                             fontSize: 14,
                             height: 1.3),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : InkWell(
                               onTap: () {
                                 showDialog(
-                                  barrierColor: Color.fromRGBO(0, 0, 0, 0.3),
+                                  barrierColor:
+                                      const Color.fromRGBO(0, 0, 0, 0.3),
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                      backgroundColor: Color(0xffCEFFE6),
+                                      backgroundColor: const Color(0xffCEFFE6),
                                       title: Text(
                                         LocaleKeys
                                             .are_you_sure_you_want_to_change_your_country
@@ -124,7 +125,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                         style:
                                             textTheme.titleMedium?.rr.copyWith(
                                           fontSize: 12.sp,
-                                          color: Color(0xff1D1D1D),
+                                          color: const Color(0xff1D1D1D),
                                           height: 0,
                                         ),
                                       ),
@@ -144,7 +145,8 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                             GetIt.I<PrefsRepository>()
                                                 .setUserCountryIsAvailable(1);
                                             BlocProvider.of<HomeBloc>(context)
-                                                .add(ClearAllAppCashEvent());
+                                                .add(
+                                                    const ClearAllAppCashEvent());
                                             clearCustomCashe();
                                             prefsRepository
                                                 .setIsFoundDataCashed(false);
@@ -164,7 +166,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                                             .languageCode));
 
                                             Future.delayed(
-                                              Duration(microseconds: 500),
+                                              const Duration(microseconds: 500),
                                               () {
                                                 appBloc.add(ChangeBasePage(0));
                                                 context.go("/");
@@ -176,7 +178,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                             style: textTheme.titleMedium?.rr
                                                 .copyWith(
                                               fontSize: 16.sp,
-                                              color: Color(0xff1D1D1D),
+                                              color: const Color(0xff1D1D1D),
                                               height: 0,
                                             ),
                                           ),
@@ -194,7 +196,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                             style: textTheme.titleMedium?.rr
                                                 .copyWith(
                                               fontSize: 16.sp,
-                                              color: Color(0xff1D1D1D),
+                                              color: const Color(0xff1D1D1D),
                                               height: 0,
                                             ),
                                           ),
@@ -243,17 +245,17 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                               height: 50,
                               width: 1.sw,
                               decoration: BoxDecoration(
-                                  color: Color(0xffF8F8F8),
-                                  border: Border.all(color: Color(0xffD3D3D3))),
+                                  color: const Color(0xffF8F8F8),
+                                  border: Border.all(
+                                      color: const Color(0xffD3D3D3))),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   SizedBox(
                                     width: 10.w,
                                   ),
                                   SvgPicture.asset(
                                     AppAssets.infoSvg,
-                                    color: Color(0xff402CDD),
+                                    color: const Color(0xff402CDD),
                                     width: 25.w,
                                   ),
                                   SizedBox(
@@ -270,11 +272,11 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                   ),
                                 ],
                               )),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           _availableCountry(),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           _commingSoonCountry(),
@@ -292,16 +294,16 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
         Container(
           height: 15,
           width: 170,
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SvgPicture.asset(
                 AppAssets.availableCountrySvg,
                 height: 15,
-                color: Color(0xff707070),
+                color: const Color(0xff707070),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               Text(
@@ -312,22 +314,22 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                     fontSize: 12,
                     height: 1.2),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               SvgPicture.asset(
                 AppAssets.chatWithQuestionSvg,
-                color: Color(0xffD3D3D3),
+                color: const Color(0xffD3D3D3),
                 height: 15,
               ),
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
+          margin: const EdgeInsets.symmetric(horizontal: 5),
           width: 1.sw,
           height: 245,
           child: ListView.separated(
@@ -340,7 +342,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                     "",
                 index,
                 true),
-            separatorBuilder: (context, index) => SizedBox(
+            separatorBuilder: (context, index) => const SizedBox(
               height: 5,
             ),
             itemCount: (homeBloc.state.getAllowedCountriesModel?.data?.countries
@@ -363,16 +365,16 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
         Container(
           height: 15,
           width: 170,
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SvgPicture.asset(
                 AppAssets.availableCountrySvg,
                 height: 15,
-                color: Color(0xff707070),
+                color: const Color(0xff707070),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               Text(
@@ -383,28 +385,28 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                     fontSize: 12,
                     height: 1.2),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               SvgPicture.asset(
                 AppAssets.chatWithQuestionSvg,
-                color: Color(0xffD3D3D3),
+                color: const Color(0xffD3D3D3),
                 height: 15,
               ),
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
+          margin: const EdgeInsets.symmetric(horizontal: 5),
           width: 1.sw,
           height: 400.h,
           child: ListView.separated(
               itemBuilder: (context, index) =>
                   _countryWidget("TR", "Turkiy", index, false),
-              separatorBuilder: (context, index) => SizedBox(
+              separatorBuilder: (context, index) => const SizedBox(
                     height: 5,
                   ),
               itemCount: 5),
@@ -428,18 +430,18 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
             margin: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
                 color: isAvailable && index == changeCountry.value
-                    ? Color(0xffF8F8F8)
+                    ? const Color(0xffF8F8F8)
                     : Colors.white,
                 borderRadius: BorderRadius.circular(15.r),
                 border: Border.all(
                     color: isAvailable && index == changeCountry.value
-                        ? Color(0xff402CDD)
-                        : Color(0xffD3D3D3))),
+                        ? const Color(0xff402CDD)
+                        : const Color(0xffD3D3D3))),
             width: 1.sw,
             height: 53,
             child: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Container(
@@ -456,7 +458,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                             width: 25,
                             borderRadius: 4.r,
                           )),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(

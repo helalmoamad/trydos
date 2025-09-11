@@ -47,9 +47,8 @@ class NoImageWidget extends StatelessWidget {
                       ),
                     ]
                   : null,
-          border: thereActivity
-              ? Border.all(color: const Color(0xff007CFF), width: 1)
-              : null,
+          border:
+              thereActivity ? Border.all(color: const Color(0xff007CFF)) : null,
           borderRadius: BorderRadius.circular(radius),
           gradient: const LinearGradient(
             colors: [
@@ -60,10 +59,7 @@ class NoImageWidget extends StatelessWidget {
             end: Alignment.bottomRight,
           )),
       child: Center(
-        child: MyTextWidget(
-          name,
-          style: textStyle
-        ),
+        child: MyTextWidget(name, style: textStyle),
       ),
     );
   }

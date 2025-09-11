@@ -11,10 +11,7 @@ class NotificationService {
     AndroidInitializationSettings initializationSettingsAndroid =
         const AndroidInitializationSettings('app_icon');
     //todo initialize ios settings
-    var initializationSettingIos = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-    );
+    var initializationSettingIos = const DarwinInitializationSettings();
     var initializeSettings = InitializationSettings(
         iOS: initializationSettingIos, android: initializationSettingsAndroid);
 

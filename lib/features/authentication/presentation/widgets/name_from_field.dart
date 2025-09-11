@@ -142,13 +142,12 @@ class _NameFormFieldState extends State<NameFormField> {
         SizedBox(
           height: 60,
           child: DottedBorder(
-            borderPadding: EdgeInsets.zero,
             padding: EdgeInsets.zero,
             borderType: BorderType.RRect,
             strokeCap: StrokeCap.round,
             strokeWidth: 0.5,
-            dashPattern: [3, 3],
-            radius: Radius.circular(20.0),
+            dashPattern: const [3, 3],
+            radius: const Radius.circular(20.0),
             color: widget.ready
                 ? const Color(0xff388CFF)
                 : const Color(0xff5D5C5D),
@@ -173,7 +172,9 @@ class _NameFormFieldState extends State<NameFormField> {
                   scrollPadding: widget.scrollPadding,
                   expands: widget.expands,
                   maxLengthEnforcement: widget.maxLengthEnforcement,
-                  focusNode: !widget.autoFocus ? (FocusNode()..requestFocus()) : FocusNode(),
+                  focusNode: !widget.autoFocus
+                      ? (FocusNode()..requestFocus())
+                      : FocusNode(),
                   obscureText: widget.obscure,
                   obscuringCharacter: widget.obscuringCharacter,
                   autovalidateMode: widget.autoValidateMode,
@@ -182,12 +183,11 @@ class _NameFormFieldState extends State<NameFormField> {
                   scrollController: widget.scrollController,
                   autocorrect: false,
                   autofocus: widget.autoFocus,
-                  cursorColor: Color(0xff5D5C5D),
+                  cursorColor: const Color(0xff5D5C5D),
                   initialValue: widget.initialValue,
                   keyboardAppearance: widget.keyboardAppearance,
                   textAlignVertical: TextAlignVertical.center,
                   textCapitalization: widget.textCapitalization,
-                  textAlign: TextAlign.start,
                   cursorHeight: 0,
                   toolbarOptions: widget.toolbarOptions,
                   style: context.textTheme.displayMedium?.ra.copyWith(
@@ -198,7 +198,7 @@ class _NameFormFieldState extends State<NameFormField> {
                   ),
                   decoration: InputDecoration(
                     errorMaxLines: 1,
-                    errorStyle: TextStyle(
+                    errorStyle: const TextStyle(
                       fontSize: 11,
                       height: 1,
                     ),
@@ -206,8 +206,7 @@ class _NameFormFieldState extends State<NameFormField> {
                         gapPadding: 2, borderRadius: BorderRadius.circular(20)),
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    contentPadding: HWEdgeInsets.only(
-                        top: 0, left: 30, bottom: 0, right: 30),
+                    contentPadding: HWEdgeInsets.only(left: 30, right: 30),
                     prefixIcon: widget.prefixIcon,
                     suffixIcon: Padding(
                       padding: HWEdgeInsets.only(bottom: 10),
@@ -227,7 +226,7 @@ class _NameFormFieldState extends State<NameFormField> {
                   ? MyTextWidget(
                       LocaleKeys.enter_your_name.tr(),
                       style: context.textTheme.displayMedium?.ra
-                          .copyWith(color: Color(0xffC4C2C2)),
+                          .copyWith(color: const Color(0xffC4C2C2)),
                     )
                   : const SizedBox.shrink();
             })

@@ -53,8 +53,8 @@ class GlobaleInfoProduct extends StatelessWidget {
                 c.getAndAddCountViewOfProductStatus[productId],
         builder: (context, state) {
           return Padding(
-              padding:
-                  EdgeInsetsGeometry.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsetsGeometry.symmetric(
+                  horizontal: 20, vertical: 10),
               child: SizedBox(
                   height: 14,
                   width: 1.sw,
@@ -73,24 +73,24 @@ class GlobaleInfoProduct extends StatelessWidget {
                           isInteractive: false,
                           onRatingChanged: (p0) {},
                           initialRating: 3,
-                          starColor: Color(0xff1D1D1D),
+                          starColor: const Color(0xff1D1D1D),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 2,
                       ),
                       MyTextWidget(
                         "368 ",
                         style: context.textTheme.titleMedium?.br.copyWith(
                             height: 1.45,
-                            color: Color(0xff1D1D1D),
+                            color: const Color(0xff1D1D1D),
                             fontSize: 9),
                       ),
                       MyTextWidget(
                         "${LocaleKeys.n_buyer_rate.tr()}  | ",
                         style: context.textTheme.titleMedium?.rr.copyWith(
                             height: 1.45,
-                            color: Color(0xff1D1D1D),
+                            color: const Color(0xff1D1D1D),
                             fontSize: 9),
                       ),
                       state.getAndAddCountViewOfProductStatus[productId] ==
@@ -133,10 +133,10 @@ class GlobaleInfoProduct extends StatelessWidget {
                                     SvgPicture.asset(
                                       AppAssets.eyeSvg,
                                       height: 11,
-                                      color: Color(0xff1D1D1D),
+                                      color: const Color(0xff1D1D1D),
                                       width: 11,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 2,
                                     ),
                                     MyTextWidget(
@@ -160,33 +160,39 @@ class GlobaleInfoProduct extends StatelessWidget {
                                       style: context.textTheme.titleMedium?.rr
                                           .copyWith(
                                               height: 1.4,
-                                              color: Color(0xff1D1D1D),
+                                              color: const Color(0xff1D1D1D),
                                               fontSize: 9),
                                     )
                                   ],
                                 ),
                       SvgPicture.asset(AppAssets.goodQualitySvg),
-                      SizedBox(
+                      const SizedBox(
                         width: 2,
                       ),
                       MyTextWidget(
                         "${LocaleKeys.good_quality.tr()} | ",
                         style: context.textTheme.titleMedium?.rr.copyWith(
-                            height: 1.4, color: Color(0xff1D1D1D), fontSize: 9),
+                            height: 1.4,
+                            color: const Color(0xff1D1D1D),
+                            fontSize: 9),
                       ),
                       SvgPicture.asset(AppAssets.recommendSvg),
-                      SizedBox(
+                      const SizedBox(
                         width: 2,
                       ),
                       MyTextWidget(
                         "${LocaleKeys.recommend_it_by.tr()}",
                         style: context.textTheme.titleMedium?.rr.copyWith(
-                            height: 1.4, color: Color(0xff1D1D1D), fontSize: 9),
+                            height: 1.4,
+                            color: const Color(0xff1D1D1D),
+                            fontSize: 9),
                       ),
                       MyTextWidget(
                         " 215 ${LocaleKeys.buyer.tr()} | ",
                         style: context.textTheme.titleMedium?.rr.copyWith(
-                            height: 1.4, color: Color(0xff1D1D1D), fontSize: 9),
+                            height: 1.4,
+                            color: const Color(0xff1D1D1D),
+                            fontSize: 9),
                       ),
                       CountryFlag.fromCountryCode(
                         "TR",
@@ -194,13 +200,15 @@ class GlobaleInfoProduct extends StatelessWidget {
                         width: 15,
                         borderRadius: 4.r,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 2,
                       ),
                       MyTextWidget(
                         "${LocaleKeys.made_in.tr()} Turkey ",
                         style: context.textTheme.titleMedium?.rr.copyWith(
-                            height: 1.4, color: Color(0xff1D1D1D), fontSize: 9),
+                            height: 1.4,
+                            color: const Color(0xff1D1D1D),
+                            fontSize: 9),
                       ),
                     ],
                   )));

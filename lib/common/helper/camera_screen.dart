@@ -13,7 +13,7 @@ import '../../features/app/my_text_widget.dart';
 class CameraScreen extends StatefulWidget {
   List<CameraDescription> cameras;
 
-  CameraScreen(this.cameras);
+  CameraScreen(this.cameras, {super.key});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -25,7 +25,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   //todo start timer for recording video
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;
       });
@@ -107,7 +107,7 @@ class _CameraScreenState extends State<CameraScreen>
   //todo exposure values
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
-  double _currentExposureOffset = 0.0;
+  final double _currentExposureOffset = 0.0;
 
   //todo zoom values
   double _minAvailableZoom = 1.0;
@@ -196,7 +196,7 @@ class _CameraScreenState extends State<CameraScreen>
                                   const EdgeInsetsDirectional.only(top: 55.0),
                               child: MyTextWidget(
                                 '0 : $_seconds',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold),
@@ -229,7 +229,7 @@ class _CameraScreenState extends State<CameraScreen>
                           });
                           onNewCameraSelected(controller!.description);
                         },
-                        hint: MyTextWidget("Select item"),
+                        hint: const MyTextWidget("Select item"),
                       ),
                     ),
 
@@ -267,7 +267,7 @@ class _CameraScreenState extends State<CameraScreen>
                                   padding: const EdgeInsets.all(8.0),
                                   child: MyTextWidget(
                                     _currentZoomLevel.toStringAsFixed(1) + 'x',
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -300,7 +300,7 @@ class _CameraScreenState extends State<CameraScreen>
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.circle,
                                     color: Colors.black38,
                                     size: 60,
@@ -330,7 +330,7 @@ class _CameraScreenState extends State<CameraScreen>
                                       alignment: Alignment.center,
                                       children: [
                                         Container(
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                               shape: BoxShape.circle),
                                           width: 50,
                                           height: 50,
@@ -347,9 +347,9 @@ class _CameraScreenState extends State<CameraScreen>
                                             ),
                                           ),
                                         ),
-                                        Icon(Icons.circle,
+                                        const Icon(Icons.circle,
                                             color: Colors.white38, size: 80),
-                                        Icon(Icons.circle,
+                                        const Icon(Icons.circle,
                                             color: Colors.white, size: 65),
                                         _isRecordingInProgress
                                             ? Container(
@@ -361,7 +361,7 @@ class _CameraScreenState extends State<CameraScreen>
                                                         BorderRadius.circular(
                                                             4)),
                                               )
-                                            : Icon(Icons.circle,
+                                            : const Icon(Icons.circle,
                                                 color: Colors.red, size: 25),
                                       ],
                                     ),
@@ -384,7 +384,7 @@ class _CameraScreenState extends State<CameraScreen>
 
 //                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ShowMessage(imageFile)));
                                     },
-                                    child: Stack(
+                                    child: const Stack(
                                       alignment: Alignment.center,
                                       children: [
                                         // Icon(Icons.circle,
@@ -474,7 +474,7 @@ class _CameraScreenState extends State<CameraScreen>
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Row(

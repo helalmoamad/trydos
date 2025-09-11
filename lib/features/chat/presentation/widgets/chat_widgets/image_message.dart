@@ -127,7 +127,7 @@ class _ImageMessageState extends State<ImageMessage>
       // );
     }
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           timer = true;
@@ -193,7 +193,7 @@ class _ImageMessageState extends State<ImageMessage>
     }
 
     // ✅ إضافة timeout للتحميل (30 ثانية)
-    Timer(Duration(seconds: 30), () {
+    Timer(const Duration(seconds: 30), () {
       if (_isDownloading && _loadingImage.value == 1) {
         debugPrint("⏰ Download timeout - switching to error state");
         _isDownloading = false;
@@ -352,7 +352,7 @@ class _ImageMessageState extends State<ImageMessage>
                     offset: !(state.isSlpoing &&
                             state.slopMessageId!.contains(widget.messageId) &&
                             (widget.isReceived || widget.isRead))
-                        ? Offset(0, 0)
+                        ? const Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
                             ? Offset(50.w, 0)
                             : Offset(-50.w, 0),
@@ -446,7 +446,7 @@ class _ImageMessageState extends State<ImageMessage>
                                   watchedAt: widget.watchedAt,
                                 ),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                       ],
                     ),
                   ),
@@ -602,7 +602,7 @@ class _ImageMessageState extends State<ImageMessage>
                 children: [
                   Icon(Icons.broken_image_outlined,
                       size: 50, color: Colors.red.shade400),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   MyTextWidget(
                     LocaleKeys.invalid_image_url.tr(),
                     style: context.textTheme.bodyMedium?.copyWith(
@@ -641,7 +641,7 @@ class _ImageMessageState extends State<ImageMessage>
                 children: [
                   Icon(Icons.error_outline,
                       size: 50, color: Colors.red.shade400),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   MyTextWidget(
                     LocaleKeys.image_load_failed.tr(),
                     style: context.textTheme.bodyMedium?.copyWith(
@@ -649,7 +649,7 @@ class _ImageMessageState extends State<ImageMessage>
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
                       debugPrint("🔄 Retry button pressed");

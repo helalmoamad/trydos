@@ -57,7 +57,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
               height: 1.31,
               color: const Color(0xff3c3c3c),
             )),
-        SizedBox(
+        const SizedBox(
           width: 5,
         ),
         Row(
@@ -160,7 +160,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         )
       ],

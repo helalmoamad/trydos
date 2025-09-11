@@ -63,7 +63,6 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
     };
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text.rich(
           TextSpan(
@@ -110,7 +109,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             ],
           ),
           textHeightBehavior:
-              TextHeightBehavior(applyHeightToFirstAscent: false),
+              const TextHeightBehavior(applyHeightToFirstAscent: false),
           textAlign: TextAlign.center,
         ),
         SizedBox(
@@ -135,14 +134,14 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: InkWell(
             key: TestVariables.kTestMode
-                ? Key(WidgetsKeys.agreeContinueButtonKey)
+                ? const Key(WidgetsKeys.agreeContinueButtonKey)
                 : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () {
               clickButton.value = 0;
               Future.delayed(
-                Duration(milliseconds: 100),
+                const Duration(milliseconds: 100),
                 () {
                   clickButton.value = -1;
                   widget.moveToNextStep.call();
@@ -163,13 +162,12 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
                 valueListenable: clickButton,
                 builder: (context, index, _) {
                   return DottedBorder(
-                    borderPadding: EdgeInsets.zero,
                     padding: EdgeInsets.zero,
                     borderType: BorderType.RRect,
                     strokeCap: StrokeCap.round,
                     strokeWidth: 0.5,
-                    dashPattern: [3, 3],
-                    radius: Radius.circular(20.0),
+                    dashPattern: const [3, 3],
+                    radius: const Radius.circular(20.0),
                     color: index == 0
                         ? const Color(0xff388cff)
                         : const Color(0xfffafafa),
@@ -196,7 +194,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
                 }),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 19,
         ),
         InkWell(
@@ -206,7 +204,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             print(
                 "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             Future.delayed(
-              Duration(milliseconds: 100),
+              const Duration(milliseconds: 100),
               () async {
                 /*     if (GetIt.I<PrefsRepository>().isVerifiedPhone != false ||
                     ((GetIt.I<PrefsRepository>().marketToken?.length ?? 0) <
@@ -248,7 +246,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 45,
         ),
       ],

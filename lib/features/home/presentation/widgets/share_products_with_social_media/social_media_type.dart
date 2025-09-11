@@ -24,9 +24,6 @@ Future share(
 
   final urlShares = Uri.encodeComponent(urlShare);
   print("$urlShares" + "000000000000000000000000000000000000");
-  final textShares = Uri.encodeComponent(text);
-  final picture = Uri.encodeComponent(
-      "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/product/2024-12-18-6762994403858.png");
 
   final urls = {
     SocialMediaType.facebook:

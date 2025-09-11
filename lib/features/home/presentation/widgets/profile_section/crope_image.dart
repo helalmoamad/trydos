@@ -89,7 +89,7 @@ class _CopperImageState extends State<CopperImage> {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.crop),
+        child: const Icon(Icons.crop),
         onPressed: () async {
           Image? image = await cropKey.currentState?.cropImage();
 

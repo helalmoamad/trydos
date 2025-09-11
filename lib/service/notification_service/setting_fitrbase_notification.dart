@@ -8,6 +8,8 @@ import 'package:trydos/service/notification_service/drop_down_notification_frequ
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 
 class SwitchListForNotification extends StatefulWidget {
+  const SwitchListForNotification({super.key});
+
   @override
   _SwitchListForNotificationState createState() =>
       _SwitchListForNotificationState();
@@ -66,11 +68,11 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
   void _onSwitchChanged(bool value, int index) {
     if (value) {
       if (switchTopics[index] == "email_notification") {
-        homeBloc.add(UpdateEmailNotificationEvent(email: 1));
+        homeBloc.add(const UpdateEmailNotificationEvent(email: 1));
       } else if (switchTopics[index] == "whatsapp_notification") {
-        homeBloc.add(UpdateWhatsappNotificationEvent(whatsapp: 1));
+        homeBloc.add(const UpdateWhatsappNotificationEvent(whatsapp: 1));
       } else if (switchTopics[index] == "firebase_notification") {
-        homeBloc.add(UpdateFirebaseNotificationEvent(firebase: 1));
+        homeBloc.add(const UpdateFirebaseNotificationEvent(firebase: 1));
       } else {
         SubsecribeOrUnSubsecribeToTopic()
             .subsecribeToOtherTopic(switchTopics[index]);
@@ -78,11 +80,11 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
       ;
     } else {
       if (switchTopics[index] == "email_notification") {
-        homeBloc.add(UpdateEmailNotificationEvent(email: 0));
+        homeBloc.add(const UpdateEmailNotificationEvent(email: 0));
       } else if (switchTopics[index] == "whatsApp_notification") {
-        homeBloc.add(UpdateWhatsappNotificationEvent(whatsapp: 0));
+        homeBloc.add(const UpdateWhatsappNotificationEvent(whatsapp: 0));
       } else if (switchTopics[index] == "fireBase_notification") {
-        homeBloc.add(UpdateFirebaseNotificationEvent(firebase: 0));
+        homeBloc.add(const UpdateFirebaseNotificationEvent(firebase: 0));
       } else {
         SubsecribeOrUnSubsecribeToTopic()
             .unSubsecribeToOtherTopic(switchTopics[index]);
@@ -99,7 +101,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
+        title: const Center(
             child: Text(
           ' Notification Setting                 ',
           style: TextStyle(
@@ -133,18 +135,22 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
             child: Column(
               children: [
                 Container(
-                    margin: EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(20),
                     height: 50.h,
                     width: 1.sw - 40,
                     child: Row(
                       children: [
-                        Text(
+                        const Text(
                           "Ntification Frequency :",
                           style: TextStyle(fontSize: 18),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         NotificationFrequencyDropdown(
-                          notificationFrequency: ["daily", "weekly", "monthly"],
+                          notificationFrequency: const [
+                            "daily",
+                            "weekly",
+                            "monthly"
+                          ],
                           selectedNotificationFrequency: homeBloc
                                   .state
                                   .firebaseSettingForNotificationModel
@@ -156,9 +162,9 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
                       ],
                     )),
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   height: 20,
-                  child: Row(
+                  child: const Row(
                     children: [
                       Text(
                         "Notification Type :",
@@ -168,7 +174,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                   height: 1.sh - 250,
                   child: ListView.builder(
                     itemCount: switchLabels.length,

@@ -61,7 +61,6 @@ class _TrendingSectionState extends State<TrendingSection> {
                 return SizedBox(
                   height: 28,
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       GestureDetector(
                         onTap: () {
@@ -73,14 +72,14 @@ class _TrendingSectionState extends State<TrendingSection> {
                           height: 20,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       if (value) ...{
                         MyTextWidget(
                           'Popular Search',
                           style: context.textTheme.titleLarge?.mq.copyWith(
-                              height: 18 / 14, color: Color(0xff505050)),
+                              height: 18 / 14, color: const Color(0xff505050)),
                         ),
                       } else ...{
                         Expanded(
@@ -89,9 +88,9 @@ class _TrendingSectionState extends State<TrendingSection> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (ctx, index) => Container(
                             height: 28,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
-                                color: Color(0xffF8F8F8),
+                                color: const Color(0xffF8F8F8),
                                 borderRadius: BorderRadius.circular(10)),
                             child: Center(
                               child: InkWell(
@@ -142,13 +141,13 @@ class _TrendingSectionState extends State<TrendingSection> {
                                   style: context.textTheme.titleLarge?.rq
                                       .copyWith(
                                           height: 18 / 14,
-                                          color: Color(0xff8D8D8D)),
+                                          color: const Color(0xff8D8D8D)),
                                 ),
                               ),
                             ),
                           ),
                           itemCount: widget.popularSearchTerms.length,
-                          separatorBuilder: (ctx, index) => SizedBox(
+                          separatorBuilder: (ctx, index) => const SizedBox(
                             width: 5,
                           ),
                         ))
@@ -162,17 +161,17 @@ class _TrendingSectionState extends State<TrendingSection> {
               builder: (context, value, _) {
                 return value
                     ? ScrollConfiguration(
-                        behavior: CupertinoScrollBehavior(),
+                        behavior: const CupertinoScrollBehavior(),
                         child: ListView.separated(
                           shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          padding: EdgeInsets.only(top: 15, right: 20),
+                          physics: const ClampingScrollPhysics(),
+                          padding: const EdgeInsets.only(top: 15, right: 20),
                           itemBuilder: (ctx, index) => Container(
                             height: 40,
                             width: 1.sw,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
-                                color: Color(0xffF8F8F8),
+                                color: const Color(0xffF8F8F8),
                                 borderRadius: BorderRadius.circular(10)),
                             child: Align(
                               alignment: Alignment.centerLeft,
@@ -231,7 +230,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                                       style: context.textTheme.titleLarge?.rq
                                           .copyWith(
                                               height: 18 / 14,
-                                              color: Color(0xff8D8D8D)),
+                                              color: const Color(0xff8D8D8D)),
                                     ),
                                     Row(
                                       children: [
@@ -243,16 +242,17 @@ class _TrendingSectionState extends State<TrendingSection> {
                                               .textTheme.titleSmall?.rq
                                               .copyWith(
                                                   height: 1.3,
-                                                  color: Color(0xff8D8D8D)),
+                                                  color:
+                                                      const Color(0xff8D8D8D)),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         ),
                                         SvgPicture.asset(
                                           AppAssets.searchOutlinedSvg,
                                           width: 13,
                                           height: 13,
-                                          color: Color(0xff388CFF),
+                                          color: const Color(0xff388CFF),
                                         )
                                       ],
                                     )
@@ -262,12 +262,12 @@ class _TrendingSectionState extends State<TrendingSection> {
                             ),
                           ),
                           itemCount: widget.popularSearchTerms.length,
-                          separatorBuilder: (ctx, index) => SizedBox(
+                          separatorBuilder: (ctx, index) => const SizedBox(
                             height: 5,
                           ),
                         ),
                       )
-                    : SizedBox.shrink();
+                    : const SizedBox.shrink();
               })
         ],
       ),

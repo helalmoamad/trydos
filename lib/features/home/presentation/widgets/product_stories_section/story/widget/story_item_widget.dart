@@ -75,9 +75,9 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
               splashColor: Colors.transparent,
               onTap: () async {
                 transactionOnOpenedStory.value = true;
-                await Future.delayed(Duration(milliseconds: 100));
+                await Future.delayed(const Duration(milliseconds: 100));
                 transactionOnOpenedStory.value = false;
-                await Future.delayed(Duration(milliseconds: 100));
+                await Future.delayed(const Duration(milliseconds: 100));
                 widget.onTapOnStoryAction.call();
               },
               child: ValueListenableBuilder<bool>(
@@ -85,12 +85,12 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                 builder: (context, build, child) {
                   return AnimatedScale(
                     scale: build ? 0.95 : 1,
-                    duration: Duration(milliseconds: 100),
+                    duration: const Duration(milliseconds: 100),
                     child: child,
                   );
                 },
                 child: Container(
-                  margin: EdgeInsets.only(top: 20, bottom: 10),
+                  margin: const EdgeInsets.only(top: 20, bottom: 10),
                   child: Hero(
                     tag: widget.index,
                     flightShuttleBuilder: (
@@ -112,7 +112,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                         scale: widget.resize ? 1.3 : 1,
                         alignment: Alignment.centerLeft,
                         curve: Curves.fastEaseInToSlowEaseOut,
-                        duration: Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 200),
                         child: Stack(
                           children: [
                             //todo just in case you to show the behavior of last  story have been seen
@@ -129,7 +129,6 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                             MyCachedNetworkImage(
                               width: 100,
                               height: 150,
-                              withImageShadow: false,
                               logoTextHeight: 14,
                               imageFit: BoxFit.cover,
                               logoTextWidth: 48.w,
@@ -148,7 +147,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                             BoxShadow(
                                               color: const Color(0xff000000)
                                                   .withOpacity(0.2),
-                                              offset: Offset(0, 3),
+                                              offset: const Offset(0, 3),
                                               blurRadius: 6,
                                             )
                                           ],
@@ -161,12 +160,12 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                       height: 150,
                                       width: 100,
                                       decoration: BoxDecoration(
-                                        gradient: LinearGradient(
+                                        gradient: const LinearGradient(
                                           begin: Alignment(0.0, -1.0),
                                           end: Alignment(0.0, 2.026),
                                           colors: [
-                                            const Color(0x00000000),
-                                            const Color(0xff000000)
+                                            Color(0x00000000),
+                                            Color(0xff000000)
                                           ],
                                           stops: [0.0, 1.0],
                                         ),
@@ -209,7 +208,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                           highlightColor: Colors.transparent,
                                           splashColor: Colors.transparent,
                                           child: Transform.translate(
-                                            offset: Offset(-10, -10),
+                                            offset: const Offset(-10, -10),
                                             child: Stack(
                                               alignment: Alignment.center,
                                               children: [
@@ -220,7 +219,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                       : widget.resize
                                                           ? 1.4
                                                           : 1,
-                                                  duration: Duration(
+                                                  duration: const Duration(
                                                       milliseconds: 50),
                                                   child: Container(
                                                     decoration: BoxDecoration(

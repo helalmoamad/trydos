@@ -40,7 +40,7 @@ class InsertPhoneTab extends StatefulWidget {
 }
 
 class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
-  final ValueNotifier<Country> countryChanged = ValueNotifier(Country(
+  final ValueNotifier<Country> countryChanged = ValueNotifier(const Country(
       name: '', flag: '', code: '', dialCode: '', minLength: 0, maxLength: 0));
   final ValueNotifier<bool> displaySubmit = ValueNotifier(false);
   final ValueNotifier<bool> changeTextInputFieldContent = ValueNotifier(false);
@@ -55,7 +55,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
 
   @override
   void didChangeDependencies() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
@@ -90,14 +90,12 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 20.0),
             child: Column(children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SvgPicture.asset(
@@ -108,7 +106,6 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                       height: 15),
                   10.horizontalSpace,
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       MyTextWidget(
@@ -117,8 +114,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                             (widget.fromLogin
                                 ? LocaleKeys.to_login.tr()
                                 : LocaleKeys.registered_with_us.tr()),
-                        style: context.textTheme.titleMedium?.ra
-                            .copyWith(color: Color(0xff5D5C5D), height: 1.42),
+                        style: context.textTheme.titleMedium?.ra.copyWith(
+                            color: const Color(0xff5D5C5D), height: 1.42),
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,16 +131,15 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 .tr(),
                             textAlign: TextAlign.start,
                             style: context.textTheme.titleMedium?.ra.copyWith(
-                                color: Color(0xffC4C2C2), height: 1.25),
+                                color: const Color(0xffC4C2C2), height: 1.25),
                           )
                         ],
                       ),
                       if (widget.fromLogin) ...{
-                        SizedBox(
+                        const SizedBox(
                           height: 3,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SvgPicture.asset(AppAssets.phoneOtpSvg,
                                 width: 10, height: 10),
@@ -154,7 +150,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 LocaleKeys.we_will_send_code.tr(),
                                 style: context.textTheme.titleMedium?.ra
                                     .copyWith(
-                                        color: Color(0xffC4C2C2), height: 1.25),
+                                        color: const Color(0xffC4C2C2),
+                                        height: 1.25),
                               ),
                             )
                           ],
@@ -177,7 +174,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 maxLines: 2,
                                 style: context.textTheme.titleMedium?.ra
                                     .copyWith(
-                                        color: Color(0xffC4C2C2),
+                                        color: const Color(0xffC4C2C2),
                                         height: 1.25.h),
                               ),
                             )
@@ -202,7 +199,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                     return PhoneFormField(
                       onFieldSubmitted: (val) {
                         if (display) {
-                          Future.delayed(Duration(milliseconds: 300), () {
+                          Future.delayed(const Duration(milliseconds: 300), () {
                             if (mounted) {
                               FocusScope.of(context).unfocus();
                             }
@@ -226,14 +223,14 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                         }
                       },
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKeys.loginPhoneFormFieldKey)
+                          ? const Key(WidgetsKeys.loginPhoneFormFieldKey)
                           : null,
                       autoFocus: true,
                       onChange: (String? text) {
                         Country newCountry = countries.firstWhere(
                             (element) => '+${text?.toLowerCase()}'
                                 .startsWith(element.dialCode.toLowerCase()),
-                            orElse: () => Country(
+                            orElse: () => const Country(
                                 name: '',
                                 flag: '',
                                 code: '',
@@ -293,7 +290,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                             MyTextWidget(
                               '+',
                               style: context.textTheme.bodyMedium?.rr
-                                  .copyWith(color: Color(0xff8E8E8E)),
+                                  .copyWith(color: const Color(0xff8E8E8E)),
                             ),
                             4.horizontalSpace
                           ],
@@ -309,11 +306,12 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               )
                             : InkWell(
                                 key: TestVariables.kTestMode
-                                    ? Key(
+                                    ? const Key(
                                         WidgetsKeys.loginConfirmPhoneButtonKey)
                                     : null,
                                 onTap: () {
-                                  Future.delayed(Duration(seconds: 1), () {
+                                  Future.delayed(const Duration(seconds: 1),
+                                      () {
                                     if (mounted) {
                                       FocusScope.of(context).unfocus();
                                     }
@@ -351,7 +349,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                       controller: form.controllers[0],
                     );
                   })),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ],

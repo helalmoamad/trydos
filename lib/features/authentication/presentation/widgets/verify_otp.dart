@@ -147,7 +147,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
             checkOtp.value = 1;
 
             Future.delayed(
-              Duration(milliseconds: 700),
+              const Duration(milliseconds: 700),
               () {
                 widget.navigateToProfile.call();
               },
@@ -166,7 +166,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               checkOtp.value = 1;
               widget.navigateTocartOrProfile.call();
               Future.delayed(
-                Duration(milliseconds: 700),
+                const Duration(milliseconds: 700),
                 () {
                   widget.navigateToAddName.call();
                 },
@@ -218,7 +218,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                   checkOtp.value = 1;
 
                   Future.delayed(
-                    Duration(milliseconds: 700),
+                    const Duration(milliseconds: 700),
                     () {
                       widget.navigateToAddName.call();
                     },
@@ -279,7 +279,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                     checkOtp.value = 1;
 
                     Future.delayed(
-                      Duration(milliseconds: 700),
+                      const Duration(milliseconds: 700),
                       () {
                         widget.navigateToAddName.call();
                       },
@@ -305,7 +305,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                       p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
                   builder: (context, state) {
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: (state.verifyOtpFromGuestStatus !=
                                   VerifyOtpFromGuestStatus.loading &&
                               state.verifyOtpFromGuestStatus !=
@@ -325,21 +324,19 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                           padding: HWEdgeInsets.symmetric(horizontal: 20.w),
                           child: Column(children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SvgPicture.asset(AppAssets.phoneOtpSvg,
                                     width: 15, height: 15),
                                 10.horizontalSpace,
                                 Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     MyTextWidget(
                                       LocaleKeys.we_have_sent_code.tr(),
                                       style: context.textTheme.titleMedium?.ra
                                           .copyWith(
-                                              color: Color(0xff5D5C5D),
+                                              color: const Color(0xff5D5C5D),
                                               height: 1.42),
                                     ),
                                     Row(
@@ -362,7 +359,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                             style: context
                                                 .textTheme.titleMedium?.ra
                                                 .copyWith(
-                                                    color: Color(0xffC4C2C2),
+                                                    color:
+                                                        const Color(0xffC4C2C2),
                                                     height: 1.25),
                                           ),
                                         )
@@ -370,8 +368,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                     ),
                                     5.verticalSpace,
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       children: [
                                         SvgPicture.asset(widget.methodIcon,
                                             width: 10, height: 10),
@@ -384,7 +380,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                           style: context
                                               .textTheme.titleMedium?.ra
                                               .copyWith(
-                                                  color: Color(0xffC4C2C2),
+                                                  color:
+                                                      const Color(0xffC4C2C2),
                                                   height: 1.25),
                                         )
                                       ],
@@ -398,8 +395,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
                                                 children: [
                                                   SvgPicture.asset(
                                                       AppAssets.registerInfoSvg,
@@ -417,7 +412,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     style: context.textTheme
                                                         .titleMedium?.ra
                                                         .copyWith(
-                                                            color: Color(
+                                                            color: const Color(
                                                                 0xffC4C2C2),
                                                             height: 1.25),
                                                   ),
@@ -445,8 +440,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                 return MyTextWidget(
                                                                   key: TestVariables
                                                                           .kTestMode
-                                                                      ? Key(WidgetsKeys
-                                                                          .otpRemainingTimeKey)
+                                                                      ? const Key(
+                                                                          WidgetsKeys
+                                                                              .otpRemainingTimeKey)
                                                                       : null,
                                                                   '0${remainingTime?.min ?? '0'} : $seconds ',
                                                                   style: context
@@ -454,7 +450,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                       .titleMedium
                                                                       ?.ra
                                                                       .copyWith(
-                                                                          color: Color(
+                                                                          color: const Color(
                                                                               0xff4D84FF),
                                                                           height:
                                                                               1.25),
@@ -472,8 +468,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                           child: MyTextWidget(
                                                             key: TestVariables
                                                                     .kTestMode
-                                                                ? Key(WidgetsKeys
-                                                                    .resendCodeButtonKey)
+                                                                ? const Key(
+                                                                    WidgetsKeys
+                                                                        .resendCodeButtonKey)
                                                                 : null,
                                                             LocaleKeys
                                                                     .resend_code
@@ -484,7 +481,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                 .titleMedium
                                                                 ?.ra
                                                                 .copyWith(
-                                                                    color: Color(
+                                                                    color: const Color(
                                                                         0xff4D84FF),
                                                                     height:
                                                                         1.25),
@@ -500,7 +497,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                               .titleMedium
                                                               ?.ra
                                                               .copyWith(
-                                                                  color: Color(
+                                                                  color: const Color(
                                                                       0xff5D5C5D),
                                                                   height: 1.25),
                                                         )
@@ -518,7 +515,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                 .titleMedium
                                                                 ?.ra
                                                                 .copyWith(
-                                                                    color: Color(
+                                                                    color: const Color(
                                                                         0xff4D84FF),
                                                                     height:
                                                                         1.25),
@@ -544,7 +541,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                               .titleMedium
                                                               ?.ra
                                                               .copyWith(
-                                                                  color: Color(
+                                                                  color: const Color(
                                                                       0xff4D84FF),
                                                                   height: 1.25),
                                                         ),
@@ -575,7 +572,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                         builder: (context, state) {
                                           if (state.sendOtpStatus ==
                                               SendOtpStatus.loading) {
-                                            return Center(
+                                            return const Center(
                                               child: SizedBox(
                                                 width: 16,
                                                 height: 16,
@@ -586,7 +583,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                             );
                                           } else if (state.sendOtpStatus ==
                                               SendOtpStatus.failure) {
-                                            return _FailureWithTimerAndTryAgain();
+                                            return const _FailureWithTimerAndTryAgain();
                                           } else {
                                             // success أو الحالة الافتراضية: الحقول كما هي الآن
                                             return Directionality(
@@ -598,23 +595,29 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                         .spaceBetween,
                                                 children: [
                                                   PinItem(
-                                                    key: Key('otp_item_1'),
+                                                    key:
+                                                        const Key('otp_item_1'),
                                                     borderColor: codeStatus == 1
-                                                        ? Color(0xff35CE3F)
+                                                        ? const Color(
+                                                            0xff35CE3F)
                                                         : codeStatus == 2
-                                                            ? Color(0xffFF5F61)
+                                                            ? const Color(
+                                                                0xffFF5F61)
                                                             : isExpired
-                                                                ? Color(
+                                                                ? const Color(
                                                                     0xffFFBC26)
-                                                                : Color(
+                                                                : const Color(
                                                                     0xff4D84FF),
                                                     isExpired: isExpired,
-                                                    contentColor: codeStatus ==
-                                                            1
-                                                        ? Color(0xffF4FFF4)
-                                                        : codeStatus == 2
-                                                            ? Color(0xffFDF5F5)
-                                                            : Color(0xffFAFAFA),
+                                                    contentColor:
+                                                        codeStatus == 1
+                                                            ? const Color(
+                                                                0xffF4FFF4)
+                                                            : codeStatus == 2
+                                                                ? const Color(
+                                                                    0xffFDF5F5)
+                                                                : const Color(
+                                                                    0xffFAFAFA),
                                                     controller:
                                                         form.controllers[0],
                                                     wrongCode: codeStatus == 2,
@@ -626,22 +629,28 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     autoFocus: true,
                                                   ),
                                                   PinItem(
-                                                    key: Key('otp_item_2'),
+                                                    key:
+                                                        const Key('otp_item_2'),
                                                     borderColor: codeStatus == 1
-                                                        ? Color(0xff35CE3F)
+                                                        ? const Color(
+                                                            0xff35CE3F)
                                                         : codeStatus == 2
-                                                            ? Color(0xffFF5F61)
+                                                            ? const Color(
+                                                                0xffFF5F61)
                                                             : isExpired
-                                                                ? Color(
+                                                                ? const Color(
                                                                     0xffFFBC26)
-                                                                : Color(
+                                                                : const Color(
                                                                     0xff4D84FF),
-                                                    contentColor: codeStatus ==
-                                                            1
-                                                        ? Color(0xffF4FFF4)
-                                                        : codeStatus == 2
-                                                            ? Color(0xffFDF5F5)
-                                                            : Color(0xffFAFAFA),
+                                                    contentColor:
+                                                        codeStatus == 1
+                                                            ? const Color(
+                                                                0xffF4FFF4)
+                                                            : codeStatus == 2
+                                                                ? const Color(
+                                                                    0xffFDF5F5)
+                                                                : const Color(
+                                                                    0xffFAFAFA),
                                                     isExpired: isExpired,
                                                     controller:
                                                         form.controllers[1],
@@ -653,23 +662,29 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     autoFocus: false,
                                                   ),
                                                   PinItem(
-                                                    key: Key('otp_item_3'),
+                                                    key:
+                                                        const Key('otp_item_3'),
                                                     borderColor: codeStatus == 1
-                                                        ? Color(0xff35CE3F)
+                                                        ? const Color(
+                                                            0xff35CE3F)
                                                         : codeStatus == 2
-                                                            ? Color(0xffFF5F61)
+                                                            ? const Color(
+                                                                0xffFF5F61)
                                                             : isExpired
-                                                                ? Color(
+                                                                ? const Color(
                                                                     0xffFFBC26)
-                                                                : Color(
+                                                                : const Color(
                                                                     0xff4D84FF),
                                                     isExpired: isExpired,
-                                                    contentColor: codeStatus ==
-                                                            1
-                                                        ? Color(0xffF4FFF4)
-                                                        : codeStatus == 2
-                                                            ? Color(0xffFDF5F5)
-                                                            : Color(0xffFAFAFA),
+                                                    contentColor:
+                                                        codeStatus == 1
+                                                            ? const Color(
+                                                                0xffF4FFF4)
+                                                            : codeStatus == 2
+                                                                ? const Color(
+                                                                    0xffFDF5F5)
+                                                                : const Color(
+                                                                    0xffFAFAFA),
                                                     index: 2,
                                                     wrongCode: codeStatus == 2,
                                                     onChange: () {
@@ -680,23 +695,29 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     autoFocus: false,
                                                   ),
                                                   PinItem(
-                                                    key: Key('otp_item_4'),
+                                                    key:
+                                                        const Key('otp_item_4'),
                                                     borderColor: codeStatus == 1
-                                                        ? Color(0xff35CE3F)
+                                                        ? const Color(
+                                                            0xff35CE3F)
                                                         : codeStatus == 2
-                                                            ? Color(0xffFF5F61)
+                                                            ? const Color(
+                                                                0xffFF5F61)
                                                             : isExpired
-                                                                ? Color(
+                                                                ? const Color(
                                                                     0xffFFBC26)
-                                                                : Color(
+                                                                : const Color(
                                                                     0xff4D84FF),
                                                     isExpired: isExpired,
-                                                    contentColor: codeStatus ==
-                                                            1
-                                                        ? Color(0xffF4FFF4)
-                                                        : codeStatus == 2
-                                                            ? Color(0xffFDF5F5)
-                                                            : Color(0xffFAFAFA),
+                                                    contentColor:
+                                                        codeStatus == 1
+                                                            ? const Color(
+                                                                0xffF4FFF4)
+                                                            : codeStatus == 2
+                                                                ? const Color(
+                                                                    0xffFDF5F5)
+                                                                : const Color(
+                                                                    0xffFAFAFA),
                                                     index: 3,
                                                     wrongCode: codeStatus == 2,
                                                     onChange: () {
@@ -707,22 +728,28 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     autoFocus: false,
                                                   ),
                                                   PinItem(
-                                                    key: Key('otp_item_5'),
+                                                    key:
+                                                        const Key('otp_item_5'),
                                                     borderColor: codeStatus == 1
-                                                        ? Color(0xff35CE3F)
+                                                        ? const Color(
+                                                            0xff35CE3F)
                                                         : codeStatus == 2
-                                                            ? Color(0xffFF5F61)
+                                                            ? const Color(
+                                                                0xffFF5F61)
                                                             : isExpired
-                                                                ? Color(
+                                                                ? const Color(
                                                                     0xffFFBC26)
-                                                                : Color(
+                                                                : const Color(
                                                                     0xff4D84FF),
-                                                    contentColor: codeStatus ==
-                                                            1
-                                                        ? Color(0xffF4FFF4)
-                                                        : codeStatus == 2
-                                                            ? Color(0xffFDF5F5)
-                                                            : Color(0xffFAFAFA),
+                                                    contentColor:
+                                                        codeStatus == 1
+                                                            ? const Color(
+                                                                0xffF4FFF4)
+                                                            : codeStatus == 2
+                                                                ? const Color(
+                                                                    0xffFDF5F5)
+                                                                : const Color(
+                                                                    0xffFAFAFA),
                                                     isExpired: isExpired,
                                                     index: 4,
                                                     wrongCode: codeStatus == 2,
@@ -734,23 +761,29 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     autoFocus: false,
                                                   ),
                                                   PinItem(
-                                                    key: Key('otp_item_6'),
+                                                    key:
+                                                        const Key('otp_item_6'),
                                                     borderColor: codeStatus == 1
-                                                        ? Color(0xff35CE3F)
+                                                        ? const Color(
+                                                            0xff35CE3F)
                                                         : codeStatus == 2
-                                                            ? Color(0xffFF5F61)
+                                                            ? const Color(
+                                                                0xffFF5F61)
                                                             : isExpired
-                                                                ? Color(
+                                                                ? const Color(
                                                                     0xffFFBC26)
-                                                                : Color(
+                                                                : const Color(
                                                                     0xff4D84FF),
                                                     isExpired: isExpired,
-                                                    contentColor: codeStatus ==
-                                                            1
-                                                        ? Color(0xffF4FFF4)
-                                                        : codeStatus == 2
-                                                            ? Color(0xffFDF5F5)
-                                                            : Color(0xffFAFAFA),
+                                                    contentColor:
+                                                        codeStatus == 1
+                                                            ? const Color(
+                                                                0xffF4FFF4)
+                                                            : codeStatus == 2
+                                                                ? const Color(
+                                                                    0xffFDF5F5)
+                                                                : const Color(
+                                                                    0xffFAFAFA),
                                                     index: 5,
                                                     wrongCode: codeStatus == 2,
                                                     onChange: () {
@@ -936,8 +969,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 style: context
                                                     .textTheme.titleMedium?.ra
                                                     .copyWith(
-                                                        color:
-                                                            Color(0xff5D5C5D),
+                                                        color: const Color(
+                                                            0xff5D5C5D),
                                                         height: 1.25),
                                               ),
                                               100.verticalSpace,
@@ -1023,7 +1056,7 @@ class _FailureWithTimerAndTryAgain extends StatelessWidget {
         LocaleKeys.otp_error_try_again_later.tr(),
         style: Theme.of(context).textTheme.bodySmall?.rr.copyWith(
               fontSize: 12,
-              color: Color(0xFF1D1D1D),
+              color: const Color(0xFF1D1D1D),
             ),
         textAlign: TextAlign.center,
       ),

@@ -113,7 +113,7 @@ class HomePageImageProtector {
   /// تنظيف دوري للصور المحمية
   static void _startPeriodicCleanup() {
     _cleanupTimer?.cancel();
-    _cleanupTimer = Timer.periodic(Duration(minutes: 30), (_) {
+    _cleanupTimer = Timer.periodic(const Duration(minutes: 30), (_) {
       _performMaintenanceCleanup();
     });
   }

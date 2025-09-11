@@ -84,7 +84,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     homeBloc = BlocProvider.of<HomeBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     animationController =
-        AnimationController(duration: Duration(seconds: 1), vsync: this);
+        AnimationController(duration: const Duration(seconds: 1), vsync: this);
     super.initState();
   }
 
@@ -125,11 +125,11 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
               child: Scaffold(
                 appBar: TrydosAppBar(
                   appBarParams: AppBarParams(
-                      backgroundColor: Color(0x000000),
+                      backgroundColor: const Color(0x000000),
                       action: [
-                        Spacer(),
+                        const Spacer(),
                         !_visibleSave
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : SizedBox(
                                 width: 55.w,
                               ),
@@ -141,9 +141,9 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               fontSize: 14,
                               height: 1.3),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         !_visibleSave
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : BlocBuilder<HomeBloc, HomeState>(
                                 buildWhen: (previous, current) =>
                                     previous.updateProfileStatus !=
@@ -151,7 +151,8 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 builder: (context, state) {
                                   if (state.updateProfileStatus ==
                                       UpdateProfileStatus.success) {
-                                    Future.delayed(Duration(milliseconds: 300),
+                                    Future.delayed(
+                                        const Duration(milliseconds: 300),
                                         () => widget.visibleSave.value = false);
                                     homeBloc.add(UpdateProfileEvent(
                                         changeStatusToInit: true));
@@ -239,7 +240,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                   );
                                 }),
                         !_visibleSave
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : SizedBox(
                                 width: 15.w,
                               )
@@ -263,18 +264,17 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                   height: 50,
                                   width: 1.sw,
                                   decoration: BoxDecoration(
-                                      color: Color(0xffF8F8F8),
-                                      border:
-                                          Border.all(color: Color(0xffD3D3D3))),
+                                      color: const Color(0xffF8F8F8),
+                                      border: Border.all(
+                                          color: const Color(0xffD3D3D3))),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       SizedBox(
                                         width: 10.w,
                                       ),
                                       SvgPicture.asset(
                                         AppAssets.infoSvg,
-                                        color: Color(0xff402CDD),
+                                        color: const Color(0xff402CDD),
                                         width: 25.w,
                                       ),
                                       SizedBox(
@@ -293,22 +293,22 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                       ),
                                     ],
                                   )),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               Container(
                                 height: 15,
                                 width: 150,
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     SvgPicture.asset(
                                       AppAssets.personalInfoSvg,
                                       height: 15,
-                                      color: Color(0xff1D1D1D),
+                                      color: const Color(0xff1D1D1D),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     ),
                                     Text(
@@ -320,18 +320,18 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                               fontSize: 12,
                                               height: 1.2),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 15,
                                     ),
                                     SvgPicture.asset(
                                       AppAssets.chatWithQuestionSvg,
-                                      color: Color(0xffD3D3D3),
+                                      color: const Color(0xffD3D3D3),
                                       height: 15,
                                     ),
                                   ],
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 15,
                               ),
                               Padding(
@@ -349,7 +349,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                   hint: LocaleKeys.enter_full_name.tr(),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Padding(
@@ -367,7 +367,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                   hint: LocaleKeys.enter_phone.tr(),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Padding(
@@ -386,7 +386,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                     title: LocaleKeys.alternative_phone.tr(),
                                     title2: LocaleKeys.optional.tr()),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Padding(
@@ -404,7 +404,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                   hint: LocaleKeys.enter_email_address.tr(),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Padding(
@@ -418,10 +418,11 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               valueListenable: visibleOtp,
                               builder: (context, _visibleOtp, _) {
                                 return !_visibleOtp
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : Positioned(
                                         child: Container(
-                                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                                        color:
+                                            const Color.fromRGBO(0, 0, 0, 0.5),
                                         width: 1.sw,
                                         height: 1.sh,
                                       ));
@@ -430,7 +431,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               valueListenable: visibleOtp,
                               builder: (context, _visibleOtp, _) {
                                 return !_visibleOtp
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : Positioned(
                                         bottom: 0,
                                         child: Container(
@@ -498,7 +499,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
           left: LanguageService.languageCode != "ar" ? null : 0,
           right: LanguageService.languageCode != "ar" ? 0 : null,
           child: Container(
-            margin: EdgeInsets.all(10),
+            margin: const EdgeInsets.all(10),
             height: 20,
             width: 40,
             child: InkWell(
@@ -509,7 +510,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                   AppAssets.closeSvg,
                   height: 15,
                   width: 30,
-                  color: Color(0xffFF5F61),
+                  color: const Color(0xffFF5F61),
                 )),
           ),
         )
@@ -526,13 +527,13 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
               width: 1.sw,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15.r),
-                  border: Border.all(color: Color(0xffD3D3D3))),
+                  border: Border.all(color: const Color(0xffD3D3D3))),
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                        padding: EdgeInsets.only(top: 7, left: 8, right: 8),
+                        padding:
+                            const EdgeInsets.only(top: 7, left: 8, right: 8),
                         height: 18,
                         child: Text(
                           LocaleKeys.gender.tr(),
@@ -544,11 +545,11 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                   ? 0.5
                                   : 0.8),
                         )),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     Container(
-                        padding: EdgeInsets.only(left: 8, right: 8),
+                        padding: const EdgeInsets.only(left: 8, right: 8),
                         height: 50,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -568,7 +569,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                           color:
                                               widget.changeGender.value == "Man"
                                                   ? const Color(0xff402CDD)
-                                                  : Color(0xffD3D3D3))),
+                                                  : const Color(0xffD3D3D3))),
                                   child: Text(
                                     LocaleKeys.man.tr(),
                                     style: context.textTheme.bodyMedium?.rr
@@ -601,7 +602,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                           color: widget.changeGender.value!
                                                   .startsWith("Wom")
                                               ? const Color(0xff402CDD)
-                                              : Color(0xffD3D3D3))),
+                                              : const Color(0xffD3D3D3))),
                                   child: Text(
                                     LocaleKeys.women.tr(),
                                     style: context.textTheme.bodyMedium?.rr
@@ -634,7 +635,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                           color: widget.changeGender.value ==
                                                   "Other"
                                               ? const Color(0xff402CDD)
-                                              : Color(0xffD3D3D3))),
+                                              : const Color(0xffD3D3D3))),
                                   child: Text(
                                     LocaleKeys.other.tr(),
                                     style: context.textTheme.bodyMedium?.rr
@@ -674,7 +675,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
           if (isValidateBox && controller.text.isNullOrEmpty) {
             animationController.forward();
             Future.delayed(
-              Duration(seconds: 2),
+              const Duration(seconds: 2),
               () => animationController.reset(),
             );
           }
@@ -686,16 +687,15 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                   width: 1.sw,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.r),
-                      border: Border.all(color: Color(0xffD3D3D3))),
+                      border: Border.all(color: const Color(0xffD3D3D3))),
                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: EdgeInsets.only(top: 5, left: 8, right: 8),
+                          padding:
+                              const EdgeInsets.only(top: 5, left: 8, right: 8),
                           height: 18,
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 title,
@@ -710,7 +710,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                 : 0.8),
                               ),
                               title2 == ""
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : Text(
                                       " (${LocaleKeys.optional.tr()})",
                                       style: context.textTheme.bodyMedium?.rr
@@ -742,9 +742,10 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                     letterSpacing: 0.18,
                                                     fontSize: 16,
                                                     height: 0.8))
-                                        : SizedBox.shrink(),
+                                        : const SizedBox.shrink(),
                                     textInputType: isPhone
-                                        ? TextInputType.numberWithOptions()
+                                        ? const TextInputType
+                                            .numberWithOptions()
                                         : TextInputType.text,
                                     bordersColor: Colors.white,
                                     isErrorBorder: false,
@@ -774,7 +775,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                           (element) => '+${val.toLowerCase()}'
                                               .startsWith(element.dialCode
                                                   .toLowerCase()),
-                                          orElse: () => Country(
+                                          orElse: () => const Country(
                                               name: '',
                                               flag: '',
                                               code: '',
@@ -826,7 +827,6 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                             end: 1,
                                             bottom: 1,
                                             top: 1),
-                                    textAlign: TextAlign.start,
                                     maxLines: hint2 == "" ? 1 : 2,
                                     minLines: 1,
                                     textStyle: context.textTheme.bodyMedium?.mr
@@ -909,7 +909,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
           if (isValidateBox && controller.text.isNullOrEmpty) {
             animationController.forward();
             Future.delayed(
-              Duration(seconds: 2),
+              const Duration(seconds: 2),
               () => animationController.reset(),
             );
           }
@@ -933,17 +933,15 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               color: (isValidateBox &&
                                       controller.text.isNullOrEmpty)
                                   ? Colors.red
-                                  : Color(0xffD3D3D3))),
+                                  : const Color(0xffD3D3D3))),
                       child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding:
-                                  EdgeInsets.only(top: 5, left: 8, right: 8),
+                              padding: const EdgeInsets.only(
+                                  top: 5, left: 8, right: 8),
                               height: 18,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
                                     title,
@@ -959,7 +957,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                     : 0.8),
                                   ),
                                   title2 == ""
-                                      ? SizedBox.shrink()
+                                      ? const SizedBox.shrink()
                                       : Text(
                                           " (${LocaleKeys.optional.tr()})",
                                           style: context
@@ -995,7 +993,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                                   0.18,
                                                               fontSize: 16,
                                                               height: 0.8))
-                                                  : SizedBox.shrink(),
+                                                  : const SizedBox.shrink(),
                                               textInputType:
                                                   TextInputType.phone,
                                               bordersColor: Colors.white,
@@ -1024,7 +1022,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                             .startsWith(element
                                                                 .dialCode
                                                                 .toLowerCase()),
-                                                    orElse: () => Country(
+                                                    orElse: () => const Country(
                                                         name: '',
                                                         flag: '',
                                                         code: '',
@@ -1087,7 +1085,6 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                       end: 1,
                                                       bottom: 1,
                                                       top: 1),
-                                              textAlign: TextAlign.start,
                                               maxLines: hint2 == "" ? 1 : 2,
                                               minLines: 1,
                                               textStyle: context
@@ -1156,7 +1153,6 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                 end: 1,
                                                 bottom: 1,
                                                 top: 1),
-                                        textAlign: TextAlign.start,
                                         maxLines: hint2 == "" ? 1 : 2,
                                         minLines: 1,
                                         textStyle: context
@@ -1210,7 +1206,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     Country newCountry = countries.firstWhere(
         (element) =>
             '+${num.toLowerCase()}'.startsWith(element.dialCode.toLowerCase()),
-        orElse: () => Country(
+        orElse: () => const Country(
             name: '',
             flag: '',
             code: '',

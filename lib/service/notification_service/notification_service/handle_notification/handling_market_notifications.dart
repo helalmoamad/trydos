@@ -102,8 +102,8 @@ class HandlingMarketNotifications {
           data?["type"] ==
               typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
-        GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
-        GetIt.I<HomeBloc>().add(GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
       }
       if (data?["type"] ==
               typeOfNotificationForMarket[
@@ -175,13 +175,13 @@ class HandlingMarketNotifications {
               TypeOfNotificationForMarketEnum.order_placed]) {
         GetIt.I<OrderBloc>().add(ChangeOrderByGroupStatus(loading: true));
         //      homeBloc.add(RemoveItemsFromCartAfterOrderSuccessEvent());
-        GetIt.I<HomeBloc>().add(GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
       }
       // GetIt.I<OrderBloc>().add(
       //   GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
 
       Future.delayed(
-          Duration(seconds: 1),
+          const Duration(seconds: 1),
           () => Navigator.of(navigatorKey.currentState!.context).push(
               PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
@@ -203,10 +203,10 @@ class HandlingMarketNotifications {
                 TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
       try {
         Future.delayed(
-            Duration(seconds: 1),
+            const Duration(seconds: 1),
             () => Navigator.of(navigatorKey.currentState!.context).push(
                   MaterialPageRoute(
-                    builder: (context) => CartPage(
+                    builder: (context) => const CartPage(
                       fromeFilters: true,
                     ),
                   ),
@@ -230,7 +230,7 @@ class HandlingMarketNotifications {
                   productSlug: data["product_slug"].toString()));
 
           Future.delayed(
-              Duration(seconds: 1),
+              const Duration(seconds: 1),
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
@@ -259,7 +259,7 @@ class HandlingMarketNotifications {
           ));
 
           Future.delayed(
-              Duration(seconds: 1),
+              const Duration(seconds: 1),
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
@@ -291,7 +291,7 @@ class HandlingMarketNotifications {
           ));
 
           Future.delayed(
-              Duration(seconds: 1),
+              const Duration(seconds: 1),
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
@@ -320,7 +320,7 @@ class HandlingMarketNotifications {
           ));
 
           Future.delayed(
-              Duration(seconds: 1),
+              const Duration(seconds: 1),
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
@@ -351,7 +351,7 @@ class HandlingMarketNotifications {
           ));
 
           Future.delayed(
-              Duration(seconds: 1),
+              const Duration(seconds: 1),
               () => Navigator.of(navigatorKey.currentState!.context)
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
@@ -380,7 +380,7 @@ class HandlingMarketNotifications {
                   requestToUpdateFilters: false));
 
           await Future.delayed(
-              Duration(seconds: 1),
+              const Duration(seconds: 1),
               () => Navigator.of(navigatorKey.currentState!.context).push(
                   PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
@@ -419,7 +419,7 @@ class HandlingMarketNotifications {
               "${boutiqueBannerList}");
 
           await Future.delayed(
-            Duration(seconds: 1),
+            const Duration(seconds: 1),
             () => Navigator.of(navigatorKey.currentState!.context)
                 .push(PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
@@ -466,8 +466,8 @@ class SubsecribeOrUnSubsecribeToTopic {
 
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>()
-        .add(SubscribeTopicForNotificationEvent(topic: "boutique_created"));
+    GetIt.I<HomeBloc>().add(
+        const SubscribeTopicForNotificationEvent(topic: "boutique_created"));
   }
 
   void unSubsecribeToBoutiqueCreated() async {
@@ -476,8 +476,8 @@ class SubsecribeOrUnSubsecribeToTopic {
 
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>()
-        .add(UnSubscribeTopicForNotificationEvent(topic: "boutique_created"));
+    GetIt.I<HomeBloc>().add(
+        const UnSubscribeTopicForNotificationEvent(topic: "boutique_created"));
   }
 
   void subsecribeToCategoryCreated() async {
@@ -486,8 +486,8 @@ class SubsecribeOrUnSubsecribeToTopic {
 
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "category_created_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>()
-        .add(SubscribeTopicForNotificationEvent(topic: "category_created"));
+    GetIt.I<HomeBloc>().add(
+        const SubscribeTopicForNotificationEvent(topic: "category_created"));
   }
 
   void unSubsecribeToCategoryCreated() async {
@@ -495,8 +495,8 @@ class SubsecribeOrUnSubsecribeToTopic {
         "category_created_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "category_created_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>()
-        .add(UnSubscribeTopicForNotificationEvent(topic: "category_created"));
+    GetIt.I<HomeBloc>().add(
+        const UnSubscribeTopicForNotificationEvent(topic: "category_created"));
   }
 
   void subsecribeToProductDiscount(String productId) async {

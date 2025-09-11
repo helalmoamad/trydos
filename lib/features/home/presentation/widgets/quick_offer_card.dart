@@ -51,7 +51,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
             boxShadow: [
               BoxShadow(
                 color: const Color(0xff000000).withOpacity(0.1),
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
                 blurRadius: 10,
               ),
             ],
@@ -67,7 +67,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
               blendMode: BlendMode.overlay,
               filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
-                decoration: BoxDecoration(color: Color(0xfffafafa)),
+                decoration: const BoxDecoration(color: Color(0xfffafafa)),
               ),
             ),
           ),
@@ -81,8 +81,8 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                 sigmaY: 10.0,
               ),
               child: Container(
-                decoration:
-                    BoxDecoration(color: Color(0xffffffff).withOpacity(0.8)),
+                decoration: BoxDecoration(
+                    color: const Color(0xffffffff).withOpacity(0.8)),
               ),
             ),
           ),
@@ -100,7 +100,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                     AppAssets.mangoSvg,
                     height: 20,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   MyTextWidget(
@@ -109,16 +109,15 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       color: const Color(0xff505050),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
                         AppAssets.quickOfferSvg,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Column(
@@ -137,14 +136,14 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                               ))
                         ],
                       ),
-                      Spacer(),
-                      OfferTimeWidget(),
+                      const Spacer(),
+                      const OfferTimeWidget(),
                     ],
                   ),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 12,
             ),
             Padding(
@@ -158,9 +157,9 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(
                           width: 0.5, color: const Color(0xfffafafa)),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
-                          color: const Color(0x33000000),
+                          color: Color(0x33000000),
                           offset: Offset(0, 3),
                           blurRadius: 10,
                         ),
@@ -179,7 +178,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       boxShadow: [
                         BoxShadow(
                             color: Colors.white.withOpacity(0.7),
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                             blurRadius: 6,
                             inset: true),
                       ],

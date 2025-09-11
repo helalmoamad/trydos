@@ -40,11 +40,7 @@ class LocalNotificationService {
         AndroidInitializationSettings('app_icon');
 
     DarwinInitializationSettings iosInitializationSettings =
-        const DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+        const DarwinInitializationSettings();
 
     final InitializationSettings settings = InitializationSettings(
       android: androidInitializationSettings,
@@ -225,8 +221,7 @@ class LocalNotificationService {
               onlyAlertOnce: true,
               showProgress: true,
               maxProgress: maxProgress,
-              progress: progress,
-              autoCancel: true);
+              progress: progress);
 
       NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -237,7 +232,7 @@ class LocalNotificationService {
         platformChannelSpecifics,
       );
     } else {
-      final IosNotificationDetails = DarwinNotificationDetails();
+      const IosNotificationDetails = DarwinNotificationDetails();
       _localNotificationPlugin.cancel(5);
       AndroidNotificationDetails androidPlatformChannelSpecifics =
           const AndroidNotificationDetails(
@@ -245,7 +240,6 @@ class LocalNotificationService {
         "Files Notifications",
         channelDescription: "Inform user files uploaded",
         channelShowBadge: false,
-        autoCancel: true,
         importance: Importance.max,
         priority: Priority.high,
         onlyAlertOnce: true,
@@ -296,7 +290,6 @@ class LocalNotificationService {
             priority: Priority.max,
             playSound: channel.playSound,
             enableVibration: channel.enableVibration,
-            autoCancel: true,
             largeIcon:
                 (pngImage == null) ? null : ByteArrayAndroidBitmap(pngImage),
             styleInformation: (pngImage == null)
@@ -314,7 +307,5 @@ class LocalNotificationService {
         _androidChannelId,
         _androidChannelName, // title
         importance: Importance.max,
-        playSound: true,
-        enableVibration: true,
       );
 }

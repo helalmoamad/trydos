@@ -89,7 +89,7 @@ class _PriceFilterState extends State<PriceFilter> {
     if ((widget.pricesFiltersRanges.maxPrice! -
             widget.pricesFiltersRanges.minPrice!) <
         1) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Padding(
       padding: EdgeInsetsDirectional.only(
@@ -141,7 +141,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             100,
                       ),
                       selectByTap: false,
-                      trackBar: FlutterSliderTrackBar(
+                      trackBar: const FlutterSliderTrackBar(
                           activeTrackBarHeight: 1,
                           inactiveTrackBarHeight: 1,
                           activeTrackBar: BoxDecoration(
@@ -152,9 +152,8 @@ class _PriceFilterState extends State<PriceFilter> {
                           )),
                       handlerWidth: 40,
                       handlerHeight: 40,
-                      centeredOrigin: false,
                       rightHandler: FlutterSliderHandler(
-                          decoration: BoxDecoration(),
+                          decoration: const BoxDecoration(),
                           child: ValueListenableBuilder<Tuple2<double, double>>(
                               valueListenable: widget.lowerAndUpperBound,
                               builder: (context, filterData, _) {
@@ -165,21 +164,22 @@ class _PriceFilterState extends State<PriceFilter> {
                                               (widget.pricesFiltersRanges
                                                       .maxPrice! *
                                                   widget.pricrRate)
-                                          ? Color(0xffFF5F61)
+                                          ? const Color(0xffFF5F61)
                                           : Colors.white,
                                       border: Border.all(
-                                          width: 0.5, color: Color(0xffC4C2C2)),
+                                          width: 0.5,
+                                          color: const Color(0xffC4C2C2)),
                                       boxShadow: [
                                         BoxShadow(
                                             blurRadius: 3,
-                                            offset: Offset(0, 3),
+                                            offset: const Offset(0, 3),
                                             color:
                                                 Colors.black.withOpacity(0.05))
                                       ]),
                                 );
                               })),
                       handler: FlutterSliderHandler(
-                          decoration: BoxDecoration(),
+                          decoration: const BoxDecoration(),
                           child: ValueListenableBuilder<Tuple2<double, double>>(
                               valueListenable: widget.lowerAndUpperBound,
                               builder: (context, filterData, _) {
@@ -190,14 +190,15 @@ class _PriceFilterState extends State<PriceFilter> {
                                               (widget.pricesFiltersRanges
                                                       .minPrice! *
                                                   widget.pricrRate)
-                                          ? Color(0xffFF5F61)
+                                          ? const Color(0xffFF5F61)
                                           : Colors.white,
                                       border: Border.all(
-                                          width: 0.5, color: Color(0xffC4C2C2)),
+                                          width: 0.5,
+                                          color: const Color(0xffC4C2C2)),
                                       boxShadow: [
                                         BoxShadow(
                                             blurRadius: 3,
-                                            offset: Offset(0, 3),
+                                            offset: const Offset(0, 3),
                                             color:
                                                 Colors.black.withOpacity(0.05))
                                       ]),
@@ -208,8 +209,8 @@ class _PriceFilterState extends State<PriceFilter> {
                           widget.pricrRate),
                       min: (widget.pricesFiltersRanges.minPrice! *
                           widget.pricrRate),
-                      handlerAnimation: FlutterSliderHandlerAnimation(
-                          scale: 1, duration: Duration(milliseconds: 0)),
+                      handlerAnimation: const FlutterSliderHandlerAnimation(
+                          scale: 1, duration: Duration()),
                       tooltip: FlutterSliderTooltip(
                           alwaysShowTooltip: false,
                           disabled: true,
@@ -225,7 +226,6 @@ class _PriceFilterState extends State<PriceFilter> {
                             Filter();
                         boutiqueBloc.add(ChangeSelectedFiltersEvent(
                           boutiqueSlug: widget.boutiqueSlug!,
-                          requestToUpdateFilters: true,
                           fromHomePageSearch: widget.fromHomeSearch,
                           category: widget.category,
                           filtersChoosedByUser: GetProductFiltersModel(
@@ -255,8 +255,8 @@ class _PriceFilterState extends State<PriceFilter> {
                                             (widget.pricesFiltersRanges
                                                     .minPrice! *
                                                 widget.pricrRate)
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
+                                        ? const Color(0xffFF5F61)
+                                        : const Color(0xff505050)),
                               ),
                               MyTextWidget(
                                 widget.pricrSymbol,
@@ -265,8 +265,8 @@ class _PriceFilterState extends State<PriceFilter> {
                                             widget.pricesFiltersRanges
                                                     .minPrice! *
                                                 widget.pricrRate
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
+                                        ? const Color(0xffFF5F61)
+                                        : const Color(0xff505050)),
                               ),
                             ],
                           );
@@ -286,8 +286,8 @@ class _PriceFilterState extends State<PriceFilter> {
                                             widget.pricesFiltersRanges
                                                     .maxPrice! *
                                                 widget.pricrRate
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
+                                        ? const Color(0xffFF5F61)
+                                        : const Color(0xff505050)),
                               ),
                               MyTextWidget(
                                 widget.pricrSymbol,
@@ -296,8 +296,8 @@ class _PriceFilterState extends State<PriceFilter> {
                                             widget.pricesFiltersRanges
                                                     .maxPrice! *
                                                 widget.pricrRate
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
+                                        ? const Color(0xffFF5F61)
+                                        : const Color(0xff505050)),
                               ),
                             ],
                           );
@@ -313,21 +313,22 @@ class _PriceFilterState extends State<PriceFilter> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            FilterSelectedMark(width: 20, height: 20),
-                            SizedBox(
+                            const FilterSelectedMark(width: 20, height: 20),
+                            const SizedBox(
                               width: 10,
                             ),
                             MyTextWidget(
                               '${LocaleKeys.filter_by.tr()} ${LocaleKeys.prices.tr()}',
                               style: context.textTheme.titleMedium?.rq.copyWith(
-                                  color: Color(0xff505050), height: 15 / 12),
+                                  color: const Color(0xff505050),
+                                  height: 15 / 12),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             SvgPicture.asset(
                               AppAssets.registerInfoSvg,
-                              color: Color(0xffD3D3D3),
+                              color: const Color(0xffD3D3D3),
                             ),
                             BlocBuilder<BoutiqueBloc, BoutiqueState>(
                                 builder: (context, state) {
@@ -335,7 +336,7 @@ class _PriceFilterState extends State<PriceFilter> {
                                   GetProductFiltersStatus.loading) {
                                 return Row(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     TrydosLoader(
@@ -344,7 +345,7 @@ class _PriceFilterState extends State<PriceFilter> {
                                   ],
                                 );
                               }
-                              return SizedBox.shrink();
+                              return const SizedBox.shrink();
                             })
                           ],
                         ),
@@ -354,7 +355,7 @@ class _PriceFilterState extends State<PriceFilter> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -370,7 +371,7 @@ class RPSCustomPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color(0xfff8f8f8).withOpacity(1.0)
+      ..color = const Color(0xfff8f8f8).withOpacity(1.0)
       ..strokeWidth = 2
       ..style = PaintingStyle.fill;
 

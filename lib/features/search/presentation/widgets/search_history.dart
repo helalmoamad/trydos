@@ -68,7 +68,6 @@ class _SearchHistoryState extends State<SearchHistory> {
               builder: (context, value, _) {
                 return _items.isNotEmpty
                     ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           GestureDetector(
                             onTap: () {
@@ -80,7 +79,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                               height: 20,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           if (value) ...{
@@ -94,9 +93,9 @@ class _SearchHistoryState extends State<SearchHistory> {
                                       style: context.textTheme.titleLarge?.mq
                                           .copyWith(
                                               height: 18 / 14,
-                                              color: Color(0xff505050)),
+                                              color: const Color(0xff505050)),
                                     ),
-                                    Spacer(),
+                                    const Spacer(),
                                     GestureDetector(
                                       onTap: () {
                                         BlocProvider.of<HomeBloc>(context).add(
@@ -111,10 +110,10 @@ class _SearchHistoryState extends State<SearchHistory> {
                                                 height: 18 / 14,
                                                 decoration:
                                                     TextDecoration.underline,
-                                                color: Color(0xff505050)),
+                                                color: const Color(0xff505050)),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 25,
                                     ),
                                   ],
@@ -146,18 +145,18 @@ class _SearchHistoryState extends State<SearchHistory> {
               builder: (context, value, _) {
                 return value && _items.isNotEmpty
                     ? ScrollConfiguration(
-                        behavior: CupertinoScrollBehavior(),
+                        behavior: const CupertinoScrollBehavior(),
                         child: ListView.separated(
                           shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          padding: EdgeInsets.only(top: 15, right: 20),
+                          physics: const ClampingScrollPhysics(),
+                          padding: const EdgeInsets.only(top: 15, right: 20),
                           itemBuilder: (ctx, index) => Container(
                             height: 40,
                             width: 1.sw,
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
                             decoration: BoxDecoration(
-                                color: Color(0xffF8F8F8),
+                                color: const Color(0xffF8F8F8),
                                 borderRadius: BorderRadius.circular(10)),
                             child: InkWell(
                               onTap: () {
@@ -200,17 +199,17 @@ class _SearchHistoryState extends State<SearchHistory> {
                                 style: context.textTheme.titleLarge?.rq
                                     .copyWith(
                                         height: 18 / 14,
-                                        color: Color(0xff8D8D8D)),
+                                        color: const Color(0xff8D8D8D)),
                               ),
                             ),
                           ),
                           itemCount: _items.length,
-                          separatorBuilder: (ctx, index) => SizedBox(
+                          separatorBuilder: (ctx, index) => const SizedBox(
                             height: 5,
                           ),
                         ),
                       )
-                    : SizedBox.shrink();
+                    : const SizedBox.shrink();
               })
         ],
       ),

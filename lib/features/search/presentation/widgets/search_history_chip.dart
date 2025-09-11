@@ -85,20 +85,20 @@ class SearchHistoryChip extends StatelessWidget {
                 },
                 child: Container(
                   height: 28,
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
-                      color: Color(0xffF8F8F8),
+                      color: const Color(0xffF8F8F8),
                       borderRadius: BorderRadius.circular(10)),
                   child: Center(
                     child: Text(
                       text,
-                      style: context.textTheme.titleLarge?.rq
-                          .copyWith(height: 18 / 14, color: Color(0xff8D8D8D)),
+                      style: context.textTheme.titleLarge?.rq.copyWith(
+                          height: 18 / 14, color: const Color(0xff8D8D8D)),
                     ),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               )
             ],
@@ -109,7 +109,7 @@ class SearchHistoryChip extends StatelessWidget {
               width: 12,
               height: 12,
               color: Colors.transparent, // don't remove it
-              child: Align(
+              child: const Align(
                 alignment: Alignment.centerRight,
                 child: CloseCircle(
                     width: 12,

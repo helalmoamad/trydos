@@ -250,7 +250,6 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onUserInteractWithCall(
       UserInteractWithCall event, Emitter<CallsState> emit) {
     emit(state.copyWith(
-        currentActiveCallId: null,
         stopRingToneReason: event.rejectIt
             ? StopRingToneReason.refuse
             : StopRingToneReason.accept));

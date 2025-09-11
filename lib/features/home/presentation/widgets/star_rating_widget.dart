@@ -88,8 +88,6 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      isDismissible: true,
-      enableDrag: true,
       builder: (context) => WillPopScope(
         onWillPop: () async {
           // عند إغلاق الرسالة بالضغط خارجها، نعيد التقييم للقيمة السابقة
@@ -321,12 +319,9 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
       height: 26,
       child: RatingBar.builder(
         initialRating: _currentRating,
-        minRating: 0,
         maxRating: 5,
         wrapAlignment: WrapAlignment.center,
-        direction: Axis.horizontal,
         allowHalfRating: true,
-        itemCount: 5,
         itemSize: 16,
         ignoreGestures: !widget.isInteractive,
         itemBuilder: (context, index) {

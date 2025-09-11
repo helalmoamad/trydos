@@ -50,13 +50,13 @@ class PlaceOrder extends StatefulWidget {
   final String currencySymbol;
   final double exchangeRate;
   const PlaceOrder({
+    super.key,
     required this.totalPrice,
     required this.customerAddressesInfo,
     required this.cartImages,
     required this.paymentMethods,
     required this.currencySympole,
     required this.exchangeRate,
-    Key? key,
     required this.availablePaymentMethod,
     required this.decimalPointSetting,
     required this.cartGroupId,
@@ -174,7 +174,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 if (orderState.placeOrderStatus ==
                     PlaceOrderStatus.unavailable) {
                   BlocProvider.of<HomeBloc>(context).add(
-                    GetCartItemEvent(),
+                    const GetCartItemEvent(),
                   );
 
                   ////////////////////////////
@@ -299,7 +299,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
                     /////////////////////////
                     Future.delayed(
-                      Duration(milliseconds: 300),
+                      const Duration(milliseconds: 300),
                       () {
                         FirebaseAnalyticsService.logEventForSession(
                           executedEventName: 'PlaceOrderScreen',
@@ -473,7 +473,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             Expanded(
                               child: SingleChildScrollView(
                                 child: Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   alignment: Alignment.topCenter,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -538,10 +539,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 highlightColor: Colors.grey[100]!,
                 child: Container(
                   height: 60,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Color(0xffC4C2C2).withOpacity(0.5),
+                    color: const Color(0xffC4C2C2).withOpacity(0.5),
                   ),
                   child: Center(
                     child: Column(
@@ -612,34 +614,35 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 height: 80,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Color.fromRGBO(255, 255, 255, 1),
+                    color: const Color.fromRGBO(255, 255, 255, 1),
                   ),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       blurRadius: 10,
                       blurStyle: BlurStyle.solid,
                       color: Color(0xffF1F1F1),
                     )
                   ],
-                  color: Color.fromRGBO(255, 255, 255, 1),
+                  color: const Color.fromRGBO(255, 255, 255, 1),
                 ),
                 width: 1.sw,
                 child: InkWell(
                   onTap: () {
                     if (_agreeToPolicies) {
                       BlocProvider.of<HomeBloc>(context).add(
-                        CheckWithGetCartEvent(isForPlaceOrder: true),
+                        const CheckWithGetCartEvent(isForPlaceOrder: true),
                       );
                     }
                   },
                   child: Container(
                     height: 70.h,
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: _agreeToPolicies
-                            ? Color(0xff346BFF)
-                            : Color(0xffC4C2C2)),
+                            ? const Color(0xff346BFF)
+                            : const Color(0xffC4C2C2)),
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -692,7 +695,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                         fontSize: 14,
                                         height: 0.8),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 2,
                               ),
                               Text(
@@ -725,32 +728,33 @@ class _PlaceOrderState extends State<PlaceOrder> {
         valueListenable: agreeToPolicies,
         builder: (context, _agreeToPolicies, _) {
           return Container(
-            margin: EdgeInsets.all(15),
+            margin: const EdgeInsets.all(15),
             height: 40.h,
             width: 1.sw,
             decoration: BoxDecoration(
               border: Border.all(
                 color: const Color(0xff388CFF),
               ),
-              color: _agreeToPolicies ? Color(0xffF5FFF8) : Color(0xffF8F8F8),
+              color: _agreeToPolicies
+                  ? const Color(0xffF5FFF8)
+                  : const Color(0xffF8F8F8),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(width: 29.w),
                 SvgPicture.asset(AppAssets.detectedSvg,
                     color: _agreeToPolicies
-                        ? Color(0xff388CFF)
-                        : Color(0xff8E8E8E)),
-                SizedBox(
+                        ? const Color(0xff388CFF)
+                        : const Color(0xff8E8E8E)),
+                const SizedBox(
                   width: 20,
                 ),
                 SizedBox(width: 10.w),
                 Text(
                   "${LocaleKeys.i_read_and_agree_to_the.tr()}",
                   style: context.textTheme.bodyMedium?.rr.copyWith(
-                      color: Color(0xff1D1D1D),
+                      color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
                       fontSize: 12,
                       height: 1.33),
@@ -760,7 +764,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   style: context.textTheme.bodyMedium?.rr.copyWith(
                       decoration: TextDecoration.underline,
                       decorationColor: const Color(0xff388CFF),
-                      color: Color(0xff388CFF),
+                      color: const Color(0xff388CFF),
                       letterSpacing: 0.18,
                       fontSize: 12,
                       height: 1.33),
@@ -768,7 +772,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 Text(
                   " ${LocaleKeys.and.tr()} ",
                   style: context.textTheme.bodyMedium?.rr.copyWith(
-                      color: Color(0xff1D1D1D),
+                      color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
                       fontSize: 12,
                       height: 1.33),
@@ -778,7 +782,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   style: context.textTheme.bodyMedium?.rr.copyWith(
                       decoration: TextDecoration.underline,
                       decorationColor: const Color(0xff388CFF),
-                      color: Color(0xff388CFF),
+                      color: const Color(0xff388CFF),
                       letterSpacing: 0.18,
                       fontSize: 12,
                       height: 1.33),
@@ -799,7 +803,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+            margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
             child: Row(
               children: [
                 SvgPicture.asset(
@@ -871,7 +875,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.all(10),
+            margin: const EdgeInsets.all(10),
             height: 20,
             child: Row(
               children: [
@@ -907,7 +911,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 right: (LanguageService.languageCode == "ar") ? 10 : 0),
             height: 150,
             child: ListView.separated(
-              separatorBuilder: (context, index) => SizedBox(
+              separatorBuilder: (context, index) => const SizedBox(
                 width: 5,
               ),
               scrollDirection: Axis.horizontal,
@@ -915,7 +919,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
               itemBuilder: (context, index) => Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: Color(0x707070),
+                  color: const Color(0x707070),
                 ),
                 width: 91.w,
                 child: Column(
@@ -923,7 +927,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     Container(
                       height: 125.h,
                       child: ProductDetailsImageWidget(
-                        withBackGroundShadow: true,
                         withInnerShadow: false,
                         imageFit: BoxFit.cover,
                         blurRadius: 0,
@@ -932,7 +935,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         radius: 15,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 2,
                     ),
                     Text(
@@ -964,7 +967,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   Widget buildPageHeader(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 60),
+      margin: const EdgeInsets.only(top: 60),
       width: 1.sw,
       height: 50.h,
       child: Column(
@@ -999,7 +1002,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     ),
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 SvgPicture.asset(
                   AppAssets.deliveryAddressSvg,
                   height: 20,

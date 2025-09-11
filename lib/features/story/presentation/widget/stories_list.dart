@@ -48,7 +48,7 @@ class _StoriesListState extends State<StoriesList> {
   final ScrollController listViewController = ScrollController();
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<dartz.Tuple2<int, int>> resizeStories =
-      ValueNotifier(dartz.Tuple2(-1, -1));
+      ValueNotifier(const dartz.Tuple2(-1, -1));
 
   double _lastScrollPosition = 0;
   Timer? debounce;
@@ -59,11 +59,11 @@ class _StoriesListState extends State<StoriesList> {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
         }
-        debounce = Timer(Duration(milliseconds: 600), () {
+        debounce = Timer(const Duration(milliseconds: 600), () {
           if (listViewController.offset >=
               (listViewController.position.maxScrollExtent * 0.6)) {
             BlocProvider.of<StoryBloc>(context)
-                .add(GetStoryEvent(withPaginition: true));
+                .add(const GetStoryEvent(withPaginition: true));
           }
           if (resizeStories.value.value1 != -1 ||
               resizeStories.value.value2 != -1) {
@@ -136,7 +136,7 @@ class _StoriesListState extends State<StoriesList> {
                                 case GetStoriesStatus.success:
                                   return SizedBox(
                                     key: TestVariables.kTestMode
-                                        ? Key(
+                                        ? const Key(
                                             WidgetsKeys.storiesSuccessStatusKey)
                                         : null,
                                     height: 220,
@@ -156,7 +156,7 @@ class _StoriesListState extends State<StoriesList> {
                                                   : 50,
                                               child: !(state
                                                       .getStoryWithPagintionStatusLoading)
-                                                  ? SizedBox.shrink()
+                                                  ? const SizedBox.shrink()
                                                   : TrydosLoader(
                                                       size: 20,
                                                     ),
@@ -172,7 +172,8 @@ class _StoriesListState extends State<StoriesList> {
                                                     mainAxisSize:
                                                         MainAxisSize.min,
                                                     children: [
-                                                      SizedBox(height: 40),
+                                                      const SizedBox(
+                                                          height: 40),
                                                       Material(
                                                         color: const Color
                                                             .fromARGB(
@@ -379,8 +380,8 @@ class _StoriesListState extends State<StoriesList> {
                                                   '.png';
                                             }
                                             return AnimatedPadding(
-                                              duration:
-                                                  Duration(milliseconds: 200),
+                                              duration: const Duration(
+                                                  milliseconds: 200),
                                               padding: EdgeInsets.only(
                                                   left: focused.value1 != -1 &&
                                                           focused.value1 ==
@@ -629,12 +630,11 @@ class _StoriesListState extends State<StoriesList> {
                                           }
                                         },
                                         physics: const ClampingScrollPhysics(),
-                                        padding:
-                                            EdgeInsetsDirectional.symmetric(
-                                                horizontal: 10),
+                                        padding: const EdgeInsetsDirectional
+                                            .symmetric(horizontal: 10),
                                         scrollDirection: Axis.horizontal,
                                         separatorBuilder: (context, index) =>
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 15,
                                             ),
                                         itemCount:
@@ -643,7 +643,7 @@ class _StoriesListState extends State<StoriesList> {
                                 case GetStoriesStatus.init:
                                   return Container();
                                 case GetStoriesStatus.failure:
-                                  return SizedBox.shrink();
+                                  return const SizedBox.shrink();
                                 //   Center(
                                 //   key: Key(WidgetsKey.storiesFailureStatusKey),
                                 //   child: ElevatedButton(
@@ -656,7 +656,6 @@ class _StoriesListState extends State<StoriesList> {
                                   return Shimmer.fromColors(
                                       baseColor: Colors.grey.shade300,
                                       highlightColor: Colors.grey.shade100,
-                                      enabled: true,
                                       child: SizedBox(
                                         width: double.infinity,
                                         height: 220,
@@ -665,11 +664,11 @@ class _StoriesListState extends State<StoriesList> {
                                             itemBuilder: (context, index) =>
                                                 Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .only(
-                                                                start: 10,
-                                                                top: 35,
-                                                                bottom: 30),
+                                                            start: 10,
+                                                            top: 35,
+                                                            bottom: 30),
                                                     child: Stack(
                                                         alignment:
                                                             Alignment.center,
@@ -690,7 +689,7 @@ class _StoriesListState extends State<StoriesList> {
                                                                         .withOpacity(
                                                                             0.4),
                                                                     offset:
-                                                                        Offset(
+                                                                        const Offset(
                                                                             0,
                                                                             3),
                                                                     blurRadius:
@@ -698,7 +697,7 @@ class _StoriesListState extends State<StoriesList> {
                                                                   )
                                                                 ],
                                                               )),
-                                                          Positioned(
+                                                          const Positioned(
                                                               left: 0,
                                                               top: 0,
                                                               child:
@@ -713,7 +712,8 @@ class _StoriesListState extends State<StoriesList> {
                                                           ),
                                                         ])),
                                             separatorBuilder:
-                                                (context, index) => SizedBox(
+                                                (context, index) =>
+                                                    const SizedBox(
                                                       width: 5,
                                                     ),
                                             itemCount: 7),

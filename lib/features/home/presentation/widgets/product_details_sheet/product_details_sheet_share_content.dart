@@ -78,11 +78,11 @@ class _ProductDetailsSheetShareContentState
           error: error.toString());
     };
     return ScrollConfiguration(
-      behavior: cupertino.CupertinoScrollBehavior(),
+      behavior: const cupertino.CupertinoScrollBehavior(),
       child: ListView(
         controller: widget.scrollController,
         shrinkWrap: true,
-        physics: cupertino.ClampingScrollPhysics(),
+        physics: const cupertino.ClampingScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
           10.verticalSpace,
@@ -92,15 +92,15 @@ class _ProductDetailsSheetShareContentState
             children: [
               SvgPicture.asset(
                 AppAssets.shareSvg,
-                color: Color(0xff505050),
+                color: const Color(0xff505050),
                 height: 20,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               MyTextWidget('${LocaleKeys.share_this_product_with.tr()}',
                   style: context.textTheme.bodyMedium?.mq.copyWith(
-                    color: Color(0xff505050),
+                    color: const Color(0xff505050),
                   )),
             ],
           ),
@@ -113,9 +113,9 @@ class _ProductDetailsSheetShareContentState
                   MyTextWidget(
                       '${LocaleKeys.you_must_login_to_share_product_with_chats.tr()}',
                       style: context.textTheme.bodyMedium?.bq.copyWith(
-                        color: Color(0xffff0000),
+                        color: const Color(0xffff0000),
                       )),
-                  cupertino.Spacer(),
+                  const cupertino.Spacer(),
                 ],
               ),
             ),
@@ -128,8 +128,8 @@ class _ProductDetailsSheetShareContentState
                     .copyWith(bottom: 10),
                 child: AppTextField(
                   focusNode: widget.focusNode,
-                  filledColor: Color(0xffF8F8F8),
-                  bordersColor: Color(0xffF8F8F8),
+                  filledColor: const Color(0xffF8F8F8),
+                  bordersColor: const Color(0xffF8F8F8),
                   hintText: '${LocaleKeys.search.tr()}',
                   roundingCornersValue: 30,
                   onChange: (String text) {
@@ -197,7 +197,6 @@ class _ProductDetailsSheetShareContentState
                                 .getRange(0, min(10, chats.length))
                                 .toList();
                             return Align(
-                              alignment: Alignment.center,
                               child: Wrap(
                                 children: List.generate(
                                     min(10, chats.length),
@@ -307,15 +306,15 @@ class ChatCardForShare extends StatelessWidget {
                         boxShadow: selected
                             ? null
                             : [
-                                BoxShadow(
-                                  color: const Color(0x29000000),
+                                const BoxShadow(
+                                  color: Color(0x29000000),
                                   offset: Offset(0, 3),
                                   blurRadius: 6,
                                 ),
                               ],
                         border: selected
                             ? Border.all(
-                                color: Color(0xff0859D9),
+                                color: const Color(0xff0859D9),
                               )
                             : null),
                     child: ClipRRect(
@@ -327,7 +326,7 @@ class ChatCardForShare extends StatelessWidget {
                             child: Container(
                                 width: 70.w - (selected ? 2 : 0),
                                 height: 80 - (selected ? 2 : 0),
-                                decoration: BoxDecoration(),
+                                decoration: const BoxDecoration(),
                                 child: channelMember.user?.photoPath == null
                                     ? NoImageWidget(
                                         width: 70.w - (selected ? 2 : 0),
@@ -355,7 +354,7 @@ class ChatCardForShare extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20.0),
                               boxShadow: [
                                 BoxShadow(
-                                  offset: Offset(0, 3),
+                                  offset: const Offset(0, 3),
                                   blurRadius: 6,
                                   color: Colors.white.withOpacity(0.5),
                                   inset: true,
@@ -376,7 +375,7 @@ class ChatCardForShare extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: context.textTheme.bodySmall?.rq
-                          .copyWith(color: Color(0xff505050)),
+                          .copyWith(color: const Color(0xff505050)),
                     ),
                   )
                 ],
@@ -387,9 +386,9 @@ class ChatCardForShare extends StatelessWidget {
                       child: SvgPicture.asset(
                         AppAssets.shareSvg,
                         height: 20,
-                        color: Color(0xff0859D9),
+                        color: const Color(0xff0859D9),
                       ))
-                  : SizedBox.shrink()
+                  : const SizedBox.shrink()
             ],
           ),
         ),

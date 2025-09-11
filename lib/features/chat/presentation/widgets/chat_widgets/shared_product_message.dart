@@ -94,7 +94,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
     print(
         "####################################################################3eee3");
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           timer = true;
@@ -191,7 +191,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                           : const Color(0xffB4FFD9),
                       borderRadius: BorderRadius.circular(22.0),
                     ),
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -200,7 +200,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                   state.slopMessageId!
                                       .contains(widget.messageId) &&
                                   (widget.isReceived || widget.isRead))
-                              ? Offset(0, 0)
+                              ? const Offset(0, 0)
                               : widget.senderId ==
                                       widget._prefsRepository.myChatId
                                   ? Offset(50.w, 0)
@@ -394,7 +394,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                         watchedAt: widget.watchedAt,
                                       ),
                                     )
-                                  : SizedBox.shrink(),
+                                  : const SizedBox.shrink(),
                             ],
                           ),
                         ),
@@ -427,9 +427,8 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                         Container(
                             width: 60,
                             height: 20,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 MyTextWidget(
                                   !widget.createAt!.isUtc
@@ -438,7 +437,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                       : HelperFunctions.getZonedDateInFormat(
                                           widget.createAt!),
                                   style: context.textTheme.titleSmall?.rr
-                                      .copyWith(color: Color(0xff1D1D1D)),
+                                      .copyWith(color: const Color(0xff1D1D1D)),
                                 ),
                                 if (widget.isSent) ...{
                                   10.horizontalSpace,

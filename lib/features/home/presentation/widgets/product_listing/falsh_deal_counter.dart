@@ -30,7 +30,7 @@ class _FlashDealCountdownTimerWidgetState
     extends State<FlashDealCountdownTimerWidget> {
   late DateTime endDate;
   Timer? _timer; // يجب أن يكون nullable بدون late
-  Duration _duration = Duration();
+  Duration _duration = const Duration();
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _FlashDealCountdownTimerWidgetState
   void _parseEndDate() {
     try {
       endDate = DateFormat('MM/dd/yyyy', 'en_US').parse(widget.endDateString);
-      endDate = endDate.add(Duration(days: 1));
+      endDate = endDate.add(const Duration(days: 1));
     } catch (e) {
       endDate = DateTime.now();
       print('Error parsing date: $e');
@@ -62,7 +62,7 @@ class _FlashDealCountdownTimerWidgetState
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
@@ -112,7 +112,7 @@ class _FlashDealCountdownTimerWidgetState
           child: Text(
             _duration > Duration.zero ? _formatDuration(_duration) : "",
             style: context.textTheme.bodyMedium?.mr.copyWith(
-              color: Color(0xffFF6200),
+              color: const Color(0xffFF6200),
               letterSpacing: 0.18,
               fontSize: 9,
               height: 1.3,

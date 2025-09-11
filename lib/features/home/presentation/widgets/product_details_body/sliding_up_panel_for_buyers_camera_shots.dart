@@ -59,30 +59,29 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
             height: 1.sh - 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: Color(0xffF8F8F8),
+              color: const Color(0xffF8F8F8),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
                         AppAssets.chromeIconSvg,
                         height: 20,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       MyTextWidget(
                         '${LocaleKeys.buyers_camera.tr()} 12 ${LocaleKeys.shot.tr()}',
                         style: context.textTheme.titleLarge?.rq
-                            .copyWith(color: Color(0xff8D8D8D)),
+                            .copyWith(color: const Color(0xff8D8D8D)),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       SvgPicture.asset(
@@ -92,7 +91,7 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 3,
                 ),
                 Padding(
@@ -104,7 +103,7 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
                         '${LocaleKeys.these_shots_are_made_by_users.tr()}',
                         style: context.textTheme.titleMedium?.rq.copyWith(
                             height: 1.23,
-                            color: Color(0xffC4C2C2),
+                            color: const Color(0xffC4C2C2),
                             fontSize: 11.sp),
                       ),
                     ],
@@ -112,17 +111,18 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
                 ),
                 Expanded(
                   child: ScrollConfiguration(
-                    behavior: CupertinoScrollBehavior(),
+                    behavior: const CupertinoScrollBehavior(),
                     child: GridView.count(
                       crossAxisCount: 2,
                       shrinkWrap: true,
                       childAspectRatio: 195 / 277,
                       controller: scrollController,
-                      padding: EdgeInsets.only(left: 25, right: 25, top: 15),
+                      padding:
+                          const EdgeInsets.only(left: 25, right: 25, top: 15),
                       crossAxisSpacing: 10,
                       primary: false,
                       mainAxisSpacing: 10,
-                      physics: ClampingScrollPhysics(),
+                      physics: const ClampingScrollPhysics(),
                       children: List.generate(
                           20,
                           (index) => GestureDetector(

@@ -145,7 +145,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
 
             return Container(
               height: 137,
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               width: 1.sw,
               margin: EdgeInsets.only(
                 top: 10,
@@ -155,9 +155,8 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
               ),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: Color(0xffFCFCFC)),
+                  color: const Color(0xffFCFCFC)),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
@@ -167,42 +166,42 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                       children: [
                         SvgPicture.asset(
                           AppAssets.sizeIconSvg,
-                          color: Color(0xff1D1D1D),
+                          color: const Color(0xff1D1D1D),
                           height: 20,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 12,
                         ),
-                        _sizesType(" CM ", Color(0xffF4F4F4)),
-                        SizedBox(
+                        _sizesType(" CM ", const Color(0xffF4F4F4)),
+                        const SizedBox(
                           width: 2,
                         ),
                         _sizesType(" INC ", null),
-                        Spacer(),
-                        _sizesType(" Standart ", Color(0xffF4F4F4)),
-                        SizedBox(
+                        const Spacer(),
+                        _sizesType(" Standart ", const Color(0xffF4F4F4)),
+                        const SizedBox(
                           width: 2,
                         ),
                         _sizesType(" EU ", null),
-                        SizedBox(
+                        const SizedBox(
                           width: 2,
                         ),
                         _sizesType(" IN ", null),
-                        SizedBox(
+                        const SizedBox(
                           width: 2,
                         ),
                         _sizesType(" US ", null),
-                        SizedBox(
+                        const SizedBox(
                           width: 2,
                         ),
                         _sizesType(" Uk ", null),
-                        SizedBox(
+                        const SizedBox(
                           width: 2,
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   MyTextWidget(
@@ -210,7 +209,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                     style: textTheme.titleLarge?.rr
                         .copyWith(fontSize: 9, color: const Color(0xff1D1D1D)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Row(
@@ -227,7 +226,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   ValueListenableBuilder<int>(
@@ -243,7 +242,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                                 "",
                                 index,
                                 index == currentSelectedSizeIndex.value
-                                    ? Color(0xffF4F4F4)
+                                    ? const Color(0xffF4F4F4)
                                     : null),
                             itemCount: sizes?.length,
                           ),
@@ -260,10 +259,10 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
     return Container(
       alignment: Alignment.center,
       height: 20,
-      padding: EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-          color: color ?? Color(0xffFCFCFC),
-          border: Border.all(color: Color(0xffD3D3D3)),
+          color: color ?? const Color(0xffFCFCFC),
+          border: Border.all(color: const Color(0xffD3D3D3)),
           borderRadius: BorderRadius.circular(6)),
       child: MyTextWidget(
         text,
@@ -309,12 +308,11 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
             height: 44,
             width: 50,
             decoration: BoxDecoration(
-                color: color ?? Color(0xffFCFCFC),
-                border: Border.all(color: Color(0xffD3D3D3)),
+                color: color ?? const Color(0xffFCFCFC),
+                border: Border.all(color: const Color(0xffD3D3D3)),
                 borderRadius: BorderRadius.circular(6)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 MyTextWidget(
                   text,
@@ -322,7 +320,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                       .copyWith(fontSize: 11, color: const Color(0xff1D1D1D)),
                 ),
                 num == null || num == ""
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : MyTextWidget(
                         num,
                         style: textTheme.titleLarge?.rr.copyWith(

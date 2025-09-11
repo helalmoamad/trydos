@@ -111,7 +111,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
         }
-        debounce = Timer(Duration(milliseconds: 600), () {
+        debounce = Timer(const Duration(milliseconds: 600), () {
           if (autoScrollController.offset >=
               (autoScrollController.position.maxScrollExtent * 0.6)) {
             boutiqueBloc.add(GetFiltersWithPaginatioEvent(
@@ -192,9 +192,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               isExpanded) {
             return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 150,
                   ),
                   state.getProductFiltersStatus[key] ==
@@ -207,10 +206,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       : Center(
                           child: MyTextWidget(
                             "${LocaleKeys.no_filters_found.tr()}",
-                            style: TextStyle(color: Colors.black, fontSize: 18),
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 18),
                           ),
                         ),
-                  SizedBox(
+                  const SizedBox(
                     height: 100,
                   ),
                   Container(
@@ -236,13 +236,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             fromHomePageSearch: widget.fromSearch,
                             boutiqueSlug: widget.boutiqueSlug,
                             category: widget.category,
-                            resetChoosedFilters: true,
-                            filtersChoosedByUser: null));
+                            resetChoosedFilters: true));
                         boutiqueBloc.add(GetProductsWithFiltersEvent(
                           fromSearch: widget.fromSearch,
                           boutiqueSlug: widget.boutiqueSlug,
                           cashedOrginalBoutique: true,
-                          searchText: null,
                           category: widget.category,
                           offset: 1,
                         ));
@@ -258,19 +256,21 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   BoxShadow(
                                       color: Colors.black.withOpacity(0.1),
                                       blurRadius: 6,
-                                      offset: Offset(0, 3)),
+                                      offset: const Offset(0, 3)),
                                   BoxShadow(
                                       color: Colors.white.withOpacity(0.4),
                                       blurRadius: 6,
-                                      offset: Offset(0, 3),
+                                      offset: const Offset(0, 3),
                                       inset: true)
                                 ],
-                                border: Border.all(color: Color(0xff388CFF))),
+                                border:
+                                    Border.all(color: const Color(0xff388CFF))),
                             child: Center(
                               child: MyTextWidget(
                                 '${LocaleKeys.reset.tr()}',
                                 style: textTheme.bodyLarge?.rq.copyWith(
-                                    color: Color(0xff388CFF), height: 23 / 18),
+                                    color: const Color(0xff388CFF),
+                                    height: 23 / 18),
                               ),
                             ),
                           ),
@@ -290,7 +290,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           if ((state.getProductFiltersModel[key]?.filters == null &&
               state.cashedOrginalBoutique &&
               state.appliedFiltersByUser[key] == null)) {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
           //GetProductFiltersModel? appliedFiltersByUser =
           // state.appliedFiltersByUser[key];
@@ -500,48 +500,48 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           if (countOfFilters == 0 &&
               state.appliedFiltersByUser[key] == null &&
               state.cashedOrginalBoutique) {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
 
           return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               if (countOfFilters != 0) ...{
                 if (isExpanded) ...{
                   !filters!.categories.isNullOrEmpty
                       ? Padding(
-                          padding: EdgeInsetsDirectional.only(start: 25),
+                          padding: const EdgeInsetsDirectional.only(start: 25),
                           child: Row(
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKeys.filterByCategoryHeadKey)
+                                ? const Key(WidgetsKeys.filterByCategoryHeadKey)
                                 : null,
                             children: [
-                              FilterSelectedMark(width: 20, height: 20),
-                              SizedBox(
+                              const FilterSelectedMark(width: 20, height: 20),
+                              const SizedBox(
                                 width: 10,
                               ),
                               MyTextWidget(
                                 '${LocaleKeys.filter_by.tr()} ${LocaleKeys.categories.tr()}',
                                 style: context.textTheme.titleMedium?.rq
                                     .copyWith(
-                                        color: Color(0xff505050),
+                                        color: const Color(0xff505050),
                                         height: 15 / 12),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               SvgPicture.asset(
                                 AppAssets.registerInfoSvg,
-                                color: Color(0xffD3D3D3),
+                                color: const Color(0xffD3D3D3),
                               ),
                               if (state.getProductFiltersStatus[key] ==
                                   GetProductFiltersStatus.loading)
                                 Row(
                                   key: TestVariables.kTestMode
-                                      ? Key(WidgetsKeys.getCategoriesLoadingKey)
+                                      ? const Key(
+                                          WidgetsKeys.getCategoriesLoadingKey)
                                       : null,
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     TrydosLoader(
@@ -551,13 +551,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 )
                             ],
                           ))
-                      : SizedBox.shrink(),
-                  SizedBox(
+                      : const SizedBox.shrink(),
+                  const SizedBox(
                     height: 10,
                   )
                 },
                 if ((widget.displayAppliedFiltersOnly && !isExpanded)) ...{
-                  SizedBox.shrink()
+                  const SizedBox.shrink()
                 },
                 if ((!widget.displayAppliedFiltersOnly && !isExpanded) ||
                     isExpanded) ...{
@@ -580,7 +580,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       : (currentActiveSection.value + 1);
                               autoScrollController.scrollToIndex(
                                   2 * currentActiveSection.value,
-                                  duration: Duration(milliseconds: 200),
+                                  duration: const Duration(milliseconds: 200),
                                   preferPosition: AutoScrollPosition.begin);
                               widget.onMoveToAnotherFiltersSection.call(
                                   titleOfFilterSection[
@@ -598,7 +598,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                           child: ListView.builder(
                                               itemCount: countOfFilters,
                                               physics:
-                                                  NeverScrollableScrollPhysics(),
+                                                  const NeverScrollableScrollPhysics(),
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemBuilder: (ctx, index) {
@@ -610,13 +610,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                       decoration: BoxDecoration(
                                                           color: currentActive ==
                                                                   index
-                                                              ? Color(
+                                                              ? const Color(
                                                                   0xff505050)
                                                               : null,
                                                           shape:
                                                               BoxShape.circle,
                                                           border: Border.all(
-                                                              color: Color(
+                                                              color: const Color(
                                                                   0xff505050))),
                                                     ),
                                                     Container(
@@ -631,7 +631,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 );
                                               }),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 10,
                                         ),
                                       ],
@@ -640,7 +640,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         /*
@@ -693,14 +693,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                  */
                         ScrollConfiguration(
                           key: TestVariables.kTestMode
-                              ? Key(WidgetsKeys.filterPageScrollKey)
+                              ? const Key(WidgetsKeys.filterPageScrollKey)
                               : null,
-                          behavior: CupertinoScrollBehavior(),
+                          behavior: const CupertinoScrollBehavior(),
                           child: Expanded(
                             child: InViewNotifierList(
                                 key: TestVariables.kTestMode == false
                                     ? null
-                                    : Key(WidgetsKeys
+                                    : const Key(WidgetsKeys
                                         .productListingFilterListKey),
                                 isInViewPortCondition: (double deltaTop,
                                     double deltaBottom, double vpWidth) {
@@ -710,7 +710,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 controller: autoScrollController,
                                 itemCount:
                                     isExpanded ? 1 : 2 * countOfFilters - 1,
-                                physics: ClampingScrollPhysics(),
+                                physics: const ClampingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
                                 padding: EdgeInsets.only(
@@ -751,7 +751,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 key: TestVariables.kTestMode ==
                                                         false
                                                     ? null
-                                                    : Key(WidgetsKeys
+                                                    : const Key(WidgetsKeys
                                                         .categoriesProductListingFilterListKey),
                                                 boutiqueSlug:
                                                     widget.boutiqueSlug,
@@ -775,7 +775,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 .kTestMode ==
                                                             false
                                                         ? null
-                                                        : Key(WidgetsKeys
+                                                        : const Key(WidgetsKeys
                                                             .brandsProductListingFilterListKey),
                                                     hideTitle: true,
                                                     boutiqueSlug:
@@ -800,7 +800,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                     .kTestMode ==
                                                                 false
                                                             ? null
-                                                            : Key(WidgetsKeys
+                                                            : const Key(WidgetsKeys
                                                                 .sizesProductListingFilterListKey),
                                                         hideTitle: true,
                                                         boutiqueSlug:
@@ -824,8 +824,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                         .kTestMode ==
                                                                     false
                                                                 ? null
-                                                                : Key(WidgetsKeys
-                                                                    .colorsProductListingFilterListKey),
+                                                                : const Key(
+                                                                    WidgetsKeys
+                                                                        .colorsProductListingFilterListKey),
                                                             hideTitle: true,
                                                             boutiqueSlug: widget
                                                                 .boutiqueSlug,
@@ -853,8 +854,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                         .kTestMode ==
                                                                     false
                                                                 ? null
-                                                                : Key(WidgetsKeys
-                                                                    .pricesProductListingFilterListKey),
+                                                                : const Key(
+                                                                    WidgetsKeys
+                                                                        .pricesProductListingFilterListKey),
                                                             decimalPoint: BlocProvider.of<
                                                                             HomeBloc>(
                                                                         context)
@@ -891,7 +893,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             : 10,
                                         bottom: 45),
                                     width: 0.5,
-                                    color: Color(0xff707070),
+                                    color: const Color(0xff707070),
                                   );
                                 }),
                           ),
@@ -901,7 +903,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                   ),
                 },
                 if (isExpanded) ...{
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   !filters!.brands.isNullOrEmpty
@@ -915,7 +917,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           isBrandFilter: true,
                           filters: filters!.brands ?? [],
                         )
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink(),
                   !filters!.colors.isNullOrEmpty
                       ? ColorsListFilter(
                           boutiqueSlug: widget.boutiqueSlug,
@@ -924,7 +926,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           category: widget.category,
                           colors: filters!.colors ?? [],
                         )
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink(),
                   FiltersNormalList(
                     filterListTitle:
                         '${LocaleKeys.filter_by.tr()} ${LocaleKeys.offer.tr()}',
@@ -933,7 +935,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                     searchText: widget.searchText,
                     category: widget.category,
                     isBrandFilter: false,
-                    filters: [],
+                    filters: const [],
                   ),
                   if (filters!.prices != null)
                     PriceFilter(
@@ -1003,7 +1005,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               (state.appliedFiltersByUser[key]?.filters?.prices?.minPrice == null)
                           ? 0
                           : 5),
-                  color: Color(0xffF8F8F8),
+                  color: const Color(0xffF8F8F8),
                   child: Container(
                     width: 1.sw,
                     height: (state.appliedFiltersByUser[key]?.filters
@@ -1036,10 +1038,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             (state.appliedFiltersByUser[key]?.filters?.prices?.minPrice == null)
                         ? 0
                         : 30,
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    padding: EdgeInsets.only(left: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.only(left: 10),
                     decoration: BoxDecoration(
-                        color: Color(0xffEFEFEF),
+                        color: const Color(0xffEFEFEF),
                         borderRadius: BorderRadius.circular(10)),
                     child: choosedOrAppliedFiltersWidget(
                         controller: widget.textController,
@@ -1057,14 +1059,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               if (countOfFilters != 0 ||
                   state.choosedFiltersByUser[key] != null) ...{
                 if (isExpanded) ...{
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Column(
                     children: [
                       ValueListenableBuilder<Tuple2<double, double>>(
                           valueListenable: lowerAndUpperPrices ??
-                              ValueNotifier(Tuple2(-1, -1)),
+                              ValueNotifier(const Tuple2(-1, -1)),
                           builder: (context, _, __) {
                             return Container(
                               width: 1.sw,
@@ -1104,13 +1106,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               lowerAndUpperPrices!.value.item2 < maxPrice!)))
                                   ? 55
                                   : 0,
-                              margin: EdgeInsets.symmetric(horizontal: 10),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               decoration: BoxDecoration(
                                   color: colorScheme.white,
                                   boxShadow: [
                                     BoxShadow(
                                         blurRadius: 6,
-                                        offset: Offset(0, 0),
                                         color: Colors.black.withOpacity(0.1))
                                   ],
                                   borderRadius: BorderRadius.circular(10)),
@@ -1119,13 +1121,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 5)
-                                        .copyWith(left: 10),
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 5)
+                                            .copyWith(left: 10),
                                     child: MyTextWidget(
                                       '${LocaleKeys.the_products_will_be_shown_as_below.tr()}',
                                       style: context.textTheme.titleMedium?.rq
                                           .copyWith(
-                                              color: Color(0xff505050),
+                                              color: const Color(0xff505050),
                                               height: 15 / 12),
                                     ),
                                   ),
@@ -1161,9 +1164,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     lowerAndUpperPrices!.value.item2 < maxPrice!)))
                                         ? 30
                                         : 0,
-                                    padding: EdgeInsets.only(left: 10),
+                                    padding: const EdgeInsets.only(left: 10),
                                     decoration: BoxDecoration(
-                                        color: Color(0xffEFEFEF),
+                                        color: const Color(0xffEFEFEF),
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     child: SizedBox(
@@ -1184,12 +1187,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               ),
                             );
                           }),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       ValueListenableBuilder<Tuple2<double, double>>(
                           valueListenable: lowerAndUpperPrices ??
-                              ValueNotifier(Tuple2(-1, -1)),
+                              ValueNotifier(const Tuple2(-1, -1)),
                           builder: (context, _, __) {
                             return Padding(
                               padding:
@@ -1206,7 +1209,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       flex: 5,
                                       child: InkWell(
                                         key: TestVariables.kTestMode
-                                            ? Key(WidgetsKeys
+                                            ? const Key(WidgetsKeys
                                                 .applayFilterButtonKey)
                                             : null,
                                         onTap: () {
@@ -1375,18 +1378,18 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         child: Container(
                                           height: 65,
                                           decoration: BoxDecoration(
-                                              color: Color(0xffFF5F61),
+                                              color: const Color(0xffFF5F61),
                                               boxShadow: [
                                                 BoxShadow(
                                                     color: Colors.black
                                                         .withOpacity(0.1),
                                                     blurRadius: 6,
-                                                    offset: Offset(0, 3)),
+                                                    offset: const Offset(0, 3)),
                                                 BoxShadow(
                                                     color: Colors.white
                                                         .withOpacity(0.4),
                                                     blurRadius: 6,
-                                                    offset: Offset(0, 3),
+                                                    offset: const Offset(0, 3),
                                                     inset: true)
                                               ],
                                               borderRadius:
@@ -1405,7 +1408,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         .bodyMedium?.mq
                                                         .copyWith(
                                                             fontSize: 12,
-                                                            color: Color(
+                                                            color: const Color(
                                                                 0xffFEFEFE),
                                                             height: 1.2),
                                                   ),
@@ -1414,8 +1417,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                   ' ${LocaleKeys.apply.tr()}   ',
                                                   style: textTheme.bodyLarge?.rq
                                                       .copyWith(
-                                                          color:
-                                                              Color(0xffFEFEFE),
+                                                          color: const Color(
+                                                              0xffFEFEFE),
                                                           height: 23 / 18),
                                                 ),
                                               ],
@@ -1424,14 +1427,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                   },
                                   ValueListenableBuilder<
                                           Tuple2<double, double>>(
                                       valueListenable: lowerAndUpperPrices ??
-                                          ValueNotifier(Tuple2(-1, -1)),
+                                          ValueNotifier(const Tuple2(-1, -1)),
                                       builder: (context, _, __) {
                                         return BlocBuilder<BoutiqueBloc,
                                             BoutiqueState>(
@@ -1450,7 +1453,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                     .value
                                                                     .item2 ==
                                                                 maxPrice!)))) {
-                                              return SizedBox.shrink();
+                                              return const SizedBox.shrink();
                                             }
                                             return Expanded(
                                               flex: 2,
@@ -1485,9 +1488,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                           category:
                                                               widget.category,
                                                           resetChoosedFilters:
-                                                              true,
-                                                          filtersChoosedByUser:
-                                                              null));
+                                                              true));
                                                   boutiqueBloc.add(
                                                       GetProductsWithFiltersEvent(
                                                     fromSearch:
@@ -1495,7 +1496,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     boutiqueSlug:
                                                         widget.boutiqueSlug,
                                                     cashedOrginalBoutique: true,
-                                                    searchText: null,
                                                     category: widget.category,
                                                     offset: 1,
                                                   ));
@@ -1527,33 +1527,36 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                     .withOpacity(
                                                                         0.1),
                                                                 blurRadius: 6,
-                                                                offset: Offset(
-                                                                    0, 3)),
+                                                                offset:
+                                                                    const Offset(
+                                                                        0, 3)),
                                                             BoxShadow(
                                                                 color: Colors
                                                                     .white
                                                                     .withOpacity(
                                                                         0.4),
                                                                 blurRadius: 6,
-                                                                offset: Offset(
-                                                                    0, 3),
+                                                                offset:
+                                                                    const Offset(
+                                                                        0, 3),
                                                                 inset: true)
                                                           ],
                                                           border: Border.all(
-                                                              color: Color(
+                                                              color: const Color(
                                                                   0xff388CFF))),
                                                       child: Center(
                                                         child: MyTextWidget(
                                                           key: TestVariables
                                                                   .kTestMode
-                                                              ? Key(WidgetsKeys
-                                                                  .resetFiltersKey)
+                                                              ? const Key(
+                                                                  WidgetsKeys
+                                                                      .resetFiltersKey)
                                                               : null,
                                                           '${LocaleKeys.reset.tr()}',
                                                           style: textTheme
                                                               .bodyLarge?.rq
                                                               .copyWith(
-                                                                  color: Color(
+                                                                  color: const Color(
                                                                       0xff388CFF),
                                                                   height:
                                                                       23 / 18),
@@ -1571,7 +1574,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               ),
                             );
                           }),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       )
                     ],
@@ -1628,9 +1631,9 @@ Widget choosedOrAppliedFiltersWidget({
       if (filters == null &&
           (!fromSearch && lowerAndUpperPrices == null) &&
           GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
-        boutiqueBloc
-            .add(IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
-        return SizedBox.shrink();
+        boutiqueBloc.add(
+            const IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
+        return const SizedBox.shrink();
       }
       if ((filters?.brands.isNullOrEmpty ?? true) &&
           (filters?.categories.isNullOrEmpty ?? true) &&
@@ -1641,9 +1644,9 @@ Widget choosedOrAppliedFiltersWidget({
           (filters?.attributes.isNullOrEmpty ?? true) &&
           GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
         if ((!fromSearch && lowerAndUpperPrices == null && choosedFilter))
-          boutiqueBloc
-              .add(IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
-        return SizedBox.shrink();
+          boutiqueBloc.add(
+              const IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
+        return const SizedBox.shrink();
       }
       if ((filters?.brands.isNullOrEmpty ?? true) &&
           (filters?.categories.isNullOrEmpty ?? true) &&
@@ -1654,9 +1657,9 @@ Widget choosedOrAppliedFiltersWidget({
           (filters?.boutiques.isNullOrEmpty ?? true) &&
           (filters?.attributes.isNullOrEmpty ?? true) &&
           GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
-        boutiqueBloc
-            .add(IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
-        return SizedBox.shrink();
+        boutiqueBloc.add(
+            const IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
+        return const SizedBox.shrink();
       }
       double exchangeRate = BlocProvider.of<HomeBloc>(context)
               .state
@@ -1671,16 +1674,17 @@ Widget choosedOrAppliedFiltersWidget({
         child: ListView(
             key: TestVariables.kTestMode == false
                 ? null
-                : Key(WidgetsKeys.appliedFiltersProductListingKey),
+                : const Key(WidgetsKeys.appliedFiltersProductListingKey),
             shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             children: [
               if (!choosedFilter)
                 InkWell(
                   key: TestVariables.kTestMode == false
                       ? null
-                      : Key(WidgetsKeys.appliedFiltersProductListingCloseKey),
+                      : const Key(
+                          WidgetsKeys.appliedFiltersProductListingCloseKey),
                   onTap: () {
                     GetIt.I<PrefsRepository>().setTagsInUrlToFilter([]);
 
@@ -1693,11 +1697,9 @@ Widget choosedOrAppliedFiltersWidget({
                       boutiqueSlug: boutiqueSlug,
                     ));
                     boutiqueBloc.add(GetProductsWithFiltersEvent(
-                      resetChoosedFilters: true,
                       fromSearch: fromSearch,
                       boutiqueSlug: boutiqueSlug,
                       cashedOrginalBoutique: true,
-                      searchText: null,
                       category: category,
                       offset: 1,
                     ));
@@ -1713,7 +1715,6 @@ Widget choosedOrAppliedFiltersWidget({
                       fromHomePageSearch: fromSearch,
                       boutiqueSlug: boutiqueSlug,
                       cashedOrginalBoutique: true,
-                      searchText: null,
                       category: fromSearch ? null : category,
                     ));
                     ///////////////////////////////
@@ -1726,16 +1727,16 @@ Widget choosedOrAppliedFiltersWidget({
                   child: Center(
                     child: Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         SvgPicture.asset(
                           AppAssets.closeSvg,
                           width: 15,
                           height: 15,
-                          color: Color(0xffFF5F61),
+                          color: const Color(0xffFF5F61),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                       ],
@@ -1746,7 +1747,8 @@ Widget choosedOrAppliedFiltersWidget({
                 InkWell(
                   key: TestVariables.kTestMode == false
                       ? null
-                      : Key(WidgetsKeys.appliedFiltersProductListingCloseKey),
+                      : const Key(
+                          WidgetsKeys.appliedFiltersProductListingCloseKey),
                   onTap: () {
                     GetIt.I<PrefsRepository>().setTagsInUrlToFilter([]);
                     controller?.clear();
@@ -1757,7 +1759,6 @@ Widget choosedOrAppliedFiltersWidget({
                     ));
                     boutiqueBloc.add(ChangeSelectedFiltersEvent(
                       category: category,
-                      requestToUpdateFilters: true,
                       resetChoosedFilters: true,
                       boutiqueSlug: boutiqueSlug,
                       fromHomePageSearch: fromSearch,
@@ -1768,7 +1769,6 @@ Widget choosedOrAppliedFiltersWidget({
                         fromSearch: fromSearch,
                         boutiqueSlug: boutiqueSlug,
                         cashedOrginalBoutique: true,
-                        searchText: null,
                         category: category,
                         offset: 1,
                       ),
@@ -1783,16 +1783,16 @@ Widget choosedOrAppliedFiltersWidget({
                   child: Center(
                     child: Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         SvgPicture.asset(
                           AppAssets.closeSvg,
                           width: 15,
                           height: 15,
-                          color: Color(0xffFF5F61),
+                          color: const Color(0xffFF5F61),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                       ],
@@ -1806,7 +1806,9 @@ Widget choosedOrAppliedFiltersWidget({
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: context.textTheme.titleLarge?.bq.copyWith(
-                        color: Color(0xffFF5F61), letterSpacing: 0, height: 1),
+                        color: const Color(0xffFF5F61),
+                        letterSpacing: 0,
+                        height: 1),
                   ),
                 )
               else
@@ -1816,7 +1818,7 @@ Widget choosedOrAppliedFiltersWidget({
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: context.textTheme.titleLarge?.bq.copyWith(
-                        color: Color(0xffFF5F61),
+                        color: const Color(0xffFF5F61),
                         letterSpacing: 0,
                         height: 1.25),
                   ),
@@ -1825,8 +1827,9 @@ Widget choosedOrAppliedFiltersWidget({
                 (filtersForSearchText?.searchText?.replaceAll(" ", "").length ??
                             0) >
                         1
-                    ? Center(child: FilterSelectedMark(width: 15, height: 15))
-                    : SizedBox.shrink(),
+                    ? const Center(
+                        child: FilterSelectedMark(width: 15, height: 15))
+                    : const SizedBox.shrink(),
                 SizedBox(
                   width: (filtersForSearchText?.searchText
                                   ?.replaceAll(" ", "")
@@ -1854,7 +1857,6 @@ Widget choosedOrAppliedFiltersWidget({
                               filtersChoosedByUser:
                                   filter_model.GetProductFiltersModel(
                                       filters: filter!.copyWithSaveOtherField(
-                                searchText: null,
                                 prices: filter.prices,
                               ))));
                           boutiqueBloc.add(GetProductsWithFiltersEvent(
@@ -1862,7 +1864,6 @@ Widget choosedOrAppliedFiltersWidget({
                             fromChoosed: true,
                             fromSearch: fromSearch,
                             boutiqueSlug: boutiqueSlug,
-                            searchText: null,
                             category: category,
                             offset: 1,
                           ));
@@ -1873,13 +1874,11 @@ Widget choosedOrAppliedFiltersWidget({
                               filtersAppliedByUser:
                                   filter_model.GetProductFiltersModel(
                                       filters: filter!.copyWithSaveOtherField(
-                                searchText: null,
                                 prices: filter.prices,
                               ))));
                           boutiqueBloc.add(GetProductsWithFiltersEvent(
                             fromSearch: fromSearch,
                             boutiqueSlug: boutiqueSlug,
-                            searchText: null,
                             category: category,
                             offset: 1,
                           ));
@@ -1897,14 +1896,14 @@ Widget choosedOrAppliedFiltersWidget({
                                 textAlign: TextAlign.center,
                                 style: context.textTheme.titleMedium?.rq
                                     .copyWith(
-                                        color: Color(0xff8E8E8E),
+                                        color: const Color(0xff8E8E8E),
                                         letterSpacing: 0,
                                         height: 1.25),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                       ),
                     )),
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
               },
@@ -1915,7 +1914,7 @@ Widget choosedOrAppliedFiltersWidget({
                     height: 28,
                     child: ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       itemCount: GetIt.I<PrefsRepository>()
                           .getTagsInUrlToFilter
@@ -1935,7 +1934,6 @@ Widget choosedOrAppliedFiltersWidget({
                                     .add(ChangeSelectedFiltersEvent(
                                   fromHomePageSearch: fromSearch,
                                   category: category,
-                                  requestToUpdateFilters: true,
                                   boutiqueSlug: boutiqueSlug,
                                   filtersChoosedByUser:
                                       newGetProductFiltersModel,
@@ -1963,7 +1961,7 @@ Widget choosedOrAppliedFiltersWidget({
                               maxLines: 1,
                               textAlign: TextAlign.center,
                               style: context.textTheme.titleMedium?.rq.copyWith(
-                                  color: Color.fromARGB(255, 86, 60, 201),
+                                  color: const Color.fromARGB(255, 86, 60, 201),
                                   letterSpacing: 0,
                                   height: 1.25),
                             ),
@@ -1972,19 +1970,19 @@ Widget choosedOrAppliedFiltersWidget({
                       },
                     )),
               },
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               if (!(filters?.boutiques.isNullOrEmpty ?? true)) ...{
-                Center(child: FilterSelectedMark(width: 15, height: 15)),
-                SizedBox(
+                const Center(child: FilterSelectedMark(width: 15, height: 15)),
+                const SizedBox(
                   width: 10,
                 ),
                 SizedBox(
                     height: 28,
                     child: ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       itemCount: filters?.boutiques?.length,
                       itemBuilder: (ctx, index) {
@@ -2005,7 +2003,6 @@ Widget choosedOrAppliedFiltersWidget({
                                   .add(ChangeSelectedFiltersEvent(
                                 fromHomePageSearch: fromSearch,
                                 category: category,
-                                requestToUpdateFilters: true,
                                 boutiqueSlug: boutiqueSlug,
                                 filtersChoosedByUser: newGetProductFiltersModel,
                               ));
@@ -2041,12 +2038,12 @@ Widget choosedOrAppliedFiltersWidget({
                                 circleDimensions: 8,
                                 logoTextHeight: 5,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               MyTextWidget(
                                 key: TestVariables.kTestMode
-                                    ? Key(WidgetsKeys
+                                    ? const Key(WidgetsKeys
                                         .appliedFiltersBoutiqueNameKey)
                                     : null,
                                 filters.boutiques![index].name.toString(),
@@ -2054,11 +2051,11 @@ Widget choosedOrAppliedFiltersWidget({
                                 textAlign: TextAlign.center,
                                 style: context.textTheme.titleMedium?.rq
                                     .copyWith(
-                                        color: Color(0xff8E8E8E),
+                                        color: const Color(0xff8E8E8E),
                                         letterSpacing: 0,
                                         height: 1.25),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 15,
                               ),
                             ],
@@ -2068,8 +2065,8 @@ Widget choosedOrAppliedFiltersWidget({
                     )),
               },
               if (!(filters?.categories.isNullOrEmpty ?? true)) ...{
-                Center(child: FilterSelectedMark(width: 15, height: 15)),
-                SizedBox(
+                const Center(child: FilterSelectedMark(width: 15, height: 15)),
+                const SizedBox(
                   width: 5,
                 ),
               },
@@ -2077,7 +2074,7 @@ Widget choosedOrAppliedFiltersWidget({
                   height: 28,
                   child: ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     itemCount: filters?.categories?.length ?? 0,
                     itemBuilder: (ctx, index) {
@@ -2137,7 +2134,7 @@ Widget choosedOrAppliedFiltersWidget({
                               withInnerShadow: true,
                               withBackGroundShadow: false,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             MyTextWidget(
@@ -2145,11 +2142,11 @@ Widget choosedOrAppliedFiltersWidget({
                               maxLines: 1,
                               textAlign: TextAlign.center,
                               style: context.textTheme.titleMedium?.rq.copyWith(
-                                  color: Color(0xff8E8E8E),
+                                  color: const Color(0xff8E8E8E),
                                   letterSpacing: 0,
                                   height: 1.25),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                           ],
@@ -2158,8 +2155,8 @@ Widget choosedOrAppliedFiltersWidget({
                     },
                   )),
               if (!(filters?.brands.isNullOrEmpty ?? true)) ...{
-                Center(child: FilterSelectedMark(width: 15, height: 15)),
-                SizedBox(
+                const Center(child: FilterSelectedMark(width: 15, height: 15)),
+                const SizedBox(
                   width: 10,
                 ),
               },
@@ -2167,7 +2164,7 @@ Widget choosedOrAppliedFiltersWidget({
                   height: 28,
                   child: ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     itemCount: filters?.brands?.length ?? 0,
                     itemBuilder: (ctx, index) {
@@ -2218,7 +2215,7 @@ Widget choosedOrAppliedFiltersWidget({
                               withInnerShadow: true,
                               withBackGroundShadow: false,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             MyTextWidget(
@@ -2226,11 +2223,11 @@ Widget choosedOrAppliedFiltersWidget({
                               maxLines: 1,
                               textAlign: TextAlign.center,
                               style: context.textTheme.titleMedium?.rq.copyWith(
-                                  color: Color(0xff8E8E8E),
+                                  color: const Color(0xff8E8E8E),
                                   letterSpacing: 0,
                                   height: 1.25),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                           ],
@@ -2239,8 +2236,8 @@ Widget choosedOrAppliedFiltersWidget({
                     },
                   )),
               if (!(filters?.attributes.isNullOrEmpty ?? true)) ...{
-                Center(child: FilterSelectedMark(width: 15, height: 15)),
-                SizedBox(
+                const Center(child: FilterSelectedMark(width: 15, height: 15)),
+                const SizedBox(
                   width: 10,
                 ),
               },
@@ -2248,7 +2245,7 @@ Widget choosedOrAppliedFiltersWidget({
                   height: 28,
                   child: ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     itemCount: filters?.attributes.isNullOrEmpty ?? true
                         ? 0
@@ -2297,7 +2294,7 @@ Widget choosedOrAppliedFiltersWidget({
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             MyTextWidget(
@@ -2306,11 +2303,11 @@ Widget choosedOrAppliedFiltersWidget({
                               maxLines: 1,
                               textAlign: TextAlign.center,
                               style: context.textTheme.titleMedium?.rq.copyWith(
-                                  color: Color(0xff8E8E8E),
+                                  color: const Color(0xff8E8E8E),
                                   letterSpacing: 0,
                                   height: 1.25),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                           ],
@@ -2319,15 +2316,15 @@ Widget choosedOrAppliedFiltersWidget({
                     },
                   )),
               if (!(filters?.colors.isNullOrEmpty ?? true)) ...{
-                Center(child: FilterSelectedMark(width: 15, height: 15)),
-                SizedBox(
+                const Center(child: FilterSelectedMark(width: 15, height: 15)),
+                const SizedBox(
                   width: 10,
                 ),
                 SizedBox(
                     height: 28,
                     child: ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       itemCount: filters?.colors?.length ?? 0,
                       itemBuilder: (ctx, index) {
@@ -2370,7 +2367,7 @@ Widget choosedOrAppliedFiltersWidget({
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               Container(
@@ -2380,10 +2377,11 @@ Widget choosedOrAppliedFiltersWidget({
                                   shape: BoxShape.circle,
                                   color: Color(int.parse(
                                       '0xff${filters!.colors![index].substring(1)}')),
-                                  border: Border.all(color: Color(0xffC4C2C2)),
+                                  border: Border.all(
+                                      color: const Color(0xffC4C2C2)),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                             ],
@@ -2398,8 +2396,8 @@ Widget choosedOrAppliedFiltersWidget({
                       lowerAndUpperPrices != null &&
                       (lowerAndUpperPrices.value.item1 > minPrice! ||
                           lowerAndUpperPrices.value.item2 < maxPrice!))) ...{
-                Center(child: FilterSelectedMark(width: 15, height: 15)),
-                SizedBox(
+                const Center(child: FilterSelectedMark(width: 15, height: 15)),
+                const SizedBox(
                   width: 10,
                 ),
                 InkWell(
@@ -2408,7 +2406,7 @@ Widget choosedOrAppliedFiltersWidget({
                         newGetProductFiltersModel =
                         filter_model.GetProductFiltersModel(
                             filters: filters!.copyWithSaveOtherField(
-                                prices: null, searchText: filters.searchText));
+                                searchText: filters.searchText));
                     if (choosedFilter) {
                       BlocProvider.of<BoutiqueBloc>(context)
                           .add(ChangeSelectedFiltersEvent(
@@ -2435,7 +2433,7 @@ Widget choosedOrAppliedFiltersWidget({
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       MyTextWidget(
@@ -2446,7 +2444,7 @@ Widget choosedOrAppliedFiltersWidget({
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: context.textTheme.titleMedium?.rq.copyWith(
-                            color: Color(0xff8E8E8E),
+                            color: const Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25),
                       ),
@@ -2457,7 +2455,7 @@ Widget choosedOrAppliedFiltersWidget({
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: context.textTheme.titleMedium?.rq.copyWith(
-                            color: Color(0xff8E8E8E),
+                            color: const Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25),
                       ),
@@ -2468,11 +2466,11 @@ Widget choosedOrAppliedFiltersWidget({
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: context.textTheme.titleMedium?.rq.copyWith(
-                            color: Color(0xff8E8E8E),
+                            color: const Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                     ],
@@ -2566,7 +2564,6 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
         child: Column(
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 InkWell(
                   onTap: () => widget.addOrRemoveSpecificFilter
@@ -2576,7 +2573,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                       AnimatedScale(
                         curve: Curves.fastEaseInToSlowEaseOut,
                         scale: widget.scale ? 0.92 : 1,
-                        duration: Duration(milliseconds: 100),
+                        duration: const Duration(milliseconds: 100),
                         child: FilterImage(
                           isSvg: widget.isSvg,
                           imageUrl: widget.imageUrl,
@@ -2585,7 +2582,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                           originalWidth: widget.originalWidth,
                           originalHeight: widget.originalHeight,
                           borderColor: widget.displayFilterMark
-                              ? Color(0xffFF5F61)
+                              ? const Color(0xffFF5F61)
                               : widget.borderColor,
                           withBackGroundShadow: !widget.displayFilterMark &&
                               widget.withBackGroundShadow,
@@ -2601,7 +2598,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                   ),
                 ),
                 if (widget.isExpanded || widget.isTopItem) ...{
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   SizedBox(
                     width: widget.width,
                     child: MyTextWidget(
@@ -2610,7 +2607,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       style: context.textTheme.titleMedium?.rq.copyWith(
-                          color: Color(0xff8E8E8E),
+                          color: const Color(0xff8E8E8E),
                           letterSpacing: 0,
                           height: 1.25),
                     ),
@@ -2654,7 +2651,7 @@ class FilterImage extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(180.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(180.0)),
           border: borderColor != null
               ? Border.all(width: 0.5, color: borderColor!)
               : null,
@@ -2662,13 +2659,13 @@ class FilterImage extends StatelessWidget {
               ? [
                   BoxShadow(
                     color: Colors.white.withOpacity(0.6),
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                     blurRadius: 3,
                   ),
                 ]
               : null),
       child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(180.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(180.0)),
           child: Stack(
             children: [
               isSvg
@@ -2695,7 +2692,7 @@ class FilterImage extends StatelessWidget {
                   boxShadow: withInnerShadow
                       ? [
                           BoxShadow(
-                            offset: Offset(0, 4),
+                            offset: const Offset(0, 4),
                             blurRadius: 6,
                             color: Colors.white.withOpacity(0.5),
                             inset: true,
@@ -2725,7 +2722,7 @@ class FilterSelectedMark extends StatelessWidget {
           height: height,
           width: width,
           decoration: BoxDecoration(
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Color(0x19000000),
                   offset: Offset(0, 3),
@@ -2733,7 +2730,7 @@ class FilterSelectedMark extends StatelessWidget {
                 ),
               ],
               borderRadius: BorderRadius.circular(180),
-              color: Color(0xffFF5F61)),
+              color: const Color(0xffFF5F61)),
           child: Center(
               child: SvgPicture.asset(
             AppAssets.filtersSvg,
@@ -2746,10 +2743,10 @@ class FilterSelectedMark extends StatelessWidget {
           width: width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(180),
-            border: Border.all(width: 1, color: Color(0xffFF5F61)),
+            border: Border.all(color: const Color(0xffFF5F61)),
             boxShadow: [
               BoxShadow(
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
                 blurRadius: 6,
                 color: Colors.white.withOpacity(0.7),
                 inset: true,

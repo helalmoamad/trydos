@@ -89,12 +89,9 @@ class _StarRatingProductWidgetState extends State<StarRatingProductWidget> {
       height: widget.widgetHeight,
       child: RatingBar.builder(
         initialRating: _currentRating,
-        minRating: 0,
         maxRating: 5,
         wrapAlignment: WrapAlignment.center,
-        direction: Axis.horizontal,
         allowHalfRating: true,
-        itemCount: 5,
         itemSize: widget.itemSize,
         ignoreGestures: !widget.isInteractive,
         itemBuilder: (context, index) {

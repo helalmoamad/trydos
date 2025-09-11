@@ -30,7 +30,6 @@ class TrydosShimmerLoadingStateless extends StatelessWidget {
       ),
       child: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Column(

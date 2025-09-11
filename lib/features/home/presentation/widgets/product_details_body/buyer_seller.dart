@@ -54,32 +54,31 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
     };
 
     return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-              padding: EdgeInsets.all(10),
-              child:
-                  SvgPicture.asset(AppAssets.faqSvg, color: Color(0xff1D1D1D))),
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset(AppAssets.faqSvg,
+                  color: const Color(0xff1D1D1D))),
           Padding(
-              padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
               child: Row(
                 children: [
                   MyTextWidget(
                     '${LocaleKeys.faq_buyer_seller.tr()}',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   SvgPicture.asset(
                     AppAssets.registerInfoSvg,
                     height: 10,
                     width: 10,
-                    color: Color(0xffC4C2C2),
+                    color: const Color(0xffC4C2C2),
                   ),
                 ],
               )),
@@ -87,7 +86,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
               height: 250,
               width: 1.sw,
               child: ListView.separated(
-                separatorBuilder: (context, index) => SizedBox(
+                separatorBuilder: (context, index) => const SizedBox(
                   width: 5,
                 ),
                 scrollDirection: Axis.horizontal,
@@ -99,26 +98,26 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           Container(
             height: 40,
             width: 1.sw,
-            margin: EdgeInsets.symmetric(vertical: 10),
+            margin: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Color(0xff513AAF))),
+                border: Border.all(color: const Color(0xff513AAF))),
             child: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 SvgPicture.asset(
                   AppAssets.faqSvg,
                 ),
-                Spacer(),
+                const Spacer(),
                 MyTextWidget(
                   '${LocaleKeys.ask_seller_about_product.tr()}',
                   style: context.textTheme.titleLarge?.rr
-                      .copyWith(color: Color(0xffC4C2C2), fontSize: 11),
+                      .copyWith(color: const Color(0xffC4C2C2), fontSize: 11),
                 ),
-                Spacer(),
-                SizedBox(
+                const Spacer(),
+                const SizedBox(
                   width: 22,
                 ),
               ],
@@ -132,20 +131,19 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
   Widget _commentWidget() {
     return Container(
         width: 388.w,
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Color(0xffF8F8F8),
+          color: const Color(0xffF8F8F8),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ..._SingelComments(appearTimeAnsward: false),
             Container(
               height: 0.5,
-              margin: EdgeInsets.only(bottom: 10, top: 10),
-              color: Color(0xffD3D3D3),
+              margin: const EdgeInsets.only(bottom: 10, top: 10),
+              color: const Color(0xffD3D3D3),
             ),
             ..._SingelComments(appearTimeAnsward: true)
           ],
@@ -159,43 +157,43 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
         width: 1.sw,
         child: Row(
           children: [
-            MyCachedNetworkImage(
+            const MyCachedNetworkImage(
                 imageUrl:
                     "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/2025-08-26-68ae378e796d0.png",
                 width: 20,
                 imageFit: BoxFit.cover,
                 height: 20),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             MyTextWidget(
               'Yxxx Oxxxx',
               style: context.textTheme.titleLarge?.rr
-                  .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                  .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
             ),
-            Spacer(),
+            const Spacer(),
             MyTextWidget(
               '18 feb',
               style: context.textTheme.titleLarge?.rr
-                  .copyWith(color: Color(0xff8D8D8D), fontSize: 9),
+                  .copyWith(color: const Color(0xff8D8D8D), fontSize: 9),
             )
           ],
         ),
       ),
-      SizedBox(height: 10),
+      const SizedBox(height: 10),
       MyTextWidget(
         'Medium | Bule',
         style: context.textTheme.titleLarge?.mr
-            .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+            .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
       ),
-      SizedBox(height: 10),
+      const SizedBox(height: 10),
       MyTextWidget(
         'Amazing Product I Buy It And I Saw It Is Good Quality Regarding Price Amazing Product I Buy It And I Saw It Is Good Quality Regardin',
         maxLines: 10,
         style: context.textTheme.titleLarge?.rr
-            .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+            .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
       ),
-      Spacer(),
+      const Spacer(),
       Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
+          padding: const EdgeInsets.only(left: 10, right: 10),
           child: Row(
             children: [
               SvgPicture.asset(
@@ -205,16 +203,16 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
               MyTextWidget(
                 '  110k',
                 style: context.textTheme.titleLarge?.rr
-                    .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                    .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
               ),
-              Spacer(),
+              const Spacer(),
               appearTimeAnsward
                   ? MyTextWidget(
                       '13 Minute Answered',
-                      style: context.textTheme.titleLarge?.rr
-                          .copyWith(color: Color(0xff8D8D8D), fontSize: 9),
+                      style: context.textTheme.titleLarge?.rr.copyWith(
+                          color: const Color(0xff8D8D8D), fontSize: 9),
                     )
-                  : SizedBox.shrink()
+                  : const SizedBox.shrink()
             ],
           ))
     ];

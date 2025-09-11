@@ -199,8 +199,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
     super.initState();
   }
 
-  final ExpansionTileController expansionTileController =
-      ExpansionTileController();
+  final ExpansibleController expansionTileController = ExpansibleController();
 
   int? prevModeForRunHero;
   RenderBox? renderBox;
@@ -248,7 +247,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                       (renderBox!.localToGlobal(Offset.zero).dy + 175 - 1.sh)
                               .abs() <=
                           10)
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : LocalHeroScope(
                       duration: const Duration(milliseconds: 200),
                       curve: Curves.fastLinearToSlowEaseIn,
@@ -302,8 +301,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                           },
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
                                             children: [
                                               SvgPicture.asset(
                                                 AppAssets.colorPickerSvg,
@@ -373,9 +370,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                       .height),
                                                               curve: Curves
                                                                   .fastEaseInToSlowEaseOut,
-                                                              duration: Duration(
-                                                                  milliseconds:
-                                                                      300));
+                                                              duration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          300));
                                                         }
                                                       }
 
@@ -391,9 +389,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                               mainAxisSize:
                                                                   MainAxisSize
                                                                       .min,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
                                                               children: List.generate(
                                                                   syncColorImageList!
                                                                           .length ~/
@@ -467,7 +462,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                             gallery3dControllerForCircles!.currentIndex ==
                                                                                 0);
                                                                   },
-                                                                  height: null,
                                                                   changingPagesScrollOffset:
                                                                       0.1,
                                                                   isClip: false,
@@ -593,9 +587,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                     2),
                                                             curve: Curves
                                                                 .fastEaseInToSlowEaseOut,
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    300));
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300));
                                                       }
                                                     } else {
                                                       displayMode.value = 1;
@@ -611,8 +606,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                         height: 12,
                                                         decoration:
                                                             BoxDecoration(
-                                                          color:
-                                                              Color(0xffD3D3D3),
+                                                          color: const Color(
+                                                              0xffD3D3D3),
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(
@@ -635,7 +630,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                               height: mode == 1 ? 112 : 240,
                                               child: ListView.separated(
                                                   physics:
-                                                      BouncingScrollPhysics(),
+                                                      const BouncingScrollPhysics(),
                                                   padding: EdgeInsets.only(
                                                       right: (LanguageService
                                                                   .languageCode !=
@@ -725,14 +720,12 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                         );
                                                       },
                                                       child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
                                                         children: [
                                                           AnimatedContainer(
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    300),
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
                                                             curve: Curves
                                                                 .fastLinearToSlowEaseIn,
                                                             alignment: Alignment
@@ -765,7 +758,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                   mode == 1,
                                                             ),
                                                           ),
-                                                          SizedBox(height: 5),
+                                                          const SizedBox(
+                                                              height: 5),
                                                           SizedBox(
                                                             width: 70,
                                                             child: Center(
@@ -784,7 +778,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                         .titleLarge
                                                                         ?.mq
                                                                         .copyWith(
-                                                                        color: Color(
+                                                                        color: const Color(
                                                                             0xff3C3C3C),
                                                                         height:
                                                                             1.35,
@@ -794,7 +788,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                         ?.rq
                                                                         .copyWith(
                                                                             color:
-                                                                                Color(0xff3C3C3C),
+                                                                                const Color(0xff3C3C3C),
                                                                             height: 1.35),
                                                               ),
                                                             ),
@@ -804,7 +798,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                             style: textTheme
                                                                 .titleMedium?.mq
                                                                 .copyWith(
-                                                              color: Color(
+                                                              color: const Color(
                                                                   0xff388CFF),
                                                               height: 1.3,
                                                             ),
@@ -824,7 +818,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                   },
                                                   separatorBuilder:
                                                       (context, index) {
-                                                    return SizedBox(
+                                                    return const SizedBox(
                                                       width: 10,
                                                     );
                                                   },
@@ -833,7 +827,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                               .length ~/
                                                           2))),
                                         )
-                                      : SizedBox.shrink(),
+                                      : const SizedBox.shrink(),
                                 ],
                               ),
                             ),

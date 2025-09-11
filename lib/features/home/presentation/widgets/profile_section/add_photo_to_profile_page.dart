@@ -85,11 +85,11 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
           return Scaffold(
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
-                    backgroundColor: Color(0x000000),
+                    backgroundColor: const Color(0x000000),
                     action: [
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : SizedBox(
                               width: 55.w,
                             ),
@@ -101,9 +101,9 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                             fontSize: 14,
                             height: 1.3),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : BlocBuilder<HomeBloc, HomeState>(
                               buildWhen: (previous, current) =>
                                   previous.updateProfileStatus !=
@@ -113,7 +113,8 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                               builder: (context, state) {
                                 if (state.updateProfileStatus ==
                                     UpdateProfileStatus.success) {
-                                  Future.delayed(Duration(milliseconds: 300),
+                                  Future.delayed(
+                                      const Duration(milliseconds: 300),
                                       () => visibleSave.value = false);
                                 }
                                 return InkWell(
@@ -155,7 +156,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                                 );
                               }),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : SizedBox(
                               width: 15.w,
                             )
@@ -193,19 +194,19 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                                                 ),
                                                 _visiblePersonPhoto != null
                                                     ? _removePhoto()
-                                                    : SizedBox.shrink(),
+                                                    : const SizedBox.shrink(),
                                                 !_visibleAddPhoto ||
                                                         _visiblePersonPhoto !=
                                                             null
-                                                    ? SizedBox.shrink()
+                                                    ? const SizedBox.shrink()
                                                     : _takePhoto(),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 10,
                                                 ),
                                                 !_visibleAddPhoto ||
                                                         _visiblePersonPhoto !=
                                                             null
-                                                    ? SizedBox.shrink()
+                                                    ? const SizedBox.shrink()
                                                     : _chooseFromLibrary()
                                               ],
                                             );
@@ -237,7 +238,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                 AppAssets.deletecartSvg,
                 width: 18,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Text(
@@ -267,12 +268,11 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
         width: 160,
         height: 20,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(
               AppAssets.takphotoSvg,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(
@@ -318,12 +318,11 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
         width: 160,
         height: 20,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(
               AppAssets.galarySvg,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(
@@ -347,7 +346,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
             child: Container(
               width: 1.sw,
               height: 406.h,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xffF8F8F8),
               ),
               child: CameraProfile(cameras, visiblePersonPhoto, visiblecamera,
@@ -360,7 +359,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                 child: Container(
                   width: 1.sw,
                   height: 406.h,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xffF8F8F8),
                   ),
                   child: !(prefsRepository.myProfilePhoto == null ||
@@ -388,7 +387,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                       width: 1.sw,
                       height: 406.h,
                       decoration: BoxDecoration(
-                          color: Color(0xffF8F8F8),
+                          color: const Color(0xffF8F8F8),
                           borderRadius: BorderRadius.circular(22.r)),
                     ),
                     Positioned(
@@ -402,14 +401,14 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                             child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             SvgPicture.asset(
                               AppAssets.addPhotoSvg,
-                              color: Color(0xff5D5C5D),
+                              color: const Color(0xff5D5C5D),
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             Text(
                               LocaleKeys.add_profile_photo.tr(),
                               style: context.textTheme.bodyMedium?.rr.copyWith(
@@ -426,7 +425,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                       child: SvgPicture.asset(
                         width: 50,
                         AppAssets.trySvg,
-                        color: Color(0xffD3D3D3),
+                        color: const Color(0xffD3D3D3),
                       ),
                     )
                   ],

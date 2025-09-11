@@ -190,7 +190,6 @@ class _ProductListing3DSliderOptimizedState
 
     _imageController = Gallery3DController(
       itemCount: imageCount,
-      primaryshiftingOffsetDivision: 2.0,
       autoLoop: false, // إيقاف الحركة التلقائية
       minScale: 0.8,
       initialIndex: 0,
@@ -378,7 +377,6 @@ class _ProductListing3DSliderOptimizedState
   /// 🎭 Sliding Mode Content
   Widget _buildSlidingModeContent() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // 📸 Image Thumbnails (Mode 2)
@@ -749,7 +747,6 @@ class _ProductListing3DSliderOptimizedState
       controller: _colorController,
       width: 200.w,
       stopScrollingOnEdges: (primaryDelta) => false,
-      height: null,
       changingPagesScrollOffset: 0.2, // 🔥 تقليل الحساسية لمنع الحركة العفوية
       isClip: false,
       onItemChanged: _handleColorCircleChanged,
@@ -863,7 +860,6 @@ class _ProductListing3DSliderOptimizedState
       mainAxisAlignment: LanguageService.languageCode == "ar"
           ? MainAxisAlignment.end
           : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(width: 2),
         // Category Icon
@@ -976,7 +972,7 @@ class _ProductListing3DSliderOptimizedState
   Widget _buildCompactBuyButton() {
     return InkWell(
       onTap: () {
-        _homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
+        _homeBloc.add(const ChangeStatusOFGetProductsDetailsToSuccessEvent(
           isStatusInitaial: true,
         ));
         widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;

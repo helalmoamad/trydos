@@ -76,7 +76,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   late PageController pageController;
   VideoPlayerController? _videoController;
 
-  LongPressDownDetails details = LongPressDownDetails();
+  LongPressDownDetails details = const LongPressDownDetails();
   var init;
   late AppBloc appBloc;
   late HomeBloc homeBloc;
@@ -373,7 +373,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   widget.animatedController.stop();
                                 } else {
                                   Future.delayed(
-                                      Duration(milliseconds: 300),
+                                      const Duration(milliseconds: 300),
                                       () =>
                                           widget.animatedController.forward());
                                 }
@@ -415,7 +415,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                 widget.collectionIndex]!]
                                         .oneLink ==
                                     null
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : positioned.Positioned(
                                     bottom: 25,
                                     child: _handleWithUrlWidget((state
@@ -499,16 +499,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 alignment: Alignment.center,
                                 children: [
                                   FittedBox(
-                                      fit: BoxFit.contain,
                                       child: SizedBox(
-                                        width:
-                                            _videoController!.value.size.width,
-                                        height:
-                                            _videoController!.value.size.height,
-                                        child: VideoPlayer(
-                                          _videoController!,
-                                        ),
-                                      )),
+                                    width: _videoController!.value.size.width,
+                                    height: _videoController!.value.size.height,
+                                    child: VideoPlayer(
+                                      _videoController!,
+                                    ),
+                                  )),
                                   state
                                               .storiesCollections[
                                                   widget.collectionIndex]
@@ -517,7 +514,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                   widget.collectionIndex]!]
                                               .oneLink ==
                                           null
-                                      ? SizedBox.shrink()
+                                      ? const SizedBox.shrink()
                                       : positioned.Positioned(
                                           bottom: 25,
                                           child: _handleWithUrlWidget(state
@@ -636,7 +633,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           state.storiesCollections[widget.collectionIndex].photoPath),
                             ),
                             Padding(
-                              padding: EdgeInsetsDirectional.only(start: 10),
+                              padding:
+                                  const EdgeInsetsDirectional.only(start: 10),
                               child: MyTextWidget(
                                   style: textTheme.bodyLarge?.rr
                                       .copyWith(color: Colors.white),
@@ -651,7 +649,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                               widget.collectionIndex]
                                           .name!),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             state
                                         .storiesCollections[
                                             widget.collectionIndex]
@@ -660,7 +658,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                 widget.collectionIndex]!]
                                         .userId ==
                                     prefsRepository.myStoriesId
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : Material(
                                     color: Colors.transparent,
                                     child: InkWell(
@@ -668,13 +666,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           widget.animatedController.stop();
                                           widget.animatedController.reset();
                                           Future.delayed(
-                                            Duration(milliseconds: 600),
+                                            const Duration(milliseconds: 600),
                                             () {
                                               showReportStoryDialog(context);
                                             },
                                           );
                                         },
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.error,
                                           size: 26,
                                           color: Colors.red,
@@ -687,7 +685,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                 widget.collectionIndex]!]
                                         .userId !=
                                     prefsRepository.myStoriesId
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : Material(
                                     color: Colors.transparent,
                                     child: InkWell(
@@ -762,14 +760,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Container(
-            padding: EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // العنوان
                 Text(
                   LocaleKeys.report_story.tr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -777,19 +775,19 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   textAlign: TextAlign.center,
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // الرسالة
                 Text(
                   LocaleKeys.confirm_report_story.tr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.black87,
                   ),
                   textAlign: TextAlign.center,
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // الأزرار
                 Row(
@@ -806,11 +804,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         child: Text(
                           LocaleKeys.cancel.tr(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
@@ -818,7 +816,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       ),
                     ),
 
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
 
                     // زر التأكيد
                     Expanded(
@@ -834,11 +832,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         child: Text(
                           LocaleKeys.confirm.tr(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
@@ -938,7 +936,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       fromBoutiqueListing = true;
       BlocProvider.of<BoutiqueBloc>(context)
           .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
-              fromHomePageSearch: false,
               boutiqueSlug: boutiques.first,
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: Filter(
@@ -987,7 +984,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             }
           }
           BlocProvider.of<HomeBloc>(context).add(
-              homeEvent.ChangeStatusOFGetProductsDetailsToSuccessEvent(
+              const homeEvent.ChangeStatusOFGetProductsDetailsToSuccessEvent(
                   isStatusInitaial: true));
           BlocProvider.of<HomeBloc>(context)
               .add(homeEvent.GetFullProductDetailsEvent(
@@ -996,13 +993,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           ));
 
           Future.delayed(
-              Duration(milliseconds: 300),
+              const Duration(milliseconds: 300),
               () => Navigator.of(context).push(PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
                       ProductDetailsPageNew(
                         productSlugForOpeningChatDirectly:
                             uriWithoutFilter.split("/").toList().last,
-                        fromNotification: false,
                       ))));
           return;
         }
@@ -1027,7 +1023,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   Widget _handleWithUrlWidget(String url) {
     return Material(
-      color: Color.fromRGBO(0, 0, 0, 0),
+      color: const Color.fromRGBO(0, 0, 0, 0),
       child: BlocListener<BoutiqueBloc, BoutiqueState>(
         listenWhen: (previous, current) =>
             previous.getFiltersForNavigatorFromLinkToListingPageStatus !=
@@ -1035,13 +1031,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         listener: (context, boutiqueState) async {
           if (boutiqueState.getFiltersForNavigatorFromLinkToListingPageStatus ==
               GetFiltersForNavigatorFromLinkToListingPageStatus.success) {
-            homeBloc.add(homeEvent.IsChangedVariationWhenQtyZeroEvent(
+            homeBloc.add(const homeEvent.IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
-            homeBloc.add(homeEvent.IsChangedVariationWhenQtyZeroEvent(
+            homeBloc.add(const homeEvent.IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
 
             boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
-                sizeAndColorFilterinTextToSearch: {}));
+                sizeAndColorFilterinTextToSearch: const {}));
             appBloc.add(HideBottomNavigationBar(false));
             appBloc.add(ShowOrHideBars(true));
             appBloc.add(ChangeIndexForSearch(1));
@@ -1061,22 +1057,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               BlocProvider.of<BoutiqueBloc>(context).add(
                   GetProductsWithFiltersEvent(
                       getWithoutFilter: true,
-                      cashedOrginalBoutique: false,
                       boutiqueSlug:
                           boutiqueState.boutiquesToNavigatorFromLink?[0].slug ??
                               "",
                       fromSearch: false,
-                      category: null,
                       context: context,
-                      searchText: null,
                       offset: 1));
 
               await Future.delayed(
-                Duration(milliseconds: 300),
+                const Duration(milliseconds: 300),
                 () => Navigator.of(context).push(PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
                       ProductListingPage(
-                          fromBackground: false,
                           boutiqueSlug: boutiqueState
                                   .boutiquesToNavigatorFromLink?[0].slug ??
                               "",
@@ -1094,14 +1086,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             }
 
             await Future.delayed(
-                Duration(milliseconds: 300),
+                const Duration(milliseconds: 300),
                 () => Navigator.of(context).push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         ProductListingPage(
                             getProductFiltersModel:
                                 boutiqueState.appliedFiltersByUser["link"],
                             fromNotificationCategory: true,
-                            fromBackground: false,
                             fromSearch: true,
                             boutiqueSlug: "search"))));
           }
@@ -1148,7 +1139,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               textAlign: TextAlign.center,
                               maxLines: 1,
                               style: context.textTheme.bodyMedium?.rr.copyWith(
-                                color: Color(0xff1D1D1D),
+                                color: const Color(0xff1D1D1D),
                                 fontSize: 10,
                                 letterSpacing: 0.18,
                               ),

@@ -141,7 +141,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                         value: progress / 100,
                                         strokeWidth: 5,
                                         backgroundColor: Colors.grey,
-                                        color: Color(0xff388CFF),
+                                        color: const Color(0xff388CFF),
                                       ),
                                       MyTextWidget(
                                         'X',

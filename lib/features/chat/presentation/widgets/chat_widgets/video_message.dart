@@ -96,7 +96,7 @@ class _VideoMessageState extends State<VideoMessage>
     _cachedVideoUrl = widget.videoUrl;
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           timer = true;
@@ -235,7 +235,7 @@ class _VideoMessageState extends State<VideoMessage>
                     offset: !(state.isSlpoing &&
                             state.slopMessageId!.contains(widget.messageId) &&
                             (widget.isReceived || widget.isRead))
-                        ? Offset(0, 0)
+                        ? const Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
                             ? Offset(100.w, 0)
                             : Offset(-50.w, 0),
@@ -454,7 +454,7 @@ class _VideoMessageState extends State<VideoMessage>
                                   watchedAt: widget.watchedAt,
                                 ),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                       ],
                     ),
                   ),

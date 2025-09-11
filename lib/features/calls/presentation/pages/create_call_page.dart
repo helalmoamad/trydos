@@ -74,7 +74,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
           listener: (context, state) {
             if (state.makeCallStatus == MakeCallStatus.cancel) {
               Future.delayed(
-                Duration(seconds: 1),
+                const Duration(seconds: 1),
                 () {
                   Navigator.of(context).pop();
                 },
@@ -101,7 +101,6 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                         borderRadius:
                                             BorderRadius.circular(12.0),
                                         border: Border.all(
-                                            width: 1.0,
                                             color: const Color(0xff388cff)),
                                         boxShadow: [
                                           BoxShadow(
@@ -141,7 +140,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                   ? CallStatusWidget(
                                       text: LocaleKeys.did_no_answer.tr(),
                                       iconUrl: 'assets/svg/end_call.svg',
-                                      textColor: Color(0xFFFF0000))
+                                      textColor: const Color(0xFFFF0000))
                                   : CallStatusWidget(
                                       text: LocaleKeys.calling.tr(),
                                       iconUrl: AppAssets.callingSvg,

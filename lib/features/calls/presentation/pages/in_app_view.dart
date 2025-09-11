@@ -44,7 +44,7 @@ class AgoraInAppWebView extends StatefulWidget {
 class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late Uri source;
   Timer? timer;
-  AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   void playIncomingCall() {
     _audioPlayer.play(AssetSource('audio/incoming_call.mp3'), volume: 1);
@@ -153,7 +153,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     _audioPlayer.dispose();
                   }
                   if (url.toString().contains('callInProg')) {
-                    Timer.periodic(Duration(seconds: 7), (timer) {
+                    Timer.periodic(const Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
                       if (context.canPop() &&
@@ -249,12 +249,13 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         "///////*111111111111111111111111111111111111*********${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************");
 
                     if (progress < 100)
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     if (timer == null && !widget.isReceivingCall) {
-                      timer = Timer.periodic(Duration(seconds: 14), (timer) {
+                      timer =
+                          Timer.periodic(const Duration(seconds: 14), (timer) {
                         playWaitingCall();
                       });
-                      Future.delayed(Duration(seconds: 7), () {
+                      Future.delayed(const Duration(seconds: 7), () {
                         timer?.cancel();
                         if (_audioPlayer.state == PlayerState.playing) {
                           _audioPlayer.dispose();
@@ -262,10 +263,11 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       });
                     } else if (timer == null && widget.isReceivingCall) {
                       startVibration();
-                      timer = Timer.periodic(Duration(seconds: 2), (timer) {
+                      timer =
+                          Timer.periodic(const Duration(seconds: 2), (timer) {
                         playIncomingCall();
                       });
-                      Future.delayed(Duration(seconds: 7), () {
+                      Future.delayed(const Duration(seconds: 7), () {
                         timer?.cancel();
                         if (_audioPlayer.state == PlayerState.playing) {
                           _audioPlayer.dispose();

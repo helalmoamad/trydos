@@ -7,7 +7,7 @@ import '../bloc/story_state.dart';
 class AnimatedBar extends StatelessWidget {
   final AnimationController animController;
   final int position;
-  final int collectionIndex ;
+  final int collectionIndex;
 
   const AnimatedBar({
     Key? key,
@@ -29,20 +29,23 @@ class AnimatedBar extends StatelessWidget {
                   children: <Widget>[
                     _buildContainer(
                       double.infinity,
-                      position < state.currentStoryInEachCollection[collectionIndex]!
+                      position <
+                              state.currentStoryInEachCollection[
+                                  collectionIndex]!
                           ? Colors.white
                           : Colors.white.withOpacity(0.5),
                     ),
-                    position == state.currentStoryInEachCollection[collectionIndex]
+                    position ==
+                            state.currentStoryInEachCollection[collectionIndex]
                         ? AnimatedBuilder(
-                      animation: animController,
-                      builder: (context, child) {
-                        return _buildContainer(
-                          constraints.maxWidth * animController.value,
-                          Colors.white,
-                        );
-                      },
-                    )
+                            animation: animController,
+                            builder: (context, child) {
+                              return _buildContainer(
+                                constraints.maxWidth * animController.value,
+                                Colors.white,
+                              );
+                            },
+                          )
                         : const SizedBox.shrink(),
                   ],
                 );

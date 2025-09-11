@@ -58,7 +58,7 @@ class ProductListingImageWidget extends StatelessWidget {
               color: borderColor ?? const Color(0xffffffff)),
           boxShadow: withBackGroundShadow
               ? [
-                  BoxShadow(
+                  const BoxShadow(
                     color: Color(0x19000000),
                     offset: Offset(0, 3),
                     blurRadius: 6,

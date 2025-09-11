@@ -70,7 +70,6 @@ class _WelcomeSectionState extends State<WelcomeSection> {
       textDirection: ui.TextDirection.ltr,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 30.0),
@@ -78,7 +77,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               LocaleKeys.welcome_page_description.tr(),
               textAlign: TextAlign.center,
               style: context.textTheme.titleLarge?.la.copyWith(
-                color: Color(0xff5D5C5D),
+                color: const Color(0xff5D5C5D),
                 letterSpacing: 0.14,
                 height: 1.3,
               ),
@@ -91,7 +90,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             LocaleKeys.why_we_know_you_label.tr(),
             textAlign: TextAlign.center,
             style: context.textTheme.titleLarge?.la.copyWith(
-              color: Color(0xffF85555),
+              color: const Color(0xffF85555),
               letterSpacing: 0.14,
               height: 1.43,
             ),
@@ -101,7 +100,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
           ),
           InkWell(
             key: TestVariables.kTestMode
-                ? Key(WidgetsKeys.haveAccountButtonKey)
+                ? const Key(WidgetsKeys.haveAccountButtonKey)
                 : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
@@ -109,7 +108,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               print(
                   "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%lattttttter");
               clickButton.value = 0;
-              Future.delayed(Duration(milliseconds: 100), () {
+              Future.delayed(const Duration(milliseconds: 100), () {
                 debugPrint(
                     "/////// user_id : ${prefsRepository.myMarketId.toString()} ///////");
                 debugPrint(
@@ -132,15 +131,14 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 valueListenable: clickButton,
                 builder: (context, index, _) {
                   return Padding(
-                    padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                    padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     child: DottedBorder(
-                      borderPadding: EdgeInsets.zero,
                       padding: EdgeInsets.zero,
                       strokeCap: StrokeCap.round,
                       strokeWidth: 0.5,
                       borderType: BorderType.RRect,
-                      dashPattern: [3, 3],
-                      radius: Radius.circular(20.0),
+                      dashPattern: const [3, 3],
+                      radius: const Radius.circular(20.0),
                       color: index == 0
                           ? const Color(0xff707070)
                           : const Color(0xfffafafa),
@@ -157,7 +155,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                           child: MyTextWidget(
                             LocaleKeys.i_have_account.tr(),
                             style: context.textTheme.displayMedium?.ra.copyWith(
-                              color: Color(0xff5D5C5D),
+                              color: const Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
                             ),
@@ -174,13 +172,13 @@ class _WelcomeSectionState extends State<WelcomeSection> {
           ),
           InkWell(
             key: TestVariables.kTestMode
-                ? Key(WidgetsKeys.createNewAccountButtonKey)
+                ? const Key(WidgetsKeys.createNewAccountButtonKey)
                 : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {
               clickButton.value = 1;
-              Future.delayed(Duration(milliseconds: 100), () {
+              Future.delayed(const Duration(milliseconds: 100), () {
                 clickButton.value = -1;
                 widget.goToCreateAccount.call();
               });
@@ -199,15 +197,14 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 valueListenable: clickButton,
                 builder: (context, index, _) {
                   return Padding(
-                    padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                    padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     child: DottedBorder(
-                      borderPadding: EdgeInsets.zero,
                       padding: EdgeInsets.zero,
                       strokeCap: StrokeCap.round,
                       strokeWidth: 0.5,
                       borderType: BorderType.RRect,
-                      dashPattern: [3, 3],
-                      radius: Radius.circular(20.0),
+                      dashPattern: const [3, 3],
+                      radius: const Radius.circular(20.0),
                       color: index == 1
                           ? const Color(0xff707070)
                           : const Color(0xfffafafa),
@@ -224,7 +221,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                           child: MyTextWidget(
                             LocaleKeys.create_new_account.tr(),
                             style: context.textTheme.displayMedium?.ra.copyWith(
-                              color: Color(0xff5D5C5D),
+                              color: const Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
                             ),
@@ -243,11 +240,11 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             key: TestVariables.kTestMode
-                ? Key(WidgetsKeys.laterTakeLookKey)
+                ? const Key(WidgetsKeys.laterTakeLookKey)
                 : null,
             onTap: () {
               Future.delayed(
-                Duration(milliseconds: 100),
+                const Duration(milliseconds: 100),
                 () async {
                   /*   if (prefsRepository.isVerifiedPhone != false ||
                       (prefsRepository.isTokenExpired ??
@@ -287,7 +284,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 LocaleKeys.later_take_look.tr(),
                 textAlign: TextAlign.center,
                 style: context.textTheme.titleLarge?.ra.copyWith(
-                  color: Color(0xff4d84ff),
+                  color: const Color(0xff4d84ff),
                   letterSpacing: 0.14,
                   height: 1.43,
                 ),

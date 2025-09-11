@@ -32,7 +32,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
   bool _isDisposed = false;
   bool _useStaticMode = false;
 
-  static bool _isFirstLaunch = true;
+  static const bool _isFirstLaunch = true;
   static int _shimmerCount = 0;
 
   @override
@@ -109,7 +109,6 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
   Widget _buildStaticPlaceholder() {
     return Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Column(
@@ -167,7 +166,6 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
 
     return Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildSimplifiedLogo(),

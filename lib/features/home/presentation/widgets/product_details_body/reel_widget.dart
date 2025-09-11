@@ -55,7 +55,7 @@ class ReelWidget extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TrydosFavoriteButton(),
+                  const TrydosFavoriteButton(),
                   const SizedBox(height: 25),
                   SvgPicture.asset(
                     AppAssets.shareSvg,
@@ -113,7 +113,7 @@ class ReelWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20.0),
                           boxShadow: [
                             BoxShadow(
-                              offset: Offset(0, 3),
+                              offset: const Offset(0, 3),
                               blurRadius: 6,
                               color: Colors.white.withOpacity(0.5),
                               inset: true,
@@ -138,12 +138,12 @@ class ReelWidget extends StatelessWidget {
                         MyTextWidget(
                           'Yxxx Oxxx',
                           style: context.textTheme.bodySmall?.rq
-                              .copyWith(color: Color(0xff969696)),
+                              .copyWith(color: const Color(0xff969696)),
                         ),
                         MyTextWidget(
                           '18 feb',
                           style: context.textTheme.titleSmall?.rq
-                              .copyWith(color: Color(0xff8D8D8D)),
+                              .copyWith(color: const Color(0xff8D8D8D)),
                         ),
                       ],
                     ),
@@ -154,7 +154,7 @@ class ReelWidget extends StatelessWidget {
                       child: MyTextWidget(
                         '${LocaleKeys.amazing_product_buy_it_and_saw.tr()}',
                         style: context.textTheme.bodySmall?.rq
-                            .copyWith(color: Color(0xff5D5C5D)),
+                            .copyWith(color: const Color(0xff5D5C5D)),
                         maxLines: 5,
                       ),
                     ),
@@ -165,13 +165,13 @@ class ReelWidget extends StatelessWidget {
                           AppAssets.favoriteSvg,
                           height: 15,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         MyTextWidget(
                           '110k',
                           style: context.textTheme.titleMedium?.rq
-                              .copyWith(color: Color(0xff8D8D8D)),
+                              .copyWith(color: const Color(0xff8D8D8D)),
                         ),
                       ],
                     ),

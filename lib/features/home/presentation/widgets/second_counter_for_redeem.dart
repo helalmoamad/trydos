@@ -106,7 +106,7 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
         style: context.textTheme.bodyMedium?.br.copyWith(
           fontSize: 9,
           height: 1.5,
-          color: Color(0xffFF6200),
+          color: const Color(0xffFF6200),
         ));
   }
 }

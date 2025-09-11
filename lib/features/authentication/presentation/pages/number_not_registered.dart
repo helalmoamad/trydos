@@ -41,7 +41,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
   bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFF9F0),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
@@ -91,32 +91,28 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                 children: [
                   Positioned(top: 50, left: 40, right: 40, child: logo),
                   PageView(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     controller: pageController,
                     children: [
                       Column(
                           mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Spacer(),
+                            const Spacer(),
                             Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 40.0),
                               child: Column(children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SvgPicture.asset(
                                       AppAssets.registerInfoSvg,
                                       width: 15,
                                       height: 15,
-                                      color: Color(0xffFCAC2D),
+                                      color: const Color(0xffFCAC2D),
                                     ),
                                     10.horizontalSpace,
                                     Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
@@ -127,12 +123,10 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                           style: context
                                               .textTheme.titleLarge?.ra
                                               .copyWith(
-                                                  color: Color(0xff5D5C5D),
+                                                  color: const Color(0xff5D5C5D),
                                                   height: 1.42),
                                         ),
                                         Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
                                           children: [
                                             Padding(
                                               padding:
@@ -149,15 +143,13 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                               style: context
                                                   .textTheme.titleMedium?.ra
                                                   .copyWith(
-                                                      color: Color(0xff8D8D8D),
+                                                      color: const Color(0xff8D8D8D),
                                                       height: 1.25),
                                             ),
                                           ],
                                         ),
                                         10.verticalSpace,
                                         Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
                                           children: [
                                             15.horizontalSpace,
                                             MyTextWidget(
@@ -167,7 +159,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                               style: context
                                                   .textTheme.titleMedium?.ra
                                                   .copyWith(
-                                                      color: Color(0xffC4C2C2),
+                                                      color: const Color(0xffC4C2C2),
                                                       height: 1.25),
                                             )
                                           ],
@@ -178,15 +170,15 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 ),
                               ]),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             InkWell(
                               key: TestVariables.kTestMode
-                                  ? Key(WidgetsKeys.createNewAccountContinueKey)
+                                  ? const Key(WidgetsKeys.createNewAccountContinueKey)
                                   : null,
                               onTap: () {
                                 pageContent.value = 1;
                                 pageController.animateToPage(1,
-                                    duration: Duration(milliseconds: 500),
+                                    duration: const Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
                                 ///////////////////
 
@@ -217,7 +209,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                           .tr(),
                                       style:
                                           textTheme.displayMedium?.ra.copyWith(
-                                        color: Color(0xff5D5C5D),
+                                        color: const Color(0xff5D5C5D),
                                         letterSpacing: 0.16,
                                         height: 1.25,
                                       ),
@@ -232,7 +224,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                               splashColor: Colors.transparent,
                               onTap: () async {
                                 Future.delayed(
-                                  Duration(milliseconds: 100),
+                                  const Duration(milliseconds: 100),
                                   () async {
                                     /*   if (GetIt.I<PrefsRepository>()
                                                 .isVerifiedPhone !=
@@ -286,7 +278,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                       "&" +
                                       LocaleKeys.later_take_look.tr(),
                                   style: textTheme.titleLarge?.ra.copyWith(
-                                    color: Color(0xff4d84ff),
+                                    color: const Color(0xff4d84ff),
                                     letterSpacing: 0.14,
                                     height: 1.43,
                                   ),
@@ -294,11 +286,11 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 44,
                             ),
                           ]),
-                      AddingName(
+                      const AddingName(
                         fromLogin: true,
                       )
                     ],

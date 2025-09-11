@@ -53,7 +53,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
       if (debounce?.isActive ?? false) {
         debounce!.cancel();
       }
-      debounce = Timer(Duration(milliseconds: 600), () {
+      debounce = Timer(const Duration(milliseconds: 600), () {
         if (scrollController.offset >=
             (scrollController.position.maxScrollExtent * 0.6)) {
           boutiqueBloc.add(GetFiltersWithPaginatioEvent(
@@ -89,12 +89,13 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
         int visible = filters.boutiques?.length ?? 0;
         return visible > 0
             ? Container(
-                margin:
-                    EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
-                padding: EdgeInsets.symmetric(vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 10)
+                    .copyWith(bottom: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
+                    border:
+                        Border.all(color: const Color(0xffC4C2C2), width: 0.3)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -106,9 +107,10 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                           MyTextWidget(
                             widget.title,
                             style: context.textTheme.titleMedium?.rq.copyWith(
-                                color: Color(0xff505050), height: 15 / 12),
+                                color: const Color(0xff505050),
+                                height: 15 / 12),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5,
                           ),
                           widget.isLoading
@@ -121,32 +123,32 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                       size: 15,
                                     ),
                                   ))
-                              : SizedBox.shrink(),
-                          Spacer(),
+                              : const SizedBox.shrink(),
+                          const Spacer(),
                           SvgPicture.asset(
                             AppAssets.backArrowArabic,
                             matchTextDirection: true,
-                            color: Color(0xffC4C2C2),
+                            color: const Color(0xffC4C2C2),
                             width: 10,
                             height: 10,
                           )
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     SizedBox(
                       height: 60,
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKeys.searchPageBoutiqueListKey)
+                          ? const Key(WidgetsKeys.searchPageBoutiqueListKey)
                           : null,
                       child: ScrollConfiguration(
-                        behavior: CupertinoScrollBehavior(),
+                        behavior: const CupertinoScrollBehavior(),
                         child: ListView.separated(
                             controller: scrollController,
                             shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
+                            physics: const ClampingScrollPhysics(),
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 10.0),
                             scrollDirection: Axis.horizontal,
@@ -158,7 +160,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                           filters.boutiques?[index].id) ??
                                   false;
                               return filters.boutiques![index].banner == null
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : InkWell(
                                       onTap: () {
                                         if (widget.isLoading) {
@@ -241,14 +243,16 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             12),
-                                                    color: Color(0xffF8F8F8),
+                                                    color:
+                                                        const Color(0xffF8F8F8),
                                                     border: Border.all(
                                                         color: isSelected
-                                                            ? Color(0xffFF5F61)
-                                                            : Color(
+                                                            ? const Color(
+                                                                0xffFF5F61)
+                                                            : const Color(
                                                                 0xffF8F8F8))),
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 0, horizontal: 0),
+                                                padding: const EdgeInsets
+                                                    .symmetric(),
                                                 child: Center(
                                                   child: filters
                                                               .boutiques![index]
@@ -266,16 +270,18 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                           circleDimensions: 13,
                                                           logoTextHeight: 9,
                                                         )
-                                                      : SizedBox.shrink(),
+                                                      : const SizedBox.shrink(),
                                                 ),
                                               ),
                                               Visibility(
                                                   visible: isSelected,
-                                                  child: FilterSelectedMark(
-                                                      width: 12, height: 12))
+                                                  child:
+                                                      const FilterSelectedMark(
+                                                          width: 12,
+                                                          height: 12))
                                             ],
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 2,
                                           ),
                                           Center(
@@ -289,14 +295,15 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                 .textTheme.titleLarge?.rq
                                                 .copyWith(
                                                     height: 12 / 14,
-                                                    color: Color(0xff8D8D8D)),
+                                                    color: const Color(
+                                                        0xff8D8D8D)),
                                           ))
                                         ],
                                       ),
                                     );
                             },
                             separatorBuilder: (context, index) {
-                              return SizedBox(
+                              return const SizedBox(
                                 width: 10,
                               );
                             },
@@ -305,7 +312,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                     ),
                   ],
                 ))
-            : SizedBox.shrink();
+            : const SizedBox.shrink();
       },
     );
   }

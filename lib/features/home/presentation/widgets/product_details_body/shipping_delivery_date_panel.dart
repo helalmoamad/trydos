@@ -44,7 +44,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
         backdropEnabled: true,
         panelBuilder: (scrollController) {
           return Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             height: 1.sh - 65,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
@@ -59,7 +59,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       horizontal: (1.sw / 2) - 40, vertical: 5),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
-                      color: Color(0xffC4C2C2)),
+                      color: const Color(0xffC4C2C2)),
                   height: 2,
                   width: 40,
                 ),
@@ -107,9 +107,9 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: Color(0xffD3D3D3),
+                    color: const Color(0xffD3D3D3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                   height: 0.5,
@@ -130,9 +130,9 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: Color(0xffD3D3D3),
+                    color: const Color(0xffD3D3D3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                   height: 0.5,
@@ -145,7 +145,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                   style: context.textTheme.titleLarge?.rr
                       .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -165,69 +165,68 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: Color(0xffD3D3D3),
+                    color: const Color(0xffD3D3D3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                   height: 0.5,
                   width: 1.sw,
                 ),
                 _buyerReviewSingle("1", 1, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("2", 3, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("3", 70, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("4", 18, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("5", 1, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("6", 1, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("7", 1, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("8", 1, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("9", 1, context),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 _buyerReviewSingle("10", 1, context),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: Color(0xffD3D3D3),
+                    color: const Color(0xffD3D3D3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                   height: 0.5,
                   width: 1.sw,
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SvgPicture.asset(
                       AppAssets.deliveryGuranteeSvg,
                       width: 20,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     MyTextWidget(
@@ -235,16 +234,16 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       style: context.textTheme.titleLarge?.mr.copyWith(
                           fontSize: 11,
                           height: 16 / 13,
-                          color: Color(0xff1D1D1D)),
+                          color: const Color(0xff1D1D1D)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     Row(children: [
                       SvgPicture.asset(
                         AppAssets.dolarSvg,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       MyTextWidget(
@@ -252,31 +251,31 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.ra.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                       MyTextWidget(
                         ' 20% ${LocaleKeys.refund.tr()} ',
                         style: context.textTheme.titleLarge?.mr.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff388CFF)),
+                            color: const Color(0xff388CFF)),
                       ),
                       MyTextWidget(
                         '${LocaleKeys.of_the_product_price_if_shipping.tr()}',
                         style: context.textTheme.titleLarge?.ra.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                     ]),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     SvgPicture.asset(
                       AppAssets.freeShippingSvg,
                       width: 20,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     MyTextWidget(
@@ -284,9 +283,9 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       style: context.textTheme.titleLarge?.mr.copyWith(
                           fontSize: 11,
                           height: 16 / 13,
-                          color: Color(0xff1D1D1D)),
+                          color: const Color(0xff1D1D1D)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 3,
                     ),
                     MyTextWidget(
@@ -294,16 +293,16 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       style: context.textTheme.titleLarge?.ra.copyWith(
                           fontSize: 11,
                           height: 16 / 13,
-                          color: Color(0xff1D1D1D)),
+                          color: const Color(0xff1D1D1D)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     SvgPicture.asset(
                       AppAssets.returnGuranteeSvg,
                       width: 20,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     MyTextWidget(
@@ -311,9 +310,9 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       style: context.textTheme.titleLarge?.mr.copyWith(
                           fontSize: 11,
                           height: 16 / 13,
-                          color: Color(0xff1D1D1D)),
+                          color: const Color(0xff1D1D1D)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 3,
                     ),
                     Row(children: [
@@ -322,14 +321,14 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.ra.copyWith(
                             fontSize: 11.sp,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                       MyTextWidget(
                         ' 3 ${LocaleKeys.day.tr()} ',
                         style: context.textTheme.titleLarge?.br.copyWith(
                             fontSize: 11.sp,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                       MyTextWidget(
                         '${LocaleKeys.after_receiving_product_return_without_conditions.tr()}',
@@ -338,17 +337,17 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.ra.copyWith(
                             fontSize: 11.sp,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                     ]),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     Row(children: [
                       SvgPicture.asset(
                         AppAssets.dolarSvg,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       MyTextWidget(
@@ -356,14 +355,14 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.ra.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                       MyTextWidget(
                         '${LocaleKeys.full.tr()} ',
                         style: context.textTheme.titleLarge?.mr.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff388CFF)),
+                            color: const Color(0xff388CFF)),
                       ),
                       MyTextWidget(
                         LocaleKeys.the_product_price_when_returned.tr(),
@@ -372,10 +371,10 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.ra.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                     ]),
-                    SizedBox(
+                    const SizedBox(
                       height: 3,
                     ),
                     Row(children: [
@@ -384,7 +383,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.ra.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff1D1D1D)),
+                            color: const Color(0xff1D1D1D)),
                       ),
                       MyTextWidget(
                         '${LocaleKeys.get_the_amount_back.tr()}',
@@ -393,17 +392,17 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.mr.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
-                            color: Color(0xff388CFF)),
+                            color: const Color(0xff388CFF)),
                       ),
                     ]),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     SvgPicture.asset(
                       AppAssets.freeReturnSvg,
                       width: 20,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     MyTextWidget(
@@ -411,9 +410,9 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       style: context.textTheme.titleLarge?.mr.copyWith(
                           fontSize: 11,
                           height: 16 / 13,
-                          color: Color(0xff1D1D1D)),
+                          color: const Color(0xff1D1D1D)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 3,
                     ),
                     MyTextWidget(
@@ -421,7 +420,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       style: context.textTheme.titleLarge?.ra.copyWith(
                           fontSize: 11,
                           height: 16 / 13,
-                          color: Color(0xff1D1D1D)),
+                          color: const Color(0xff1D1D1D)),
                     ),
                   ],
                 )
@@ -443,36 +442,36 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
               height: 15,
               width: 284.w,
               decoration: BoxDecoration(
-                  color: Color(0xffFCFCFC),
+                  color: const Color(0xffFCFCFC),
                   borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Color(0xffD3D3D3))),
+                  border: Border.all(color: const Color(0xffD3D3D3))),
             ),
             Container(
               height: 15,
               width: (numOfPercent / 100) * 284.w,
               decoration: BoxDecoration(
-                  color: Color(0xff1D1D1D),
+                  color: const Color(0xff1D1D1D),
                   borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Color(0xff1D1D1D))),
+                  border: Border.all(color: const Color(0xff1D1D1D))),
             )
           ],
         ),
-        Spacer(),
+        const Spacer(),
         MyTextWidget(
           "${numOfPercent}%",
           style: context.textTheme.titleLarge?.rr
-              .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+              .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
         ),
-        Spacer(),
+        const Spacer(),
         MyTextWidget(
           day,
           style: context.textTheme.titleLarge?.br
-              .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+              .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
         ),
         MyTextWidget(
           " ${LocaleKeys.day.tr()}",
           style: context.textTheme.titleLarge?.rr
-              .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+              .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
         ),
         SizedBox(width: day == "10" ? 5.w : 10.w),
       ]),

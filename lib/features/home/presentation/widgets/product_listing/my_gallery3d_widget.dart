@@ -112,7 +112,7 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
                                 1) &&
                         index == rightItemIndex)),
             child: widget.threeImages.isNullOrEmpty
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : ProductListingImageWidget(
                     innerShadowYOffset: 3,
                     circleShape: false,

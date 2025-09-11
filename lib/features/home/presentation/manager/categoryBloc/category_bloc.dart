@@ -57,7 +57,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     this.searchByImageFromGeminiUseCase,
     this.getMainCategoriesUseCase,
     this.getHomeBoutiqesUseCase,
-  ) : super(CategoryState()) {
+  ) : super(const CategoryState()) {
     on<CategoryEvent>((event, emit) {});
     on<GetHomeBoutiqesEvent>(
       _onGetHomeBoutiquesEvent,
@@ -101,8 +101,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     if (!event.getWithPrefetchToStoreInMemory) {
       if (!event.getWithPagination) {
         getHomeBoutiquesPaginationObjectByMainCategory = {};
-        GetHomeBoutiquesModel getHomeBoutiquesModel =
-            GetHomeBoutiquesModel(data: null);
+        GetHomeBoutiquesModel getHomeBoutiquesModel = GetHomeBoutiquesModel();
         try {
           final responseFromSharedPrefrence = jsonDecode(prefsRepository
                   .getPrefechOfBoutiquesForEachMainCategoryInHomePage(
@@ -330,10 +329,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 categorySlugs: categorySlugs,
                 context: context,
                 cashedOrginalBoutique: true,
-                fromHomePageSearch: false,
-                boutiqueSlug: slug,
-                category: null,
-                searchText: null));
+                boutiqueSlug: slug));
       }
     } catch (e, st) {
       print(e);
@@ -351,7 +347,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     print(
         "###########################################################*****${state.sendRequestToGeminiStatus}");
 
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     if (event.resetTheReply) {
       emit(state.copyWith(
         theReplyFromGemini: "",
@@ -405,7 +401,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           prefsRepository.getPrefechOfMainCategoryInHomePage() ?? "{}");
 
       mainCategoriesResponseModel = responseFromSharedPrefrence == {}
-          ? MainCategoriesResponseModel(data: null)
+          ? MainCategoriesResponseModel()
           : MainCategoriesResponseModel.fromJson(responseFromSharedPrefrence);
     } catch (e) {}
 
@@ -459,7 +455,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
       }
       if (event.getWithPrefech) {
-        Future.delayed(Duration(seconds: 10), () {
+        Future.delayed(const Duration(seconds: 10), () {
           for (var i = 0;
               i < min(categorySlugs.length, (1.sw - 55) ~/ 40);
               i++) {
@@ -469,7 +465,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
               add(GetHomeBoutiqesEvent(
                 withSemaphore: true,
                 getWithPrefetchToStoreInMemory: true,
-                getWithOutPrefetchForEachBoutiques: false,
                 context: event.context ?? navigatorKey.currentContext!,
                 categorySlug: categorySlugs[i],
                 offset: "1",
@@ -490,14 +485,14 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   void requestAPIAfterHome() {
     if (prefsRepository.marketToken != null &&
         prefsRepository.marketToken != "") {
-      Future.delayed(Duration(seconds: 3),
+      Future.delayed(const Duration(seconds: 3),
           () => GetIt.I<AuthBloc>().add(GetCustomerInfoEvent()));
     }
-    GetIt.I<HomeBloc>().add(GetStartingSettingsEvent());
+    GetIt.I<HomeBloc>().add(const GetStartingSettingsEvent());
     GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
     if (GetIt.I<ChatBloc>().state.firstRequestForGetChats) {
       if (prefsRepository.chatToken != null) {
-        GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
+        GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));
       }
     }
   }

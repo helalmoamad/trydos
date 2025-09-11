@@ -73,7 +73,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
       Country newCountry = countries.firstWhere(
           (element) => '+${num.toLowerCase()}'
               .startsWith(element.dialCode.toLowerCase()),
-          orElse: () => Country(
+          orElse: () => const Country(
               name: '',
               flag: '',
               code: '',
@@ -161,9 +161,9 @@ class _UserInformationPageState extends State<UserInformationPage> {
     return Scaffold(
         appBar: TrydosAppBar(
           appBarParams: AppBarParams(
-              backgroundColor: Color(0x000000),
+              backgroundColor: const Color(0x000000),
               action: [
-                Spacer(),
+                const Spacer(),
                 Text(
                   LocaleKeys.profile.tr(),
                   style: context.textTheme.bodyMedium?.mr.copyWith(
@@ -172,7 +172,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                       fontSize: 14,
                       height: 1.3),
                 ),
-                Spacer()
+                const Spacer()
               ],
               scrolledUnderElevation: 0,
               backIconColor: Colors.black,
@@ -210,7 +210,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                   ),
                   InkWell(
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ProfileSizeInfoPage())),
+                          builder: (context) => const ProfileSizeInfoPage())),
                       child: _actionWidget(
                           AppAssets.sizeLineSvg, LocaleKeys.size.tr())),
                   SizedBox(
@@ -219,7 +219,8 @@ class _UserInformationPageState extends State<UserInformationPage> {
                   ),
                   InkWell(
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ProfileAddressInfoPage())),
+                          builder: (context) =>
+                              const ProfileAddressInfoPage())),
                       child: _actionWidget(
                           AppAssets.addressSvg, LocaleKeys.address.tr())),
                   SizedBox(
@@ -228,7 +229,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                   ),
                   InkWell(
                     onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ProfileBankCartPage())),
+                        builder: (context) => const ProfileBankCartPage())),
                     child: _actionWidget(
                         AppAssets.bankCardSvg, LocaleKeys.bank_cards.tr()),
                   ),
@@ -245,8 +246,8 @@ class _UserInformationPageState extends State<UserInformationPage> {
 
   Widget _addPhotoWidget() {
     return InkWell(
-      onTap: () => Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => AddPhotoProfilePage())),
+      onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const AddPhotoProfilePage())),
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
             previous.updateProfileStatus != current.updateProfileStatus,
@@ -258,7 +259,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                 width: 128,
                 height: 128,
                 decoration: BoxDecoration(
-                    color: Color(0xffF8F8F8),
+                    color: const Color(0xffF8F8F8),
                     borderRadius: BorderRadius.circular(22.r)),
               ),
               Positioned(
@@ -267,7 +268,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                   width: 128,
                   height: 40,
                   decoration: BoxDecoration(
-                      color: Color.fromRGBO(0, 0, 0, 0.6),
+                      color: const Color.fromRGBO(0, 0, 0, 0.6),
                       borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(22.r),
                           bottomLeft: Radius.circular(22.r))),
@@ -277,9 +278,9 @@ class _UserInformationPageState extends State<UserInformationPage> {
                     children: [
                       SvgPicture.asset(
                         AppAssets.addPhotoSvg,
-                        color: Color(0xffFFFFFF),
+                        color: const Color(0xffFFFFFF),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         LocaleKeys.add.tr() + " " + LocaleKeys.photo.tr(),
                         style: context.textTheme.bodyMedium?.rr.copyWith(
@@ -288,7 +289,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                             fontSize: 12,
                             height: 1.3),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                     ],
                   )),
                 ),
@@ -306,7 +307,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                       child: SvgPicture.asset(
                         width: 50,
                         AppAssets.trySvg,
-                        color: Color(0xffD3D3D3),
+                        color: const Color(0xffD3D3D3),
                       ),
                     )
             ],
@@ -322,15 +323,14 @@ class _UserInformationPageState extends State<UserInformationPage> {
         height: 53,
         width: 1.sw,
         decoration: BoxDecoration(
-            color: Color(0xffF8F8F8),
+            color: const Color(0xffF8F8F8),
             borderRadius: BorderRadius.circular(15.r)),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(
               svgUrl,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(

@@ -64,15 +64,14 @@ class ColorImagesPanel extends StatelessWidget {
       child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 height: 2,
                 width: 40,
-                decoration: BoxDecoration(color: Color(0xffC4C2C2)),
+                decoration: const BoxDecoration(color: Color(0xffC4C2C2)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Expanded(

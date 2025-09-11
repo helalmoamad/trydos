@@ -161,7 +161,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
                 ),
               ),
               FractionalTranslation(
-                  translation: Offset(0.0, 0.43),
+                  translation: const Offset(0.0, 0.43),
                   child: (widget.answeredFile != null ||
                               widget.answeredFilePath != null) &&
                           widget.messageType == "ImageMessage"
@@ -251,11 +251,9 @@ class _ReplayMessageState extends State<ReplayMessage> {
                                   : TextMessage(
                                       message: widget.messageAnswer!,
                                       index: widget.index,
-                                      withImageShadow: true,
                                       senderId:
                                           GetIt.I<PrefsRepository>().myChatId!,
                                       isRead: widget.isAnswerMessageRead,
-                                      disableMessageAlignment: false,
                                       isReceived:
                                           widget.isAnswerMessageReceived,
                                       messageId: widget.messageAnswerId,

@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fast_contacts/fast_contacts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
@@ -91,8 +92,6 @@ class HelperFunctions {
       return await launchUrl(
         uri,
         mode: LaunchMode.inAppWebView,
-        webViewConfiguration: const WebViewConfiguration(
-            enableDomStorage: true, enableJavaScript: true),
       );
     } else {
       throw Exception('Unable to launch url');
@@ -139,27 +138,28 @@ class HelperFunctions {
     List<Contact> contacts = [];
 
     if (permissionStatus == PermissionStatus.granted) {
-      contacts = await FlutterContacts.getContacts(
-          withThumbnail: false, withProperties: true);
+      contacts = await FastContacts.getAllContacts();
     }
 
     print("🔍 إجمالي جهات الاتصال: ${contacts.length}");
-
+    int i = 0;
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
+      i = i + 1;
+
       if (contact.phones.isNotEmpty) {
         print("📞 ${contact.displayName}: ${contact.phones.length} رقم");
         contact.phones.forEach((element) {
           print("   - ${element.number}");
-          myContacts.add(
-              Contact(phones: [element], displayName: contact.displayName));
+          myContacts.add(contact);
         });
       } else {
         print("❌ ${contact.displayName}: بدون أرقام هواتف");
       }
     }
 
-    print("📱 جهات الاتصال مع أرقام: ${myContacts.length}");
+    print(
+        "📱 جهات الاتصال مع أرقام: ${myContacts.length}   ${contacts.length}");
 
     String myPhoneNumber = '${GetIt.I<PrefsRepository>().myPhoneNumber ?? ""}';
     if (!(myPhoneNumber.startsWith("+"))) {
@@ -243,7 +243,7 @@ class HelperFunctions {
 
       return {
         "mobile_phone": formattedNumber,
-        "name": e.displayName,
+        "name": e.displayName != "" ? e.displayName : "No Number",
       };
     }).toList();
 
@@ -257,8 +257,10 @@ class HelperFunctions {
       }
       return shouldRemove;
     });
-
+    String contactDetails =
+        "🔍 إجمالي جهات الاتصال: ${contacts.length}  ✅ النتيجة النهائية: ${result.length} 📱 جهات الاتصال مع أرقام: ${myContacts.length}";
     print("✅ النتيجة النهائية: ${result.length}");
+    GetIt.I<PrefsRepository>().setContactDetails(contactDetails);
     return result;
   }
 
@@ -271,9 +273,9 @@ class HelperFunctions {
       BuildContext context) async {
     return AssetPicker.pickAssets(
       context,
-      pickerConfig: AssetPickerConfig(
+      pickerConfig: const AssetPickerConfig(
         maxAssets: 1,
-        themeColor: const Color(0xff137AC9),
+        themeColor: Color(0xff137AC9),
       ),
     );
   }
@@ -282,14 +284,14 @@ class HelperFunctions {
     // نقسم النص إلى تاريخ ووقت
     final parts = dateTimeString.split(' ');
     if (parts.length != 2) {
-      throw FormatException('صيغة التاريخ غير صحيحة');
+      throw const FormatException('صيغة التاريخ غير صحيحة');
     }
 
     final dateParts = parts[0].split('-');
     final timeParts = parts[1].split(':');
 
     if (dateParts.length != 3 || timeParts.length != 3) {
-      throw FormatException('صيغة التاريخ أو الوقت غير صحيحة');
+      throw const FormatException('صيغة التاريخ أو الوقت غير صحيحة');
     }
 
     return DateTime.utc(
@@ -406,15 +408,15 @@ class HelperFunctions {
               ? CupertinoAlertDialog(
                   title: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.system_update_rounded,
                         size: 40,
                         color: Color(0xFF007AFF),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       MyTextWidget(
                         title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF1D1D1F),
@@ -426,14 +428,14 @@ class HelperFunctions {
                     children: [
                       MyTextWidget(
                         message,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13,
                           color: Color(0xFF6E6E73),
                           height: 1.3,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                     ],
                   ),
                   actions: <Widget>[
@@ -444,7 +446,7 @@ class HelperFunctions {
                             onPressed: () => Navigator.pop(context),
                             child: Text(
                               btnLabel2,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Color(0xFF6E6E73),
                                 fontSize: 16,
                               ),
@@ -459,7 +461,7 @@ class HelperFunctions {
                             },
                             child: Text(
                               btnLabel1,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -477,21 +479,21 @@ class HelperFunctions {
                   title: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Color(0xFF007AFF).withOpacity(0.12),
+                          color: const Color(0xFF007AFF).withOpacity(0.12),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.system_update_rounded,
                           size: 40,
                           color: Color(0xFF007AFF),
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       MyTextWidget(
                         title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
                           color: Color(0xFF1D1D1F),
@@ -503,14 +505,14 @@ class HelperFunctions {
                     children: [
                       MyTextWidget(
                         message,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color(0xFF6E6E73),
                           height: 1.4,
                           fontSize: 14,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                     ],
                   ),
                   actions: <Widget>[
@@ -520,14 +522,14 @@ class HelperFunctions {
                           child: TextButton(
                             onPressed: () => Navigator.pop(context),
                             style: TextButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             child: Text(
                               btnLabel2,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xFF6E6E73),
@@ -535,7 +537,7 @@ class HelperFunctions {
                             ),
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
@@ -543,8 +545,8 @@ class HelperFunctions {
                               _openWhatsAppGroup(); // فتح الواتساب
                             },
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              backgroundColor: Color(0xFF007AFF),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: const Color(0xFF007AFF),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -553,7 +555,7 @@ class HelperFunctions {
                             ),
                             child: Text(
                               btnLabel1,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -639,60 +641,58 @@ class HelperFunctions {
       {required BuildContext context, bool withIcon = false}) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Color(0xffF4F4F4),
-      barrierColor: Color(0xff1D1D1D).withOpacity(0.75),
+      backgroundColor: const Color(0xffF4F4F4),
+      barrierColor: const Color(0xff1D1D1D).withOpacity(0.75),
       builder: (ctx) {
         return Container(
           height: 250,
-          margin: EdgeInsets.all(20)..copyWith(bottom: 0),
+          margin: const EdgeInsets.all(20)..copyWith(bottom: 0),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
           child: Column(
             children: [
               DottedBorder(
-                radius: Radius.circular(15),
+                radius: const Radius.circular(15),
                 borderType: BorderType.RRect,
                 padding: const EdgeInsets.all(10.0)..copyWith(top: 15),
                 strokeCap: StrokeCap.round,
                 strokeWidth: 0.5,
-                color: Color(0xff707070),
-                dashPattern: [3, 3],
+                color: const Color(0xff707070),
+                dashPattern: const [3, 3],
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SvgPicture.asset(
                           AppAssets.partyCozSvg,
                           width: 20,
                           height: 20,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         MyTextWidget(
                           'Suitable Occasions',
                           style: context.textTheme.displayMedium?.mq.copyWith(
-                              color: Color(0xff8D8D8D),
+                              color: const Color(0xff8D8D8D),
                               fontSize: 15.sp,
                               height: 1.26),
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         MyTextWidget(
                           'According To The Opinions Of Our Fashion Team, The Appropriate Occasions For This Product Have Been Identified Based On Long Experience. We Provide An Opinion Only And Opinions May Differ From One Person To Another. So It Is Suitable For',
                           style: context.textTheme.titleLarge?.rq.copyWith(
                               height: 1.23,
-                              color: Color(0xff8D8D8D),
+                              color: const Color(0xff8D8D8D),
                               fontSize: 13.sp),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         SizedBox(
@@ -711,12 +711,12 @@ class HelperFunctions {
                                       style: context.textTheme.titleLarge?.rq
                                           .copyWith(
                                               height: 1.23,
-                                              color: Color(0xff505050),
+                                              color: const Color(0xff505050),
                                               fontSize: 13.sp),
                                     ),
                                     Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 5),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
                                       child: SvgPicture.asset(
                                         AppAssets.polyesterSvg,
                                         width: 15,
@@ -729,7 +729,7 @@ class HelperFunctions {
                                     style: context.textTheme.titleLarge?.rq
                                         .copyWith(
                                             height: 1.23,
-                                            color: Color(0xff8D8D8D),
+                                            color: const Color(0xff8D8D8D),
                                             fontSize: 13.sp),
                                   )
                                 ],
@@ -737,11 +737,11 @@ class HelperFunctions {
                             },
                             separatorBuilder: (context, index) {
                               return Container(
-                                margin: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.symmetric(
                                     horizontal: 5, vertical: 1.5),
                                 width: 1,
                                 decoration: BoxDecoration(
-                                    color: Color(0xff8D8D8D),
+                                    color: const Color(0xff8D8D8D),
                                     borderRadius: BorderRadius.circular(2)),
                               );
                             },
@@ -752,7 +752,7 @@ class HelperFunctions {
                   ],
                 ),
               ),
-              Spacer()
+              const Spacer()
             ],
           ),
         );

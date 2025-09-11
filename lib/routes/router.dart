@@ -104,7 +104,7 @@ class GRouter {
         path: _config.applicationRoutes.kRegistrationPage,
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
-            child: RegistrationPage(),
+            child: const RegistrationPage(),
             state: state,
           );
         },
@@ -165,7 +165,7 @@ class GRouter {
                 path: _config.applicationRoutes.kRegistrationPageName,
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   return _builderPage(
-                    child: RegistrationPage(),
+                    child: const RegistrationPage(),
                     state: state,
                   );
                 },

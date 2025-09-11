@@ -70,7 +70,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
           error: error.toString());
     };
     if (widget.priceRanges.isNullOrEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return SizedBox(
         height: 70,
@@ -78,7 +78,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
           itemCount: widget.priceRanges.length,
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
-          separatorBuilder: (ctx, index) => SizedBox(
+          separatorBuilder: (ctx, index) => const SizedBox(
             width: 10,
           ),
           itemBuilder: (ctx, index) {
@@ -142,7 +142,6 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
                               .copyWithSaveOtherField(
-                                  prices: null,
                                   searchText:
                                       prevChoosedOrAppliedFilterToAddToIt
                                           .searchText);
@@ -162,16 +161,17 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                   },
                   child: Container(
                     height: 50,
-                    margin: EdgeInsets.only(top: 20),
+                    margin: const EdgeInsets.only(top: 20),
                     child: DottedBorder(
-                        radius: Radius.circular(180),
+                        radius: const Radius.circular(180),
                         borderType: BorderType.RRect,
                         strokeCap: StrokeCap.square,
                         strokeWidth: 0.5,
-                        color:
-                            isSelected ? Color(0xffFF5F61) : Color(0xff6B6B6B),
-                        padding: EdgeInsets.all(8),
-                        dashPattern: [3, 3],
+                        color: isSelected
+                            ? const Color(0xffFF5F61)
+                            : const Color(0xff6B6B6B),
+                        padding: const EdgeInsets.all(8),
+                        dashPattern: const [3, 3],
                         child: Center(
                           child: Text(
                             '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint)} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',

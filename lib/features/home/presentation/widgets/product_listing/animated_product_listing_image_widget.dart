@@ -45,7 +45,7 @@ class AnimatedProductListingImageWidget extends StatelessWidget {
           error: error.toString());
     };
     return AnimatedSize(
-      duration: Duration(milliseconds: 7000),
+      duration: const Duration(milliseconds: 7000),
       curve: Curves.fastEaseInToSlowEaseOut,
       child: Container(
         alignment: Alignment.center,
@@ -57,7 +57,7 @@ class AnimatedProductListingImageWidget extends StatelessWidget {
                 color: borderColor ?? const Color(0xffffffff)),
             boxShadow: withBackGroundShadow
                 ? [
-                    BoxShadow(
+                    const BoxShadow(
                       color: Color(0x19000000),
                       offset: Offset(0, 3),
                       blurRadius: 6,

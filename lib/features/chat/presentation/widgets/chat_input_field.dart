@@ -185,7 +185,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                             boxShadow: [
                               BoxShadow(
                                   offset: const Offset(0, 2),
-                                  color: Color.fromARGB(41, 255, 255, 255)
+                                  color: const Color.fromARGB(41, 255, 255, 255)
                                       .withValues(),
 //                              colorScheme.black.withOpacity(0.16)
                                   blurRadius: 10)
@@ -195,9 +195,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                           child: state.replyType == 'text'
                               ? Row(
                                   key: TestVariables.kTestMode
-                                      ? Key(WidgetsKeys.replayTextKey)
+                                      ? const Key(WidgetsKeys.replayTextKey)
                                       : null,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     20.horizontalSpace,
@@ -213,12 +212,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       onTap: () {
                                         BlocProvider.of<AppBloc>(context).add(
                                             RefreshChatInputField(
-                                                false, '', false,
-                                                messageId: null,
-                                                message: null,
-                                                senderParentMessageId: null,
-                                                imageUrl: null,
-                                                time: null));
+                                                false, '', false));
                                       },
                                       child: SvgPicture.asset(
                                         AppAssets.closeSvg,
@@ -270,10 +264,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 )
                               : state.replyType == 'image'
                                   ? Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       children: [
                                         20.horizontalSpace,
                                         SvgPicture.asset(
@@ -320,7 +310,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12.0),
-                                                  boxShadow: [
+                                                  boxShadow: const [
                                                     BoxShadow(
                                                       color: Color.fromARGB(
                                                           1, 0, 0, 0)
@@ -329,8 +319,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
 //                                                      .withOpacity(0.05)
 
                                                       ,
-                                                      offset:
-                                                          const Offset(0, 3),
+                                                      offset: Offset(0, 3),
                                                       blurRadius: 6,
                                                     ),
                                                   ],
@@ -380,10 +369,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     )
                                   : state.replyType == 'file'
                                       ? Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
                                           children: [
                                             20.horizontalSpace,
                                             SvgPicture.asset(
@@ -461,10 +446,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         )
                                       : state.replyType == 'video'
                                           ? Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
                                               children: [
                                                 20.horizontalSpace,
                                                 SvgPicture.asset(
@@ -554,10 +535,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               ],
                                             )
                                           : Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
                                               children: [
                                                 20.horizontalSpace,
                                                 SvgPicture.asset(
@@ -788,7 +765,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 vertical: 7.0),
                                             child: AppTextField(
                                               key: TestVariables.kTestMode
-                                                  ? Key(
+                                                  ? const Key(
                                                       WidgetsKeys
                                                           .sendMessageTextFieldKey,
                                                     )
@@ -954,7 +931,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         } else ...{
                                           InkWell(
                                             key: TestVariables.kTestMode
-                                                ? Key(
+                                                ? const Key(
                                                     WidgetsKeys
                                                         .sendMessageInChatButtonKey,
                                                   )

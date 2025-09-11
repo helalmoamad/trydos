@@ -94,7 +94,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
     if (debounce?.isActive ?? false) {
       debounce!.cancel();
     }
-    debounce = Timer(Duration(milliseconds: 600), () {
+    debounce = Timer(const Duration(milliseconds: 600), () {
       //  videoProductInListingController.forEach((key, value) => value.pause());
       // if (setThisEnabledNotifier.value.item1 != -1) {
       //    setThisEnabledNotifier.value = Tuple2(-1, -1);
@@ -117,7 +117,6 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
 
         boutiqueBloc.add(GetProductsWithFiltersEvent(
             context: context,
-            fromNotification: false,
             limit: 10,
             cashedOrginalBoutique: true,
             boutiqueSlug: "*flashDeal*",
@@ -182,13 +181,14 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                 ? null
                 : TrydosAppBar(
                     appBarParams: AppBarParams(
-                        automaticallyImplyLeading: false,
                         hasLeading: false,
-                        leading: SizedBox.shrink(),
+                        leading: const SizedBox.shrink(),
                         scrolledUnderElevation: 0,
                         backIconColor: Colors.black,
                         action: [
-                          LanguageService.rtl ? Spacer() : SizedBox.shrink(),
+                          LanguageService.rtl
+                              ? const Spacer()
+                              : const SizedBox.shrink(),
                           Padding(
                             padding:
                                 const EdgeInsetsDirectional.only(end: 10.0),
@@ -227,7 +227,8 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                       onTap: () {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => CartPage(
+                                            builder: (context) =>
+                                                const CartPage(
                                               fromeFilters: true,
                                             ),
                                           ),
@@ -302,13 +303,14 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                     children: [
                       Container(
                         alignment: Alignment.bottomRight,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         width: 150,
                         height: 30,
                         child: MyTextWidget(
                           textAlign: TextAlign.start,
                           "${LocaleKeys.flash_deal.tr()}",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 14),
                         ),
                       ),
                       ValueListenableBuilder<bool>(
@@ -341,14 +343,15 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                       productWithFlashDealEndDate = [];
                                   products.forEach((element) {
                                     DateTime endDate;
-                                    Duration _duration = Duration();
+                                    Duration _duration = const Duration();
                                     final now = DateTime.now();
                                     try {
                                       endDate = DateFormat(
                                               'MM/dd/yyyy', 'en_US')
                                           .parse(
                                               element.flashDealEndDate ?? "");
-                                      endDate = endDate.add(Duration(days: 1));
+                                      endDate =
+                                          endDate.add(const Duration(days: 1));
                                     } catch (e) {
                                       endDate = DateTime.now();
                                       print('Error parsing date: $e');
@@ -361,7 +364,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                   });
                                   products = productWithFlashDealEndDate;
                                   return products.isNullOrEmpty
-                                      ? SizedBox.shrink()
+                                      ? const SizedBox.shrink()
                                       : Container(
                                           width: 1.sw,
                                           height: state
@@ -377,22 +380,21 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                               LayoutBuilder(
                                             builder: (context, constraints) {
                                               // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)
-                                              final double spacing = 5;
-                                              final int crossAxisCount = 2;
-                                              final double totalSpacing =
+                                              const double spacing = 5;
+                                              const int crossAxisCount = 2;
+                                              const double totalSpacing =
                                                   spacing *
                                                       (crossAxisCount + 1);
                                               final double itemWidth =
                                                   (constraints.maxWidth -
                                                           totalSpacing) /
                                                       crossAxisCount;
-                                              final double itemHeight = 375;
+                                              const double itemHeight = 375;
 
                                               return Column(
                                                 children: [
                                                   Expanded(
                                                     child: GridView.builder(
-                                                      shrinkWrap: false,
                                                       addRepaintBoundaries:
                                                           false,
                                                       addAutomaticKeepAlives:
@@ -422,7 +424,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                         return InkWell(
                                                           onTap: () {
                                                             GetIt.I<HomeBloc>().add(
-                                                                ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                                const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                                     isStatusInitaial:
                                                                         true));
                                                             homeBloc.add(AddCurrentSelectedColorEvent(
@@ -434,7 +436,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                                     .toString()));
 
                                                             Future.delayed(
-                                                                Duration(
+                                                                const Duration(
                                                                     milliseconds:
                                                                         300),
                                                                 () =>
@@ -460,7 +462,6 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                                 tapIndexToShowColorImages,
                                                             refreshFlashDeal:
                                                                 refreshFlashDeal,
-                                                            fromHomePage: false,
                                                             itemIndex: index,
                                                             finishRedeem:
                                                                 finishRedeem,
@@ -498,7 +499,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                 child: TrydosLoader(),
                               );
                             }
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           })
                     ],
                   ),
@@ -527,12 +528,12 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                     List<filter.Products> productWithFlashDealEndDate = [];
                     products.forEach((element) {
                       DateTime endDate;
-                      Duration _duration = Duration();
+                      Duration _duration = const Duration();
                       final now = DateTime.now();
                       try {
                         endDate = DateFormat('MM/dd/yyyy', 'en_US')
                             .parse(element.flashDealEndDate ?? "");
-                        endDate = endDate.add(Duration(days: 1));
+                        endDate = endDate.add(const Duration(days: 1));
                       } catch (e) {
                         endDate = DateTime.now();
                         print('Error parsing date: $e');
@@ -545,7 +546,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                     products = productWithFlashDealEndDate;
 
                     if (tapIndex != -1) {
-                      homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                      homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                           isChangedVariationWhenQtyZero: false));
 
                       /* homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
@@ -559,12 +560,12 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                           productId: products[tapIndex].productId.toString()));
 
                       loadingForRquestProductDetails.value = true;
-                      Future.delayed(Duration(milliseconds: 600),
+                      Future.delayed(const Duration(milliseconds: 600),
                           () => loadingForRquestProductDetails.value = false);
                     } else {
                       currentActiveTab.value = 0;
 
-                      return SizedBox.shrink();
+                      return const SizedBox.shrink();
                     }
                     return ValueListenableBuilder<bool>(
                         valueListenable: loadingForRquestProductDetails,
@@ -747,7 +748,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                                 .marketToken ==
                                                             null)) {
                                               Future.delayed(
-                                                Duration(seconds: 5),
+                                                const Duration(seconds: 5),
                                                 () {
                                                   homeBloc.add(
                                                       GetProductDatailsWithoutRelatedProductsEvent(
@@ -763,8 +764,8 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                               );
                                             }
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
-                                                () {
+                                                const Duration(
+                                                    milliseconds: 300), () {
                                               if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                       GetProductDetailWithoutSimilarRelatedProductsStatus
                                                           .success &&
@@ -805,8 +806,8 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                               }
                                             });
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
-                                                () {
+                                                const Duration(
+                                                    milliseconds: 300), () {
                                               if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                       GetProductDetailWithoutSimilarRelatedProductsStatus
                                                           .failure ||
@@ -863,9 +864,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                           : true
                                                       : true)) {
                                                 homeBloc.add(
-                                                    AddCurrentColorSizeEvent(
-                                                        choice_1: null,
-                                                        choiceOption: null));
+                                                    AddCurrentColorSizeEvent());
                                               } else if (!(state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                           productId] !=
@@ -943,14 +942,14 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                             sizeOptionSelect));
                                               }
                                               homeBloc.add(
-                                                  IsChangedVariationWhenQtyZeroEvent(
+                                                  const IsChangedVariationWhenQtyZeroEvent(
                                                       isChangedVariationWhenQtyZero:
                                                           true));
 
                                               currentActiveTab.value = 3;
                                               Future.delayed(
-                                                  Duration(milliseconds: 600),
-                                                  () {
+                                                  const Duration(
+                                                      milliseconds: 600), () {
                                                 WidgetsBinding.instance
                                                     .addPostFrameCallback((_) {
                                                   panelControllerForCart.open();
@@ -978,7 +977,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                 ? Container(
                                                     width: 1.sw,
                                                     height: 1.sh - 150,
-                                                    color: Color.fromRGBO(
+                                                    color: const Color.fromRGBO(
                                                         0, 0, 0, 0.3),
                                                     child: TrydosLoader(
                                                       size: 25,
@@ -1008,7 +1007,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                                         .getRedeemDateForProduct(products[tapIndex]
                                                                             .productId
                                                                             .toString())
-                                                                        ?.isAfter(DateTime.now().add(Duration(
+                                                                        ?.isAfter(DateTime.now().add(const Duration(
                                                                             seconds:
                                                                                 1))) ==
                                                                     true) &&
@@ -1337,12 +1336,12 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
         valueListenable: showShadowForColorImages,
         builder: (context, isShowShadowForPanel, _) {
           return !isShowShadowForPanel
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : InkWell(
                   onTap: () {
                     showShadowForColorImages.value = false;
                     Future.delayed(
-                      Duration(microseconds: 300),
+                      const Duration(microseconds: 300),
                       () {
                         colorImagesPanelController.close();
                         showShadowForColorImages.value = false;
@@ -1352,7 +1351,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                   child: Container(
                     height: 1.sh,
                     width: 1.sw,
-                    color: Color.fromRGBO(29, 29, 29, 0.6),
+                    color: const Color.fromRGBO(29, 29, 29, 0.6),
                   ),
                 );
         });
@@ -1376,7 +1375,6 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30.r),
                       topRight: Radius.circular(30.r)),
-                  isDraggable: true,
                   onPanelClosed: () {
                     showShadowForColorImages.value = false;
                   },
@@ -1399,15 +1397,14 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
       child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 height: 2,
                 width: 40,
-                decoration: BoxDecoration(color: Color(0xffC4C2C2)),
+                decoration: const BoxDecoration(color: Color(0xffC4C2C2)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               ValueListenableBuilder<bool>(
@@ -1436,7 +1433,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                   itemBuilder: (context, index) => InkWell(
                                       onTap: () {
                                         GetIt.I<HomeBloc>().add(
-                                            ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                            const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                 isStatusInitaial: true));
                                         homeBloc.add(AddCurrentSelectedColorEvent(
                                             currentSelectedColor: index,
@@ -1446,7 +1443,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                 .toString()));
 
                                         Future.delayed(
-                                            Duration(milliseconds: 300),
+                                            const Duration(milliseconds: 300),
                                             () => Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                     builder: (ctx) =>

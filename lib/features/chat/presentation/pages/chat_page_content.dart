@@ -48,7 +48,7 @@ class ChatPageContentState extends State<ChatPageContent> {
         .add(Duration(minutes: differencetime))
         .toString());
 
-    timers = Timer.periodic(Duration(minutes: 4), (timer) {
+    timers = Timer.periodic(const Duration(minutes: 4), (timer) {
       FirebasePresence.sendUserStatus(DateTime.now()
           .toUtc()
           .add(Duration(minutes: differencetime))
@@ -140,7 +140,7 @@ class ChatPageContentState extends State<ChatPageContent> {
             child: Center(
               child: ElevatedButton(
                   onPressed: () {
-                    GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
+                    GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));
                   },
                   child: MyTextWidget(LocaleKeys.try_again.tr())),
             ),
@@ -160,8 +160,6 @@ class ChatPageContentState extends State<ChatPageContent> {
           searchChats.value = chats;
         });
         return SlidableAutoCloseBehavior(
-          closeWhenOpened: true,
-          closeWhenTapped: true,
           child: BlocBuilder<AppBloc, AppState>(
             buildWhen: (p, c) =>
                 p.pusherActivityIds.length != c.pusherActivityIds.length,
@@ -194,7 +192,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                                           searchedChats[index].id.toString()))
                                   : false;
                               if (searchedChats[index].isPrivate == true) {
-                                return SizedBox.shrink();
+                                return const SizedBox.shrink();
                               }
                               return ChatCard(
                                 key: TestVariables.kTestMode

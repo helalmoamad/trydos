@@ -57,7 +57,7 @@ class BuyersCommentsPanel extends StatelessWidget {
         backdropEnabled: true,
         panelBuilder: (scrollController) {
           return Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             height: 1.sh - 70,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
@@ -71,7 +71,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                       horizontal: (1.sw / 2) - 40, vertical: 10),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
-                      color: Color(0xffC4C2C2)),
+                      color: const Color(0xffC4C2C2)),
                   height: 2,
                   width: 40,
                 ),
@@ -79,7 +79,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                   height: 5,
                 ),
                 Padding(
-                    padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
+                    padding: const EdgeInsetsGeometry.symmetric(horizontal: 10),
                     child: SvgPicture.asset(
                       AppAssets.buyersCommentSvg,
                       height: 30,
@@ -88,7 +88,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                   height: 10,
                 ),
                 Padding(
-                    padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
+                    padding: const EdgeInsetsGeometry.symmetric(horizontal: 10),
                     child: MyTextWidget(
                       '${LocaleKeys.buyers_comment.tr()}',
                       style: context.textTheme.titleLarge?.rr.copyWith(
@@ -98,7 +98,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                   height: 10,
                 ),
                 Padding(
-                    padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
+                    padding: const EdgeInsetsGeometry.symmetric(horizontal: 10),
                     child: MyTextWidget(
                       LocaleKeys
                           .all_comments_are_genuine_from_customers_who_purchased_and_actually
@@ -107,7 +107,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                           color: const Color(0xff1D1D1D), fontSize: 11),
                     )),
                 Padding(
-                    padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
+                    padding: const EdgeInsetsGeometry.symmetric(horizontal: 10),
                     child: Row(
                       children: [
                         MyTextWidget(
@@ -123,9 +123,10 @@ class BuyersCommentsPanel extends StatelessWidget {
                       ],
                     )),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   decoration: BoxDecoration(
-                    color: Color(0xffD3D3D3),
+                    color: const Color(0xffD3D3D3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                   height: 0.5,
@@ -135,17 +136,17 @@ class BuyersCommentsPanel extends StatelessWidget {
                   height: 32,
                   width: 1.sw,
                   child: ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) => Container(
                       margin: EdgeInsets.only(
                           left: LanguageService.languageCode == "ar" ? 5 : 0,
                           right: LanguageService.languageCode != "ar" ? 5 : 0),
-                      padding: EdgeInsets.symmetric(horizontal: 7),
+                      padding: const EdgeInsets.symmetric(horizontal: 7),
                       alignment: Alignment.center,
                       height: 32,
                       decoration: BoxDecoration(
-                          color: Color(0xffF8F8F8),
+                          color: const Color(0xffF8F8F8),
                           borderRadius: BorderRadius.circular(8)),
                       child: MyTextWidget(
                         filter[index],
@@ -159,7 +160,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                 Expanded(
                     child: ListView.builder(
                   controller: scrollController,
-                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   itemBuilder: (context, index) => _commentWidget(context),
                   itemCount: 10,
                 ))
@@ -171,16 +172,15 @@ class BuyersCommentsPanel extends StatelessWidget {
 
   Widget _commentWidget(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       width: 388.w,
       height: 115,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Color(0xffF8F8F8),
+        color: const Color(0xffF8F8F8),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -188,43 +188,43 @@ class BuyersCommentsPanel extends StatelessWidget {
             width: 1.sw,
             child: Row(
               children: [
-                MyCachedNetworkImage(
+                const MyCachedNetworkImage(
                     imageUrl:
                         "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/2025-08-26-68ae378e796d0.png",
                     width: 20,
                     imageFit: BoxFit.cover,
                     height: 20),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 MyTextWidget(
                   'Yxxx Oxxxx',
                   style: context.textTheme.titleLarge?.rr
-                      .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                      .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                 ),
-                Spacer(),
+                const Spacer(),
                 MyTextWidget(
                   '18 feb',
                   style: context.textTheme.titleLarge?.rr
-                      .copyWith(color: Color(0xff8D8D8D), fontSize: 9),
+                      .copyWith(color: const Color(0xff8D8D8D), fontSize: 9),
                 )
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           MyTextWidget(
             'Medium | Bule',
             style: context.textTheme.titleLarge?.mr
-                .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           MyTextWidget(
             'Amazing Product I Buy It And I Saw It Is Good Quality Regarding Price Amazing Product I Buy It And I Saw It Is Good Quality Regardin',
             maxLines: 10,
             style: context.textTheme.titleLarge?.rr
-                .copyWith(color: Color(0xff1D1D1D), fontSize: 11),
+                .copyWith(color: const Color(0xff1D1D1D), fontSize: 11),
           ),
-          Spacer(),
+          const Spacer(),
           Padding(
-              padding: EdgeInsets.only(left: 5, right: 5),
+              padding: const EdgeInsets.only(left: 5, right: 5),
               child: Row(
                 children: [
                   SvgPicture.asset(
@@ -234,28 +234,28 @@ class BuyersCommentsPanel extends StatelessWidget {
                   MyTextWidget(
                     '  110k',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   MyTextWidget(
                     '${LocaleKeys.true_size.tr()} | ',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
-                    color: Color(0xff068D06),
+                    color: const Color(0xff068D06),
                     width: 12,
                   ),
                   MyTextWidget(
                     ' ${LocaleKeys.recommend_it.tr()} | ',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   MyTextWidget(
                     '${LocaleKeys.good_quality.tr()} ',
                     style: context.textTheme.titleLarge?.rr
-                        .copyWith(color: Color(0xff1D1D1D), fontSize: 9),
+                        .copyWith(color: const Color(0xff1D1D1D), fontSize: 9),
                   ),
                   StarRatingProductWidget(
                     itemHeight: 13,
@@ -265,7 +265,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                     widgetWidth: 71,
                     svgWidth: 12,
                     onRatingChanged: (p0) {},
-                    starColor: Color(0xff1D1D1D),
+                    starColor: const Color(0xff1D1D1D),
                     initialRating: 3,
                   ),
                 ],

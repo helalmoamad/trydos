@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +9,8 @@ import '../../../app/app_default_container.dart';
 import 'back_button.dart';
 
 class SearchRequestsAppBar extends StatefulWidget {
-  const SearchRequestsAppBar({Key? key, required this.onSearch}) : super(key: key);
+  const SearchRequestsAppBar({Key? key, required this.onSearch})
+      : super(key: key);
 
   final void Function(String text) onSearch;
 
@@ -80,8 +80,8 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
               ),
             ),
             Positioned(
-              right: LanguageService.languageCode== 'en' ? 0.0 : null,
-              left:  LanguageService.languageCode== 'en' ? 0.0 : null,
+              right: LanguageService.languageCode == 'en' ? 0.0 : null,
+              left: LanguageService.languageCode == 'en' ? 0.0 : null,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,8 +90,8 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
                     radius: 18.h,
                     backgroundColor: colorScheme.tertiary,
                     child: Center(
-                      child:
-                      SvgPicture.asset(AppAssets.searchSvg,color: colorScheme.primary,height: 14.h),
+                      child: SvgPicture.asset(AppAssets.searchSvg,
+                          color: colorScheme.primary, height: 14.h),
                     ),
                   ),
                 ],

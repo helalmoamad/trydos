@@ -77,7 +77,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   late PageController pageController;
   VideoPlayerController? _videoController;
 
-  LongPressDownDetails details = LongPressDownDetails();
+  LongPressDownDetails details = const LongPressDownDetails();
   var init;
   late AppBloc appBloc;
   late HomeBloc homeBloc;
@@ -374,7 +374,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   widget.animatedController.stop();
                                 } else {
                                   Future.delayed(
-                                      Duration(milliseconds: 300),
+                                      const Duration(milliseconds: 300),
                                       () =>
                                           widget.animatedController.forward());
                                 }
@@ -416,7 +416,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                 widget.collectionIndex]!]
                                         .oneLink ==
                                     null
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : positioned.Positioned(
                                     bottom: 0,
                                     child: _handleWithUrlWidget((state
@@ -497,7 +497,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   storyId: story.id.toString()));
                             }*/
                             return FittedBox(
-                              fit: BoxFit.contain,
                               child: SizedBox(
                                 width: _videoController!.value.size.width,
                                 height: _videoController!.value.size.height,
@@ -515,7 +514,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                     widget.collectionIndex]!]
                                                 .oneLink ==
                                             null
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : positioned.Positioned(
                                             bottom: 0,
                                             child: _handleWithUrlWidget(state
@@ -638,7 +637,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           state.storiesCollections[widget.collectionIndex].photoPath),
                             ),
                             Padding(
-                              padding: EdgeInsetsDirectional.only(start: 10),
+                              padding:
+                                  const EdgeInsetsDirectional.only(start: 10),
                               child: MyTextWidget(
                                   style: textTheme.bodyLarge?.rr
                                       .copyWith(color: Colors.white),
@@ -796,7 +796,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       fromBoutiqueListing = true;
       BlocProvider.of<BoutiqueBloc>(context)
           .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
-              fromHomePageSearch: false,
               //    tagsNames: tagsNames,
               boutiqueSlug: boutiueSlug,
               filtersChoosedByUser: GetProductFiltersModel(
@@ -847,7 +846,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             }
           }
           BlocProvider.of<HomeBloc>(context).add(
-              ChangeStatusOFGetProductsDetailsToSuccessEvent(
+              const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                   isStatusInitaial: true));
           BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
             currentColorName: colorName == "" ? null : colorName,
@@ -855,13 +854,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           ));
 
           Future.delayed(
-              Duration(milliseconds: 300),
+              const Duration(milliseconds: 300),
               () => Navigator.of(context).push(PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
                       ProductDetailsPageNew(
                         productSlugForOpeningChatDirectly:
                             uriWithoutFilter.split("/").toList().last,
-                        fromNotification: false,
                       ))));
           return;
         }
@@ -886,7 +884,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   Widget _handleWithUrlWidget(String url) {
     return Material(
-      color: Color.fromRGBO(0, 0, 0, 0),
+      color: const Color.fromRGBO(0, 0, 0, 0),
       child: BlocListener<BoutiqueBloc, BoutiqueState>(
         listenWhen: (previous, current) =>
             previous.getFiltersForNavigatorFromLinkToListingPageStatus !=
@@ -894,13 +892,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         listener: (context, boutiqueState) async {
           if (boutiqueState.getFiltersForNavigatorFromLinkToListingPageStatus ==
               GetFiltersForNavigatorFromLinkToListingPageStatus.success) {
-            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
-            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                 isChangedVariationWhenQtyZero: false));
 
             boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
-                sizeAndColorFilterinTextToSearch: {}));
+                sizeAndColorFilterinTextToSearch: const {}));
             appBloc.add(HideBottomNavigationBar(false));
             appBloc.add(ShowOrHideBars(true));
             appBloc.add(ChangeIndexForSearch(1));
@@ -921,22 +919,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               BlocProvider.of<BoutiqueBloc>(context).add(
                   GetProductsWithFiltersEvent(
                       getWithoutFilter: true,
-                      cashedOrginalBoutique: false,
                       boutiqueSlug: boutiqueState.appliedFiltersByUser["link"]
                               ?.filters?.boutiques?[0].slug ??
                           "",
                       fromSearch: false,
-                      category: null,
                       context: context,
-                      searchText: null,
                       offset: 1));
 
               await Future.delayed(
-                Duration(milliseconds: 300),
+                const Duration(milliseconds: 300),
                 () => Navigator.of(context).push(PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
                       ProductListingPage(
-                          fromBackground: false,
                           boutiqueSlug: boutiqueState
                                   .appliedFiltersByUser["link"]
                                   ?.filters
@@ -959,14 +953,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             }
 
             await Future.delayed(
-                Duration(milliseconds: 300),
+                const Duration(milliseconds: 300),
                 () => Navigator.of(context).push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         ProductListingPage(
                             getProductFiltersModel:
                                 boutiqueState.appliedFiltersByUser["link"],
                             fromNotificationCategory: true,
-                            fromBackground: false,
                             fromSearch: true,
                             boutiqueSlug: "search"))));
           }

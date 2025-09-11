@@ -37,7 +37,7 @@ class lableInfoProduct extends StatelessWidget {
           error: error.toString());
     };
     return Padding(
-        padding: EdgeInsetsGeometry.only(bottom: 10, left: 20, right: 20),
+        padding: const EdgeInsetsGeometry.only(bottom: 10, left: 20, right: 20),
         child: SizedBox(
             height: 14,
             width: 1.sw,
@@ -48,19 +48,25 @@ class lableInfoProduct extends StatelessWidget {
                 MyTextWidget(
                   " ! ${LocaleKeys.best_price.tr()}",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xff388CFF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff388CFF),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   " Last ` Days ",
                   style: context.textTheme.titleMedium?.rr.copyWith(
-                      height: 1.3, color: Color(0xff388CFF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff388CFF),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "!",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xff388CFF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff388CFF),
+                      fontSize: 11),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 SvgPicture.asset(
@@ -71,19 +77,25 @@ class lableInfoProduct extends StatelessWidget {
                 MyTextWidget(
                   "Trend ",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xffFF641A), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xffFF641A),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "Color ",
                   style: context.textTheme.titleMedium?.rr.copyWith(
-                      height: 1.3, color: Color(0xffFF641A), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xffFF641A),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "!",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xffFF641A), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xffFF641A),
+                      fontSize: 11),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 SvgPicture.asset(
@@ -92,46 +104,60 @@ class lableInfoProduct extends StatelessWidget {
                 MyTextWidget(
                   " ${LocaleKeys.best_sell.tr()} ",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xff513AAF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff513AAF),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "Last Week ",
                   style: context.textTheme.titleMedium?.rr.copyWith(
-                      height: 1.3, color: Color(0xff513AAF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff513AAF),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "!",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xff513AAF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff513AAF),
+                      fontSize: 11),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 SvgPicture.asset(
                   AppAssets.fastPackingManIconSvg,
-                  color: Color(0xff388CFF),
+                  color: const Color(0xff388CFF),
                   width: 14,
                   height: 14,
                 ),
                 MyTextWidget(
                   " ${LocaleKeys.fast_packing.tr()} ",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xff388CFF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff388CFF),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "${LocaleKeys.today_shipping_if_buy_before.tr()} ",
                   style: context.textTheme.titleMedium?.rr.copyWith(
-                      height: 1.3, color: Color(0xff388CFF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff388CFF),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "13:00",
                   style: context.textTheme.titleMedium?.br.copyWith(
-                      height: 1.3, color: Color(0xff388CFF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff388CFF),
+                      fontSize: 11),
                 ),
                 MyTextWidget(
                   "${LocaleKeys.today.tr()} ",
                   style: context.textTheme.titleMedium?.rr.copyWith(
-                      height: 1.3, color: Color(0xff388CFF), fontSize: 11),
+                      height: 1.3,
+                      color: const Color(0xff388CFF),
+                      fontSize: 11),
                 ),
               ],
             )));

@@ -112,7 +112,6 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                 userMessageName: widget.senderAnswerName,
                 userMessagePhoto: widget.senderAnswerPhoto,
                 messageId: widget.messageId,
-                disableMessageAlignment: false,
                 isSent: widget.isISentFirstMessage,
                 isRead: widget.isReplayedMessageRead,
                 watchedAt: widget.watchedaAt,
@@ -207,11 +206,9 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                                 : TextMessage(
                                     message: widget.messageAnswer!,
                                     index: widget.index,
-                                    withImageShadow: true,
                                     senderId:
                                         GetIt.I<PrefsRepository>().myChatId!,
                                     isRead: widget.isAnswerMessageRead,
-                                    disableMessageAlignment: false,
                                     isReceived: widget.isAnswerMessageReceived,
                                     messageId: widget.messageAnswerId,
                                     userMessageName: widget.senderAnswerName,

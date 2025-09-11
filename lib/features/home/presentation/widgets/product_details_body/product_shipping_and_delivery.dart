@@ -49,15 +49,15 @@ class ProductShippingAndDelivery extends StatelessWidget {
           error: error.toString());
     };
     return Container(
-        margin: EdgeInsets.symmetric(horizontal: 10),
-        padding: EdgeInsets.all(10),
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15), color: Color(0xffFCFCFC)),
+            borderRadius: BorderRadius.circular(15),
+            color: const Color(0xffFCFCFC)),
         child: ValueListenableBuilder<bool>(
             valueListenable: isExpanded,
             builder: (context, expanded, _) {
               return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InkWell(
@@ -65,11 +65,10 @@ class ProductShippingAndDelivery extends StatelessWidget {
                           isExpanded.value = !isExpanded.value;
                         },
                         child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SvgPicture.asset(AppAssets.deliveryPathSvg),
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
                               Row(children: [
@@ -79,18 +78,18 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           height: 16 / 13,
                                           fontSize: 9,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 SvgPicture.asset(
                                   AppAssets.chatWithQuestionSvg,
                                   height: 12,
-                                  color: Color(0xffC4C2C2),
+                                  color: const Color(0xffC4C2C2),
                                 ),
                               ]),
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
                               Row(
@@ -101,7 +100,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         .copyWith(
                                             height: 16 / 13,
                                             fontSize: 11,
-                                            color: Color(0xff1D1D1D)),
+                                            color: const Color(0xff1D1D1D)),
                                   ),
                                   MyTextWidget(
                                     '2.Jun | ',
@@ -109,7 +108,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         .copyWith(
                                             height: 16 / 13,
                                             fontSize: 11,
-                                            color: Color(0xff1D1D1D)),
+                                            color: const Color(0xff1D1D1D)),
                                   ),
                                   MyTextWidget(
                                     '3 ${LocaleKeys.work_days_at_your_address_in.tr()} Lebanon',
@@ -117,7 +116,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         .copyWith(
                                             height: 16 / 13,
                                             fontSize: 11,
-                                            color: Color(0xff1D1D1D)),
+                                            color: const Color(0xff1D1D1D)),
                                   ),
                                 ],
                               )
@@ -131,21 +130,21 @@ class ProductShippingAndDelivery extends StatelessWidget {
                             panelController.open();
                           },
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
                                 width: 1.sw,
                                 height: 0.5,
-                                decoration:
-                                    BoxDecoration(color: Color(0xffD3D3D3)),
-                                margin: EdgeInsets.symmetric(vertical: 10),
+                                decoration: const BoxDecoration(
+                                    color: Color(0xffD3D3D3)),
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
                               ),
                               SvgPicture.asset(
                                 AppAssets.freeShippingSvg,
                                 width: 20,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 8,
                               ),
                               MyTextWidget(
@@ -154,9 +153,9 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                     .copyWith(
                                         fontSize: 11,
                                         height: 16 / 13,
-                                        color: Color(0xff1D1D1D)),
+                                        color: const Color(0xff1D1D1D)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 3,
                               ),
                               MyTextWidget(
@@ -165,12 +164,12 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                     .copyWith(
                                         fontSize: 9,
                                         height: 16 / 13,
-                                        color: Color(0xff1D1D1D)),
+                                        color: const Color(0xff1D1D1D)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
                               Row(children: [
@@ -178,7 +177,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                   AppAssets.deliveryGuranteeSvg,
                                   width: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 MyTextWidget(
@@ -187,14 +186,14 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 11,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                               ]),
-                              SizedBox(
+                              const SizedBox(
                                 height: 3,
                               ),
                               Row(children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 25,
                                 ),
                                 MyTextWidget(
@@ -203,7 +202,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                                 MyTextWidget(
                                   ' 20% ${LocaleKeys.refund.tr()} ',
@@ -211,7 +210,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff388CFF)),
+                                          color: const Color(0xff388CFF)),
                                 ),
                                 MyTextWidget(
                                   '${LocaleKeys.of_the_product_price_if_shipping.tr()}',
@@ -219,21 +218,22 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                               ]),
                               Container(
                                 width: 1.sw,
                                 height: 0.5,
-                                decoration:
-                                    BoxDecoration(color: Color(0xffD3D3D3)),
-                                margin: EdgeInsets.symmetric(vertical: 10),
+                                decoration: const BoxDecoration(
+                                    color: Color(0xffD3D3D3)),
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
                               ),
                               SvgPicture.asset(
                                 AppAssets.freeReturnSvg,
                                 width: 20,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 8,
                               ),
                               MyTextWidget(
@@ -242,9 +242,9 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                     .copyWith(
                                         fontSize: 11,
                                         height: 16 / 13,
-                                        color: Color(0xff1D1D1D)),
+                                        color: const Color(0xff1D1D1D)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 3,
                               ),
                               MyTextWidget(
@@ -253,12 +253,12 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                     .copyWith(
                                         fontSize: 9,
                                         height: 16 / 13,
-                                        color: Color(0xff1D1D1D)),
+                                        color: const Color(0xff1D1D1D)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
                               Row(children: [
@@ -266,7 +266,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                   AppAssets.returnGuranteeSvg,
                                   width: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 MyTextWidget(
@@ -275,14 +275,14 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 11,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                               ]),
-                              SizedBox(
+                              const SizedBox(
                                 height: 3,
                               ),
                               Row(children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 25,
                                 ),
                                 MyTextWidget(
@@ -291,7 +291,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                                 MyTextWidget(
                                   ' 3 ${LocaleKeys.day.tr()} ',
@@ -299,7 +299,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                                 MyTextWidget(
                                   '${LocaleKeys.after_receiving_product_return_without_conditions.tr()}',
@@ -309,14 +309,14 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                               ]),
-                              SizedBox(
+                              const SizedBox(
                                 height: 3,
                               ),
                               Row(children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 25,
                                 ),
                                 MyTextWidget(
@@ -325,7 +325,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff1D1D1D)),
+                                          color: const Color(0xff1D1D1D)),
                                 ),
                                 MyTextWidget(
                                   '${LocaleKeys.get_the_amount_back.tr()}',
@@ -335,7 +335,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       .copyWith(
                                           fontSize: 9,
                                           height: 16 / 13,
-                                          color: Color(0xff388CFF)),
+                                          color: const Color(0xff388CFF)),
                                 ),
                               ])
                             ],

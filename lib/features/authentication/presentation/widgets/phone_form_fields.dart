@@ -123,20 +123,19 @@ class PhoneFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       showCursor.value = !showCursor.value;
     });
     if (controller?.text.isEmpty ?? true) {
       offset = 0;
     }
     return DottedBorder(
-      borderPadding: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       borderType: BorderType.RRect,
       strokeCap: StrokeCap.round,
       strokeWidth: 0.5,
-      dashPattern: [3, 3],
-      radius: Radius.circular(20.0),
+      dashPattern: const [3, 3],
+      radius: const Radius.circular(20.0),
       color: ready ? const Color(0xff388CFF) : const Color(0xff5D5C5D),
       child: Stack(
         alignment: Alignment.bottomLeft,
@@ -179,7 +178,7 @@ class PhoneFormField extends StatelessWidget {
                 scrollController: scrollController,
                 autocorrect: false,
                 autofocus: autoFocus ?? false,
-                cursorColor: Color(0xff5D5C5D),
+                cursorColor: const Color(0xff5D5C5D),
                 cursorHeight: 0,
                 cursorWidth: 0.w,
                 initialValue: initialValue,
@@ -202,7 +201,7 @@ class PhoneFormField extends StatelessWidget {
                   counterText: '',
                   hintText: hintText?.tr(),
                   hintStyle: context.textTheme.displayMedium?.ra
-                      .copyWith(color: Color(0xffC4C2C2)),
+                      .copyWith(color: const Color(0xffC4C2C2)),
                 ),
               ),
             ),
@@ -260,7 +259,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
         orElse: () => countries.firstWhere(
             (element) => '+${oldText.toLowerCase()}'
                 .startsWith(element.dialCode.toLowerCase()),
-            orElse: () => Country(
+            orElse: () => const Country(
                 name: '',
                 flag: '',
                 code: '',

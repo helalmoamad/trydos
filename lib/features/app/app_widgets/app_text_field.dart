@@ -172,7 +172,7 @@ class AppTextField extends StatelessWidget {
         ),
         prefix: prefix,
         prefixIconConstraints: isPrefixIconConstraints
-            ? BoxConstraints(
+            ? const BoxConstraints(
                 maxWidth: 2, maxHeight: 2, minHeight: 2, minWidth: 2)
             : null,
         border: OutlineInputBorder(

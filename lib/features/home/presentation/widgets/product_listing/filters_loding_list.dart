@@ -49,10 +49,9 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
     return Shimmer.fromColors(
         baseColor: Colors.grey.shade300,
         highlightColor: Colors.grey.shade100,
-        enabled: true,
         child: ListView.builder(
             itemCount: widget.countOfListInPage,
-            padding: EdgeInsetsDirectional.only(start: 15),
+            padding: const EdgeInsetsDirectional.only(start: 15),
             shrinkWrap: true,
             itemBuilder: (ctx, index) {
               return Column(
@@ -61,20 +60,20 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
                   Row(
                     children: [
                       Center(child: SvgPicture.asset(AppAssets.filtersSvg)),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Text('${LocaleKeys.filter_by.tr()} ${titles[index]}'),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   SizedBox(
                     height: 70,
                     child: index == 5
                         ? FlutterSlider(
-                            values: [1, 1000],
+                            values: const [1, 1000],
                             max: 1000,
                             min: 1,
                             disabled: true,
@@ -85,22 +84,22 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
                             rangeSlider: true,
                           )
                         : ListView.separated(
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             separatorBuilder: (ctx, index) {
-                              return SizedBox(
+                              return const SizedBox(
                                 width: 10,
                               );
                             },
                             itemBuilder: (ctx, index) {
-                              return CircleAvatar(
+                              return const CircleAvatar(
                                 radius: 35,
                               );
                             },
                             itemCount: 6,
                           ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   )
                 ],

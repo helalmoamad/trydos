@@ -76,14 +76,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UpdateChatUserNameEvent>(_onUpdateChatUserNameEvent,
         transformer: throttleDroppable(throttleDuration));
     on<LoginToChatEvent>(_onLoginToChatEvent,
-        transformer: throttleDroppable(Duration(seconds: 10)));
+        transformer: throttleDroppable(const Duration(seconds: 10)));
     on<LoginToStoriesEvent>(_onLoginToStoriesEvent,
-        transformer: throttleDroppable(Duration(seconds: 10)));
+        transformer: throttleDroppable(const Duration(seconds: 10)));
     on<StoreFcmTokenEvent>(
       _onStoreFcmTokenEvent,
     );
     on<SendOtpEvent>(_onSendOtpEvent,
-        transformer: throttleDroppable(Duration(seconds: 10)));
+        transformer: throttleDroppable(const Duration(seconds: 10)));
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
     on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
@@ -91,7 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onVerifyGuestPhoneEvent,
     );
     on<RegisterGuestEvent>(_onRegisterGuestEvent,
-        transformer: throttleDroppable(Duration(seconds: 5)));
+        transformer: throttleDroppable(const Duration(seconds: 5)));
     on<UpdateNameEvent>(_onUpdateNameEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
@@ -172,8 +172,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             foreGroundColor: Colors.white,
             hasError: true,
             backGroundColor: Colors.black,
-            showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG);
+            showInRelease: true);
         _prefsRepository.setLogInToChat(false);
       },
       (r) {
@@ -200,7 +199,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         NotificationProcess().fcmToken(null, null, null, null);
 
         apisMustNotToRequest.remove('GetChatsEvent');
-        GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
+        GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));
       },
     );
   }
@@ -288,7 +287,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setMarketToken(r.data?.token.toString());
 
         Future.delayed(
-          Duration(seconds: 30),
+          const Duration(seconds: 30),
           () {
             print("#########33333333332");
             _prefsRepository.setTokenExpired(false);
@@ -301,8 +300,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository
             .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-        GetIt.I<HomeBloc>().add(GetCartItemEvent());
-        GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
         //GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
 
         add(LoginToStoriesEvent(
@@ -375,7 +374,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
         NotificationProcess().fcmToken(null, null, null, null);
         apisMustNotToRequest.remove('GetStoryEvent');
-        GetIt.I<StoryBloc>().add(GetStoryEvent(withPaginition: false));
+        GetIt.I<StoryBloc>().add(const GetStoryEvent(withPaginition: false));
       },
     );
   }
@@ -440,8 +439,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>()
             .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-        GetIt.I<HomeBloc>().add(GetCartItemEvent());
-        GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
         // GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         print(
@@ -555,8 +554,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       /////////////////////////////////////
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-      GetIt.I<HomeBloc>().add(GetCartItemEvent());
-      GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
+      GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+      GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
       //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       ;
       _prefsRepository.setIdToken((r.data!.idToken).toString());
@@ -617,7 +616,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));
       Future.delayed(
-        Duration(minutes: 2),
+        const Duration(minutes: 2),
         () {
           _prefsRepository.setTokenExpired(false);
         },
@@ -652,10 +651,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-      GetIt.I<HomeBloc>().add(GetCartItemEvent());
-      GetIt.I<HomeBloc>()
-          .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
-      GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
+      GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+
+      GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
       //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       NotificationProcess().fcmToken(null, null, null, null);
     });
@@ -686,6 +684,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetCustomerInfoEvent(
       GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold((l) {
       if (ErrorManager.shouldRetry('GetCustomerInfoEvent', l.statusCode)) {
@@ -704,6 +703,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setMyStoriesName(userInfo.name!);
       }
       _prefsRepository.setPhoneNumber((userInfo.phone).toString());
+      GetIt.I<HomeBloc>().add(SaveUserInfoFromAuthEvent(userInfo: userInfo));
       emit(state.copyWith(
           getCustomerInfoStatus: GetCustomerInfoStatus.success,
           marketUser: userInfo));
@@ -781,7 +781,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
       ));
     }, (r) {
-      GetIt.I<StoryBloc>().add(GetStoryEvent(withPaginition: false));
+      GetIt.I<StoryBloc>().add(const GetStoryEvent(withPaginition: false));
       ErrorManager.resetRetry('UpdateStoriesUserEvent');
       _prefsRepository.setMyStoriesName(event.name ?? "");
       _prefsRepository.setMyMarketName(event.name ?? "");

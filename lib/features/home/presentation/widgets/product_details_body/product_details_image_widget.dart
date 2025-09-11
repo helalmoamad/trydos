@@ -88,7 +88,6 @@ class ProductDetailsImageWidget extends StatelessWidget {
     };
 
     return InteractiveViewer(
-      panEnabled: true,
       minScale: 0.1,
       maxScale: 4.0,
       child: Stack(
@@ -100,17 +99,17 @@ class ProductDetailsImageWidget extends StatelessWidget {
               borderRadius: index == 0
                   ? BorderRadius.only(
                       bottomRight: LanguageService.languageCode != "ar"
-                          ? Radius.circular(0)
-                          : Radius.circular(15),
+                          ? const Radius.circular(0)
+                          : const Radius.circular(15),
                       topRight: LanguageService.languageCode != "ar"
-                          ? Radius.circular(0)
-                          : Radius.circular(15),
+                          ? const Radius.circular(0)
+                          : const Radius.circular(15),
                       topLeft: LanguageService.languageCode == "ar"
-                          ? Radius.circular(0)
-                          : Radius.circular(15),
+                          ? const Radius.circular(0)
+                          : const Radius.circular(15),
                       bottomLeft: LanguageService.languageCode == "ar"
-                          ? Radius.circular(0)
-                          : Radius.circular(15))
+                          ? const Radius.circular(0)
+                          : const Radius.circular(15))
                   : borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
               border: Border.all(
                   width: 0.5, color: borderColor ?? context.colorScheme.white),
@@ -118,7 +117,6 @@ class ProductDetailsImageWidget extends StatelessWidget {
                   ? [
                       BoxShadow(
                         color: context.colorScheme.black.withOpacity(0.01),
-                        offset: Offset(0, 0),
                         blurRadius: blurRadius ?? 10,
                       ),
                     ]
@@ -128,17 +126,17 @@ class ProductDetailsImageWidget extends StatelessWidget {
                 borderRadius: index == 0
                     ? BorderRadius.only(
                         bottomRight: LanguageService.languageCode != "ar"
-                            ? Radius.circular(0)
-                            : Radius.circular(15),
+                            ? const Radius.circular(0)
+                            : const Radius.circular(15),
                         topRight: LanguageService.languageCode != "ar"
-                            ? Radius.circular(0)
-                            : Radius.circular(15),
+                            ? const Radius.circular(0)
+                            : const Radius.circular(15),
                         topLeft: LanguageService.languageCode == "ar"
-                            ? Radius.circular(0)
-                            : Radius.circular(15),
+                            ? const Radius.circular(0)
+                            : const Radius.circular(15),
                         bottomLeft: LanguageService.languageCode == "ar"
-                            ? Radius.circular(0)
-                            : Radius.circular(15))
+                            ? const Radius.circular(0)
+                            : const Radius.circular(15))
                     : borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
                 child: (imageUrl?.contains('assets') ?? true)
                     ? Image.asset('assets/images/address2.png',
@@ -165,7 +163,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                   ? [
                       BoxShadow(
                           color: context.colorScheme.white,
-                          offset: Offset(0, 3),
+                          offset: const Offset(0, 3),
                           blurRadius: 6,
                           inset: true),
                     ]
@@ -173,7 +171,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
             ),
           ),
           index != 0
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Positioned(
                   bottom: 0,
                   right: LanguageService.languageCode != "ar" ? null : 0,
@@ -183,9 +181,9 @@ class ProductDetailsImageWidget extends StatelessWidget {
                         width: 25,
                         height: 25,
                         decoration: BoxDecoration(
-                            color: Color(0xff513AAF),
+                            color: const Color(0xff513AAF),
                             borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(6),
+                                topLeft: const Radius.circular(6),
                                 bottomRight: Radius.circular(
                                     LanguageService.languageCode == "ar"
                                         ? 15
@@ -194,13 +192,13 @@ class ProductDetailsImageWidget extends StatelessWidget {
                                     LanguageService.languageCode != "ar"
                                         ? 15
                                         : 6),
-                                topRight: Radius.circular(6)))),
+                                topRight: const Radius.circular(6)))),
                     SvgPicture.asset(
                       AppAssets.malekanSvg,
                     ),
                   ])),
           (flashDealEndDate ?? "") == "" || index != 0
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : !(isFlashDealEnded ?? true)
                   ? Positioned(
                       left: 4,
@@ -217,8 +215,8 @@ class ProductDetailsImageWidget extends StatelessWidget {
                                   ? 1
                                   : 170.w),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Color(0xffFF6200)),
-                            color: Color(0xffFFF3E8),
+                            border: Border.all(color: const Color(0xffFF6200)),
+                            color: const Color(0xffFFF3E8),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           height: 20,
@@ -226,17 +224,16 @@ class ProductDetailsImageWidget extends StatelessWidget {
                               transform:
                                   Matrix4.skewX(0.4), // انحراف بسيط للشكل
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   SvgPicture.asset(
                                     AppAssets.flashDealSvg,
                                     height: 12,
-                                    color: Color(0xffFF6200),
+                                    color: const Color(0xffFF6200),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 2,
                                   ),
                                   Text(
@@ -245,13 +242,13 @@ class ProductDetailsImageWidget extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: context.textTheme.bodyMedium?.br
                                         .copyWith(
-                                      color: Color(0xffFF6200),
+                                      color: const Color(0xffFF6200),
                                       letterSpacing: 0.18,
                                       fontSize: 9,
                                       height: 1.3,
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 2,
                                   ),
                                   FlashDealCountdownTimerWidget(
@@ -262,7 +259,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                               )),
                         ),
                       ))
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
           visibleRedeem == true && index == 0
               ? Positioned(
                   left: 4,
@@ -278,21 +275,20 @@ class ProductDetailsImageWidget extends StatelessWidget {
                           right:
                               LanguageService.languageCode == "ar" ? 1 : 130.w),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xffFF6200)),
-                        color: Color(0xffFFF3E8),
+                        border: Border.all(color: const Color(0xffFF6200)),
+                        color: const Color(0xffFFF3E8),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       height: 20,
                       child: Transform(
                           transform: Matrix4.skewX(0.4), // انحراف بسيط للشكل
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 width: 8,
                               ),
                               SvgPicture.asset(AppAssets.redeemClockSvg),
-                              SizedBox(
+                              const SizedBox(
                                 width: 3,
                               ),
                               Text(LocaleKeys.luck.tr(),
@@ -301,7 +297,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                                     fontSize: 9,
                                     color: const Color(0xffFF6200),
                                   )),
-                              SizedBox(
+                              const SizedBox(
                                 width: 1,
                               ),
                               Text(" ${LocaleKeys.add_to_bag_within.tr()} ",
@@ -330,7 +326,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                           )),
                     ),
                   ))
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           ((visibleRedeem == true || !(isFlashDealEnded ?? true)) && index == 0)
               ? Positioned(
                   left: LanguageService.languageCode == "ar" ? null : 35.w,
@@ -346,7 +342,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                             alignment: Alignment.center,
                             width: 76,
                             height: 20,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(8)),
                                 color: Color(0xff1D1D1D)),
@@ -361,15 +357,16 @@ class ProductDetailsImageWidget extends StatelessWidget {
                           width: 15,
                           height: 15,
                           decoration: BoxDecoration(
-                              border: Border.all(color: Color(0xffFFFFFF)),
+                              border:
+                                  Border.all(color: const Color(0xffFFFFFF)),
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                              color: Color(0xff1D1D1D)),
+                                  const BorderRadius.all(Radius.circular(15)),
+                              color: const Color(0xff1D1D1D)),
                         )
                       ],
                     ),
                   ))
-              : SizedBox.shrink()
+              : const SizedBox.shrink()
         ],
       ),
     );

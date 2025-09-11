@@ -35,7 +35,6 @@ class _VoiceWavesInRecordingState extends State<VoiceWavesInRecording> {
         AudioWaveBar(heightFactor: 0.2, color: color),
         AudioWaveBar(heightFactor: 0.14, color: color),
       ],
-      animation: true,
     );
   }
 }

@@ -36,7 +36,6 @@ class ProductListingLoading extends StatelessWidget {
               child: Shimmer.fromColors(
                   baseColor: Colors.grey.shade300,
                   highlightColor: Colors.grey.shade100,
-                  enabled: true,
                   child: Stack(
                     children: [
                       Container(
@@ -45,7 +44,7 @@ class ProductListingLoading extends StatelessWidget {
                         boxShadow: [
                           BoxShadow(
                             color: const Color(0xff000000).withOpacity(0.4),
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                             blurRadius: 6,
                           )
                         ],
@@ -57,7 +56,7 @@ class ProductListingLoading extends StatelessWidget {
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xff000000).withOpacity(0.6),
-                                offset: Offset(0, 3),
+                                offset: const Offset(0, 3),
                                 blurRadius: 6,
                               )
                             ],

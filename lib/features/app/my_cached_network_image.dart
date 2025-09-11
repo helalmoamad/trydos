@@ -171,7 +171,6 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           width: widget.width, // maxHeightDiskCache: widget.height.ceil(),
           //  maxWidthDiskCache: widget.width.ceil(),
           color: widget.imageColor,
-          useOldImageOnUrlChange: false,
           cacheManager: CustomCacheManagers(),
           height: widget.height,
           // 🔧 إصلاح: إعادة تفعيل memory cache للأداء الأفضل
@@ -184,9 +183,9 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           memCacheWidth: widget.width.ceil(),
 
           // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
-          fadeInDuration: const Duration(milliseconds: 0),
-          placeholderFadeInDuration: Duration(milliseconds: 0),
-          fadeOutDuration: const Duration(milliseconds: 0),
+          fadeInDuration: const Duration(),
+          placeholderFadeInDuration: const Duration(),
+          fadeOutDuration: const Duration(),
           /*  progressIndicatorBuilder: (context, _, progress) {
             if (_isDisposed) return const SizedBox.shrink();
 

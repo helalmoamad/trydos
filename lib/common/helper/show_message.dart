@@ -73,37 +73,6 @@ showSuccessMessage(BuildContext context, String message,
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
   OverlayState? overlayState = Overlay.of(context);
 
-  if (overlayState == null) {
-    // إذا لم نتمكن من الحصول على Overlay، استخدم Dialog كبديل
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.transparent,
-      builder: (BuildContext dialogContext) {
-        Timer(Duration(seconds: 3), () {
-          try {
-            if (Navigator.of(dialogContext).canPop()) {
-              Navigator.of(dialogContext).pop();
-            }
-          } catch (e) {
-            // تجاهل الأخطاء
-          }
-        });
-
-        return _buildSuccessWidget(context, message, () {
-          try {
-            if (Navigator.of(dialogContext).canPop()) {
-              Navigator.of(dialogContext).pop();
-            }
-          } catch (e) {
-            // تجاهل الأخطاء
-          }
-        });
-      },
-    );
-    return;
-  }
-
   late OverlayEntry overlayEntry;
 
   overlayEntry = OverlayEntry(
@@ -115,7 +84,7 @@ showSuccessMessage(BuildContext context, String message,
   overlayState.insert(overlayEntry);
 
   // إغلاق تلقائي بعد 3 ثوانٍ
-  Timer(Duration(seconds: 3), () {
+  Timer(const Duration(seconds: 3), () {
     try {
       overlayEntry.remove();
     } catch (e) {
@@ -146,7 +115,7 @@ Widget _buildSuccessWidget(
               decoration: BoxDecoration(
                 color: const Color(0xFFE2FFF1),
                 borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: const Color(0xFF2CDD92), width: 1),
+                border: Border.all(color: const Color(0xFF2CDD92)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -218,37 +187,6 @@ showErrorMessage(BuildContext context, String message,
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
   OverlayState? overlayState = Overlay.of(context);
 
-  if (overlayState == null) {
-    // إذا لم نتمكن من الحصول على Overlay، استخدم Dialog كبديل
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.transparent,
-      builder: (BuildContext dialogContext) {
-        Timer(Duration(seconds: 3), () {
-          try {
-            if (Navigator.of(dialogContext).canPop()) {
-              Navigator.of(dialogContext).pop();
-            }
-          } catch (e) {
-            // تجاهل الأخطاء
-          }
-        });
-
-        return _buildErrorWidget(context, message, () {
-          try {
-            if (Navigator.of(dialogContext).canPop()) {
-              Navigator.of(dialogContext).pop();
-            }
-          } catch (e) {
-            // تجاهل الأخطاء
-          }
-        });
-      },
-    );
-    return;
-  }
-
   late OverlayEntry overlayEntry;
 
   overlayEntry = OverlayEntry(
@@ -260,7 +198,7 @@ showErrorMessage(BuildContext context, String message,
   overlayState.insert(overlayEntry);
 
   // إغلاق تلقائي بعد 3 ثوانٍ
-  Timer(Duration(seconds: 3), () {
+  Timer(const Duration(seconds: 3), () {
     try {
       overlayEntry.remove();
     } catch (e) {
@@ -291,7 +229,7 @@ Widget _buildErrorWidget(
               decoration: BoxDecoration(
                 color: const Color(0xFFFFEDE2),
                 borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: const Color(0xFF402CDD), width: 1),
+                border: Border.all(color: const Color(0xFF402CDD)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -363,37 +301,6 @@ showWarningMessage(BuildContext context, String message,
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
   OverlayState? overlayState = Overlay.of(context);
 
-  if (overlayState == null) {
-    // إذا لم نتمكن من الحصول على Overlay، استخدم Dialog كبديل
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.transparent,
-      builder: (BuildContext dialogContext) {
-        Timer(Duration(seconds: 3), () {
-          try {
-            if (Navigator.of(dialogContext).canPop()) {
-              Navigator.of(dialogContext).pop();
-            }
-          } catch (e) {
-            // تجاهل الأخطاء
-          }
-        });
-
-        return _buildWarningWidget(context, message, () {
-          try {
-            if (Navigator.of(dialogContext).canPop()) {
-              Navigator.of(dialogContext).pop();
-            }
-          } catch (e) {
-            // تجاهل الأخطاء
-          }
-        });
-      },
-    );
-    return;
-  }
-
   late OverlayEntry overlayEntry;
 
   overlayEntry = OverlayEntry(
@@ -405,7 +312,7 @@ showWarningMessage(BuildContext context, String message,
   overlayState.insert(overlayEntry);
 
   // إغلاق تلقائي بعد 3 ثوانٍ
-  Timer(Duration(seconds: 3), () {
+  Timer(const Duration(seconds: 3), () {
     try {
       overlayEntry.remove();
     } catch (e) {
@@ -436,7 +343,7 @@ Widget _buildWarningWidget(
               decoration: BoxDecoration(
                 color: const Color(0xFFFFEDE2),
                 borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: const Color(0xFF402CDD), width: 1),
+                border: Border.all(color: const Color(0xFF402CDD)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -517,13 +424,13 @@ void _showCustomToast(BuildContext context, String message,
       try {
         if (navigatorKey.currentState?.context != null) {
           workingContext = navigatorKey.currentState!.context;
-          overlayState = Overlay.of(workingContext!);
+          overlayState = Overlay.of(workingContext);
         }
       } catch (e3) {
         try {
           if (navigatorKey.currentState?.context != null) {
             workingContext = navigatorKey.currentState!.context;
-            overlayState = Overlay.of(workingContext!, rootOverlay: true);
+            overlayState = Overlay.of(workingContext, rootOverlay: true);
           }
         } catch (e4) {
           _showDialogToast(workingContext ?? context, message, isSuccess);
@@ -566,8 +473,7 @@ void _showCustomToast(BuildContext context, String message,
                   border: Border.all(
                       color: isSuccess
                           ? const Color(0xFF2CDD92)
-                          : const Color(0xFF402CDD),
-                      width: 1),
+                          : const Color(0xFF402CDD)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -636,7 +542,7 @@ void _showCustomToast(BuildContext context, String message,
 
   overlayState.insert(overlayEntry);
 
-  Timer(Duration(seconds: 3), () {
+  Timer(const Duration(seconds: 3), () {
     try {
       overlayEntry.remove();
     } catch (e) {
@@ -650,10 +556,9 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
   if (!context.mounted) return;
   showDialog(
     context: context,
-    barrierDismissible: true,
     barrierColor: Colors.transparent,
     builder: (BuildContext dialogContext) {
-      Timer(Duration(seconds: 3), () {
+      Timer(const Duration(seconds: 3), () {
         if (dialogContext.mounted && Navigator.of(dialogContext).canPop()) {
           Navigator.of(dialogContext).pop();
         }
@@ -684,8 +589,7 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
                     border: Border.all(
                         color: isSuccess
                             ? const Color(0xFF2CDD92)
-                            : const Color(0xFF402CDD),
-                        width: 1),
+                            : const Color(0xFF402CDD)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -772,10 +676,9 @@ Future<void> callInProgressDialog(BuildContext context) async {
             child: IntrinsicHeight(
               child: AlertDialog(
                 backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(18.0))),
                 content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const MyTextWidget(
@@ -788,7 +691,7 @@ Future<void> callInProgressDialog(BuildContext context) async {
                         letterSpacing: 0.5,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     TrydosLoader()

@@ -140,7 +140,7 @@ class _ProductListing3DSliderOptimizedState
 
   /// 🎯 بطاقة منتج بسيطة - أداء ممتاز
   Widget _buildSimpleProductCard() {
-    return Container(
+    return SizedBox(
       height: 350,
       width: 200,
       child: Column(
@@ -149,14 +149,14 @@ class _ProductListing3DSliderOptimizedState
         mainAxisSize: MainAxisSize.min,
         children: [
           // 🖼️ صورة المنتج - بدون مسافات إضافية
-          Container(
+          SizedBox(
             height: 230,
             width: 200,
             child: _buildSingleImage((GetIt.I<PrefsRepository>()
                             .getRedeemDateForProduct(
                                 widget.productItem.productId.toString())
-                            ?.isAfter(
-                                DateTime.now().add(Duration(seconds: 1))) ==
+                            ?.isAfter(DateTime.now()
+                                .add(const Duration(seconds: 1))) ==
                         true &&
                     widget.productItem.hasRedeemDiscount == true) ||
                 (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
@@ -232,7 +232,8 @@ class _ProductListing3DSliderOptimizedState
           bool isRedeem = (GetIt.I<PrefsRepository>()
                           .getRedeemDateForProduct(
                               widget.productItem.productId.toString())
-                          ?.isAfter(DateTime.now().add(Duration(seconds: 1))) ==
+                          ?.isAfter(
+                              DateTime.now().add(const Duration(seconds: 1))) ==
                       true &&
                   widget.productItem.hasRedeemDiscount == true) ||
               (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
@@ -248,7 +249,7 @@ class _ProductListing3DSliderOptimizedState
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
               border:
                   isRedeem ? Border.all(color: const Color(0xffFF6200)) : null,
             ),
@@ -256,7 +257,6 @@ class _ProductListing3DSliderOptimizedState
                 ? _buildVideoBox(isRedeem, imageUrl ?? "")
                 : (imageUrl != null
                     ? ProductListingImageWidget(
-                        borderColor: null,
                         orginalHeight: imageHeight,
                         orginalWidth: imageWidth,
                         width: 200,
@@ -280,7 +280,7 @@ class _ProductListing3DSliderOptimizedState
       return Container(color: Colors.black12);
     }
 
-    return Container(
+    return SizedBox(
         height: 250,
         child: FutureBuilder<void>(
           future: _initializeVideoFuture,
@@ -308,7 +308,7 @@ class _ProductListing3DSliderOptimizedState
                             widget.productItem.slug ?? ""]!),
                       )));
             } else {
-              videoChild = SizedBox.shrink();
+              videoChild = const SizedBox.shrink();
             }
 
             return Stack(
@@ -319,7 +319,7 @@ class _ProductListing3DSliderOptimizedState
                   ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: ProductListingImageWidget(
-                      borderColor: isRedeem ? Color(0xffFF6200) : null,
+                      borderColor: isRedeem ? const Color(0xffFF6200) : null,
                       orginalHeight: 250,
                       orginalWidth: 200,
                       width: 200,
@@ -366,7 +366,7 @@ class _ProductListing3DSliderOptimizedState
                               child: Icon(Icons.play_arrow,
                                   size: 30, color: Colors.white),
                             ))*/
-                    SizedBox.shrink()
+                    const SizedBox.shrink()
               ],
             );
           },
@@ -376,7 +376,6 @@ class _ProductListing3DSliderOptimizedState
   /// 💰 معلومات المنتج المبسطة
   Widget _buildProductInfo() {
     return Column(
-      mainAxisSize: MainAxisSize.max, // تقليل المساحة المستخدمة
       children: [
         // معلومات المنتج
         SizedBox(
@@ -403,17 +402,16 @@ class _ProductListing3DSliderOptimizedState
                         children: [
                           RotatingTextWidget(
                             texts: widget.productItem.labelNames ?? [],
-                            rotationDuration: Duration(seconds: 5),
                             textStyle: textTheme.titleMedium?.br.copyWith(
                               fontSize: 9.sp,
-                              color: Color(0xff388CFF),
+                              color: const Color(0xff388CFF),
                               height: 0,
                             ),
                           ),
-                          Container(
+                          SizedBox(
                             width: 50,
                             height: 13,
-                            child: Container(
+                            child: SizedBox(
                                 width: 40,
                                 height: 12,
                                 child: ValueListenableBuilder<bool>(
@@ -426,7 +424,7 @@ class _ProductListing3DSliderOptimizedState
                                                                   .toString())
                                                           ?.isAfter(DateTime
                                                                   .now()
-                                                              .add(Duration(
+                                                              .add(const Duration(
                                                                   seconds:
                                                                       1))) ==
                                                       true &&
@@ -443,9 +441,9 @@ class _ProductListing3DSliderOptimizedState
                                           ? Row(children: [
                                               SvgPicture.asset(
                                                 AppAssets.redeemClockSvg,
-                                                color: Color(0xffFF6200),
+                                                color: const Color(0xffFF6200),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 2,
                                               ),
                                               Row(
@@ -481,7 +479,7 @@ class _ProductListing3DSliderOptimizedState
                                                 ],
                                               ),
                                             ])
-                                          : SizedBox.shrink();
+                                          : const SizedBox.shrink();
                                     })),
                           )
                         ])),
@@ -644,7 +642,6 @@ class _ProductListing3DSliderOptimizedState
       mainAxisAlignment: LanguageService.languageCode == "ar"
           ? MainAxisAlignment.end
           : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Category Icon
         //  _buildCategoryIcon(),
@@ -695,12 +692,12 @@ class _ProductListing3DSliderOptimizedState
                       builder: (context, _visibleFlashDeal, _) {
                         bool isFlashDealEnded = false;
                         DateTime endDate;
-                        Duration _duration = Duration();
+                        Duration _duration = const Duration();
                         final now = DateTime.now();
                         try {
                           endDate = DateFormat('MM/dd/yyyy', 'en_US')
                               .parse(widget.productItem.flashDealEndDate ?? "");
-                          endDate = endDate.add(Duration(days: 1));
+                          endDate = endDate.add(const Duration(days: 1));
                         } catch (e) {
                           endDate = DateTime.now();
                           print('Error parsing date: $e');
@@ -717,8 +714,9 @@ class _ProductListing3DSliderOptimizedState
                                               .getRedeemDateForProduct(widget
                                                   .productItem.productId
                                                   .toString())
-                                              ?.isAfter(DateTime.now()
-                                                  .add(Duration(seconds: 1))) ==
+                                              ?.isAfter(DateTime.now().add(
+                                                  const Duration(
+                                                      seconds: 1))) ==
                                           true &&
                                       widget.productItem.hasRedeemDiscount ==
                                           true) ||
@@ -734,7 +732,7 @@ class _ProductListing3DSliderOptimizedState
                                   children: [
                                     Container(
                                         constraints:
-                                            BoxConstraints(maxWidth: 42),
+                                            const BoxConstraints(maxWidth: 42),
                                         child: AutoSizeText(
                                           HelperFunctions.formatNumber(
                                               number: (price * exchangeRate))
@@ -750,18 +748,18 @@ class _ProductListing3DSliderOptimizedState
                                           style: textTheme.titleMedium?.lr
                                               .copyWith(
                                             fontSize: 12,
-                                            color: Color(0xff3c3c3c),
+                                            color: const Color(0xff3c3c3c),
                                             decoration:
                                                 TextDecoration.lineThrough,
                                             height: 0,
                                           ),
                                         )),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 2,
                                     ),
                                     Container(
                                         constraints:
-                                            BoxConstraints(maxWidth: 42),
+                                            const BoxConstraints(maxWidth: 42),
                                         child: AutoSizeText(
                                           HelperFunctions.formatNumber(
                                               number: (((isFlashDealEnded ||
@@ -786,15 +784,16 @@ class _ProductListing3DSliderOptimizedState
                                           style: textTheme.titleMedium?.mr
                                               .copyWith(
                                             fontSize: 12.sp,
-                                            decorationColor: Color(0xffFF6200),
+                                            decorationColor:
+                                                const Color(0xffFF6200),
                                             decoration: isRedeem
                                                 ? TextDecoration.lineThrough
                                                 : null,
-                                            color: Color(0xff3c3c3c),
+                                            color: const Color(0xff3c3c3c),
                                             height: 0,
                                           ),
                                         )),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 2,
                                     ),
                                     AutoSizeText(
@@ -809,11 +808,12 @@ class _ProductListing3DSliderOptimizedState
                                       overflow: TextOverflow.ellipsis,
                                       style: textTheme.titleMedium?.lr.copyWith(
                                         fontSize: 10.sp,
-                                        decorationColor: Color(0xff1D1D1D),
+                                        decorationColor:
+                                            const Color(0xff1D1D1D),
                                         decoration: isRedeem
                                             ? TextDecoration.lineThrough
                                             : null,
-                                        color: Color(0xff3c3c3c),
+                                        color: const Color(0xff3c3c3c),
                                         height: 0,
                                       ),
                                     ),
@@ -836,11 +836,11 @@ class _ProductListing3DSliderOptimizedState
     return InkWell(
       onTap: () {
         Future.delayed(
-            Duration(milliseconds: 50),
+            const Duration(milliseconds: 50),
             () => _homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: 0,
                 productSlug: widget.productItem.slug.toString())));
-        _homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
+        _homeBloc.add(const ChangeStatusOFGetProductsDetailsToSuccessEvent(
           isStatusInitaial: true,
         ));
         widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
@@ -860,8 +860,8 @@ class _ProductListing3DSliderOptimizedState
             bool isRedeem = (GetIt.I<PrefsRepository>()
                             .getRedeemDateForProduct(
                                 widget.productItem.productId.toString())
-                            ?.isAfter(
-                                DateTime.now().add(Duration(seconds: 1))) ==
+                            ?.isAfter(DateTime.now()
+                                .add(const Duration(seconds: 1))) ==
                         true &&
                     widget.productItem.hasRedeemDiscount == true) ||
                 (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
@@ -884,14 +884,14 @@ class _ProductListing3DSliderOptimizedState
                     style: textTheme.titleSmall?.rr.copyWith(
                       fontSize: 10.sp,
                       color: isRedeem
-                          ? Color(0xffFF6200)
+                          ? const Color(0xffFF6200)
                           : const Color(0xff414141),
                       height: 0,
                     ),
                   ),
                   isRedeem
                       ? Container(
-                          constraints: BoxConstraints(maxWidth: 25),
+                          constraints: const BoxConstraints(maxWidth: 25),
                           child: AutoSizeText(
                             HelperFunctions.formatNumber(
                                 number: redeemPrice * exchangeRate),
@@ -899,12 +899,12 @@ class _ProductListing3DSliderOptimizedState
                             //      .toStringAsFixed(widget.decimalPoint),
                             style: textTheme.headlineMedium?.br.copyWith(
                               fontSize: 10.sp,
-                              color: Color(0xffFF6200),
+                              color: const Color(0xffFF6200),
                               height: 1.2,
                             ),
                           ))
                       : const SizedBox.shrink(),
-                  SizedBox(
+                  const SizedBox(
                     width: 2,
                   ),
                   isRedeem
@@ -916,7 +916,7 @@ class _ProductListing3DSliderOptimizedState
                                   "",
                           style: TextStyle(
                             fontSize: 8.sp,
-                            color: Color(0xffFF6200),
+                            color: const Color(0xffFF6200),
                             height: 1.2,
                           ),
                         )

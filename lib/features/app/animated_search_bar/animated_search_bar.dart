@@ -133,7 +133,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
 
       /// animationDurationInMilli is optional, the default value is 375
       duration: Duration(milliseconds: widget.animationDurationInMilli),
-      reverseDuration: Duration(milliseconds: 0),
+      reverseDuration: const Duration(),
     );
   }
 
@@ -154,7 +154,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
           }
 
           return AnimatedContainer(
-            padding: EdgeInsets.only(left: 10, right: 10),
+            padding: const EdgeInsets.only(left: 10, right: 10),
             duration: Duration(
                 milliseconds:
                     (toggle == 1) ? widget.animationDurationInMilli : 0),
@@ -244,12 +244,13 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                           width: widget.width - 60,
                           height: widget.height,
                           child: TextFormField(
+                              autocorrect: false,
+                              enableSuggestions: false,
                               onFieldSubmitted: widget.onFieldSubmitted,
                               controller: widget.textController,
                               inputFormatters: widget.inputFormatters,
                               focusNode: focusNode,
-                              cursorRadius: Radius.circular(10.0),
-                              cursorWidth: 2.0,
+                              cursorRadius: const Radius.circular(10.0),
                               onChanged: (value) {
                                 textFieldValue = value;
                                 widget.onChanged?.call(value);
@@ -258,12 +259,12 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                               ///style is of type TextStyle, the default is just a color black
                               style: widget.style != null
                                   ? widget.style
-                                  : TextStyle(color: Colors.black),
+                                  : const TextStyle(color: Colors.black),
                               cursorColor: Colors.black,
                               decoration: widget.searchDecoration),
                         ),
                         (toggle == 0)
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : InkWell(
                                 onTap: () {
                                   widget.hideTrendingAndHistory?.value = false;
@@ -283,16 +284,16 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                   height: widget.height,
                                   child: Row(
                                     children: [
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 15,
                                       ),
                                       SvgPicture.asset(
                                         AppAssets.closeSvg,
                                         height: 15,
                                         width: 30,
-                                        color: Color(0xffFF5F61),
+                                        color: const Color(0xffFF5F61),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 25,
                                       ),
                                     ],
@@ -306,14 +307,15 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
 
                 ///Using material widget here to get the ripple effect on the prefix icon
                 toggle != 0
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : Material(
                         /// can add custom color or the color will be white
                         /// toggle button color based on toggle state
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(15.0),
                         child: GestureDetector(
-                          key: Key(WidgetsKeys.productListingSearchIconKey),
+                          key: const Key(
+                              WidgetsKeys.productListingSearchIconKey),
 
                           ///if toggle is 1, which means it's open. so show the back icon, which will close it.
                           ///if the toggle is 0, which means it's closed, so tapping on it will expand the widget.
@@ -340,7 +342,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                   _con.forward();
                                   ////////////////////////////////////////////////
                                   Future.delayed(
-                                    Duration(milliseconds: 300),
+                                    const Duration(milliseconds: 300),
                                     () {
                                       // FirebaseAnalyticsService
                                       //     .logEventForSession(

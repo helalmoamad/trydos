@@ -86,7 +86,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           state.getUserNotificationModel?.paginationStatus ==
                               PaginationStatus.initial) &&
                       state.getUserNotificationModel?.items.length == 0))
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: ListView.separated(
@@ -96,8 +96,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     itemBuilder: (context, index) {
                       if (index < itemsCount) {
                         return ListTile(
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 5),
                           onTap: () {
                             HandlingMarketNotifications
                                 .dealWithNotificationFromMarket(
@@ -107,8 +107,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     false);
                           },
                           leading: MyCachedNetworkImage(
-                            ordinalHeight: null,
-                            ordinalwidth: null,
                             imageUrl: items[index].description?.type ==
                                     "boutique created"
                                 ? (items[index].description?.banner?.length ??
@@ -121,8 +119,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                             .filePath ??
                                         ''
                                 : items[index].description?.image ?? '',
-                            imageWidth: null,
-                            imageHeight: null,
                             height: 60,
                             width: 60,
                             imageFit: BoxFit.cover,
@@ -158,7 +154,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             child: Center(
                               child:
                                   state.getUserNotificationModel!.hasReachedMax
-                                      ? Text('No More Items')
+                                      ? const Text('No More Items')
                                       : const CircularProgressIndicator(),
                             ),
                           );

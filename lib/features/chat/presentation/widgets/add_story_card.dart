@@ -39,73 +39,70 @@ class AddStoryCard extends StatelessWidget {
                 Container(
                   padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
                   color: context.colorScheme.white,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        collectionStoryModel.photoPath == null
-                            ? NoImageWidget(
-                                width: 60.r,
-                                height: 60.r,
-                                textStyle: context.textTheme.bodyMedium?.br
-                                    .copyWith(
-                                        color: const Color(0xff6638FF),
-                                        letterSpacing: 0.18,
-                                        height: 1.33),
-                                name: collectionStoryModel.name == null
-                                    ? LocaleKeys.uk.tr()
-                                    : HelperFunctions
-                                        .getTheFirstTwoLettersOfName(
-                                            collectionStoryModel.name!))
-                            : MyCachedNetworkImage(
-                                height: 60.r,
-                                width: 60.r,
-                                imageUrl: (collectionStoryModel.photoPath
-                                            .toString()
-                                            .contains("cloudinary")
-                                        ? collectionStoryModel.photoPath
-                                        : "${dotenv.env['Images_Url']}") +
-                                    collectionStoryModel.photoPath,
-                                imageFit: BoxFit.cover,
-                              ),
-                        18.horizontalSpace,
-                        Flexible(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                  child: Row(
-                                children: [
-                                  MyTextWidget(
-                                    LocaleKeys.my_stories.tr(),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.bodyMedium?.rr
-                                        .copyWith(
-                                            height: 1.33,
-                                            color: const Color(0xff505050)),
-                                  ),
-                                  const Spacer(),
-                                ],
-                              )),
-                              Flexible(
-                                  child: Row(
-                                children: [
-                                  MyTextWidget(
-                                    LocaleKeys.click_to_add_story.tr(),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.bodyMedium?.rr
-                                        .copyWith(
-                                            height: 1.33,
-                                            color: const Color(0xff505050)),
-                                  ),
-                                  const Spacer(),
-                                ],
-                              )),
-                            ],
+                  child: Row(children: [
+                    collectionStoryModel.photoPath == null
+                        ? NoImageWidget(
+                            width: 60.r,
+                            height: 60.r,
+                            textStyle: context.textTheme.bodyMedium?.br
+                                .copyWith(
+                                    color: const Color(0xff6638FF),
+                                    letterSpacing: 0.18,
+                                    height: 1.33),
+                            name: collectionStoryModel.name == null
+                                ? LocaleKeys.uk.tr()
+                                : HelperFunctions.getTheFirstTwoLettersOfName(
+                                    collectionStoryModel.name!))
+                        : MyCachedNetworkImage(
+                            height: 60.r,
+                            width: 60.r,
+                            imageUrl: (collectionStoryModel.photoPath
+                                        .toString()
+                                        .contains("cloudinary")
+                                    ? collectionStoryModel.photoPath
+                                    : "${dotenv.env['Images_Url']}") +
+                                collectionStoryModel.photoPath,
+                            imageFit: BoxFit.cover,
                           ),
-                        ),
-                      ]),
+                    18.horizontalSpace,
+                    Flexible(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                              child: Row(
+                            children: [
+                              MyTextWidget(
+                                LocaleKeys.my_stories.tr(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        height: 1.33,
+                                        color: const Color(0xff505050)),
+                              ),
+                              const Spacer(),
+                            ],
+                          )),
+                          Flexible(
+                              child: Row(
+                            children: [
+                              MyTextWidget(
+                                LocaleKeys.click_to_add_story.tr(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        height: 1.33,
+                                        color: const Color(0xff505050)),
+                              ),
+                              const Spacer(),
+                            ],
+                          )),
+                        ],
+                      ),
+                    ),
+                  ]),
                 )
               ],
             )));

@@ -21,12 +21,9 @@ class AddLinkToStory extends StatefulWidget {
   void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
   File? vedioFile;
   AssetEntity? assetEntity;
-  AddLinkToStory(
-    this.imageFile,
-    this.assetEntity,
-    this.vedioFile,
-    this.onChooseFileFromGalleryAction,
-  );
+  AddLinkToStory(this.imageFile, this.assetEntity, this.vedioFile,
+      this.onChooseFileFromGalleryAction,
+      {super.key});
 
   @override
   _AddLinkToStory createState() => _AddLinkToStory();
@@ -39,7 +36,7 @@ class _AddLinkToStory extends State<AddLinkToStory> {
   @override
   void initState() {
     storyBloc = BlocProvider.of<StoryBloc>(context);
-    storyBloc.add(SetStoryLinkEvent(""));
+    storyBloc.add(const SetStoryLinkEvent(""));
 
     super.initState();
   }
@@ -73,11 +70,11 @@ class _AddLinkToStory extends State<AddLinkToStory> {
               },
               textInputAction: TextInputAction.done,
               onEditingComplete: () {
-                Future.delayed(Duration(milliseconds: 300),
+                Future.delayed(const Duration(milliseconds: 300),
                     () => FocusScope.of(context).unfocus());
               },
               onFieldSubmitted: (val) {
-                Future.delayed(Duration(milliseconds: 300),
+                Future.delayed(const Duration(milliseconds: 300),
                     () => FocusScope.of(context).unfocus());
               },
               hintText: '${LocaleKeys.add_link_to_story.tr()}',

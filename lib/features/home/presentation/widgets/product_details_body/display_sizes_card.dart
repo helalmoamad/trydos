@@ -216,8 +216,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
     super.initState();
   }
 
-  final ExpansionTileController expansionTileController =
-      ExpansionTileController();
+  final ExpansibleController expansionTileController = ExpansibleController();
 
   int? prevModeForRunHero;
 
@@ -269,7 +268,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                       1.sh)
                                   .abs() <=
                               10
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : LocalHeroScope(
                           duration: const Duration(milliseconds: 200),
                           curve: Curves.fastLinearToSlowEaseIn,
@@ -324,10 +323,8 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 child: Row(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
                                                   children: [
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 10,
                                                     ),
                                                     SvgPicture.asset(
@@ -416,7 +413,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                           .height),
                                                                   curve: Curves
                                                                       .fastEaseInToSlowEaseOut,
-                                                                  duration: Duration(
+                                                                  duration: const Duration(
                                                                       milliseconds:
                                                                           300));
                                                             }
@@ -438,8 +435,6 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                         return Row(
                                                                           mainAxisSize:
                                                                               MainAxisSize.min,
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.center,
                                                                           children: List.generate(
                                                                               sizes!.length ~/ 2,
                                                                               (index) => GestureDetector(
@@ -469,7 +464,6 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                           return (primaryDelta <= 0 && gallery3dControllerForCircles!.currentIndex == (sizes!.length ~/ 2 - 1)) ||
                                                                               (primaryDelta >= 0 && gallery3dControllerForCircles!.currentIndex == 0);
                                                                         },
-                                                                        height: null,
                                                                         changingPagesScrollOffset: 0.1,
                                                                         isClip: false,
                                                                         onItemChanged: (index) {
@@ -538,7 +532,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                               height: 12,
                                                               decoration:
                                                                   BoxDecoration(
-                                                                color: Color(
+                                                                color: const Color(
                                                                     0xffD3D3D3),
                                                                 borderRadius:
                                                                     BorderRadius
@@ -571,7 +565,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                             _) {
                                                           return ListView.separated(
                                                               reverse: true,
-                                                              physics: BouncingScrollPhysics(),
+                                                              physics: const BouncingScrollPhysics(),
                                                               padding: EdgeInsets.only(
                                                                   right: (LanguageService.languageCode == "ar")
                                                                       ? 0
@@ -655,7 +649,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                     );
                                                                   },
                                                                   child: AnimatedContainer(
-                                                                      duration: Duration(milliseconds: 300),
+                                                                      duration: const Duration(milliseconds: 300),
                                                                       curve: Curves.fastLinearToSlowEaseIn,
                                                                       alignment: Alignment.topCenter,
                                                                       child: SizeItemWidget(
@@ -680,31 +674,31 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                 );
                                                               },
                                                               separatorBuilder: (context, index) {
-                                                                return SizedBox(
+                                                                return const SizedBox(
                                                                   width: 10,
                                                                 );
                                                               },
                                                               itemCount: (sizes!.length ~/ 2));
                                                         })),
                                               )
-                                            : SizedBox.shrink(),
+                                            : const SizedBox.shrink(),
                                         if (mode != 0) ...{
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 15,
                                           ),
                                           Container(
                                               width: 1.sw,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 20),
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20),
                                               height: 30,
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
-                                                  color: Color(0xffF4F4F4)),
+                                                  color:
+                                                      const Color(0xffF4F4F4)),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
                                                 children: [
@@ -728,7 +722,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                       0) ...{
                                                     SvgPicture.asset(AppAssets
                                                         .registerInfoSvg),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 5,
                                                     ),
                                                     MyTextWidget(
@@ -796,25 +790,23 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                   }
                                                 ],
                                               )),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 5,
                                           ),
                                           Container(
                                             height: 30,
-                                            margin: EdgeInsets.symmetric(
+                                            margin: const EdgeInsets.symmetric(
                                                 horizontal: 20),
                                             child: DottedBorder(
-                                              radius: Radius.circular(10),
+                                              radius: const Radius.circular(10),
                                               borderType: BorderType.RRect,
                                               strokeCap: StrokeCap.round,
                                               strokeWidth: 0.5,
-                                              color: Color(0xff707070),
-                                              dashPattern: [3, 3],
+                                              color: const Color(0xff707070),
+                                              dashPattern: const [3, 3],
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
                                                 children: [
                                                   SvgPicture.asset(
                                                     AppAssets.malokanSvg,
@@ -870,15 +862,15 @@ class SizeItemWidget extends StatelessWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(180.0),
           color: index == currentIndex
-              ? Color.fromARGB(192, 226, 216, 216)
-              : Color(0xffF8F8F8)),
+              ? const Color.fromARGB(192, 226, 216, 216)
+              : const Color(0xffF8F8F8)),
       child: DottedBorder(
-        radius: Radius.circular(180),
+        radius: const Radius.circular(180),
         borderType: BorderType.RRect,
         strokeCap: StrokeCap.round,
         strokeWidth: 0.5,
-        color: Color(0xff707070),
-        dashPattern: [3, 3],
+        color: const Color(0xff707070),
+        dashPattern: const [3, 3],
         child: Center(
           child: Text(
             sizeName,

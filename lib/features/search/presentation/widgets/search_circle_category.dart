@@ -178,7 +178,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
         }
-        debounce = Timer(Duration(milliseconds: 600), () {
+        debounce = Timer(const Duration(milliseconds: 600), () {
           if (scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
             boutiqueBloc.add(GetFiltersWithPaginatioEvent(
@@ -203,12 +203,13 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
         int visible = filters.categories?.length ?? 0;
         return visible > 0
             ? Container(
-                margin:
-                    EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
-                padding: EdgeInsets.symmetric(vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 10)
+                    .copyWith(bottom: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
+                    border:
+                        Border.all(color: const Color(0xffC4C2C2), width: 0.3)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -220,9 +221,10 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                           MyTextWidget(
                             widget.title,
                             style: context.textTheme.titleMedium?.rq.copyWith(
-                                color: Color(0xff505050), height: 15 / 12),
+                                color: const Color(0xff505050),
+                                height: 15 / 12),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5,
                           ),
                           widget.isLoading
@@ -235,29 +237,29 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                       size: 15,
                                     ),
                                   ))
-                              : SizedBox.shrink(),
-                          Spacer(),
+                              : const SizedBox.shrink(),
+                          const Spacer(),
                           SvgPicture.asset(
                             AppAssets.backArrowArabic,
                             matchTextDirection: true,
-                            color: Color(0xffC4C2C2),
+                            color: const Color(0xffC4C2C2),
                             width: 10,
                             height: 10,
                           )
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     SizedBox(
                       height: 40,
                       child: ScrollConfiguration(
-                        behavior: CupertinoScrollBehavior(),
+                        behavior: const CupertinoScrollBehavior(),
                         child: ListView.separated(
                             controller: scrollController,
                             shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
+                            physics: const ClampingScrollPhysics(),
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 10.0),
                             scrollDirection: Axis.horizontal,
@@ -381,14 +383,14 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(12),
-                                              color: Color(0xffF8F8F8),
+                                              color: const Color(0xffF8F8F8),
                                               border: Border.all(
                                                   color: isSelected ||
                                                           isChildCategorySlug
-                                                      ? Color(0xffFF5F61)
-                                                      : Color(0xffF8F8F8))),
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 0, horizontal: 0),
+                                                      ? const Color(0xffFF5F61)
+                                                      : const Color(
+                                                          0xffF8F8F8))),
+                                          padding: const EdgeInsets.symmetric(),
                                           child: Row(
                                             children: [
                                               Center(
@@ -399,12 +401,13 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                     .textTheme.titleLarge?.rq
                                                     .copyWith(
                                                         height: 12 / 14,
-                                                        color:
-                                                            Color(0xff8D8D8D)),
+                                                        color: const Color(
+                                                            0xff8D8D8D)),
                                               )),
                                               Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 5),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5),
                                                 child: filters
                                                             .categories?[index]
                                                             .flatPhotoPath
@@ -417,7 +420,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                             .filePath!,
                                                         height: 15,
                                                       )
-                                                    : SizedBox.shrink(),
+                                                    : const SizedBox.shrink(),
                                               ),
                                             ],
                                           ),
@@ -425,7 +428,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                         Visibility(
                                             visible: isSelected ||
                                                 isChildCategorySlug,
-                                            child: FilterSelectedMark(
+                                            child: const FilterSelectedMark(
                                                 width: 12, height: 12))
                                       ],
                                     ),
@@ -435,11 +438,13 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                     child: SizedBox(
                                       height: 40,
                                       child: ScrollConfiguration(
-                                        behavior: CupertinoScrollBehavior(),
+                                        behavior:
+                                            const CupertinoScrollBehavior(),
                                         child: ListView.separated(
                                             controller: scrollController,
                                             shrinkWrap: true,
-                                            physics: ClampingScrollPhysics(),
+                                            physics:
+                                                const ClampingScrollPhysics(),
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 10.0),
                                             scrollDirection: Axis.horizontal,
@@ -590,18 +595,16 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(12),
-                                                          color:
-                                                              Color(0xffF8F8F8),
+                                                          color: const Color(
+                                                              0xffF8F8F8),
                                                           border: Border.all(
                                                               color: isSubSelected
-                                                                  ? Color(
+                                                                  ? const Color(
                                                                       0xffFF5F61)
-                                                                  : Color(
+                                                                  : const Color(
                                                                       0xffF8F8F8))),
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              vertical: 0,
-                                                              horizontal: 0),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(),
                                                       child: Row(
                                                         children: [
                                                           Center(
@@ -620,12 +623,13 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                                 .copyWith(
                                                                     height:
                                                                         12 / 14,
-                                                                    color: Color(
+                                                                    color: const Color(
                                                                         0xff8D8D8D)),
                                                           )),
                                                           Container(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
                                                                     horizontal:
                                                                         5),
                                                             child: filters
@@ -646,7 +650,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                                         .filePath!,
                                                                     height: 15,
                                                                   )
-                                                                : SizedBox
+                                                                : const SizedBox
                                                                     .shrink(),
                                                           ),
                                                         ],
@@ -655,7 +659,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                     Visibility(
                                                         visible: isSubSelected,
                                                         child:
-                                                            FilterSelectedMark(
+                                                            const FilterSelectedMark(
                                                                 width: 12,
                                                                 height: 12))
                                                   ],
@@ -663,7 +667,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                               );
                                             },
                                             separatorBuilder: (context, index) {
-                                              return SizedBox(
+                                              return const SizedBox(
                                                 width: 10,
                                               );
                                             },
@@ -679,7 +683,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                               );
                             },
                             separatorBuilder: (context, index) {
-                              return SizedBox(
+                              return const SizedBox(
                                 width: 10,
                               );
                             },
@@ -688,7 +692,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                     ),
                   ],
                 ))
-            : SizedBox.shrink();
+            : const SizedBox.shrink();
       },
     );
   }

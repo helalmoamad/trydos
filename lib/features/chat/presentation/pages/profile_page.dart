@@ -123,13 +123,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     50.verticalSpace,
                     widget.receiverPhoto != null
                         ? Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
                                   color: Color.fromARGB(2, 0, 0, 0)
 //                            colorScheme.black.withOpacity(0.16)
                                   ,
-                                  offset: const Offset(0, 3),
+                                  offset: Offset(0, 3),
                                   blurRadius: 10,
                                 ),
                               ],
@@ -386,7 +386,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? Key(WidgetsKeys
+                                                ? const Key(WidgetsKeys
                                                     .imageCountInEachChatKey)
                                                 : null,
                                             state.imageCountInEachChat
@@ -409,7 +409,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? Key(WidgetsKeys
+                                                ? const Key(WidgetsKeys
                                                     .videoCountInEachChatKey)
                                                 : null,
                                             state.videoCountInEachChat
@@ -432,7 +432,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? Key(WidgetsKeys
+                                                ? const Key(WidgetsKeys
                                                     .fileCountInEachChatKey)
                                                 : null,
                                             state.fileCountInEachChat
@@ -495,7 +495,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (mimeStr.split('/').contains("video") &&
                           !mimeStr.split('.').contains("aac")) {
                         return Container(
-                          margin: EdgeInsets.all(2),
+                          margin: const EdgeInsets.all(2),
                           width: 200.w,
                           child: MYVideoPlayer(
                             videoFile: File(images![index].split(" ")[1]),
@@ -509,7 +509,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Hero(
                             tag: "hero${DateTime.now()}",
                             child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 2),
+                              margin: const EdgeInsets.symmetric(horizontal: 2),
                               width: 150.w,
                               height: 400.h,
                               decoration: BoxDecoration(
@@ -529,7 +529,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         );
                       }
 
-                      return SizedBox.shrink();
+                      return const SizedBox.shrink();
                     },
                   ),
                 ),
@@ -582,7 +582,7 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),
               child: InkWell(
                 key: TestVariables.kTestMode
-                    ? Key(
+                    ? const Key(
                         WidgetsKeys.backFromProfileKey,
                       )
                     : null,

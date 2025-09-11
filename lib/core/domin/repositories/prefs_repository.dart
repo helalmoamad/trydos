@@ -53,6 +53,8 @@ abstract class PrefsRepository {
 
   String? get myPhoneNumber;
 
+  String? get myContactDetails;
+
   String? get currentEvent;
   String? get language;
 
@@ -61,7 +63,7 @@ abstract class PrefsRepository {
   String? get otpCode;
   String? get idToken;
   int? get getdurtion;
-
+  Future<bool> setContactDetails(String contactDetails);
   String? getPrefechOfMainCategoryInHomePage();
   Future<bool> setPrefechOfMainCategoryInHomePage(String value);
   Future<bool> removeMainCategoryWhenOpenApp();

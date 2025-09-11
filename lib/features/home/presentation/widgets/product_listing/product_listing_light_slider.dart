@@ -225,7 +225,7 @@ class _ProductListingLightSliderState
       three = all.sublist(0, 3);
     }
 
-    final height = 240.0;
+    const height = 240.0;
     return SizedBox(
       height: height,
       width: 200,
@@ -350,7 +350,6 @@ class _ProductListingLightSliderState
               ),
             const SizedBox(height: 5),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: LanguageService.languageCode == 'ar'
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
@@ -450,7 +449,8 @@ class _ProductListingLightSliderState
 
   void _onBuyPressed() {
     BlocProvider.of<HomeBloc>(context).add(
-        ChangeStatusOFGetProductsDetailsToSuccessEvent(isStatusInitaial: true));
+        const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+            isStatusInitaial: true));
     widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
     Future.delayed(const Duration(milliseconds: 600), () {
       widget.tapIndexToAddProductToCart.value = widget.itemIndex;

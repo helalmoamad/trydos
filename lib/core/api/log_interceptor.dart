@@ -119,12 +119,11 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             hasError: true,
-            showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG);
+            showInRelease: true);
       }
       if (err.requestOptions.path.contains("stories/upload_story") ||
           err.requestOptions.path.contains("/djooohujg/upload")) {
-        GetIt.I<StoryBloc>().add(ChangeStatusUploadToFailureEvent());
+        GetIt.I<StoryBloc>().add(const ChangeStatusUploadToFailureEvent());
       }
       if (err.requestOptions.path.contains("storage/storage-upload")) {
         GetIt.I<HomeBloc>()
@@ -138,8 +137,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
               hasError: true,
-              showInRelease: true,
-              timeShowing: Toast.LENGTH_LONG);
+              showInRelease: true);
         } catch (e) {}
       }
       if (err.requestOptions.path.contains("order/checkout")) {
@@ -150,8 +148,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
               hasError: true,
-              showInRelease: true,
-              timeShowing: Toast.LENGTH_LONG);
+              showInRelease: true);
         } catch (e) {}
       }
 
@@ -160,9 +157,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               "The user does not exist.") {
         String? deviceId = await HelperFunctions.getDeviceId();
         Future.delayed(
-            Duration(seconds: 5),
-            () => GetIt.I<AuthBloc>().add(RegisterGuestEvent(
-                deviceId: deviceId ?? "", oldGuestUserId: null)));
+            const Duration(seconds: 5),
+            () => GetIt.I<AuthBloc>()
+                .add(RegisterGuestEvent(deviceId: deviceId ?? "")));
       }
 
       if ((jsonDecode(err.response.toString())["message"]

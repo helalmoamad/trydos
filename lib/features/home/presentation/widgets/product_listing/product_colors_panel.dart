@@ -84,8 +84,8 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
   Widget _buildSimpleProductCard() {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          color: Color(0xffF8F8F8),
+          borderRadius: const BorderRadius.all(Radius.circular(15)),
+          color: const Color(0xffF8F8F8),
           border: Border.all(color: Colors.white)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,7 +166,8 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
           bool isRedeem = (GetIt.I<PrefsRepository>()
                           .getRedeemDateForProduct(
                               widget.productItem.productId.toString())
-                          ?.isAfter(DateTime.now().add(Duration(seconds: 1))) ==
+                          ?.isAfter(
+                              DateTime.now().add(const Duration(seconds: 1))) ==
                       true &&
                   widget.productItem.hasRedeemDiscount == true) ||
               (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
@@ -180,7 +181,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
             padding: EdgeInsets.zero,
             child: (imageUrl != null
                 ? ProductListingImageWidget(
-                    borderColor: isRedeem ? Color(0xffFF6200) : null,
+                    borderColor: isRedeem ? const Color(0xffFF6200) : null,
                     orginalHeight: imageHeight,
                     orginalWidth: imageWidth,
                     width: 200,
@@ -218,15 +219,14 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                 _buildProductNameRow(),
 
                 (widget.productItem.labelNames?.length ?? 0) == 0
-                    ? SizedBox(
+                    ? const SizedBox(
                         height: 10,
                       )
                     : RotatingTextWidget(
                         texts: widget.productItem.labelNames ?? [],
-                        rotationDuration: Duration(seconds: 5),
                         textStyle: textTheme.titleMedium?.br.copyWith(
                           fontSize: 9.sp,
-                          color: Color(0xff388CFF),
+                          color: const Color(0xff388CFF),
                           height: 0,
                         ),
                       ),
@@ -261,7 +261,6 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
       mainAxisAlignment: LanguageService.languageCode == "ar"
           ? MainAxisAlignment.end
           : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Category Icon
         //  _buildCategoryIcon(),
@@ -331,7 +330,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                                             .productItem.productId
                                             .toString())
                                         ?.isAfter(DateTime.now()
-                                            .add(Duration(seconds: 1))) ==
+                                            .add(const Duration(seconds: 1))) ==
                                     true &&
                                 widget.productItem.hasRedeemDiscount == true) ||
                             (GetIt.I<PrefsRepository>()
@@ -353,12 +352,12 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                               ,
                               style: textTheme.titleMedium?.lq.copyWith(
                                 fontSize: 9.sp,
-                                color: Color(0xff3c3c3c),
+                                color: const Color(0xff3c3c3c),
                                 decoration: TextDecoration.lineThrough,
                                 height: 0,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 2,
                             ),
                             MyTextWidget(
@@ -371,15 +370,15 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                               ,
                               style: textTheme.titleMedium?.mr.copyWith(
                                 fontSize: 9.sp,
-                                decorationColor: Color(0xffFF6200),
+                                decorationColor: const Color(0xffFF6200),
                                 decoration: isRedeem
                                     ? TextDecoration.lineThrough
                                     : null,
-                                color: Color(0xff3c3c3c),
+                                color: const Color(0xff3c3c3c),
                                 height: 0,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 2,
                             ),
                             MyTextWidget(
@@ -410,18 +409,18 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
       onTap: () {
         if (widget.fromDetailsPage) {
           widget.panelController?.close();
-          Future.delayed(Duration(milliseconds: 600), () {
+          Future.delayed(const Duration(milliseconds: 600), () {
             widget.currentActiveTab?.value = 3;
             widget.panelControllerForCart?.open();
           });
           return;
         }
         Future.delayed(
-            Duration(milliseconds: 50),
+            const Duration(milliseconds: 50),
             () => _homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: 0,
                 productSlug: widget.productItem.slug.toString())));
-        _homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
+        _homeBloc.add(const ChangeStatusOFGetProductsDetailsToSuccessEvent(
           isStatusInitaial: true,
         ));
         // widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
@@ -442,8 +441,8 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
             bool isRedeem = (GetIt.I<PrefsRepository>()
                             .getRedeemDateForProduct(
                                 widget.productItem.productId.toString())
-                            ?.isAfter(
-                                DateTime.now().add(Duration(seconds: 1))) ==
+                            ?.isAfter(DateTime.now()
+                                .add(const Duration(seconds: 1))) ==
                         true &&
                     widget.productItem.hasRedeemDiscount == true) ||
                 (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
@@ -466,7 +465,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                     style: textTheme.titleSmall?.rr.copyWith(
                       fontSize: 9.sp,
                       color: isRedeem
-                          ? Color(0xffFF6200)
+                          ? const Color(0xffFF6200)
                           : const Color(0xff414141),
                       height: 0,
                     ),
@@ -478,12 +477,12 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                           //      .toStringAsFixed(widget.decimalPoint),
                           style: textTheme.headlineMedium?.br.copyWith(
                             fontSize: 9.sp,
-                            color: Color(0xffFF6200),
+                            color: const Color(0xffFF6200),
                             height: 1.2,
                           ),
                         )
                       : const SizedBox.shrink(),
-                  SizedBox(
+                  const SizedBox(
                     width: 2,
                   ),
                   isRedeem
@@ -495,7 +494,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                                   "",
                           style: TextStyle(
                             fontSize: 8.sp,
-                            color: Color(0xffFF6200),
+                            color: const Color(0xffFF6200),
                             height: 1.2,
                           ),
                         )
@@ -550,7 +549,8 @@ class _ImagePageViewWithDotsState extends State<_ImagePageViewWithDots> {
             itemCount: widget.images.length,
             onPageChanged: (i) => setState(() => _page = i),
             itemBuilder: (context, i) => ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
               child: ProductListingImageWidget(
                 imageUrl: widget.images[i],
                 width: 200,
@@ -573,7 +573,9 @@ class _ImagePageViewWithDotsState extends State<_ImagePageViewWithDots> {
                 width: 4,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: _page == i ? Color(0xff8D8D8D) : Color(0xffD3D3D3),
+                  color: _page == i
+                      ? const Color(0xff8D8D8D)
+                      : const Color(0xffD3D3D3),
                   shape: BoxShape.circle,
                 ),
               ),

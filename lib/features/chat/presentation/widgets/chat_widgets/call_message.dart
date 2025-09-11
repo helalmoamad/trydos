@@ -66,7 +66,6 @@ class CallMessage extends StatelessWidget {
                       child: Directionality(
                         textDirection: TextDirection.ltr,
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SvgPicture.asset(
                               isVideo

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:like_button/like_button.dart';
@@ -12,16 +10,16 @@ class TrydosFavoriteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LikeButton(
-      circleColor:
-      CircleColor(start: Colors.redAccent, end: Colors.red),
+      circleColor: const CircleColor(start: Colors.redAccent, end: Colors.red),
       bubblesColor: BubblesColor(
         dotPrimaryColor: Colors.red.shade300,
         dotSecondaryColor: Colors.red,
       ),
       likeBuilder: (bool isLiked) {
-        return SvgPicture.asset(isLiked ? AppAssets.favoriteActiveSvg : AppAssets.favoriteSvg,);
+        return SvgPicture.asset(
+          isLiked ? AppAssets.favoriteActiveSvg : AppAssets.favoriteSvg,
+        );
       },
     );
-
   }
 }

@@ -163,7 +163,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   bool? fromSearch;
-  SpeechToText _speechToText = SpeechToText();
+  final SpeechToText _speechToText = SpeechToText();
 
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
   final ValueNotifier<bool> finishRedeem = ValueNotifier(false);
@@ -245,7 +245,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       _speechEnabled = await _speechToText.initialize();
     }
     await _speechToText.listen(
-      listenFor: Duration(seconds: 7),
+      listenFor: const Duration(seconds: 7),
       onResult: (result) {
         if (result.recognizedWords.replaceAll(" ", "").length > 2) {
           resetSearchAfterSearchingWhileRemoveSearch = true;
@@ -293,7 +293,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     );
     isRecordeForSearchWithMic.value = true;
     Future.delayed(
-      Duration(seconds: 9),
+      const Duration(seconds: 9),
       () => isRecordeForSearchWithMic.value = false,
     );
   }
@@ -373,18 +373,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
           true;
     }*/
     if (widget.fromNotificationCategory ?? false) {
-      homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+      homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
           isChangedVariationWhenQtyZero: false));
-      homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+      homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
           isChangedVariationWhenQtyZero: false));
 
       boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
-          sizeAndColorFilterinTextToSearch: {}));
+          sizeAndColorFilterinTextToSearch: const {}));
       appBloc.add(HideBottomNavigationBar(false));
       appBloc.add(ShowOrHideBars(true));
       appBloc.add(ChangeIndexForSearch(1));
       Future.delayed(
-        Duration(seconds: 1),
+        const Duration(seconds: 1),
         () {
           boutiqueBloc.add(ChangeAppliedFiltersEvent(
             boutiqueSlug: "search",
@@ -575,7 +575,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
           if (widget.fromSearch) {
             boutiqueBloc.add(ChangeSelectedFiltersEvent(
-              requestToUpdateFilters: true,
               fromHomePageSearch: widget.fromSearch,
               boutiqueSlug: widget.boutiqueSlug,
               filtersChoosedByUser: GetProductFiltersModel(
@@ -607,7 +606,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
             alignment: Alignment.topCenter,
             children: [
               Scaffold(
-                  backgroundColor: Color(0xffF8F8F8),
+                  backgroundColor: const Color(0xffF8F8F8),
                   bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
                       buildWhen: (p, c) => p.showBars != c.showBars,
                       builder: (context, state) {
@@ -719,7 +718,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         cacheExtent:
                                             0, // قيمة محسنة لمنع التعليق
                                         key: TestVariables.kTestMode
-                                            ? Key(WidgetsKeys
+                                            ? const Key(WidgetsKeys
                                                 .productListingScrollKey)
                                             : null,
                                         controller: scrollController,
@@ -730,14 +729,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         ?.totalSize ==
                                                     0 &&
                                                 isExpanded
-                                            ? NeverScrollableScrollPhysics()
+                                            ? const NeverScrollableScrollPhysics()
                                             : const ClampingScrollPhysics(
                                                 parent:
                                                     AlwaysScrollableScrollPhysics()),
                                         slivers: [
                                       // 🛡️ حماية من تجاوز شريط الحالة
-                                      SliverSafeArea(
-                                        top: true,
+                                      const SliverSafeArea(
                                         bottom: false,
                                         sliver: SliverToBoxAdapter(
                                           child: SizedBox(
@@ -775,8 +773,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         backIconColor: Colors.black,
                                                                         action: [
                                                                           LanguageService.rtl
-                                                                              ? Spacer()
-                                                                              : SizedBox.shrink(),
+                                                                              ? const Spacer()
+                                                                              : const SizedBox.shrink(),
                                                                           Padding(
                                                                             padding:
                                                                                 const EdgeInsetsDirectional.only(end: 10.0),
@@ -799,7 +797,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       onTap: () {
                                                                                         Navigator.of(context).push(
                                                                                           MaterialPageRoute(
-                                                                                            builder: (context) => CartPage(
+                                                                                            builder: (context) => const CartPage(
                                                                                               fromeFilters: true,
                                                                                             ),
                                                                                           ),
@@ -876,8 +874,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             boutiqueBloc.add(ChangeAppliedFiltersEvent(
                                                                                 boutiqueSlug: widget.boutiqueSlug,
                                                                                 category: widget.category,
-                                                                                filtersAppliedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
-                                                                                resetAppliedFilters: false));
+                                                                                filtersAppliedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters)));
                                                                             boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                                                               fromHomePageSearch: widget.fromSearch,
                                                                               boutiqueSlug: widget.boutiqueSlug,
@@ -891,7 +888,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         backIconColor: Colors.black,
                                                                         hasLeading: !isExpanded && !searchOpen,
                                                                         action: [
-                                                                          Spacer(),
+                                                                          const Spacer(),
                                                                           ValueListenableBuilder<bool>(
                                                                               valueListenable: displayBoutiqueIconInAppBar,
                                                                               child: Padding(
@@ -901,29 +898,27 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                         svgUrl: widget.boutiqueIcon ?? "",
                                                                                         height: 20,
                                                                                       )
-                                                                                    : SizedBox.shrink(),
+                                                                                    : const SizedBox.shrink(),
                                                                               ),
                                                                               builder: (context, display, child) {
-                                                                                return display ? child! : SizedBox.shrink();
+                                                                                return display ? child! : const SizedBox.shrink();
                                                                               }),
                                                                           Padding(
                                                                             padding:
                                                                                 EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
                                                                             child:
                                                                                 AnimatedSearchBar(
-                                                                              key: TestVariables.kTestMode ? Key(WidgetsKeys.productListingSearchInputKey) : null,
-                                                                              autoFocus: false,
+                                                                              key: TestVariables.kTestMode ? const Key(WidgetsKeys.productListingSearchInputKey) : null,
                                                                               width: isExpanded ? (1.sw - 90) : (1.sw - 120),
                                                                               height: 40,
                                                                               onClickClose: () {
-                                                                                boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
+                                                                                boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: const {}));
 
                                                                                 if (!isExpanded && controller.text.isNotEmpty) {
                                                                                   Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
                                                                                   boutiqueBloc.add(GetProductsWithFiltersEvent(
                                                                                     offset: 1,
-                                                                                    searchText: null,
                                                                                     fromSearch: fromSearch,
                                                                                     category: widget.category,
                                                                                     boutiqueSlug: widget.boutiqueSlug,
@@ -931,7 +926,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 }
                                                                                 if (isExpanded && controller.text.isNotEmpty) {
                                                                                   Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
-                                                                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
                                                                                 }
 
                                                                                 resetSearchAfterSearchingWhileRemoveSearch = false;
@@ -960,7 +955,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   AppAssets.searchOutlinedSvg,
                                                                                   height: 20,
                                                                                   width: 20,
-                                                                                  color: Color(0xff388CFF),
+                                                                                  color: const Color(0xff388CFF),
                                                                                 ),
                                                                               ),
                                                                               prefixWidget: Padding(
@@ -1007,7 +1002,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               _stopListening();
                                                                                             }
                                                                                           },
-                                                                                          child: Container(
+                                                                                          child: SizedBox(
                                                                                             width: 20,
                                                                                             child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
                                                                                           ),
@@ -1020,19 +1015,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               animationDurationInMilli: 400,
                                                                               searchDecoration: InputDecoration(
                                                                                 border: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
                                                                                   borderRadius: BorderRadius.circular(kbrBorderTextField),
                                                                                 ),
                                                                                 focusedBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
                                                                                   borderRadius: BorderRadius.circular(kbrBorderTextField),
                                                                                 ),
                                                                                 enabledBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
                                                                                   borderRadius: BorderRadius.circular(kbrBorderTextField),
                                                                                 ),
                                                                                 disabledBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
                                                                                   borderRadius: BorderRadius.circular(kbrBorderTextField),
                                                                                 ),
                                                                                 errorBorder: OutlineInputBorder(
@@ -1044,14 +1039,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   borderRadius: BorderRadius.circular(kbrBorderTextField),
                                                                                 ),
                                                                                 filled: true,
-                                                                                fillColor: focusNode.hasFocus ? colorScheme.white : Color(0xffF8F8F8),
+                                                                                fillColor: focusNode.hasFocus ? colorScheme.white : const Color(0xffF8F8F8),
                                                                                 prefixIcon: Padding(
                                                                                   padding: const EdgeInsets.only(top: 12, bottom: 12),
                                                                                   child: SvgPicture.asset(
                                                                                     AppAssets.searchOutlinedSvg,
                                                                                     height: 20,
                                                                                     width: 20,
-                                                                                    color: Color(0xff388CFF),
+                                                                                    color: const Color(0xff388CFF),
                                                                                   ),
                                                                                 ),
                                                                                 suffixIcon: Padding(
@@ -1078,7 +1073,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                                 width: 20,
                                                                                               ),
                                                                                       ),
-                                                                                      SizedBox(
+                                                                                      const SizedBox(
                                                                                         width: 20,
                                                                                       ),
                                                                                       ValueListenableBuilder<bool>(
@@ -1101,7 +1096,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                                 _stopListening();
                                                                                               }
                                                                                             },
-                                                                                            child: Container(
+                                                                                            child: SizedBox(
                                                                                               width: 20,
                                                                                               child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
                                                                                             ),
@@ -1114,14 +1109,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 //context.colorScheme.white,
                                                                                 contentPadding: HWEdgeInsetsDirectional.only(start: 20, end: 10, bottom: 12, top: 12),
                                                                                 hintText: '${LocaleKeys.search.tr()}',
-                                                                                hintStyle: context.textTheme.bodyMedium?.lq.copyWith(color: Color(0xffC4C2C2)),
+                                                                                hintStyle: context.textTheme.bodyMedium?.lq.copyWith(color: const Color(0xffC4C2C2)),
                                                                                 labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
                                                                               ),
                                                                               onChanged: (String text) {
                                                                                 if (searchDebounce?.isActive ?? false) {
                                                                                   searchDebounce!.cancel();
                                                                                 }
-                                                                                searchDebounce = Timer(Duration(seconds: 1), () {
+                                                                                searchDebounce = Timer(const Duration(seconds: 1), () {
                                                                                   String searchText = text;
 
                                                                                   if (isExpanded) {
@@ -1132,7 +1127,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     }
                                                                                     if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
                                                                                       resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
                                                                                     }
                                                                                     return;
                                                                                   }
@@ -1168,7 +1163,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     ));
                                                                                   }
                                                                                   if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
-                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
+                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: const {}));
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                                     Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
 
@@ -1178,18 +1173,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       filtersAppliedByUser: GetProductFiltersModel(
                                                                                           filters: filters.copyWithSaveOtherField(
                                                                                         prices: filters.prices,
-                                                                                        searchText: null,
                                                                                       )),
                                                                                     ));
                                                                                     boutiqueBloc.add(GetFiltersEvent(
                                                                                       fromHomePageSearch: widget.fromSearch,
-                                                                                      searchText: null,
                                                                                       category: widget.category,
                                                                                       boutiqueSlug: widget.boutiqueSlug,
                                                                                     ));
                                                                                     boutiqueBloc.add(GetProductsWithFiltersEvent(
                                                                                       offset: 1,
-                                                                                      searchText: null,
                                                                                       fromSearch: fromSearch,
                                                                                       category: widget.category,
                                                                                       boutiqueSlug: widget.boutiqueSlug,
@@ -1203,14 +1195,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             curve:
                                                                                 Curves.easeOut,
                                                                             duration:
-                                                                                Duration(milliseconds: 400),
+                                                                                const Duration(milliseconds: 400),
                                                                             reverseDuration:
-                                                                                Duration(milliseconds: 400),
+                                                                                const Duration(milliseconds: 400),
                                                                             child:
                                                                                 Row(
                                                                               children: [
                                                                                 isExpanded
-                                                                                    ? SizedBox.shrink()
+                                                                                    ? const SizedBox.shrink()
                                                                                     : Padding(
                                                                                         padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
                                                                                         child: SvgPicture.asset(AppAssets.sortingSvg, width: 20, height: 20),
@@ -1222,19 +1214,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   builder: (context, state) {
                                                                                     isExpanded = state.isExpandedForListingPage ?? false;
                                                                                     if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) == 1) {
-                                                                                      return SizedBox.shrink();
+                                                                                      return const SizedBox.shrink();
                                                                                     }
                                                                                     return Padding(
                                                                                         padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
                                                                                         child: InkWell(
-                                                                                          key: TestVariables.kTestMode ? Key(WidgetsKeys.filterIconKey) : null,
+                                                                                          key: TestVariables.kTestMode ? const Key(WidgetsKeys.filterIconKey) : null,
                                                                                           onTap: () {
                                                                                             if (!isExpanded) {
                                                                                               prefAppliedFilters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
                                                                                               boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
                                                                                               boutiqueBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
 
-                                                                                              boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                                              boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
 
                                                                                               resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                                               // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
@@ -1257,7 +1249,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                             AppAssets.filtersSvg,
                                                                                             width: 20,
                                                                                             height: 20,
-                                                                                            color: isExpanded ? Color(0xffFF5F61) : null,
+                                                                                            color: isExpanded ? const Color(0xffFF5F61) : null,
                                                                                           ),
                                                                                         ));
                                                                                   },
@@ -1314,14 +1306,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                                 AppAssets.shareSvg,
                                                                                                 width: 20,
                                                                                                 height: 20,
-                                                                                                color: Color(0xff3C3C3C),
+                                                                                                color: const Color(0xff3C3C3C),
                                                                                               )
                                                                                             : SvgPicture.asset(
-                                                                                                key: TestVariables.kTestMode ? Key(WidgetsKeys.closeFilterPageKey) : null,
+                                                                                                key: TestVariables.kTestMode ? const Key(WidgetsKeys.closeFilterPageKey) : null,
                                                                                                 AppAssets.closeSvg,
                                                                                                 width: 15,
                                                                                                 height: 15,
-                                                                                                color: Color(0xffFF5F61),
+                                                                                                color: const Color(0xffFF5F61),
                                                                                               ),
                                                                                         SizedBox(width: !isExpanded ? 10.0 : 12.5)
                                                                                       ]),
@@ -1346,9 +1338,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     builder: (context,
                                                         htmlHeight, child) {
                                                       return isExpanded
-                                                          ? SliverToBoxAdapter()
+                                                          ? const SliverToBoxAdapter()
                                                           : SliverAppBar(
-                                                              pinned: false,
                                                               collapsedHeight:
                                                                   180 +
                                                                       htmlHeight,
@@ -1357,11 +1348,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       .white,
                                                               automaticallyImplyLeading:
                                                                   false,
-                                                              flexibleSpace: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
-                                                                  children: [
+                                                              flexibleSpace:
+                                                                  Column(
+                                                                      children: [
                                                                     Center(
                                                                       child: Column(
                                                                           children: [
@@ -1373,8 +1362,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                         svgUrl: widget.boutiqueIcon ?? "",
                                                                                         height: 20,
                                                                                       )
-                                                                                    : SizedBox.shrink(),
-                                                                                SizedBox(
+                                                                                    : const SizedBox.shrink(),
+                                                                                const SizedBox(
                                                                                   width: 8,
                                                                                 ),
                                                                                 SvgPicture.asset(
@@ -1382,7 +1371,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   height: 15,
                                                                                   width: 15,
                                                                                 ),
-                                                                                SizedBox(
+                                                                                const SizedBox(
                                                                                   width: 8,
                                                                                 ),
                                                                                 SvgPicture.asset(
@@ -1392,7 +1381,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 ),
                                                                               ],
                                                                             ),
-                                                                            SizedBox(
+                                                                            const SizedBox(
                                                                               height: 5,
                                                                             ),
                                                                             Text(
@@ -1400,11 +1389,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               textAlign: TextAlign.center,
                                                                               style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 1),
                                                                             ),
-                                                                            SizedBox(
+                                                                            const SizedBox(
                                                                               height: 5,
                                                                             ),
                                                                             widget.withSlidingImages
-                                                                                ? Container(
+                                                                                ? SizedBox(
                                                                                     height: 128,
                                                                                     //color: Colors.red,
                                                                                     child: CarouselSlider.builder(
@@ -1414,7 +1403,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           bool isVisible = index <= 2; // عرض أول 3 صور فقط
 
                                                                                           return Padding(
-                                                                                            padding: EdgeInsets.only(
+                                                                                            padding: const EdgeInsets.only(
                                                                                               right: 10,
                                                                                               left: 10,
                                                                                             ),
@@ -1424,9 +1413,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               decoration: BoxDecoration(
                                                                                                 borderRadius: BorderRadius.circular(15.0),
                                                                                                 border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                                boxShadow: [
+                                                                                                boxShadow: const [
                                                                                                   BoxShadow(
-                                                                                                    color: const Color(0x33000000),
+                                                                                                    color: Color(0x33000000),
                                                                                                     offset: Offset(0, 3),
                                                                                                     blurRadius: 10,
                                                                                                   ),
@@ -1455,15 +1444,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           );
                                                                                         },
                                                                                         options: CarouselOptions(
-                                                                                          autoPlay: false, // 🔧 إيقاف التشغيل التلقائي لتوفير الأداء
-                                                                                          autoPlayInterval: Duration(seconds: 30), // 🔧 زيادة المدة لتقليل التحديثات
-                                                                                          autoPlayAnimationDuration: Duration(milliseconds: 300), // 🔧 تقليل مدة الحركة
-                                                                                          initialPage: 0,
+                                                                                          autoPlayInterval: const Duration(seconds: 30), // 🔧 زيادة المدة لتقليل التحديثات
+                                                                                          autoPlayAnimationDuration: const Duration(milliseconds: 300), // 🔧 تقليل مدة الحركة
                                                                                           height: 128,
                                                                                           enableInfiniteScroll: false,
                                                                                           viewportFraction: 1.0, // 🔧 تغيير لـ 1.0 لتقليل الرسم الإضافي
-                                                                                          pauseAutoPlayOnTouch: true, // 🔧 إيقاف عند اللمس
-                                                                                          pauseAutoPlayOnManualNavigate: true, // 🔧 إيقاف عند التنقل اليدوي
                                                                                           pauseAutoPlayInFiniteScroll: true, // 🔧 إيقاف في نهاية القائمة
                                                                                         )))
                                                                                 : Padding(
@@ -1476,9 +1461,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           decoration: BoxDecoration(
                                                                                             borderRadius: BorderRadius.circular(15.0),
                                                                                             border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                            boxShadow: [
+                                                                                            boxShadow: const [
                                                                                               BoxShadow(
-                                                                                                color: const Color(0x33000000),
+                                                                                                color: Color(0x33000000),
                                                                                                 offset: Offset(0, 3),
                                                                                                 blurRadius: 10,
                                                                                               ),
@@ -1499,7 +1484,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           decoration: BoxDecoration(
                                                                                             borderRadius: BorderRadius.circular(15.0),
                                                                                             boxShadow: [
-                                                                                              BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
+                                                                                              BoxShadow(color: Colors.white.withOpacity(0.7), offset: const Offset(0, 3), blurRadius: 6, inset: true),
                                                                                             ],
                                                                                           ),
                                                                                         ),
@@ -1511,7 +1496,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   ]),
                                                             );
                                                     })
-                                                : SliverToBoxAdapter();
+                                                : const SliverToBoxAdapter();
                                           }),
                                       ValueListenableBuilder<bool>(
                                           valueListenable: searchVisible,
@@ -1708,7 +1693,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 expandingFiltersStack,
                                                             key: TestVariables
                                                                     .kTestMode
-                                                                ? Key(WidgetsKeys
+                                                                ? const Key(WidgetsKeys
                                                                     .productListFilterKey)
                                                                 : null,
                                                             textController:
@@ -1733,7 +1718,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               ;
                                                             },
                                                             displayAppliedFiltersOnly:
-                                                                (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 &&
+                                                                (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) <
+                                                                        2 &&
                                                                     state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
                                                                         PaginationStatus.success,
                                                             category: widget.category,
@@ -1745,12 +1731,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               showTitleForFilterList
                                                                       .value =
                                                                   title;
-                                                              timerForDisplayFilterSectionTitle =
-                                                                  Timer(
-                                                                      Duration(
-                                                                          seconds:
-                                                                              3),
-                                                                      () {
+                                                              timerForDisplayFilterSectionTitle = Timer(
+                                                                  const Duration(
+                                                                      seconds:
+                                                                          3),
+                                                                  () {
                                                                 showTitleForFilterList
                                                                         .value =
                                                                     null;
@@ -1760,7 +1745,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             );
                                           }),
                                       isExpanded
-                                          ? SliverToBoxAdapter()
+                                          ? const SliverToBoxAdapter()
                                           : BlocBuilder<BoutiqueBloc,
                                               BoutiqueState>(
                                               buildWhen: (p, c) {
@@ -2104,7 +2089,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     '${widget.boutiqueSlug}' +
                                                                         'withoutFilter' +
                                                                         '${(widget.category ?? '')}'] ==
-                                                                PaginationModel
+                                                                const PaginationModel
                                                                     .init() &&
                                                             state
                                                                 .getProductListingWithFiltersPaginationModels[
@@ -2115,7 +2100,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 .isNullOrEmpty) &&
                                                         !state
                                                             .isGettingProductListingWithPagination) {
-                                                  return ProductListingLoading();
+                                                  return const ProductListingLoading();
                                                 }
                                                 if ((state
                                                                 .getProductListingWithFiltersPaginationModels[
@@ -2145,7 +2130,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     child: Center(
                                                       child: MyTextWidget(
                                                         "${LocaleKeys.no_internet_connected.tr()}",
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             color: Colors.black,
                                                             fontSize: 18),
                                                       ),
@@ -2181,7 +2166,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     child: Center(
                                                       child: MyTextWidget(
                                                         "${LocaleKeys.no_products_found.tr()}",
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             color: Colors.black,
                                                             fontSize: 18),
                                                       ),
@@ -2232,7 +2217,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       '${(widget.category ?? '')}']?.paginationStatus}");
                                                   return ProductListingLoading(
                                                     key: TestVariables.kTestMode
-                                                        ? Key(WidgetsKeys
+                                                        ? const Key(WidgetsKeys
                                                             .boutiqueProductListingLoadingKey)
                                                         : null,
                                                   );
@@ -2256,10 +2241,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       child: Center(
                                                         child: MyTextWidget(
                                                           "${LocaleKeys.no_products_found.tr()}",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 18),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 18),
                                                         ),
                                                       ),
                                                     );
@@ -2294,7 +2280,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                                 return SliverPadding(
                                                   key: TestVariables.kTestMode
-                                                      ? Key(WidgetsKeys
+                                                      ? const Key(WidgetsKeys
                                                           .productsListKey)
                                                       : gridViewKeyForRendering,
                                                   padding:
@@ -2323,7 +2309,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         return InkWell(
                                                           onTap: () {
                                                             Future.delayed(
-                                                              Duration(
+                                                              const Duration(
                                                                   milliseconds:
                                                                       100),
                                                             ).then(
@@ -2417,7 +2403,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     .slug
                                                                     .toString()));*/
                                                             homeBloc.add(
-                                                                ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                                const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                                     isStatusInitaial:
                                                                         true));
                                                             homeBloc.add(AddCurrentSelectedColorEvent(
@@ -2429,7 +2415,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     .toString()));
 
                                                             Future.delayed(
-                                                                Duration(
+                                                                const Duration(
                                                                     milliseconds:
                                                                         300),
                                                                 () => Navigator.of(
@@ -2464,7 +2450,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ),
                                               );
                                             }
-                                            return SliverToBoxAdapter();
+                                            return const SliverToBoxAdapter();
                                           })
                                     ]));
                               },
@@ -2487,7 +2473,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   height: 40,
                                   width: 140,
                                   decoration: BoxDecoration(
-                                      boxShadow: [
+                                      boxShadow: const [
                                         BoxShadow(
                                           color: Color(0x19000000),
                                           offset: Offset(0, 3),
@@ -2495,7 +2481,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         ),
                                       ],
                                       borderRadius: BorderRadius.circular(15),
-                                      color: Color(0xff505050)),
+                                      color: const Color(0xff505050)),
                                   child: Center(
                                     child: MyTextWidget(
                                       title ?? '',
@@ -2511,7 +2497,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   decoration: BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
-                                        offset: Offset(0, 3),
+                                        offset: const Offset(0, 3),
                                         blurRadius: 6,
                                         color: Colors.white.withOpacity(0.16),
                                         inset: true,
@@ -2532,7 +2518,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   valueListenable: tapIndexToAddProductToCart,
                   builder: (context, tapIndex, _) {
                     if (tapIndex != -1) {
-                      homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                      homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
                           isChangedVariationWhenQtyZero: false));
 
                       /* homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
@@ -2546,12 +2532,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           productId: products[tapIndex].productId.toString()));
 
                       loadingForRquestProductDetails.value = true;
-                      Future.delayed(Duration(milliseconds: 600),
+                      Future.delayed(const Duration(milliseconds: 600),
                           () => loadingForRquestProductDetails.value = false);
                     } else {
                       currentActiveTab.value = 0;
 
-                      return SizedBox.shrink();
+                      return const SizedBox.shrink();
                     }
                     return ValueListenableBuilder<bool>(
                         valueListenable: loadingForRquestProductDetails,
@@ -2559,14 +2545,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           return Positioned(
                               bottom: -20.h,
                               child: _loadingForRquestProductDetails
-                                  ? Container(
+                                  ? SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: TrydosLoader(
                                         size: 15,
                                       ),
                                     )
-                                  : Container(
+                                  : SizedBox(
                                       height: tapIndex == -1 ? 0 : 1.sh,
                                       width: 1.sw,
                                       child: BlocBuilder<HomeBloc, HomeState>(
@@ -2741,7 +2727,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 .marketToken ==
                                                             null)) {
                                               Future.delayed(
-                                                Duration(seconds: 5),
+                                                const Duration(seconds: 5),
                                                 () {
                                                   homeBloc.add(
                                                       GetProductDatailsWithoutRelatedProductsEvent(
@@ -2757,8 +2743,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               );
                                             }
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
-                                                () {
+                                                const Duration(
+                                                    milliseconds: 300), () {
                                               if ((state
                                                           .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                       GetProductDetailWithoutSimilarRelatedProductsStatus
@@ -2800,8 +2786,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               }
                                             });
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
-                                                () {
+                                                const Duration(
+                                                    milliseconds: 300), () {
                                               if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                       GetProductDetailWithoutSimilarRelatedProductsStatus
                                                           .failure ||
@@ -2858,9 +2844,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           : true
                                                       : true)) {
                                                 homeBloc.add(
-                                                    AddCurrentColorSizeEvent(
-                                                        choice_1: null,
-                                                        choiceOption: null));
+                                                    AddCurrentColorSizeEvent());
                                               } else if (!(state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                           productId] !=
@@ -2938,7 +2922,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             sizeOptionSelect));
                                               }
                                               homeBloc.add(
-                                                  IsChangedVariationWhenQtyZeroEvent(
+                                                  const IsChangedVariationWhenQtyZeroEvent(
                                                       isChangedVariationWhenQtyZero:
                                                           true));
                                               /*   String currentSelectedColorName =
@@ -2991,8 +2975,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   productId: productId);*/
                                               currentActiveTab.value = 3;
                                               Future.delayed(
-                                                  Duration(milliseconds: 600),
-                                                  () {
+                                                  const Duration(
+                                                      milliseconds: 600), () {
                                                 WidgetsBinding.instance
                                                     .addPostFrameCallback((_) {
                                                   panelControllerForCart.open();
@@ -3020,7 +3004,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ? Container(
                                                     width: 1.sw,
                                                     height: 1.sh,
-                                                    color: Color.fromRGBO(
+                                                    color: const Color.fromRGBO(
                                                         0, 0, 0, 0.3),
                                                     child: TrydosLoader(
                                                       size: 25,
@@ -3050,7 +3034,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         .getRedeemDateForProduct(products[tapIndex]
                                                                             .productId
                                                                             .toString())
-                                                                        ?.isAfter(DateTime.now().add(Duration(
+                                                                        ?.isAfter(DateTime.now().add(const Duration(
                                                                             seconds:
                                                                                 1))) ==
                                                                     true &&
@@ -3379,7 +3363,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
     //required Tuple2<int, int> slidingMode,
   }) {
     return SliverPadding(
-      key: TestVariables.kTestMode ? Key(WidgetsKeys.productsListKey) : null,
+      key: TestVariables.kTestMode
+          ? const Key(WidgetsKeys.productsListKey)
+          : null,
       padding: const EdgeInsets.only(top: 10),
       sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -3397,7 +3383,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
             return InkWell(
               onTap: () {
                 Future.delayed(
-                  Duration(milliseconds: 100),
+                  const Duration(milliseconds: 100),
                 ).then(
                   (value) {
                     FirebaseAnalyticsService.logEventForSession(
@@ -3430,13 +3416,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       AnalyticsExecutedEventNameConst.chooseProductButton,
                 );*/
 
-                homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                    isStatusInitaial: true));
+                homeBloc.add(
+                    const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                        isStatusInitaial: true));
                 homeBloc.add(AddCurrentSelectedColorEvent(
                     currentSelectedColor: 0,
                     productSlug: products[index].slug.toString()));
                 Future.delayed(
-                    Duration(milliseconds: 300),
+                    const Duration(milliseconds: 300),
                     () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (ctx) => ProductDetailsPageNew(
@@ -3542,12 +3529,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
         valueListenable: showShadowForColorImages,
         builder: (context, isShowShadowForPanel, _) {
           return !isShowShadowForPanel
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : InkWell(
                   onTap: () {
                     showShadowForColorImages.value = false;
                     Future.delayed(
-                      Duration(microseconds: 300),
+                      const Duration(microseconds: 300),
                       () {
                         colorImagesPanelController.close();
                         showShadowForColorImages.value = false;
@@ -3557,7 +3544,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   child: Container(
                     height: 1.sh,
                     width: 1.sw,
-                    color: Color.fromRGBO(29, 29, 29, 0.6),
+                    color: const Color.fromRGBO(29, 29, 29, 0.6),
                   ),
                 );
         });
@@ -3581,7 +3568,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30.r),
                       topRight: Radius.circular(30.r)),
-                  isDraggable: true,
                   onPanelClosed: () {
                     showShadowForColorImages.value = false;
                   },
@@ -3604,15 +3590,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
       child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 height: 2,
                 width: 40,
-                decoration: BoxDecoration(color: Color(0xffC4C2C2)),
+                decoration: const BoxDecoration(color: Color(0xffC4C2C2)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               ValueListenableBuilder<bool>(
@@ -3622,7 +3607,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       valueListenable: tapIndexToShowColorImages,
                       builder: (context, _tapIndexToShowColorImages, _) =>
                           _tapIndexToShowColorImages == -1
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : Expanded(
                                   child: GridView.builder(
                                       addAutomaticKeepAlives: false,
@@ -3644,7 +3629,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       itemBuilder: (context, index) => InkWell(
                                           onTap: () {
                                             GetIt.I<HomeBloc>().add(
-                                                ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                     isStatusInitaial: true));
                                             homeBloc.add(
                                                 AddCurrentSelectedColorEvent(
@@ -3655,7 +3640,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         .toString()));
 
                                             Future.delayed(
-                                                Duration(milliseconds: 300),
+                                                const Duration(
+                                                    milliseconds: 300),
                                                 () =>
                                                     Navigator.of(context).push(
                                                       MaterialPageRoute(
@@ -3717,7 +3703,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
       colorImagesPanelController: colorImagesPanelController,
       finishRedeem: finishRedeem,
       displayImageColors: true,
-      fromHomePage: false,
       tapIndexToAddProductToCart: tapIndexToAddProductToCart,
       key: TestVariables.kTestMode
           ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')

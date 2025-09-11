@@ -81,7 +81,7 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
             itemBuilder: (_, index) {
               if (state.callRegister![index].authMessageStatus!.isDeleted ==
                   1) {
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               } else {
                 return CallsCard(
                   isMissing:

@@ -735,4 +735,5 @@ abstract class LocaleKeys {
   static const product_shared_successfully = 'product_shared_successfully';
   static const report_story = 'report_story';
   static const confirm_report_story = 'confirm_report_story';
+  static const download_the_app_here = 'download_the_app_here';
 }

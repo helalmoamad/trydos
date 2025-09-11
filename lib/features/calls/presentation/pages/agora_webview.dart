@@ -126,10 +126,10 @@ class _AgoraWebViewState extends State<AgoraWebView> {
           WebViewWidget(
             controller: controller,
           ),
-          if (loading < 100) Center(child: CircularProgressIndicator()),
+          if (loading < 100) const Center(child: CircularProgressIndicator()),
           MyTextWidget(
             urlBasd,
-            style: TextStyle(color: Colors.teal),
+            style: const TextStyle(color: Colors.teal),
           )
         ],
       ),

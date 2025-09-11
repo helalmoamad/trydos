@@ -1036,6 +1036,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setString(PrefsKey.redeemSecondRemainForProducts, "{}");
   }
 
+  @override
+  // TODO: implement myContactDetails
+  String? get myContactDetails =>
+      _preferences.getString(PrefsKey.myContactDetail);
+
+  @override
+  Future<bool> setContactDetails(String? contactDetails) {
+    return _preferences.setString(
+        PrefsKey.myContactDetail, contactDetails ?? "");
+  }
+
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

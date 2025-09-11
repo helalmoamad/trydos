@@ -64,7 +64,7 @@ class SearchWithImageRelatedGemini {
                 // إغلاق ديالوج الاختيار
                 Navigator.of(context).pop();
                 // تأخير صغير لضمان إغلاق الديالوج
-                await Future.delayed(Duration(milliseconds: 100));
+                await Future.delayed(const Duration(milliseconds: 100));
                 // عرض معاينة الصورة
                 _showImagePreview(file);
               }
@@ -85,7 +85,7 @@ class SearchWithImageRelatedGemini {
                 // إغلاق ديالوج الاختيار
                 Navigator.of(context).pop();
                 // تأخير صغير لضمان إغلاق الديالوج
-                await Future.delayed(Duration(milliseconds: 100));
+                await Future.delayed(const Duration(milliseconds: 100));
                 // عرض معاينة الصورة
                 _showImagePreview(file);
               }

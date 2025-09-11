@@ -86,7 +86,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           timer = true;
@@ -201,7 +201,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                     .contains(widget.messageId) &&
                                 (widget.isReceived || widget.isRead) &&
                                 !widget.isreplay)
-                            ? Offset(0, 0)
+                            ? const Offset(0, 0)
                             : widget.senderId ==
                                     widget._prefsRepository.myChatId
                                 ? Offset(50.w, 0)
@@ -501,7 +501,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                     offset: widget.senderId ==
                                             widget._prefsRepository.myChatId
                                         ? Offset(-120.w, 0)
-                                        : Offset(0, 0),
+                                        : const Offset(0, 0),
                                     child: SendRecieveWatchTime(
                                       isRead: widget.isRead,
                                       isReceived: widget.isReceived,
@@ -509,7 +509,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                       watchedAt: widget.watchedAt,
                                     ),
                                   )
-                                : SizedBox.shrink(),
+                                : const SizedBox.shrink(),
                           ],
                         ),
                       ),
@@ -562,7 +562,8 @@ class SendRecieveWatchTime extends StatelessWidget {
                                   fontWeight: FontWeight.normal,
                                   color: const Color(0xffC4C2C2)),
                             )),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 3.5)),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 3.5)),
                         Container(
                             width: 10,
                             height: 10,
@@ -570,8 +571,8 @@ class SendRecieveWatchTime extends StatelessWidget {
                                 AppAssets.messageDeliveredArrowSvg))
                       ],
                     )
-                  : SizedBox.shrink(),
-              Padding(padding: EdgeInsets.symmetric(vertical: 0.17)),
+                  : const SizedBox.shrink(),
+              const Padding(padding: EdgeInsets.symmetric(vertical: 0.17)),
               isRead
                   ? Row(
                       children: [
@@ -588,7 +589,8 @@ class SendRecieveWatchTime extends StatelessWidget {
                                     fontSize: 10.sp,
                                     fontWeight: FontWeight.normal,
                                     color: const Color(0xff505050)))),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 3.5)),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 3.5)),
                         Container(
                             width: 10,
                             height: 10,
@@ -596,7 +598,7 @@ class SendRecieveWatchTime extends StatelessWidget {
                                 SvgPicture.asset(AppAssets.messageReadArrowSvg))
                       ],
                     )
-                  : SizedBox.shrink()
+                  : const SizedBox.shrink()
             ],
           ),
         ],

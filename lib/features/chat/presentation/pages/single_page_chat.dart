@@ -125,7 +125,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   late CallsBloc callsBloc;
   int countMessagesReceivedToMeNow = 0;
   late Chat chat;
-  AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   Map<String, int> messagesIndexes = {};
   List<String> searchResults = [];
@@ -180,7 +180,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   void dispose() {
     callsBloc.add(GetMissedCallCountEvent());
     chatBloc
-        .add(AddUserConntctSatuseEvent(userConnectedStatuse: " ", chatId: " "));
+        .add(const AddUserConntctSatuseEvent(userConnectedStatuse: " ", chatId: " "));
     autoScrollController.dispose();
     _audioPlayer.dispose();
     super.dispose();
@@ -254,7 +254,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         BlocProvider.of<AppBloc>(context)
             .add(RefreshChatInputField(false, 'null', false));
         chatBloc
-            .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: null));
+            .add(const ChangeGlobalUsedVariablesInBloc());
         return Future.value(true);
       },
       child: Scaffold(
@@ -263,7 +263,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
           appBar: TrydosAppBar(
             heightAppBar: (widget.fromSearch ?? false) ? 120 : 56,
             appBarParams: AppBarParams(
-                dividerBottom: false,
                 hasLeading: false,
                 surfaceTintColor: Colors.transparent,
                 elevation: 0,
@@ -271,28 +270,26 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   child: Column(
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           widget.fromOrder == "true"
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : ValueListenableBuilder<bool>(
                                   valueListenable: clickBackButton,
                                   builder: (context, clicked, _) {
                                     return InkWell(
                                       key: TestVariables.kTestMode
-                                          ? Key(WidgetsKeys.backFromChatKey)
+                                          ? const Key(WidgetsKeys.backFromChatKey)
                                           : null,
                                       onTap: () {
                                         BlocProvider.of<AppBloc>(context).add(
                                             RefreshChatInputField(
                                                 false, 'null', false));
                                         chatBloc.add(
-                                            ChangeGlobalUsedVariablesInBloc(
-                                                currentOpenedChatId: null));
+                                            const ChangeGlobalUsedVariablesInBloc(
+                                                ));
                                         clickBackButton.value = true;
                                         Future.delayed(
-                                          Duration(milliseconds: 100),
+                                          const Duration(milliseconds: 100),
                                           () {
                                             clickBackButton.value = false;
                                             GoRouter.of(context).pop();
@@ -319,7 +316,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     );
                                   }),
                           widget.fromOrder == "true"
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : BlocListener<ChatBloc, ChatState>(
                                   listenWhen: (p, c) =>
                                       p.currentOpenedChatId !=
@@ -375,7 +372,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               ? Container(
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                        width: 1.0,
                                         color: const Color(0xff388cff)),
                                     boxShadow: const [
                                       BoxShadow(
@@ -417,7 +413,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               children: [
                                 InkWell(
                                   key: TestVariables.kTestMode
-                                      ? Key(WidgetsKeys.goToProfileButtonKey)
+                                      ? const Key(WidgetsKeys.goToProfileButtonKey)
                                       : null,
                                   onTap: () {
                                     widget.fromOrder == "true"
@@ -549,7 +545,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           0xff007CFF))),
                                                         ],
                                                       )
-                                                : SizedBox.shrink();
+                                                : const SizedBox.shrink();
                                           },
                                         );
                                       }
@@ -559,7 +555,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             ),
                           ),
                           widget.fromOrder == "true"
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : BlocBuilder<CallsBloc, CallsState>(
                                   builder: (context, state) => InkWell(
                                     onTap: () async {
@@ -615,7 +611,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           30.horizontalSpace,
                           // todo CreateCallPage
                           widget.fromOrder == "true"
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : InkWell(
                                   onTap: () async {
                                     try {
@@ -686,7 +682,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         ],
                       ),
                       if ((widget.fromSearch ?? false)) ...{
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         ValueListenableBuilder<Map<String, int>>(
@@ -731,8 +727,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         HWEdgeInsets.symmetric(horizontal: 20.0)
                                             .copyWith(bottom: 10),
                                     child: AppTextField(
-                                      filledColor: Color(0xffF8F8F8),
-                                      bordersColor: Color(0xffF8F8F8),
+                                      filledColor: const Color(0xffF8F8F8),
+                                      bordersColor: const Color(0xffF8F8F8),
                                       hintText: 'Search',
                                       roundingCornersValue: 30,
                                       controller: controller,
@@ -747,7 +743,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         if (text.length > 0) {
                                           rebuildForScrollFirstWord = true;
                                           chatBloc.add(SearchTextInChatEvent(
-                                              getWithPagination: false,
                                               channel_id: widget.chatId,
                                               searchText: text));
                                           indexForEveryTextInSearchResult = 0;
@@ -779,8 +774,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               state.getMessagesBetweenStatus ==
                                                   GetMessagesBetweenStatus
                                                       .loading
-                                          ? LoadingIndicator()
-                                          : SizedBox.shrink(),
+                                          ? const LoadingIndicator()
+                                          : const SizedBox.shrink(),
                                       suffixIcon: (state.resultOfSearchTextInChat
                                                           ?.paginationStatus ==
                                                       PaginationStatus
@@ -792,13 +787,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               state.getMessagesBetweenStatus ==
                                                   GetMessagesBetweenStatus
                                                       .loading
-                                          ? SizedBox.shrink()
+                                          ? const SizedBox.shrink()
                                           : Container(
                                               height: 15,
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
                                                 children: [
                                                   IconButton(
                                                     onPressed: () {
@@ -822,7 +815,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                               searchResults[
                                                                   indexForEveryTextInSearchResult]);
                                                     },
-                                                    icon: Icon(
+                                                    icon: const Icon(
                                                         Icons.arrow_downward),
                                                   ),
                                                   IconButton(
@@ -833,7 +826,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                               .paginationStatus,
                                                           currentIndextForMessages);
                                                     },
-                                                    icon: Icon(
+                                                    icon: const Icon(
                                                         Icons.arrow_upward),
                                                   ),
                                                 ],
@@ -926,16 +919,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               chat.paginationStatus ==
                                                       PaginationStatus.loading
                                                   ? TrydosLoader()
-                                                  : SizedBox.shrink(),
+                                                  : const SizedBox.shrink(),
                                               chat.paginationStatus ==
                                                       PaginationStatus.loading
                                                   ? 8.verticalSpace
-                                                  : SizedBox.shrink(),
+                                                  : const SizedBox.shrink(),
                                               Flexible(
                                                   child: ListView.builder(
                                                       key: TestVariables
                                                               .kTestMode
-                                                          ? Key(
+                                                          ? const Key(
                                                               WidgetsKeys
                                                                   .messagesListKey,
                                                             )
@@ -1562,7 +1555,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                 ],
                                                                                               ),
                                                                                             ].reversed.toList()))))
-                                                                      : SizedBox.shrink()
+                                                                      : const SizedBox.shrink()
                                                                 ]));
                                                       },
                                                       itemCount: chatState
@@ -1635,12 +1628,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         : LocaleKeys.voice.tr(),
                             receiverUserId: member?.userId));
                         BlocProvider.of<AppBloc>(context).add(
-                            RefreshChatInputField(false, '', false,
-                                messageId: null,
-                                message: null,
-                                senderParentMessageId: null,
-                                imageUrl: null,
-                                time: null));
+                            RefreshChatInputField(false, '', false));
                       },
                       onSendMessage: (String message) {
                         String id = const Uuid().v4();
@@ -1663,12 +1651,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             parentMessageContent: state.message,
                             receiverUserId: member?.userId));
                         BlocProvider.of<AppBloc>(context).add(
-                            RefreshChatInputField(false, '', false,
-                                messageId: null,
-                                message: null,
-                                senderParentMessageId: null,
-                                imageUrl: null,
-                                time: null));
+                            RefreshChatInputField(false, '', false));
                         // rebuildMessage.value = data.length;
                       },
                     );
@@ -1703,11 +1686,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
               messageType: message.messageType!.name,
               channelId: channelId,
               isForward: true,
-              parentMessageId: null,
               content: message.messageContent!.content,
               messageId: id,
-              senderParentMessageId: null,
-              parentMessageContent: null,
               receiverUserId: receiverId));
         } else {
           chatBloc.add(SendMessageEvent(
@@ -1720,10 +1700,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               ],
               messageType: message.messageType!.name,
               isForward: true,
-              senderParentMessageId: null,
-              parentMessageId: null,
               messageId: id,
-              parentMessageContent: null,
               receiverUserId: receiverId));
         }
       },
@@ -1770,13 +1747,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (maxScrollExtent ?? false) {
       autoScrollController
           .animateTo(autoScrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 300), curve: Curves.easeOut)
+              duration: const Duration(milliseconds: 300), curve: Curves.easeOut)
           .then((value) {
         currentScrolledIndex = index;
         rebuildMessage.value = index;
         if (!(forSearchText ?? false)) {
           Future.delayed(
-            Duration(seconds: 2),
+            const Duration(seconds: 2),
             () {
               currentScrolledIndex = -1;
               rebuildMessage.value = -1;
@@ -1794,7 +1771,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         rebuildMessage.value = index;
         if (!(forSearchText ?? false)) {
           Future.delayed(
-            Duration(seconds: 2),
+            const Duration(seconds: 2),
             () {
               currentScrolledIndex = -1;
               rebuildMessage.value = -1;
@@ -1838,14 +1815,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
           Container(
             margin: EdgeInsets.only(left: 10.w, right: 10.w),
             decoration: BoxDecoration(
-                color: Color.fromARGB(255, 252, 243, 243),
-                border: Border(),
+                color: const Color.fromARGB(255, 252, 243, 243),
+                border: const Border(),
                 borderRadius: BorderRadius.circular(20.w)),
             width: 250.w,
             height: 32.h,
             child: Row(
               children: [
-                Spacer(),
+                const Spacer(),
                 MyTextWidget(
                   message.deletedByUserId == _prefsRepository.myChatId
                       ? LocaleKeys.you_have_deleted_this_message.tr()
@@ -1854,7 +1831,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   style: textTheme.titleSmall?.lr.copyWith(
                       fontSize: 12, height: 1.1, color: colorScheme.grey200),
                 ),
-                Spacer(),
+                const Spacer(),
                 MyTextWidget(
                   !message.createdAt!.isUtc
                       ? HelperFunctions.getDateInFormat(message.createdAt!)
@@ -1864,7 +1841,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   style: textTheme.titleSmall?.lr.copyWith(
                       fontSize: 12, height: 1.1, color: colorScheme.grey200),
                 ),
-                Spacer()
+                const Spacer()
               ],
             ),
           ),
@@ -2057,7 +2034,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isLocalMessage: true,
             isForwarded: message.isForward == 1,
           );
         case 'ShareProduct':
@@ -2124,7 +2100,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isLocalMessage: true,
             isForwarded: message.isForward == 1,
             watchedAt: messageStatus?.watchedAt,
           );

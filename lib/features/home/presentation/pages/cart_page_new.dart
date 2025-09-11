@@ -44,7 +44,7 @@ class CartPage extends StatefulWidget {
   final bool? fromeFilters;
 
   const CartPage({
-    Key? key,
+    super.key,
     this.fromeFilters,
   });
   @override
@@ -80,7 +80,7 @@ class _CartPageState extends State<CartPage> {
     orderBloc = BlocProvider.of<OrderBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     orderBloc.add(GetCustomerAddressesEvent(setDefault: true));
-    homeBloc.add(GetCartItemEvent());
+    homeBloc.add(const GetCartItemEvent());
 
     authBloc.add(GetCustomerInfoEvent());
 
@@ -164,7 +164,7 @@ class _CartPageState extends State<CartPage> {
                   }
                   /////////////////////////////////
                   Future.delayed(
-                    Duration(milliseconds: 300),
+                    const Duration(milliseconds: 300),
                     () {
                       FirebaseAnalyticsService.logEventForSession(
                         executedEventName: GlobalScreenConst.CART_SCREEN,
@@ -180,7 +180,7 @@ class _CartPageState extends State<CartPage> {
                   ); ////////////////////////////////
                   orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
                   Future.delayed(
-                    Duration(milliseconds: 600),
+                    const Duration(milliseconds: 600),
                     () => HelperFunctions.slidingNavigation(
                       context,
                       CartDelivaryAddress(
@@ -343,12 +343,12 @@ class _CartPageState extends State<CartPage> {
               if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                   (state.getCartShippingItemsModel == null)) {
                 return Padding(
-                  padding: EdgeInsets.only(top: 100),
+                  padding: const EdgeInsets.only(top: 100),
                   child: Center(
                     child: TryAgainWidget(
                       tryAgain: () {
                         BlocProvider.of<HomeBloc>(context)
-                            .add(GetCartItemEvent());
+                            .add(const GetCartItemEvent());
                       },
                     ),
                   ),
@@ -432,7 +432,6 @@ class _CartPageState extends State<CartPage> {
                             padding: EdgeInsets.symmetric(horizontal: 10.h),
                             height: 50.h,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 InkWell(
                                   onTap: () {
@@ -461,7 +460,6 @@ class _CartPageState extends State<CartPage> {
                                   child: !(LanguageService.languageCode != "ar")
                                       ? Transform.rotate(
                                           angle: pi,
-                                          alignment: Alignment.center,
                                           child: Container(
                                             width: 40.w,
                                             child: SvgPicture.asset(
@@ -477,7 +475,7 @@ class _CartPageState extends State<CartPage> {
                                           ),
                                         ),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 SvgPicture.asset(
                                   AppAssets.bagsSvg,
                                   height: 20,
@@ -522,12 +520,12 @@ class _CartPageState extends State<CartPage> {
                                       ? 0
                                       : 20.w,
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 SvgPicture.asset(
                                   AppAssets.shareSvg,
                                   height: 20,
                                   width: 20,
-                                  color: Color(0xff3C3C3C),
+                                  color: const Color(0xff3C3C3C),
                                 )
                               ],
                             ),
@@ -593,14 +591,14 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
                     Container(
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: const Color.fromARGB(255, 255, 255, 255),
                       child: Container(
                         color: ((state.cartCollection == null ||
                                     state.cartCollection!.isEmpty) &&
                                 (state.oldcartCollection == null ||
                                     state.oldcartCollection!.isEmpty))
-                            ? Color(0xffF8F8F8)
-                            : Color(0xffFEFEFE),
+                            ? const Color(0xffF8F8F8)
+                            : const Color(0xffFEFEFE),
                         alignment: Alignment.topCenter,
                         child: Stack(
                           children: [
@@ -610,8 +608,6 @@ class _CartPageState extends State<CartPage> {
                                         state.oldcartCollection!.isEmpty))
                                 ? Center(
                                     child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       children: [
                                         SizedBox(
                                           height: (1.sh / 2) -
@@ -627,23 +623,21 @@ class _CartPageState extends State<CartPage> {
                                             height: 20,
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 10,
                                         ),
-                                        Container(
-                                          child: Text(
-                                            "${LocaleKeys.your_cart_empty.tr()}",
-                                            style: context
-                                                .textTheme.bodyMedium?.mr
-                                                .copyWith(
-                                                    fontSize: 13.sp,
-                                                    color:
-                                                        const Color(0xff8E8E8E),
-                                                    letterSpacing: 0.18,
-                                                    height: 1.33),
-                                          ),
+                                        Text(
+                                          "${LocaleKeys.your_cart_empty.tr()}",
+                                          style: context
+                                              .textTheme.bodyMedium?.mr
+                                              .copyWith(
+                                                  fontSize: 13.sp,
+                                                  color:
+                                                      const Color(0xff8E8E8E),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 15,
                                         ),
                                         Container(
@@ -672,13 +666,14 @@ class _CartPageState extends State<CartPage> {
                                         ? (1.sh - 140.h)
                                         : 1.sh - 210.h,
                                     child: ListView(
-                                      padding: EdgeInsets.only(top: 0),
+                                      padding: const EdgeInsets.only(),
                                       shrinkWrap: true,
-                                      physics: AlwaysScrollableScrollPhysics(),
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
                                       children: [
                                         (state.cartCollection == null ||
                                                 state.cartCollection!.isEmpty)
-                                            ? SizedBox.shrink()
+                                            ? const SizedBox.shrink()
                                             : ProductCollectionInCartPage1(
                                                 isOldCart: false,
                                                 oldCartCollection:
@@ -688,7 +683,7 @@ class _CartPageState extends State<CartPage> {
                                                     state.cartCollection ?? [],
                                                 priceSymbol: priceSymbol,
                                               ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 20,
                                         ),
                                         state.oldcartCollection != null
@@ -696,13 +691,13 @@ class _CartPageState extends State<CartPage> {
                                                 ? Center(
                                                     child: MyTextWidget(
                                                     "${LocaleKeys.old_cart.tr()}",
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 24),
                                                   ))
-                                                : SizedBox.shrink()
-                                            : SizedBox.shrink(),
-                                        SizedBox(
+                                                : const SizedBox.shrink()
+                                            : const SizedBox.shrink(),
+                                        const SizedBox(
                                           height: 10,
                                         ),
                                         state.oldcartCollection != null
@@ -733,12 +728,12 @@ class _CartPageState extends State<CartPage> {
                                                             ))
                                                       ],
                                                     ))
-                                                : SizedBox.shrink()
-                                            : SizedBox.shrink(),
+                                                : const SizedBox.shrink()
+                                            : const SizedBox.shrink(),
                                         (state.oldcartCollection == null ||
                                                 state
                                                     .oldcartCollection!.isEmpty)
-                                            ? SizedBox.shrink()
+                                            ? const SizedBox.shrink()
                                             : ProductCollectionInCartPage1(
                                                 isOldCart: true,
                                                 oldCartCollection:
@@ -758,13 +753,14 @@ class _CartPageState extends State<CartPage> {
                                       valueListenable: isExpanded,
                                       builder: (context, expanded, _) {
                                         return !(expanded || isMoreInfo)
-                                            ? SizedBox.shrink()
+                                            ? const SizedBox.shrink()
                                             : InkWell(
                                                 onTap: () {
                                                   isExpanded.value = false;
                                                   moreInfo.value = false;
                                                   Future.delayed(
-                                                    Duration(microseconds: 300),
+                                                    const Duration(
+                                                        microseconds: 300),
                                                     () {
                                                       panelController.close();
                                                     },
@@ -772,7 +768,7 @@ class _CartPageState extends State<CartPage> {
                                                 },
                                                 child: Container(
                                                   height: 600.h,
-                                                  color: Color.fromRGBO(
+                                                  color: const Color.fromRGBO(
                                                       29, 29, 29, 0.6),
                                                 ),
                                               );
@@ -798,7 +794,8 @@ class _CartPageState extends State<CartPage> {
                                                                     .cartCollection!
                                                                     .isEmpty))
                                                             ? null
-                                                            : BorderRadius.only(
+                                                            : const BorderRadius
+                                                                .only(
                                                                 topLeft: Radius
                                                                     .circular(
                                                                         30),
@@ -818,15 +815,13 @@ class _CartPageState extends State<CartPage> {
                                                                   .cartCollection!
                                                                   .isEmpty))
                                                           ? null
-                                                          : BorderRadius.only(
+                                                          : const BorderRadius
+                                                              .only(
                                                               topLeft: Radius
                                                                   .circular(30),
                                                               topRight: Radius
                                                                   .circular(
                                                                       30)),
-                                                  isDraggable: true,
-                                                  slideDirection:
-                                                      SlideDirection.UP,
                                                   onPanelClosed: () {
                                                     isExpanded.value = false;
                                                     moreInfo.value = false;
@@ -867,7 +862,7 @@ class _CartPageState extends State<CartPage> {
                                                     alignment:
                                                         Alignment.topLeft,
                                                     decoration: BoxDecoration(
-                                                        boxShadow: [
+                                                        boxShadow: const [
                                                           BoxShadow(
                                                               color: Color(
                                                                   0xffF8F8F8),
@@ -875,12 +870,13 @@ class _CartPageState extends State<CartPage> {
                                                               blurRadius: 0.1)
                                                         ],
                                                         border: Border.all(
-                                                            color: Color(
+                                                            color: const Color(
                                                                 0xffF8F8F8)),
-                                                        color:
-                                                            Color(0xffFFFFFF),
+                                                        color: const Color(
+                                                            0xffFFFFFF),
                                                         borderRadius:
-                                                            BorderRadius.only(
+                                                            const BorderRadius
+                                                                .only(
                                                                 topLeft: Radius
                                                                     .circular(
                                                                         30),
@@ -910,11 +906,11 @@ class _CartPageState extends State<CartPage> {
                                                           ? null
                                                           : BoxDecoration(
                                                               border: Border.all(
-                                                                  color: Color(
+                                                                  color: const Color(
                                                                       0xffFFFFFF)),
-                                                              color: Color(
+                                                              color: const Color(
                                                                   0xffFFFFFF),
-                                                              borderRadius: BorderRadius.only(
+                                                              borderRadius: const BorderRadius.only(
                                                                   topLeft: Radius
                                                                       .circular(
                                                                           30),
@@ -931,9 +927,9 @@ class _CartPageState extends State<CartPage> {
                                                                     state
                                                                         .cartCollection!
                                                                         .isEmpty))
-                                                                ? SizedBox
+                                                                ? const SizedBox
                                                                     .shrink()
-                                                                : SizedBox(
+                                                                : const SizedBox(
                                                                     height: 10,
                                                                   ),
                                                             ((state.cartCollection ==
@@ -941,7 +937,7 @@ class _CartPageState extends State<CartPage> {
                                                                     state
                                                                         .cartCollection!
                                                                         .isEmpty))
-                                                                ? SizedBox
+                                                                ? const SizedBox
                                                                     .shrink()
                                                                 : InkWell(
                                                                     onTap: () {
@@ -950,7 +946,7 @@ class _CartPageState extends State<CartPage> {
                                                                             true;
                                                                         Future
                                                                             .delayed(
-                                                                          Duration(
+                                                                          const Duration(
                                                                               microseconds: 500),
                                                                           () {
                                                                             panelController.open();
@@ -974,9 +970,9 @@ class _CartPageState extends State<CartPage> {
                                                                     state
                                                                         .cartCollection!
                                                                         .isEmpty))
-                                                                ? SizedBox
+                                                                ? const SizedBox
                                                                     .shrink()
-                                                                : SizedBox(
+                                                                : const SizedBox(
                                                                     height: 5,
                                                                   ),
                                                             ((state.cartCollection ==
@@ -984,7 +980,7 @@ class _CartPageState extends State<CartPage> {
                                                                     state
                                                                         .cartCollection!
                                                                         .isEmpty))
-                                                                ? SizedBox
+                                                                ? const SizedBox
                                                                     .shrink()
                                                                 : Container(
                                                                     height: 27,
@@ -994,7 +990,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 0)),
                                                                   ),
                                                             !isMoreInfo
-                                                                ? SizedBox
+                                                                ? const SizedBox
                                                                     .shrink()
                                                                 : SizedBox(
                                                                     height:
@@ -1007,16 +1003,18 @@ class _CartPageState extends State<CartPage> {
                                                                       border:
                                                                           Border
                                                                               .all(
-                                                                        color: Color(
+                                                                        color: const Color(
                                                                             0xffF8F8F8),
                                                                       ),
-                                                                      color: Color(
+                                                                      color: const Color(
                                                                           0xffF8F8F8),
-                                                                      borderRadius:
-                                                                          BorderRadius.all(
-                                                                              Radius.circular(30))),
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
+                                                                      borderRadius: const BorderRadius
+                                                                          .all(
+                                                                          Radius.circular(
+                                                                              30))),
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
                                                                       horizontal:
                                                                           10),
                                                               child: Column(
@@ -1025,25 +1023,24 @@ class _CartPageState extends State<CartPage> {
                                                                         .start,
                                                                 children: [
                                                                   !expanded
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : Container(
-                                                                          margin:
-                                                                              EdgeInsets.all(18),
+                                                                          margin: const EdgeInsets
+                                                                              .all(
+                                                                              18),
                                                                           width:
                                                                               65,
                                                                           height:
                                                                               18,
                                                                           child:
                                                                               Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
                                                                             crossAxisAlignment:
                                                                                 CrossAxisAlignment.start,
                                                                             children: [
                                                                               SvgPicture.asset(
                                                                                 AppAssets.countItemSvg,
-                                                                                color: Color(0xff1D1D1D),
+                                                                                color: const Color(0xff1D1D1D),
                                                                                 height: 12,
                                                                               ),
                                                                               Text(
@@ -1058,7 +1055,7 @@ class _CartPageState extends State<CartPage> {
                                                                           ),
                                                                         ),
                                                                   !expanded
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : Container(
                                                                           width:
@@ -1078,8 +1075,6 @@ class _CartPageState extends State<CartPage> {
                                                                               EdgeInsets.symmetric(horizontal: 10.w),
                                                                           child:
                                                                               Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
                                                                             crossAxisAlignment:
                                                                                 CrossAxisAlignment.start,
                                                                             children: [
@@ -1093,16 +1088,16 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     child: Text(
                                                                                       "${LocaleKeys.details.tr()} ",
-                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
+                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : const StrutStyle(height: 0.1, leading: 0.1),
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
                                                                                     ),
                                                                                   ),
-                                                                                  Spacer(),
+                                                                                  const Spacer(),
                                                                                   Text(
                                                                                     " ${HelperFunctions.formatNumber(number: totlalPriceWithoutShipping, isNeedRounding: false)}  ",
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
-                                                                                  SizedBox(
+                                                                                  const SizedBox(
                                                                                     width: 2,
                                                                                   ),
                                                                                   Text(
@@ -1126,14 +1121,14 @@ class _CartPageState extends State<CartPage> {
                                                                           ),
                                                                         ),
                                                                   !expanded
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : SizedBox(
                                                                           height:
                                                                               5.h,
                                                                         ),
                                                                   !expanded
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : Container(
                                                                           padding:
@@ -1153,8 +1148,6 @@ class _CartPageState extends State<CartPage> {
                                                                               EdgeInsets.symmetric(horizontal: 10.w),
                                                                           child:
                                                                               Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
                                                                             crossAxisAlignment:
                                                                                 CrossAxisAlignment.start,
                                                                             children: [
@@ -1167,7 +1160,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     child: SvgPicture.asset(
                                                                                       AppAssets.totalDiscountCartSvg,
-                                                                                      color: Color(0xffFE0364),
+                                                                                      color: const Color(0xffFE0364),
                                                                                       height: 12,
                                                                                     ),
                                                                                   ),
@@ -1179,16 +1172,16 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     child: Text(
                                                                                       "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(0)}% ",
-                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
+                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : const StrutStyle(height: 0.1, leading: 0.1),
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
                                                                                     ),
                                                                                   ),
-                                                                                  Spacer(),
+                                                                                  const Spacer(),
                                                                                   Text(
                                                                                     "- ${HelperFunctions.formatNumber(number: (totlalDiscount), isNeedRounding: false)}  ",
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
-                                                                                  SizedBox(
+                                                                                  const SizedBox(
                                                                                     width: 2,
                                                                                   ),
                                                                                   Text(
@@ -1212,14 +1205,14 @@ class _CartPageState extends State<CartPage> {
                                                                           ),
                                                                         ),
                                                                   !expanded
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : SizedBox(
                                                                           height:
                                                                               5.h,
                                                                         ),
                                                                   !expanded
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : Container(
                                                                           padding:
@@ -1239,8 +1232,6 @@ class _CartPageState extends State<CartPage> {
                                                                               EdgeInsets.symmetric(horizontal: 10.w),
                                                                           child:
                                                                               Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
                                                                             crossAxisAlignment:
                                                                                 CrossAxisAlignment.start,
                                                                             children: [
@@ -1250,7 +1241,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10.w : 2, left: LanguageService.languageCode != "ar" ? 2 : 10.w),
                                                                                     child: SvgPicture.asset(
                                                                                       AppAssets.giftCartSvg,
-                                                                                      color: Color(0xff5BA260),
+                                                                                      color: const Color(0xff5BA260),
                                                                                       height: 12,
                                                                                     ),
                                                                                   ),
@@ -1265,12 +1256,12 @@ class _CartPageState extends State<CartPage> {
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                   ),
-                                                                                  Spacer(),
+                                                                                  const Spacer(),
                                                                                   Text(
                                                                                     "- ${0}  ",
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
-                                                                                  SizedBox(
+                                                                                  const SizedBox(
                                                                                     width: 2,
                                                                                   ),
                                                                                   Text(
@@ -1297,7 +1288,7 @@ class _CartPageState extends State<CartPage> {
                                                                     height: 5.h,
                                                                   ),
                                                                   !expanded
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : Container(
                                                                           padding:
@@ -1317,8 +1308,6 @@ class _CartPageState extends State<CartPage> {
                                                                               EdgeInsets.symmetric(horizontal: 10.w),
                                                                           child:
                                                                               Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
                                                                             crossAxisAlignment:
                                                                                 CrossAxisAlignment.start,
                                                                             children: [
@@ -1328,7 +1317,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10 : 2, left: LanguageService.languageCode != "ar" ? 2 : 10),
                                                                                     child: SvgPicture.asset(
                                                                                       AppAssets.shappingCartSvg,
-                                                                                      color: Color(0xffBEF4CD),
+                                                                                      color: const Color(0xffBEF4CD),
                                                                                       height: 12,
                                                                                     ),
                                                                                   ),
@@ -1340,11 +1329,11 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     child: Text(
                                                                                       "${LocaleKeys.shipping.tr()} ",
-                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
+                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : const StrutStyle(height: 0.1, leading: 0.1),
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
                                                                                     ),
                                                                                   ),
-                                                                                  Spacer(),
+                                                                                  const Spacer(),
                                                                                   /*    Text(
                                                                                       "0",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
@@ -1353,7 +1342,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     " ${HelperFunctions.formatNumber(number: ((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)}  ",
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
-                                                                                  SizedBox(
+                                                                                  const SizedBox(
                                                                                     width: 2,
                                                                                   ),
                                                                                   Text(
@@ -1387,12 +1376,12 @@ class _CartPageState extends State<CartPage> {
                                                                           state
                                                                               .cartCollection!
                                                                               .isEmpty))
-                                                                      ? SizedBox
+                                                                      ? const SizedBox
                                                                           .shrink()
                                                                       : InkWell(
                                                                           onTap: () =>
                                                                               Future.delayed(
-                                                                            Duration(microseconds: 500),
+                                                                            const Duration(microseconds: 500),
                                                                             () {
                                                                               if (isExpanded.value || moreInfo.value) {
                                                                                 isExpanded.value = false;
@@ -1410,7 +1399,7 @@ class _CartPageState extends State<CartPage> {
                                                                             height:
                                                                                 50.h,
                                                                             decoration:
-                                                                                BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.all(Radius.circular(12))),
+                                                                                const BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.all(Radius.circular(12))),
                                                                             padding:
                                                                                 EdgeInsets.only(
                                                                               right: LanguageService.languageCode != "ar" ? 10.w : 2,
@@ -1420,7 +1409,6 @@ class _CartPageState extends State<CartPage> {
                                                                                 EdgeInsets.symmetric(horizontal: 10.w),
                                                                             child:
                                                                                 Column(
-                                                                              mainAxisAlignment: MainAxisAlignment.start,
                                                                               crossAxisAlignment: CrossAxisAlignment.start,
                                                                               children: [
                                                                                 Row(
@@ -1436,7 +1424,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                       ),
                                                                                     ),
-                                                                                    Spacer(),
+                                                                                    const Spacer(),
                                                                                     Text(
                                                                                       "${HelperFunctions.formatNumber(number: (totlalPrice + totlalDiscount), isNeedRounding: false)}  ",
                                                                                       style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
@@ -1445,7 +1433,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       "${HelperFunctions.formatNumber(number: totlalPrice, isNeedRounding: false)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
-                                                                                    SizedBox(
+                                                                                    const SizedBox(
                                                                                       width: 2,
                                                                                     ),
                                                                                     Text(
@@ -1518,8 +1506,8 @@ class _CartPageState extends State<CartPage> {
                                                               ),
                                                             ),
                                                             expanded
-                                                                ? Spacer()
-                                                                : SizedBox
+                                                                ? const Spacer()
+                                                                : const SizedBox
                                                                     .shrink(),
                                                             SizedBox(
                                                               height: expanded
@@ -1540,7 +1528,7 @@ class _CartPageState extends State<CartPage> {
                                                                     child: Stack(
                                                                         children: [
                                                                           PageView(
-                                                                              physics: NeverScrollableScrollPhysics(),
+                                                                              physics: const NeverScrollableScrollPhysics(),
                                                                               controller: pageController,
                                                                               children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
                                                                                   ? [
@@ -1553,7 +1541,7 @@ class _CartPageState extends State<CartPage> {
                                                                                           navigateTocartOrProfile: () {
                                                                                             isVerified.value = true;
                                                                                             BlocProvider.of<HomeBloc>(context).add(
-                                                                                              CheckWithGetCartEvent(isForPlaceOrder: false),
+                                                                                              const CheckWithGetCartEvent(isForPlaceOrder: false),
                                                                                             );
                                                                                           },
                                                                                           fromLogin: false,
@@ -1568,11 +1556,10 @@ class _CartPageState extends State<CartPage> {
                                                                                     ]
                                                                                   : [
                                                                                       InsertPhoneTab(
-                                                                                        fromLogin: false,
                                                                                         focusNode: focusNode,
                                                                                         moveToNextStep: (String phoneNumber) {
                                                                                           this.phoneNumber = phoneNumber.replaceAll(' ', '');
-                                                                                          pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                          pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                                                                                           setState(() {});
                                                                                         },
                                                                                       ),
@@ -1581,7 +1568,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         isFromLogin: true,
                                                                                         onChooseWhatsapp: () {
                                                                                           isVisWhatsApp = 1;
-                                                                                          pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                          pageController.animateToPage(2, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
 
                                                                                           if (prefsRepository.isTimerForOtpRunning ?? false) {
                                                                                             showWarningMessage(context, '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
@@ -1590,11 +1577,11 @@ class _CartPageState extends State<CartPage> {
                                                                                           /* authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
                                                                                         },
                                                                                         goBackToPhone: () {
-                                                                                          pageController.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                          pageController.animateToPage(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                                                                                         },
                                                                                         onChooseSms: () {
                                                                                           isVisWhatsApp = 0;
-                                                                                          pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                          pageController.animateToPage(3, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                                                                                           /*authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
                                                                                         },
                                                                                       ),
@@ -1607,15 +1594,15 @@ class _CartPageState extends State<CartPage> {
                                                                                           navigateTocartOrProfile: () {
                                                                                             isVerified.value = true;
                                                                                             BlocProvider.of<HomeBloc>(context).add(
-                                                                                              CheckWithGetCartEvent(isForPlaceOrder: false),
+                                                                                              const CheckWithGetCartEvent(isForPlaceOrder: false),
                                                                                             );
                                                                                           },
                                                                                           fromLogin: false,
                                                                                           onLoginFailed: () {
-                                                                                            pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            pageController.animateToPage(3, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                                                                                           },
                                                                                           goBack: () {
-                                                                                            pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                                                                                           },
                                                                                           methodIcon: isVisWhatsApp == 1 ? AppAssets.whatsappSvg : AppAssets.smsSvg,
                                                                                           phoneNumber: phoneNumber),
@@ -1631,7 +1618,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 : null,
                                                                             child:
                                                                                 Container(
-                                                                              margin: EdgeInsets.all(10),
+                                                                              margin: const EdgeInsets.all(10),
                                                                               height: 20,
                                                                               width: 40,
                                                                               child: InkWell(
@@ -1640,7 +1627,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     AppAssets.closeSvg,
                                                                                     height: 15,
                                                                                     width: 30,
-                                                                                    color: Color(0xffFF5F61),
+                                                                                    color: const Color(0xffFF5F61),
                                                                                   )),
                                                                             ),
                                                                           )
@@ -1729,15 +1716,15 @@ class _CartPageState extends State<CartPage> {
                                                                                                 letterSpacing: 0.18,
                                                                                               ),
                                                                                             ),
-                                                                                            SizedBox(
+                                                                                            const SizedBox(
                                                                                               width: 2,
                                                                                             ),
                                                                                             Text(
                                                                                               priceSymbol ?? '\$',
                                                                                               style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                decorationColor: Color(0xffFEFEFE),
+                                                                                                decorationColor: const Color(0xffFEFEFE),
                                                                                                 fontSize: 14.sp,
-                                                                                                color: Color(0xffFEFEFE),
+                                                                                                color: const Color(0xffFEFEFE),
                                                                                               ),
                                                                                             )
                                                                                           ],
@@ -1749,7 +1736,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     height: 70.h,
                                                                                     decoration: BoxDecoration(
                                                                                       borderRadius: BorderRadius.circular(20),
-                                                                                      color: Color(0xff3C3C3C),
+                                                                                      color: const Color(0xff3C3C3C),
                                                                                     ),
                                                                                   ),
                                                                                 )
@@ -1775,7 +1762,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       homeBloc.add(GetCartOverviewEvent());
                                                                                       return;
                                                                                     } else if (state.checkWithGetCartStatus == CheckWithGetCartStatus.failure) {
-                                                                                      homeBloc.add(CheckWithGetCartEvent(isForPlaceOrder: false));
+                                                                                      homeBloc.add(const CheckWithGetCartEvent(isForPlaceOrder: false));
                                                                                       return;
                                                                                     } else if (state.cartCollection!.any(
                                                                                       (element) => (element.isActive == false || element.isCountryRestricted == true || element.checkAvailability == false),
@@ -1793,7 +1780,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         isVerified.value = false;
                                                                                       } else {
                                                                                         BlocProvider.of<HomeBloc>(context).add(
-                                                                                          CheckWithGetCartEvent(isForPlaceOrder: false),
+                                                                                          const CheckWithGetCartEvent(isForPlaceOrder: false),
                                                                                         );
                                                                                       }
                                                                                     }
@@ -1869,20 +1856,20 @@ class _CartPageState extends State<CartPage> {
                                                                                                         letterSpacing: 0.18,
                                                                                                       ),
                                                                                                     ),
-                                                                                                    SizedBox(
+                                                                                                    const SizedBox(
                                                                                                       width: 2,
                                                                                                     ),
                                                                                                     Text(
                                                                                                       priceSymbol ?? '\$',
                                                                                                       style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                        decorationColor: Color(0xffFEFEFE),
+                                                                                                        decorationColor: const Color(0xffFEFEFE),
                                                                                                         fontSize: 14.sp,
-                                                                                                        color: Color(0xffFEFEFE),
+                                                                                                        color: const Color(0xffFEFEFE),
                                                                                                       ),
                                                                                                     )
                                                                                                   ],
                                                                                                 ),
-                                                                                                SizedBox(
+                                                                                                const SizedBox(
                                                                                                   height: 5,
                                                                                                 )
                                                                                               ],
@@ -1892,18 +1879,15 @@ class _CartPageState extends State<CartPage> {
                                                                                       height: 70.h,
                                                                                       decoration: BoxDecoration(
                                                                                         borderRadius: BorderRadius.circular(20),
-                                                                                        color: Color(0xff3C3C3C),
+                                                                                        color: const Color(0xff3C3C3C),
                                                                                       )),
                                                                                 );
                                                                         }),
                                                                   ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 5,
                                                             )
-                                                          ],
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start),
+                                                          ]),
                                                     ),
                                                   ),
                                                 ),

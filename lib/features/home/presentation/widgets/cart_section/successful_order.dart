@@ -38,12 +38,12 @@ class SuccessfullOrder extends StatefulWidget {
   final String orderGroupId;
   final String currencySymbol;
   const SuccessfullOrder({
+    super.key,
     required this.totalPrice,
     required this.customerAddressesInfo,
     required this.cartImages,
     required this.paymentMethods,
     required this.currencySympole,
-    Key? key,
     required this.availablePaymentMethod,
     required this.decimalPointSetting,
     required this.orderAmount,
@@ -65,8 +65,8 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
     appBloc = BlocProvider.of<AppBloc>(context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(RemoveItemsFromCartAfterOrderSuccessEvent());
-    homeBloc.add(GetCartItemEvent());
+    homeBloc.add(const RemoveItemsFromCartAfterOrderSuccessEvent());
+    homeBloc.add(const GetCartItemEvent());
     super.initState();
   }
 
@@ -118,7 +118,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
                   alignment: Alignment.topCenter,
                   child: Column(
                     children: [
@@ -159,16 +159,16 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
               height: 80,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Color.fromRGBO(255, 255, 255, 1),
+                  color: const Color.fromRGBO(255, 255, 255, 1),
                 ),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     blurRadius: 10,
                     blurStyle: BlurStyle.solid,
                     color: Color(0xffF1F1F1),
                   ),
                 ],
-                color: Color.fromRGBO(255, 255, 255, 1),
+                color: const Color.fromRGBO(255, 255, 255, 1),
               ),
               width: 1.sw,
               child: InkWell(
@@ -178,10 +178,11 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 },
                 child: Container(
                   height: 70.h,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Color(0xff1D1D1D)),
+                      color: const Color(0xff1D1D1D)),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -227,7 +228,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.only(left: 10, right: 10),
+            margin: const EdgeInsets.only(left: 10, right: 10),
             child: Row(
               children: [
                 SvgPicture.asset(
@@ -254,7 +255,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Container(
@@ -268,7 +269,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                   height: 0.8),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Padding(
@@ -330,7 +331,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Container(
@@ -340,7 +341,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 right: (LanguageService.languageCode == "ar") ? 10 : 0),
             height: 135,
             child: ListView.separated(
-              separatorBuilder: (context, index) => SizedBox(
+              separatorBuilder: (context, index) => const SizedBox(
                 width: 5,
               ),
               scrollDirection: Axis.horizontal,
@@ -348,7 +349,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
               itemBuilder: (context, index) => Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: Color(0x707070),
+                  color: const Color(0x707070),
                 ),
                 width: 91.w,
                 child: Column(
@@ -356,7 +357,6 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                     Container(
                       height: 100,
                       child: ProductDetailsImageWidget(
-                        withBackGroundShadow: true,
                         withInnerShadow: false,
                         imageFit: BoxFit.cover,
                         blurRadius: 0,
@@ -365,7 +365,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                         radius: 15,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 2,
                     ),
                     Text(
@@ -397,12 +397,11 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
   Container buildPurchaseWasCompletedWidget(BuildContext context) {
     return Container(
       alignment: Alignment.topCenter,
-      margin: EdgeInsets.only(top: 50),
+      margin: const EdgeInsets.only(top: 50),
       width: 1.sw,
       height: 255,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -415,7 +414,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Text(
@@ -426,7 +425,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 fontSize: 14,
                 height: 1.33),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -445,7 +444,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 fontSize: 20,
                 height: 1.33),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Row(
@@ -467,13 +466,13 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           SvgPicture.asset(
             AppAssets.infoSvg,
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -484,7 +483,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 fontSize: 12,
                 height: 1.33),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(

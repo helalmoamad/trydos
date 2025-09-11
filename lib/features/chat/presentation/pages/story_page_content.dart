@@ -15,28 +15,29 @@ class StoryPageContent extends StatefulWidget {
 }
 
 class _StoryPageContentState extends State<StoryPageContent> {
-
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
         child: BlocBuilder<PreloadingVideosBloc, PreloadingVideosState>(
       builder: (context, state) {
         return SizedBox(
-          height: 1.sh-150.h,
+          height: 1.sh - 150.h,
           child: PageView.builder(
               itemCount: state.urls.length,
-              scrollDirection: Axis.horizontal,
               onPageChanged: (index) {
                 BlocProvider.of<PreloadingVideosBloc>(context)
                     .add(PreloadPreviousOrNext(index: index));
               },
               itemBuilder: (context, index) {
                 return state.focusedIndex == index
-                    ? state.controllers[index] == null ?  Center(
-                  child: TrydosLoader(),
-                ) :AspectRatio(
-                    aspectRatio: state.controllers[index]!.value.aspectRatio,
-                    child: VideoPlayer(state.controllers[index]!))
+                    ? state.controllers[index] == null
+                        ? Center(
+                            child: TrydosLoader(),
+                          )
+                        : AspectRatio(
+                            aspectRatio:
+                                state.controllers[index]!.value.aspectRatio,
+                            child: VideoPlayer(state.controllers[index]!))
                     : const SizedBox.shrink();
               }),
         );

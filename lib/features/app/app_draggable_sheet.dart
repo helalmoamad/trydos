@@ -27,10 +27,9 @@ class AppDraggableSheet<T> extends StatelessWidget {
   }) =>
       showModalBottomSheet<T>(
         context: context ?? navigatorKey.currentContext!,
-        enableDrag: true,
-        isDismissible: true,
         isScrollControlled: true,
-        backgroundColor: (context ?? navigatorKey.currentContext!).theme.colorScheme.background,
+        backgroundColor:
+            (context ?? navigatorKey.currentContext!).theme.colorScheme.surface,
         builder: (_) => AppDraggableSheet._(
           builder: builder,
           initialChildSize: initialChildSize,

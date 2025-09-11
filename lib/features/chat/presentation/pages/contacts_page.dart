@@ -46,7 +46,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    chatBloc.add(GetContactsEvent());
+    chatBloc.add(const GetContactsEvent());
     super.initState();
   }
 
@@ -64,14 +64,11 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
       backgroundColor: const Color(0xffF8F8F8),
       appBar: TrydosAppBar(
         appBarParams: AppBarParams(
-            dividerBottom: false,
             hasLeading: false,
             surfaceTintColor: Colors.transparent,
             elevation: 0,
             child: SafeArea(
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Transform(
                     alignment: Alignment.center,
@@ -180,7 +177,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   return Center(
                     child: ElevatedButton(
                         onPressed: () {
-                          chatBloc.add(GetContactsEvent());
+                          chatBloc.add(const GetContactsEvent());
                         },
                         child: MyTextWidget(LocaleKeys.try_again.tr())),
                   );

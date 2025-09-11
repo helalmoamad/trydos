@@ -86,7 +86,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
     }
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           timer = true;
@@ -178,7 +178,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                     offset: !(state.isSlpoing &&
                             state.slopMessageId!.contains(widget.messageId) &&
                             (widget.isReceived || widget.isRead))
-                        ? Offset(0, 0)
+                        ? const Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
                             ? Offset(140.w, 0)
                             : Offset(-140.w, 0),
@@ -197,7 +197,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                   .catchError((onError) {
                                 showDialog(
                                   context: context,
-                                  builder: (context) => AlertDialog(
+                                  builder: (context) => const AlertDialog(
                                     content: Text("صيغة الملف غير مدعومة"),
                                   ),
                                 );
@@ -224,10 +224,6 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                       : CrossAxisAlignment.end,
                                   children: [
                                     Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       children: [
                                         SvgPicture.asset(
                                           AppAssets.documentSvg,
@@ -471,7 +467,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                   watchedAt: widget.watchedAt,
                                 ),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                       ],
                     ),
                   ),

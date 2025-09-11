@@ -1,35 +1,32 @@
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
+
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/error/failures.dart';
+
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
+
 import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/features/app/app_elvated_button.dart';
+
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/trydos_shimmer_loading.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
-import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
@@ -40,13 +37,9 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_quantity_available_button.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/routes/router.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class ProductDetailsSheetBottomBar extends StatefulWidget {
   const ProductDetailsSheetBottomBar(
@@ -262,17 +255,21 @@ class _ProductDetailsSheetBottomBarState
                                                           widget.colorName,
                                                     );
                                                     return AnimatedSwitcher(
-                                                        duration: Duration(
+                                                        duration: const Duration(
                                                             milliseconds: 300),
-                                                        reverseDuration: Duration(
-                                                            milliseconds: 300),
+                                                        reverseDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
                                                         transitionBuilder:
                                                             (child, animation) {
                                                           return SlideTransition(
                                                             position: Tween(
-                                                              begin: Offset(
-                                                                  -1.0, 0.0),
-                                                              end: Offset(
+                                                              begin:
+                                                                  const Offset(
+                                                                      -1.0,
+                                                                      0.0),
+                                                              end: const Offset(
                                                                   0.0, 0.0),
                                                             ).animate(
                                                                 animation),
@@ -288,11 +285,8 @@ class _ProductDetailsSheetBottomBarState
                                                                             null)) ||
                                                                     widget
                                                                         .collectedAfterOrder
-                                                                ? (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                                            GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                                                .failure ||
-                                                                        state.authProductDetailsStatus ==
-                                                                            AuthProductDetailsStatus.failure)
+                                                                ? (state.getProductDetailWithoutSimilarRelatedProductsStatus == GetProductDetailWithoutSimilarRelatedProductsStatus.failure ||
+                                                                        state.authProductDetailsStatus == AuthProductDetailsStatus.failure)
                                                                     ? Container(
                                                                         width: 120,
                                                                         height: 60,
@@ -595,25 +589,25 @@ class _ProductDetailsSheetBottomBarState
                                                                                                             style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                                           ),
                                                                                                           widget.colorNum == ""
-                                                                                                              ? SizedBox.shrink()
+                                                                                                              ? const SizedBox.shrink()
                                                                                                               : MyTextWidget(
                                                                                                                   '${LocaleKeys.color.tr()} ',
                                                                                                                   style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                                                 ),
                                                                                                           widget.colorNum == ""
-                                                                                                              ? SizedBox.shrink()
+                                                                                                              ? const SizedBox.shrink()
                                                                                                               : MyTextWidget(
                                                                                                                   '${widget.colorName} ',
-                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: isCloseToWhite(Color(int.parse('0xff${widget.colorNum.substring(1)}'))) ? Color(0xff1D1D1D) : Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: isCloseToWhite(Color(int.parse('0xff${widget.colorNum.substring(1)}'))) ? const Color(0xff1D1D1D) : Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
                                                                                                                 ),
                                                                                                           widget.size == ""
-                                                                                                              ? SizedBox.shrink()
+                                                                                                              ? const SizedBox.shrink()
                                                                                                               : MyTextWidget(
                                                                                                                   '${LocaleKeys.size.tr()} ',
                                                                                                                   style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                                                 ),
                                                                                                           widget.size == ""
-                                                                                                              ? SizedBox.shrink()
+                                                                                                              ? const SizedBox.shrink()
                                                                                                               : MyTextWidget(
                                                                                                                   '${widget.size} ',
                                                                                                                   style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
@@ -683,7 +677,7 @@ class _ProductDetailsSheetBottomBarState
 
                                                                       return notificationTypeId ==
                                                                               -1
-                                                                          ? SizedBox
+                                                                          ? const SizedBox
                                                                               .shrink()
                                                                           : NotifyWhenQuantityAvailableButton(
                                                                               currentTap: currentTab,
@@ -802,7 +796,7 @@ class _ProductDetailsSheetBottomBarState
                                                     '${state.cachedProductWithoutRelatedProductsModel[widget.productIdForCashproducts]?.product?.sharedCount ?? "0"}',
                                                 svgPath: AppAssets.shareSvg,
                                                 color: currentTab == 1
-                                                    ? Color(0xff505050)
+                                                    ? const Color(0xff505050)
                                                     : null,
                                                 onTap: widget.clickOnShare);
                                       },
@@ -810,7 +804,7 @@ class _ProductDetailsSheetBottomBarState
                                     BarWidget(
                                         svgPath: AppAssets.moreOptionSvg,
                                         color: currentTab == 2
-                                            ? Color(0xff505050)
+                                            ? const Color(0xff505050)
                                             : null,
                                         onTap: widget.clickOnMoreOptions),
                                   ],
@@ -863,7 +857,7 @@ class BarWidget extends StatelessWidget {
               5.verticalSpace,
               MyTextWidget(text!,
                   style: context.textTheme.titleMedium?.rq.copyWith(
-                    color: Color(0xff8D8D8D),
+                    color: const Color(0xff8D8D8D),
                   ))
             }
           ],

@@ -85,11 +85,11 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
           return Scaffold(
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
-                    backgroundColor: Color(0x000000),
+                    backgroundColor: const Color(0x000000),
                     action: [
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : SizedBox(
                               width: 55.w,
                             ),
@@ -101,13 +101,13 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                             fontSize: 14,
                             height: 1.3),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       !_visibleSave
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : InkWell(
                               onTap: () {
                                 BlocProvider.of<HomeBloc>(context)
-                                    .add(ClearAllAppCashEvent());
+                                    .add(const ClearAllAppCashEvent());
                                 clearCustomCashe();
                                 prefsRepository.setIsFoundDataCashed(false);
                                 BlocProvider.of<HomeBloc>(context).add(
@@ -120,7 +120,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                                                     .code ??
                                                 ""));
                                 Future.delayed(
-                                  Duration(microseconds: 500),
+                                  const Duration(microseconds: 500),
                                   () {
                                     appBloc.add(ChangeBasePage(0));
                                     context.go("/");
@@ -172,17 +172,17 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                               height: 50,
                               width: 1.sw,
                               decoration: BoxDecoration(
-                                  color: Color(0xffF8F8F8),
-                                  border: Border.all(color: Color(0xffD3D3D3))),
+                                  color: const Color(0xffF8F8F8),
+                                  border: Border.all(
+                                      color: const Color(0xffD3D3D3))),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   SizedBox(
                                     width: 10.w,
                                   ),
                                   SvgPicture.asset(
                                     AppAssets.infoSvg,
-                                    color: Color(0xff402CDD),
+                                    color: const Color(0xff402CDD),
                                     width: 25.w,
                                   ),
                                   SizedBox(
@@ -201,11 +201,11 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                                   ),
                                 ],
                               )),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           _availableLanguage(),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                         ],
@@ -222,7 +222,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
         Container(
           height: 15,
           width: 170,
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -230,7 +230,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                 AppAssets.languageSvg,
                 height: 25,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               Text(
@@ -241,22 +241,22 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                     fontSize: 12,
                     height: 1.2),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               SvgPicture.asset(
                 AppAssets.chatWithQuestionSvg,
-                color: Color(0xffD3D3D3),
+                color: const Color(0xffD3D3D3),
                 height: 15,
               ),
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
+          margin: const EdgeInsets.symmetric(horizontal: 5),
           width: 1.sw,
           height: 245,
           child: ListView.separated(
@@ -272,7 +272,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                   language[index].name ?? "",
                   index);
             },
-            separatorBuilder: (context, index) => SizedBox(
+            separatorBuilder: (context, index) => const SizedBox(
               height: 5,
             ),
             itemCount: language.length,
@@ -294,18 +294,18 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
             margin: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
                 color: index == changeLanguage.value
-                    ? Color(0xffF8F8F8)
+                    ? const Color(0xffF8F8F8)
                     : Colors.white,
                 borderRadius: BorderRadius.circular(15.r),
                 border: Border.all(
                     color: index == changeLanguage.value
-                        ? Color(0xff402CDD)
-                        : Color(0xffD3D3D3))),
+                        ? const Color(0xff402CDD)
+                        : const Color(0xffD3D3D3))),
             width: 1.sw,
             height: 53,
             child: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 code.toUpperCase() == "SY"
@@ -325,7 +325,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                               width: 25,
                               borderRadius: 4.r,
                             )),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(

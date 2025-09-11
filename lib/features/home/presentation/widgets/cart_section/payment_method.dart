@@ -28,6 +28,7 @@ class PaymentMethod extends StatefulWidget {
   final String currencySymbol;
   final double partialPaymentByWallet;
   const PaymentMethod({
+    super.key,
     required this.paymentMethods,
     required this.fromPalceOrder,
     required this.fromSuccessOrder,
@@ -93,18 +94,17 @@ class _PaymentMethodState extends State<PaymentMethod> {
           builder: (context, _paymentMethods, _) {
             return Container(
               width: 1.sw,
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   border: (widget.fromPalceOrder)
                       ? null
-                      : Border.all(color: Color(0xff388CFF))),
+                      : Border.all(color: const Color(0xff388CFF))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SvgPicture.asset(AppAssets.paymentMethodSvg),
                       SizedBox(width: 10.w),
@@ -124,7 +124,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 2,
                   ),
                   Padding(
@@ -142,14 +142,14 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           height: 1.33),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&
                               (widget.fromPalceOrder)) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.cod)
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
@@ -202,8 +202,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               (widget.fromPalceOrder)) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.cod)
-                      ? SizedBox.shrink()
-                      : SizedBox(
+                      ? const SizedBox.shrink()
+                      : const SizedBox(
                           height: 8,
                         ),
                   /////////////////////
@@ -211,7 +211,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.trydosWallet)
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
@@ -246,8 +246,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.trydosWallet)
-                      ? SizedBox.shrink()
-                      : SizedBox(
+                      ? const SizedBox.shrink()
+                      : const SizedBox(
                           height: 8,
                         ),
                   ////////////////////
@@ -255,7 +255,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.card)
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
@@ -307,7 +307,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.card)
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : SizedBox(
                           height: 12.h,
                         ),
@@ -316,7 +316,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.crypto)
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
@@ -533,28 +533,27 @@ class PaymentMethodCard extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(
           color: fromSuccessOrder
-              ? Color.fromARGB(255, 255, 255, 255)
+              ? const Color.fromARGB(255, 255, 255, 255)
               : fromPalceOrder
-                  ? Color(0xffC4C2C2)
+                  ? const Color(0xffC4C2C2)
                   : paymentMethod.contains(currentPaymentMethod)
-                      ? Color(0xff388CFF)
-                      : Color(0xffF8F8F8),
+                      ? const Color(0xff388CFF)
+                      : const Color(0xffF8F8F8),
         ),
         color: fromSuccessOrder || fromPalceOrder
-            ? Color.fromARGB(255, 255, 255, 255)
-            : Color(0xffF8F8F8),
+            ? const Color.fromARGB(255, 255, 255, 255)
+            : const Color(0xffF8F8F8),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 26.w),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(
               svg,
               color: paymentMethod.contains(currentPaymentMethod) &&
                       !fromSuccessOrder
-                  ? Color(0xff1D1D1D)
+                  ? const Color(0xff1D1D1D)
                   : null,
             ),
             SizedBox(width: 10.w),
@@ -562,14 +561,14 @@ class PaymentMethodCard extends StatelessWidget {
               title,
               style: context.textTheme.bodyMedium?.rr.copyWith(
                   color: paymentMethod.contains(currentPaymentMethod)
-                      ? Color(0xff1D1D1D)
-                      : Color(0xffC4C2C2),
+                      ? const Color(0xff1D1D1D)
+                      : const Color(0xffC4C2C2),
                   letterSpacing: 0.18,
                   fontSize: 12,
                   height: 1.33),
             ),
             //////////////////
-            Spacer(),
+            const Spacer(),
             ///////////////////
             cardWidgets,
           ],
