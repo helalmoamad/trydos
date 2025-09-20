@@ -324,6 +324,17 @@ class AddPrefAppliedFilterForExtendFilterEvent extends BoutiqueEvent {
   List<Object?> get props => [prefAppliedFilter];
 }
 
+class AddCurrentMainCategoryTapedEvent extends BoutiqueEvent {
+  final String? currentMainCategoryTaped;
+
+  AddCurrentMainCategoryTapedEvent({
+    this.currentMainCategoryTaped,
+  });
+
+  @override
+  List<Object?> get props => [currentMainCategoryTaped];
+}
+
 class ResetAllSelectedAppliedFilterEvent extends BoutiqueEvent {
   ResetAllSelectedAppliedFilterEvent();
 

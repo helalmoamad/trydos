@@ -24,6 +24,7 @@ import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
@@ -895,202 +896,283 @@ class _TabsBarState extends State<TabsBar> {
                                             padding:
                                                 HWEdgeInsetsDirectional.only(
                                                     end: 15),
-                                            child: InkWell(
-                                              onTap: () {
-                                                if (BlocProvider.of<AppBloc>(
-                                                            context)
-                                                        .state
-                                                        .tabIndex !=
-                                                    index) {
-                                                  appBloc.add(ChangeTab(index));
-                                                  ///////////////////////
-                                                  categoryBloc.add(
-                                                    GetHomeBoutiqesEvent(
-                                                      getWithPrefetchToStoreInMemory:
-                                                          false,
-                                                      getWithOutPrefetchForEachBoutiques:
-                                                          true,
-                                                      offset: "1",
-                                                      categorySlug: homeState
-                                                          .mainCategoriesResponseModel!
-                                                          .data!
-                                                          .mainCategories![
-                                                              index]
-                                                          .slug!,
-                                                      context: context,
-                                                    ),
-                                                  );
-                                                  ////////////////////////////
-                                                  categoryBloc.add(
-                                                    ChangeCurrentIndexForMainCategoryEvent(
-                                                      index: index,
-                                                    ),
-                                                  );
-                                                  ///////////////////////////
-                                                  Future.delayed(
-                                                    const Duration(
-                                                        milliseconds: 500),
-                                                    () {
-                                                      Map<
-                                                              String,
-                                                              PaginationModel<
-                                                                  HomeBoutiques>>
-                                                          getHomeBoutiquesPaginationObjectByMainCategory =
-                                                          Map.of(categoryBloc
+                                            child: BlocBuilder<BoutiqueBloc,
+                                                    BoutiqueState>(
+                                                buildWhen: (previous, current) =>
+                                                    previous.getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]?.paginationStatus != current.getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]?.paginationStatus ||
+                                                    previous
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                "*flashDeal*withoutFilter"]
+                                                            ?.paginationStatus !=
+                                                        current
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                "*flashDeal*withoutFilter"]
+                                                            ?.paginationStatus ||
+                                                    previous.getProductFiltersStatus[
+                                                            "*flashDeal*"] !=
+                                                        current
+                                                            .getProductFiltersStatus["*flashDeal*"],
+                                                builder: (context, state) {
+                                                  return InkWell(
+                                                    onTap: () {
+                                                      if (state
+                                                                  .getProductListingWithFiltersPaginationModels[
+                                                                      "*featured*withoutFilter"]
+                                                                  ?.paginationStatus ==
+                                                              PaginationStatus
+                                                                  .loading ||
+                                                          state
+                                                                  .getProductListingWithFiltersPaginationModels[
+                                                                      "*flashDeal*withoutFilter"]
+                                                                  ?.paginationStatus ==
+                                                              PaginationStatus
+                                                                  .loading) {
+                                                        return;
+                                                      }
+                                                      if (BlocProvider.of<
+                                                                      AppBloc>(
+                                                                  context)
                                                               .state
-                                                              .getHomeBoutiquesPaginationObjectByMainCategory);
-
-                                                      List<HomeBoutiques>
-                                                          boutiques =
-                                                          List.of(getHomeBoutiquesPaginationObjectByMainCategory[homeState
-                                                                  .mainCategoriesResponseModel!
-                                                                  .data!
-                                                                  .mainCategories![
-                                                                      index]
-                                                                  .slug!]!
-                                                              .items);
-                                                      ////////////////////////
-                                                      List<Map<String, String>>
-                                                          analyticsBoutiques =
-                                                          [];
-
-                                                      boutiques.forEach(
-                                                        (element) {
-                                                          analyticsBoutiques
-                                                              .add({
-                                                            'item_id': element
-                                                                .id
-                                                                .toString(),
-                                                            'item_name': element
-                                                                .name
-                                                                .toString(),
-                                                          });
-                                                        },
-                                                      );
-                                                      ///////////////////////////
-                                                      FirebaseAnalyticsService
-                                                          .logEventForSession(
-                                                        executedEventName:
-                                                            GlobalScreenConst
-                                                                .HOME_SCREEN,
-                                                        eventName:
-                                                            AnalyticsEventsConst
-                                                                .viewCategory,
-                                                        extraParams: {
-                                                          'category_id': homeState
-                                                              .mainCategoriesResponseModel!
-                                                              .data!
-                                                              .mainCategories![
-                                                                  index]
-                                                              .id
-                                                              .toString(),
-                                                          'category': homeState
-                                                              .mainCategoriesResponseModel!
-                                                              .data!
-                                                              .mainCategories![
-                                                                  index]
-                                                              .name
-                                                              .toString(),
-                                                          'items': boutiques
-                                                              .toString(),
-                                                          'screen_name':
-                                                              GlobalScreenConst
-                                                                  .HOME_SCREEN,
-                                                        },
-                                                      );
-                                                    },
-                                                  );
-                                                } else {
-                                                  appBloc.add(ChangeTab(-1));
-                                                  categoryBloc.add(
-                                                    GetHomeBoutiqesEvent(
-                                                      getWithPrefetchToStoreInMemory:
-                                                          false,
-                                                      getWithOutPrefetchForEachBoutiques:
-                                                          true,
-                                                      context: context,
-                                                      categorySlug: "Empty",
-                                                      offset: "1",
-                                                    ),
-                                                  );
-                                                  categoryBloc.add(
-                                                    ChangeCurrentIndexForMainCategoryEvent(
-                                                        index: -1),
-                                                  );
-                                                }
-                                              },
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  BlocBuilder<AppBloc,
-                                                      AppState>(
-                                                    buildWhen: (p, c) =>
-                                                        p.tabIndex !=
-                                                        c.tabIndex,
-                                                    builder: (context, state) {
-                                                      return Stack(
-                                                        children: [
-                                                          SvgNetworkWidget(
-                                                            svgUrl: mainCategory
-                                                                .flatPhotoPath!
-                                                                .filePath
-                                                                .toString(),
-                                                            height: 24,
-                                                            // color: state.tabIndex ==
-                                                            //         index
-                                                            //     ? Colors.black
-                                                            //     : Color(
-                                                            //         0xffC4C2C2),
+                                                              .tabIndex !=
+                                                          index) {
+                                                        appBloc.add(
+                                                            ChangeTab(index));
+                                                        ///////////////////////
+                                                        categoryBloc.add(
+                                                          GetHomeBoutiqesEvent(
+                                                            getWithPrefetchToStoreInMemory:
+                                                                false,
+                                                            getWithOutPrefetchForEachBoutiques:
+                                                                true,
+                                                            offset: "1",
+                                                            categorySlug: homeState
+                                                                .mainCategoriesResponseModel!
+                                                                .data!
+                                                                .mainCategories![
+                                                                    index]
+                                                                .slug!,
+                                                            context: context,
                                                           ),
-                                                          BlocBuilder<AppBloc,
-                                                              AppState>(
-                                                            buildWhen: (p, c) =>
-                                                                p.tabIndex !=
-                                                                c.tabIndex,
-                                                            builder: (context,
-                                                                state) {
-                                                              return Positioned(
-                                                                top: 0,
-                                                                left: 0,
-                                                                child: Visibility(
-                                                                    visible: state
-                                                                            .tabIndex ==
-                                                                        index,
-                                                                    child: const FilterSelectedMark(
-                                                                        width:
-                                                                            12,
-                                                                        height:
-                                                                            12)),
-                                                              );
-                                                            },
-                                                          )
-                                                        ],
-                                                      );
+                                                        );
+                                                        ////////////////////////////
+                                                        categoryBloc.add(
+                                                          ChangeCurrentIndexForMainCategoryEvent(
+                                                            index: index,
+                                                          ),
+                                                        );
+                                                        boutiqueBloc.add(AddCurrentMainCategoryTapedEvent(
+                                                            currentMainCategoryTaped:
+                                                                homeState
+                                                                    .mainCategoriesResponseModel!
+                                                                    .data!
+                                                                    .mainCategories![
+                                                                        index]
+                                                                    .slug!));
+                                                        boutiqueBloc.add(
+                                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                                categorySlugs: [],
+                                                                cashedOrginalBoutique:
+                                                                    true,
+                                                                boutiqueSlug:
+                                                                    "*featured*"));
+                                                        boutiqueBloc.add(
+                                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                                categorySlugs: [],
+                                                                cashedOrginalBoutique:
+                                                                    true,
+                                                                boutiqueSlug:
+                                                                    "*flashDeal*"));
+                                                        ///////////////////////////
+                                                        Future.delayed(
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500),
+                                                          () {
+                                                            Map<
+                                                                    String,
+                                                                    PaginationModel<
+                                                                        HomeBoutiques>>
+                                                                getHomeBoutiquesPaginationObjectByMainCategory =
+                                                                Map.of(categoryBloc
+                                                                    .state
+                                                                    .getHomeBoutiquesPaginationObjectByMainCategory);
+
+                                                            List<HomeBoutiques>
+                                                                boutiques =
+                                                                List.of(getHomeBoutiquesPaginationObjectByMainCategory[homeState
+                                                                        .mainCategoriesResponseModel!
+                                                                        .data!
+                                                                        .mainCategories![
+                                                                            index]
+                                                                        .slug!]!
+                                                                    .items);
+                                                            ////////////////////////
+                                                            List<
+                                                                    Map<String,
+                                                                        String>>
+                                                                analyticsBoutiques =
+                                                                [];
+
+                                                            boutiques.forEach(
+                                                              (element) {
+                                                                analyticsBoutiques
+                                                                    .add({
+                                                                  'item_id': element
+                                                                      .id
+                                                                      .toString(),
+                                                                  'item_name':
+                                                                      element
+                                                                          .name
+                                                                          .toString(),
+                                                                });
+                                                              },
+                                                            );
+                                                            ///////////////////////////
+                                                            FirebaseAnalyticsService
+                                                                .logEventForSession(
+                                                              executedEventName:
+                                                                  GlobalScreenConst
+                                                                      .HOME_SCREEN,
+                                                              eventName:
+                                                                  AnalyticsEventsConst
+                                                                      .viewCategory,
+                                                              extraParams: {
+                                                                'category_id': homeState
+                                                                    .mainCategoriesResponseModel!
+                                                                    .data!
+                                                                    .mainCategories![
+                                                                        index]
+                                                                    .id
+                                                                    .toString(),
+                                                                'category': homeState
+                                                                    .mainCategoriesResponseModel!
+                                                                    .data!
+                                                                    .mainCategories![
+                                                                        index]
+                                                                    .name
+                                                                    .toString(),
+                                                                'items': boutiques
+                                                                    .toString(),
+                                                                'screen_name':
+                                                                    GlobalScreenConst
+                                                                        .HOME_SCREEN,
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      } else {
+                                                        appBloc
+                                                            .add(ChangeTab(-1));
+                                                        categoryBloc.add(
+                                                          GetHomeBoutiqesEvent(
+                                                            getWithPrefetchToStoreInMemory:
+                                                                false,
+                                                            getWithOutPrefetchForEachBoutiques:
+                                                                true,
+                                                            context: context,
+                                                            categorySlug:
+                                                                "Empty",
+                                                            offset: "1",
+                                                          ),
+                                                        );
+                                                        boutiqueBloc.add(
+                                                            AddCurrentMainCategoryTapedEvent(
+                                                                currentMainCategoryTaped:
+                                                                    "Empty"));
+                                                        categoryBloc.add(
+                                                          ChangeCurrentIndexForMainCategoryEvent(
+                                                              index: -1),
+                                                        );
+                                                        boutiqueBloc.add(
+                                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                                categorySlugs: [],
+                                                                cashedOrginalBoutique:
+                                                                    true,
+                                                                boutiqueSlug:
+                                                                    "*featured*"));
+                                                        boutiqueBloc.add(
+                                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                                categorySlugs: [],
+                                                                cashedOrginalBoutique:
+                                                                    true,
+                                                                boutiqueSlug:
+                                                                    "*flashDeal*"));
+                                                      }
                                                     },
-                                                  ),
-                                                  2.verticalSpace,
-                                                  MyTextWidget(
-                                                    mainCategory.name
-                                                        .toString(),
-                                                    maxLines: 1,
-                                                    style: textTheme
-                                                        .titleSmall?.lr
-                                                        .copyWith(
-                                                      letterSpacing: 0,
-                                                      color: const Color(
-                                                          0xff505050),
-                                                      // color: state.tabIndex !=
-                                                      //         index
-                                                      //     ? Color(
-                                                      //         0xffC4C2C2)
-                                                      //     : Color(
-                                                      //         0xff505050)
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        BlocBuilder<AppBloc,
+                                                            AppState>(
+                                                          buildWhen: (p, c) =>
+                                                              p.tabIndex !=
+                                                              c.tabIndex,
+                                                          builder:
+                                                              (context, state) {
+                                                            return Stack(
+                                                              children: [
+                                                                SvgNetworkWidget(
+                                                                  svgUrl: mainCategory
+                                                                      .flatPhotoPath!
+                                                                      .filePath
+                                                                      .toString(),
+                                                                  height: 24,
+                                                                  // color: state.tabIndex ==
+                                                                  //         index
+                                                                  //     ? Colors.black
+                                                                  //     : Color(
+                                                                  //         0xffC4C2C2),
+                                                                ),
+                                                                BlocBuilder<
+                                                                    AppBloc,
+                                                                    AppState>(
+                                                                  buildWhen: (p,
+                                                                          c) =>
+                                                                      p.tabIndex !=
+                                                                      c.tabIndex,
+                                                                  builder:
+                                                                      (context,
+                                                                          state) {
+                                                                    return Positioned(
+                                                                      top: 0,
+                                                                      left: 0,
+                                                                      child: Visibility(
+                                                                          visible: state.tabIndex ==
+                                                                              index,
+                                                                          child: const FilterSelectedMark(
+                                                                              width: 12,
+                                                                              height: 12)),
+                                                                    );
+                                                                  },
+                                                                )
+                                                              ],
+                                                            );
+                                                          },
+                                                        ),
+                                                        2.verticalSpace,
+                                                        MyTextWidget(
+                                                          mainCategory.name
+                                                              .toString(),
+                                                          maxLines: 1,
+                                                          style: textTheme
+                                                              .titleSmall?.lr
+                                                              .copyWith(
+                                                            letterSpacing: 0,
+                                                            color: const Color(
+                                                                0xff505050),
+                                                            // color: state.tabIndex !=
+                                                            //         index
+                                                            //     ? Color(
+                                                            //         0xffC4C2C2)
+                                                            //     : Color(
+                                                            //         0xff505050)
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ));
+                                                  );
+                                                }));
                                       },
                                     ),
                                   );

@@ -90,6 +90,8 @@ abstract class HomeRepository {
 
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       unSubscribeTopicFornotification(Map<String, dynamic> params);
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
+      updateLikeSocialSharedProducts(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       subscribeTopicFornotification(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>

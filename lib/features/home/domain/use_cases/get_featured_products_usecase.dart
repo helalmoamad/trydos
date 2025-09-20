@@ -24,14 +24,16 @@ class GetFeaturedProductsUseCase
 class GetFeaturedProductsParams {
   final List<double>? offset;
   final int? limit;
-
+  final List<String>? categorySlugs;
   GetFeaturedProductsParams({
     this.offset,
     this.limit,
+    this.categorySlugs,
   });
 
   Map<String, dynamic> get map => {
         "offset": offset.isNullOrEmpty ? null : offset.toString(),
         "limit": "20",
+        "category_slugs": categorySlugs.toString(),
       }..removeWhere((key, value) => value == null || value == 'null');
 }

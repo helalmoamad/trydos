@@ -39,6 +39,15 @@ class GetCoutryBoundaryByIsoEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class UpdateLikeSocialSharedProductsEvent extends HomeEvent {
+  final String productId;
+  const UpdateLikeSocialSharedProductsEvent({required this.productId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId];
+}
+
 class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
   final String productSlug;

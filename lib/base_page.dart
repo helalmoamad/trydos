@@ -176,8 +176,8 @@ class BasePage extends StatefulWidget {
   State<BasePage> createState() => _BasePageState();
 }
 
-handleOpenChatPageFromNotificationInBackground(
-    String? prevMessageId, String? orderId, String? orderGroupID,
+handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
+    String? orderId, String? orderGroupID, String? parentOrderId,
     {required Message message}) async {
   DealWithMessagesStoredFromBackground();
   DealWithChatsToDeleteFromBackground();
@@ -186,8 +186,10 @@ handleOpenChatPageFromNotificationInBackground(
   DealWithMessageReceivedStatusStoredFromBackground();
   DealWithMessageWatchStatusStoredFromBackground();
   if (orderId != "" && orderGroupID != "") {
-    Future.delayed(const Duration(milliseconds: 600),
-        () => navigationToOrderPageForChat(orderGroupID!, orderId!));
+    Future.delayed(
+        const Duration(milliseconds: 600),
+        () => navigationToOrderPageForChat(
+            orderGroupID!, orderId!, parentOrderId));
   } else {
     Future.delayed(const Duration(milliseconds: 600),
         () => navigationToSinglePageChat(message.channel!));
@@ -222,11 +224,13 @@ navigationToSinglePageChat(Chat chat) {
   //});
 }
 
-navigationToOrderPageForChat(String orderGroupId, String orderId) {
+navigationToOrderPageForChat(
+    String orderGroupId, String orderId, String? parentOrderId) {
   Navigator.of(navigatorKey.currentState!.context).push(PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
           fromNotification: true,
           groupId: orderGroupId,
+          parentOrderIdFormNotification: parentOrderId,
           orderIdFormNotification: orderId)));
 }
 

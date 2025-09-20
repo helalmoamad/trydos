@@ -160,6 +160,23 @@ class HomeRemoteDatasource {
     return getProductDetailWithoutRelatedProducts();
   }
 
+  Future<ReadOnlyMessageFromApiModel> updateLikeSocialSharedProducts(
+      Map<String, dynamic> params) {
+    GetClient<ReadOnlyMessageFromApiModel> updateLikeSocialSharedProducts =
+        GetClient<ReadOnlyMessageFromApiModel>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+        queryParameters: params,
+        endpoint: WebAppEndPoints.editSocialProductEP,
+        response:
+            ResponseValue<ReadOnlyMessageFromApiModel>(fromJson: (response) {
+          return ReadOnlyMessageFromApiModel.fromJson(response);
+        }),
+      ),
+    );
+    return updateLikeSocialSharedProducts();
+  }
+
   Future<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch() {
     GetClient<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch =
         GetClient<GeColorsAndSizesForSearchModel>(

@@ -52,7 +52,6 @@ class NotificationProcess {
 
   Future fcmToken(String? mobilePhone, String? name, String? originalUserId,
       String? otpIdToken) async {
-    await FirebaseMessaging.instance.deleteToken();
     myFcmToken = await FirebaseMessaging.instance.getToken();
 
     if (otpIdToken != null) {
@@ -122,8 +121,12 @@ class NotificationProcess {
       Map remoteMessage = convert.jsonDecode(event.data['data']);
       handleOpenChatPageFromNotificationInBackground(
           remoteMessage['prev_message_id'],
-          remoteMessage['order_id'] ?? "",
+          (remoteMessage["parent_order_id"] != null &&
+                  remoteMessage["parent_order_id"] != "")
+              ? remoteMessage["parent_order_id"]
+              : remoteMessage['order_id'] ?? "",
           remoteMessage['order_group_id'] ?? "",
+          remoteMessage["parent_order_id"] ?? "",
           message: Message.fromJson(remoteMessage['message']));
     });
   }
@@ -145,13 +148,12 @@ class NotificationProcess {
   }
 
   Future<void> init() async {
-    try {
+    if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform);
-    } catch (e) {
-      debugPrint('firebase error $e');
-      rethrow;
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
     }
+
     await _setForegroundNotificationPresentationOptions();
 
     await LocalNotificationService.initialize();

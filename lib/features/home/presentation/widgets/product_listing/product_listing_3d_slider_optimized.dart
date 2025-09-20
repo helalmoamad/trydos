@@ -620,23 +620,8 @@ class _ProductListing3DSliderOptimizedState
   /// 📝 Product Name Row
   Widget _buildProductCategoryRow() {
     List<String> productCategory = [];
-    if ((widget.productItem.categoryHierarchy?.mainCategory?.name ?? "")
-            .length >
-        0) {
-      productCategory
-          .add(widget.productItem.categoryHierarchy?.mainCategory?.name ?? '');
-    }
-    if ((widget.productItem.categoryHierarchy?.subCategory?.name ?? "").length >
-        0) {
-      productCategory
-          .add(widget.productItem.categoryHierarchy?.subCategory?.name ?? '');
-    }
-    if ((widget.productItem.categoryHierarchy?.subSubCategory?.name ?? "")
-            .length >
-        0) {
-      productCategory.add(
-          widget.productItem.categoryHierarchy?.subSubCategory?.name ?? '');
-    }
+    productCategory.add(widget.productItem.name ?? '');
+    productCategory.add(widget.productItem.categoriesTree ?? '');
 
     return Row(
       mainAxisAlignment: LanguageService.languageCode == "ar"

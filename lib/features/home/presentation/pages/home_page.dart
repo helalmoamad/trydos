@@ -278,9 +278,14 @@ class _HomePageState extends State<HomePage> {
             String prevMessageId = info.split('#orderId#')[0];
             String orderInfo = info.split('#orderId#')[1];
             String orderId = orderInfo.split('#groupeOrderId#')[0];
-            String orderGroupId = orderInfo.split('#groupeOrderId#')[1];
+            String orderGroupIdWithReturnRequestId =
+                orderInfo.split('#groupeOrderId#')[1];
+            String orderGroupId =
+                orderGroupIdWithReturnRequestId.split('#parentOrderId#')[0];
+            String parentOrderId =
+                orderGroupIdWithReturnRequestId.split('#parentOrderId#')[1];
             handleOpenChatPageFromNotificationInBackground(
-                prevMessageId, orderId, orderGroupId,
+                prevMessageId, orderId, orderGroupId, parentOrderId,
                 message: myMessage);
           } else {
             Map data = jsonDecode(notificationTypesOfMarketFromTerminated);
@@ -365,16 +370,16 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _isLoading = true; // بدء التحميل
       });
-      boutiqueBloc.add(GetProductsWithFiltersEvent(
-          limit: 10,
-          cashedOrginalBoutique: true,
-          boutiqueSlug: "*featured*",
-          offset: 1));
-      boutiqueBloc.add(GetProductsWithFiltersEvent(
-          limit: 10,
-          cashedOrginalBoutique: true,
-          boutiqueSlug: "*flashDeal*",
-          offset: 1));
+      GetIt.I<BoutiqueBloc>().add(
+          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+              categorySlugs: [],
+              cashedOrginalBoutique: true,
+              boutiqueSlug: "*featured*"));
+      GetIt.I<BoutiqueBloc>().add(
+          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+              categorySlugs: [],
+              cashedOrginalBoutique: true,
+              boutiqueSlug: "*flashDeal*"));
       BlocProvider.of<StoryBloc>(context)
           .add(const GetStoryEvent(withPaginition: false));
       categoryBloc.add(GetMainCategoriesEvent(
@@ -915,148 +920,66 @@ class _HomePageState extends State<HomePage> {
                                         false);
                               },
                               panelBuilder: (sc) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  margin: const EdgeInsets.only(top: 20),
-                                  height: 200,
-                                  child: Stack(children: [
-                                    PageView(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        controller: pageController,
-                                        children: (prefsRepository
-                                                    .isVerifiedPhonePeforeExpiredToken ??
-                                                false)
-                                            ? [
-                                                VerifyOtp(
-                                                    fromProfile: false,
-                                                    navigateToProfile: () {},
-                                                    fromExpired: true,
-                                                    isVisWhatsApp: 1,
-                                                    navigateToAddName: () {},
-                                                    navigateTocartOrProfile:
-                                                        () {
-                                                      Future.delayed(
-                                                          const Duration(
-                                                              seconds: 3),
-                                                          () => panelController
-                                                              .close());
-                                                    },
-                                                    fromLogin: false,
-                                                    onLoginFailed: () {
-                                                      //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                    },
-                                                    goBack: () {
-                                                      // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                    },
-                                                    methodIcon:
-                                                        AppAssets.whatsappSvg,
-                                                    phoneNumber: prefsRepository
-                                                        .myPhoneNumber!),
-                                              ]
-                                            : [
-                                                InsertPhoneTab(
-                                                  focusNode: focusNode,
-                                                  moveToNextStep:
-                                                      (String phoneNumber) {
-                                                    this.phoneNumber =
-                                                        phoneNumber.replaceAll(
-                                                            ' ', '');
-                                                    pageController.animateToPage(
-                                                        1,
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    500),
-                                                        curve:
-                                                            Curves.easeInOut);
-                                                    setState(() {});
-                                                  },
-                                                ),
-                                                VerificationMethods(
-                                                  phoneNumber: phoneNumber,
-                                                  isFromLogin: true,
-                                                  onChooseWhatsapp: () {
-                                                    isVisWhatsApp = 1;
-                                                    pageController.animateToPage(
-                                                        2,
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    100),
-                                                        curve:
-                                                            Curves.easeInOut);
-
-                                                    if (prefsRepository
-                                                            .isTimerForOtpRunning ??
-                                                        false) {
-                                                      showWarningMessage(
-                                                          context,
-                                                          '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
-                                                      return;
-                                                    }
-                                                    /* authBloc.add(SendOtpEvent(
-                                                        phone: phoneNumber,
-                                                        isViaWhatsApp: 1));*/
-                                                  },
-                                                  goBackToPhone: () {
-                                                    pageController.animateToPage(
-                                                        0,
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    500),
-                                                        curve:
-                                                            Curves.easeInOut);
-                                                  },
-                                                  onChooseSms: () {
-                                                    isVisWhatsApp = 0;
-                                                    pageController.animateToPage(
-                                                        3,
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    500),
-                                                        curve:
-                                                            Curves.easeInOut);
-                                                    /*  authBloc.add(SendOtpEvent(
-                                                        phone: phoneNumber,
-                                                        isViaWhatsApp: 0));*/
-                                                  },
-                                                ),
-                                                VerifyOtp(
-                                                    fromProfile: false,
-                                                    navigateToProfile: () {},
-                                                    fromExpired: true,
-                                                    isVisWhatsApp:
-                                                        isVisWhatsApp,
-                                                    navigateToAddName: () {},
-                                                    navigateTocartOrProfile:
-                                                        () {
-                                                      WidgetsBinding.instance
-                                                          .addPostFrameCallback(
-                                                              (_) {
+                                return AnimatedPadding(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOut,
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom,
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    margin: const EdgeInsets.only(top: 20),
+                                    height: 200,
+                                    child: Stack(children: [
+                                      PageView(
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          controller: pageController,
+                                          children: (prefsRepository
+                                                      .isVerifiedPhonePeforeExpiredToken ??
+                                                  false)
+                                              ? [
+                                                  VerifyOtp(
+                                                      fromProfile: false,
+                                                      navigateToProfile: () {},
+                                                      fromExpired: true,
+                                                      isVisWhatsApp: 1,
+                                                      navigateToAddName: () {},
+                                                      navigateTocartOrProfile:
+                                                          () {
                                                         Future.delayed(
                                                             const Duration(
                                                                 seconds: 3),
                                                             () =>
                                                                 panelController
                                                                     .close());
-                                                      });
-                                                    },
-                                                    fromLogin: false,
-                                                    onLoginFailed: () {
-                                                      pageController.animateToPage(
-                                                          3,
-                                                          duration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      500),
-                                                          curve:
-                                                              Curves.easeInOut);
-                                                    },
-                                                    goBack: () {
+                                                      },
+                                                      fromLogin: false,
+                                                      onLoginFailed: () {
+                                                        //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                      },
+                                                      goBack: () {
+                                                        // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                      },
+                                                      methodIcon:
+                                                          AppAssets.whatsappSvg,
+                                                      phoneNumber:
+                                                          prefsRepository
+                                                              .myPhoneNumber!),
+                                                ]
+                                              : [
+                                                  InsertPhoneTab(
+                                                    focusNode: focusNode,
+                                                    moveToNextStep:
+                                                        (String phoneNumber) {
+                                                      this.phoneNumber =
+                                                          phoneNumber
+                                                              .replaceAll(
+                                                                  ' ', '');
                                                       pageController.animateToPage(
                                                           1,
                                                           duration:
@@ -1065,38 +988,136 @@ class _HomePageState extends State<HomePage> {
                                                                       500),
                                                           curve:
                                                               Curves.easeInOut);
+                                                      setState(() {});
                                                     },
-                                                    methodIcon: isVisWhatsApp ==
-                                                            1
-                                                        ? AppAssets.whatsappSvg
-                                                        : AppAssets.smsSvg,
-                                                    phoneNumber: phoneNumber),
-                                              ]),
-                                    Positioned(
-                                      top: 0,
-                                      left: LanguageService.languageCode != "ar"
-                                          ? null
-                                          : 0,
-                                      right:
-                                          LanguageService.languageCode != "ar"
-                                              ? 0
-                                              : null,
-                                      child: Container(
-                                        margin: const EdgeInsets.all(10),
-                                        height: 20,
-                                        width: 40,
-                                        child: InkWell(
-                                            onTap: () =>
-                                                panelController.close(),
-                                            child: SvgPicture.asset(
-                                              AppAssets.closeSvg,
-                                              height: 15,
-                                              width: 30,
-                                              color: const Color(0xffFF5F61),
-                                            )),
-                                      ),
-                                    )
-                                  ]),
+                                                  ),
+                                                  VerificationMethods(
+                                                    phoneNumber: phoneNumber,
+                                                    isFromLogin: true,
+                                                    onChooseWhatsapp: () {
+                                                      isVisWhatsApp = 1;
+                                                      pageController.animateToPage(
+                                                          2,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      100),
+                                                          curve:
+                                                              Curves.easeInOut);
+
+                                                      if (prefsRepository
+                                                              .isTimerForOtpRunning ??
+                                                          false) {
+                                                        showWarningMessage(
+                                                            context,
+                                                            '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
+                                                        return;
+                                                      }
+                                                      /* authBloc.add(SendOtpEvent(
+                                                        phone: phoneNumber,
+                                                        isViaWhatsApp: 1));*/
+                                                    },
+                                                    goBackToPhone: () {
+                                                      pageController.animateToPage(
+                                                          0,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                          curve:
+                                                              Curves.easeInOut);
+                                                    },
+                                                    onChooseSms: () {
+                                                      isVisWhatsApp = 0;
+                                                      pageController.animateToPage(
+                                                          3,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                          curve:
+                                                              Curves.easeInOut);
+                                                      /*  authBloc.add(SendOtpEvent(
+                                                        phone: phoneNumber,
+                                                        isViaWhatsApp: 0));*/
+                                                    },
+                                                  ),
+                                                  VerifyOtp(
+                                                      fromProfile: false,
+                                                      navigateToProfile: () {},
+                                                      fromExpired: true,
+                                                      isVisWhatsApp:
+                                                          isVisWhatsApp,
+                                                      navigateToAddName: () {},
+                                                      navigateTocartOrProfile:
+                                                          () {
+                                                        WidgetsBinding.instance
+                                                            .addPostFrameCallback(
+                                                                (_) {
+                                                          Future.delayed(
+                                                              const Duration(
+                                                                  seconds: 3),
+                                                              () =>
+                                                                  panelController
+                                                                      .close());
+                                                        });
+                                                      },
+                                                      fromLogin: false,
+                                                      onLoginFailed: () {
+                                                        pageController.animateToPage(
+                                                            3,
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        500),
+                                                            curve: Curves
+                                                                .easeInOut);
+                                                      },
+                                                      goBack: () {
+                                                        pageController.animateToPage(
+                                                            1,
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        500),
+                                                            curve: Curves
+                                                                .easeInOut);
+                                                      },
+                                                      methodIcon:
+                                                          isVisWhatsApp == 1
+                                                              ? AppAssets
+                                                                  .whatsappSvg
+                                                              : AppAssets
+                                                                  .smsSvg,
+                                                      phoneNumber: phoneNumber),
+                                                ]),
+                                      Positioned(
+                                        top: 0,
+                                        left:
+                                            LanguageService.languageCode != "ar"
+                                                ? null
+                                                : 0,
+                                        right:
+                                            LanguageService.languageCode != "ar"
+                                                ? 0
+                                                : null,
+                                        child: Container(
+                                          margin: const EdgeInsets.all(10),
+                                          height: 20,
+                                          width: 40,
+                                          child: InkWell(
+                                              onTap: () =>
+                                                  panelController.close(),
+                                              child: SvgPicture.asset(
+                                                AppAssets.closeSvg,
+                                                height: 15,
+                                                width: 30,
+                                                color: const Color(0xffFF5F61),
+                                              )),
+                                        ),
+                                      )
+                                    ]),
+                                  ),
                                 );
                               },
                             ),

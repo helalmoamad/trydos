@@ -64,6 +64,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     on<GetFiltersWithPaginatioEvent>(
       _onGetFiltersWithPaginatioEvent,
     );
+    on<AddCurrentMainCategoryTapedEvent>(
+      _onAddCurrentMainCategoryTapedEvent,
+    );
     on<ClearAllBoutiquesEvent>(
       _onClearAllBoutiquesEvent,
     );
@@ -201,6 +204,13 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   FutureOr<void> _onClearAllBoutiquesEvent(
       ClearAllBoutiquesEvent event, Emitter<BoutiqueState> emit) async {
     emit(state.copyWith(getProductListingWithFiltersPaginationModels: {}));
+  }
+
+  FutureOr<void> _onAddCurrentMainCategoryTapedEvent(
+      AddCurrentMainCategoryTapedEvent event,
+      Emitter<BoutiqueState> emit) async {
+    emit(state.copyWith(
+        currentMainCategoryTaped: event.currentMainCategoryTaped));
   }
 
   FutureOr<void> _onAddSizeAndColorFilterinTextToSearchEvent(
@@ -1022,7 +1032,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 paginationStatus: PaginationStatus.loading)
           });
         }
-
         /* if ((getProductListingWithFiltersModel.products ?? []).length > 0) {
           await Future.delayed(Duration(seconds: 3));
         }*/
@@ -1097,13 +1106,21 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ? await getFeaturedProductsUseCase(GetFeaturedProductsParams(
             limit: 20,
             offset: [],
-          ))
+            categorySlugs: (state.currentMainCategoryTaped == "" ||
+                    state.currentMainCategoryTaped == null ||
+                    state.currentMainCategoryTaped == "Empty")
+                ? null
+                : ['"${state.currentMainCategoryTaped}"']))
         : event.boutiqueSlug == "*flashDeal*"
             ? await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
                 offset: [],
                 limit: 20,
                 flashDeal: true,
-              ))
+                categorySlugs: (state.currentMainCategoryTaped == "" ||
+                        state.currentMainCategoryTaped == null ||
+                        state.currentMainCategoryTaped == "Empty")
+                    ? null
+                    : ['"${state.currentMainCategoryTaped}"']))
             : await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
                 offset: [],
                 limit: 20,
@@ -1692,9 +1709,15 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       choosedFiltersByUser: Map.of(choosedFilters),
       appliedFiltersByUser: Map.of(appliedFilters),
     ));
+
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(GetFeaturedProductsParams(
             limit: 20,
+            categorySlugs: (state.currentMainCategoryTaped == "" ||
+                    state.currentMainCategoryTaped == null ||
+                    state.currentMainCategoryTaped == "Empty")
+                ? null
+                : ['"${state.currentMainCategoryTaped}"'],
             offset: !event.getWithPagination
                 ? null
                 : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -1702,12 +1725,16 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*flashDeal*"
             ? await getProductsWithFiltersUseCase(
                 GetProductsWithFiltersParams(
-                  flashDeal: true,
-                  limit: 20,
-                  offset: !event.getWithPagination
-                      ? null
-                      : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
-                ),
+                    flashDeal: true,
+                    limit: 20,
+                    offset: !event.getWithPagination
+                        ? null
+                        : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
+                    categorySlugs: (state.currentMainCategoryTaped == "" ||
+                            state.currentMainCategoryTaped == null ||
+                            state.currentMainCategoryTaped == "Empty")
+                        ? null
+                        : ['"${state.currentMainCategoryTaped}"']),
               )
             : await getProductsWithFiltersUseCase(
                 GetProductsWithFiltersParams(
@@ -1806,6 +1833,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
       try {
+        print(
+            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FF555");
         String url;
         r.data?.products?.forEach((product) {
           if ((product.syncColorImages?.length ?? 0) > 0) {
@@ -2010,13 +2039,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       Map<String, GetProductFiltersStatus>? getProductFiltersStatus =
           Map.of(state.getProductFiltersStatus);
       getProductFiltersStatus[key] = GetProductFiltersStatus.success;
-      print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FF555${keyWithoutFilter}////#${event.cashedOrginalBoutique}");
       emit(state.copyWith(
         getProductFiltersStatus: getProductFiltersStatus,
         searchWithFilterOffset: searchWithFilterOffset,
         getProductListingWithFiltersPaginationModels:
-            getProductListingWithFiltersPaginationModels,
+            Map.of(getProductListingWithFiltersPaginationModels),
         countOfProductExpectedByFiltering:
             Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
         getProductFiltersModel: Map.of(data),
@@ -2345,6 +2372,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(GetFeaturedProductsParams(
             limit: 20,
+            categorySlugs: (state.currentMainCategoryTaped == "" ||
+                    state.currentMainCategoryTaped == null ||
+                    state.currentMainCategoryTaped == "Empty")
+                ? null
+                : ['"${state.currentMainCategoryTaped}"'],
             offset: !event.getWithPagination
                 ? null
                 : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -2354,6 +2386,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 GetProductsWithFiltersParams(
                   flashDeal: true,
                   limit: 20,
+                  categorySlugs: (state.currentMainCategoryTaped == "" ||
+                          state.currentMainCategoryTaped == null ||
+                          state.currentMainCategoryTaped == "Empty")
+                      ? null
+                      : ['"${state.currentMainCategoryTaped}"'],
                   offset: !event.getWithPagination
                       ? null
                       : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -2653,8 +2690,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       Map<String, GetProductFiltersStatus>? getProductFiltersStatus =
           Map.of(state.getProductFiltersStatus);
       getProductFiltersStatus[key] = GetProductFiltersStatus.success;
-      print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FF555${keyWithoutFilter}////#${event.cashedOrginalBoutique}");
       emit(state.copyWith(
         getProductFiltersStatus: getProductFiltersStatus,
         searchWithFilterOffset: searchWithFilterOffset,

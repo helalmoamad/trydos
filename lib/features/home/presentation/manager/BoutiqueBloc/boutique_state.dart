@@ -39,6 +39,7 @@ class BoutiqueState extends Equatable {
     this.choosedFiltersByUser = const {},
     this.appliedFiltersByUser = const {},
     this.filterOffset = 1,
+    this.currentMainCategoryTaped,
     this.boutiquesThatDidPrefetch = const {},
     this.countOfProductExpectedByFiltering,
   });
@@ -61,6 +62,7 @@ class BoutiqueState extends Equatable {
   final bool isGettingProductListingWithPagination;
 
   final bool? isExpandedForListingPage;
+  final String? currentMainCategoryTaped;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationModels;
   final bool isGettingProductListingWithPaginationForAppearProduct;
@@ -79,6 +81,7 @@ class BoutiqueState extends Equatable {
         prefAppliedFilterForExtendFilter,
         cashedOrginalBoutique,
         isExpandedForListingPage,
+        currentMainCategoryTaped,
         getFiltersForNavigatorFromLinkToListingPageStatus,
         filterOffset,
         getProductFiltersStatus,
@@ -106,8 +109,9 @@ class BoutiqueState extends Equatable {
     final Map<String, get_filters.GetProductFiltersModel?>?
         choosedFiltersByUser,
     bool? isExpandedForListingPage,
+    final String? currentMainCategoryTaped,
     final bool? isGettingProductListingWithPagination,
-    final Map<String, PaginationModel<product.Products>?>?
+    Map<String, PaginationModel<product.Products>?>?
         getProductListingWithFiltersPaginationModels,
     final Map<String, bool>? boutiquesThatDidPrefetch,
     final GetFiltersForNavigatorFromLinkToListingPageStatus?
@@ -141,6 +145,8 @@ class BoutiqueState extends Equatable {
         choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
         isExpandedForListingPage:
             isExpandedForListingPage ?? this.isExpandedForListingPage,
+        currentMainCategoryTaped:
+            currentMainCategoryTaped ?? this.currentMainCategoryTaped,
         getFiltersForNavigatorFromLinkToListingPageStatus:
             getFiltersForNavigatorFromLinkToListingPageStatus ??
                 this.getFiltersForNavigatorFromLinkToListingPageStatus,

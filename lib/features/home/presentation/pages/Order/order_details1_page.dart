@@ -20,6 +20,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
+import 'package:trydos/features/home/data/models/get_order_details_return_model.dart';
 import 'package:trydos/features/home/domain/use_cases/add_order_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/cancel_order_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_order_address_usecase.dart';
@@ -63,11 +64,13 @@ class OrderDetails1 extends StatefulWidget {
       this.orderIdToOpenPackage = "",
       this.indexGroupe = -1,
       this.orderIdFormNotification,
+      this.parentOrderIdFormNotification,
       required this.orders});
 
   final List<OrderListModel> orders;
   final bool fromNotification;
   final String? orderIdFormNotification;
+  final String? parentOrderIdFormNotification;
 
   final String orderIdToOpenPackage;
   final String? currentStatus;
@@ -97,6 +100,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
   List<OrderListModel> orders = [];
   int firstAddressChoosed = 0;
   bool firstOpenPage = true;
+  bool requestReturnApiFromNotification = false;
   bool requestReturnApi = false;
   bool canFetchReturnDetails = false;
   @override
@@ -116,12 +120,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
     if (widget.fromNotification &&
         widget.orderIdFormNotification != null &&
         widget.orderIdFormNotification != "") {
+      requestReturnApiFromNotification = true;
+      indexTapPackage.value = orders.indexWhere((element) =>
+          element.id.toString() ==
+          (widget.parentOrderIdFormNotification ??
+              widget.orderIdFormNotification));
+
       GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
           originalUserId: GetIt.I<PrefsRepository>().myMarketId.toString(),
           orderId: widget.orderIdFormNotification!));
-
-      indexTapPackage.value = orders.indexWhere(
-          (element) => element.id.toString() == widget.orderIdFormNotification);
     } else if (widget.orderIdToOpenPackage != "") {
       indexTapPackage.value = orders.indexWhere(
           (element) => element.id.toString() == widget.orderIdToOpenPackage);
@@ -129,11 +136,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    orderBloc.add(
-      GetOrdersByOrderGroupIDEvent(
-          orderGroupId: orders[indexTapPackage.value].orderGroupId ?? "",
-          firstOpenPage: true),
-    );
+    if (!widget.fromNotification) {
+      Future.delayed(const Duration(seconds: 5), () {
+        orderBloc.add(
+          GetOrdersByOrderGroupIDEvent(
+              orderGroupId: orders[indexTapPackage.value].orderGroupId ?? "",
+              firstOpenPage: true),
+        );
+      });
+    }
     orders.forEach(
       (element) {
         if (element.returnRequestId != null) {
@@ -141,7 +152,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
         }
       },
     );
-    if (canFetchReturnDetails) {
+    if (canFetchReturnDetails && !widget.fromNotification) {
       orderBloc.add(FetchOrderReturnDetailsEvent(
         orders[indexTapPackage.value].orderGroupId ?? "",
       ));
@@ -809,6 +820,31 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                       current
                                                           .orderReturnDetailsStatus,
                                                   builder: (context, state) {
+                                                    ReturnRequestsDatum?
+                                                        orderReturnDetail;
+
+                                                    if (state
+                                                            .orderReturnDetailsModel !=
+                                                        null) {
+                                                      if (state
+                                                              .orderReturnDetailsModel!
+                                                              .data
+                                                              ?.returnRequestsData !=
+                                                          null) {
+                                                        orderReturnDetail = state
+                                                            .orderReturnDetailsModel!
+                                                            .data!
+                                                            .returnRequestsData!
+                                                            .firstWhere(
+                                                          (element) =>
+                                                              element.orderId ==
+                                                              orders[_indexTapPackage]
+                                                                  .id,
+                                                          orElse: () =>
+                                                              ReturnRequestsDatum(),
+                                                        );
+                                                      }
+                                                    }
                                                     return GestureDetector(
                                                       onTapUp: (details) {
                                                         final double dx =
@@ -818,10 +854,17 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                         print(dx);
 
                                                         if ((dx > (1.sw - 75) &&
-                                                            orders[_indexTapPackage]
-                                                                    .orderStatus
-                                                                    ?.value ==
-                                                                "out_for_delivery")) {
+                                                            (orders[_indexTapPackage]
+                                                                        .orderStatus
+                                                                        ?.value ==
+                                                                    "out_for_delivery" ||
+                                                                (orderReturnDetail !=
+                                                                        null
+                                                                    ? orderReturnDetail
+                                                                            .status
+                                                                            ?.value ==
+                                                                        "out_for_return"
+                                                                    : false)))) {
                                                           return;
                                                         }
                                                         if (state
@@ -4070,10 +4113,32 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ValueListenableBuilder<int>(
                             valueListenable: indexTapPackage,
                             builder: (context, _indexTapPackage, _) {
-                              return orders[_indexTapPackage]
-                                          .orderStatus
-                                          ?.value !=
-                                      "out_for_delivery"
+                              ReturnRequestsDatum? orderReturnDetail;
+
+                              if (state.orderReturnDetailsModel != null) {
+                                if (state.orderReturnDetailsModel!.data
+                                        ?.returnRequestsData !=
+                                    null) {
+                                  orderReturnDetail = state
+                                      .orderReturnDetailsModel!
+                                      .data!
+                                      .returnRequestsData!
+                                      .firstWhere(
+                                    (element) =>
+                                        element.orderId ==
+                                        orders[_indexTapPackage].id,
+                                    orElse: () => ReturnRequestsDatum(),
+                                  );
+                                }
+                              }
+
+                              return (orders[_indexTapPackage]
+                                                  .orderStatus
+                                                  ?.value !=
+                                              "out_for_delivery" &&
+                                          orderReturnDetail?.status?.value !=
+                                              "out_for_return") &&
+                                      (!widget.fromNotification)
                                   ? const SizedBox.shrink()
                                   : Container(
                                       width: 105,
@@ -4084,6 +4149,30 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   .getOrderRecipientIdStatus !=
                                               current.getOrderRecipientIdStatus,
                                           listener: (context, state) {
+                                            if (requestReturnApiFromNotification &&
+                                                (state.getOrderRecipientIdStatus ==
+                                                        GetOrderRecipientIdStatus
+                                                            .success ||
+                                                    state.getOrderRecipientIdStatus ==
+                                                        GetOrderRecipientIdStatus
+                                                            .failure)) {
+                                              requestReturnApiFromNotification =
+                                                  false;
+                                              Future.delayed(
+                                                  const Duration(seconds: 3),
+                                                  () {
+                                                if (canFetchReturnDetails) {
+                                                  orderBloc.add(
+                                                      FetchOrderReturnDetailsEvent(
+                                                    orders[indexTapPackage
+                                                                .value]
+                                                            .orderGroupId ??
+                                                        "",
+                                                  ));
+                                                }
+                                              });
+                                            }
+
                                             if (state
                                                     .getOrderRecipientIdStatus ==
                                                 GetOrderRecipientIdStatus
@@ -4093,6 +4182,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   "Delivery Worker";
                                               String? recipientUserId =
                                                   state.recipientUserId;
+                                              print(
+                                                  "recipientUserId $recipientUserId");
                                               if (recipientUserId == null) {
                                                 return;
                                               }
@@ -4166,16 +4257,29 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                 height: 30,
                                                 child: InkWell(
                                                     onTap: () {
-                                                      chatBloc.add(GetOrderRecipientIdEvent(
-                                                          originalUserId: GetIt.I<
-                                                                  PrefsRepository>()
-                                                              .myMarketId
-                                                              .toString(),
-                                                          orderId: orders[
-                                                                  indexTapPackage
-                                                                      .value]
-                                                              .id
-                                                              .toString()));
+                                                      chatBloc.add(
+                                                          GetOrderRecipientIdEvent(
+                                                              originalUserId: GetIt.I<
+                                                                      PrefsRepository>()
+                                                                  .myMarketId
+                                                                  .toString(),
+                                                              orderId: orderReturnDetail ==
+                                                                      null
+                                                                  ? orders[indexTapPackage
+                                                                          .value]
+                                                                      .id
+                                                                      .toString()
+                                                                  : orderReturnDetail
+                                                                              .status
+                                                                              ?.value ==
+                                                                          "out_for_return"
+                                                                      ? orderReturnDetail
+                                                                          .returnRequestId
+                                                                          .toString()
+                                                                      : orders[indexTapPackage
+                                                                              .value]
+                                                                          .id
+                                                                          .toString()));
                                                     },
                                                     child: Row(
                                                       children: [

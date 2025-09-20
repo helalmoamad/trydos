@@ -802,6 +802,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onGetOrderRecipientIdEvent(
       GetOrderRecipientIdEvent event, Emitter<ChatState> emit) async {
+    if (event.changeStatusToInit) {
+      emit(state.copyWith(
+        getOrderRecipientIdStatus: GetOrderRecipientIdStatus.init,
+      ));
+      return;
+    }
     emit(state.copyWith(
       getOrderRecipientIdStatus: GetOrderRecipientIdStatus.loading,
     ));
@@ -820,7 +826,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       },
       (r) {
         ErrorManager.resetRetry('GetOrderRecipientIdEvent');
-        List<Chat> newChats = List.of(state.chats);
+        List<Chat> newChats = [];
         newChats.removeWhere((element) => element.isPrivate ?? false);
         //bool changed = false;
         /*  List<Chat> chats = List.of(state.chats);
@@ -1480,11 +1486,11 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             if (e.id == channelId) {
               return e.copyWith(
                   totalUnreadMessageCount: watched != null
-                      ? e.totalUnreadMessageCount! - 1
+                      ? (e.totalUnreadMessageCount ?? 1) - 1
                       : e.totalUnreadMessageCount,
-                  messages: e.messages?.map((m) {
+                  messages: (e.messages ?? []).map((m) {
                     return m.copyWith(
-                        messageStatus: m.messageStatus?.map((s) {
+                        messageStatus: (m.messageStatus ?? []).map((s) {
                       return s.copyWith(
                         isWatched: watched ?? s.isWatched,
                         receivedAt: receivedAt,
@@ -1721,6 +1727,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             receiveMessageStatus: ReceiveMessageStatus.init,
             readMessagesStatus: ResetReadMessagesStatus.init,
             firstRequestForGetChats: true,
+            getOrderRecipientIdStatus: GetOrderRecipientIdStatus.init,
             changeChatPropertyStatus: ChangeChatPropertyStatus.init,
             changeMessageStateFromPusherStatus:
                 ChangeMessageStateFromPusherStatus.init,

@@ -95,9 +95,10 @@ class _TextMessageState extends ThemeState<TextMessage> {
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {
-        final RenderBox renderBox =
-            key.currentContext?.findRenderObject() as RenderBox;
+        final renderBox = key.currentContext?.findRenderObject();
+        if (renderBox is RenderBox && renderBox.hasSize) {
         height = renderBox.size.height;
+        }
       }
     });
     super.initState();

@@ -14,6 +14,7 @@ import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
@@ -32,6 +33,7 @@ import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.da
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -100,62 +102,117 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
           child: Row(
             children: [
               Expanded(
-                child: InkWell(
-                  onTap: () {
-                    appBloc.add(ChangeTab(-1));
-                    categoryBloc.add(
-                      ChangeCurrentIndexForMainCategoryEvent(index: -1),
-                    );
+                  child: BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                      buildWhen: (previous, current) =>
+                          previous
+                                  .getProductListingWithFiltersPaginationModels[
+                                      "*featured*withoutFilter"]
+                                  ?.paginationStatus !=
+                              current
+                                  .getProductListingWithFiltersPaginationModels[
+                                      "*featured*withoutFilter"]
+                                  ?.paginationStatus ||
+                          previous
+                                  .getProductListingWithFiltersPaginationModels[
+                                      "*flashDeal*withoutFilter"]
+                                  ?.paginationStatus !=
+                              current
+                                  .getProductListingWithFiltersPaginationModels[
+                                      "*flashDeal*withoutFilter"]
+                                  ?.paginationStatus ||
+                          previous.getProductFiltersStatus["*flashDeal*"] !=
+                              current.getProductFiltersStatus["*flashDeal*"],
+                      builder: (context, boutiqueState) {
+                        return InkWell(
+                          onTap: () {
+                            if (boutiqueState
+                                        .getProductListingWithFiltersPaginationModels[
+                                            "*featured*withoutFilter"]
+                                        ?.paginationStatus ==
+                                    PaginationStatus.loading ||
+                                boutiqueState
+                                        .getProductListingWithFiltersPaginationModels[
+                                            "*flashDeal*withoutFilter"]
+                                        ?.paginationStatus ==
+                                    PaginationStatus.loading) {
+                              return;
+                            }
+                            if (boutiqueState.currentMainCategoryTaped !=
+                                    "Empty" &&
+                                boutiqueState.currentMainCategoryTaped != "") {
+                              boutiqueBloc.add(AddCurrentMainCategoryTapedEvent(
+                                  currentMainCategoryTaped: "Empty"));
+                              categoryBloc.add(
+                                ChangeCurrentIndexForMainCategoryEvent(
+                                    index: -1),
+                              );
+                              boutiqueBloc.add(
+                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                      categorySlugs: [],
+                                      cashedOrginalBoutique: true,
+                                      boutiqueSlug: "*featured*"));
+                              boutiqueBloc.add(
+                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                      categorySlugs: [],
+                                      cashedOrginalBoutique: true,
+                                      boutiqueSlug: "*flashDeal*"));
+                              appBloc.add(ChangeTab(-1));
+                              categoryBloc.add(
+                                ChangeCurrentIndexForMainCategoryEvent(
+                                    index: -1),
+                              );
+                            }
 
-                    if (Navigator.of(context).canPop()) {
-                      try {
-                        Navigator.of(context).pop();
-                      } catch (e) {}
-                    }
+                            if (Navigator.of(context).canPop()) {
+                              try {
+                                Navigator.of(context).pop();
+                              } catch (e) {}
+                            }
 
-                    categoryBloc.add(
-                      GetHomeBoutiqesEvent(
-                        getWithPrefetchToStoreInMemory: false,
-                        getWithOutPrefetchForEachBoutiques: true,
-                        context: context,
-                        categorySlug: "Empty",
-                        offset: "1",
-                      ),
-                    );
+                            categoryBloc.add(
+                              GetHomeBoutiqesEvent(
+                                getWithPrefetchToStoreInMemory: false,
+                                getWithOutPrefetchForEachBoutiques: true,
+                                context: context,
+                                categorySlug: "Empty",
+                                offset: "1",
+                              ),
+                            );
 
-                    appBloc.add(ChangeBasePage(0));
-                    boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
-                    /////////////////////////
-                    // FirebaseAnalyticsService.logEventForSession(
-                    //   eventName: AnalyticsEventsConst.buttonClicked,
-                    //   executedEventName:
-                    //       AnalyticsButtonsEventNameConst.homeNavBarButton,
-                    // );
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      state.currentIndex == 0
-                          ? SvgPicture.asset(
-                              AppAssets.bottomBarLogoActiveSvg,
-                            )
-                          : SvgPicture.asset(
-                              AppAssets.bottomBarLogoActiveSvg,
-                            ),
-                      10.verticalSpace,
-                      state.currentIndex == 0
-                          ? SvgPicture.asset(
-                              AppAssets.logoTextActiveSvg,
-                              height: 10.h,
-                            )
-                          : SvgPicture.asset(
-                              AppAssets.logoTextInactiveSvg,
-                              height: 10.h,
-                            ),
-                    ],
-                  ),
-                ),
-              ),
+                            appBloc.add(ChangeBasePage(0));
+                            boutiqueBloc
+                                .add(ResetAllSelectedAppliedFilterEvent());
+                            /////////////////////////
+                            // FirebaseAnalyticsService.logEventForSession(
+                            //   eventName: AnalyticsEventsConst.buttonClicked,
+                            //   executedEventName:
+                            //       AnalyticsButtonsEventNameConst.homeNavBarButton,
+                            // );
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              state.currentIndex == 0
+                                  ? SvgPicture.asset(
+                                      AppAssets.bottomBarLogoActiveSvg,
+                                    )
+                                  : SvgPicture.asset(
+                                      AppAssets.bottomBarLogoActiveSvg,
+                                    ),
+                              10.verticalSpace,
+                              state.currentIndex == 0
+                                  ? SvgPicture.asset(
+                                      AppAssets.logoTextActiveSvg,
+                                      height: 10.h,
+                                    )
+                                  : SvgPicture.asset(
+                                      AppAssets.logoTextInactiveSvg,
+                                      height: 10.h,
+                                    ),
+                            ],
+                          ),
+                        );
+                      })),
               Expanded(
                 child: InkWell(
                   onTap: () {

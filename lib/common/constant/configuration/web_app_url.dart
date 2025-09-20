@@ -5,11 +5,12 @@ extension ScopeApi on String {
 }
 
 abstract class WebAppEndPoints {
-  static final imageSearchEP = "api/image-search";
-  static final mainCategoriesEP = "api/home/mainCategories";
-  static final homeBoutiquesEP = "api/home/boutiques";
-  static final searchProductEP = "api/products/searchInCatalog";
-  static final productFeaturedEP = "api/products/featured";
+  static const imageSearchEP = "api/image-search";
+  static const mainCategoriesEP = "api/home/mainCategories";
+  static const editSocialProductEP = "api/editSocialProduct";
+  static const homeBoutiquesEP = "api/home/boutiques";
+  static const searchProductEP = "api/products/searchInCatalog";
+  static const productFeaturedEP = "api/products/featured";
   static String productDetailsEP(String slug) =>
       "api/mobile/product/details_without_similar_related_products/${slug}";
   //  static final imageSearchEP = "api/image-search";

@@ -787,12 +787,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
 
                                           BlocBuilder<OrderBloc, OrderState>(
                                               buildWhen: (previous, current) =>
-                                                  previous.cancelReturnRequestStatus !=
-                                                      current
-                                                          .cancelReturnRequestStatus ||
+                                                  previous.cancelReturnRequestStatus != current.cancelReturnRequestStatus ||
                                                   previous.getOrdersByOrderGroupIDStatus !=
                                                       current
-                                                          .getOrdersByOrderGroupIDStatus,
+                                                          .getOrdersByOrderGroupIDStatus ||
+                                                  previous.orderReturnDetailsStatus !=
+                                                      current
+                                                          .orderReturnDetailsStatus,
                                               builder: (context, state) {
                                                 returnRequestIdsToCancel = [];
                                                 state
@@ -811,52 +812,47 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 return returnRequestIdsToCancel
                                                         .isEmpty
                                                     ? const SizedBox.shrink()
-                                                    : InkWell(
-                                                        onTap: () {
-                                                          showShadowForCancelAllOrder
-                                                              .value = true;
-                                                        },
-                                                        child: Container(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            margin:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 10),
-                                                            decoration:
-                                                                const BoxDecoration(
-                                                              color: Colors.red,
-                                                              borderRadius: BorderRadius
-                                                                  .all(Radius
-                                                                      .circular(
-                                                                          15)),
-                                                            ),
-                                                            width: 1.sw,
-                                                            height: 30,
-                                                            child: Text(
-                                                              LocaleKeys
-                                                                  .cancel_return_request
-                                                                  .tr(),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
+                                                    : state
+                                                                    .cancelReturnRequestStatus ==
+                                                                CancelReturnRequestStatus
+                                                                    .loading ||
+                                                            state.orderReturnDetailsStatus ==
+                                                                OrderReturnDetailsStatus
+                                                                    .loading ||
+                                                            state.getOrdersByOrderGroupIDStatus ==
+                                                                GetOrdersByOrderGroupIDStatus
+                                                                    .loading
+                                                        ? TrydosLoader(size: 16)
+                                                        : InkWell(
+                                                            onTap: () {
+                                                              showShadowForCancelAllOrder
+                                                                  .value = true;
+                                                            },
+                                                            child: Center(
+                                                                child: Text(
+                                                              "${LocaleKeys.cancel_return_request.tr()}",
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium
-                                                                  ?.rq
+                                                                  ?.rr
                                                                   .copyWith(
-                                                                color: Colors
-                                                                    .white,
+                                                                decorationColor:
+                                                                    Colors.red,
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .underline,
+                                                                color:
+                                                                    Colors.red,
                                                                 letterSpacing:
-                                                                    0.24,
-                                                                fontSize: 14,
-                                                                height: 1.3,
+                                                                    0.18,
+                                                                fontSize: 12,
+                                                                height: 1.5,
                                                               ),
                                                             )));
                                               }),
+                                          const SizedBox(
+                                            height: 2,
+                                          ),
 
                                           BlocBuilder<OrderBloc, OrderState>(
                                               buildWhen: (previous, current) =>
@@ -916,79 +912,34 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             state.getOrdersByOrderGroupIDStatus ==
                                                                 GetOrdersByOrderGroupIDStatus
                                                                     .loading
-                                                        ? Shimmer.fromColors(
-                                                            baseColor: Colors
-                                                                .grey[300]!,
-                                                            highlightColor:
-                                                                Colors
-                                                                    .grey[100]!,
-                                                            child: Container(
-                                                                margin:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        top: 5),
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                width: 1.sw,
-                                                                height: 30,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                        color: const Color(
-                                                                            0xffC4C2C2),
-                                                                        border: Border
-                                                                            .all(
-                                                                          color:
-                                                                              const Color(0xffC4C2C2),
-                                                                        ),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(15))))
+                                                        ? TrydosLoader(size: 16)
                                                         : InkWell(
                                                             onTap: () {
                                                               showShadowForConfirmOrder
                                                                   .value = true;
                                                             },
-                                                            child: Container(
-                                                                alignment: Alignment.center,
-                                                                margin: const EdgeInsets.only(top: 5),
-                                                                decoration: const BoxDecoration(
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          32,
-                                                                          122,
-                                                                          28),
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              15)),
-                                                                ),
-                                                                width: 1.sw,
-                                                                height: 30,
+                                                            child: Center(
                                                                 child: Text(
-                                                                  LocaleKeys
-                                                                      .confirm_return_request
-                                                                      .tr(),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style: context
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.rq
-                                                                      .copyWith(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    letterSpacing:
-                                                                        0.24,
-                                                                    fontSize:
-                                                                        14,
-                                                                    height: 1.3,
-                                                                  ),
-                                                                )));
+                                                              "${LocaleKeys.confirm_return_request.tr()}",
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.rr
+                                                                  .copyWith(
+                                                                decorationColor:
+                                                                    Colors
+                                                                        .green,
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .underline,
+                                                                color: Colors
+                                                                    .green,
+                                                                letterSpacing:
+                                                                    0.18,
+                                                                fontSize: 12,
+                                                                height: 1.5,
+                                                              ),
+                                                            )));
                                               }),
                                           order?.returnRequestId == null
                                               ? const SizedBox.shrink()
@@ -2551,182 +2502,217 @@ class _OrderDetails2 extends State<OrderDetails2> {
   }
 
   Widget buildFirstSection(BuildContext context, String itemsCount) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            color: const Color(0xffF4F4F4),
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: const Color(0xffC4C2C2),
-            )),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
-                  AppAssets.bagsSvg,
-                  width: 20,
-                ),
-                ///////////////////
-                const SizedBox(
-                  height: 3,
-                ),
-                ///////////////////
-                Text(
-                  LocaleKeys.order_details.tr(),
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.bodyMedium?.rq.copyWith(
-                    color: const Color(0xff8D8D8D),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.3,
-                  ),
-                ),
-                ///////////////////
-                const SizedBox(
-                  height: 3,
-                ),
-                ///////////////////
-                RichText(
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                    style: context.textTheme.bodyMedium?.rq.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.3,
-                    ),
+    return BlocBuilder<OrderBloc, OrderState>(
+        buildWhen: (p, c) =>
+            p.orderReturnDetailsStatus != c.orderReturnDetailsStatus,
+        builder: (context, state) {
+          ReturnRequestsDatum? orderReturnDetail;
+
+          if (state.orderReturnDetailsModel != null) {
+            if (state.orderReturnDetailsModel!.data?.returnRequestsData !=
+                null) {
+              orderReturnDetail = state
+                  .orderReturnDetailsModel!.data!.returnRequestsData!
+                  .firstWhere(
+                (element) => element.orderId == order?.id,
+                orElse: () => ReturnRequestsDatum(),
+              );
+            }
+          }
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: const Color(0xffF4F4F4),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: const Color(0xffC4C2C2),
+                  )),
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(
-                        text: itemsCount,
-                        style: context.textTheme.bodyMedium?.bq.copyWith(
-                          color: const Color(0xff1D1D1D),
+                      SvgPicture.asset(
+                        AppAssets.bagsSvg,
+                        width: 20,
+                      ),
+                      ///////////////////
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      ///////////////////
+                      Text(
+                        LocaleKeys.order_details.tr(),
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
-                          fontSize: 14,
+                          fontSize: 12,
                           height: 1.3,
                         ),
                       ),
-                      TextSpan(text: ' ${LocaleKeys.item.tr()}   '),
-                      TextSpan(text: ' 1 ${LocaleKeys.returned.tr()}  '),
-                      TextSpan(text: ' 1 ${LocaleKeys.not_delivery.tr()}')
+                      ///////////////////
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      ///////////////////
+                      RichText(
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: const Color(0xff1D1D1D),
+                            letterSpacing: 0.18,
+                            fontSize: 14,
+                            height: 1.3,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: itemsCount,
+                              style: context.textTheme.bodyMedium?.bq.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 14,
+                                height: 1.3,
+                              ),
+                            ),
+                            TextSpan(text: ' ${LocaleKeys.item.tr()}   '),
+                            TextSpan(text: ' 1 ${LocaleKeys.returned.tr()}  '),
+                            TextSpan(text: ' 1 ${LocaleKeys.not_delivery.tr()}')
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            order!.orderStatus?.value != "out_for_delivery"
-                ? const SizedBox.shrink()
-                : Container(
-                    width: 105,
-                    height: 40,
-                    child: BlocListener<ChatBloc, ChatState>(
-                        listenWhen: (previous, current) =>
-                            previous.getOrderRecipientIdStatus !=
-                            current.getOrderRecipientIdStatus,
-                        listener: (context, state) {
-                          if (state.getOrderRecipientIdStatus ==
-                              GetOrderRecipientIdStatus.success) {
-                            String receiverName = "DW";
-                            String fullReceiverName = "Delivery Worker";
-                            String? recipientUserId = state.recipientUserId;
-                            if (recipientUserId == null) {
-                              return;
-                            }
-                            Chat? chat;
-                            User? receiver;
-                            List<Chat> chats =
-                                List.of(GetIt.I<ChatBloc>().state.chats);
-                            debugPrint(chats.toString());
-                            chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
-                            chat = chats.firstWhere((element) =>
-                                element.channelMembers!.any((element) {
-                                  return element.userId.toString() ==
-                                      recipientUserId;
-                                }));
-                            final preferences = GetIt.I<PrefsRepository>();
-                            receiver = chat.channelMembers
-                                ?.firstWhere(
-                                  (element) =>
-                                      element.userId != preferences.myChatId,
-                                  orElse: () => ChannelMember(
-                                      userId: int.tryParse(recipientUserId),
-                                      user: User(
-                                          id: int.tryParse(recipientUserId),
-                                          name: receiverName)),
-                                )
-                                .user;
-                            String fromOrder = "true";
-                            context.go(GRouter.config.applicationRoutes
-                                    .kSinglePageChatPagePath +
-                                '?chatId=${chat.id!.toString()}&fromOrder=$fromOrder&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
-                          }
-                          // TODO: implement listener
-                        },
-                        child: BlocBuilder<ChatBloc, ChatState>(
-                          buildWhen: (previous, current) =>
-                              previous.getOrderRecipientIdStatus !=
-                              current.getOrderRecipientIdStatus,
-                          builder: (context, state) {
-                            if (state.getOrderRecipientIdStatus ==
-                                GetOrderRecipientIdStatus.loading) {
-                              return Container(
-                                width: 30,
-                                height: 30,
-                                child: TrydosLoader(
-                                  size: 16,
-                                ),
-                              );
-                            }
-                            return Container(
-                              alignment: Alignment.center,
-                              width: 70,
-                              height: 30,
-                              child: InkWell(
-                                  onTap: () {
-                                    GetIt.I<ChatBloc>().add(
-                                        GetOrderRecipientIdEvent(
-                                            originalUserId:
-                                                GetIt.I<PrefsRepository>()
-                                                    .myMarketId
-                                                    .toString(),
-                                            orderId: order!.id.toString()));
-                                  },
-                                  child: Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.chatMarkActiveSvg,
-                                        width: 15,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        LocaleKeys.chat_with_delivery_person
-                                            .tr(),
-                                        style: context.textTheme.bodyMedium?.rr
-                                            .copyWith(
-                                          color: const Color(0xff1D1D1D),
-                                          fontSize: 9,
-                                          height: 1.3,
-                                          letterSpacing: 0.18,
-                                        ),
+                  const Spacer(),
+                  order!.orderStatus?.value != "out_for_delivery" &&
+                          orderReturnDetail?.status?.value != "out_for_return"
+                      ? const SizedBox.shrink()
+                      : Container(
+                          width: 105,
+                          height: 40,
+                          child: BlocListener<ChatBloc, ChatState>(
+                              listenWhen: (previous, current) =>
+                                  previous.getOrderRecipientIdStatus !=
+                                  current.getOrderRecipientIdStatus,
+                              listener: (context, state) {
+                                if (state.getOrderRecipientIdStatus ==
+                                    GetOrderRecipientIdStatus.success) {
+                                  String receiverName = "DW";
+                                  String fullReceiverName = "Delivery Worker";
+                                  String? recipientUserId =
+                                      state.recipientUserId;
+                                  if (recipientUserId == null) {
+                                    return;
+                                  }
+                                  Chat? chat;
+                                  User? receiver;
+                                  List<Chat> chats =
+                                      List.of(GetIt.I<ChatBloc>().state.chats);
+                                  debugPrint(chats.toString());
+                                  chats.addAll(
+                                      GetIt.I<ChatBloc>().state.pinnedChats);
+                                  chat = chats.firstWhere((element) =>
+                                      element.channelMembers!.any((element) {
+                                        return element.userId.toString() ==
+                                            recipientUserId;
+                                      }));
+                                  final preferences =
+                                      GetIt.I<PrefsRepository>();
+                                  receiver = chat.channelMembers
+                                      ?.firstWhere(
+                                        (element) =>
+                                            element.userId !=
+                                            preferences.myChatId,
+                                        orElse: () => ChannelMember(
+                                            userId:
+                                                int.tryParse(recipientUserId),
+                                            user: User(
+                                                id: int.tryParse(
+                                                    recipientUserId),
+                                                name: receiverName)),
                                       )
-                                    ],
-                                  )),
-                            );
-                          },
-                        )),
-                  ),
-          ],
-        ),
-      ),
-    );
+                                      .user;
+                                  String fromOrder = "true";
+                                  context.go(GRouter.config.applicationRoutes
+                                          .kSinglePageChatPagePath +
+                                      '?chatId=${chat.id!.toString()}&fromOrder=$fromOrder&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
+                                }
+                                // TODO: implement listener
+                              },
+                              child: BlocBuilder<ChatBloc, ChatState>(
+                                buildWhen: (previous, current) =>
+                                    previous.getOrderRecipientIdStatus !=
+                                    current.getOrderRecipientIdStatus,
+                                builder: (context, state) {
+                                  if (state.getOrderRecipientIdStatus ==
+                                      GetOrderRecipientIdStatus.loading) {
+                                    return Container(
+                                      width: 30,
+                                      height: 30,
+                                      child: TrydosLoader(
+                                        size: 16,
+                                      ),
+                                    );
+                                  }
+                                  return Container(
+                                    alignment: Alignment.center,
+                                    width: 70,
+                                    height: 30,
+                                    child: InkWell(
+                                        onTap: () {
+                                          GetIt.I<ChatBloc>().add(
+                                              GetOrderRecipientIdEvent(
+                                                  originalUserId:
+                                                      GetIt.I<PrefsRepository>()
+                                                          .myMarketId
+                                                          .toString(),
+                                                  orderId:
+                                                      orderReturnDetail?.status
+                                                                  ?.value ==
+                                                              "out_for_return"
+                                                          ? orderReturnDetail!
+                                                              .returnRequestId
+                                                              .toString()
+                                                          : order!.id
+                                                              .toString()));
+                                        },
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              AppAssets.chatMarkActiveSvg,
+                                              width: 15,
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              LocaleKeys
+                                                  .chat_with_delivery_person
+                                                  .tr(),
+                                              style: context
+                                                  .textTheme.bodyMedium?.rr
+                                                  .copyWith(
+                                                color: const Color(0xff1D1D1D),
+                                                fontSize: 9,
+                                                height: 1.3,
+                                                letterSpacing: 0.18,
+                                              ),
+                                            )
+                                          ],
+                                        )),
+                                  );
+                                },
+                              )),
+                        ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   Widget shadowForPanel() {
@@ -4962,10 +4948,6 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   ))
                                               : InkWell(
                                                   onTap: () {
-                                                    if (agreeToPolicies.value ==
-                                                        false) {
-                                                      return;
-                                                    }
                                                     returnBottomIndexTap.value =
                                                         1;
 
@@ -5048,73 +5030,40 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                               )));
                                                     }
                                                   },
-                                                  child:
-                                                      ValueListenableBuilder<
-                                                              bool>(
-                                                          valueListenable:
-                                                              agreeToPolicies,
-                                                          builder: (context,
-                                                              _agreeToPolicies,
-                                                              _) {
-                                                            return Container(
-                                                              margin:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          24),
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              width: 1.sw,
-                                                              height: 50,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                      color: agreeToPolicies.value ==
-                                                                              true
-                                                                          ? const Color
-                                                                              .fromARGB(
-                                                                              255,
-                                                                              157,
-                                                                              183,
-                                                                              231)
-                                                                          : const Color(
-                                                                              0xffC4C2C2),
-                                                                      border: agreeToPolicies.value ==
-                                                                              true
-                                                                          ? Border
-                                                                              .all(
-                                                                              color: const Color(0xffF8F8F8),
-                                                                            )
-                                                                          : Border
-                                                                              .all(
-                                                                              color: const Color(0xffC4C2C2),
-                                                                            ),
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              15)),
-                                                              child: Text(
-                                                                LocaleKeys
-                                                                    .i_want_returm_more_products
-                                                                    .tr(),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                                style: context
-                                                                    .textTheme
-                                                                    .bodyMedium
-                                                                    ?.br
-                                                                    .copyWith(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 16,
-                                                                  height: 1.3,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          }),
-                                                );
+                                                  child: Container(
+                                                    margin: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 24),
+                                                    alignment: Alignment.center,
+                                                    width: 1.sw,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 157, 183, 231),
+                                                        border: Border.all(
+                                                          color: const Color(
+                                                              0xffF8F8F8),
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15)),
+                                                    child: Text(
+                                                      LocaleKeys
+                                                          .i_want_returm_more_products
+                                                          .tr(),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: context.textTheme
+                                                          .bodyMedium?.br
+                                                          .copyWith(
+                                                        color: Colors.white,
+                                                        letterSpacing: 0.18,
+                                                        fontSize: 16,
+                                                        height: 1.3,
+                                                      ),
+                                                    ),
+                                                  ));
                                         });
                                   })),
                       SizedBox(
@@ -8741,7 +8690,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     builder:
                                         (context, _qtyToChangeController, _) {
                                       return Container(
-                                          width: 130,
+                                          width: 1.sw - 50,
                                           decoration: BoxDecoration(
                                               border: Border.all(
                                                   color:
@@ -9055,7 +9004,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           return Directionality(
                               textDirection: TextDirection.rtl,
                               child: Container(
-                                  width: 280,
+                                  width: 1.sw - 50,
                                   decoration: BoxDecoration(
                                       border: Border.all(
                                           color: const Color(0xFF1D1D1D)),
@@ -9455,7 +9404,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       valueListenable: orderPhotos,
                                       builder: (context, _orderPhotos, _) {
                                         return SizedBox(
-                                          height: 198.h,
+                                          height: 175.h,
                                           width: 1.sw,
                                           child: Column(
                                             children: [
@@ -10076,8 +10025,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       });
                                 });
                           }))),
-              SizedBox(
-                height: 5.h,
+              const SizedBox(
+                height: 12,
               )
             ],
           );

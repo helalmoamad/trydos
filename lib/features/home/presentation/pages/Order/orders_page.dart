@@ -31,8 +31,10 @@ class OrdersPage extends StatefulWidget {
   bool? fromNotification;
   final String? groupId;
   final String? orderIdFormNotification;
+  final String? parentOrderIdFormNotification;
   OrdersPage(
       {super.key,
+      this.parentOrderIdFormNotification,
       this.groupId,
       this.orderIdFormNotification,
       this.fromNotification});
@@ -48,7 +50,7 @@ class _OrdersPageState extends State<OrdersPage> {
   final ScrollController ordersScrollController = ScrollController();
 
   final ValueNotifier<String> currentStatus = ValueNotifier('');
-
+  bool requestReturnApiFromNotification = true;
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -66,7 +68,7 @@ class _OrdersPageState extends State<OrdersPage> {
       if (debounce?.isActive ?? false) {
         debounce!.cancel();
       }
-      debounce = Timer(Duration(milliseconds: 600), () {
+      debounce = Timer(const Duration(milliseconds: 600), () {
         if (ordersScrollController.offset >=
             (ordersScrollController.position.maxScrollExtent * 0.6)) {
           debugPrint('scrollController');
@@ -97,7 +99,7 @@ class _OrdersPageState extends State<OrdersPage> {
               backIconColor: Colors.black,
               withShadow: false,
               action: [
-                Spacer(),
+                const Spacer(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -106,7 +108,7 @@ class _OrdersPageState extends State<OrdersPage> {
                       width: 23,
                     ),
                     ///////////////////////////
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     ///////////////////////////
@@ -120,13 +122,13 @@ class _OrdersPageState extends State<OrdersPage> {
                       ),
                     ),
                     ///////////////////////////
-                    SizedBox(
+                    const SizedBox(
                       width: 15,
                     ),
                     ///////////////////////////
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
               ],
             ),
           ),
@@ -149,8 +151,9 @@ class _OrdersPageState extends State<OrdersPage> {
                 listener: (context, state) {
                   if ((widget.fromNotification ?? false) &&
                       state.getOrdersByOrderGroupIDStatus ==
-                          GetOrdersByOrderGroupIDStatus.success) {
-                    widget.fromNotification = false;
+                          GetOrdersByOrderGroupIDStatus.success &&
+                      requestReturnApiFromNotification) {
+                    requestReturnApiFromNotification = false;
 
                     if (state.getOrdersByOrderGroupIDModel?.orders?.first !=
                         null) {
@@ -158,17 +161,18 @@ class _OrdersPageState extends State<OrdersPage> {
                           state.getOrdersByOrderGroupIDModel!.orders ?? [];
 
                       Future.delayed(
-                          Duration(milliseconds: 50),
+                          const Duration(milliseconds: 50),
                           () => Navigator.of(context).push(PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      OrderDetails1(
-                                          indexGroupe: -1,
-                                          currentStatus: currentStatus.value,
-                                          orderIdFormNotification:
-                                              widget.orderIdFormNotification,
-                                          fromNotification: true,
-                                          orders: order))));
+                              pageBuilder: (context, animation,
+                                      secondaryAnimation) =>
+                                  OrderDetails1(
+                                      currentStatus: currentStatus.value,
+                                      orderIdFormNotification:
+                                          widget.orderIdFormNotification,
+                                      parentOrderIdFormNotification:
+                                          widget.parentOrderIdFormNotification,
+                                      fromNotification: true,
+                                      orders: order))));
                     }
                   }
                 },
@@ -320,7 +324,7 @@ class _OrdersPageState extends State<OrdersPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: Color(0xffF8F8F8),
+          color: const Color(0xffF8F8F8),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -467,7 +471,6 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
                 ///////////////////////////
                 Flexible(
-                  fit: FlexFit.loose,
                   child: Text(
                     text1,
                     overflow: TextOverflow.ellipsis,
@@ -505,13 +508,12 @@ class _OrdersPageState extends State<OrdersPage> {
                   width: 15,
                 ),
                 ///////////////////////////
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 ///////////////////////////
                 isTextSpan
                     ? Flexible(
-                        fit: FlexFit.loose,
                         child: RichText(
                           overflow: TextOverflow.ellipsis,
                           text: TextSpan(
@@ -549,7 +551,6 @@ class _OrdersPageState extends State<OrdersPage> {
                         ),
                       )
                     : Flexible(
-                        fit: FlexFit.loose,
                         child: Text(
                           text2,
                           overflow: TextOverflow.ellipsis,
@@ -574,7 +575,7 @@ class _OrdersPageState extends State<OrdersPage> {
       valueListenable: currentStatus,
       builder: (context, _currentStatus, _) {
         orderBloc.add(
-            SaveCurrentOrederStatusEvent(currentOrederStatus: _currentStatus));
+            SaveCurrentOrederStatusEvent(currentOrderStatus: _currentStatus));
         return BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getStartingSettingsStatus !=
@@ -604,7 +605,6 @@ class _OrdersPageState extends State<OrdersPage> {
                           return Shimmer.fromColors(
                             baseColor: Colors.grey.shade200,
                             highlightColor: Colors.grey.shade50,
-                            enabled: true,
                             child: Container(
                               margin: EdgeInsets.symmetric(vertical: 10.h),
                               height: 40,

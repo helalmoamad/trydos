@@ -1,10 +1,10 @@
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -74,6 +74,8 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     isExpanded.value = false;
+    print('Firebase app:Firebase.app//////s${Firebase.apps.length}');
+
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -844,7 +846,7 @@ class _CartPageState extends State<CartPage> {
                                                                   .isEmpty))
                                                           ? 100
                                                           : !isverified
-                                                              ? 510
+                                                              ? 600
                                                               : 258,
                                                   maxHeight: isMoreInfo
                                                       ? 1.sh - 250.h
@@ -855,7 +857,7 @@ class _CartPageState extends State<CartPage> {
                                                                   .isEmpty))
                                                           ? 120
                                                           : !isverified
-                                                              ? 680
+                                                              ? 720
                                                               : 447,
                                                   panelBuilder: (sc) =>
                                                       Container(
@@ -1523,9 +1525,26 @@ class _CartPageState extends State<CartPage> {
                                                                           : 60,
                                                             ),
                                                             !isverified
-                                                                ? Container(
-                                                                    height: 200,
-                                                                    child: Stack(
+                                                                ? AnimatedPadding(
+                                                                    duration: const Duration(
+                                                                        milliseconds:
+                                                                            300),
+                                                                    curve: Curves
+                                                                        .easeOut,
+                                                                    padding:
+                                                                        EdgeInsets
+                                                                            .only(
+                                                                      bottom: MediaQuery.of(
+                                                                              context)
+                                                                          .viewInsets
+                                                                          .bottom,
+                                                                    ),
+                                                                    child:
+                                                                        Container(
+                                                                      height:
+                                                                          250,
+                                                                      child:
+                                                                          Stack(
                                                                         children: [
                                                                           PageView(
                                                                               physics: const NeverScrollableScrollPhysics(),
@@ -1631,7 +1650,9 @@ class _CartPageState extends State<CartPage> {
                                                                                   )),
                                                                             ),
                                                                           )
-                                                                        ]),
+                                                                        ],
+                                                                      ),
+                                                                    ),
                                                                   )
                                                                 : Container(
                                                                     margin: EdgeInsets.only(

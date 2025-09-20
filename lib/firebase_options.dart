@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g',
-    appId: '1:817506223106:android:b7b4ce2b70aeff3e82131b',
+    appId: '1:817506223106:android:28ea5e0de1f196c382131b',
     messagingSenderId: '817506223106',
     authDomain: "trydos-2e2b2.firebaseapp.com",
     projectId: 'trydos-2e2b2',

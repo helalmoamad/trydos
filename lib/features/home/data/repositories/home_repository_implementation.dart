@@ -88,6 +88,13 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
+      updateLikeSocialSharedProducts(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateLikeSocialSharedProducts(params));
+  }
+
+  @override
   Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
       String iso) {
     return handlingExceptionRequest(

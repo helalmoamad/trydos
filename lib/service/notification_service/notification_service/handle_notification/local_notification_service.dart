@@ -170,7 +170,6 @@ class LocalNotificationService {
       } catch (e) {}
       String title = "${data?["showed_type"]}";
       String body = "${data?["description"]}";
-      print("##################################${notificationId}");
       await _localNotificationPlugin.show(
           notificationId, title, body, _notificationDetails(pngImage, null),
           payload: '${message.data["body"] ?? ""}###${fromBackGround}');
@@ -180,7 +179,12 @@ class LocalNotificationService {
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
     String prevMessageId = (RemoteMessage['prev_message_id'] ?? "").toString();
+
     String orderId = (RemoteMessage['order_id'] ?? "").toString();
+    String parentOrderId = RemoteMessage["parent_order_id"] == null ||
+            RemoteMessage["parent_order_id"] == ""
+        ? "-1"
+        : RemoteMessage["parent_order_id"].toString();
     String orderGroupId = (RemoteMessage['order_group_id'] ?? "").toString();
     String type = myMessage.messageType!.name.toString();
 
@@ -198,7 +202,7 @@ class LocalNotificationService {
                         : 'File',
         _notificationDetails(null, myMessage.channel?.id),
         payload:
-            '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}');
+            '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}#parentOrderId#${parentOrderId}');
   }
 
   static void sendIReceivedTheMessage(String channelId) async {
@@ -271,10 +275,15 @@ class LocalNotificationService {
     String prevMessageId = info.split('#orderId#')[0];
     String orderInfo = info.split('#orderId#')[1];
     String orderId = orderInfo.split('#groupeOrderId#')[0];
-    String orderGroupId = orderInfo.split('#groupeOrderId#')[1];
+    String orderGroupIdWithReturnRequestId =
+        orderInfo.split('#groupeOrderId#')[1];
+    String orderGroupId =
+        orderGroupIdWithReturnRequestId.split('#parentOrderId#')[0];
+    String parentOrderId =
+        orderGroupIdWithReturnRequestId.split('#parentOrderId#')[1];
 
-    handleOpenChatPageFromNotificationInBackground(
-        prevMessageId, orderId, orderGroupId,
+    handleOpenChatPageFromNotificationInBackground(prevMessageId, orderId,
+        orderGroupId, ((parentOrderId == "-1") ? null : parentOrderId),
         message: myMessage);
   }
 

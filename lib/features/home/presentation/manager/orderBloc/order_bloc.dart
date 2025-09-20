@@ -281,9 +281,28 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         ErrorManager.resetRetry('GetOrdersByOrderGroupIDEvent');
         debugPrint('GetOrdersByOrderGroupIDEvent success');
         debugPrint('orders length :  r.data!.length}');
+        Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel =
+            Map.of(state.getOrdersModel ?? {});
+        List<List<OrderListModel>> listOrder =
+            getOrdersModel[event.status]?.items ?? [];
+        int index = listOrder.indexWhere(
+            (element) => element[0].orderGroupId == event.orderGroupId);
+        if (index != -1) {
+          listOrder[index] = r.orders ?? [];
+          getOrdersModel[event.status] = PaginationModel<List<OrderListModel>>(
+              page: 1,
+              items: listOrder,
+              paginationStatus:
+                  getOrdersModel[event.status]?.paginationStatus ??
+                      PaginationStatus.success,
+              hasReachedMax:
+                  getOrdersModel[event.status]?.hasReachedMax ?? false);
+        }
+
         emit(state.copyWith(
             getOrdersByOrderGroupIDStatus:
                 GetOrdersByOrderGroupIDStatus.success,
+            getOrdersModel: getOrdersModel,
             getOrdersByOrderGroupIDModel: r));
       },
     );
@@ -468,7 +487,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ///////////////////////////
     emit(
       state.copyWith(
-        currentOrederStatus: event.currentOrederStatus,
+        currentOrederStatus: event.currentOrderStatus,
       ),
     );
   }
@@ -497,6 +516,16 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       List<List<OrderListModel>> listOrder =
           getOrdersModel?[event.status]?.items ?? [];
       listOrder[event.index] = event.orders;
+      getOrdersModel?[event.status] = PaginationModel<List<OrderListModel>>(
+          page: 1,
+          items: listOrder,
+          paginationStatus: getOrdersModel[event.status]?.paginationStatus ??
+              PaginationStatus.loading,
+          hasReachedMax: getOrdersModel[event.status]?.hasReachedMax ?? false);
+
+      emit(state.copyWith(getOrdersModel: getOrdersModel));
+
+      await Future.delayed(const Duration(seconds: 1));
       getOrdersModel?[event.status] = PaginationModel<List<OrderListModel>>(
           page: 1,
           items: listOrder,

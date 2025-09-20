@@ -170,6 +170,7 @@ class Products {
   final int? viewsCount;
   final List<DataDescriptor>? descriptors;
   final List<Label>? labels;
+  final String? categoriesTree;
   final int? shippingDays;
   final bool? isProductNotifiedForUser;
 
@@ -195,6 +196,7 @@ class Products {
     this.syncColorImages,
     this.price,
     this.priceFormatted,
+    this.categoriesTree,
     this.offerPrice,
     this.offerPriceFormatted,
     this.isFavourite,
@@ -257,6 +259,7 @@ class Products {
     List<Category>? categories,
     Category? category,
     CategoryHierarchy? categoryHierarchy,
+    String? categoriesTree,
     Brand? brand,
     List<Color>? colors,
     List<SyncColorImage>? syncColorImages,
@@ -325,6 +328,7 @@ class Products {
         hasRedeemDiscount: hasRedeemDiscount ?? this.hasRedeemDiscount,
         images: images ?? this.images,
         categories: categories ?? this.categories,
+        categoriesTree: categoriesTree ?? this.categoriesTree,
         category: category ?? this.category,
         flashDealStatus: flashDealStatus ?? this.flashDealStatus,
         flashDealDiscount: flashDealDiscount ?? this.flashDealDiscount,
@@ -396,6 +400,7 @@ class Products {
         slug: json["slug"],
         shareLink: json["share_link"],
         isRedeem: json["is_redeem"],
+        categoriesTree: json["categories_tree"],
         redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
         details: json["details"],
         countryIsRestricted: json["is_country_restricted"],
@@ -498,6 +503,7 @@ class Products {
         "slug": slug,
         "share_link": shareLink,
         "flash_deal_status": flashDealStatus,
+        "categories_tree": categoriesTree,
         "flash_deal_discount": flashDealDiscount,
         "flash_deal_price": flashDealPrice,
         "has_redeem_discount": hasRedeemDiscount,

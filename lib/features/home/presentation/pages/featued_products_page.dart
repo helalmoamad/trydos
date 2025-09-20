@@ -100,8 +100,9 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
       //  if (setThisEnabledNotifier.value.item1 != -1) {
       //    setThisEnabledNotifier.value = Tuple2(-1, -1);
       //  }
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.6)) {
+      if (scrollController.hasClients &&
+          scrollController.offset >=
+              (scrollController.position.maxScrollExtent * 0.6)) {
         if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
         if (boutiqueBloc.state.getProductListingWithFiltersPaginationModels[
                 "*featured*withoutFilter"] ==

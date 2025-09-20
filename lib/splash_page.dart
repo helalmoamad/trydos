@@ -49,6 +49,8 @@ class _SplashPageState extends State<SplashPage> {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
 
     appBloc.add(ChangeTab(-1));
+    boutiqueBloc.add(
+        AddCurrentMainCategoryTapedEvent(currentMainCategoryTaped: "Empty"));
     GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
     BlocProvider.of<StoryBloc>(context)
         .add(const GetStoryEvent(withPaginition: false));

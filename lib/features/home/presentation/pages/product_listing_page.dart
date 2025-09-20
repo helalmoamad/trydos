@@ -189,7 +189,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       // }
       boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
-      if ((scrollController.offset >= 50) &&
+      if ((scrollController.hasClients && scrollController.offset >= 50) &&
           !(boutiqueBloc.state.isExpandedForListingPage ?? false) &&
           !widget.fromSearch &&
           widget.boutiqueIcon != "") {
@@ -208,8 +208,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       //   scrollController.jumpTo(80);
       // }
 
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.6)) {
+      if (scrollController.hasClients &&
+          scrollController.offset >=
+              (scrollController.position.maxScrollExtent * 0.6)) {
         if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
 
         if (boutiqueBloc
@@ -2418,12 +2419,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 const Duration(
                                                                     milliseconds:
                                                                         300),
-                                                                () => Navigator.of(
-                                                                        context)
-                                                                    .push(MaterialPageRoute(
-                                                                        builder: (ctx) => ProductDetailsPageNew(
-                                                                              productItem: products[index],
-                                                                            ))));
+                                                                () {
+                                                              if (!mounted)
+                                                                return;
+                                                              Navigator.of(context).push(
+                                                                  MaterialPageRoute(
+                                                                      builder: (ctx) =>
+                                                                          ProductDetailsPageNew(
+                                                                            productItem:
+                                                                                products[index],
+                                                                          )));
+                                                            });
                                                           },
                                                           child: _productItem(
                                                             index: index,
@@ -3422,15 +3428,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 homeBloc.add(AddCurrentSelectedColorEvent(
                     currentSelectedColor: 0,
                     productSlug: products[index].slug.toString()));
-                Future.delayed(
-                    const Duration(milliseconds: 300),
-                    () => Navigator.of(context).push(
+                Future.delayed(const Duration(milliseconds: 300), () {
+                  if (!mounted) return;
+
+                  Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (ctx) => ProductDetailsPageNew(
                               productItem: products[index],
                             ),
                           ),
-                        ));
+                  );
+                });
               },
               child: _productItem(
                 index: index,
@@ -3641,17 +3649,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                             Future.delayed(
                                                 const Duration(
-                                                    milliseconds: 300),
-                                                () =>
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
+                                                    milliseconds: 300), () {
+                                              if (!mounted) return;
+                                              Navigator.of(context)
+                                                  .push(MaterialPageRoute(
                                                         builder: (ctx) =>
                                                             ProductDetailsPageNew(
                                                           productItem: products[
                                                               _tapIndexToShowColorImages],
-                                                        ),
                                                       ),
                                                     ));
+                                            });
                                           },
                                           child: ProductColorPanal(
                                             colorImages: products[

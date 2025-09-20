@@ -64,6 +64,7 @@ import 'package:trydos/features/home/domain/use_cases/un_subscribe_topic_for_not
 import 'package:trydos/features/home/domain/use_cases/update_email_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_firebase_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_like_share_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_notification_frequency_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_profile_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notification_usecase.dart';
@@ -123,6 +124,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //this.getCommentForProductUseCase,
     //this.getProductsListInCartUseCase,
     this.updateProfileUseCase,
+    this.updateLikeSocialSharedProductsUsecase,
     this.getAllowedCountryUseCase,
     this.getNotificationTypeProductUseCase,
     this.getWidthAndHeightUseCase,
@@ -166,6 +168,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<IsChangedColorBeforOpenPanelEvent>(
       _onIsChangedColorBeforOpenPanelEvent,
+    );
+
+    on<UpdateLikeSocialSharedProductsEvent>(
+      _onUpdateLikeSocialSharedProductsEvent,
     );
 
     on<SaveUserInfoFromAuthEvent>(
@@ -389,6 +395,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final StoreFcmTokenOfMarketUseCase storeFcmTokenOfMarketUseCase;
   //final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
+  final UpdateLikeSocialSharedProductsUsecase
+      updateLikeSocialSharedProductsUsecase;
   final UpdateProfileUseCase updateProfileUseCase;
   // final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
@@ -449,6 +457,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
           getStartingSettingsStatus: GetStartingSettingsStatus.success));
+    });
+  }
+
+  FutureOr<void> _onUpdateLikeSocialSharedProductsEvent(
+      UpdateLikeSocialSharedProductsEvent event,
+      Emitter<HomeState> emit) async {
+    //  if (apisMustNotToRequest.contains('GetStartingSettingsEvent')) return;
+
+    final response = await updateLikeSocialSharedProductsUsecase(
+        UpdateLikeSocialSharedProductParams(productId: event.productId));
+
+    response.fold((l) {
+      if (ErrorManager.shouldRetry(
+          'UpdateLikeSocialSharedProductsEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('UpdateLikeSocialSharedProductsEvent');
+        add(UpdateLikeSocialSharedProductsEvent(productId: event.productId));
+      }
+    }, (r) {
+      apisMustNotToRequest.add('UpdateLikeSocialSharedProductsEvent');
+      ErrorManager.resetRetry('UpdateLikeSocialSharedProductsEvent');
     });
   }
 
@@ -585,6 +613,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         backGroundColor: Colors.black,
         showInRelease: true,
         timeShowing: Toast.LENGTH_SHORT);
+    add(UpdateLikeSocialSharedProductsEvent(
+      productId: event.productId,
+    ));
   }
 
   FutureOr<void> _onAddProductIdToSaveRedeemTimerEvent(
@@ -3611,6 +3642,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           addOrRemoveLikeOfProductStatus:
               AddOrRemoveLikeOfProductStatus.failure));
     }, (r) {
+      add(UpdateLikeSocialSharedProductsEvent(
+        productId: event.productId,
+      ));
       ErrorManager.resetRetry('AddOrRemoveLikeForProductEvent');
       emit(state.copyWith(
         addOrRemoveLikeOfProductStatus: AddOrRemoveLikeOfProductStatus.success,
@@ -3860,6 +3894,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(addCommentStatus: AddCommentStatus.failure));
     }, (r) {
+      add(UpdateLikeSocialSharedProductsEvent(
+        productId: event.productId,
+      ));
       ErrorManager.resetRetry('AddCommentEvent');
       Map<String, GetProductDetailWithoutRelatedProductsModel> cachedProducts =
           Map.of(state.cachedProductWithoutRelatedProductsModel);

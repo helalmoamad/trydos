@@ -295,6 +295,11 @@ abstract class AppAssets {
   static String get chatMarkSvg => 'chat_mark'.svg;
   static String get chatMarkActiveSvg => 'chat_mark_active'.svg;
   static String get shareSvg => 'share'.svg;
+  static String get addCommentSvg => 'add_comment'.svg;
+  static String get addLikevg => 'add_like'.svg;
+  static String get bagNewSvg => 'bag_new'.svg;
+  static String get buyNewSvg => 'buy_new'.svg;
+
   static String get moreOptionSvg => 'more_option'.svg;
   static String getFlagPath(String name) => name.flagSvg;
 

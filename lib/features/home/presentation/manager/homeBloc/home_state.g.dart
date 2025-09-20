@@ -307,6 +307,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       userInfo: json['userInfo'] == null
           ? null
           : User.fromJson(json['userInfo'] as Map<String, dynamic>),
+      finishLoadingAfterChangedVariationWhenQtyZero:
+          json['finishLoadingAfterChangedVariationWhenQtyZero'] as bool?,
       listOfErrorSendedToMobileErrorLog:
           (json['listOfErrorSendedToMobileErrorLog'] as List<dynamic>?)
                   ?.map((e) => e as String)
@@ -476,6 +478,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'sizesQuantitiesForEachColor': instance.sizesQuantitiesForEachColor,
       'colorsQuantitiesForEachProduct': instance.colorsQuantitiesForEachProduct,
       'isVariantRequestNotification': instance.isVariantRequestNotification,
+      'finishLoadingAfterChangedVariationWhenQtyZero':
+          instance.finishLoadingAfterChangedVariationWhenQtyZero,
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel
           .map((k, e) => MapEntry(

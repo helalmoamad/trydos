@@ -50,28 +50,30 @@ class SaveLastAddress extends OrderEvent {
 
 class GetOrdersByOrderGroupIDEvent extends OrderEvent {
   final String orderGroupId;
+  final String status;
   final bool firstOpenPage;
   final bool getWithRating;
   GetOrdersByOrderGroupIDEvent({
     required this.orderGroupId,
     this.firstOpenPage = false,
+    this.status = "false",
     this.getWithRating = false,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [orderGroupId, firstOpenPage];
+  List<Object?> get props => [orderGroupId, firstOpenPage, status];
 }
 
 class SaveCurrentOrederStatusEvent extends OrderEvent {
-  final String currentOrederStatus;
+  final String currentOrderStatus;
 
   SaveCurrentOrederStatusEvent({
-    required this.currentOrederStatus,
+    required this.currentOrderStatus,
   });
   @override
   // TODO: implement props
-  List<Object?> get props => [currentOrederStatus];
+  List<Object?> get props => [currentOrderStatus];
 }
 
 class ChangeOrderByGroupStatus extends OrderEvent {

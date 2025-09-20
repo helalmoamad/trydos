@@ -150,9 +150,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
     }
 
     callsBloc = BlocProvider.of<CallsBloc>(context);
+
     chatBloc = BlocProvider.of<ChatBloc>(context);
     chatBloc.add(
         ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: widget.chatId));
+    chatBloc.add(GetOrderRecipientIdEvent(
+        originalUserId: widget.senderName,
+        orderId: widget.chatId,
+        changeStatusToInit: true));
     autoScrollController = AutoScrollController();
     callsBloc.add(GetMissedCallCountEvent());
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
@@ -179,8 +184,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   void dispose() {
     callsBloc.add(GetMissedCallCountEvent());
-    chatBloc
-        .add(const AddUserConntctSatuseEvent(userConnectedStatuse: " ", chatId: " "));
+    chatBloc.add(const AddUserConntctSatuseEvent(
+        userConnectedStatuse: " ", chatId: " "));
     autoScrollController.dispose();
     _audioPlayer.dispose();
     super.dispose();
@@ -253,8 +258,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         }
         BlocProvider.of<AppBloc>(context)
             .add(RefreshChatInputField(false, 'null', false));
-        chatBloc
-            .add(const ChangeGlobalUsedVariablesInBloc());
+        chatBloc.add(const ChangeGlobalUsedVariablesInBloc());
         return Future.value(true);
       },
       child: Scaffold(
@@ -278,15 +282,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   builder: (context, clicked, _) {
                                     return InkWell(
                                       key: TestVariables.kTestMode
-                                          ? const Key(WidgetsKeys.backFromChatKey)
+                                          ? const Key(
+                                              WidgetsKeys.backFromChatKey)
                                           : null,
                                       onTap: () {
                                         BlocProvider.of<AppBloc>(context).add(
                                             RefreshChatInputField(
                                                 false, 'null', false));
                                         chatBloc.add(
-                                            const ChangeGlobalUsedVariablesInBloc(
-                                                ));
+                                            const ChangeGlobalUsedVariablesInBloc());
                                         clickBackButton.value = true;
                                         Future.delayed(
                                           const Duration(milliseconds: 100),
@@ -413,7 +417,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               children: [
                                 InkWell(
                                   key: TestVariables.kTestMode
-                                      ? const Key(WidgetsKeys.goToProfileButtonKey)
+                                      ? const Key(
+                                          WidgetsKeys.goToProfileButtonKey)
                                       : null,
                                   onTap: () {
                                     widget.fromOrder == "true"
@@ -1627,8 +1632,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         ? LocaleKeys.vvideo.tr()
                                         : LocaleKeys.voice.tr(),
                             receiverUserId: member?.userId));
-                        BlocProvider.of<AppBloc>(context).add(
-                            RefreshChatInputField(false, '', false));
+                        BlocProvider.of<AppBloc>(context)
+                            .add(RefreshChatInputField(false, '', false));
                       },
                       onSendMessage: (String message) {
                         String id = const Uuid().v4();
@@ -1650,8 +1655,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             senderParentMessageId: state.senderParentMessageId,
                             parentMessageContent: state.message,
                             receiverUserId: member?.userId));
-                        BlocProvider.of<AppBloc>(context).add(
-                            RefreshChatInputField(false, '', false));
+                        BlocProvider.of<AppBloc>(context)
+                            .add(RefreshChatInputField(false, '', false));
                         // rebuildMessage.value = data.length;
                       },
                     );
@@ -1747,7 +1752,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (maxScrollExtent ?? false) {
       autoScrollController
           .animateTo(autoScrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300), curve: Curves.easeOut)
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut)
           .then((value) {
         currentScrolledIndex = index;
         rebuildMessage.value = index;

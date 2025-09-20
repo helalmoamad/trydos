@@ -135,7 +135,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
         if (sizes.length == 0) {
           return Container(
             color: Colors.white,
-            height: 210,
+            height: 0,
           );
         }
         return Container(

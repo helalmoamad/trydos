@@ -52,6 +52,8 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/p
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_video.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/shipping_delivery_date_panel.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet_new.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_header.dart';
 
 import 'package:trydos/main.dart';
 
@@ -215,7 +217,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
   @override
   void dispose() {
-    if (productItem == null) {
+    if (productItem == null || widget.productItem != null) {
       return;
     }
 
@@ -639,7 +641,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       if (productSlug == "") {
                         productSlug = widget.productItem?.slug.toString() ?? '';
                       }
-
+                      List<String> productCategory = [];
+                      if (widget.productItem != null) {
+                        productCategory.add(widget.productItem!.name ?? '');
+                        productCategory
+                            .add(widget.productItem!.categoriesTree ?? '');
+                      }
                       if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                               GetProductDetailWithoutSimilarRelatedProductsStatus
                                   .success &&
@@ -738,6 +745,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   .success &&
                           state.authProductDetailsStatus ==
                               AuthProductDetailsStatus.success) {
+                        if (!productItem!.categories.isNullOrEmpty) {
+                          productCategory = productItem!.categories!
+                              .map((e) => e.name ?? "")
+                              .toList();
+                        }
+                        productCategory.insert(0, productItem!.name ?? "");
                         currentSelectedColor = state
                                     .currentSelectedColorForEveryProduct[
                                 productSlug] ??
@@ -800,23 +813,26 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   productItem: productItem,
                                   isRedeem:
                                       state.cachedProductWithoutRelatedProductsModel[
-                                                  productItem?.productId
+                                                  productItem
+                                                      ?.productId
                                                       .toString()] !=
                                               null
                                           ? state
                                                   .cachedProductWithoutRelatedProductsModel[
-                                                      productItem?.productId
+                                                      productItem
+                                                          ?.productId
                                                           .toString()]!
                                                   .product
                                                   ?.isRedeem ==
                                               true
-                                          : false),
+                                          : widget.productItem?.isRedeem ==
+                                              true),
                               ProductDetailsTitle(
                                 productId: productItem!.productId.toString(),
                                 orginalHeight: 0,
                                 orginalWidth: 0,
                                 brand: productItem!.brand,
-                                productName: productItem!.name ?? "",
+                                productName: productCategory.join(' | '),
                                 thumbnail: (!productItem!
                                         .syncColorImages.isNullOrEmpty)
                                     ? (!productItem!.syncColorImages![0].images
@@ -1542,6 +1558,52 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     .failure &&
                             state.authProductDetailsStatus !=
                                 AuthProductDetailsStatus.failure)) {
+                      if (productItem != null) {
+                        return Container(
+                            height: 80, // ارتفاع الـ panel المغلقة
+                            child: ProductDetailsSheetHeader(
+                              redeemVariantPrice:
+                                  (productItem!.redeemPrice ?? 0) *
+                                      state.getCurrencyForCountryModel!.data!
+                                          .currency!.exchangeRate!,
+                              isRedeem: productItem?.isRedeem ?? false,
+                              redeemPrice: (productItem!.redeemPrice ?? 0) *
+                                  state.getCurrencyForCountryModel!.data!
+                                      .currency!.exchangeRate!,
+                              currentActiveTab: currentActiveTab,
+                              initOfferPrice:
+                                  ((productItem!.flashDealStatus == 1
+                                              ? productItem!.flashDealPrice ?? 0
+                                              : productItem!.offerPrice ?? 0) *
+                                          state.getCurrencyForCountryModel!
+                                              .data!.currency!.exchangeRate!)
+                                      .toString(),
+                              initPrice: ((productItem!.price ?? 0) *
+                                      state.getCurrencyForCountryModel!.data!
+                                          .currency!.exchangeRate!)
+                                  .toString(),
+                              shippingCost: productItem!.shippingCost ?? 0,
+                              decimalPoint:
+                                  state.startingSetting?.decimalPointSettings ??
+                                      2,
+                              priceSymbol: state.getCurrencyForCountryModel!
+                                      .data!.currency!.symbol ??
+                                  "",
+                              addToBagButtonShapeNotifier:
+                                  addToBagButtonShapeNotifier,
+                              price: ((productItem!.price ?? 0) *
+                                      state.getCurrencyForCountryModel!.data!
+                                          .currency!.exchangeRate!)
+                                  .toString(),
+                              offerPrice: ((productItem!.flashDealStatus == 1
+                                          ? productItem!.flashDealPrice ?? 0
+                                          : productItem!.offerPrice ?? 0) *
+                                      state.getCurrencyForCountryModel!.data!
+                                          .currency!.exchangeRate!)
+                                  .toString(),
+                            ));
+                      }
+
                       return Container(
                         height: 120.h, // ارتفاع الـ panel المغلقة
                         decoration: BoxDecoration(
@@ -1752,7 +1814,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     return ValueListenableBuilder<bool>(
                         valueListenable: visibleRedeem,
                         builder: (context, _visibleRedeem, _) {
-                          return ProductDetailsBottomSheet(
+                          return ProductDetailsBottomSheetNew(
                             isRedeem: (prefsRepository
                                             .getRedeemDateForProduct(
                                                 productItem!.productId
@@ -2673,6 +2735,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   return ValueListenableBuilder<bool>(
                                       valueListenable: visibleRedeem,
                                       builder: (context, _visibleRedeem, _) {
+                                        print(
+                                            "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeeee4${(GetIt.I<PrefsRepository>().getRedeemDateForProduct(productItem.productId.toString())?.isAfter(DateTime.now().add(const Duration(seconds: 1))) == true && isRedeem == true) || (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(productItem.productId.toString()) ?? 0) > 0}");
                                         return ProductDetailsImageWidget(
                                           borderRadius:
                                               BorderRadius.circular(0),

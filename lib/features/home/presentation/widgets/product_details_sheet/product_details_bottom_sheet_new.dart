@@ -22,6 +22,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_comments_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_header.dart';
 import 'dart:ui' as ui;
@@ -41,7 +42,7 @@ import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import '../product_listing/product_listing_image_widget.dart';
 
-class ProductDetailsBottomSheet extends StatefulWidget {
+class ProductDetailsBottomSheetNew extends StatefulWidget {
   final productListingModel.Products productItem;
   final int currentColor;
 
@@ -71,7 +72,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final ValueNotifier<int>? tapIndexToAddProductToCart;
   final ValueNotifier<int> currentActiveTab;
   final ValueNotifier<String?> productNotAvailableNotifier;
-  ProductDetailsBottomSheet(
+  ProductDetailsBottomSheetNew(
       {super.key,
       required this.productItem,
       required this.redeemVariantPrice,
@@ -102,11 +103,12 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.currentColorName});
 
   @override
-  State<ProductDetailsBottomSheet> createState() =>
-      _ProductDetailsBottomSheetState();
+  State<ProductDetailsBottomSheetNew> createState() =>
+      _ProductDetailsBottomSheetNewState();
 }
 
-class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
+class _ProductDetailsBottomSheetNewState
+    extends State<ProductDetailsBottomSheetNew> {
   final ValueNotifier<List<String>> idsOfChatCardsToShare = ValueNotifier([]);
 
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
@@ -1256,7 +1258,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 p.currentColorSizeForCart?["choiceOption"] !=
                                 c.currentColorSizeForCart?["choiceOption"],
                             builder: (context, state) {
-                              return ProductDetailsSheetBottomBar(
+                              return ProductDetailsSheetBottomBarNew(
                                   isRedeem: widget.isRedeem,
                                   redeemVariantPrice: widget.redeemVariantPrice,
                                   colorOption: widget.currentColorOption,

@@ -6,8 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
@@ -51,13 +53,15 @@ class FlashDealProductsWidget extends StatelessWidget {
           return BlocBuilder<BoutiqueBloc, BoutiqueState>(
             buildWhen: (previous, current) =>
                 previous
-                    .getProductListingWithFiltersPaginationModels[
-                        "*flashDeal*withoutFilter"]
-                    ?.paginationStatus !=
-                current
-                    .getProductListingWithFiltersPaginationModels[
-                        "*flashDeal*withoutFilter"]
-                    ?.paginationStatus,
+                        .getProductListingWithFiltersPaginationModels[
+                            "*flashDeal*withoutFilter"]
+                        ?.paginationStatus !=
+                    current
+                        .getProductListingWithFiltersPaginationModels[
+                            "*flashDeal*withoutFilter"]
+                        ?.paginationStatus ||
+                previous.getProductFiltersStatus["*flashDeal*"] !=
+                    current.getProductFiltersStatus["*flashDeal*"],
             builder: (context, state) {
               try {
                 products = state.getProductListingWithFiltersPaginationModels[
@@ -112,6 +116,18 @@ class FlashDealProductsWidget extends StatelessWidget {
                                 style: const TextStyle(
                                     color: Colors.black, fontSize: 14),
                               ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              state
+                                          .getProductListingWithFiltersPaginationModels[
+                                              "*flashDeal*withoutFilter"]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading
+                                  ? TrydosLoader(
+                                      size: 16,
+                                    )
+                                  : const SizedBox.shrink()
                             ],
                           ),
                         ),
