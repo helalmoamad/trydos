@@ -22,6 +22,7 @@ import '../../../story/helper_functions/check_showing_stories.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../../story/presentation/pages/story_collection_page_view.dart';
 import 'chat_widgets/no_image_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StoryCard extends StatelessWidget {
   const StoryCard(
@@ -32,13 +33,9 @@ class StoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("" +
-        "111111111${collectionStoryModel.name}1111111111111111111111111111111111111");
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      debugPrint(error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return InkWell(
       onTap: () {

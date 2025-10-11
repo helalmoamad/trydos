@@ -55,6 +55,7 @@ import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_state.dart';
 import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class OrderDetails1 extends StatefulWidget {
   const OrderDetails1(
@@ -105,6 +106,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
   bool canFetchReturnDetails = false;
   @override
   void initState() {
+    LastPagesTracker.push("OrderDetails1 Page");
+
     orders = widget.orders;
     /* widget.orders.forEach(
       (element) {
@@ -123,11 +126,18 @@ class _OrderDetails1State extends State<OrderDetails1> {
       requestReturnApiFromNotification = true;
       indexTapPackage.value = orders.indexWhere((element) =>
           element.id.toString() ==
-          (widget.parentOrderIdFormNotification ??
-              widget.orderIdFormNotification));
+          ((widget.parentOrderIdFormNotification == null ||
+                  widget.parentOrderIdFormNotification == "" ||
+                  widget.parentOrderIdFormNotification == "-1")
+              ? (widget.orderIdFormNotification)
+              : widget.parentOrderIdFormNotification));
 
       GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
           originalUserId: GetIt.I<PrefsRepository>().myMarketId.toString(),
+          parentOrderId: (widget.parentOrderIdFormNotification == "" ||
+                  widget.parentOrderIdFormNotification == "-1")
+              ? null
+              : widget.parentOrderIdFormNotification,
           orderId: widget.orderIdFormNotification!));
     } else if (widget.orderIdToOpenPackage != "") {
       indexTapPackage.value = orders.indexWhere(
@@ -170,6 +180,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     Future<void> _refreshData() async {
       if (canFetchReturnDetails) {
         orderBloc.add(FetchOrderReturnDetailsEvent(
@@ -238,6 +252,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                   .shippingAddressData
                                   ?.id) ??
                       -1;
+                  print(
+                      "Fffffffffffffffffffffffffffffffffffffffffffffff${indexTapAddress.value}");
                   firstAddressChoosed = indexTapAddress.value;
                   orderBloc.add(GetOrdersEvent(
                       status: widget.currentStatus ?? '',
@@ -2698,7 +2714,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             ?.id) ??
                 -1;
             firstAddressChoosed = indexTapAddress.value;
-            if (indexTapAddress.value != firstAddressChoosed ||
+            if (indexTapAddress.value == -1) {
+              enableChangeAddress.value = true;
+            } else if (indexTapAddress.value != firstAddressChoosed ||
                 (state.listOfAddressInfoClassToSave![indexTapAddress.value].address != orders[indexTapPackage.value].shippingAddressData?.address ||
                     state.listOfAddressInfoClassToSave![indexTapAddress.value].addressDetail !=
                         orders[indexTapPackage.value]
@@ -4138,7 +4156,19 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               "out_for_delivery" &&
                                           orderReturnDetail?.status?.value !=
                                               "out_for_return") &&
-                                      (!widget.fromNotification)
+                                      (!(widget.fromNotification &&
+                                          ((!(widget.parentOrderIdFormNotification ==
+                                                      null ||
+                                                  widget.parentOrderIdFormNotification ==
+                                                      "" ||
+                                                  widget.parentOrderIdFormNotification ==
+                                                      "-1")) ||
+                                              (!(widget.orderIdFormNotification ==
+                                                      null ||
+                                                  widget.orderIdFormNotification ==
+                                                      "" ||
+                                                  widget.orderIdFormNotification ==
+                                                      "-1")))))
                                   ? const SizedBox.shrink()
                                   : Container(
                                       width: 105,
@@ -4177,9 +4207,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                     .getOrderRecipientIdStatus ==
                                                 GetOrderRecipientIdStatus
                                                     .success) {
-                                              String receiverName = "DW";
+                                              String receiverName = HelperFunctions
+                                                  .getTheFirstTwoLettersOfName(
+                                                      LocaleKeys.delivery_worker
+                                                          .tr());
                                               String fullReceiverName =
-                                                  "Delivery Worker";
+                                                  LocaleKeys.delivery_worker
+                                                      .tr();
                                               String? recipientUserId =
                                                   state.recipientUserId;
                                               print(
@@ -4259,10 +4293,20 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                     onTap: () {
                                                       chatBloc.add(
                                                           GetOrderRecipientIdEvent(
-                                                              originalUserId: GetIt.I<
-                                                                      PrefsRepository>()
-                                                                  .myMarketId
-                                                                  .toString(),
+                                                              originalUserId:
+                                                                  GetIt.I<PrefsRepository>()
+                                                                      .myMarketId
+                                                                      .toString(),
+                                                              parentOrderId: orderReturnDetail ==
+                                                                      null
+                                                                  ? null
+                                                                  : orderReturnDetail
+                                                                              .status?.value ==
+                                                                          "out_for_return"
+                                                                      ? orders[indexTapPackage.value]
+                                                                          .id
+                                                                          .toString()
+                                                                      : null,
                                                               orderId: orderReturnDetail ==
                                                                       null
                                                                   ? orders[indexTapPackage

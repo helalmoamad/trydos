@@ -5,6 +5,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StarRatingWidget extends StatefulWidget {
   final double initialRating;
@@ -159,58 +160,27 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
               ),
               const SizedBox(height: 20),
 
-              // Rating display
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  final starValue = index + 1.0;
-                  final isFullStar = _currentRating >= starValue;
-                  final isHalfStar = _currentRating >= (starValue - 0.5) &&
-                      _currentRating < starValue;
-
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Stack(
-                      children: [
-                        // نجمة فارغة في الخلفية
-                        SvgPicture.asset(
-                          AppAssets.starOutlineSvg,
-                          width: 24.0,
-                          height: 24.0,
-                          color: Colors.grey[400],
-                        ),
-                        // نجمة ممتلئة في المقدمة
-                        if (isFullStar)
-                          SvgPicture.asset(
-                            AppAssets.starFilledSvg,
-                            width: 24.0,
-                            height: 24.0,
-                            colorFilter: ColorFilter.mode(
-                              widget.starColor,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        // نصف نجمة - نجمة ممتلئة مع ClipRect
-                        if (isHalfStar)
-                          ClipRect(
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              widthFactor: 0.5,
-                              child: SvgPicture.asset(
-                                AppAssets.starFilledSvg,
-                                width: 24.0,
-                                height: 24.0,
-                                colorFilter: ColorFilter.mode(
-                                  widget.starColor,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                }),
+              // Rating display (نجوم تفاعلية)
+              RatingBar.builder(
+                initialRating: _currentRating,
+                minRating: 1,
+                allowHalfRating: true,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                itemBuilder: (context, _) => SvgPicture.asset(
+                  AppAssets.starFilledSvg,
+                  width: 24.0,
+                  height: 24.0,
+                  colorFilter: ColorFilter.mode(
+                    widget.starColor,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                unratedColor: Colors.grey[400],
+                onRatingUpdate: (rating) {
+                  setState(() {
+                    _currentRating = rating;
+                  });
+                },
               ),
               const SizedBox(height: 20),
 
@@ -314,6 +284,10 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return SizedBox(
       width: 80,
       height: 26,

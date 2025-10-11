@@ -11,6 +11,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class BadgesList extends StatelessWidget {
   final List<Label>? lable;
@@ -19,16 +20,8 @@ class BadgesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return lable.isNullOrEmpty
         ? const SizedBox.shrink()

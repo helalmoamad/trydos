@@ -10,6 +10,7 @@ import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
@@ -144,8 +145,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LoginToChatEvent event,
     Emitter<AuthState> emit,
   ) async {
-    print(
-        "llllllllllllllllllllllllllooooooooooooooooooooooooooooooooooooooooooooooooooooootiovvhhhhhhhhhhat");
     emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
 
     final response = await loginToChatUseCase(
@@ -700,8 +699,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
         _prefsRepository.setMyMarketName(userInfo.name!);
         _prefsRepository.setMyChatName(userInfo.name!);
+
         _prefsRepository.setMyStoriesName(userInfo.name!);
       }
+      _prefsRepository.setMyMarketId(userInfo.id.toString());
+
       _prefsRepository.setPhoneNumber((userInfo.phone).toString());
       GetIt.I<HomeBloc>().add(SaveUserInfoFromAuthEvent(userInfo: userInfo));
       emit(state.copyWith(
@@ -725,6 +727,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setCountryIso(r.countryCode);
 
       emit(state.copyWith(
+          getUserCountryResponseModel: r,
           countryName: r.country,
           getCustomerCountryStatus: GetCustomerCountryStatus.success));
     });

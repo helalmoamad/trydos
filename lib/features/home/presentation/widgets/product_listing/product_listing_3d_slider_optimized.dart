@@ -28,6 +28,7 @@ import 'package:trydos/main.dart';
 import 'package:video_player/video_player.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 /// 🚀 نسخة مبسطة جداً من ProductListing3DSlider - أداء فائق ⚡
 class ProductListing3DSliderOptimized extends StatefulWidget {
@@ -41,6 +42,8 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
     required this.productItem,
     required this.visibleFlashDeal,
     this.productIsFlashDeal,
+    this.productIsRecommend,
+    this.fromRecommend,
     this.fromFlashDeal,
     this.fromHomePage = false,
     required this.finishRedeem,
@@ -54,6 +57,7 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
   // final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final ValueNotifier<bool> finishRedeem;
+  final ValueNotifier<bool>? productIsRecommend;
   final ValueNotifier<bool> visibleFlashDeal;
   final int itemIndex;
   //final bool displayImageColors;
@@ -62,6 +66,7 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
 
   final String? videoSource;
   final bool? fromFlashDeal;
+  final bool? fromRecommend;
   final productListingModel.Products productItem;
   //final ValueNotifier<int> currentChosenColor;
   final ValueNotifier<bool>? productIsFlashDeal;
@@ -132,6 +137,10 @@ class _ProductListing3DSliderOptimizedState
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: _buildSimpleProductCard(),
@@ -829,6 +838,7 @@ class _ProductListing3DSliderOptimizedState
           isStatusInitaial: true,
         ));
         widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
+        widget.productIsRecommend?.value = widget.fromRecommend ?? false;
 
         Future.delayed(
           const Duration(milliseconds: 600),

@@ -38,6 +38,7 @@ class AuthState {
     this.signInErrorMessage,
     this.sendOtpError,
     this.signUpErrorMessage,
+    this.getUserCountryResponseModel,
     this.registerGuestStatus = RegisterGuestStatus.init,
     this.verifyOtpSignUpStatus = VerifyOtpSignUpStatus.init,
     this.verifyOtpSignInStatus = VerifyOtpSignInStatus.init,
@@ -66,6 +67,7 @@ class AuthState {
   final UpdateChatUserNameStatus updateChatUserNameStatus;
   final GetCustomerCountryStatus getCustomerCountryStatus;
   final User? marketUser;
+  final GetUserCountryResponseModel? getUserCountryResponseModel;
   final String? signInErrorMessage;
   final String? signUpErrorMessage;
   final String? sendOtpError;
@@ -77,6 +79,7 @@ class AuthState {
       final SendOtpStatus? sendOtpStatus,
       final String? signInErrorMessage,
       final String? countryName,
+      final GetUserCountryResponseModel? getUserCountryResponseModel,
       final GetCustomerCountryStatus? getCustomerCountryStatus,
       final RegisterGuestStatus? registerGuestStatus,
       final VerifyOtpInProfileStatus? verifyOtpInProfileStatus,
@@ -102,6 +105,8 @@ class AuthState {
       loginToStoriesStatus: loginToStoriesStatus ?? this.loginToStoriesStatus,
       registerGuestStatus: registerGuestStatus ?? this.registerGuestStatus,
       sendOtpStatus: sendOtpStatus ?? this.sendOtpStatus,
+      getUserCountryResponseModel:
+          getUserCountryResponseModel ?? this.getUserCountryResponseModel,
       getCustomerInfoStatus:
           getCustomerInfoStatus ?? this.getCustomerInfoStatus,
       verifyOtpInProfileStatus:

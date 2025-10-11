@@ -95,6 +95,13 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, GetProductListingWithFiltersModel>>
+      getRecommendedProducts(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getRecommendedProducts(params));
+  }
+
+  @override
   Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
       String iso) {
     return handlingExceptionRequest(

@@ -23,6 +23,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/domain/use_cases/get_featured_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_recommend_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/upload_images_product_return_useCase.dart';
 import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
 
@@ -33,6 +34,7 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 
 import '../../../../../core/domin/repositories/prefs_repository.dart';
@@ -51,6 +53,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   BoutiqueBloc(
     this.getFeaturedProductsUseCase,
     this.getProductsWithFiltersUseCase,
+    this.getRecommendProductsUseCase,
     this.getProductFiltersUseCase,
   ) : super(const BoutiqueState()) {
     on<BoutiqueEvent>((event, emit) {});
@@ -103,6 +106,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetProductFiltersUseCase getProductFiltersUseCase;
   final GetFeaturedProductsUseCase getFeaturedProductsUseCase;
+  final GetRecommendProductsUseCase getRecommendProductsUseCase;
 
   /* PrefetchProductsForFirstFiveFilter(
       {filters_model.Filter? filter,
@@ -986,7 +990,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       Emitter<BoutiqueState> emit) async {
     String key = event.boutiqueSlug + (event.category ?? '');
     if ((event.boutiqueSlug != "*featured*" &&
-            event.boutiqueSlug != "*flashDeal*") &&
+            event.boutiqueSlug != "*flashDeal*" &&
+            event.boutiqueSlug != "*recommended*") &&
         ((prefsRepository
                     .getPrefechOfProductsForEachBoutiqueInHomePage(key)
                     ?.length ??
@@ -1085,12 +1090,59 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             getProductListingWithFiltersPaginationModels:
                 getProductListingWithFiltersPaginationModels));
       } catch (e) {}
+    } else if (event.boutiqueSlug == "*recommended*") {
+      try {
+        Map<String, PaginationModel<product.Products>?>
+            getProductListingWithFiltersPaginationModels =
+            Map.of(state.getProductListingWithFiltersPaginationModels);
+        Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
+            prefsRepository
+                    .getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
+                "{}");
+        DataGetProductListingWithFiltersModel
+            getProductListingWithFiltersModel =
+            responseFromSharedPrefrence == {}
+                ? DataGetProductListingWithFiltersModel()
+                : DataGetProductListingWithFiltersModel.fromJson(
+                    responseFromSharedPrefrence);
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*recommended*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*recommended*withoutFilter"] =
+              PaginationModel<product.Products>(
+                  hasReachedMax:
+                      (getProductListingWithFiltersModel.products?.length ??
+                              0) <
+                          20,
+                  items: getProductListingWithFiltersModel.products ?? [],
+                  page: 1,
+                  paginationStatus: PaginationStatus.loading);
+        } else {
+          getProductListingWithFiltersPaginationModels.addAll({
+            "*recommended*withoutFilter": PaginationModel<product.Products>(
+                hasReachedMax:
+                    (getProductListingWithFiltersModel.products?.length ?? 0) <
+                        20,
+                items: getProductListingWithFiltersModel.products ?? [],
+                page: 1,
+                paginationStatus: PaginationStatus.loading)
+          });
+        }
+
+        /* if ((getProductListingWithFiltersModel.products ?? []).length > 0) {
+          await Future.delayed(Duration(seconds: 3));
+        }*/
+        emit(state.copyWith(
+            getProductListingWithFiltersPaginationModels:
+                getProductListingWithFiltersPaginationModels));
+      } catch (e) {}
     } else {
       Map<String, bool> boutiquesThatDidPrefetch =
           Map.of(state.boutiquesThatDidPrefetch);
       if (boutiquesThatDidPrefetch[key] == true &&
           (event.boutiqueSlug != "*featured*" &&
-              event.boutiqueSlug != "*flashDeal*")) {
+              event.boutiqueSlug != "*flashDeal*" &&
+              event.boutiqueSlug != "*recommended*")) {
         return;
       }
       if (boutiquesThatDidPrefetch[key] == null) {
@@ -1121,11 +1173,21 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                         state.currentMainCategoryTaped == "Empty")
                     ? null
                     : ['"${state.currentMainCategoryTaped}"']))
-            : await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
-                offset: [],
-                limit: 20,
-                boutiqueSlugs: ['"${event.boutiqueSlug}"'],
-              ));
+            : event.boutiqueSlug == "*recommended*"
+                ? await getRecommendProductsUseCase(GetRecommendProductsParams(
+                    limit: 20,
+                    offset: [],
+                    categorySlugs: (state.currentMainCategoryTaped == "" ||
+                            state.currentMainCategoryTaped == null ||
+                            state.currentMainCategoryTaped == "Empty")
+                        ? null
+                        : ['"${state.currentMainCategoryTaped}"']))
+                : await getProductsWithFiltersUseCase(
+                    GetProductsWithFiltersParams(
+                    offset: [],
+                    limit: 20,
+                    boutiqueSlugs: ['"${event.boutiqueSlug}"'],
+                  ));
     response.fold((l) {
       //   prefechBoutiques.release();
       Map<String, bool> boutiquesThatDidPrefetch =
@@ -1154,6 +1216,48 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             context: event.context));
         return;
       }
+      Map<String, PaginationModel<product.Products>?>
+          getProductListingWithFiltersPaginationModels =
+          Map.of(state.getProductListingWithFiltersPaginationModels);
+      if (event.boutiqueSlug == "*featured*") {
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*featured*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*featured*withoutFilter"] =
+              getProductListingWithFiltersPaginationModels[
+                      "*featured*withoutFilter"]
+                  ?.copyWith(paginationStatus: PaginationStatus.failure);
+        }
+        emit(state.copyWith(
+            getProductListingWithFiltersPaginationModels:
+                getProductListingWithFiltersPaginationModels));
+      }
+      if (event.boutiqueSlug == "*recommended*") {
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*recommended*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*recommended*withoutFilter"] =
+              getProductListingWithFiltersPaginationModels[
+                      "*recommended*withoutFilter"]
+                  ?.copyWith(paginationStatus: PaginationStatus.failure);
+        }
+        emit(state.copyWith(
+            getProductListingWithFiltersPaginationModels:
+                getProductListingWithFiltersPaginationModels));
+      }
+      if (event.boutiqueSlug == "*flashDeal*") {
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*flashDeal*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*flashDeal*withoutFilter"] =
+              getProductListingWithFiltersPaginationModels[
+                      "*flashDeal*withoutFilter"]
+                  ?.copyWith(paginationStatus: PaginationStatus.failure);
+        }
+        emit(state.copyWith(
+            getProductListingWithFiltersPaginationModels:
+                getProductListingWithFiltersPaginationModels));
+      }
     }, (r) async {
       ErrorManager.resetRetry(
           'GetWithProductFiltersWithoutCancelingPreviousEvents');
@@ -1171,9 +1275,45 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   page: 1,
                   hasReachedMax: false,
                   items: r.data?.products ?? []);
+          emit(state.copyWith(
+              getProductListingWithFiltersPaginationModels:
+                  getProductListingWithFiltersPaginationModels));
         } else {
           getProductListingWithFiltersPaginationModels.addAll({
             "*featured*withoutFilter": PaginationModel<product.Products>(
+                offset: "${r.data?.offset}",
+                paginationStatus: PaginationStatus.success,
+                page: 1,
+                hasReachedMax: false,
+                items: r.data?.products ?? [])
+          });
+        }
+
+        emit(state.copyWith(
+            getProductListingWithFiltersPaginationModels:
+                getProductListingWithFiltersPaginationModels));
+      }
+
+      if (event.boutiqueSlug == "*recommended*") {
+        Map<String, PaginationModel<product.Products>?>
+            getProductListingWithFiltersPaginationModels =
+            Map.of(state.getProductListingWithFiltersPaginationModels);
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*recommended*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*recommended*withoutFilter"] =
+              PaginationModel<product.Products>(
+                  offset: "${r.data?.offset}",
+                  paginationStatus: PaginationStatus.success,
+                  page: 1,
+                  hasReachedMax: false,
+                  items: r.data?.products ?? []);
+          emit(state.copyWith(
+              getProductListingWithFiltersPaginationModels:
+                  getProductListingWithFiltersPaginationModels));
+        } else {
+          getProductListingWithFiltersPaginationModels.addAll({
+            "*recommended*withoutFilter": PaginationModel<product.Products>(
                 offset: "${r.data?.offset}",
                 paginationStatus: PaginationStatus.success,
                 page: 1,
@@ -1529,6 +1669,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           !(key.contains(event.boutiqueSlug)) &&
           !(key.contains("search")) &&
           !(key.contains("*featured*")) &&
+          !(key.contains("*recommended*")) &&
           !(key.contains("*flashDeal*")));
       Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
           prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
@@ -1617,27 +1758,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         (filters.searchText == null) &&
         filters.prices == null);
 
-    List<String>? brandsForAnalytics =
-        filters.brands?.map((e) => e.slug.toString()).toList();
-    List<String>? categoriesForAnalytics =
-        filters.categories?.map((e) => e.slug.toString()).toList();
-    List<String>? boutiquesForAnalytics = event.fromSearch ?? false
-        ? filters.boutiques?.map((e) => e.slug.toString()).toList()
-        : [event.boutiqueSlug];
-    List<String>? colorsForAnalytics = filters.colors;
-    List<String>? pricesForAnalytics =
-        (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice != null &&
-                prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice !=
-                    null)
-            ? [
-                '${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}'
-              ]
-            : null;
-    List<String>? optionsForAnalytics =
-        filters.attributes.isNullOrEmpty ? [] : filters.attributes?[0].options;
-    String? searchTextForAnalytics = filters.searchText ??
-        state.appliedFiltersByUser[key]?.filters?.searchText;
-
     if (!(event.fromChoosed ?? false)) {
       if (checkForFilter) {
         appliedFilters[key] = null;
@@ -1722,85 +1842,98 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ? null
                 : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
           ))
-        : event.boutiqueSlug == "*flashDeal*"
-            ? await getProductsWithFiltersUseCase(
-                GetProductsWithFiltersParams(
-                    flashDeal: true,
-                    limit: 20,
-                    offset: !event.getWithPagination
-                        ? null
-                        : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
-                    categorySlugs: (state.currentMainCategoryTaped == "" ||
-                            state.currentMainCategoryTaped == null ||
-                            state.currentMainCategoryTaped == "Empty")
-                        ? null
-                        : ['"${state.currentMainCategoryTaped}"']),
-              )
-            : await getProductsWithFiltersUseCase(
-                GetProductsWithFiltersParams(
-                  brandSlugs: filters.brands
-                      ?.map((e) => '"${e.slug.toString()}"')
-                      .toList(),
-                  categorySlugs:
-                      (event.category != null && event.category != "")
-                          ? [
-                              ...(filters.categories
-                                      ?.map((e) => '"${e.slug.toString()}"')
-                                      .toList() ??
-                                  []),
-                              (event.resetChoosedFilters == true &&
-                                      (event.fromSearch ?? false))
-                                  ? ""
-                                  : '"${event.category}"'
-                            ]
-                          : filters.categories
-                              ?.map((e) => '"${e.slug.toString()}"')
-                              .toList(),
-                  boutiqueSlugs: event.fromSearch ?? false
-                      ? filters.boutiques
+        : event.boutiqueSlug == "*recommended*"
+            ? await getRecommendProductsUseCase(GetRecommendProductsParams(
+                limit: 20,
+                offset: !event.getWithPagination
+                    ? null
+                    : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
+                categorySlugs: (state.currentMainCategoryTaped == "" ||
+                        state.currentMainCategoryTaped == null ||
+                        state.currentMainCategoryTaped == "Empty")
+                    ? null
+                    : ['"${state.currentMainCategoryTaped}"']))
+            : event.boutiqueSlug == "*flashDeal*"
+                ? await getProductsWithFiltersUseCase(
+                    GetProductsWithFiltersParams(
+                        flashDeal: true,
+                        limit: 20,
+                        offset: !event.getWithPagination
+                            ? null
+                            : state.searchWithFilterOffset?[keyWithoutFilter] ??
+                                [],
+                        categorySlugs: (state.currentMainCategoryTaped == "" ||
+                                state.currentMainCategoryTaped == null ||
+                                state.currentMainCategoryTaped == "Empty")
+                            ? null
+                            : ['"${state.currentMainCategoryTaped}"']),
+                  )
+                : await getProductsWithFiltersUseCase(
+                    GetProductsWithFiltersParams(
+                      brandSlugs: filters.brands
                           ?.map((e) => '"${e.slug.toString()}"')
-                          .toList()
-                      : ['"${event.boutiqueSlug}"'],
-                  offset: !event.getWithPagination
-                      ? null
-                      : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
-                  attributes: filters.attributes.isNullOrEmpty
-                      ? null
-                      : [
-                          {
-                            '"id"': '"${filters.attributes![0].id}"',
-                            '"name"': '"${filters.attributes![0].name}"',
-                            '"options"': [
-                              ...(filters.attributes![0].options) ?? [],
+                          .toList(),
+                      categorySlugs:
+                          (event.category != null && event.category != "")
+                              ? [
+                                  ...(filters.categories
+                                          ?.map((e) => '"${e.slug.toString()}"')
+                                          .toList() ??
+                                      []),
+                                  (event.resetChoosedFilters == true &&
+                                          (event.fromSearch ?? false))
+                                      ? ""
+                                      : '"${event.category}"'
+                                ]
+                              : filters.categories
+                                  ?.map((e) => '"${e.slug.toString()}"')
+                                  .toList(),
+                      boutiqueSlugs: event.fromSearch ?? false
+                          ? filters.boutiques
+                              ?.map((e) => '"${e.slug.toString()}"')
+                              .toList()
+                          : ['"${event.boutiqueSlug}"'],
+                      offset: !event.getWithPagination
+                          ? null
+                          : state.searchWithFilterOffset?[keyWithoutFilter] ??
+                              [],
+                      attributes: filters.attributes.isNullOrEmpty
+                          ? null
+                          : [
+                              {
+                                '"id"': '"${filters.attributes![0].id}"',
+                                '"name"': '"${filters.attributes![0].name}"',
+                                '"options"': [
+                                  ...(filters.attributes![0].options) ?? [],
+                                ]
+                                    .map(
+                                      (e) => '"${e}"',
+                                    )
+                                    .toList(),
+                              }
+                            ],
+                      colors: ([
+                        ...filters.colors ?? [],
+                      ]).map((e) => '"${e.toString()}"').toList(),
+                      limit: 20,
+                      prices: (prevAppliedFiltersByUser[key]
+                                      ?.filters
+                                      ?.prices
+                                      ?.maxPrice !=
+                                  null &&
+                              prevAppliedFiltersByUser[key]
+                                      ?.filters
+                                      ?.prices
+                                      ?.minPrice !=
+                                  null)
+                          ? [
+                              '"${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}"'
                             ]
-                                .map(
-                                  (e) => '"${e}"',
-                                )
-                                .toList(),
-                          }
-                        ],
-                  colors: ([
-                    ...filters.colors ?? [],
-                  ]).map((e) => '"${e.toString()}"').toList(),
-                  limit: 20,
-                  prices: (prevAppliedFiltersByUser[key]
-                                  ?.filters
-                                  ?.prices
-                                  ?.maxPrice !=
-                              null &&
-                          prevAppliedFiltersByUser[key]
-                                  ?.filters
-                                  ?.prices
-                                  ?.minPrice !=
-                              null)
-                      ? [
-                          '"${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}"'
-                        ]
-                      : null,
-                  searchText: filters.searchText ??
-                      state.appliedFiltersByUser[key]?.filters?.searchText,
-                ),
-              );
+                          : null,
+                      searchText: filters.searchText ??
+                          state.appliedFiltersByUser[key]?.filters?.searchText,
+                    ),
+                  );
 
     response.fold((l) {
       Map<String, PaginationModel<product.Products>?>
@@ -1832,9 +1965,45 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.viewItemList,
+        executedEventName: "",
+        extraParams: {
+          'item_list_id': Random().nextInt(1000000).toString(),
+          'items': r.data?.products
+                  ?.map((e) => {
+                        'item_id': e.productId.toString(),
+                        'item_name': e.name.toString(),
+                        'brand': e.brand!.name.toString(),
+                        'category': e.categories!
+                            .map((e) => e.id.toString())
+                            .toList()
+                            .toString(),
+                      })
+                  .toList()
+                  .toString() ??
+              ''
+        },
+      ).toString();
       try {
-        print(
-            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FF555");
+        if (((filters.searchText ??
+                        state.appliedFiltersByUser[key]?.filters?.searchText)
+                    ?.length ??
+                0) >
+            2) {
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.search,
+            executedEventName: "search",
+            extraParams: {
+              'search_keyword': filters.searchText ??
+                  state.appliedFiltersByUser[key]?.filters?.searchText ??
+                  '',
+              'screen_name': GlobalScreenConst.SEARCH_SCREEN,
+              'search_results_count': r.data?.totalSize.toString() ?? '',
+              'search_results_limit': r.data?.products?.length.toString() ?? '',
+            },
+          );
+        }
         String url;
         r.data?.products?.forEach((product) {
           if ((product.syncColorImages?.length ?? 0) > 0) {
@@ -2062,10 +2231,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
 
     Map<String, filters_model.GetProductFiltersModel?> data =
         Map.of(state.getProductFiltersModel);
-    Map<String, filters_model.GetProductFiltersModel?> dataForFirstFiveFilter =
-        {};
-    Map<String, PaginationModel<product.Products>?>
-        getProductListingWithFiltersForFirstFiveFilter = {};
+
     String keyWithoutFilter = '${event.boutiqueSlug}' +
         '${(event.getWithPagination) ? ((state.cashedOrginalBoutique) ? 'withoutFilter' : "") : ((event.cashedOrginalBoutique) ? 'withoutFilter' : "")}' +
         '${(event.category ?? '')}';
@@ -2190,6 +2356,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           !(key.contains(event.boutiqueSlug)) &&
           !(key.contains("search")) &&
           !(key.contains("*featured*")) &&
+          !(key.contains("*recommended*")) &&
           !(key.contains("*flashDeal*")));
       Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
           prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
@@ -2209,6 +2376,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               page: 1,
               paginationStatus: (keyWithoutFilter.contains("withoutFilter") &&
                       !keyWithoutFilter.contains("*featured*withoutFilter") &&
+                      !keyWithoutFilter
+                          .contains("*recommended*withoutFilter") &&
                       !keyWithoutFilter.contains("*flashDeal*withoutFilter") &&
                       (getProductListingWithFiltersModel.products?.length ??
                               0) >
@@ -2381,86 +2550,99 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ? null
                 : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
           ))
-        : event.boutiqueSlug == "*flashDeal*"
-            ? await getProductsWithFiltersUseCase(
-                GetProductsWithFiltersParams(
-                  flashDeal: true,
-                  limit: 20,
-                  categorySlugs: (state.currentMainCategoryTaped == "" ||
-                          state.currentMainCategoryTaped == null ||
-                          state.currentMainCategoryTaped == "Empty")
-                      ? null
-                      : ['"${state.currentMainCategoryTaped}"'],
-                  offset: !event.getWithPagination
-                      ? null
-                      : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
-                ),
-              )
-            : await getProductsWithFiltersUseCase(
-                GetProductsWithFiltersParams(
-                  brandSlugs: filters.brands
-                      ?.map((e) => '"${e.slug.toString()}"')
-                      .toList(),
-                  categorySlugs:
-                      (event.category != null && event.category != "")
-                          ? [
-                              ...(filters.categories
-                                      ?.map((e) => '"${e.slug.toString()}"')
-                                      .toList() ??
-                                  []),
-                              (event.resetChoosedFilters == true &&
-                                      (event.fromSearch ?? false))
-                                  ? ""
-                                  : '"${event.category}"'
-                            ]
-                          : filters.categories
-                              ?.map((e) => '"${e.slug.toString()}"')
-                              .toList(),
-                  boutiqueSlugs: event.fromSearch ?? false
-                      ? filters.boutiques
+        : event.boutiqueSlug == "*recommended*"
+            ? await getRecommendProductsUseCase(GetRecommendProductsParams(
+                limit: 20,
+                offset: !event.getWithPagination
+                    ? null
+                    : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
+                categorySlugs: (state.currentMainCategoryTaped == "" ||
+                        state.currentMainCategoryTaped == null ||
+                        state.currentMainCategoryTaped == "Empty")
+                    ? null
+                    : ['"${state.currentMainCategoryTaped}"']))
+            : event.boutiqueSlug == "*flashDeal*"
+                ? await getProductsWithFiltersUseCase(
+                    GetProductsWithFiltersParams(
+                      flashDeal: true,
+                      limit: 20,
+                      categorySlugs: (state.currentMainCategoryTaped == "" ||
+                              state.currentMainCategoryTaped == null ||
+                              state.currentMainCategoryTaped == "Empty")
+                          ? null
+                          : ['"${state.currentMainCategoryTaped}"'],
+                      offset: !event.getWithPagination
+                          ? null
+                          : state.searchWithFilterOffset?[keyWithoutFilter] ??
+                              [],
+                    ),
+                  )
+                : await getProductsWithFiltersUseCase(
+                    GetProductsWithFiltersParams(
+                      brandSlugs: filters.brands
                           ?.map((e) => '"${e.slug.toString()}"')
-                          .toList()
-                      : ['"${event.boutiqueSlug}"'],
-                  offset: !event.getWithPagination
-                      ? null
-                      : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
-                  attributes: filters.attributes.isNullOrEmpty
-                      ? null
-                      : [
-                          {
-                            '"id"': '"${filters.attributes![0].id}"',
-                            '"name"': '"${filters.attributes![0].name}"',
-                            '"options"': [
-                              ...(filters.attributes![0].options) ?? [],
+                          .toList(),
+                      categorySlugs:
+                          (event.category != null && event.category != "")
+                              ? [
+                                  ...(filters.categories
+                                          ?.map((e) => '"${e.slug.toString()}"')
+                                          .toList() ??
+                                      []),
+                                  (event.resetChoosedFilters == true &&
+                                          (event.fromSearch ?? false))
+                                      ? ""
+                                      : '"${event.category}"'
+                                ]
+                              : filters.categories
+                                  ?.map((e) => '"${e.slug.toString()}"')
+                                  .toList(),
+                      boutiqueSlugs: event.fromSearch ?? false
+                          ? filters.boutiques
+                              ?.map((e) => '"${e.slug.toString()}"')
+                              .toList()
+                          : ['"${event.boutiqueSlug}"'],
+                      offset: !event.getWithPagination
+                          ? null
+                          : state.searchWithFilterOffset?[keyWithoutFilter] ??
+                              [],
+                      attributes: filters.attributes.isNullOrEmpty
+                          ? null
+                          : [
+                              {
+                                '"id"': '"${filters.attributes![0].id}"',
+                                '"name"': '"${filters.attributes![0].name}"',
+                                '"options"': [
+                                  ...(filters.attributes![0].options) ?? [],
+                                ]
+                                    .map(
+                                      (e) => '"${e}"',
+                                    )
+                                    .toList(),
+                              }
+                            ],
+                      colors: ([
+                        ...filters.colors ?? [],
+                      ]).map((e) => '"${e.toString()}"').toList(),
+                      limit: 20,
+                      prices: (prevAppliedFiltersByUser[key]
+                                      ?.filters
+                                      ?.prices
+                                      ?.maxPrice !=
+                                  null &&
+                              prevAppliedFiltersByUser[key]
+                                      ?.filters
+                                      ?.prices
+                                      ?.minPrice !=
+                                  null)
+                          ? [
+                              '"${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}"'
                             ]
-                                .map(
-                                  (e) => '"${e}"',
-                                )
-                                .toList(),
-                          }
-                        ],
-                  colors: ([
-                    ...filters.colors ?? [],
-                  ]).map((e) => '"${e.toString()}"').toList(),
-                  limit: 20,
-                  prices: (prevAppliedFiltersByUser[key]
-                                  ?.filters
-                                  ?.prices
-                                  ?.maxPrice !=
-                              null &&
-                          prevAppliedFiltersByUser[key]
-                                  ?.filters
-                                  ?.prices
-                                  ?.minPrice !=
-                              null)
-                      ? [
-                          '"${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}"'
-                        ]
-                      : null,
-                  searchText: filters.searchText ??
-                      state.appliedFiltersByUser[key]?.filters?.searchText,
-                ),
-              );
+                          : null,
+                      searchText: filters.searchText ??
+                          state.appliedFiltersByUser[key]?.filters?.searchText,
+                    ),
+                  );
 
     response.fold((l) {
       Map<String, PaginationModel<product.Products>?>
@@ -2493,6 +2675,26 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
       try {
+        FirebaseAnalyticsService.logEventForSession(
+          eventName: AnalyticsEventsConst.viewItemList,
+          executedEventName: "",
+          extraParams: {
+            'item_list_id': Random().nextInt(1000000).toString(),
+            'items': r.data?.products
+                    ?.map((e) => {
+                          'item_id': e.productId.toString(),
+                          'item_name': e.name.toString(),
+                          'brand': e.brand!.name.toString(),
+                          'category': e.categories!
+                              .map((e) => e.id.toString())
+                              .toList()
+                              .toString(),
+                        })
+                    .toList()
+                    .toString() ??
+                ''
+          },
+        ).toString();
         String url;
         r.data?.products?.forEach((product) {
           if ((product.syncColorImages?.length ?? 0) > 0) {

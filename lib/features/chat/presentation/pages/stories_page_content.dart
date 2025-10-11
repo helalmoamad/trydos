@@ -18,6 +18,7 @@ import '../../../calls/presentation/widgets/calls_card.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../widgets/add_story_card.dart';
 import '../widgets/story_card.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StoriesForChatPageContent extends StatefulWidget {
   const StoriesForChatPageContent({Key? key}) : super(key: key);
@@ -31,6 +32,7 @@ class _StoriesForChatPageContentState
     extends ThemeState<StoriesForChatPageContent> {
   late ChatBloc chatBloc;
   void initState() {
+    LastPagesTracker.push('StoriesForChatPageContent');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     super.initState();
   }
@@ -39,12 +41,8 @@ class _StoriesForChatPageContentState
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Stories_For_Chat_Page_Content"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      debugPrint(error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     return BlocBuilder<StoryBloc, StoryState>(

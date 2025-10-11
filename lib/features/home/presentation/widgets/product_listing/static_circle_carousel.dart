@@ -3,6 +3,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StaticCircleCarousel extends StatelessWidget {
   final List<String> imageUrls;
@@ -24,13 +25,17 @@ class StaticCircleCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     // إعداد أحجام الدوائر
     const double big = 22;
     const double medium = 22;
     const double small = 18;
     const double overlap = 12; // مقدار التداخل بين الدوائر
 
-    if (imageUrls.isEmpty) return SizedBox.shrink();
+    if (imageUrls.isEmpty) return const SizedBox.shrink();
     int center = imageUrls.length ~/ 2;
 
     List<Widget> circles = [];

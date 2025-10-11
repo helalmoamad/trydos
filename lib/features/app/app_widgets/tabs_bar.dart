@@ -17,6 +17,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
@@ -256,6 +257,10 @@ class _TabsBarState extends State<TabsBar> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return SafeArea(
         child: BlocBuilder<CategoryBloc, CategoryState>(
             buildWhen: (oldState, newState) =>
@@ -893,9 +898,8 @@ class _TabsBarState extends State<TabsBar> {
                                                 ? Key(
                                                     '${WidgetsKeys.mainCategoriesItemKey}$index')
                                                 : null,
-                                            padding:
-                                                HWEdgeInsetsDirectional.only(
-                                                    end: 15),
+                                            padding: HWEdgeInsetsDirectional.only(
+                                                end: 15),
                                             child: BlocBuilder<BoutiqueBloc,
                                                     BoutiqueState>(
                                                 buildWhen: (previous, current) =>
@@ -975,6 +979,13 @@ class _TabsBarState extends State<TabsBar> {
                                                                     true,
                                                                 boutiqueSlug:
                                                                     "*featured*"));
+                                                        boutiqueBloc.add(
+                                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                                categorySlugs: [],
+                                                                cashedOrginalBoutique:
+                                                                    true,
+                                                                boutiqueSlug:
+                                                                    "*recommended*"));
                                                         boutiqueBloc.add(
                                                             const GetProductWithFiltersWithoutCancelingPreviousEvents(
                                                                 categorySlugs: [],
@@ -1090,6 +1101,13 @@ class _TabsBarState extends State<TabsBar> {
                                                                     true,
                                                                 boutiqueSlug:
                                                                     "*featured*"));
+                                                        boutiqueBloc.add(
+                                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                                categorySlugs: [],
+                                                                cashedOrginalBoutique:
+                                                                    true,
+                                                                boutiqueSlug:
+                                                                    "*recommended*"));
                                                         boutiqueBloc.add(
                                                             const GetProductWithFiltersWithoutCancelingPreviousEvents(
                                                                 categorySlugs: [],

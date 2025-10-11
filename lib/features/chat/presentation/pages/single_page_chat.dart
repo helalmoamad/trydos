@@ -66,6 +66,7 @@ import '../widgets/chat_widgets/call_message.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 import '../widgets/chat_widgets/text_message.dart';
 import '../widgets/chat_widgets/voice_message.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SinglePageChat extends StatefulWidget {
   const SinglePageChat(
@@ -141,6 +142,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   void initState() {
+    LastPagesTracker.push('SinglePageChat');
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
     rebuildMessage.value = -2;
     if (widget.fromOrder == "true") {
@@ -195,6 +197,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     int duration = GetIt.I<PrefsRepository>().getdurtion ?? 0;
     MoveToUpToScrollSearch(PaginationStatus resultOfSearchTextInChat,
         Map<String, int> currentIndextForMessages) {

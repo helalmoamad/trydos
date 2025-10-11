@@ -60,10 +60,26 @@ class AddCurrentSelectedColorEvent extends HomeEvent {
   List<Object?> get props => [currentSelectedColor, productSlug];
 }
 
+class AddCurrentHeightWhenAddToBagEvent extends HomeEvent {
+  final int currentHeightWhenAddToBag;
+
+  const AddCurrentHeightWhenAddToBagEvent(
+      {required this.currentHeightWhenAddToBag});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [currentHeightWhenAddToBag];
+}
+
 class IncreaseCountShareOfProductEvent extends HomeEvent {
   final String productId;
+  final String socialMediaName;
+  final Products product;
 
-  const IncreaseCountShareOfProductEvent({required this.productId});
+  const IncreaseCountShareOfProductEvent(
+      {required this.productId,
+      required this.socialMediaName,
+      required this.product});
 
   @override
   // TODO: implement props
@@ -197,15 +213,23 @@ class SendErrorToMobileErrorLogEvent extends HomeEvent {
   final String errorPath;
   final String urlBackend;
   final String messageFromeBackend;
-  const SendErrorToMobileErrorLogEvent(
-      {required this.errorExption,
-      required this.errorPath,
-      required this.urlBackend,
-      required this.messageFromeBackend});
+  final String lastForPageHasBeenVisited;
+  const SendErrorToMobileErrorLogEvent({
+    required this.errorExption,
+    required this.errorPath,
+    required this.urlBackend,
+    required this.messageFromeBackend,
+    required this.lastForPageHasBeenVisited,
+  });
 
   @override
-  // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [
+        errorExption,
+        errorPath,
+        urlBackend,
+        messageFromeBackend,
+        lastForPageHasBeenVisited,
+      ];
 }
 
 /*class GetProductsListInCartEvent extends HomeEvent {
@@ -447,15 +471,6 @@ class IsChangedVariationWhenQtyZeroEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [isChangedVariationWhenQtyZero];
-}
-
-class IsChangedColorBeforOpenPanelEvent extends HomeEvent {
-  final bool iChangedColorBeforOpenPanelEvent;
-  const IsChangedColorBeforOpenPanelEvent(
-      {required this.iChangedColorBeforOpenPanelEvent});
-
-  @override
-  List<Object?> get props => [iChangedColorBeforOpenPanelEvent];
 }
 
 class ChangeStatusOFGetProductsDetailsToSuccessEvent extends HomeEvent {

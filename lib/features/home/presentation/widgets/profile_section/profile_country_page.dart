@@ -12,7 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 
 import 'package:trydos/config/theme/typography.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
@@ -47,6 +47,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
   late AppBloc appBloc;
   @override
   void initState() {
+    LastPagesTracker.push('ProfileCountryPage');
     appBloc = BlocProvider.of<AppBloc>(context);
     choosedCountryIso = (GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
             ? GetIt.I<PrefsRepository>().userChoosedCountryIso
@@ -73,18 +74,9 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return ValueListenableBuilder<bool>(
         valueListenable: visibleSave,
         builder: (context, _visibleSave, _) {

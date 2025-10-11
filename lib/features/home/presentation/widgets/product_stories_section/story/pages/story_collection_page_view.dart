@@ -8,7 +8,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/pages/story_collection.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 
 class StoryCollectionPageView extends StatefulWidget {
@@ -30,6 +30,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
   bool canPop = true;
   @override
   void initState() {
+    LastPagesTracker.push('StoryCollectionPageView product');
     canPop = true;
     prevPageNumber = widget.initialPage;
     pageController = PageController(initialPage: prevPageNumber);
@@ -75,6 +76,10 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return OverscrollPop(
       dragToPopDirection: DragToPopDirection.toBottom,
       friction: 2,

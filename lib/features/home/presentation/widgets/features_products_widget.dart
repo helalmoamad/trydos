@@ -29,6 +29,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class FeatureProductsWidget extends StatelessWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
@@ -41,20 +42,41 @@ class FeatureProductsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     List<filter.Products> products = [];
 
     return BlocBuilder<BoutiqueBloc, BoutiqueState>(
         buildWhen: (previous, current) =>
             previous
-                .getProductListingWithFiltersPaginationModels[
-                    "*featured*withoutFilter"]
-                ?.paginationStatus !=
-            current
-                .getProductListingWithFiltersPaginationModels[
-                    "*featured*withoutFilter"]
-                ?.paginationStatus,
+                    .getProductListingWithFiltersPaginationModels[
+                        "*featured*withoutFilter"]
+                    ?.paginationStatus !=
+                current
+                    .getProductListingWithFiltersPaginationModels[
+                        "*featured*withoutFilter"]
+                    ?.paginationStatus ||
+            previous
+                    .getProductListingWithFiltersPaginationModels[
+                        "*recommended*withoutFilter"]
+                    ?.paginationStatus !=
+                current
+                    .getProductListingWithFiltersPaginationModels[
+                        "*recommended*withoutFilter"]
+                    ?.paginationStatus,
         builder: (context, state) {
           try {
+            List<filter.Products> recommendProduct =
+                state.getProductListingWithFiltersPaginationModels[
+                            "*recommended*withoutFilter"] ==
+                        null
+                    ? []
+                    : state
+                        .getProductListingWithFiltersPaginationModels[
+                            "*recommended*withoutFilter"]!
+                        .items;
             products = state.getProductListingWithFiltersPaginationModels[
                         "*featured*withoutFilter"] ==
                     null
@@ -63,6 +85,12 @@ class FeatureProductsWidget extends StatelessWidget {
                     .getProductListingWithFiltersPaginationModels[
                         "*featured*withoutFilter"]!
                     .items;
+            for (var i = 0;
+                i < (recommendProduct.length > 6 ? 6 : recommendProduct.length);
+                i++) {
+              products.removeWhere(
+                  (element) => element.slug == recommendProduct[i].slug);
+            }
           } catch (e) {
             debugPrint('❌ Error getting featured products: $e');
             products = [];
@@ -106,41 +134,36 @@ class FeatureProductsWidget extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 5),
-                          width: 1.sw,
-                          height: 300,
-                          child: ListView.separated(
-                              addAutomaticKeepAlives: false,
-                              addRepaintBoundaries: false,
-                              addSemanticIndexes: false,
-                              cacheExtent: 0,
-                              itemBuilder: (context, index) {
-                                // التحقق من صحة الفهرس
-                                if (index >= products.length) {
-                                  return const SizedBox.shrink();
-                                }
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 5),
+                      width: 1.sw,
+                      height: 300,
+                      child: ListView.separated(
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false,
+                          addSemanticIndexes: false,
+                          cacheExtent: 0,
+                          itemBuilder: (context, index) {
+                            // التحقق من صحة الفهرس
+                            if (index >= products.length) {
+                              return const SizedBox.shrink();
+                            }
 
-                                if (index == 5 && products.length > 5) {
-                                  return _buildMoreButton(
-                                      context, products, index);
-                                }
-                                return _buildProductItem(
-                                    context, products, index);
-                              },
-                              physics: const BouncingScrollPhysics(
-                                parent: ClampingScrollPhysics(),
-                              ),
-                              padding: const EdgeInsetsDirectional.symmetric(
-                                  horizontal: 10),
-                              scrollDirection: Axis.horizontal,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(width: 15),
-                              itemCount:
-                                  products.length > 6 ? 6 : products.length),
-                        ))
+                            if (index == 5 && products.length > 5) {
+                              return _buildMoreButton(context, products, index);
+                            }
+                            return _buildProductItem(context, products, index);
+                          },
+                          physics: const BouncingScrollPhysics(
+                            parent: ClampingScrollPhysics(),
+                          ),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 10),
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(width: 15),
+                          itemCount: products.length > 6 ? 6 : products.length),
+                    )
                   ],
                 );
         });

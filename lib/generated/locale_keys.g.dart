@@ -276,6 +276,7 @@ abstract class LocaleKeys {
   static const share_this_product_with = 'share_this_product_with';
   static const please_select_the_appropriate = 'please_select_the_appropriate';
   static const not_available_now_stock = 'not_available_now_stock';
+  static const take_a_look_at_other_colors = 'take_a_look_at_other_colors';
   static const need_help_finding_your_size = 'need_help_finding_your_size';
   static const recommended = 'recommended';
   static const for_you = 'for_you';
@@ -736,4 +737,18 @@ abstract class LocaleKeys {
   static const report_story = 'report_story';
   static const confirm_report_story = 'confirm_report_story';
   static const download_the_app_here = 'download_the_app_here';
+  static const today_shipping = 'today_shipping';
+  static const if_buy_before = 'if_buy_before';
+
+  static const today_shipping_short = 'today_shipping_short';
+  static const selected_color = 'selected_color';
+  static const get = 'get';
+  static const select_your_required_size = 'select_your_required_size';
+  static const only = 'only';
+  static const added = 'added';
+  static const to_your_bag = 'to_your_bag';
+
+  static const add_more_to_bag = 'add_more_to_bag';
+  static const delivery_worker = 'delivery_worker';
+  static const recommend_products = 'recommend_products';
 }

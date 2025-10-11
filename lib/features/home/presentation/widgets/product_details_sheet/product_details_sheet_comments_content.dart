@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
@@ -46,17 +46,10 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
   //     ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
+    LastPagesTracker.push("ProductDetailsSheetCommentsContent Page");
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
@@ -277,6 +270,10 @@ class CommentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       margin: HWEdgeInsets.symmetric(horizontal: 20),
       padding: HWEdgeInsets.only(left: 10, top: 20, right: 10),

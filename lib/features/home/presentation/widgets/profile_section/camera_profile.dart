@@ -12,6 +12,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/crope_image.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CameraProfile extends StatefulWidget {
   final ValueNotifier<bool> visiblecamera;
@@ -84,6 +85,7 @@ class _CameraProfileState extends State<CameraProfile>
 
   @override
   void initState() {
+    LastPagesTracker.push('CameraProfile');
 // Hide the status bar
 //    SystemChrome.setEnabledSystemUIOverlays([]);
 //;
@@ -164,6 +166,10 @@ class _CameraProfileState extends State<CameraProfile>
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Scaffold(
       body: _isCameraInitialized
           ? Container(

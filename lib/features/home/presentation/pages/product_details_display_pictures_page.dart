@@ -11,7 +11,9 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as listing;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../service/language_service.dart';
@@ -21,8 +23,14 @@ import '../widgets/product_details_body/product_details_image_widget.dart';
 class ProductDetailsDisplayPicturesPage extends StatefulWidget {
   final List<listing.Thumbnail> images;
   final int currentIndex;
+  final String brand;
+  final String category;
   const ProductDetailsDisplayPicturesPage(
-      {super.key, required this.images, required this.currentIndex});
+      {super.key,
+      required this.images,
+      required this.currentIndex,
+      required this.brand,
+      required this.category});
 
   @override
   State<ProductDetailsDisplayPicturesPage> createState() =>
@@ -41,22 +49,11 @@ class _ProductDetailsDisplayPicturesPageState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-    };
     final ValueNotifier<int> selectedPicture =
         ValueNotifier(widget.currentIndex);
-    FlutterError.onError = (error) {
-      debugPrint(error.toString());
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Directionality(
       textDirection: TextDirection.ltr,
@@ -106,6 +103,21 @@ class _ProductDetailsDisplayPicturesPageState
                                     return GestureDetector(
                                       onTap: () {
                                         selectedPicture.value = index;
+                                        FirebaseAnalyticsService
+                                            .logEventForSession(
+                                          eventName:
+                                              AnalyticsEventsConst.VIEW_IMAGE,
+                                          extraParams: {
+                                            'image_index': index.toString(),
+                                            'screen_name': GlobalScreenConst
+                                                .PRODUCT_SCREEN,
+                                            'brand': widget.brand,
+                                            'category': widget.category
+                                          },
+                                          executedEventName:
+                                              AnalyticsButtonsEventNameConst
+                                                  .SHOW_PRODUCT_PHOTOS_BUTTON,
+                                        );
                                       },
                                       child: ProductDetailsImageWidget(
                                         orginalHeight: double.tryParse(widget

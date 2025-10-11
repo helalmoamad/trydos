@@ -9,7 +9,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/reel_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/star_ratting_product.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../trydos_application.dart';
 import '../../../../app/my_text_widget.dart';
@@ -40,16 +40,8 @@ class BuyersProductRatePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return SlidingUpPanel(
         borderRadius: const BorderRadius.only(

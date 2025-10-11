@@ -2,12 +2,22 @@ import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as productListingModel;
+
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class ProductDetailsDescriptionWidget extends StatefulWidget {
   final String description;
+  final productListingModel.Products productItem;
   const ProductDetailsDescriptionWidget({
     super.key,
+    required this.productItem,
     required this.description,
   });
 
@@ -48,6 +58,10 @@ class _ProductDetailsDescriptionWidgetState
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LayoutBuilder(
@@ -76,6 +90,30 @@ class _ProductDetailsDescriptionWidgetState
               if (needsExpansion)
                 GestureDetector(
                   onTap: () {
+                    FirebaseAnalyticsService.logEventForSession(
+                      executedEventName: AnalyticsButtonsEventNameConst
+                          .READ_MORE_ABOUT_PRODUCT_BUTTON,
+                      eventName: AnalyticsEventsConst.READ_MORE_ABOUT_PRODUCT,
+                      extraParams: {
+                        'item_id': widget.productItem.productId.toString(),
+                        'item_name': widget.productItem.name.toString(),
+                        'price': widget.productItem.price.toString(),
+                        'brand': widget.productItem.brand == null
+                            ? ""
+                            : widget.productItem.brand!.name.toString(),
+                        'category': widget.productItem.categories!
+                            .map(
+                              (e) => e.id.toString(),
+                            )
+                            .toList()
+                            .toString(),
+                        'count_likes':
+                            widget.productItem.countOfLikes.toString(),
+                        'review_count':
+                            widget.productItem.reviewsCount.toString(),
+                        'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                      },
+                    );
                     isExpandedNotifier.value = !isExpandedNotifier.value;
                     setState(() {});
                   },

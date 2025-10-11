@@ -39,6 +39,7 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../manager/orderBloc/order_bloc.dart';
 import '../manager/orderBloc/order_event.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CartPage extends StatefulWidget {
   final bool? fromeFilters;
@@ -73,6 +74,7 @@ class _CartPageState extends State<CartPage> {
 
   @override
   void initState() {
+    LastPagesTracker.push("Cart Page");
     isExpanded.value = false;
     print('Firebase app:Firebase.app//////s${Firebase.apps.length}');
 
@@ -114,16 +116,8 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     List<Map<String, String>> cartImages = [];
     return Scaffold(

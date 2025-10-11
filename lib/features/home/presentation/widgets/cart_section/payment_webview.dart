@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/trydos_shimmer_loading.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class PaymentWebview extends StatefulWidget {
   final String url;
@@ -30,6 +31,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
   @override
   void initState() {
     super.initState();
+    LastPagesTracker.push("PaymentWebview Page");
     //////////////////////////
     pullToRefreshController = PullToRefreshController(
       settings: PullToRefreshSettings(
@@ -61,6 +63,10 @@ class _PaymentWebviewState extends State<PaymentWebview> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {

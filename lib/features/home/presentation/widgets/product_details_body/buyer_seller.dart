@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 
@@ -41,18 +41,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: Column(

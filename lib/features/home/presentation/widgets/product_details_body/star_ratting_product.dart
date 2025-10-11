@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 
 import 'dart:async';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StarRatingProductWidget extends StatefulWidget {
   final double initialRating;
@@ -84,6 +85,10 @@ class _StarRatingProductWidgetState extends State<StarRatingProductWidget> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return SizedBox(
       width: widget.widgetWidth,
       height: widget.widgetHeight,

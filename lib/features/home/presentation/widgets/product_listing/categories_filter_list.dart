@@ -8,8 +8,12 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
@@ -47,16 +51,8 @@ class CategoriesFilterList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
@@ -269,6 +265,23 @@ class CategoriesFilterList extends StatelessWidget {
                                                   []);
 
                                           if (add) {
+                                            FirebaseAnalyticsService
+                                                .logEventForSession(
+                                              eventName: AnalyticsEventsConst
+                                                  .applyFilter,
+                                              extraParams: {
+                                                'filter_type': "category",
+                                                'filter_value':
+                                                    subCategories[innerIndex]
+                                                            .name ??
+                                                        "",
+                                                'screen_name': GlobalScreenConst
+                                                    .PRODUCT_LISTING_SCREEN,
+                                              },
+                                              executedEventName:
+                                                  AnalyticsButtonsEventNameConst
+                                                      .applyFilterButton,
+                                            );
                                             // FirebaseAnalyticsService
                                             //     .logEventForSession(
                                             //   eventName: AnalyticsEventsConst
@@ -445,6 +458,8 @@ class CategoriesFilterList extends StatelessWidget {
                                         isExpanded: (currentExpandedIndex == index),
                                         displayFilterMark: ((!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => (element.slug == filters.categories![index].slug))) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)))),
                                         addOrRemoveSpecificFilter: (bool add) {
+                                          print(
+                                              "addOrRemoveSpecificFilter${add}");
                                           if (appliedFilters?.categories ==
                                                   null &&
                                               choosedFilters?.categories ==
@@ -494,15 +509,23 @@ class CategoriesFilterList extends StatelessWidget {
                                                   []);
 
                                           if (add) {
-                                            // FirebaseAnalyticsService
-                                            //     .logEventForSession(
-                                            //   eventName: AnalyticsEventsConst
-                                            //       .buttonClicked,
-                                            //   executedEventName:
-                                            //       AnalyticsButtonsEventNameConst
-                                            //           .addFilterButton,
-                                            // );
-                                            //////////////////////////////
+                                            FirebaseAnalyticsService
+                                                .logEventForSession(
+                                              eventName: AnalyticsEventsConst
+                                                  .applyFilter,
+                                              extraParams: {
+                                                'filter_type': "category",
+                                                'filter_value': filters
+                                                        .categories![index]
+                                                        .name ??
+                                                    "",
+                                                'screen_name': GlobalScreenConst
+                                                    .PRODUCT_LISTING_SCREEN,
+                                              },
+                                              executedEventName:
+                                                  AnalyticsButtonsEventNameConst
+                                                      .applyFilterButton,
+                                            );
                                             Category category =
                                                 filters.categories![index];
                                             if (prevChoosedOrAppliedFilterToAddToIt ==
@@ -547,8 +570,9 @@ class CategoriesFilterList extends StatelessWidget {
                                             ///////////////////////////////////////
                                             expandingFiltersStack.value = -1;
                                             categories.removeWhere(((element) =>
-                                                element.id ==
-                                                filters.categories![index].id));
+                                                element.slug ==
+                                                filters
+                                                    .categories![index].slug));
 
                                             categories.removeWhere(((element) =>
                                                 subCategories.any((sub) =>
@@ -645,12 +669,18 @@ class CategoriesFilterList extends StatelessWidget {
                             prevChoosedOrAppliedFilterToAddToIt?.categories ??
                                 []);
                         if (add) {
-                          // FirebaseAnalyticsService.logEventForSession(
-                          //   eventName: AnalyticsEventsConst.buttonClicked,
-                          //   executedEventName:
-                          //       AnalyticsButtonsEventNameConst.addFilterButton,
-                          // );
-                          //////////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.applyFilter,
+                            extraParams: {
+                              'filter_type': "category",
+                              'filter_value':
+                                  filters.categories![index].name ?? "",
+                              'screen_name':
+                                  GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                            },
+                            executedEventName: AnalyticsButtonsEventNameConst
+                                .applyFilterButton,
+                          );
                           Category category = filters.categories![index];
                           if (prevChoosedOrAppliedFilterToAddToIt == null) {
                             prevChoosedOrAppliedFilterToAddToIt = Filter();

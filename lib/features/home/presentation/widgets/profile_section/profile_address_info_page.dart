@@ -21,6 +21,7 @@ import 'package:trydos/service/language_service.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProfileAddressInfoPage extends StatefulWidget {
   const ProfileAddressInfoPage({super.key});
@@ -43,6 +44,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
 
   @override
   void initState() {
+    LastPagesTracker.push('ProfileAddressInfoPage');
     homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
     super.initState();
@@ -56,18 +58,9 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return ValueListenableBuilder<bool>(
         valueListenable: visibleSave,
         builder: (context, _visibleSave, _) {

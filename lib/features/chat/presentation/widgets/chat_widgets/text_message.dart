@@ -25,6 +25,7 @@ import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class TextMessage extends StatefulWidget {
   TextMessage({
@@ -97,7 +98,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
       if (mounted) {
         final renderBox = key.currentContext?.findRenderObject();
         if (renderBox is RenderBox && renderBox.hasSize) {
-        height = renderBox.size.height;
+          height = renderBox.size.height;
         }
       }
     });
@@ -107,9 +108,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocConsumer<ChatBloc, ChatState>(
       listenWhen: (p, c) =>

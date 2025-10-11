@@ -8,7 +8,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
@@ -18,11 +21,14 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductDetailsSheetHeader extends StatefulWidget {
   final String price;
   final String offerPrice;
   final String priceSymbol;
+  final int? productId;
+  final String? currentVariant;
   final int decimalPoint;
   final ValueNotifier<int> currentActiveTab;
   final bool isRedeem;
@@ -34,6 +40,8 @@ class ProductDetailsSheetHeader extends StatefulWidget {
   const ProductDetailsSheetHeader({
     super.key,
     required this.shippingCost,
+    this.productId,
+    this.currentVariant,
     required this.addToBagButtonShapeNotifier,
     required this.offerPrice,
     required this.currentActiveTab,
@@ -107,6 +115,10 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     List<String> svg = [
       AppAssets.freeShippingSvg,
       AppAssets.freeReturnSvg,
@@ -114,6 +126,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
     ];
 
     List<String> texts = [
+      "${LocaleKeys.all_inclusive_without_additions.tr()}",
       '${LocaleKeys.free_shipping.tr()}',
       '${LocaleKeys.free_return.tr()}',
       '${LocaleKeys.ship_to_you_accepted.tr()} 2 June',
@@ -122,18 +135,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
       texts.remove('${LocaleKeys.free_shipping.tr()}');
       svg.remove(AppAssets.freeShippingSvg);
     }
-    FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-    };
+
     return ValueListenableBuilder<int>(
         valueListenable: widget.currentActiveTab,
         builder: (context, currentTab, _) {
@@ -142,16 +144,37 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                 color: colorScheme.white,
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(30))),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
+            child: BlocBuilder<HomeBloc, HomeState>(
+                buildWhen: (previous, current) =>
+                    previous.updateItemInCartStatus !=
+                        current.updateItemInCartStatus ||
+                    previous.addItemInCartStatus !=
+                        current.addItemInCartStatus ||
+                    previous.deleteItemInCartStatus !=
+                        current.deleteItemInCartStatus ||
+                    previous.getCartItemsStatus != current.getCartItemsStatus,
+                builder: (context, state) {
+                  double offPriceInCart = state.cartCollection?.firstWhere(
+                          (element) {
+                        if (element.variations?.isNullOrEmpty ?? true) {
+                          return (element.productId == widget.productId);
+                        }
+                        return (element.productId == widget.productId &&
+                            ('${element.variations![0].colorOption ?? ""}${(((element.variations![0].colorOption ?? "") != "") && ((element.variations![0].sizeOption ?? "") != "")) ? "-" : ""}${element.variations![0].sizeOption ?? ""}') ==
+                                widget.currentVariant);
+                      }, orElse: () => Cart(id: 0, offerPrice: 0)).offerPrice ??
+                      0;
+                  return Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Container(
+                        width: 1.sw,
+                        height: 40.h,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            SizedBox(
+                              width: 20.w,
+                            ),
                             MyTextWidget(
                               HelperFunctions.formatNumber(
                                   number: double.parse(currentTab == 3
@@ -160,7 +183,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                               //  .toStringAsFixed(widget.decimalPoint),
                               style: textTheme.headlineMedium?.rq.copyWith(
                                 color: const Color(0xffC4C2C2),
-                                fontSize: 20.sp,
+                                fontSize: 16.sp,
                                 decoration: TextDecoration.lineThrough,
                                 height: 0,
                               ),
@@ -171,11 +194,19 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                             MyTextWidget(
                               HelperFunctions.formatNumber(
                                   number: double.parse(currentTab == 3
-                                      ? widget.offerPrice
+                                      ? (offPriceInCart > 0
+                                          ? (offPriceInCart *
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!)
+                                              .toString()
+                                          : widget.offerPrice)
                                       : widget.initOfferPrice)),
                               //      .toStringAsFixed(widget.decimalPoint),
                               style: textTheme.headlineMedium?.bq.copyWith(
-                                fontSize: 20.sp,
+                                fontSize: 16.sp,
                                 decoration: widget.isRedeem
                                     ? TextDecoration.lineThrough
                                     : null,
@@ -191,7 +222,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                 : MyTextWidget(
                                     widget.priceSymbol,
                                     style: textTheme.titleMedium?.rq.copyWith(
-                                      fontSize: 16.sp,
+                                      fontSize: 9.sp,
                                       color: const Color(0xffC4C2C2),
                                       height: 0,
                                     ),
@@ -208,93 +239,54 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                     //      .toStringAsFixed(widget.decimalPoint),
                                     style:
                                         textTheme.headlineMedium?.bq.copyWith(
-                                      fontSize: 20.sp,
-                                      color: Colors.deepOrangeAccent,
-                                      height: 0,
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            widget.isRedeem
-                                ? MyTextWidget(
-                                    widget.priceSymbol,
-                                    style: textTheme.titleMedium?.rq.copyWith(
                                       fontSize: 16.sp,
                                       color: Colors.deepOrangeAccent,
                                       height: 0,
                                     ),
                                   )
                                 : const SizedBox.shrink(),
-                            /*    ValueListenableBuilder<int>(
-                              valueListenable: widget.addToBagButtonShapeNotifier,
-                              builder: (context, itemCount, _) {
-                                return itemCount > 1
-                                    ? Row(
-                                        children: [
-                                          MyTextWidget(
-                                            'x$itemCount = ${itemCount * 70} ',
-                                            style:
-                                                textTheme.titleMedium?.bq.copyWith(
-                                              color: Color(0xff505050),
-                                              height: 0,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          // MyTextWidget(
-                                          //   widget.price.split(" ").toList()[1],
-                                          //   style: textTheme.titleMedium?.rq.copyWith(
-                                          //     color: Color(0xffC4C2C2),
-                                          //     height: 0,
-                                          //   ),
-                                          // ),
-                                        ],
-                                      )
-                                    : const SizedBox.shrink();
-                              }),
-                          SvgPicture.asset(
-                            AppAssets.registerInfoSvg,
-                            height: 12,
-                            color: Color(0xff8E8E8E),
-                          )*/
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: HWEdgeInsets.only(bottom: 8),
-                              child: MyTextWidget(
-                                '${LocaleKeys.all_inclusive_without_additions.tr()}',
-                                style: textTheme.titleMedium?.rq.copyWith(
-                                  color: const Color(0xff8D8D8D),
-                                  height: 0,
+                            widget.isRedeem
+                                ? MyTextWidget(
+                                    widget.priceSymbol,
+                                    style: textTheme.titleMedium?.rq.copyWith(
+                                      fontSize: 9.sp,
+                                      color: Colors.deepOrangeAccent,
+                                      height: 0,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                            Column(
+                              children: [
+                                const SizedBox(
+                                  height: 5,
                                 ),
-                              ),
+                                SvgPicture.asset(
+                                  AppAssets.chatWithQuestionSvg,
+                                  height: 11,
+                                  color: const Color(0xff5D5C5D),
+                                ),
+                              ],
                             ),
                             const SizedBox(
-                              width: 11,
+                              width: 5,
                             ),
                             Flexible(
                               child: SizedBox(
-                                height: 15 + 12.h,
+                                height: 30,
                                 child: ListView.builder(
                                   controller: _scrollController,
-                                  padding: HWEdgeInsets.only(bottom: 12),
                                   itemBuilder: (
                                     BuildContext context,
                                     int index,
                                   ) {
                                     return Row(
                                       children: [
-                                        SvgPicture.asset(
-                                          svg[index],
-                                          height: 15,
-                                        ),
+                                        index == 0
+                                            ? const SizedBox.shrink()
+                                            : SvgPicture.asset(
+                                                svg[index - 1],
+                                                height: 15,
+                                              ),
                                         const SizedBox(
                                           width: 5,
                                         ),
@@ -313,18 +305,14 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                     );
                                   },
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: svg.length,
+                                  itemCount: texts.length,
                                 ),
                               ),
                             )
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                      ));
+                }),
           );
         });
   }

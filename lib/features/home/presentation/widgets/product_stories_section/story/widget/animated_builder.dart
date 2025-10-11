@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class AnimatedBar extends StatelessWidget {
   final AnimationController animController;
@@ -17,6 +18,10 @@ class AnimatedBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.currentStoryInEachCollection[collectionIndex] !=

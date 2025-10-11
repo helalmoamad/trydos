@@ -20,7 +20,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 import 'package:get_it/get_it.dart';
@@ -75,16 +75,8 @@ class _PriceFilterState extends State<PriceFilter> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     if ((widget.pricesFiltersRanges.maxPrice! -
             widget.pricesFiltersRanges.minPrice!) <

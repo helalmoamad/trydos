@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
@@ -20,6 +21,7 @@ void main() {
       testWidgets(
         'Find Number Already exists page after entering existing number test',
         (WidgetTester tester) async {
+          TestVariables.kTestMode = true;
           app.main();
           await tester.pumpAndSettle();
           //////////////////////////
@@ -43,6 +45,8 @@ void main() {
       testWidgets(
         'Entering existing number and login test',
         (WidgetTester tester) async {
+          TestVariables.kTestMode = true;
+
           app.main();
           await tester.pumpAndSettle();
           //////////////////////////
@@ -62,7 +66,7 @@ void main() {
           );
           ////////////////////////////
           final Finder loginContinueButtonKey =
-              find.byKey(Key(WidgetsKeys.loginContinueButtonKey));
+              find.byKey(const Key(WidgetsKeys.loginContinueButtonKey));
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(loginContinueButtonKey);
           await tester.pumpAndSettle();
@@ -96,6 +100,8 @@ void main() {
       testWidgets(
         'Entering existing number and continue as guest',
         (WidgetTester tester) async {
+          TestVariables.kTestMode = true;
+
           app.main();
           await tester.pumpAndSettle();
           TestVariables.kTestMode = true;
@@ -116,7 +122,7 @@ void main() {
           );
           ////////////////////////////
           final Finder takeLookButtonKey =
-              find.byKey(Key(WidgetsKeys.takeLookButtonKey));
+              find.byKey(const Key(WidgetsKeys.takeLookButtonKey));
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(takeLookButtonKey);
           await tester.pumpAndSettle();

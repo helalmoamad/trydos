@@ -1,3 +1,4 @@
+/*
 import 'package:easy_localization/easy_localization.dart' as localization;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -2511,7 +2512,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         print(
             "DFDFEDFEWFEFEFEWFEWF++++.........******//////${currentSelectedColorAfterChangeVariant}");
 
-        await Future.delayed(
+      /*  await Future.delayed(
             const Duration(milliseconds: 50),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
@@ -2564,3 +2565,4 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             isChangedVariationWhenQtyZero: true)));
   }
 }
+*/

@@ -28,6 +28,7 @@ import '../../../data/models/ImageDetail.dart';
 import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SharedProductMessage extends StatefulWidget {
   SharedProductMessage(
@@ -109,9 +110,8 @@ class _SharedProductMessageState extends State<SharedProductMessage>
     super.build(context); // ✅ مطلوب لـ AutomaticKeepAliveClientMixin
 
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     debugPrint('widget.isLocalMessage ${widget.isLocalMessage}');
     return Directionality(

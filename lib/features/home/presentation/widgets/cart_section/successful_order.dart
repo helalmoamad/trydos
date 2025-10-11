@@ -24,6 +24,7 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SuccessfullOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
@@ -62,6 +63,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
 
   @override
   void initState() {
+    LastPagesTracker.push("SuccessfullOrder Page");
     appBloc = BlocProvider.of<AppBloc>(context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -93,16 +95,8 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return WillPopScope(
       onWillPop: () async {

@@ -36,6 +36,7 @@ enum TypeOfNotificationForMarketEnum {
   order_placed,
   order_status_changed_to_pending,
   order_status_changed_to_preparing,
+  order_status_changed_to_canceled,
   order_status_changed_to_shipped,
   order_status_changed_to_delivered,
   seller_order_added,
@@ -58,6 +59,8 @@ Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
       "order status changed to pending",
   TypeOfNotificationForMarketEnum.order_status_changed_to_preparing:
       "order status changed to preparing",
+  TypeOfNotificationForMarketEnum.order_status_changed_to_canceled:
+      "order status changed to canceled",
   TypeOfNotificationForMarketEnum.order_status_changed_to_shipped:
       "order status changed to shipped",
   TypeOfNotificationForMarketEnum.order_status_changed_to_delivered:
@@ -90,6 +93,7 @@ class HandlingMarketNotifications {
     }
 
     if (message.data["title"] == "market") {
+      print("data?['type']${data?["type"]}");
       if (data?["type"] ==
               typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_cart_expiration] ||
@@ -117,6 +121,9 @@ class HandlingMarketNotifications {
           data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .order_status_changed_to_delivered] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_status_changed_to_canceled] ||
           data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .order_status_changed_to_pending] ||
@@ -162,6 +169,9 @@ class HandlingMarketNotifications {
         data["type"] ==
             typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                 .order_status_changed_to_delivered] ||
+        data["type"] ==
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_status_changed_to_canceled] ||
         data["type"] ==
             typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                 .order_status_changed_to_pending] ||

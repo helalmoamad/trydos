@@ -16,7 +16,8 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
@@ -89,16 +90,8 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     if (widget.colors.isNullOrEmpty) {
       return const SizedBox.shrink();
@@ -189,13 +182,18 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                 prevChoosedOrAppliedFilterToAddToIt?.colors ??
                                     []);
                             if (!isSelected) {
-                              // FirebaseAnalyticsService.logEventForSession(
-                              //   eventName: AnalyticsEventsConst.buttonClicked,
-                              //   executedEventName:
-                              //       AnalyticsButtonsEventNameConst
-                              //           .addFilterButton,
-                              // );
-                              //////////////////////////////
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.applyFilter,
+                                extraParams: {
+                                  'filter_type': "color",
+                                  'filter_value': widget.colors[index],
+                                  'screen_name':
+                                      GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                                },
+                                executedEventName:
+                                    AnalyticsButtonsEventNameConst
+                                        .applyFilterButton,
+                              );
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();
                               }
@@ -235,9 +233,6 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                               );
                             }
                             if (widget.hideTitle) {
-                              print(
-                                  "........................................ddddddddddddddddd${widget.colors[index]}ddddddddddddddddddddddddddddddddddddddddd");
-
                               boutiqueBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,

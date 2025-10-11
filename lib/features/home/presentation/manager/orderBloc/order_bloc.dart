@@ -445,8 +445,13 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetCustomerWalletEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(state.copyWith(
-        getCustomerWalletStatus: GetCustomerWalletStatus.loading));
+    if (event.statusInitToRefreshAmount) {
+      emit(state.copyWith(
+          getCustomerWalletStatus: GetCustomerWalletStatus.init));
+    } else {
+      emit(state.copyWith(
+          getCustomerWalletStatus: GetCustomerWalletStatus.loading));
+    }
     final response = await getCustomerWalletUseCase
         .call(CustomerWalletParams(limit: event.limit, offset: event.offset));
     response.fold(
@@ -685,7 +690,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           setCustomerAddressDefaultStatus:
               SetCustomerAddressDefaultStatus.failure));
     }, (r) async {
-      add(GetCustomerAddressesEvent());
       GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
       ErrorManager.resetRetry('SetCustomerAddressDefaultEvent');
 

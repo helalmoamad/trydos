@@ -17,6 +17,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CartDetailsSheetHeader extends StatefulWidget {
   final double shippingCost;
@@ -105,22 +106,15 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     if (widget.shippingCost == 0) {
       texts.remove('${LocaleKeys.free_shipping.tr()}');
       svg.remove(AppAssets.freeShippingSvg);
     }
-    FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-    };
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(

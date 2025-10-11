@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductListingImageWidget extends StatelessWidget {
   const ProductListingImageWidget({
@@ -34,18 +35,10 @@ class ProductListingImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-    };*/
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       alignment: Alignment.center,
       width: width,

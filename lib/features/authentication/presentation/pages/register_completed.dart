@@ -15,6 +15,7 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
 import '../../../app/my_text_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class RegisterCompleted extends StatefulWidget {
   const RegisterCompleted({Key? key, required this.userName}) : super(key: key);
@@ -29,6 +30,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
 
   @override
   void initState() {
+    LastPagesTracker.push('RegisterCompleted');
     appBloc = BlocProvider.of<AppBloc>(context);
     super.initState();
   }
@@ -45,6 +47,10 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Scaffold(
       backgroundColor: const Color(0xffBCFFDF),
       body: Stack(

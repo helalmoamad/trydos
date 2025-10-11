@@ -10,12 +10,17 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class PaymentMethod extends StatefulWidget {
   final ValueNotifier<List<String>> paymentMethods;
@@ -62,7 +67,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
 
   void _addItemToPaymentMethods(
       ValueNotifier<List<String>> paymentMethods, String item) {
-    paymentMethods.value = List.from(paymentMethods.value)..add(item);
+    Future.delayed(const Duration(milliseconds: 300), () {
+      paymentMethods.value = List.from(paymentMethods.value)..add(item);
+    });
   }
 
   void _removeItemFromPaymentMethods(
@@ -76,16 +83,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Column(
       children: [
@@ -239,8 +238,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               context: context,
                               fromSuccessOrder: widget.fromSuccessOrder,
                             ),
-                          ),
-                        ),
+                          )),
                   /////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
                               widget.fromPalceOrder) ||
@@ -500,6 +498,36 @@ class _PaymentMethodState extends State<PaymentMethod> {
             height: 1.33,
           ),
         ),
+        (fromSuccessOrder)
+            ? const SizedBox.shrink()
+            : BlocBuilder<OrderBloc, OrderState>(
+                buildWhen: (previous, current) =>
+                    previous.getCustomerWalletStatus !=
+                    current.getCustomerWalletStatus,
+                builder: (context, state) => state.getCustomerWalletStatus ==
+                        GetCustomerWalletStatus.init
+                    ? SizedBox(
+                        width: 30,
+                        height: 40,
+                        child: TrydosLoader(
+                          size: 17,
+                        ))
+                    : InkWell(
+                        onTap: () {
+                          BlocProvider.of<OrderBloc>(context).add(
+                            GetCustomerWalletEvent(
+                                limit: 10,
+                                offset: 1,
+                                statusInitToRefreshAmount: true),
+                          );
+                        },
+                        child: const SizedBox(
+                            width: 30,
+                            height: 40,
+                            child: Icon(
+                              Icons.refresh_sharp,
+                              size: 17,
+                            )))),
       ],
     );
   }
@@ -527,6 +555,10 @@ class PaymentMethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       height: 40.h,
       width: 1.sw,

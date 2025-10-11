@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../app/my_text_widget.dart';
 
 class NoImageWidget extends StatelessWidget {
@@ -27,6 +27,10 @@ class NoImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       width: width,
       height: height,

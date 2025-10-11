@@ -38,6 +38,7 @@ import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
 import 'package:geodesy/geodesy.dart' as geod;
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class AddShippingAdress extends StatefulWidget {
   const AddShippingAdress(
@@ -177,6 +178,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
   List<LatLng> mapSyriaBorders = [];
   @override
   void initState() {
+    LastPagesTracker.push("AddShippingAdress Page");
     homeBloc = BlocProvider.of<HomeBloc>(context);
     countryBorders = homeBloc.state.countryCoordinatesBorders;
 
@@ -422,18 +424,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     String _formatNumber(String input, String countryCode) {
       // إزالة الفراغات
 

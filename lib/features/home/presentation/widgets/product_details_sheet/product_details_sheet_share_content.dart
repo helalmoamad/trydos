@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,9 +17,7 @@ import 'package:trydos/features/home/presentation/widgets/share_products_with_so
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../generated/locale_keys.g.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 import '../../../../app/app_widgets/app_text_field.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
@@ -30,22 +28,16 @@ import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
   const ProductDetailsSheetShareContent(
       {super.key,
       required this.idsOfChatCardsToShare,
-      required this.focusNode,
       required this.productItem,
       required this.currentColor,
       required this.currentSize,
       required this.productDescription,
       this.scrollController});
-
-  final FocusNode focusNode;
   final String currentColor;
   final String currentSize;
   final product.Products productItem;
@@ -66,16 +58,8 @@ class _ProductDetailsSheetShareContentState
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return ScrollConfiguration(
       behavior: const cupertino.CupertinoScrollBehavior(),
@@ -127,7 +111,6 @@ class _ProductDetailsSheetShareContentState
                 padding: HWEdgeInsets.symmetric(horizontal: 20.0)
                     .copyWith(bottom: 10),
                 child: AppTextField(
-                  focusNode: widget.focusNode,
                   filledColor: const Color(0xffF8F8F8),
                   bordersColor: const Color(0xffF8F8F8),
                   hintText: '${LocaleKeys.search.tr()}',
@@ -144,10 +127,10 @@ class _ProductDetailsSheetShareContentState
                                 GetIt.I<PrefsRepository>().myChatId);
                         if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
                                 .toLowerCase()
-                                .contains(text.toLowerCase() ?? '') ||
+                                .contains(text.toLowerCase()) ||
                             (member.user?.mobilePhone ?? LocaleKeys.no_num.tr())
                                 .toLowerCase()
-                                .contains(text.toLowerCase() ?? '')) {
+                                .contains(text.toLowerCase())) {
                           search.add(chat);
                         }
                       }
@@ -251,6 +234,7 @@ class _ProductDetailsSheetShareContentState
           buildSocialButtons(
               currentColor: widget.currentColor,
               currentSize: widget.currentSize,
+              product: widget.productItem,
               text: "${widget.productDescription}",
               productSlugForULr: widget.productItem.slug ?? "",
               productId: widget.productItem.productId.toString()),
@@ -276,6 +260,10 @@ class ChatCardForShare extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     final String receiverName, fullReceiverName;
     if (channelMember.user?.name == null) {
       receiverName = LocaleKeys.uk.tr();

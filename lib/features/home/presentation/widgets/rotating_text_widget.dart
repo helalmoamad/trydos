@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class RotatingTextWidget extends StatefulWidget {
   final List<String> texts;
@@ -65,6 +66,10 @@ class _RotatingTextWidgetState extends State<RotatingTextWidget> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     if (widget.texts.isEmpty) {
       return const SizedBox.shrink();
     }

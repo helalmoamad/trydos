@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -42,6 +43,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   void initState() {
+    LastPagesTracker.push("Splash Page");
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
@@ -85,6 +87,11 @@ class _SplashPageState extends State<SplashPage> {
               categorySlugs: [],
               cashedOrginalBoutique: true,
               boutiqueSlug: "*featured*"));
+      GetIt.I<BoutiqueBloc>().add(
+          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+              categorySlugs: [],
+              cashedOrginalBoutique: true,
+              boutiqueSlug: "*recommended*"));
       GetIt.I<BoutiqueBloc>().add(
           const GetProductWithFiltersWithoutCancelingPreviousEvents(
               categorySlugs: [],
@@ -136,6 +143,10 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         navigationToSinglePageChat(state.chatToNavigateFromTerminated!);

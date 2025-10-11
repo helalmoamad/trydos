@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -37,6 +38,7 @@ class _AgoraWebViewState extends State<AgoraWebView> {
   late ChatBloc chatBloc;
   @override
   void initState() {
+    LastPagesTracker.push('AgoraWebView');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     // final flutterWebviewPlugin = new FlutterWebviewPlugin();
     debugPrint("asdafsd{${widget.channelId}");
@@ -66,11 +68,8 @@ class _AgoraWebViewState extends State<AgoraWebView> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Agora_Web_View"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     Uri baseUrl = Uri.parse('https://webdev.trydos.com');

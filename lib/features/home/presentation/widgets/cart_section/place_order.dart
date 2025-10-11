@@ -35,6 +35,7 @@ import '../../manager/homeBloc/home_state.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_state.dart';
 import 'payment_webview.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class PlaceOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
@@ -75,6 +76,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   @override
   void initState() {
+    LastPagesTracker.push("PlaceOrder Page");
     super.initState();
   }
 
@@ -86,16 +88,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return WillPopScope(
       onWillPop: () async {
@@ -302,7 +296,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       const Duration(milliseconds: 300),
                       () {
                         FirebaseAnalyticsService.logEventForSession(
-                          executedEventName: 'PlaceOrderScreen',
+                          executedEventName:
+                              AnalyticsButtonsEventNameConst.PLACE_ORDER_BUTTON,
                           eventName: AnalyticsEventsConst.purchase,
                           extraParams: {
                             'transaction_id': data[0].transactionRef.toString(),
@@ -310,7 +305,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             'currency': widget.currencySympole.toString(),
                             'shipping': data[0].shippingCost.toString(),
                             'coupon': data[0].couponCode.toString(),
-                            'interaction_type': 'purchase',
                             'screen_name': 'PlaceOrderScreen',
                             'items': analyticsItems.toString(),
                           },

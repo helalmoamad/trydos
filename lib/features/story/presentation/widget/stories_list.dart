@@ -28,7 +28,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -100,10 +100,8 @@ class _StoriesListState extends State<StoriesList> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) =>

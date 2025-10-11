@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../data/models/get_orders_model.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class OrderWidget extends StatelessWidget {
   final List<OrderListModel> orders;
@@ -16,13 +17,16 @@ class OrderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
         width: double.infinity,
         color: (index % 2 == 0)
             ? const Color.fromARGB(255, 231, 231, 231)
             : Colors.white,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(

@@ -224,6 +224,8 @@ import '../../features/home/domain/use_cases/get_products_with_filters_usecase.d
     as _i955;
 import '../../features/home/domain/use_cases/get_provinces_by_iso_usecase.dart'
     as _i401;
+import '../../features/home/domain/use_cases/get_recommend_products_usecase.dart'
+    as _i889;
 import '../../features/home/domain/use_cases/get_return_reasons_usecase.dart'
     as _i815;
 import '../../features/home/domain/use_cases/get_starting_settings_usecase.dart'
@@ -512,6 +514,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i749.GetProductsListInCartUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i401.GetProvincesByIsoUseCase>(
       () => _i401.GetProvincesByIsoUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i889.GetRecommendProductsUseCase>(
+      () => _i889.GetRecommendProductsUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i815.GetReturnReasonsUseCase>(
       () => _i815.GetReturnReasonsUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i815.GetStartingSettingsUseCase>(
@@ -651,11 +655,6 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i518.GetHomeBoutiqesUseCase>(),
       ));
-  gh.lazySingleton<_i511.BoutiqueBloc>(() => _i511.BoutiqueBloc(
-        gh<_i146.GetFeaturedProductsUseCase>(),
-        gh<_i955.GetProductsWithFiltersUseCase>(),
-        gh<_i290.GetProductFiltersUseCase>(),
-      ));
   gh.factory<_i589.CreateUserUseCase>(
       () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i142.ChangeChatPropertyUseCase>(
@@ -717,6 +716,12 @@ Future<_i174.GetIt> $initGetIt(
       () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i961.WatchMissedCallUseCase>(
       () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.lazySingleton<_i511.BoutiqueBloc>(() => _i511.BoutiqueBloc(
+        gh<_i146.GetFeaturedProductsUseCase>(),
+        gh<_i955.GetProductsWithFiltersUseCase>(),
+        gh<_i889.GetRecommendProductsUseCase>(),
+        gh<_i290.GetProductFiltersUseCase>(),
+      ));
   gh.lazySingleton<_i547.CallsBloc>(() => _i547.CallsBloc(
         gh<_i711.RejectCallUseCase>(),
         gh<_i643.MakeCallUseCase>(),

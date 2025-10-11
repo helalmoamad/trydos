@@ -38,8 +38,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           (json['searchWithOutFilterOffset'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
-      isChangedColorBeforeOpenPanel:
-          json['isChangedColorBeforeOpenPanel'] as bool?,
       updateProfileStatus: $enumDecodeNullable(
           _$UpdateProfileStatusEnumMap, json['updateProfileStatus']),
       addProductIdToSaveRedeemTimerStatus: $enumDecodeNullable(
@@ -182,7 +180,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
         (k, e) => MapEntry(
             k, (e as List<dynamic>).map((e) => (e as num).toInt()).toList()),
       ),
-      animatedCartMessage: json['animatedCartMessage'] as String?,
       addVariationToCartId:
           (json['addVariationToCartId'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(k, Map<String, String>.from(e as Map)),
@@ -196,7 +193,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                       (k, e) => MapEntry(
                           int.parse(k),
                           (e as List<dynamic>)
-                              .map((e) => e as String)
+                              .map((e) => (e as List<dynamic>)
+                                  .map((e) => e as String)
+                                  .toList())
                               .toList()),
                     )),
               ) ??
@@ -262,12 +261,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$CheckWithGetCartStatusEnumMap,
               json['checkWithGetCartStatus']) ??
           CheckWithGetCartStatus.init,
-      getProductDetailWithoutRelatedProductsModel:
-          json['getProductDetailWithoutRelatedProductsModel'] == null
-              ? null
-              : GetProductDetailWithoutRelatedProductsModel.fromJson(
-                  json['getProductDetailWithoutRelatedProductsModel']
-                      as Map<String, dynamic>),
       addOrRemoveLikeOfProductStatus: $enumDecodeNullable(
               _$AddOrRemoveLikeOfProductStatusEnumMap,
               json['addOrRemoveLikeOfProductStatus']) ??
@@ -299,6 +292,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getNotificationTypeProductStatus: $enumDecodeNullable(
           _$GetNotificationTypeProductStatusEnumMap,
           json['getNotificationTypeProductStatus']),
+      currentHeightWhenAddToBag:
+          (json['currentHeightWhenAddToBag'] as num?)?.toInt() ?? 0,
       currentIndexForUpdateCart:
           (json['currentIndexForUpdateCart'] as num?)?.toInt(),
       getCountryBoundaryByIsoStatus: $enumDecodeNullable(
@@ -365,6 +360,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'storiesCollections':
           instance.storiesCollections.map((e) => e.toJson()).toList(),
       'currentPage': instance.currentPage,
+      'currentHeightWhenAddToBag': instance.currentHeightWhenAddToBag,
       'selectedVideoStatus':
           _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
       'storyOffset': instance.storyOffset,
@@ -388,9 +384,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'enableAddToCardAfterChangeVariantZero':
           _$EnableAddToCardAfterChangeVariantZeroEnumMap[
               instance.enableAddToCardAfterChangeVariantZero],
-      'animatedCartMessage': instance.animatedCartMessage,
       'isChangedvariationWhenQtyZero': instance.isChangedvariationWhenQtyZero,
-      'isChangedColorBeforeOpenPanel': instance.isChangedColorBeforeOpenPanel,
       'convertItemFromcartToOldCartStatus':
           _$ConvertItemFromcartToOldCartStatusEnumMap[
               instance.convertItemFromcartToOldCartStatus]!,
@@ -489,8 +483,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               ))),
       'getCartShippingItemsModel': instance.getCartShippingItemsModel?.toJson(),
       'getOldCartModel': instance.getOldCartModel?.toJson(),
-      'getProductDetailWithoutRelatedProductsModel':
-          instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'changeSizesForEveryProduct': _$ChangeSizesForEveryProductEnumMap[
           instance.changeSizesForEveryProduct],
       'currentIndexForUpdateCart': instance.currentIndexForUpdateCart,

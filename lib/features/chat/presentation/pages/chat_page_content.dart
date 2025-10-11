@@ -24,6 +24,7 @@ import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_state.dart';
 import '../utils/firebase_presence.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ChatPageContent extends StatefulWidget {
   const ChatPageContent({Key? key, this.onSendForwardMessage})
@@ -40,6 +41,7 @@ class ChatPageContentState extends State<ChatPageContent> {
   int differencetime = 0;
   @override
   void initState() {
+    LastPagesTracker.push('ChatPageContent');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     differencetime = GetIt.I<PrefsRepository>().getdurtion ?? 0;
 
@@ -100,12 +102,8 @@ class ChatPageContentState extends State<ChatPageContent> {
 // ! asd
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Chat_Page_Content"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error);
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     //todo  9/21  change it to BlocBuilder
     return BlocBuilder<ChatBloc, ChatState>(

@@ -69,7 +69,8 @@ abstract class HomeRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, bool>> sendErrorToMobileErrorLog(
       Map<String, dynamic> params);
-
+  Future<Either<Failure, GetProductListingWithFiltersModel>>
+      getRecommendedProducts(Map<String, dynamic> params);
   /* Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(

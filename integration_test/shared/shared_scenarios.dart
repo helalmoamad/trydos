@@ -21,7 +21,7 @@ class SharedScenarios {
     required WidgetTester tester,
     required bool isForLogin,
     bool isAfterAddName = false,
-    String phoneNumber = '963997412860',
+    String phoneNumber = '963934330889',
   }) async {
     if (!isAfterAddName) {
       await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
@@ -39,11 +39,14 @@ class SharedScenarios {
         successMessage: 'Find WelcomeSection Success',
         failedMessage: 'Find WelcomeSection failed',
       );
+      await tester.pumpAndSettle();
       ////////////////////////////
       final Finder haveAccountButton =
-          find.byKey(Key(WidgetsKeys.haveAccountButtonKey));
+          find.byKey(const Key(WidgetsKeys.haveAccountButtonKey));
+
       final Finder createNewAccountButton =
-          find.byKey(Key(WidgetsKeys.createNewAccountButtonKey));
+          find.byKey(const Key(WidgetsKeys.createNewAccountButtonKey));
+
       await Future.delayed(const Duration(seconds: 1));
       if (isForLogin) {
         await tester.tap(haveAccountButton);
@@ -60,7 +63,7 @@ class SharedScenarios {
           failedMessage: 'Find CreateAccountSection failed',
         );
         final Finder agreeContinueButton =
-            find.byKey(Key(WidgetsKeys.agreeContinueButtonKey));
+            find.byKey(const Key(WidgetsKeys.agreeContinueButtonKey));
         await Future.delayed(const Duration(seconds: 1));
         await tester.tap(agreeContinueButton);
         await tester.pumpAndSettle();
@@ -75,9 +78,9 @@ class SharedScenarios {
     );
     //////////////////////////
     final Finder phoneField =
-        find.byKey(Key(WidgetsKeys.loginPhoneFormFieldKey));
+        find.byKey(const Key(WidgetsKeys.loginPhoneFormFieldKey));
     final Finder confirmPhoneButton =
-        find.byKey(Key(WidgetsKeys.loginConfirmPhoneButtonKey));
+        find.byKey(const Key(WidgetsKeys.loginConfirmPhoneButtonKey));
 
     await tester.enterText(phoneField, phoneNumber);
     await Future.delayed(const Duration(seconds: 2));
@@ -92,7 +95,7 @@ class SharedScenarios {
     );
     //////////////////////////
     final Finder chooseWhatsAppButton =
-        find.byKey(Key(WidgetsKeys.chooseWhatsappButtonKey));
+        find.byKey(const Key(WidgetsKeys.chooseWhatsappButtonKey));
     await tester.tap(chooseWhatsAppButton);
     await tester.pumpAndSettle();
     //////////////////////////
@@ -106,7 +109,7 @@ class SharedScenarios {
 
   static Future<void> countryDropDown({required WidgetTester tester}) async {
     final Finder countryDropDownWidget =
-        find.byKey(Key(WidgetsKeys.countryDropDownKey));
+        find.byKey(const Key(WidgetsKeys.countryDropDownKey));
     if (countryDropDownWidget.evaluate().isEmpty) {
       print('DropdownButton not found.');
     } else {
@@ -128,7 +131,7 @@ class SharedScenarios {
       await Future.delayed(const Duration(seconds: 3));
       ///////////////////
       final Finder chooseCountryButton =
-          find.byKey(Key(WidgetsKeys.chooseCountryButtonKey));
+          find.byKey(const Key(WidgetsKeys.chooseCountryButtonKey));
       await tester.tap(chooseCountryButton);
       await tester.pumpAndSettle();
     }
@@ -155,7 +158,7 @@ class SharedScenarios {
     await testTokensAreNull(isJustForMarketToken: true);
     ////////////////////////////
     final Finder laterTakeLookButton =
-        find.byKey(Key(WidgetsKeys.laterTakeLookKey));
+        find.byKey(const Key(WidgetsKeys.laterTakeLookKey));
     await Future.delayed(const Duration(seconds: 1));
     await tester.tap(laterTakeLookButton);
     await tester.pumpAndSettle();
@@ -163,7 +166,7 @@ class SharedScenarios {
     await countryDropDown(tester: tester);
     ////////////////////////////
     await GlobalTestFunctions.waitFor(tester, find.byType(HomePage),
-        timeout: Duration(seconds: 40));
+        timeout: const Duration(seconds: 40));
     //////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -285,9 +288,10 @@ class SharedScenarios {
       failedMessage: 'Find Adding Name failed',
     );
     //////////////////////////
-    final Finder nameField = find.byKey(Key(WidgetsKeys.nameFormFieldKey));
+    final Finder nameField =
+        find.byKey(const Key(WidgetsKeys.nameFormFieldKey));
     final Finder confirmNameButton =
-        find.byKey(Key(WidgetsKeys.confirmNameButtonKey));
+        find.byKey(const Key(WidgetsKeys.confirmNameButtonKey));
     await tester.enterText(nameField, name);
     await Future.delayed(const Duration(seconds: 2));
     await tester.tap(confirmNameButton);
@@ -303,7 +307,8 @@ class SharedScenarios {
     );
     //////////////////////////
     await Future.delayed(const Duration(seconds: 2));
-    final Finder skipForNowButton = find.byKey(Key(WidgetsKeys.skipForNowKey));
+    final Finder skipForNowButton =
+        find.byKey(const Key(WidgetsKeys.skipForNowKey));
     await tester.tap(skipForNowButton);
     await tester.pumpAndSettle();
     //////////////////////////
@@ -325,9 +330,9 @@ class SharedScenarios {
     String text = 'test text message',
   }) async {
     final Finder sendMessageTextField =
-        find.byKey(Key(WidgetsKeys.sendMessageTextFieldKey));
+        find.byKey(const Key(WidgetsKeys.sendMessageTextFieldKey));
     final Finder sendMessageInChatButton =
-        find.byKey(Key(WidgetsKeys.sendMessageInChatButtonKey));
+        find.byKey(const Key(WidgetsKeys.sendMessageInChatButtonKey));
     await tester.enterText(sendMessageTextField, text);
     await Future.delayed(const Duration(seconds: 2));
     await tester.tap(sendMessageInChatButton);

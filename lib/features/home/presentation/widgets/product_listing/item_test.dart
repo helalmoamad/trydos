@@ -28,6 +28,7 @@ import '../../../../../core/utils/theme_state.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 import 'my_gallery3d_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 /// 🚀 نسخة محسنة من ProductListing3DSlider مع أداء فائق والمحافظة على التصميم
 class ProductListing3DSliderOptimized extends StatefulWidget {
@@ -256,6 +257,10 @@ class _ProductListing3DSliderOptimizedState
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     super.build(context);
 
     return Directionality(

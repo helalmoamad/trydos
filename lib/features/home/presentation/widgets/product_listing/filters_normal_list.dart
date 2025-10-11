@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -15,6 +15,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
@@ -87,16 +88,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     if (widget.filters.isNullOrEmpty) {
       return const SizedBox.shrink();
@@ -205,13 +198,19 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 prevChoosedOrAppliedFilterToAddToIt?.brands ??
                                     []);
                             if (!isSelected) {
-                              // FirebaseAnalyticsService.logEventForSession(
-                              //   eventName: AnalyticsEventsConst.buttonClicked,
-                              //   executedEventName:
-                              //       AnalyticsButtonsEventNameConst
-                              //           .addFilterButton,
-                              // );
-                              //////////////////////////////
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.applyFilter,
+                                extraParams: {
+                                  'filter_type': "brand",
+                                  'filter_value':
+                                      widget.filters[index].name ?? "",
+                                  'screen_name':
+                                      GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                                },
+                                executedEventName:
+                                    AnalyticsButtonsEventNameConst
+                                        .applyFilterButton,
+                              );
                               dynamic item = widget.filters[index];
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();

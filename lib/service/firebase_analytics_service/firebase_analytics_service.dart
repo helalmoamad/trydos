@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -43,28 +45,42 @@ class FirebaseAnalyticsService {
     bool isForApi = false,
     required executedEventName,
   }) async {
+    final sessionId = Random()
+        .nextInt(1000000)
+        .toString(); //await FirebaseAnalytics.instance.getSessionId();
     try {
-      await FirebaseAnalytics.instance.logEvent(
+      await FirebaseAnalytics.instance
+          .logEvent(
         name: eventName,
         parameters: {
-          // 'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
-          // 'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
-          // 'executed_event_name': isForApi ? 'null' : executedEventName,
-          'timestamp': DateTime.now()
+          'event_id': Random().nextInt(1000000).toString(),
+          'timestamp_now': DateTime.now()
               .toUtc()
               .add(
                   Duration(minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
               .toString(),
-          // 'previous_event_name': isForApi
-          //     ? 'null'
-          //     : GetIt.I<PrefsRepository>().currentEvent.toString(),
-          'device_language': LanguageService.languageCode == 'ar'
-              ? 'ae'
-              : LanguageService.languageCode,
-          'country_name': GetIt.I<PrefsRepository>().countryIso.toString(),
+          "user_id_guest": GetIt.I<PrefsRepository>().isVerifiedPhone ?? false
+              ? null
+              : GetIt.I<PrefsRepository>().myMarketId.toString(),
+          "user_id_verified":
+              !(GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
+                  ? null
+                  : GetIt.I<PrefsRepository>().myMarketId.toString(),
+          'device_language':
+              LanguageService.isKurdish ? 'ku' : LanguageService.languageCode,
+          "operating_system": Platform.isIOS ? "ios" : "Android",
+          "platform_source": "mobile",
+          'session_id': sessionId.toString(),
+          "interaction_type": eventName,
+          'country_name':
+              ((GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+                      ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+                      : GetIt.I<PrefsRepository>().countryIso) ??
+                  ""),
           if (extraParams != null) ...extraParams,
-        },
-      ).then(
+        }..removeWhere((key, value) => value == null),
+      )
+          .then(
         (value) async {
           if (!isForApi) {
             // await GetIt.I<PrefsRepository>().setCurrentEvent(executedEventName);

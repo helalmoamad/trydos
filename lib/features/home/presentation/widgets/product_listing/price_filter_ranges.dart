@@ -1,7 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +10,10 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
@@ -58,16 +62,8 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     if (widget.priceRanges.isNullOrEmpty) {
       return const SizedBox.shrink();
@@ -97,8 +93,17 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                       : Key(
                           '${WidgetsKeys.priceCircleProductListingFilterKey}$index'),
                   onTap: () {
-                    print('tab on price');
-
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.applyFilter,
+                      extraParams: {
+                        'filter_type': "price",
+                        'filter_value':
+                            '${widget.priceRanges[index].minPrice} - ${widget.priceRanges[index].maxPrice}',
+                        'screen_name': GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                      },
+                      executedEventName:
+                          AnalyticsButtonsEventNameConst.applyFilterButton,
+                    );
                     Filter? prevChoosedOrAppliedFilterToAddToIt =
                         boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
                     if (prevChoosedOrAppliedFilterToAddToIt == null) {

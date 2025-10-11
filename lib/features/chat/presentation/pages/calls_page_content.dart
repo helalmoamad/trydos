@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,6 +26,7 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
   late CallsBloc callsBloc;
   late ChatBloc chatBloc;
   void initState() {
+    LastPagesTracker.push('CallsPageContent');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
     callsBloc.add(ResetMissedCallEvent());
@@ -44,11 +45,8 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Calls_Page_Content"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     return BlocBuilder<CallsBloc, CallsState>(

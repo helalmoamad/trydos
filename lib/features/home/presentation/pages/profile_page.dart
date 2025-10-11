@@ -39,11 +39,9 @@ import 'package:trydos/features/home/presentation/widgets/profile_section/langua
 import 'package:trydos/features/home/presentation/widgets/profile_section/profile_country_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/user_information_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
-import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
-import 'package:trydos/service/language_service.dart';
 
+import 'package:trydos/service/language_service.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../manager/orderBloc/order_bloc.dart';
 import 'Order/orders_page.dart';
@@ -68,6 +66,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
+    LastPagesTracker.push("ProfileHome Page");
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -89,18 +88,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return Scaffold(
         body: SafeArea(
       child: Stack(
@@ -203,11 +193,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: 130);
-    if (textPainter.size != null) {
-      return textPainter.size.width;
-    } else {
-      return 0.0;
-    }
+    return textPainter.size.width;
   }
 
   Widget _veryfiedOtp() {

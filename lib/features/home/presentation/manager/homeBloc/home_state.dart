@@ -136,7 +136,6 @@ class HomeState extends Equatable {
     this.changeSizesForEveryProduct,
     this.uploadUserPhotoCloudinaryStatus,
     this.searchWithOutFilterOffset,
-    this.isChangedColorBeforeOpenPanel,
     this.updateProfileStatus,
     this.addProductIdToSaveRedeemTimerStatus =
         AddProductIdToSaveRedeemTimerStatus.init,
@@ -180,7 +179,6 @@ class HomeState extends Equatable {
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.currentColorSizeForCart,
     this.currentQuantityForCart,
-    this.animatedCartMessage,
     this.addVariationToCartId = const {},
     this.addImagesToProductIdForCart = const {},
     this.searchHistory,
@@ -208,12 +206,12 @@ class HomeState extends Equatable {
     this.currentSlugToRefreshFromNotification,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.checkWithGetCartStatus = CheckWithGetCartStatus.init,
-    this.getProductDetailWithoutRelatedProductsModel,
     this.addOrRemoveLikeOfProductStatus = AddOrRemoveLikeOfProductStatus.init,
     this.getProductListingPaginationWithoutFiltersModel = const {},
     this.currentSelectedColorForEveryProduct = const {},
     this.notificationTypeForProductModel,
     this.getNotificationTypeProductStatus,
+    this.currentHeightWhenAddToBag = 0,
     // this.geColorsAndSizesForSearchModel,
     this.currentIndexForUpdateCart,
     this.getCountryBoundaryByIsoStatus,
@@ -242,6 +240,7 @@ class HomeState extends Equatable {
   final User? userInfo;
   final List<CollectionStoryModel> storiesCollections;
   final int currentPage;
+  final int? currentHeightWhenAddToBag;
   final SelectedVideoStatus selectedVideoStatus;
   final int storyOffset;
   final bool getStoryWithPagintionStatusLoading;
@@ -258,9 +257,9 @@ class HomeState extends Equatable {
   final List<String>? productIdToSaveRedeemTimer;
   final EnableAddToCardAfterChangeVariantZero?
       enableAddToCardAfterChangeVariantZero;
-  final String? animatedCartMessage;
+
   final bool isChangedvariationWhenQtyZero;
-  final bool? isChangedColorBeforeOpenPanel;
+
   final ConvertItemFromcartToOldCartStatus convertItemFromcartToOldCartStatus;
 
   final GetNotificationTypeProductStatus? getNotificationTypeProductStatus;
@@ -298,7 +297,7 @@ class HomeState extends Equatable {
   final List<String> listOfErrorSendedToMobileErrorLog;
 
   final Map<String, String>? searchWithOutFilterOffset;
-  final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
+  final Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart;
   final Map<String, Map<String, String>>? addVariationToCartId;
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
@@ -339,8 +338,6 @@ class HomeState extends Equatable {
   final oldCart.GetOldCartModel? getOldCartModel;
   // final Map<String, GetCommentForProductModel> getCommentForProductModel;
 
-  final GetProductDetailWithoutRelatedProductsModel?
-      getProductDetailWithoutRelatedProductsModel;
   final ChangeSizesForEveryProduct? changeSizesForEveryProduct;
 
   final int? currentIndexForUpdateCart;
@@ -365,7 +362,7 @@ class HomeState extends Equatable {
         oldcartCollection,
         convertItemFromcartToOldCartStatus,
         getOldCartModel,
-        animatedCartMessage,
+
         getOldCartItemsStatus,
         notificationTypeForProductModel,
         updateProfileStatus,
@@ -427,8 +424,6 @@ class HomeState extends Equatable {
         getCartShippingItemsModel,
         //    getCommentForProductModel,
 
-        getProductDetailWithoutRelatedProductsModel,
-
         addItemInCartStatus,
         addVariationToCartId,
         deleteItemInCartStatus,
@@ -436,7 +431,7 @@ class HomeState extends Equatable {
 
         isVariantRequestNotification,
         selectedCollection,
-        isChangedColorBeforeOpenPanel,
+
         startingSetting,
         currentIndexForUpdateCart,
         currentColorSizeForCart,
@@ -458,6 +453,7 @@ class HomeState extends Equatable {
         selectedVideoStatus,
         finishGetAllStory,
         storyOffset,
+        currentHeightWhenAddToBag,
         getStoryWithPagintionStatusLoading
       ];
 
@@ -465,12 +461,12 @@ class HomeState extends Equatable {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetFirebaseSettingForNotificationStatus?
           getFirebaseSettingForNotificationStatus,
-      final String? animatedCartMessage,
       final GetAllowedCountriesStatus? getAllowedCountriesStatus,
       final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
       final List<String>? productIdToSaveRedeemTimer,
+      final int? currentHeightWhenAddToBag,
       final bool? isChangedVariationWhenQtyZero,
       final bool? finishLoadingAfterChangedVariationWhenQtyZero,
       final List<CollectionStoryModel>? storiesCollections,
@@ -499,7 +495,6 @@ class HomeState extends Equatable {
       final Map<String, Map<String, String>>? addVariationToCartId,
       final CheckAvailabilityProductCartModel?
           checkAvailabilityProductCartModel,
-      final bool? isChangedColorBeforeOpenPanel,
       final CheckAvailabilityProductCartStatus?
           checkAvailabilityProductCartStatus,
       final AddItemInCartStatus? addItemInCartStatus,
@@ -523,7 +518,7 @@ class HomeState extends Equatable {
       final ChangeSizesForEveryProduct? changeSizesForEveryProduct,
       // String? idForRequest,
 
-      Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
+      Map<String, Map<int, List<List<String>>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? listitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
       //final GetCommentForProductStatus? getCommentForProductStatus,
@@ -534,8 +529,6 @@ class HomeState extends Equatable {
       final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus,
       final GetOLdCartItemsStatus? getOldCartItemsStatus,
       final AddCommentStatus? addCommentStatus,
-      final GetProductDetailWithoutRelatedProductsModel?
-          getProductDetailWithoutRelatedProductsModel,
       final Products? productContentForStatusOfOpeningProductDetailsDirectly,
       List<String>? sizesForEachColor,
       List<int>? sizesQuantitiesForEachColor,
@@ -608,7 +601,7 @@ class HomeState extends Equatable {
           countryCoordinatesBorders ?? this.countryCoordinatesBorders,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
-      animatedCartMessage: animatedCartMessage ?? this.animatedCartMessage,
+
       addProductIdToSaveRedeemTimerStatus:
           addProductIdToSaveRedeemTimerStatus ??
               this.addProductIdToSaveRedeemTimerStatus,
@@ -629,8 +622,7 @@ class HomeState extends Equatable {
       currentSelectedColorForEveryProductStatus:
           currentSelectedColorForEveryProductStatus ??
               this.currentSelectedColorForEveryProductStatus,
-      isChangedColorBeforeOpenPanel:
-          isChangedColorBeforeOpenPanel ?? this.isChangedColorBeforeOpenPanel,
+
       notificationTypeForProductModel: notificationTypeForProductModel ??
           this.notificationTypeForProductModel,
       firebaseSettingForNotificationModel:
@@ -699,6 +691,8 @@ class HomeState extends Equatable {
       oldcartCollection: oldCartCollection ?? this.oldcartCollection,
       getOldCartItemsStatus:
           getOldCartItemsStatus ?? this.getOldCartItemsStatus,
+      currentHeightWhenAddToBag:
+          currentHeightWhenAddToBag ?? this.currentHeightWhenAddToBag,
 
       getOldCartModel: getOldCartModel ?? this.getOldCartModel,
 
@@ -759,9 +753,7 @@ class HomeState extends Equatable {
 
       searchWithOutFilterOffset:
           searchWithOutFilterOffset ?? this.searchWithOutFilterOffset,
-      getProductDetailWithoutRelatedProductsModel:
-          getProductDetailWithoutRelatedProductsModel ??
-              this.getProductDetailWithoutRelatedProductsModel,
+
       productStatus: productStatus ?? this.productStatus,
       getAllowedCountriesModel:
           getAllowedCountriesModel ?? this.getAllowedCountriesModel,

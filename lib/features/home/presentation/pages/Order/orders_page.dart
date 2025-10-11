@@ -12,7 +12,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';
@@ -53,6 +53,7 @@ class _OrdersPageState extends State<OrdersPage> {
   bool requestReturnApiFromNotification = true;
   @override
   void initState() {
+    LastPagesTracker.push("Orders Page");
     orderBloc = BlocProvider.of<OrderBloc>(context);
     orderBloc.add(GetCustomerAddressesEvent());
     if (widget.fromNotification ?? false) {
@@ -87,6 +88,10 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       color: const Color(0xffFFFFFF),
       child: SafeArea(

@@ -21,6 +21,7 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class VerificationMethods extends StatefulWidget {
   VerificationMethods({
@@ -198,9 +199,8 @@ class _VerificationMethodsState extends State<VerificationMethods> {
   Widget build(BuildContext context) {
     FocusScope.of(context).unfocus();
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocListener<AuthBloc, AuthState>(
       bloc: authBloc,

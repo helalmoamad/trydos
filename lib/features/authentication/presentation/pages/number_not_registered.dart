@@ -27,6 +27,7 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class NumberNotRegistered extends StatefulWidget {
   const NumberNotRegistered({required this.phoneNumber, Key? key})
@@ -63,11 +64,21 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
     super.didChangeDependencies();
   }
 
+  @override
+  void initState() {
+    LastPagesTracker.push('NumberNotRegistered');
+    super.initState();
+  }
+
   final ValueNotifier<int> pageContent = ValueNotifier(0);
   final PageController pageController = PageController();
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return ValueListenableBuilder<int>(
         valueListenable: pageContent,
         builder: (context, index, _) {
@@ -123,7 +134,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                           style: context
                                               .textTheme.titleLarge?.ra
                                               .copyWith(
-                                                  color: const Color(0xff5D5C5D),
+                                                  color:
+                                                      const Color(0xff5D5C5D),
                                                   height: 1.42),
                                         ),
                                         Row(
@@ -143,7 +155,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                               style: context
                                                   .textTheme.titleMedium?.ra
                                                   .copyWith(
-                                                      color: const Color(0xff8D8D8D),
+                                                      color: const Color(
+                                                          0xff8D8D8D),
                                                       height: 1.25),
                                             ),
                                           ],
@@ -159,7 +172,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                               style: context
                                                   .textTheme.titleMedium?.ra
                                                   .copyWith(
-                                                      color: const Color(0xffC4C2C2),
+                                                      color: const Color(
+                                                          0xffC4C2C2),
                                                       height: 1.25),
                                             )
                                           ],
@@ -173,7 +187,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                             const Spacer(),
                             InkWell(
                               key: TestVariables.kTestMode
-                                  ? const Key(WidgetsKeys.createNewAccountContinueKey)
+                                  ? const Key(
+                                      WidgetsKeys.createNewAccountContinueKey)
                                   : null,
                               onTap: () {
                                 pageContent.value = 1;

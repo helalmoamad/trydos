@@ -519,8 +519,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             currentFailedMessage: currentFailedMessage));
       },
       (r) {
-        GetIt.I<HomeBloc>()
-            .add(IncreaseCountShareOfProductEvent(productId: event.productId));
+        GetIt.I<HomeBloc>().add(IncreaseCountShareOfProductEvent(
+            productId: event.productId,
+            socialMediaName: "Share_in_chat",
+            product: event.product));
         ids.remove(messageId);
         pinnedChats = state.pinnedChats.map((e) {
           if (event.channelIds.contains(e.localId) &&
@@ -812,13 +814,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       getOrderRecipientIdStatus: GetOrderRecipientIdStatus.loading,
     ));
     final response = await getOrderRecipientIdUseCase(GetOrderRecipientIdParams(
-        orderId: event.orderId, originalUserId: event.originalUserId));
+        orderId: event.orderId,
+        originalUserId: event.originalUserId,
+        parentOrderId: event.parentOrderId));
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
             'GetOrderRecipientIdEvent', l.statusCode)) {
           add(GetOrderRecipientIdEvent(
-              orderId: event.orderId, originalUserId: event.originalUserId));
+              orderId: event.orderId,
+              originalUserId: event.originalUserId,
+              parentOrderId: event.parentOrderId));
           ErrorManager.incrementRetry('GetOrderRecipientIdEvent');
         }
         emit(state.copyWith(
@@ -1174,7 +1180,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             photo: event.photo,
             userId: event.userId));
         ErrorManager.incrementRetry('UpdateProfileInChatEvent');
+        return;
       }
+      GetIt.I<HomeBloc>().add(
+          UpdateProfileEvent(image: GetIt.I<PrefsRepository>().myChatPhoto));
     }, (r) {
       _prefsRepository.setMyChatName(event.name);
       _prefsRepository.setMyChatPhoto(event.photo);
@@ -2184,15 +2193,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         getSharedProductCountStatus: GetSharedProductCountStatus.loading));
 
     response.fold((l) => print("............"), (r) {
-      //    Map<String, String>? getSharedProductCount =
-      //    state.getSharedProductCount ?? {};
-      //  int count =
-      //     int.tryParse((getSharedProductCount[event.productId] ?? '0')) ?? 0;
-      //   getSharedProductCount[event.productId] = '${count + 1}';
-      print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF888888888888888888888888888**********");
-      GetIt.I<HomeBloc>()
-          .add(IncreaseCountShareOfProductEvent(productId: event.productId));
+      GetIt.I<HomeBloc>().add(IncreaseCountShareOfProductEvent(
+          productId: event.productId,
+          socialMediaName: event.socialMediaName,
+          product: event.product));
       emit(state.copyWith(
           // getSharedProductCount: getSharedProductCount,
           getSharedProductCountStatus: GetSharedProductCountStatus.success));

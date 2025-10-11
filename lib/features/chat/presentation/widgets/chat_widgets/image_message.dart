@@ -30,6 +30,7 @@ import '../../../data/models/ImageDetail.dart';
 import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ImageMessage extends StatefulWidget {
   ImageMessage(
@@ -273,9 +274,8 @@ class _ImageMessageState extends State<ImageMessage>
 
     debugPrint(widget.imageFile.toString());
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     debugPrint('widget.isLocalMessage ${widget.isLocalMessage}');
     return Directionality(
@@ -549,12 +549,12 @@ class _ImageMessageState extends State<ImageMessage>
             tag: "hero_${widget.messageId}",
             child: Container(
               key: ValueKey("image_${widget.messageId}"),
-              width: 200.w,
-              height: 250,
+              width: 250.w,
+              height: 200,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: FileImage(imageFile),
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                   onError: (exception, stackTrace) {
                     // ✅ في حالة الخطأ، log فقط - لا تغيير للحالة
                     debugPrint("Image display error: $exception");

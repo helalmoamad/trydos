@@ -25,7 +25,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../generated/locale_keys.g.dart';
@@ -142,9 +142,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (p, c) =>

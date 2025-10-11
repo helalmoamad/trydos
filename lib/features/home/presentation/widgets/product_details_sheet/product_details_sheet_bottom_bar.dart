@@ -26,7 +26,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
@@ -140,23 +140,9 @@ class _ProductDetailsSheetBottomBarState
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-    bool isCloseToWhite(Color color, {int threshold = 50}) {
-      return (color.red > 255 - threshold &&
-          color.green > 255 - threshold &&
-          color.blue > 255 - threshold);
-    }
-
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.addImagesToProductIdForCart[widget.productIdForRequestApi]
@@ -187,7 +173,7 @@ class _ProductDetailsSheetBottomBarState
                   ?.sharedCount ||
           previous.addCommentStatus != current.addCommentStatus,
       builder: (context, state) {
-        List<String> allimages = [];
+        List<List<String>> allimages = [];
         List<String> cartIds = [];
 
         // حلقات متداخلة للوصول إلى جميع القيم
@@ -353,7 +339,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                     return;
                                                                                   }
                                                                                   if (details.localPosition.dx <= 92.w) {
-                                                                                    homeBloc.add(UpdateItemInCartEvent(fromCartPage: false, newQuantity: -1, maxAllowed: 0, currentSize: state.addVariationToCartId?[cartIds.last]?["size"] ?? "", colorOption: state.addVariationToCartId?[cartIds.last]?["color"] ?? "", productId: widget.productIdForRequestApi, totalQuantity: (state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.length ?? 0) - 1, image: state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.last ?? "", cartId: cartIds.last, boutiqueId: ""));
+                                                                                    //    homeBloc.add(UpdateItemInCartEvent(fromCartPage: false, newQuantity: -1, maxAllowed: 0, currentSize: state.addVariationToCartId?[cartIds.last]?["size"] ?? "", colorOption: state.addVariationToCartId?[cartIds.last]?["color"] ?? "", productId: widget.productIdForRequestApi, totalQuantity: (state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.length ?? 0) - 1, image: state.addImagesToProductIdForCart[widget.productIdForRequestApi]?[int.tryParse(cartIds.last)]?.last ?? "", cartId: cartIds.last, boutiqueId: ""));
                                                                                     return;
                                                                                   }
                                                                                   animationController.forward();
@@ -543,7 +529,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                                   widthFactor: 1 - (itemCount / 12 * 0.3),
                                                                                                                   child: MyCachedNetworkImage(
                                                                                                                     circleDimensions: 15,
-                                                                                                                    imageUrl: allimages[index],
+                                                                                                                    imageUrl: allimages[index][0],
                                                                                                                     width: 15,
                                                                                                                     imageWidth: 70,
                                                                                                                     imageHeight: 70,
@@ -598,7 +584,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                               ? const SizedBox.shrink()
                                                                                                               : MyTextWidget(
                                                                                                                   '${widget.colorName} ',
-                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: isCloseToWhite(Color(int.parse('0xff${widget.colorNum.substring(1)}'))) ? const Color(0xff1D1D1D) : Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff1D1D1D)),
                                                                                                                 ),
                                                                                                           widget.size == ""
                                                                                                               ? const SizedBox.shrink()
@@ -680,6 +666,7 @@ class _ProductDetailsSheetBottomBarState
                                                                           ? const SizedBox
                                                                               .shrink()
                                                                           : NotifyWhenQuantityAvailableButton(
+                                                                              productItem: widget.products,
                                                                               currentTap: currentTab,
                                                                               unAvailableSize: selectedSizeByUser ?? "",
                                                                               notificationTypeId: notificationTypeId,
@@ -688,7 +675,7 @@ class _ProductDetailsSheetBottomBarState
                                                                             );
                                                                     },
                                                                   )
-                                                            : NotifyWhenAvailableInCountryButton(currentTap: currentTab, productId: widget.productIdForRequestApi, unAvailableType: _productNotAvailableNotifier ?? ''));
+                                                            : NotifyWhenAvailableInCountryButton(currentTap: currentTab, productItem: widget.products, productId: widget.productIdForRequestApi, unAvailableType: _productNotAvailableNotifier ?? ''));
                                                   });
                                             });
                                       });
@@ -840,6 +827,10 @@ class BarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -853,7 +844,7 @@ class BarWidget extends StatelessWidget {
               color: color,
               height: 30.h,
             ),
-            if (text != null) ...{
+            if (text != null && text != "0") ...{
               5.verticalSpace,
               MyTextWidget(text!,
                   style: context.textTheme.titleMedium?.rq.copyWith(

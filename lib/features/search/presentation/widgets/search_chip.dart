@@ -3,14 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class SearchChip extends StatelessWidget {
   const SearchChip({super.key, required this.title, this.justLogo = false});
@@ -21,16 +16,8 @@ class SearchChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),

@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:trydos/common/constant/countries.dart';
@@ -81,6 +81,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
   late AuthBloc authBloc;
   @override
   void initState() {
+    LastPagesTracker.push('ProfilePersonalInfoPage');
     homeBloc = BlocProvider.of<HomeBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     animationController =
@@ -98,18 +99,9 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return ValueListenableBuilder<bool>(
         valueListenable: widget.visibleSave,
         builder: (context, _visibleSave, _) {

@@ -26,6 +26,10 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/theme/typography.dart';
 import 'package:trydos/service/language_service.dart';
@@ -49,6 +53,7 @@ import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
 import 'dart:ui';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 // ignore: must_be_immutable
 class StoryCollection extends StatefulWidget {
@@ -107,10 +112,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      debugPrint(error.toString());
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     return Hero(
@@ -203,7 +206,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   _videoController = null;
                   init = null;
                   if (LanguageService.rtl) {
-                    if (dx > screenWidth * 1 / 2) {
+                    print("rtlfffffffffffffffffffffffffffff ");
+                    if (dx < screenWidth * 1 / 2) {
+                      print("rtlfffffffffff54");
                       widget.animatedController.stop();
                       widget.animatedController.reset();
                       if ((state.currentStoryInEachCollection[
@@ -226,7 +231,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                         widget.collectionIndex]! +
                                     1));
                       }
-                    } else if (dx < screenWidth * 1 / 2) {
+                    } else if (dx > screenWidth * 1 / 2) {
                       widget.animatedController.stop();
                       widget.animatedController.reset();
                       if ((state.currentStoryInEachCollection[
@@ -266,6 +271,38 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 state.currentStoryInEachCollection[
                                         widget.collectionIndex]! +
                                     1));
+                        FirebaseAnalyticsService.logEventForSession(
+                          executedEventName:
+                              AnalyticsButtonsEventNameConst.VIEW_STORY_BUTTON,
+                          eventName: AnalyticsEventsConst.viewStory,
+                          extraParams: {
+                            "link": state
+                                    .storiesCollections[widget.collectionIndex]
+                                    .stories![
+                                        state.currentStoryInEachCollection[
+                                            widget.collectionIndex]!]
+                                    .oneLink ??
+                                "",
+                            "link_product": (state
+                                            .storiesCollections[
+                                                widget.collectionIndex]
+                                            .stories![state
+                                                    .currentStoryInEachCollection[
+                                                widget.collectionIndex]!]
+                                            .oneLink ??
+                                        "") !=
+                                    ""
+                                ? 'true'
+                                : 'false',
+                            "story_id": state
+                                .storiesCollections[widget.collectionIndex]
+                                .stories![state.currentStoryInEachCollection[
+                                    widget.collectionIndex]!]
+                                .id
+                                .toString(),
+                            'screen_name': GlobalScreenConst.STORY_SCREEN,
+                          },
+                        );
                       }
                     } else if (dx < screenWidth * 1 / 2) {
                       widget.animatedController.stop();

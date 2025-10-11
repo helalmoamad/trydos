@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import '../../data/models/my_chats_response_model.dart';
 
@@ -96,9 +97,11 @@ class GetOrderRecipientIdEvent extends ChatEvent {
   final String originalUserId;
   final String orderId;
   final bool changeStatusToInit;
+  final String? parentOrderId;
   const GetOrderRecipientIdEvent(
       {required this.originalUserId,
       required this.orderId,
+      this.parentOrderId,
       this.changeStatusToInit = false});
 
   @override
@@ -418,12 +421,14 @@ class GetMediaCountEvent extends ChatEvent {
 
 class IncreaseSharedProductCountOnSocialAppEvent extends ChatEvent {
   final String productId;
+  final Products product;
   final String socialMediaName;
   final int sharedCount;
 
   const IncreaseSharedProductCountOnSocialAppEvent(
       {required this.socialMediaName,
       required this.productId,
+      required this.product,
       required this.sharedCount});
 
   @override
@@ -546,6 +551,7 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
   final String productName;
   final String productSlug;
   final String productDescription;
+  final Products product;
   final String productImageUrl;
   final String? originalImageWidth;
   final String? originalImageHeight;
@@ -553,6 +559,7 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
 
   ShareProductWithContactsOrChannelsEvent({
     required this.productId,
+    required this.product,
     required this.productName,
     required this.productSlug,
     required this.productDescription,

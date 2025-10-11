@@ -21,6 +21,7 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CreateAccountSection extends StatefulWidget {
   CreateAccountSection({Key? key, required this.moveToNextStep})
@@ -57,9 +58,8 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

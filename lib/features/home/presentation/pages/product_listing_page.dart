@@ -46,6 +46,7 @@ import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/item_test.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
@@ -53,10 +54,11 @@ import 'package:trydos/features/search/presentation/widgets/search_with_image_re
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
@@ -136,9 +138,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
       ValueNotifier(false);
   final ValueNotifier<bool> searchVisible = ValueNotifier(true);
   final ValueNotifier<bool> isShowPanelForVerified = ValueNotifier(false);
+  final ValueNotifier<bool> showShadowForPanel = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
   Timer? timerForDisplayFilterSectionTitle;
   final GlobalKey htmlDescriptionKey = GlobalKey();
+  final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
   final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
   final ScrollController scrollController = ScrollController();
   final ScrollController scrollControllerFilter = ScrollController();
@@ -308,8 +312,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
   @override
   void initState() {
     super.initState();
+    LastPagesTracker.push(
+        "Product Listing Page , boutique Name:${widget.boutiqueName ?? widget.boutiqueSlug}");
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
     // 🔥 FIX: إزالة Timer.periodic الخطير - استخدام WidgetsBinding آمن بدلاً
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
       _setHtmlDescriptionHeight();
@@ -492,18 +498,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   Widget build(BuildContext context) {
-    /* FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-    };*/
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return WillPopScope(
       onWillPop: () async {
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
@@ -747,28 +745,35 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           valueListenable:
                                               tapIndexToAddProductToCart,
                                           builder: (context, tapIndex, _) {
-                                            return SliverAppBar(
-                                                pinned: true,
-                                                backgroundColor:
-                                                    colorScheme.white,
-                                                automaticallyImplyLeading:
-                                                    false,
-                                                flexibleSpace:
-                                                    ValueListenableBuilder<
-                                                            bool>(
-                                                        valueListenable:
-                                                            searchVisible,
-                                                        builder: (context,
-                                                            searchOpen, _) {
-                                                          return Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    right: 5,
-                                                                    left: 5),
-                                                            child: tapIndex !=
-                                                                    -1
-                                                                ? TrydosAppBar(
+                                            return /* tapIndex != -1
+                                                ? const SliverToBoxAdapter(
+                                                    child: SizedBox(
+                                                      height: 0,
+                                                    ),
+                                                  )
+                                                :*/
+                                                SliverAppBar(
+                                                    pinned: true,
+                                                    backgroundColor:
+                                                        colorScheme.white,
+                                                    automaticallyImplyLeading:
+                                                        false,
+                                                    flexibleSpace:
+                                                        ValueListenableBuilder<
+                                                                bool>(
+                                                            valueListenable:
+                                                                searchVisible,
+                                                            builder: (context,
+                                                                searchOpen, _) {
+                                                              return Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            5,
+                                                                        left:
+                                                                            5),
+                                                                child: /*TrydosAppBar(
                                                                     appBarParams: AppBarParams(
                                                                         scrolledUnderElevation: 0,
                                                                         backIconColor: Colors.black,
@@ -843,115 +848,233 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           ),
                                                                         ],
                                                                         withShadow: false),
-                                                                  )
-                                                                : TrydosAppBar(
-                                                                    appBarParams: AppBarParams(
-                                                                        onBack: () {
-                                                                          prefsRepository
-                                                                              .setTagsInUrlToFilter([]);
-                                                                          FocusScope.of(context)
-                                                                              .unfocus();
-                                                                          try {
-                                                                            if (panelControllerForCart.isPanelOpen) {
-                                                                              panelControllerForCart.close();
-                                                                              return;
-                                                                            }
-                                                                          } catch (e) {}
-                                                                          if (widget
-                                                                              .fromBackground) {
-                                                                            context.go(GRouter.config.kRootRoute);
+                                                                  )*/
+                                                                    TrydosAppBar(
+                                                                  appBarParams: AppBarParams(
+                                                                      onBack: () {
+                                                                        prefsRepository
+                                                                            .setTagsInUrlToFilter([]);
+                                                                        FocusScope.of(context)
+                                                                            .unfocus();
+                                                                        try {
+                                                                          if (panelControllerForCart
+                                                                              .isPanelOpen) {
+                                                                            panelControllerForCart.close();
+                                                                            return;
                                                                           }
-                                                                          categoryBloc
-                                                                              .add(ReplyFromGeminiEvent(
-                                                                            fromSearch:
-                                                                                false,
-                                                                            resetTheReply:
-                                                                                true,
-                                                                          ));
-                                                                          if (widget
-                                                                              .fromSearch) {
-                                                                            widget.controllerFormSearchPage?.text =
-                                                                                controller.text;
-                                                                            boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                                category: widget.category,
-                                                                                filtersAppliedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters)));
-                                                                            boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                                                                              fromHomePageSearch: widget.fromSearch,
+                                                                        } catch (e) {}
+                                                                        if (widget
+                                                                            .fromBackground) {
+                                                                          context.go(GRouter
+                                                                              .config
+                                                                              .kRootRoute);
+                                                                        }
+                                                                        categoryBloc
+                                                                            .add(ReplyFromGeminiEvent(
+                                                                          fromSearch:
+                                                                              false,
+                                                                          resetTheReply:
+                                                                              true,
+                                                                        ));
+                                                                        if (widget
+                                                                            .fromSearch) {
+                                                                          widget
+                                                                              .controllerFormSearchPage
+                                                                              ?.text = controller.text;
+                                                                          boutiqueBloc.add(ChangeAppliedFiltersEvent(
                                                                               boutiqueSlug: widget.boutiqueSlug,
                                                                               category: widget.category,
-                                                                              filtersChoosedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
-                                                                            ));
-                                                                          }
-                                                                        },
-                                                                        backgroundColor: colorScheme.white,
-                                                                        scrolledUnderElevation: 0,
-                                                                        backIconColor: Colors.black,
-                                                                        hasLeading: !isExpanded && !searchOpen,
-                                                                        action: [
-                                                                          const Spacer(),
-                                                                          ValueListenableBuilder<bool>(
-                                                                              valueListenable: displayBoutiqueIconInAppBar,
-                                                                              child: Padding(
-                                                                                padding: EdgeInsetsDirectional.only(start: 30.w),
-                                                                                child: widget.boutiqueIcon != null
-                                                                                    ? SvgNetworkWidget(
-                                                                                        svgUrl: widget.boutiqueIcon ?? "",
-                                                                                        height: 20,
-                                                                                      )
-                                                                                    : const SizedBox.shrink(),
-                                                                              ),
-                                                                              builder: (context, display, child) {
-                                                                                return display ? child! : const SizedBox.shrink();
-                                                                              }),
-                                                                          Padding(
-                                                                            padding:
-                                                                                EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                              filtersAppliedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters)));
+                                                                          boutiqueBloc
+                                                                              .add(ChangeSelectedFiltersEvent(
+                                                                            fromHomePageSearch:
+                                                                                widget.fromSearch,
+                                                                            boutiqueSlug:
+                                                                                widget.boutiqueSlug,
+                                                                            category:
+                                                                                widget.category,
+                                                                            filtersChoosedByUser:
+                                                                                GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
+                                                                          ));
+                                                                        }
+                                                                      },
+                                                                      backgroundColor: colorScheme.white,
+                                                                      scrolledUnderElevation: 0,
+                                                                      backIconColor: Colors.black,
+                                                                      hasLeading: !isExpanded && !searchOpen,
+                                                                      action: [
+                                                                        const Spacer(),
+                                                                        ValueListenableBuilder<
+                                                                                bool>(
+                                                                            valueListenable:
+                                                                                displayBoutiqueIconInAppBar,
                                                                             child:
-                                                                                AnimatedSearchBar(
-                                                                              key: TestVariables.kTestMode ? const Key(WidgetsKeys.productListingSearchInputKey) : null,
-                                                                              width: isExpanded ? (1.sw - 90) : (1.sw - 120),
-                                                                              height: 40,
-                                                                              onClickClose: () {
-                                                                                boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: const {}));
+                                                                                Padding(
+                                                                              padding: EdgeInsetsDirectional.only(start: 30.w),
+                                                                              child: widget.boutiqueIcon != null
+                                                                                  ? SvgNetworkWidget(
+                                                                                      svgUrl: widget.boutiqueIcon ?? "",
+                                                                                      height: 20,
+                                                                                    )
+                                                                                  : const SizedBox.shrink(),
+                                                                            ),
+                                                                            builder: (context,
+                                                                                display,
+                                                                                child) {
+                                                                              return display ? child! : const SizedBox.shrink();
+                                                                            }),
+                                                                        Padding(
+                                                                          padding:
+                                                                              EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                          child:
+                                                                              AnimatedSearchBar(
+                                                                            key: TestVariables.kTestMode
+                                                                                ? const Key(WidgetsKeys.productListingSearchInputKey)
+                                                                                : null,
+                                                                            width: isExpanded
+                                                                                ? (1.sw - 90)
+                                                                                : (1.sw - 120),
+                                                                            height:
+                                                                                40,
+                                                                            onClickClose:
+                                                                                () {
+                                                                              boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: const {}));
 
-                                                                                if (!isExpanded && controller.text.isNotEmpty) {
-                                                                                  Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
-                                                                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                    offset: 1,
-                                                                                    fromSearch: fromSearch,
-                                                                                    category: widget.category,
-                                                                                    boutiqueSlug: widget.boutiqueSlug,
-                                                                                  ));
-                                                                                }
-                                                                                if (isExpanded && controller.text.isNotEmpty) {
-                                                                                  Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
-                                                                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
-                                                                                }
+                                                                              if (!isExpanded && controller.text.isNotEmpty) {
+                                                                                Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+                                                                                boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
+                                                                                boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                  offset: 1,
+                                                                                  fromSearch: fromSearch,
+                                                                                  category: widget.category,
+                                                                                  boutiqueSlug: widget.boutiqueSlug,
+                                                                                ));
+                                                                              }
+                                                                              if (isExpanded && controller.text.isNotEmpty) {
+                                                                                Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
+                                                                              }
 
-                                                                                resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                FocusScope.of(context).unfocus();
+                                                                              resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                              FocusScope.of(context).unfocus();
 
-                                                                                searchVisible.value = false;
+                                                                              searchVisible.value = false;
 
-                                                                                controller.clear();
-                                                                                appBloc.add(HideBottomNavigationBar(false));
-                                                                                ///////////////////////////
-                                                                                /* FirebaseAnalyticsService.logEventForSession(
+                                                                              controller.clear();
+                                                                              appBloc.add(HideBottomNavigationBar(false));
+                                                                              ///////////////////////////
+                                                                              /* FirebaseAnalyticsService.logEventForSession(
                                                                                 eventName: AnalyticsEventsConst.buttonClicked,
                                                                                 executedEventName: AnalyticsExecutedEventNameConst.resetCloseIconButton,
                                                                               );*/
-                                                                                return false;
-                                                                              },
-                                                                              textController: controller,
-                                                                              focusNode: focusNode,
-                                                                              onSuffixTap: () {
-                                                                                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                                                                                  searchVisible.value = true;
-                                                                                });
-                                                                              },
-                                                                              suffixWidget: Center(
+                                                                              return false;
+                                                                            },
+                                                                            textController:
+                                                                                controller,
+                                                                            focusNode:
+                                                                                focusNode,
+                                                                            onSuffixTap:
+                                                                                () {
+                                                                              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                                                                searchVisible.value = true;
+                                                                              });
+                                                                            },
+                                                                            suffixWidget:
+                                                                                Center(
+                                                                              child: SvgPicture.asset(
+                                                                                AppAssets.searchOutlinedSvg,
+                                                                                height: 20,
+                                                                                width: 20,
+                                                                                color: const Color(0xff388CFF),
+                                                                              ),
+                                                                            ),
+                                                                            prefixWidget:
+                                                                                Padding(
+                                                                              padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
+                                                                              child: Row(
+                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                children: [
+                                                                                  InkWell(
+                                                                                    onTap: () async {
+                                                                                      SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
+                                                                                      /////////////////////////////
+                                                                                      /*  FirebaseAnalyticsService.logEventForSession(
+                                                                                        eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                        executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                      );*/
+                                                                                    },
+                                                                                    child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
+                                                                                        ? TrydosLoader(
+                                                                                            size: 18,
+                                                                                          )
+                                                                                        : SvgPicture.asset(
+                                                                                            AppAssets.realCameraSvg,
+                                                                                            height: 20,
+                                                                                            width: 20,
+                                                                                          ),
+                                                                                  ),
+                                                                                  ValueListenableBuilder<bool>(
+                                                                                    valueListenable: isRecordeForSearchWithMic,
+                                                                                    builder: (context, recordeForSearchWithMic, _) {
+                                                                                      return InkWell(
+                                                                                        onTap: () async {
+                                                                                          final status = await Permission.microphone.request();
+                                                                                          if (status != PermissionStatus.granted) {
+                                                                                            return;
+                                                                                          }
+                                                                                          if (_speechToText.isNotListening) {
+                                                                                            _startListening();
+                                                                                            /////////////////////////////
+                                                                                            /*  FirebaseAnalyticsService.logEventForSession(
+                                                                                              eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                              executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                            );*/
+                                                                                          } else {
+                                                                                            _stopListening();
+                                                                                          }
+                                                                                        },
+                                                                                        child: SizedBox(
+                                                                                          width: 20,
+                                                                                          child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
+                                                                                        ),
+                                                                                      );
+                                                                                    },
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            animationDurationInMilli:
+                                                                                400,
+                                                                            searchDecoration:
+                                                                                InputDecoration(
+                                                                              border: OutlineInputBorder(
+                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
+                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                              ),
+                                                                              focusedBorder: OutlineInputBorder(
+                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
+                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                              ),
+                                                                              enabledBorder: OutlineInputBorder(
+                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
+                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                              ),
+                                                                              disabledBorder: OutlineInputBorder(
+                                                                                borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
+                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                              ),
+                                                                              errorBorder: OutlineInputBorder(
+                                                                                borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                              ),
+                                                                              focusedErrorBorder: OutlineInputBorder(
+                                                                                borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                              ),
+                                                                              filled: true,
+                                                                              fillColor: focusNode.hasFocus ? colorScheme.white : const Color(0xffF8F8F8),
+                                                                              prefixIcon: Padding(
+                                                                                padding: const EdgeInsets.only(top: 12, bottom: 12),
                                                                                 child: SvgPicture.asset(
                                                                                   AppAssets.searchOutlinedSvg,
                                                                                   height: 20,
@@ -959,7 +1082,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   color: const Color(0xff388CFF),
                                                                                 ),
                                                                               ),
-                                                                              prefixWidget: Padding(
+                                                                              suffixIcon: Padding(
                                                                                 padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
                                                                                 child: Row(
                                                                                   mainAxisSize: MainAxisSize.min,
@@ -968,10 +1091,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       onTap: () async {
                                                                                         SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
                                                                                         /////////////////////////////
-                                                                                        /*  FirebaseAnalyticsService.logEventForSession(
-                                                                                        eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                        executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                      );*/
+                                                                                        /*   FirebaseAnalyticsService.logEventForSession(
+                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                          executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                        );*/
                                                                                       },
                                                                                       child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
                                                                                           ? TrydosLoader(
@@ -982,6 +1105,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               height: 20,
                                                                                               width: 20,
                                                                                             ),
+                                                                                    ),
+                                                                                    const SizedBox(
+                                                                                      width: 20,
                                                                                     ),
                                                                                     ValueListenableBuilder<bool>(
                                                                                       valueListenable: isRecordeForSearchWithMic,
@@ -995,10 +1121,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                             if (_speechToText.isNotListening) {
                                                                                               _startListening();
                                                                                               /////////////////////////////
-                                                                                              /*  FirebaseAnalyticsService.logEventForSession(
-                                                                                              eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                              executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                            );*/
+                                                                                              /*FirebaseAnalyticsService.logEventForSession(
+                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                              );*/
                                                                                             } else {
                                                                                               _stopListening();
                                                                                             }
@@ -1013,320 +1139,218 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   ],
                                                                                 ),
                                                                               ),
-                                                                              animationDurationInMilli: 400,
-                                                                              searchDecoration: InputDecoration(
-                                                                                border: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
-                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                                ),
-                                                                                focusedBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
-                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                                ),
-                                                                                enabledBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
-                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                                ),
-                                                                                disabledBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? const Color(0xffE6E6E6) : const Color(0xffF8F8F8), width: 0.4),
-                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                                ),
-                                                                                errorBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                                ),
-                                                                                focusedErrorBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                                ),
-                                                                                filled: true,
-                                                                                fillColor: focusNode.hasFocus ? colorScheme.white : const Color(0xffF8F8F8),
-                                                                                prefixIcon: Padding(
-                                                                                  padding: const EdgeInsets.only(top: 12, bottom: 12),
-                                                                                  child: SvgPicture.asset(
-                                                                                    AppAssets.searchOutlinedSvg,
-                                                                                    height: 20,
-                                                                                    width: 20,
-                                                                                    color: const Color(0xff388CFF),
-                                                                                  ),
-                                                                                ),
-                                                                                suffixIcon: Padding(
-                                                                                  padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
-                                                                                  child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    children: [
-                                                                                      InkWell(
-                                                                                        onTap: () async {
-                                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
-                                                                                          /////////////////////////////
-                                                                                          /*   FirebaseAnalyticsService.logEventForSession(
-                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                          executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                        );*/
-                                                                                        },
-                                                                                        child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
-                                                                                            ? TrydosLoader(
-                                                                                                size: 18,
-                                                                                              )
-                                                                                            : SvgPicture.asset(
-                                                                                                AppAssets.realCameraSvg,
-                                                                                                height: 20,
-                                                                                                width: 20,
-                                                                                              ),
-                                                                                      ),
-                                                                                      const SizedBox(
-                                                                                        width: 20,
-                                                                                      ),
-                                                                                      ValueListenableBuilder<bool>(
-                                                                                        valueListenable: isRecordeForSearchWithMic,
-                                                                                        builder: (context, recordeForSearchWithMic, _) {
-                                                                                          return InkWell(
-                                                                                            onTap: () async {
-                                                                                              final status = await Permission.microphone.request();
-                                                                                              if (status != PermissionStatus.granted) {
-                                                                                                return;
-                                                                                              }
-                                                                                              if (_speechToText.isNotListening) {
-                                                                                                _startListening();
-                                                                                                /////////////////////////////
-                                                                                                /*FirebaseAnalyticsService.logEventForSession(
-                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                              );*/
-                                                                                              } else {
-                                                                                                _stopListening();
-                                                                                              }
-                                                                                            },
-                                                                                            child: SizedBox(
-                                                                                              width: 20,
-                                                                                              child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
-                                                                                            ),
-                                                                                          );
-                                                                                        },
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                ),
-                                                                                //context.colorScheme.white,
-                                                                                contentPadding: HWEdgeInsetsDirectional.only(start: 20, end: 10, bottom: 12, top: 12),
-                                                                                hintText: '${LocaleKeys.search.tr()}',
-                                                                                hintStyle: context.textTheme.bodyMedium?.lq.copyWith(color: const Color(0xffC4C2C2)),
-                                                                                labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
-                                                                              ),
-                                                                              onChanged: (String text) {
-                                                                                if (searchDebounce?.isActive ?? false) {
-                                                                                  searchDebounce!.cancel();
-                                                                                }
-                                                                                searchDebounce = Timer(const Duration(seconds: 1), () {
-                                                                                  String searchText = text;
+                                                                              //context.colorScheme.white,
+                                                                              contentPadding: HWEdgeInsetsDirectional.only(start: 20, end: 10, bottom: 12, top: 12),
+                                                                              hintText: '${LocaleKeys.search.tr()}',
+                                                                              hintStyle: context.textTheme.bodyMedium?.lq.copyWith(color: const Color(0xffC4C2C2)),
+                                                                              labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
+                                                                            ),
+                                                                            onChanged:
+                                                                                (String text) {
+                                                                              if (searchDebounce?.isActive ?? false) {
+                                                                                searchDebounce!.cancel();
+                                                                              }
+                                                                              searchDebounce = Timer(const Duration(seconds: 1), () {
+                                                                                String searchText = text;
 
-                                                                                  if (isExpanded) {
-                                                                                    Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
-                                                                                    if (text.length > 2) {
-                                                                                      resetSearchAfterSearchingWhileRemoveSearch = true;
-                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: searchText))));
-                                                                                    }
-                                                                                    if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
-                                                                                      resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
-                                                                                    }
-                                                                                    return;
-                                                                                  }
+                                                                                if (isExpanded) {
+                                                                                  Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
                                                                                   if (text.length > 2) {
-                                                                                    FirebaseAnalyticsService.logEventForSession(
-                                                                                      eventName: AnalyticsEventsConst.search,
-                                                                                      executedEventName: "search",
-                                                                                      extraParams: {
-                                                                                        'search_keyword': text,
-                                                                                        'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
-                                                                                      },
-                                                                                    );
-
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = true;
-                                                                                    Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-
-                                                                                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                      filtersAppliedByUser: GetProductFiltersModel(
-                                                                                          filters: filters.copyWithSaveOtherField(
-                                                                                        prices: filters.prices,
-                                                                                        searchText: searchText,
-                                                                                      )),
-                                                                                    ));
-
-                                                                                    boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                      offset: 1,
-                                                                                      searchText: searchText,
-                                                                                      fromSearch: fromSearch,
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                    ));
+                                                                                    boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: searchText))));
                                                                                   }
                                                                                   if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
-                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: const {}));
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                    Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-
-                                                                                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                      filtersAppliedByUser: GetProductFiltersModel(
-                                                                                          filters: filters.copyWithSaveOtherField(
-                                                                                        prices: filters.prices,
-                                                                                      )),
-                                                                                    ));
-                                                                                    boutiqueBloc.add(GetFiltersEvent(
-                                                                                      fromHomePageSearch: widget.fromSearch,
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                    ));
-                                                                                    boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                      offset: 1,
-                                                                                      fromSearch: fromSearch,
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                    ));
+                                                                                    boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices))));
                                                                                   }
-                                                                                });
-                                                                              },
-                                                                            ),
+                                                                                  return;
+                                                                                }
+                                                                                if (text.length > 2) {
+                                                                                  resetSearchAfterSearchingWhileRemoveSearch = true;
+                                                                                  Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+
+                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                    filtersAppliedByUser: GetProductFiltersModel(
+                                                                                        filters: filters.copyWithSaveOtherField(
+                                                                                      prices: filters.prices,
+                                                                                      searchText: searchText,
+                                                                                    )),
+                                                                                  ));
+
+                                                                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                    offset: 1,
+                                                                                    searchText: searchText,
+                                                                                    fromSearch: fromSearch,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                }
+                                                                                if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                  boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: const {}));
+                                                                                  resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                  Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+
+                                                                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                    filtersAppliedByUser: GetProductFiltersModel(
+                                                                                        filters: filters.copyWithSaveOtherField(
+                                                                                      prices: filters.prices,
+                                                                                    )),
+                                                                                  ));
+                                                                                  boutiqueBloc.add(GetFiltersEvent(
+                                                                                    fromHomePageSearch: widget.fromSearch,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                    offset: 1,
+                                                                                    fromSearch: fromSearch,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                }
+                                                                              });
+                                                                            },
                                                                           ),
-                                                                          AnimatedSize(
-                                                                            curve:
-                                                                                Curves.easeOut,
-                                                                            duration:
-                                                                                const Duration(milliseconds: 400),
-                                                                            reverseDuration:
-                                                                                const Duration(milliseconds: 400),
-                                                                            child:
-                                                                                Row(
-                                                                              children: [
-                                                                                isExpanded
-                                                                                    ? const SizedBox.shrink()
-                                                                                    : Padding(
-                                                                                        padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
-                                                                                        child: SvgPicture.asset(AppAssets.sortingSvg, width: 20, height: 20),
-                                                                                      ),
-                                                                                BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                                                                                  buildWhen: (p, c) {
-                                                                                    return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] != c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] || p.getProductFiltersStatus[key] != c.getProductFiltersStatus[key] || p.isExpandedForListingPage != c.isExpandedForListingPage || p.cashedOrginalBoutique != c.cashedOrginalBoutique);
-                                                                                  },
-                                                                                  builder: (context, state) {
-                                                                                    isExpanded = state.isExpandedForListingPage ?? false;
-                                                                                    if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) == 1) {
-                                                                                      return const SizedBox.shrink();
-                                                                                    }
-                                                                                    return Padding(
-                                                                                        padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
-                                                                                        child: InkWell(
-                                                                                          key: TestVariables.kTestMode ? const Key(WidgetsKeys.filterIconKey) : null,
-                                                                                          onTap: () {
-                                                                                            if (!isExpanded) {
-                                                                                              prefAppliedFilters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
-                                                                                              boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
-                                                                                              boutiqueBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
+                                                                        ),
+                                                                        AnimatedSize(
+                                                                          curve:
+                                                                              Curves.easeOut,
+                                                                          duration:
+                                                                              const Duration(milliseconds: 400),
+                                                                          reverseDuration:
+                                                                              const Duration(milliseconds: 400),
+                                                                          child:
+                                                                              Row(
+                                                                            children: [
+                                                                              isExpanded
+                                                                                  ? const SizedBox.shrink()
+                                                                                  : Padding(
+                                                                                      padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                                      child: SvgPicture.asset(AppAssets.sortingSvg, width: 20, height: 20),
+                                                                                    ),
+                                                                              BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                                                                                buildWhen: (p, c) {
+                                                                                  return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] != c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] || p.getProductFiltersStatus[key] != c.getProductFiltersStatus[key] || p.isExpandedForListingPage != c.isExpandedForListingPage || p.cashedOrginalBoutique != c.cashedOrginalBoutique);
+                                                                                },
+                                                                                builder: (context, state) {
+                                                                                  isExpanded = state.isExpandedForListingPage ?? false;
+                                                                                  if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) == 1) {
+                                                                                    return const SizedBox.shrink();
+                                                                                  }
+                                                                                  return Padding(
+                                                                                      padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                                      child: InkWell(
+                                                                                        key: TestVariables.kTestMode ? const Key(WidgetsKeys.filterIconKey) : null,
+                                                                                        onTap: () {
+                                                                                          if (!isExpanded) {
+                                                                                            prefAppliedFilters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
+                                                                                            boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
+                                                                                            boutiqueBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
 
-                                                                                              boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                                            boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
 
-                                                                                              resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                              // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                                                              // homeBloc
-                                                                                              //     .add(
-                                                                                              //     AddIsExpandedForLidtingPageEvent(
-                                                                                              //         isExpandedForLidting: true));
-                                                                                              /////////////////////////////////////////
-                                                                                              /*FirebaseAnalyticsService.logEventForSession(
+                                                                                            resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                            // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                                            // homeBloc
+                                                                                            //     .add(
+                                                                                            //     AddIsExpandedForLidtingPageEvent(
+                                                                                            //         isExpandedForLidting: true));
+                                                                                            /////////////////////////////////////////
+                                                                                            /*FirebaseAnalyticsService.logEventForSession(
                                                                                               eventName: AnalyticsEventsConst.buttonClicked,
                                                                                               executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
                                                                                             );*/
-                                                                                              /////////////////////////////////////////
-                                                                                              /* FirebaseAnalyticsService.logScreen(
+                                                                                            /////////////////////////////////////////
+                                                                                            /* FirebaseAnalyticsService.logScreen(
                                                                                               screen: AnalyticsScreensConst.productListingFilterScreen,
                                                                                             );*/
-                                                                                            }
-                                                                                          },
-                                                                                          child: SvgPicture.asset(
-                                                                                            AppAssets.filtersSvg,
-                                                                                            width: 20,
-                                                                                            height: 20,
-                                                                                            color: isExpanded ? const Color(0xffFF5F61) : null,
-                                                                                          ),
-                                                                                        ));
-                                                                                  },
-                                                                                ),
-                                                                                InkWell(
-                                                                                    onTap: () {
-                                                                                      if (isExpanded) {
-                                                                                        prefAppliedFilters = boutiqueBloc.state.prefAppliedFilterForExtendFilter;
-                                                                                        controller.text = prefAppliedFilters?.searchText ?? "";
+                                                                                          }
+                                                                                        },
+                                                                                        child: SvgPicture.asset(
+                                                                                          AppAssets.filtersSvg,
+                                                                                          width: 20,
+                                                                                          height: 20,
+                                                                                          color: isExpanded ? const Color(0xffFF5F61) : null,
+                                                                                        ),
+                                                                                      ));
+                                                                                },
+                                                                              ),
+                                                                              InkWell(
+                                                                                  onTap: () {
+                                                                                    if (isExpanded) {
+                                                                                      prefAppliedFilters = boutiqueBloc.state.prefAppliedFilterForExtendFilter;
+                                                                                      controller.text = prefAppliedFilters?.searchText ?? "";
 
-                                                                                        // homeBloc.add(GetProductFiltersEvent(
-                                                                                        //     fromHomePageSearch: widget
-                                                                                        //         .fromSearch,
-                                                                                        //     cashedOrginalBoutique:
-                                                                                        //         false,
-                                                                                        //     boutiqueSlug:
-                                                                                        //         widget.boutiqueSlug,
-                                                                                        //     category: widget.category,
-                                                                                        //     searchText: widget.searchText,
-                                                                                        //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                                        boutiqueBloc.add(
-                                                                                          ChangeAppliedFiltersEvent(
-                                                                                            boutiqueSlug: widget.boutiqueSlug,
-                                                                                            isExpandedForListing: false,
-                                                                                            category: widget.category,
-                                                                                            filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters),
-                                                                                          ),
-                                                                                        );
-                                                                                        //////////////////////////////////
-                                                                                        /* FirebaseAnalyticsService.logEventForSession(
+                                                                                      // homeBloc.add(GetProductFiltersEvent(
+                                                                                      //     fromHomePageSearch: widget
+                                                                                      //         .fromSearch,
+                                                                                      //     cashedOrginalBoutique:
+                                                                                      //         false,
+                                                                                      //     boutiqueSlug:
+                                                                                      //         widget.boutiqueSlug,
+                                                                                      //     category: widget.category,
+                                                                                      //     searchText: widget.searchText,
+                                                                                      //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                                      boutiqueBloc.add(
+                                                                                        ChangeAppliedFiltersEvent(
+                                                                                          boutiqueSlug: widget.boutiqueSlug,
+                                                                                          isExpandedForListing: false,
+                                                                                          category: widget.category,
+                                                                                          filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters),
+                                                                                        ),
+                                                                                      );
+                                                                                      //////////////////////////////////
+                                                                                      /* FirebaseAnalyticsService.logEventForSession(
                                                                                         eventName: AnalyticsEventsConst.buttonClicked,
                                                                                         executedEventName: AnalyticsExecutedEventNameConst.filterCloseIconButton,
                                                                                       );*/
-                                                                                      }
-                                                                                      // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                                                      // homeBloc.add(
-                                                                                      //     AddIsExpandedForLidtingPageEvent(
-                                                                                      //         isExpandedForLidting:
-                                                                                      //         false));
+                                                                                    }
+                                                                                    // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                                    // homeBloc.add(
+                                                                                    //     AddIsExpandedForLidtingPageEvent(
+                                                                                    //         isExpandedForLidting:
+                                                                                    //         false));
 
-                                                                                      resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                    },
-                                                                                    child: SizedBox(
-                                                                                      height: 30,
-                                                                                      child: Row(children: [
-                                                                                        SizedBox(
-                                                                                            width: searchOpen
-                                                                                                ? 0
-                                                                                                : !isExpanded
-                                                                                                    ? 10.0
-                                                                                                    : 12.5),
-                                                                                        !isExpanded
-                                                                                            ? SvgPicture.asset(
-                                                                                                AppAssets.shareSvg,
-                                                                                                width: 20,
-                                                                                                height: 20,
-                                                                                                color: const Color(0xff3C3C3C),
-                                                                                              )
-                                                                                            : SvgPicture.asset(
-                                                                                                key: TestVariables.kTestMode ? const Key(WidgetsKeys.closeFilterPageKey) : null,
-                                                                                                AppAssets.closeSvg,
-                                                                                                width: 15,
-                                                                                                height: 15,
-                                                                                                color: const Color(0xffFF5F61),
-                                                                                              ),
-                                                                                        SizedBox(width: !isExpanded ? 10.0 : 12.5)
-                                                                                      ]),
-                                                                                    )),
-                                                                              ],
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                        withShadow: false),
-                                                                  ),
-                                                          );
-                                                        }));
+                                                                                    resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                  },
+                                                                                  child: SizedBox(
+                                                                                    height: 30,
+                                                                                    child: Row(children: [
+                                                                                      SizedBox(
+                                                                                          width: searchOpen
+                                                                                              ? 0
+                                                                                              : !isExpanded
+                                                                                                  ? 10.0
+                                                                                                  : 12.5),
+                                                                                      !isExpanded
+                                                                                          ? SvgPicture.asset(
+                                                                                              AppAssets.shareSvg,
+                                                                                              width: 20,
+                                                                                              height: 20,
+                                                                                              color: const Color(0xff3C3C3C),
+                                                                                            )
+                                                                                          : SvgPicture.asset(
+                                                                                              key: TestVariables.kTestMode ? const Key(WidgetsKeys.closeFilterPageKey) : null,
+                                                                                              AppAssets.closeSvg,
+                                                                                              width: 15,
+                                                                                              height: 15,
+                                                                                              color: const Color(0xffFF5F61),
+                                                                                            ),
+                                                                                      SizedBox(width: !isExpanded ? 10.0 : 12.5)
+                                                                                    ]),
+                                                                                  )),
+                                                                            ],
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                      withShadow: false),
+                                                                ),
+                                                              );
+                                                            }));
                                           }),
                                       ValueListenableBuilder<bool>(
                                           valueListenable: searchVisible,
@@ -2309,100 +2333,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           int index) {
                                                         return InkWell(
                                                           onTap: () {
-                                                            Future.delayed(
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      100),
-                                                            ).then(
-                                                              (value) {
-                                                                FirebaseAnalyticsService
-                                                                    .logEventForSession(
-                                                                  executedEventName:
-                                                                      "viewItem",
-                                                                  eventName:
-                                                                      AnalyticsEventsConst
-                                                                          .viewItem,
-                                                                  extraParams: {
-                                                                    'item_id': products[
-                                                                            index]
-                                                                        .productId
-                                                                        .toString(),
-                                                                    'item_name':
-                                                                        products[index]
-                                                                            .name
-                                                                            .toString(),
-                                                                    'price': products[
-                                                                            index]
-                                                                        .price
-                                                                        .toString(),
-                                                                    'brand': products[index].brand ==
-                                                                            null
-                                                                        ? ""
-                                                                        : products[index]
-                                                                            .brand!
-                                                                            .name
-                                                                            .toString(),
-                                                                    'category': products[
-                                                                            index]
-                                                                        .categories!
-                                                                        .map(
-                                                                          (e) => e
-                                                                              .id
-                                                                              .toString(),
-                                                                        )
-                                                                        .toList()
-                                                                        .toString(),
-                                                                    'count_likes': products[
-                                                                            index]
-                                                                        .countOfLikes
-                                                                        .toString(),
-                                                                    'review_count': products[
-                                                                            index]
-                                                                        .reviewsCount
-                                                                        .toString(),
-                                                                    'interaction_type':
-                                                                        'view',
-                                                                    'screen_name':
-                                                                        GlobalScreenConst
-                                                                            .PRODUCT_SCREEN,
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                            ////////////////////////////
-                                                            /* FirebaseAnalyticsService
-                                                          .logEventForSession(
-                                                        eventName:
-                                                            AnalyticsEventsConst
-                                                                .buttonClicked,
-                                                        executedEventName:
-                                                            AnalyticsExecutedEventNameConst
-                                                                .chooseProductButton,
-                                                      );*/
-
-                                                            // pushOverscrollRoute(
-                                                            //     context: context,
-                                                            //     transitionDuration : Duration(milliseconds : 250),
-                                                            //     reverseTransitionDuration : Duration(milliseconds : 400),
-                                                            //     child: ProductDetailsPage(
-                                                            //       productItem: state
-                                                            //           .getProductListingWithoutFiltersModel!
-                                                            //           .data!
-                                                            //           .products![index]
-                                                            //     ),
-                                                            //     workNormally: true,
-                                                            //     withRoundedCorners: true,
-                                                            //     isArabicLanguage: LanguageService.rtl,
-                                                            //     dragToPopDirection: DragToPopDirection.toBottom,
-                                                            //     scrollToPopOption: ScrollToPopOption.start,
-                                                            //     fullscreenDialog: true);
-                                                            /* homeBloc.add(AddCurrentSelectedColorEvent(
-                                                                currentSelectedColor:
-                                                                    0,
-                                                                productSlug: products[
-                                                                        index]
-                                                                    .slug
-                                                                    .toString()));*/
                                                             homeBloc.add(
                                                                 const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                                     isStatusInitaial:
@@ -2520,6 +2450,24 @@ class _ProductListingPageState extends State<ProductListingPage> {
               ),
               shadowForPanel(),
               panelWidget(),
+              ValueListenableBuilder<bool>(
+                valueListenable: showShadowForPanel,
+                builder: (context, _showShadowForPanel, _) {
+                  return _showShadowForPanel
+                      ? GestureDetector(
+                          onTap: () {
+                            showShadowForPanel.value = false;
+                            currentActiveTab.value = -1;
+                            panelControllerForCart.close();
+                          },
+                          child: Container(
+                            height: 1.sh,
+                            width: 1.sw,
+                            color: Colors.black.withOpacity(0.55),
+                          ))
+                      : const SizedBox.shrink();
+                },
+              ),
               ValueListenableBuilder<int>(
                   valueListenable: tapIndexToAddProductToCart,
                   builder: (context, tapIndex, _) {
@@ -2779,7 +2727,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 .toString()]
                                                         ?.product
                                                         ?.availableQuantity ==
-                                                    false) {
+                                                    0) {
                                                   productNotAvailableNotifier
                                                           .value =
                                                       LocaleKeys
@@ -3021,337 +2969,348 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         finishRedeem,
                                                     builder: (context,
                                                         _finishRedeem, _) {
-                                                      return ProductDetailsBottomSheet(
-                                                        redeemVariantPrice: (currentVariation
-                                                                    ?.redeemPrice !=
-                                                                null)
-                                                            ? currentVariation
-                                                                    ?.redeemPrice ??
-                                                                0
-                                                            : state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()]
-                                                                    ?.product
-                                                                    ?.redeemPrice ??
-                                                                0,
-                                                        isRedeem: (prefsRepository
-                                                                        .getRedeemDateForProduct(products[tapIndex]
-                                                                            .productId
-                                                                            .toString())
-                                                                        ?.isAfter(DateTime.now().add(const Duration(
-                                                                            seconds:
-                                                                                1))) ==
-                                                                    true &&
-                                                                state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]
-                                                                        ?.product
-                                                                        ?.isRedeem ==
-                                                                    true) ||
-                                                            (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()) ??
-                                                                    0) >
-                                                                0,
-                                                        redeemPrice: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product!
-                                                                        .redeemPrice ??
-                                                                    0
-                                                                : 0
-                                                            : 0,
-                                                        initOfferPrice:
-                                                            (products[tapIndex]
-                                                                    .offerPrice ??
-                                                                0),
-                                                        currentColorOption: productColors
-                                                                .isNullOrEmpty
-                                                            ? ''
-                                                            : productColors?[
-                                                                        currentSelectedColor]
-                                                                    .option ??
-                                                                products[
-                                                                        tapIndex]
-                                                                    .colors![
-                                                                        currentSelectedColor]
-                                                                    .option ??
-                                                                "",
-                                                        initPrice:
-                                                            (products[tapIndex]
-                                                                    .price ??
-                                                                0),
-                                                        isGetFullProductDetails:
-                                                            false,
-                                                        productNotAvailableNotifier:
-                                                            productNotAvailableNotifier,
-                                                        currentActiveTab:
-                                                            currentActiveTab,
-                                                        qtyForproductWithoutVariant: state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                            ?.product
-                                                            ?.availableQuantity,
-                                                        collectedAfterOrdering: state
-                                                                .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                                ?.product
-                                                                ?.collectedAfterOrdering ==
-                                                            1,
-                                                        tapIndexToAddProductToCart:
-                                                            tapIndexToAddProductToCart,
-                                                        fromListingPage: true,
-                                                        productIdForCashData:
-                                                            products[tapIndex]
-                                                                .productId
-                                                                .toString(),
-                                                        panelController:
-                                                            panelControllerForCart,
-                                                        productSlugForTopic: state
-                                                                .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                                ?.product
-                                                                ?.slug ??
-                                                            "",
-                                                        productDescription:
-                                                            HtmlParser.parseHTML(
-                                                                    products[tapIndex]
-                                                                            .details ??
-                                                                        "")
-                                                                .text,
-                                                        countOfPieces: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product!
-                                                                        .countOfPieces ??
-                                                                    0
-                                                                : 0
-                                                            : 0,
-                                                        addToBagButtonShapeNotifier:
-                                                            addToBagButtonShapeNotifier,
-                                                        currentColornum: productColors
-                                                                .isNullOrEmpty
-                                                            ? ''
-                                                            : productColors?[
-                                                                        currentSelectedColor]
-                                                                    .color ??
-                                                                "",
-                                                        boutiqueIcon: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique !=
-                                                                        null
-                                                                    ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon !=
-                                                                            null
-                                                                        ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon!.filePath ??
-                                                                            ""
-                                                                        : ""
-                                                                    : ""
-                                                                : ""
-                                                            : "",
-                                                        boutiqueId: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state
-                                                                            .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                                .productId
-                                                                                .toString()]!
-                                                                            .product!
-                                                                            .boutique !=
-                                                                        null
-                                                                    ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product!
-                                                                        .boutique!
-                                                                        .id!
-                                                                    : 0
-                                                                : 0
-                                                            : 0,
-                                                        currentColorName: productColors
-                                                                .isNullOrEmpty
-                                                            ? ''
-                                                            : productColors?[
-                                                                        currentSelectedColor]
-                                                                    .name ??
-                                                                "",
-                                                        productItem:
-                                                            products[tapIndex]
-                                                                .copyWith(
-                                                          price: currentVariation
-                                                                      ?.price !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.price
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.price,
-                                                          offerPrice: currentVariation
-                                                                      ?.offerPrice !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.offerPrice
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.offerPrice,
-                                                          priceFormatted: currentVariation
-                                                                      ?.priceFormated !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.priceFormated
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.priceFormatted,
-                                                          offerPriceFormatted: currentVariation
-                                                                      ?.offerPriceFormated !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.offerPriceFormated
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.offerPriceFormatted,
-                                                          availableQuantity: state
+                                                      return ValueListenableBuilder<
+                                                              bool>(
+                                                          valueListenable:
+                                                              visibleFlashDeal,
+                                                          builder: (context,
+                                                              _visibleFlashDeal,
+                                                              _) {
+                                                            bool
+                                                                isFlashDealEnded =
+                                                                false;
+                                                            DateTime endDate;
+                                                            Duration _duration =
+                                                                const Duration();
+                                                            final now =
+                                                                DateTime.now();
+                                                            try {
+                                                              endDate = DateFormat(
+                                                                      'MM/dd/yyyy',
+                                                                      'en_US')
+                                                                  .parse(state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                              .productId
+                                                                              .toString()]
+                                                                          ?.product
+                                                                          ?.flashDealEndDate ??
+                                                                      "");
+                                                              endDate = endDate.add(
+                                                                  const Duration(
+                                                                      days: 1));
+                                                            } catch (e) {
+                                                              endDate = DateTime
+                                                                  .now();
+                                                              print(
+                                                                  'Error parsing date: $e');
+                                                            }
+                                                            _duration = endDate
+                                                                .difference(
+                                                                    now);
+                                                            if (_duration
+                                                                    .isNegative ||
+                                                                _duration
+                                                                        .inSeconds <
+                                                                    1) {
+                                                              isFlashDealEnded =
+                                                                  true;
+                                                            }
+
+                                                            return ProductDetailsBottomSheetNew(
+                                                              showShadowForPanel:
+                                                                  showShadowForPanel,
+                                                              currentVariant:
+                                                                  currentVariantType,
+                                                              visibleRedeemNotifier:
+                                                                  finishRedeem,
+                                                              visibleFlashDeal:
+                                                                  visibleFlashDeal,
+                                                              isFlashDealEnded:
+                                                                  isFlashDealEnded,
+                                                              flashDealEndDate: state
                                                                       .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.flashDealEndDate ??
+                                                                  "",
+                                                              redeemVariantPrice: (currentVariation
+                                                                          ?.redeemPrice !=
+                                                                      null)
+                                                                  ? currentVariation
+                                                                          ?.redeemPrice ??
+                                                                      0
+                                                                  : state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                              .productId
+                                                                              .toString()]
+                                                                          ?.product
+                                                                          ?.redeemPrice ??
+                                                                      0,
+                                                              isRedeem: (prefsRepository.getRedeemDateForProduct(products[tapIndex].productId.toString())?.isAfter(DateTime.now().add(const Duration(
+                                                                              seconds:
+                                                                                  1))) ==
+                                                                          true &&
+                                                                      state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.isRedeem ==
+                                                                          true) ||
+                                                                  (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(products[tapIndex]
+                                                                              .productId
+                                                                              .toString()) ??
+                                                                          0) >
+                                                                      0,
+                                                              redeemPrice: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state
+                                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                              .product!
+                                                                              .redeemPrice ??
+                                                                          0
+                                                                      : 0
+                                                                  : 0,
+                                                              initOfferPrice:
+                                                                  (products[tapIndex]
+                                                                          .offerPrice ??
+                                                                      0),
+                                                              currentColorOption: productColors
+                                                                      .isNullOrEmpty
+                                                                  ? ''
+                                                                  : productColors?[
+                                                                              currentSelectedColor]
+                                                                          .option ??
+                                                                      products[
+                                                                              tapIndex]
+                                                                          .colors![
+                                                                              currentSelectedColor]
+                                                                          .option ??
+                                                                      "",
+                                                              initPrice: (products[
                                                                           tapIndex]
-                                                                      .productId
-                                                                      .toString()] ==
-                                                                  null
-                                                              ? 0
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.availableQuantity,
-                                                          choiceOptions: state
+                                                                      .price ??
+                                                                  0),
+                                                              isGetFullProductDetails:
+                                                                  false,
+                                                              productNotAvailableNotifier:
+                                                                  productNotAvailableNotifier,
+                                                              currentActiveTab:
+                                                                  currentActiveTab,
+                                                              collectedAfterOrdering: state
                                                                       .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()] ==
-                                                                  null
-                                                              ? []
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.choiceOptions,
-                                                          colors: state
-                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.collectedAfterOrdering ==
+                                                                  1,
+                                                              tapIndexToAddProductToCart:
+                                                                  tapIndexToAddProductToCart,
+                                                              fromListingPage:
+                                                                  true,
+                                                              productIdForCashData:
                                                                   products[
                                                                           tapIndex]
                                                                       .productId
-                                                                      .toString()]!
-                                                              .product
-                                                              ?.colors,
-                                                          images: state
+                                                                      .toString(),
+                                                              panelController:
+                                                                  panelControllerForCart,
+                                                              productSlugForTopic: state
                                                                       .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()] ==
-                                                                  null
-                                                              ? []
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.images,
-                                                          syncColorImages: state
-                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.slug ??
+                                                                  "",
+                                                              productDescription:
+                                                                  HtmlParser.parseHTML(
+                                                                          products[tapIndex].details ??
+                                                                              "")
+                                                                      .text,
+                                                              countOfPieces: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state
+                                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                              .product!
+                                                                              .countOfPieces ??
+                                                                          0
+                                                                      : 0
+                                                                  : 0,
+                                                              addToBagButtonShapeNotifier:
+                                                                  addToBagButtonShapeNotifier,
+                                                              currentColornum: productColors
+                                                                      .isNullOrEmpty
+                                                                  ? ''
+                                                                  : productColors?[
+                                                                              currentSelectedColor]
+                                                                          .color ??
+                                                                      "",
+                                                              boutiqueIcon: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique !=
+                                                                              null
+                                                                          ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon != null
+                                                                              ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon!.filePath ?? ""
+                                                                              : ""
+                                                                          : ""
+                                                                      : ""
+                                                                  : "",
+                                                              boutiqueId: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique !=
+                                                                              null
+                                                                          ? state
+                                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                              .product!
+                                                                              .boutique!
+                                                                              .id!
+                                                                          : 0
+                                                                      : 0
+                                                                  : 0,
+                                                              currentColorName: productColors
+                                                                      .isNullOrEmpty
+                                                                  ? ''
+                                                                  : productColors?[
+                                                                              currentSelectedColor]
+                                                                          .name ??
+                                                                      "",
+                                                              productItem:
                                                                   products[
                                                                           tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                              .product
-                                                              ?.syncColorImages,
-                                                        ),
-                                                        currentColor:
-                                                            currentSelectedColor,
-                                                        maxAllowedToAddCart: state
-                                                                .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                                ?.product
-                                                                ?.maxAllowedQty ??
-                                                            "0",
-                                                      );
+                                                                      .copyWith(
+                                                                price: currentVariation
+                                                                            ?.price !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.price
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.price,
+                                                                offerPrice: currentVariation
+                                                                            ?.offerPrice !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.offerPrice
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.offerPrice,
+                                                                priceFormatted: currentVariation
+                                                                            ?.priceFormated !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.priceFormated
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.priceFormatted,
+                                                                offerPriceFormatted: currentVariation
+                                                                            ?.offerPriceFormated !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.offerPriceFormated
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.offerPriceFormatted,
+                                                                availableQuantity: state
+                                                                            .cachedProductWithoutRelatedProductsModel[products[
+                                                                                tapIndex]
+                                                                            .productId
+                                                                            .toString()] ==
+                                                                        null
+                                                                    ? 0
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.availableQuantity,
+                                                                choiceOptions: state
+                                                                            .cachedProductWithoutRelatedProductsModel[products[
+                                                                                tapIndex]
+                                                                            .productId
+                                                                            .toString()] ==
+                                                                        null
+                                                                    ? []
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.choiceOptions,
+                                                                colors: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                            tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                    .product
+                                                                    ?.colors,
+                                                                images: state
+                                                                            .cachedProductWithoutRelatedProductsModel[products[
+                                                                                tapIndex]
+                                                                            .productId
+                                                                            .toString()] ==
+                                                                        null
+                                                                    ? []
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.images,
+                                                                syncColorImages: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                            tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                    .product
+                                                                    ?.syncColorImages,
+                                                              ),
+                                                              currentColor:
+                                                                  currentSelectedColor,
+                                                              maxAllowedToAddCart: state
+                                                                      .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.maxAllowedQty ??
+                                                                  "0",
+                                                            );
+                                                          });
                                                     });
                                           }),
                                     ));
@@ -3432,11 +3391,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   if (!mounted) return;
 
                   Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => ProductDetailsPageNew(
-                              productItem: products[index],
-                            ),
-                          ),
+                    MaterialPageRoute(
+                      builder: (ctx) => ProductDetailsPageNew(
+                        productItem: products[index],
+                      ),
+                    ),
                   );
                 });
               },
@@ -3653,12 +3612,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               if (!mounted) return;
                                               Navigator.of(context)
                                                   .push(MaterialPageRoute(
-                                                        builder: (ctx) =>
-                                                            ProductDetailsPageNew(
-                                                          productItem: products[
-                                                              _tapIndexToShowColorImages],
-                                                      ),
-                                                    ));
+                                                builder: (ctx) =>
+                                                    ProductDetailsPageNew(
+                                                  productItem: products[
+                                                      _tapIndexToShowColorImages],
+                                                ),
+                                              ));
                                             });
                                           },
                                           child: ProductColorPanal(

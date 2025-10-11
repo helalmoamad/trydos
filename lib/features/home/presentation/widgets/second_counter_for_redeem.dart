@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SecondsCountdown extends StatefulWidget {
   final DateTime endTime;
@@ -40,7 +41,9 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
 
   @override
   void dispose() {
+    timer?.cancel(); // أوقف المؤقت دائمًا
     if (widget.denyStopTimer) {
+      super.dispose();
       return;
     }
     // خزّن عدد الثواني المتبقية عند التخلص من الودجت
@@ -50,7 +53,6 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
     final prefs = GetIt.I<PrefsRepository>();
     prefs.setRedeemSecondRemainingForProduct(
         widget.productId.toString(), secondsToSave);
-
     super.dispose();
   }
 
@@ -92,16 +94,27 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
       secondsLeft = diff.inSeconds > 0 ? diff.inSeconds : 0;
     });
     if (secondsLeft == 0) {
+      timer?.cancel();
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          widget.visibleRedeem.value = !widget.visibleRedeem.value;
+          if (widget.finishRedeem != null) {
+            widget.finishRedeem!.value = !(widget.finishRedeem!.value);
+          }
+        });
+      }
       GetIt.I<PrefsRepository>()
           .setRedeemSecondRemainingForProduct(widget.productId.toString(), 0);
-      timer?.cancel();
-      widget.visibleRedeem.value = !widget.visibleRedeem.value;
-      widget.finishRedeem?.value = !(widget.finishRedeem?.value ?? false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Text('$secondsLeft',
         style: context.textTheme.bodyMedium?.br.copyWith(
           fontSize: 9,

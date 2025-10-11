@@ -16,6 +16,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class lableInfoProduct extends StatelessWidget {
   const lableInfoProduct({
@@ -25,16 +26,8 @@ class lableInfoProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Padding(
         padding: const EdgeInsetsGeometry.only(bottom: 10, left: 20, right: 20),

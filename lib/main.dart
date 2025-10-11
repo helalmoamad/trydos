@@ -24,6 +24,7 @@ import 'package:sync/semaphore.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
@@ -289,7 +290,7 @@ void clearvideoProductInListingController({required String productSlug}) {
   }
 }
 
-int applicationVersion = 16;
+int applicationVersion = 24;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
@@ -368,7 +369,6 @@ void main() async {
       'login _prefsRepository.marketToken${GetIt.I<PrefsRepository>().marketToken}');
   debugPrint(
       'login _prefsRepository.storiesToken${GetIt.I<PrefsRepository>().storiesToken}');
-
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];

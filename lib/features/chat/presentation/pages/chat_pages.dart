@@ -45,6 +45,7 @@ import '../../../calls/presentation/pages/in_app_view.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ChatPages extends StatefulWidget {
   const ChatPages(
@@ -84,6 +85,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   @override
   void initState() {
+    LastPagesTracker.push('ChatPages');
     scrollController.addListener(_getChatsPaginationListener);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
@@ -138,13 +140,9 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (details) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: details.toString(), lastPage: "Chat_Pages"));
-      debugPrint("asfsd${details.toString()}");
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: details.toString());
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return WillPopScope(
       onWillPop: () async {

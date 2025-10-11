@@ -33,6 +33,7 @@ import '../../../app/my_text_widget.dart';
 import '../../../calls/presentation/bloc/calls_bloc.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage(
@@ -70,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int videoss = 0;
   @override
   void initState() {
+    LastPagesTracker.push('ProfilePage');
     images = _prefsRepository.getTheLocalPathForChannel(widget.chatId) ?? [];
     chatBloc = BlocProvider.of<ChatBloc>(context);
     print(images);
@@ -91,15 +93,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget build(BuildContext context) {
-    print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${widget.receiverPhoto}");
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: " Profile_Page "));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error);
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(

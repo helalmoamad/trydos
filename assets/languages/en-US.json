@@ -251,6 +251,7 @@
   "share_this_product_with": "Share This Product With",
   "please_select_the_appropriate": "Please Select The Appropriate",
   "not_available_now_stock": "Not Available Now, Stock Is Sold Out",
+  "take_a_look_at_other_colors": "Take A Look At Other Colors",
   "need_help_finding_your_size": "Need Help Finding Your Size?",
   "recommended": "Recommended",
   "for_you": "for you",
@@ -491,7 +492,7 @@
   "clarification": "Clarification",
   "about_cancel_order": "About Cancel Your Order ",
   "you_will_not_charged_fees": "You Will Not Be Charged Any Fees.",
-  "you_will_receive_your_refund_within": "You Will Receive Your Full Refund Within",
+  "you_will_receive_your_refund_within": "You Will Receive Your Refund Within",
   "hours": "Hours",
   "repeated_cancellations_affect_rating": "Repeated Cancellations Will Affect Your Rating, Which Will Affect Your Ability To Receive New Offers Or Opportunities From Us.",
   "terms_of_cancellation_term": "Terms Of Cancellation Terms",
@@ -509,7 +510,7 @@
   "hide_this_product": "Hide This Product",
   "hide_this_product_from_list": "Hide This Product From My List",
   "you_can_return_product_without_conditions": "You Can Return The Product Without Any Conditions According To The ",
-  "return_policy_get_full_refund": "Return Policy And Get A Full Refund",
+  "return_policy_get_full_refund": "You will receive your refund ",
   "to_your_account": " To Your Account.",
   "why_was_product_return": "Why Was The Product Return?",
   "i_didnt_like": "I Didn't Like",
@@ -631,21 +632,18 @@
   ,"good_quality": "Good Quality"
   ,"recommend_it_by": "Recommend It By"
   ,"made_in": "Made In"
-  ,"today_shipping_if_buy_before": "Today Shipping If Buy Before"
-  ,"fast_packing": "Fast Packing"
-  ,"best_sell": "Best Sell"
-  ,"best_price": "Best Price"
-  ,"expected_shipping_delivery_date": "Expected Shipping & Delivery Date"
-  ,"work_days_at_your_address_in": "Work Days At Your Address In"
-  ,"after_receiving_product_return_without_conditions": "After Receiving The Product, You Can Return It Without Conditions"
-  ,"or_reasons_with_complete_ease_and": "Or Reasons With Complete Ease And",
-  "return_problem_resolved": "Return problem has been resolved."
-  ,"out_for_return": "Out For Return"
-  ,"country_not_available": "Your country is not available in this application"
-  ,"choose_a_country": "Choose a country:"
-  ,"you_have_to_choose_a_country": "You have to choose a country"
-  ,"ok_and_continue": "OK & Continue"
-  ,"press_here_for_more": "Press here for more",
-  "download_the_app_here": "Download the app here"
-
+  ,"today_shipping": "Today Shipping"
+  ,"if_buy_before": "If Buy Before"
+ 
+  ,"today_shipping_short": "Today Shipping"
+  ,"selected_color": "Selected Color"
+  ,"get": "Get"
+  ,"select_your_required_size": "Select Your Required Size"
+  ,"only": "Only"
+  ,"added": "Added"
+  ,"to_your_bag": "To Your Bag"
+  ,"today_shipping_if_buy_before": "& Today Shipping If Buy Before"
+  ,"add_more_to_bag": "Add More To Bag"
+  ,"delivery_worker": "Delivery Worker"
+  ,"recommend_products": "Recommended Products"
 }

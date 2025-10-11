@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -62,6 +63,7 @@ class _AnswerCallState extends State<AnswerCall> {
 
   @override
   void initState() {
+    LastPagesTracker.push('AnswerCall');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall) {
       Navigator.of(context).pop();
@@ -80,11 +82,8 @@ class _AnswerCallState extends State<AnswerCall> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Answer_Call"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     // er.oGoRoutf(context).p

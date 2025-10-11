@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../bloc/story_bloc.dart';
 import '../bloc/story_state.dart';
 
@@ -18,6 +18,10 @@ class AnimatedBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return BlocBuilder<StoryBloc, StoryState>(
       builder: (context1, state) {
         return Flexible(

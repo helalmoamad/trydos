@@ -12,11 +12,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../trydos_application.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SlidingUpPanelForReels extends StatelessWidget {
   const SlidingUpPanelForReels({super.key, required this.panelController});
@@ -26,16 +22,8 @@ class SlidingUpPanelForReels extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return SlidingUpPanel(
         borderRadius: const BorderRadius.only(

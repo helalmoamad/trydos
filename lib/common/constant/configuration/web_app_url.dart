@@ -11,6 +11,7 @@ abstract class WebAppEndPoints {
   static const homeBoutiquesEP = "api/home/boutiques";
   static const searchProductEP = "api/products/searchInCatalog";
   static const productFeaturedEP = "api/products/featured";
+  static const productRecommendedEP = "api/products/recomended";
   static String productDetailsEP(String slug) =>
       "api/mobile/product/details_without_similar_related_products/${slug}";
   //  static final imageSearchEP = "api/image-search";

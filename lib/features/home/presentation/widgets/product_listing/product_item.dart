@@ -13,7 +13,7 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_deal_counter.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider_optimized.dart';
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
@@ -27,6 +27,8 @@ class ProductItem extends StatefulWidget {
       {super.key,
       required this.itemIndex,
       this.productIsFlashDeal,
+      this.fromRecommend,
+      this.productIsRecommend,
       this.fromHomePage = false,
       this.refreshFlashDeal,
       this.fromFlashDeal,
@@ -46,6 +48,8 @@ class ProductItem extends StatefulWidget {
   final ValueNotifier<int>? tapIndexToShowColorImages;
   final bool fromHomePage;
   final String? imageSource;
+  final bool? fromRecommend;
+  final ValueNotifier<bool>? productIsRecommend;
   final ValueNotifier<bool>? showShadowForColorImages;
   final PanelController? colorImagesPanelController;
   final ValueNotifier<bool>? productIsFlashDeal;
@@ -97,6 +101,10 @@ class _ProductItemState extends State<ProductItem> {
 */
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     /*  FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
@@ -219,6 +227,8 @@ class _ProductItemState extends State<ProductItem> {
                           : ("${dotenv.env['Video_url']}" +
                               (widget.productItem.videos!.first)),
                   productIsFlashDeal: widget.productIsFlashDeal,
+                  productIsRecommend: widget.productIsRecommend,
+                  fromRecommend: widget.fromRecommend,
                   fromFlashDeal: widget.fromFlashDeal,
                   fromHomePage: widget.fromHomePage,
                   visibleRedeem: visibleRedeem,
@@ -241,7 +251,6 @@ class _ProductItemState extends State<ProductItem> {
                   visibleRedeem: visibleRedeem,
                   fromFlashDeal: widget.fromFlashDeal,
                   fromHomePage: widget.fromHomePage,
-                  productIsFlashDeal: widget.productIsFlashDeal,
                   productItem: widget.productItem,
                   tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
                   itemIndex: widget.itemIndex,

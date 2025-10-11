@@ -15,6 +15,7 @@ import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_text_widget.dart';
 import 'home_page_card2.dart';
 import 'offer_time_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class quickOfferCard extends StatefulWidget {
   const quickOfferCard({super.key});
@@ -29,16 +30,8 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Stack(
       alignment: Alignment.bottomCenter,

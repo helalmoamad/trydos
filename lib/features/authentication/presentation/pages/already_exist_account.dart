@@ -13,7 +13,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -67,7 +67,17 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
   }
 
   @override
+  void initState() {
+    LastPagesTracker.push('AlreadyExistAccount');
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     bool verifiedBySignIn = false;
     return Scaffold(
       backgroundColor: const Color(0xffF4F8FF),

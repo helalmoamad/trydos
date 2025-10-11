@@ -11,7 +11,7 @@ import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
 import 'package:like_button/like_button.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../app/trydos_favorite_buton.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -25,16 +25,8 @@ class ReelWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Column(
       children: [

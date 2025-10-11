@@ -13,13 +13,14 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/language_service.dart';
 
@@ -33,11 +34,10 @@ class DisplayColorsCardNew extends StatefulWidget {
   const DisplayColorsCardNew(
       {super.key,
       required this.productItem,
-      required this.scrollController,
       required this.currentColorForProduct});
 
   final productListingModel.Products productItem;
-  final ScrollController scrollController;
+
   final int currentColorForProduct;
   @override
   State<DisplayColorsCardNew> createState() => _DisplayColorsCardNewState();
@@ -65,18 +65,9 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.currentSelectedColorForEveryProduct[
@@ -166,9 +157,8 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                                   FirebaseAnalyticsService.logEventForSession(
                                     executedEventName:
                                         AnalyticsButtonsEventNameConst
-                                            .COLOR_SLIDE,
-                                    eventName: AnalyticsEventsConst
-                                        .itemVariantExchange,
+                                            .CHOOSE_AVAILABLE_COLOR_BUTTON,
+                                    eventName: AnalyticsEventsConst.changeColor,
                                     extraParams: {
                                       'item_id': widget.productItem.productId
                                           .toString(),
@@ -182,9 +172,17 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                                           )
                                           .toList()
                                           .toString(),
-                                      'item_variant': widget
-                                          .productItem.colors![index]
-                                          .toString(),
+                                      'selected_color': widget.productItem
+                                              .colors![index].name ??
+                                          ''.toString(),
+                                      'screen_name':
+                                          GlobalScreenConst.PRODUCT_SCREEN,
+                                      'selected_size':
+                                          BlocProvider.of<HomeBloc>(context)
+                                                      .state
+                                                      .currentColorSizeForCart?[
+                                                  'choiceOption'] ??
+                                              ''
                                     },
                                   );
                                 },

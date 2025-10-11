@@ -31,11 +31,12 @@ import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/service/language_service.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:tuple/tuple.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
@@ -71,10 +72,12 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
       ValueNotifier(null);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<bool> finishRedeem = ValueNotifier(false);
+  final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
   final ValueNotifier<bool> loadingForRquestProductDetails =
       ValueNotifier(false);
   final PanelController colorImagesPanelController = PanelController();
   final ValueNotifier<bool> showShadowForColorImages = ValueNotifier(false);
+  final ValueNotifier<bool> showShadowForPanel = ValueNotifier(false);
   int currentSelectedColor = -1;
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   Map<String, Key> reRenderingListViewKey = {};
@@ -129,6 +132,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
 
   @override
   void initState() {
+    LastPagesTracker.push("FlashDealProducts Page");
     authBloc = BlocProvider.of<AuthBloc>(context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -152,10 +156,8 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return WillPopScope(
         onWillPop: () async {
@@ -178,124 +180,6 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
         child: ValueListenableBuilder<int>(
           valueListenable: tapIndexToAddProductToCart,
           builder: (context, tapIndex, _) => Scaffold(
-            appBar: tapIndex == -1
-                ? null
-                : TrydosAppBar(
-                    appBarParams: AppBarParams(
-                        hasLeading: false,
-                        leading: const SizedBox.shrink(),
-                        scrolledUnderElevation: 0,
-                        backIconColor: Colors.black,
-                        action: [
-                          LanguageService.rtl
-                              ? const Spacer()
-                              : const SizedBox.shrink(),
-                          Padding(
-                            padding:
-                                const EdgeInsetsDirectional.only(end: 10.0),
-                            child: BlocBuilder<HomeBloc, HomeState>(
-                              buildWhen: (previous, current) =>
-                                  previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                      current
-                                          .getProductDetailWithoutSimilarRelatedProductsStatus ||
-                                  previous.authProductDetailsStatus !=
-                                      current.authProductDetailsStatus ||
-                                  previous.updateItemInCartStatus !=
-                                      current.updateItemInCartStatus ||
-                                  previous.addItemInCartStatus !=
-                                      current.addItemInCartStatus ||
-                                  previous.deleteItemInCartStatus !=
-                                      current.deleteItemInCartStatus ||
-                                  previous.getCartItemsStatus !=
-                                      current.getCartItemsStatus,
-                              builder: (context, state) {
-                                int qtyItemsInCart =
-                                    state.cartCollection?.length ?? 0;
-                                /*  state.cartCollection?.forEach(
-                              (element) {
-                                qtyItemsInCart =
-                                    qtyItemsInCart + (element.quantity ?? 0);
-                              },
-                            );*/
-
-                                return Container(
-                                  alignment: Alignment.center,
-                                  height: 40,
-                                  width: LanguageService.languageCode != "ar"
-                                      ? 40
-                                      : 50,
-                                  child: InkWell(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CartPage(
-                                              fromeFilters: true,
-                                            ),
-                                          ),
-                                        );
-                                        //////////////////////////////
-                                      },
-                                      child: Stack(children: [
-                                        Positioned(
-                                          child: SvgPicture.asset(
-                                              AppAssets.bagsSvg),
-                                          right: LanguageService.languageCode !=
-                                                  "ar"
-                                              ? 0
-                                              : null,
-                                          left: LanguageService.languageCode ==
-                                                  "ar"
-                                              ? 0
-                                              : null,
-                                          bottom: 5,
-                                        ),
-                                        Positioned(
-                                          child: Container(
-                                            width:
-                                                (qtyItemsInCart > 0) ? 15 : 0,
-                                            alignment: Alignment.center,
-                                            height:
-                                                (qtyItemsInCart > 0) ? 15 : 0,
-                                            decoration: BoxDecoration(
-                                                color: Colors.green,
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            child: MyTextWidget(
-                                              (qtyItemsInCart > 0)
-                                                  ? "${qtyItemsInCart}"
-                                                  : "",
-                                              maxLines: 1,
-                                              style: textTheme.titleSmall?.ra
-                                                  .copyWith(
-                                                      fontSize: 12,
-                                                      color: Colors.white,
-                                                      letterSpacing: 0.28),
-                                            ),
-                                          ),
-                                          top: 0,
-                                          left: LanguageService.languageCode !=
-                                                  "ar"
-                                              ? 5
-                                              : null,
-                                          right: LanguageService.languageCode !=
-                                                  "en"
-                                              ? (qtyItemsInCart
-                                                          .toString()
-                                                          .length >
-                                                      1)
-                                                  ? 0
-                                                  : 10
-                                              : null,
-                                        )
-                                      ])),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                        withShadow: false),
-                  ),
             body: SafeArea(
               child: Stack(
                 children: [
@@ -506,6 +390,24 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                   ),
                   shadowForPanel(),
                   panelWidget(),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: showShadowForPanel,
+                    builder: (context, _showShadowForPanel, _) {
+                      return _showShadowForPanel
+                          ? GestureDetector(
+                              onTap: () {
+                                showShadowForPanel.value = false;
+                                currentActiveTab.value = -1;
+                                panelControllerForCart.close();
+                              },
+                              child: Container(
+                                height: 1.sh,
+                                width: 1.sw,
+                                color: Colors.black.withOpacity(0.55),
+                              ))
+                          : const SizedBox.shrink();
+                    },
+                  ),
                   BlocBuilder<BoutiqueBloc, BoutiqueState>(
                       buildWhen: (previous, current) {
                     return previous
@@ -794,7 +696,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                                 .toString()]
                                                         ?.product
                                                         ?.availableQuantity ==
-                                                    false) {
+                                                    0) {
                                                   productNotAvailableNotifier
                                                           .value =
                                                       LocaleKeys
@@ -989,337 +891,348 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                         finishRedeem,
                                                     builder: (context,
                                                         _finishRedeem, _) {
-                                                      return ProductDetailsBottomSheet(
-                                                        redeemVariantPrice: (currentVariation
-                                                                    ?.redeemPrice !=
-                                                                null)
-                                                            ? currentVariation
-                                                                    ?.redeemPrice ??
-                                                                0
-                                                            : state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()]
-                                                                    ?.product
-                                                                    ?.redeemPrice ??
-                                                                0,
-                                                        isRedeem: (prefsRepository
-                                                                        .getRedeemDateForProduct(products[tapIndex]
-                                                                            .productId
-                                                                            .toString())
-                                                                        ?.isAfter(DateTime.now().add(const Duration(
-                                                                            seconds:
-                                                                                1))) ==
-                                                                    true) &&
-                                                                state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]
-                                                                        ?.product
-                                                                        ?.isRedeem ==
-                                                                    true ||
-                                                            (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(products[
-                                                                            tapIndex]
-                                                                        .productId
-                                                                        .toString()) ??
-                                                                    0) >
-                                                                0,
-                                                        redeemPrice: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product!
-                                                                        .redeemPrice ??
-                                                                    0
-                                                                : 0
-                                                            : 0,
-                                                        initOfferPrice:
-                                                            (products[tapIndex]
-                                                                    .offerPrice ??
-                                                                0),
-                                                        initPrice:
-                                                            (products[tapIndex]
-                                                                    .price ??
-                                                                0),
-                                                        currentColorOption: productColors
-                                                                .isNullOrEmpty
-                                                            ? ''
-                                                            : productColors?[
-                                                                        currentSelectedColor]
-                                                                    .option ??
-                                                                products[
-                                                                        tapIndex]
-                                                                    .colors![
-                                                                        currentSelectedColor]
-                                                                    .option ??
-                                                                "",
-                                                        isGetFullProductDetails:
-                                                            false,
-                                                        productNotAvailableNotifier:
-                                                            productNotAvailableNotifier,
-                                                        currentActiveTab:
-                                                            currentActiveTab,
-                                                        qtyForproductWithoutVariant: state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                            ?.product
-                                                            ?.availableQuantity,
-                                                        collectedAfterOrdering: state
-                                                                .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                                ?.product
-                                                                ?.collectedAfterOrdering ==
-                                                            1,
-                                                        tapIndexToAddProductToCart:
-                                                            tapIndexToAddProductToCart,
-                                                        fromListingPage: true,
-                                                        productIdForCashData:
-                                                            products[tapIndex]
-                                                                .productId
-                                                                .toString(),
-                                                        panelController:
-                                                            panelControllerForCart,
-                                                        productSlugForTopic: state
-                                                                .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                                ?.product
-                                                                ?.slug ??
-                                                            "",
-                                                        productDescription:
-                                                            HtmlParser.parseHTML(
-                                                                    products[tapIndex]
-                                                                            .details ??
-                                                                        "")
-                                                                .text,
-                                                        countOfPieces: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product!
-                                                                        .countOfPieces ??
-                                                                    0
-                                                                : 0
-                                                            : 0,
-                                                        addToBagButtonShapeNotifier:
-                                                            addToBagButtonShapeNotifier,
-                                                        currentColornum: productColors
-                                                                .isNullOrEmpty
-                                                            ? ''
-                                                            : productColors?[
-                                                                        currentSelectedColor]
-                                                                    .color ??
-                                                                "",
-                                                        boutiqueIcon: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique !=
-                                                                        null
-                                                                    ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon !=
-                                                                            null
-                                                                        ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon!.filePath ??
-                                                                            ""
-                                                                        : ""
-                                                                    : ""
-                                                                : ""
-                                                            : "",
-                                                        boutiqueId: state
-                                                                    .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()] !=
-                                                                null
-                                                            ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product !=
-                                                                    null
-                                                                ? state
-                                                                            .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                                .productId
-                                                                                .toString()]!
-                                                                            .product!
-                                                                            .boutique !=
-                                                                        null
-                                                                    ? state
-                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                            .productId
-                                                                            .toString()]!
-                                                                        .product!
-                                                                        .boutique!
-                                                                        .id!
-                                                                    : 0
-                                                                : 0
-                                                            : 0,
-                                                        currentColorName: productColors
-                                                                .isNullOrEmpty
-                                                            ? ''
-                                                            : productColors?[
-                                                                        currentSelectedColor]
-                                                                    .name ??
-                                                                "",
-                                                        productItem:
-                                                            products[tapIndex]
-                                                                .copyWith(
-                                                          price: currentVariation
-                                                                      ?.price !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.price
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.price,
-                                                          offerPrice: currentVariation
-                                                                      ?.offerPrice !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.offerPrice
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.offerPrice,
-                                                          priceFormatted: currentVariation
-                                                                      ?.priceFormated !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.priceFormated
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.priceFormatted,
-                                                          offerPriceFormatted: currentVariation
-                                                                      ?.offerPriceFormated !=
-                                                                  null
-                                                              ? currentVariation
-                                                                  ?.offerPriceFormated
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.offerPriceFormatted,
-                                                          availableQuantity: state
+                                                      return ValueListenableBuilder<
+                                                              bool>(
+                                                          valueListenable:
+                                                              visibleFlashDeal,
+                                                          builder: (context,
+                                                              _visibleFlashDeal,
+                                                              _) {
+                                                            bool
+                                                                isFlashDealEnded =
+                                                                false;
+                                                            DateTime endDate;
+                                                            Duration _duration =
+                                                                const Duration();
+                                                            final now =
+                                                                DateTime.now();
+                                                            try {
+                                                              endDate = DateFormat(
+                                                                      'MM/dd/yyyy',
+                                                                      'en_US')
+                                                                  .parse(state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                              .productId
+                                                                              .toString()]
+                                                                          ?.product
+                                                                          ?.flashDealEndDate ??
+                                                                      "");
+                                                              endDate = endDate.add(
+                                                                  const Duration(
+                                                                      days: 1));
+                                                            } catch (e) {
+                                                              endDate = DateTime
+                                                                  .now();
+                                                              print(
+                                                                  'Error parsing date: $e');
+                                                            }
+                                                            _duration = endDate
+                                                                .difference(
+                                                                    now);
+                                                            if (_duration
+                                                                    .isNegative ||
+                                                                _duration
+                                                                        .inSeconds <
+                                                                    1) {
+                                                              isFlashDealEnded =
+                                                                  true;
+                                                            }
+
+                                                            return ProductDetailsBottomSheetNew(
+                                                              showShadowForPanel:
+                                                                  showShadowForPanel,
+                                                              currentVariant:
+                                                                  currentVariantType,
+                                                              visibleRedeemNotifier:
+                                                                  finishRedeem,
+                                                              visibleFlashDeal:
+                                                                  visibleFlashDeal,
+                                                              isFlashDealEnded:
+                                                                  isFlashDealEnded,
+                                                              flashDealEndDate: state
                                                                       .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.flashDealEndDate ??
+                                                                  "",
+                                                              redeemVariantPrice: (currentVariation
+                                                                          ?.redeemPrice !=
+                                                                      null)
+                                                                  ? currentVariation
+                                                                          ?.redeemPrice ??
+                                                                      0
+                                                                  : state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                              .productId
+                                                                              .toString()]
+                                                                          ?.product
+                                                                          ?.redeemPrice ??
+                                                                      0,
+                                                              isRedeem: (prefsRepository.getRedeemDateForProduct(products[tapIndex].productId.toString())?.isAfter(DateTime.now().add(const Duration(
+                                                                              seconds:
+                                                                                  1))) ==
+                                                                          true) &&
+                                                                      state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.isRedeem ==
+                                                                          true ||
+                                                                  (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(products[tapIndex]
+                                                                              .productId
+                                                                              .toString()) ??
+                                                                          0) >
+                                                                      0,
+                                                              redeemPrice: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state
+                                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                              .product!
+                                                                              .redeemPrice ??
+                                                                          0
+                                                                      : 0
+                                                                  : 0,
+                                                              initOfferPrice:
+                                                                  (products[tapIndex]
+                                                                          .offerPrice ??
+                                                                      0),
+                                                              initPrice: (products[
                                                                           tapIndex]
-                                                                      .productId
-                                                                      .toString()] ==
-                                                                  null
-                                                              ? 0
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.availableQuantity,
-                                                          choiceOptions: state
+                                                                      .price ??
+                                                                  0),
+                                                              currentColorOption: productColors
+                                                                      .isNullOrEmpty
+                                                                  ? ''
+                                                                  : productColors?[
+                                                                              currentSelectedColor]
+                                                                          .option ??
+                                                                      products[
+                                                                              tapIndex]
+                                                                          .colors![
+                                                                              currentSelectedColor]
+                                                                          .option ??
+                                                                      "",
+                                                              isGetFullProductDetails:
+                                                                  false,
+                                                              productNotAvailableNotifier:
+                                                                  productNotAvailableNotifier,
+                                                              currentActiveTab:
+                                                                  currentActiveTab,
+                                                              collectedAfterOrdering: state
                                                                       .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()] ==
-                                                                  null
-                                                              ? []
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.choiceOptions,
-                                                          colors: state
-                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.collectedAfterOrdering ==
+                                                                  1,
+                                                              tapIndexToAddProductToCart:
+                                                                  tapIndexToAddProductToCart,
+                                                              fromListingPage:
+                                                                  true,
+                                                              productIdForCashData:
                                                                   products[
                                                                           tapIndex]
                                                                       .productId
-                                                                      .toString()]!
-                                                              .product
-                                                              ?.colors,
-                                                          images: state
+                                                                      .toString(),
+                                                              panelController:
+                                                                  panelControllerForCart,
+                                                              productSlugForTopic: state
                                                                       .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()] ==
-                                                                  null
-                                                              ? []
-                                                              : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[
-                                                                          tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.images,
-                                                          syncColorImages: state
-                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.slug ??
+                                                                  "",
+                                                              productDescription:
+                                                                  HtmlParser.parseHTML(
+                                                                          products[tapIndex].details ??
+                                                                              "")
+                                                                      .text,
+                                                              countOfPieces: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state
+                                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                              .product!
+                                                                              .countOfPieces ??
+                                                                          0
+                                                                      : 0
+                                                                  : 0,
+                                                              addToBagButtonShapeNotifier:
+                                                                  addToBagButtonShapeNotifier,
+                                                              currentColornum: productColors
+                                                                      .isNullOrEmpty
+                                                                  ? ''
+                                                                  : productColors?[
+                                                                              currentSelectedColor]
+                                                                          .color ??
+                                                                      "",
+                                                              boutiqueIcon: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique !=
+                                                                              null
+                                                                          ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon != null
+                                                                              ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique!.icon!.filePath ?? ""
+                                                                              : ""
+                                                                          : ""
+                                                                      : ""
+                                                                  : "",
+                                                              boutiqueId: state
+                                                                          .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()] !=
+                                                                      null
+                                                                  ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product !=
+                                                                          null
+                                                                      ? state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product!.boutique !=
+                                                                              null
+                                                                          ? state
+                                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                              .product!
+                                                                              .boutique!
+                                                                              .id!
+                                                                          : 0
+                                                                      : 0
+                                                                  : 0,
+                                                              currentColorName: productColors
+                                                                      .isNullOrEmpty
+                                                                  ? ''
+                                                                  : productColors?[
+                                                                              currentSelectedColor]
+                                                                          .name ??
+                                                                      "",
+                                                              productItem:
                                                                   products[
                                                                           tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                              .product
-                                                              ?.syncColorImages,
-                                                        ),
-                                                        currentColor:
-                                                            currentSelectedColor,
-                                                        maxAllowedToAddCart: state
-                                                                .cachedProductWithoutRelatedProductsModel[products[
-                                                                        tapIndex]
-                                                                    .productId
-                                                                    .toString()]
-                                                                ?.product
-                                                                ?.maxAllowedQty ??
-                                                            "0",
-                                                      );
+                                                                      .copyWith(
+                                                                price: currentVariation
+                                                                            ?.price !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.price
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.price,
+                                                                offerPrice: currentVariation
+                                                                            ?.offerPrice !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.offerPrice
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.offerPrice,
+                                                                priceFormatted: currentVariation
+                                                                            ?.priceFormated !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.priceFormated
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.priceFormatted,
+                                                                offerPriceFormatted: currentVariation
+                                                                            ?.offerPriceFormated !=
+                                                                        null
+                                                                    ? currentVariation
+                                                                        ?.offerPriceFormated
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.offerPriceFormatted,
+                                                                availableQuantity: state
+                                                                            .cachedProductWithoutRelatedProductsModel[products[
+                                                                                tapIndex]
+                                                                            .productId
+                                                                            .toString()] ==
+                                                                        null
+                                                                    ? 0
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.availableQuantity,
+                                                                choiceOptions: state
+                                                                            .cachedProductWithoutRelatedProductsModel[products[
+                                                                                tapIndex]
+                                                                            .productId
+                                                                            .toString()] ==
+                                                                        null
+                                                                    ? []
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.choiceOptions,
+                                                                colors: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                            tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                    .product
+                                                                    ?.colors,
+                                                                images: state
+                                                                            .cachedProductWithoutRelatedProductsModel[products[
+                                                                                tapIndex]
+                                                                            .productId
+                                                                            .toString()] ==
+                                                                        null
+                                                                    ? []
+                                                                    : state
+                                                                        .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .product
+                                                                        ?.images,
+                                                                syncColorImages: state
+                                                                    .cachedProductWithoutRelatedProductsModel[products[
+                                                                            tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                    .product
+                                                                    ?.syncColorImages,
+                                                              ),
+                                                              currentColor:
+                                                                  currentSelectedColor,
+                                                              maxAllowedToAddCart: state
+                                                                      .cachedProductWithoutRelatedProductsModel[products[
+                                                                              tapIndex]
+                                                                          .productId
+                                                                          .toString()]
+                                                                      ?.product
+                                                                      ?.maxAllowedQty ??
+                                                                  "0",
+                                                            );
+                                                          });
                                                     });
                                           }),
                                     ));

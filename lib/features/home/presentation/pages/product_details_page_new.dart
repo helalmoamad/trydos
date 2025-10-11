@@ -51,13 +51,13 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/l
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_video.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/shipping_delivery_date_panel.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_header.dart';
 
 import 'package:trydos/main.dart';
 
 import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
@@ -71,7 +71,7 @@ import '../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 
 import '../manager/homeBloc/home_state.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../widgets/product_details_body/product_details_chip_widget.dart';
 import '../widgets/product_details_body/product_details_description_widget.dart';
 import '../widgets/product_details_body/product_details_image_widget.dart';
@@ -80,6 +80,8 @@ import '../widgets/product_details_body/sliding_up_panel_for_buyers_camera_shots
 import '../widgets/product_details_body/sliding_up_panel_for_reels.dart';
 
 import '../widgets/product_stories_section/story/widget/stories_list.dart';
+
+import 'dart:async';
 
 // ignore: must_be_immutable
 class ProductDetailsPageNew extends StatefulWidget {
@@ -105,7 +107,6 @@ class ProductDetailsPageNew extends StatefulWidget {
 }
 
 class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
-  final ScrollController scrollController = ScrollController();
   productListingModel.Products? productItem;
   late HomeBloc homeBloc;
   late ChatBloc chatBloc;
@@ -125,6 +126,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<bool> visibleSizeAndColorCard = ValueNotifier(false);
   final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
+  final ValueNotifier<bool> showShadowForPanel = ValueNotifier(false);
   final ValueNotifier<bool> visibleVedio = ValueNotifier(true);
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
 
@@ -140,8 +142,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   int currentSelectedColorAfterChangeVariant = -1;
   List<String> productSlugToOnVoideo = [];
 
+  Timer? _analyticsTimer;
+
   @override
   void initState() {
+    LastPagesTracker.push(
+        "Product Details Page , Product Name:${widget.productItem?.name}");
     try {
       videoProductInListingController.forEach((key, value) {
         if (value.value.isPlaying) {
@@ -158,10 +164,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(AddCurrentColorSizeEvent());
     productIdToSaveRedeemTimer.remove(productItem?.productId.toString());
-    //homeBloc.add(AddProductIdToSaveRedeemTimerEvent(
-    //   on: false, productIdToSaveRedeemTimer: productIdToSaveRedeemTimer));
-    homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
-        iChangedColorBeforOpenPanelEvent: false));
+
     initialColor = homeBloc.state.currentSelectedColorForEveryProduct[
             widget.productItem?.slug.toString()] ??
         -1;
@@ -184,6 +187,18 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                   : productItem!.syncColorImages![initialColor!].colorName,
           productId: productItem?.productId.toString()));
     }
+
+    // Timer لإرسال الحدث كل 20 ثانية
+
+    FirebaseAnalyticsService.logEventForSession(
+      executedEventName: GlobalScreenConst.PRODUCT_SCREEN,
+      eventName: AnalyticsEventsConst.SCREEN_VIEW,
+      extraParams: {
+        'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+        'screen_path': '',
+        'platform': GlobalPlatform.MOBILE,
+      },
+    );
 
     super.initState();
   }
@@ -217,89 +232,79 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
   @override
   void dispose() {
-    if (productItem == null || widget.productItem != null) {
-      return;
+    _analyticsTimer?.cancel();
+    if (!(productItem == null || widget.productItem != null)) {
+      late DateTime _endTime;
+      final now = DateTime.now();
+      final prefs = GetIt.I<PrefsRepository>();
+      int? savedSeconds = prefs.getRedeemSecondRemainingForProduct(
+          productItem!.productId.toString());
+      if (savedSeconds != null && savedSeconds > 0) {
+        _endTime = DateTime.now().add(Duration(seconds: savedSeconds));
+      } else {
+        _endTime =
+            prefs.getRedeemDateForProduct(productItem!.productId.toString()) ??
+                DateTime.now();
+      }
+      final diff = _endTime.difference(now);
+      int secondsToSave = (diff.inSeconds) > 0 ? diff.inSeconds : 0;
+      prefs.setRedeemSecondRemainingForProduct(
+          productItem!.productId.toString(), secondsToSave);
+      //  homeBloc.add(AddProductIdToSaveRedeemTimerEvent(
+      //      on: true, productIdToSaveRedeemTimer: productIdToSaveRedeemTimer));
     }
-
-    late DateTime _endTime;
-    final now = DateTime.now();
-    final prefs = GetIt.I<PrefsRepository>();
-    int? savedSeconds = prefs
-        .getRedeemSecondRemainingForProduct(productItem!.productId.toString());
-    if (savedSeconds != null && savedSeconds > 0) {
-      _endTime = DateTime.now().add(Duration(seconds: savedSeconds));
-    } else {
-      _endTime =
-          prefs.getRedeemDateForProduct(productItem!.productId.toString()) ??
-              DateTime.now();
-    }
-    final diff = _endTime.difference(now);
-    int secondsToSave = (diff.inSeconds) > 0 ? diff.inSeconds : 0;
-
-    prefs.setRedeemSecondRemainingForProduct(
-        productItem!.productId.toString(), secondsToSave);
-    //  homeBloc.add(AddProductIdToSaveRedeemTimerEvent(
-    //      on: true, productIdToSaveRedeemTimer: productIdToSaveRedeemTimer));
-    // TODO: implement dispose
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return WillPopScope(
       onWillPop: () {
-        homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
-            iChangedColorBeforOpenPanelEvent: false));
-        if (widget.fromCart ?? false) {
-          homeBloc.add(const GetCartItemEvent());
-        }
-        if (panelControllerForCart.isPanelOpen) {
-          panelControllerForCart.close();
-          currentActiveTab.value = 0;
-          return Future.value(false);
-        }
-        if (panelBuyersComments.isPanelOpen) {
-          panelBuyersComments.close();
-          currentActiveTab.value = 0;
-          return Future.value(false);
-        }
-        if (panelColorImages.isPanelOpen) {
-          panelColorImages.close();
-          currentActiveTab.value = 0;
-          return Future.value(false);
-        }
-        if (panelBuyersSeller.isPanelOpen) {
-          panelBuyersSeller.close();
-          currentActiveTab.value = 0;
-          return Future.value(false);
-        }
-        if (panelBuyersProductRate.isPanelOpen) {
-          panelBuyersProductRate.close();
-          currentActiveTab.value = 0;
-          return Future.value(false);
-        }
-        if (panelShippingDeliveryDate.isPanelOpen) {
-          panelShippingDeliveryDate.close();
-          currentActiveTab.value = 0;
-          return Future.value(false);
-        }
-        if (widget.fromNotification) {
-          context.go(GRouter.config.kRootRoute);
+        try {
+          if (widget.fromCart ?? false) {
+            homeBloc.add(const GetCartItemEvent());
+          }
+          if (panelControllerForCart.isPanelOpen) {
+            panelControllerForCart.close();
+            currentActiveTab.value = 0;
+            return Future.value(false);
+          }
+          if (panelBuyersComments.isPanelOpen) {
+            panelBuyersComments.close();
+            currentActiveTab.value = 0;
+            return Future.value(false);
+          }
+          if (panelColorImages.isPanelOpen) {
+            panelColorImages.close();
+            currentActiveTab.value = 0;
+            return Future.value(false);
+          }
+          if (panelBuyersSeller.isPanelOpen) {
+            panelBuyersSeller.close();
+            currentActiveTab.value = 0;
+            return Future.value(false);
+          }
+          if (panelBuyersProductRate.isPanelOpen) {
+            panelBuyersProductRate.close();
+            currentActiveTab.value = 0;
+            return Future.value(false);
+          }
+          if (panelShippingDeliveryDate.isPanelOpen) {
+            panelShippingDeliveryDate.close();
+            currentActiveTab.value = 0;
+            return Future.value(false);
+          }
+          if (widget.fromNotification) {
+            context.go(GRouter.config.kRootRoute);
 
-          return Future.value(false);
-        }
+            return Future.value(false);
+          }
+        } catch (e) {}
+
         try {
           productSlugToOnVoideo.forEach((key) {
             Future.delayed(
@@ -339,8 +344,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           );
                         });
                       } catch (e) {}
-                      homeBloc.add(const IsChangedColorBeforOpenPanelEvent(
-                          iChangedColorBeforOpenPanelEvent: false));
+
                       if (widget.productItem != null && initialColor != -1) {
                         homeBloc.add(AddCurrentSelectedColorEvent(
                             currentSelectedColor: initialColor ?? 0,
@@ -562,6 +566,69 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     .product
                                     ?.syncColorImages,
                               );
+                              Future.delayed(
+                                const Duration(milliseconds: 100),
+                              ).then(
+                                (value) {
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    executedEventName:
+                                        AnalyticsButtonsEventNameConst
+                                            .VIEW_ITEM_BUTTON,
+                                    eventName: AnalyticsEventsConst.viewItem,
+                                    extraParams: {
+                                      'item_id':
+                                          productItem!.productId.toString(),
+                                      'item_name': productItem!.name.toString(),
+                                      'price': productItem!.price.toString(),
+                                      'brand': productItem!.brand == null
+                                          ? ""
+                                          : productItem!.brand!.name.toString(),
+                                      'category': productItem!.categories!
+                                          .map(
+                                            (e) => e.id.toString(),
+                                          )
+                                          .toList()
+                                          .toString(),
+                                      'count_likes':
+                                          productItem!.countOfLikes.toString(),
+                                      'review_count':
+                                          productItem!.reviewsCount.toString(),
+                                      'screen_name':
+                                          GlobalScreenConst.PRODUCT_SCREEN,
+                                    },
+                                  );
+                                },
+                              );
+                              _analyticsTimer = Timer.periodic(
+                                  const Duration(seconds: 20), (_) {
+                                FirebaseAnalyticsService.logEventForSession(
+                                  executedEventName: "",
+                                  eventName:
+                                      AnalyticsEventsConst.viewTimeProduct,
+                                  extraParams: {
+                                    'item_id':
+                                        productItem!.productId.toString(),
+                                    'item_name': productItem!.name.toString(),
+                                    'price': productItem!.price.toString(),
+                                    'brand': productItem!.brand == null
+                                        ? ""
+                                        : productItem!.brand!.name.toString(),
+                                    'category': productItem!.categories!
+                                        .map(
+                                          (e) => e.id.toString(),
+                                        )
+                                        .toList()
+                                        .toString(),
+                                    'count_likes':
+                                        productItem!.countOfLikes.toString(),
+                                    'review_count':
+                                        productItem!.reviewsCount.toString(),
+                                    'screen_name':
+                                        GlobalScreenConst.PRODUCT_SCREEN,
+                                  },
+                                );
+                              });
+
                               getAllDataForProductForFirst = false;
                             }
                           }
@@ -804,8 +871,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         child: ScrollConfiguration(
                           behavior: const CupertinoScrollBehavior(),
                           child: ListView(
-                            shrinkWrap: true,
-                            controller: scrollController,
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
                               productImagesWidget(
@@ -867,6 +932,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               } else ...{
                                 ProductDetailsDescriptionWidget(
                                   description: productItem!.details ?? " ",
+                                  productItem: productItem!,
                                 ),
 
                                 /*BadgesList(
@@ -979,8 +1045,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     return !_visibleSizeAndColorCard
                                         ? const SizedBox.shrink()
                                         : InkWell(
-                                            onTap: () =>
-                                                panelColorImages.open(),
+                                            onTap: () {
+                                              LastPagesTracker.push(
+                                                  "DisplayColorsCardNew Page");
+                                              panelColorImages.open();
+                                            },
                                             child: DisplayColorsCardNew(
                                               productItem: productItem!
                                                   .copyWith(
@@ -1015,8 +1084,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                                   .id
                                                               : null
                                                           : null),
-                                              scrollController:
-                                                  scrollController,
                                               currentColorForProduct:
                                                   currentSelectedColor,
                                             ));
@@ -1168,11 +1235,15 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               storySection(),
                               InkWell(
                                   onTap: () {
+                                    LastPagesTracker.push(
+                                        "BuyersCommentsPanel Page");
                                     panelBuyersComments.open();
                                   },
                                   child: const BuyerComment()),
                               InkWell(
                                   onTap: () {
+                                    LastPagesTracker.push(
+                                        "BuyerSellerChat Page");
                                     panelBuyersSeller.open();
                                   },
                                   child: const BuyerSellerChat()),
@@ -1243,8 +1314,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                           : null),
                                               currentColorForProduct:
                                                   currentSelectedColor,
-                                              scrollController:
-                                                  scrollController,
                                               variation: state
                                                           .authProductDetailsModel
                                                           ?.data ==
@@ -1295,6 +1364,24 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 },
               ),
             ),
+            ValueListenableBuilder<bool>(
+              valueListenable: showShadowForPanel,
+              builder: (context, _showShadowForPanel, _) {
+                return _showShadowForPanel
+                    ? GestureDetector(
+                        onTap: () {
+                          showShadowForPanel.value = false;
+                          currentActiveTab.value = -1;
+                          panelControllerForCart.close();
+                        },
+                        child: Container(
+                          height: 1.sh,
+                          width: 1.sw,
+                          color: Colors.black.withOpacity(0.55),
+                        ))
+                    : const SizedBox.shrink();
+              },
+            ),
             BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (p, c) =>
                   p.getFullProductDetailsStatus !=
@@ -1319,6 +1406,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       .productContentForStatusOfOpeningProductDetailsDirectly!;
                   Future.delayed(const Duration(seconds: 1), () {
                     if (widget.fromNotificationComment) {
+                      LastPagesTracker.push("panelControllerForCart Page");
                       panelControllerForCart.open();
                       currentActiveTab.value = 0;
                       widget.fromNotificationComment = false;
@@ -1546,62 +1634,145 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       );
                     }
 
-                    if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                GetProductDetailWithoutSimilarRelatedProductsStatus
-                                    .loading ||
-                            state.finishLoadingAfterChangedVariationWhenQtyZero ==
-                                false ||
-                            state.authProductDetailsStatus ==
-                                AuthProductDetailsStatus.loading) &&
-                        (state.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                GetProductDetailWithoutSimilarRelatedProductsStatus
-                                    .failure &&
-                            state.authProductDetailsStatus !=
-                                AuthProductDetailsStatus.failure)) {
+                    if ((state.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                .success ||
+                        state.authProductDetailsStatus !=
+                            AuthProductDetailsStatus.success)) {
                       if (productItem != null) {
-                        return Container(
-                            height: 80, // ارتفاع الـ panel المغلقة
-                            child: ProductDetailsSheetHeader(
-                              redeemVariantPrice:
-                                  (productItem!.redeemPrice ?? 0) *
-                                      state.getCurrencyForCountryModel!.data!
-                                          .currency!.exchangeRate!,
-                              isRedeem: productItem?.isRedeem ?? false,
-                              redeemPrice: (productItem!.redeemPrice ?? 0) *
-                                  state.getCurrencyForCountryModel!.data!
-                                      .currency!.exchangeRate!,
-                              currentActiveTab: currentActiveTab,
-                              initOfferPrice:
-                                  ((productItem!.flashDealStatus == 1
-                                              ? productItem!.flashDealPrice ?? 0
-                                              : productItem!.offerPrice ?? 0) *
-                                          state.getCurrencyForCountryModel!
-                                              .data!.currency!.exchangeRate!)
-                                      .toString(),
-                              initPrice: ((productItem!.price ?? 0) *
-                                      state.getCurrencyForCountryModel!.data!
-                                          .currency!.exchangeRate!)
-                                  .toString(),
-                              shippingCost: productItem!.shippingCost ?? 0,
-                              decimalPoint:
-                                  state.startingSetting?.decimalPointSettings ??
-                                      2,
-                              priceSymbol: state.getCurrencyForCountryModel!
-                                      .data!.currency!.symbol ??
-                                  "",
-                              addToBagButtonShapeNotifier:
-                                  addToBagButtonShapeNotifier,
-                              price: ((productItem!.price ?? 0) *
-                                      state.getCurrencyForCountryModel!.data!
-                                          .currency!.exchangeRate!)
-                                  .toString(),
-                              offerPrice: ((productItem!.flashDealStatus == 1
-                                          ? productItem!.flashDealPrice ?? 0
-                                          : productItem!.offerPrice ?? 0) *
-                                      state.getCurrencyForCountryModel!.data!
-                                          .currency!.exchangeRate!)
-                                  .toString(),
-                            ));
+                        return ValueListenableBuilder<bool>(
+                            valueListenable: visibleRedeem,
+                            builder: (context, _visibleRedeem, _) {
+                              return ValueListenableBuilder<bool>(
+                                  valueListenable: visibleFlashDeal,
+                                  builder: (context, _visibleFlashDeal, _) {
+                                    bool isFlashDealEnded = false;
+                                    DateTime endDate;
+                                    Duration _duration = const Duration();
+                                    final now = DateTime.now();
+                                    try {
+                                      endDate =
+                                          DateFormat('MM/dd/yyyy', 'en_US')
+                                              .parse(productItem
+                                                      ?.flashDealEndDate ??
+                                                  "");
+                                      endDate =
+                                          endDate.add(const Duration(days: 1));
+                                    } catch (e) {
+                                      endDate = DateTime.now();
+                                      print('Error parsing date: $e');
+                                    }
+                                    _duration = endDate.difference(now);
+                                    if (_duration.isNegative ||
+                                        _duration.inSeconds < 1) {
+                                      isFlashDealEnded = true;
+                                    }
+
+                                    return Container(
+                                        height: 80, // ارتفاع الـ panel المغلقة
+                                        child: ProductDetailsSheetHeader(
+                                          redeemVariantPrice: (productItem!
+                                                      .redeemPrice ??
+                                                  0) *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!,
+                                          currentVariant: currentVariantType,
+                                          isRedeem: (prefsRepository
+                                                          .getRedeemDateForProduct(
+                                                              productItem!.productId
+                                                                  .toString())
+                                                          ?.isAfter(DateTime.now()
+                                                              .add(const Duration(
+                                                                  seconds:
+                                                                      1))) ==
+                                                      true &&
+                                                  state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem!
+                                                                  .productId
+                                                                  .toString()]
+                                                          ?.product
+                                                          ?.isRedeem ==
+                                                      true) ||
+                                              (GetIt.I<PrefsRepository>()
+                                                          .getRedeemSecondRemainingForProduct(
+                                                              (productItem?.productId ?? 0)
+                                                                  .toString()) ??
+                                                      0) >
+                                                  0,
+                                          redeemPrice: (productItem!
+                                                      .redeemPrice ??
+                                                  0) *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!,
+                                          currentActiveTab: currentActiveTab,
+                                          initOfferPrice: ((productItem!
+                                                              .flashDealStatus ==
+                                                          1
+                                                      ? productItem!
+                                                              .flashDealPrice ??
+                                                          0
+                                                      : productItem!
+                                                              .offerPrice ??
+                                                          0) *
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!)
+                                              .toString(),
+                                          initPrice: ((productItem!.price ??
+                                                      0) *
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!)
+                                              .toString(),
+                                          shippingCost:
+                                              productItem!.shippingCost ?? 0,
+                                          decimalPoint: state.startingSetting
+                                                  ?.decimalPointSettings ??
+                                              2,
+                                          priceSymbol: state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .symbol ??
+                                              "",
+                                          addToBagButtonShapeNotifier:
+                                              addToBagButtonShapeNotifier,
+                                          price: ((productItem!.price ?? 0) *
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!)
+                                              .toString(),
+                                          offerPrice:
+                                              ((productItem!.flashDealStatus ==
+                                                              1
+                                                          ? productItem!
+                                                                  .flashDealPrice ??
+                                                              0
+                                                          : productItem!
+                                                                  .offerPrice ??
+                                                              0) *
+                                                      state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .exchangeRate!)
+                                                  .toString(),
+                                        ));
+                                  });
+                            });
                       }
 
                       return Container(
@@ -1814,263 +1985,305 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     return ValueListenableBuilder<bool>(
                         valueListenable: visibleRedeem,
                         builder: (context, _visibleRedeem, _) {
-                          return ProductDetailsBottomSheetNew(
-                            isRedeem: (prefsRepository
-                                            .getRedeemDateForProduct(
-                                                productItem!.productId
-                                                    .toString())
-                                            ?.isAfter(DateTime.now().add(
-                                                const Duration(seconds: 1))) ==
-                                        true &&
-                                    state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem!.productId
-                                                    .toString()]
-                                            ?.product
-                                            ?.isRedeem ==
-                                        true) ||
-                                (GetIt.I<PrefsRepository>()
-                                            .getRedeemSecondRemainingForProduct(
-                                                (productItem?.productId ?? 0)
-                                                    .toString()) ??
-                                        0) >
-                                    0,
-                            redeemPrice: state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                        productItem?.productId.toString()] !=
-                                    null
-                                ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem?.productId
-                                                    .toString()]!
-                                            .product !=
-                                        null
-                                    ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem?.productId
-                                                    .toString()]!
-                                            .product!
-                                            .redeemPrice ??
-                                        0
-                                    : 0
-                                : 0,
-                            redeemVariantPrice: (currentVariation
-                                        ?.redeemPrice !=
-                                    null)
-                                ? currentVariation?.redeemPrice ?? 0
-                                : state
-                                        .cachedProductWithoutRelatedProductsModel[
-                                            productItem?.productId.toString()]
-                                        ?.product
-                                        ?.redeemPrice ??
-                                    0,
-                            initOfferPrice: (state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                        productItem?.productId.toString()] !=
-                                    null
-                                ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem?.productId
-                                                    .toString()]!
-                                            .product !=
-                                        null
-                                    ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem?.productId
-                                                    .toString()]!
-                                            .product!
-                                            .offerPrice ??
-                                        0
-                                    : 0
-                                : 0),
-                            initPrice: (state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                        productItem?.productId.toString()] !=
-                                    null
-                                ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem?.productId
-                                                    .toString()]!
-                                            .product !=
-                                        null
-                                    ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem?.productId
-                                                    .toString()]!
-                                            .product!
-                                            .price ??
-                                        0
-                                    : 0
-                                : 0),
-                            isGetFullProductDetails: widget.productItem == null,
-                            currentSelectedColorAfterChangeVariant:
-                                currentSelectedColorAfterChangeVariant,
-                            productNotAvailableNotifier:
-                                productNotAvailableNotifier,
-                            currentActiveTab: currentActiveTab,
-                            qtyForproductWithoutVariant: widget.productItem ==
-                                    null
-                                ? productItem?.availableQuantity
-                                : state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productItem!.productId.toString()]
-                                    ?.product
-                                    ?.availableQuantity,
-                            collectedAfterOrdering: widget.productItem == null
-                                ? productItem?.collectedAfterOrdering == 1
-                                : state
-                                        .cachedProductWithoutRelatedProductsModel[
-                                            productItem!.productId.toString()]
-                                        ?.product
-                                        ?.collectedAfterOrdering ==
-                                    1,
-                            productIdForCashData: productId,
-                            panelController: panelControllerForCart,
-                            productSlugForTopic: state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productItem!.productId.toString()]
-                                    ?.product
-                                    ?.slug ??
-                                "",
-                            productDescription:
-                                HtmlParser.parseHTML(productItem!.details ?? "")
-                                    .text,
-                            countOfPieces: state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                        productItem!.productId.toString()] !=
-                                    null
-                                ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem!.productId
-                                                    .toString()]!
-                                            .product !=
-                                        null
-                                    ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem!.productId
-                                                    .toString()]!
-                                            .product!
-                                            .countOfPieces ??
-                                        0
-                                    : 0
-                                : 0,
-                            addToBagButtonShapeNotifier:
-                                addToBagButtonShapeNotifier,
-                            currentColornum: productItem!.colors.isNullOrEmpty
-                                ? ''
-                                : productItem!
-                                        .colors![currentSelectedColor].color ??
-                                    "",
-                            boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
-                                        productItem!.productId.toString()] !=
-                                    null
-                                ? state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!.product !=
-                                        null
-                                    ? state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    productItem!.productId
-                                                        .toString()]!
-                                                .product!
-                                                .boutique !=
-                                            null
-                                        ? state
-                                                    .cachedProductWithoutRelatedProductsModel[
-                                                        productItem!.productId
-                                                            .toString()]!
-                                                    .product!
-                                                    .boutique!
-                                                    .icon !=
-                                                null
-                                            ? state
-                                                    .cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!
-                                                    .product!
-                                                    .boutique!
-                                                    .icon!
-                                                    .filePath ??
-                                                ""
-                                            : ""
-                                        : ""
-                                    : ""
-                                : "",
-                            boutiqueId: state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                        productItem!.productId.toString()] !=
-                                    null
-                                ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem!.productId
-                                                    .toString()]!
-                                            .product !=
-                                        null
-                                    ? state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    productItem!.productId
-                                                        .toString()]!
-                                                .product!
-                                                .boutique !=
-                                            null
-                                        ? state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                productItem!.productId
-                                                    .toString()]!
-                                            .product!
-                                            .boutique!
-                                            .id!
-                                        : 0
-                                    : 0
-                                : 0,
-                            currentColorName: productItem!.colors.isNullOrEmpty
-                                ? ''
-                                : productItem!
-                                        .colors![currentSelectedColor].name ??
-                                    "",
-                            currentColorOption:
-                                productItem!.colors.isNullOrEmpty
-                                    ? ''
-                                    : productItem!.colors![currentSelectedColor]
-                                            .option ??
-                                        productItem!
-                                            .colors![currentSelectedColor]
-                                            .option ??
-                                        "",
-                            productItem: productItem!.copyWith(
-                                availableQuantity: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
-                                    ? 0
-                                    : state
-                                        .cachedProductWithoutRelatedProductsModel[
-                                            productItem?.productId.toString()]!
-                                        .product
-                                        ?.availableQuantity,
-                                choiceOptions: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
-                                    ? []
-                                    : state
-                                        .cachedProductWithoutRelatedProductsModel[
-                                            productItem?.productId.toString()]!
-                                        .product
-                                        ?.choiceOptions,
-                                colors: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] ==
-                                        null
-                                    ? []
-                                    : state
-                                        .cachedProductWithoutRelatedProductsModel[
-                                            productItem?.productId.toString()]!
-                                        .product
-                                        ?.colors,
-                                images: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.images,
-                                syncColorImages: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.syncColorImages,
-                                productId: int.tryParse(productId),
-                                price: (currentVariation?.price != null) ? currentVariation?.price : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.price,
-                                offerPrice: currentVariation?.offerPrice != null ? currentVariation?.offerPrice : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPrice,
-                                priceFormatted: currentVariation?.priceFormated != null ? currentVariation?.priceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.priceFormatted,
-                                offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPriceFormatted),
-                            currentColor: currentSelectedColor,
-                            maxAllowedToAddCart: state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productItem!.productId.toString()]
-                                    ?.product
-                                    ?.maxAllowedQty ??
-                                "0",
-                          );
+                          return ValueListenableBuilder<bool>(
+                              valueListenable: visibleFlashDeal,
+                              builder: (context, _visibleFlashDeal, _) {
+                                bool isFlashDealEnded = false;
+                                DateTime endDate;
+                                Duration _duration = const Duration();
+                                final now = DateTime.now();
+                                try {
+                                  endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                                      .parse(
+                                          productItem?.flashDealEndDate ?? "");
+                                  endDate =
+                                      endDate.add(const Duration(days: 1));
+                                } catch (e) {
+                                  endDate = DateTime.now();
+                                  print('Error parsing date: $e');
+                                }
+                                _duration = endDate.difference(now);
+                                if (_duration.isNegative ||
+                                    _duration.inSeconds < 1) {
+                                  isFlashDealEnded = true;
+                                }
+
+                                return ProductDetailsBottomSheetNew(
+                                  showShadowForPanel: showShadowForPanel,
+                                  currentVariant: currentVariantType,
+                                  visibleRedeemNotifier: visibleRedeem,
+                                  visibleFlashDeal: visibleFlashDeal,
+                                  isFlashDealEnded: isFlashDealEnded,
+                                  flashDealEndDate:
+                                      productItem?.flashDealEndDate ?? "",
+                                  isRedeem: (prefsRepository
+                                                  .getRedeemDateForProduct(
+                                                      productItem!.productId
+                                                          .toString())
+                                                  ?.isAfter(DateTime.now().add(
+                                                      const Duration(
+                                                          seconds: 1))) ==
+                                              true &&
+                                          state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]
+                                                  ?.product
+                                                  ?.isRedeem ==
+                                              true) ||
+                                      (GetIt.I<PrefsRepository>()
+                                                  .getRedeemSecondRemainingForProduct(
+                                                      (productItem?.productId ??
+                                                              0)
+                                                          .toString()) ??
+                                              0) >
+                                          0,
+                                  redeemPrice: state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .redeemPrice ??
+                                              0
+                                          : 0
+                                      : 0,
+                                  redeemVariantPrice: (currentVariation
+                                              ?.redeemPrice !=
+                                          null)
+                                      ? currentVariation?.redeemPrice ?? 0
+                                      : state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem?.productId
+                                                      .toString()]
+                                              ?.product
+                                              ?.redeemPrice ??
+                                          0,
+                                  initOfferPrice: (state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .offerPrice ??
+                                              0
+                                          : 0
+                                      : 0),
+                                  initPrice: (state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .price ??
+                                              0
+                                          : 0
+                                      : 0),
+                                  isGetFullProductDetails:
+                                      widget.productItem == null,
+                                  currentSelectedColorAfterChangeVariant:
+                                      currentSelectedColorAfterChangeVariant,
+                                  productNotAvailableNotifier:
+                                      productNotAvailableNotifier,
+                                  currentActiveTab: currentActiveTab,
+                                  collectedAfterOrdering: widget.productItem ==
+                                          null
+                                      ? productItem?.collectedAfterOrdering == 1
+                                      : state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.productId
+                                                      .toString()]
+                                              ?.product
+                                              ?.collectedAfterOrdering ==
+                                          1,
+                                  productIdForCashData: productId,
+                                  panelController: panelControllerForCart,
+                                  productSlugForTopic: state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId.toString()]
+                                          ?.product
+                                          ?.slug ??
+                                      "",
+                                  productDescription: HtmlParser.parseHTML(
+                                          productItem!.details ?? "")
+                                      .text,
+                                  countOfPieces: state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .countOfPieces ??
+                                              0
+                                          : 0
+                                      : 0,
+                                  addToBagButtonShapeNotifier:
+                                      addToBagButtonShapeNotifier,
+                                  currentColornum:
+                                      productItem!.colors.isNullOrEmpty
+                                          ? ''
+                                          : productItem!
+                                                  .colors![currentSelectedColor]
+                                                  .color ??
+                                              "",
+                                  boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!.product !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          productItem!.productId
+                                                              .toString()]!
+                                                      .product!
+                                                      .boutique !=
+                                                  null
+                                              ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem!.productId
+                                                                  .toString()]!
+                                                          .product!
+                                                          .boutique!
+                                                          .icon !=
+                                                      null
+                                                  ? state
+                                                          .cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]!
+                                                          .product!
+                                                          .boutique!
+                                                          .icon!
+                                                          .filePath ??
+                                                      ""
+                                                  : ""
+                                              : ""
+                                          : ""
+                                      : "",
+                                  boutiqueId: state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          productItem!.productId
+                                                              .toString()]!
+                                                      .product!
+                                                      .boutique !=
+                                                  null
+                                              ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .boutique!
+                                                  .id!
+                                              : 0
+                                          : 0
+                                      : 0,
+                                  currentColorName:
+                                      productItem!.colors.isNullOrEmpty
+                                          ? ''
+                                          : productItem!
+                                                  .colors![currentSelectedColor]
+                                                  .name ??
+                                              "",
+                                  currentColorOption:
+                                      productItem!.colors.isNullOrEmpty
+                                          ? ''
+                                          : productItem!
+                                                  .colors![currentSelectedColor]
+                                                  .option ??
+                                              productItem!
+                                                  .colors![currentSelectedColor]
+                                                  .option ??
+                                              "",
+                                  productItem: productItem!.copyWith(
+                                      availableQuantity:
+                                          state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                              ? 0
+                                              : state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.availableQuantity,
+                                      choiceOptions:
+                                          state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                              ? []
+                                              : state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.choiceOptions,
+                                      colors: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                          ? []
+                                          : state
+                                              .cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!
+                                              .product
+                                              ?.colors,
+                                      images: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.images,
+                                      syncColorImages: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.syncColorImages,
+                                      productId: int.tryParse(productId),
+                                      price: (currentVariation?.price != null) ? currentVariation?.price : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.price,
+                                      offerPrice: currentVariation?.offerPrice != null ? currentVariation?.offerPrice : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPrice,
+                                      priceFormatted: currentVariation?.priceFormated != null ? currentVariation?.priceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.priceFormatted,
+                                      offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPriceFormatted),
+                                  currentColor: currentSelectedColor,
+                                  maxAllowedToAddCart: state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem!.productId.toString()]
+                                          ?.product
+                                          ?.maxAllowedQty ??
+                                      "0",
+                                );
+                              });
                         });
                   },
                 );
@@ -2156,10 +2369,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
               );
             }
             int qtyItemsInCart = state.cartCollection?.length ?? 0;
-            double totlalPrice =
-                (state.getCartShippingItemsModel?.data?.total ?? 0) *
-                    state.getCurrencyForCountryModel!.data!.currency!
-                        .exchangeRate!;
+            double totlalPrice = ((state
+                            .getCartShippingItemsModel?.data?.total ??
+                        0) -
+                    (state.getCartShippingItemsModel?.data?.totalShippingCost ??
+                        0)) *
+                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
             String priceSymbol =
                 state.getCurrencyForCountryModel!.data!.currency!.symbol ?? "";
             (productItem?.syncColorImages?.length ?? 0) ~/ 2;
@@ -2233,12 +2448,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   height: 1.4),
                             ),
                             Text(
-                              " ${HelperFunctions.formatNumber(number: totlalPrice, isNeedRounding: false)} ",
+                              " ${HelperFunctions.formatNumber(number: totlalPrice)} ",
                               style: context.textTheme.bodyMedium?.mr.copyWith(
                                   fontSize: 13.sp,
                                   color: const Color(0xff1D1D1D),
                                   letterSpacing: 0.18,
-                                  height: 1.4),
+                                  height: 1.0),
                             ),
                             const SizedBox(
                               width: 2,
@@ -2687,6 +2902,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       context,
                       ProductDetailsDisplayPicturesPage(
                         currentIndex: index,
+                        brand: productItem.brand?.name ?? "",
+                        category: productItem.categories?.first.name ?? "",
                         images: productItem.syncColorImages.isNullOrEmpty
                             ? productItem.images ?? []
                             : productItem.syncColorImages![currentSelectedColor]

@@ -33,6 +33,7 @@ import 'package:trydos/features/home/presentation/widgets/profile_section/camera
 import 'package:trydos/features/home/presentation/widgets/profile_section/crope_image.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class AddPhotoProfilePage extends StatefulWidget {
   const AddPhotoProfilePage({super.key});
@@ -52,6 +53,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
   late HomeBloc homeBloc;
   @override
   void initState() {
+    LastPagesTracker.push('AddPhotoProfilePage');
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     if (!(prefsRepository.myProfilePhoto == null ||
@@ -67,18 +69,9 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return ValueListenableBuilder<bool>(
         valueListenable: visibleSave,
         builder: (context, _visibleSave, _) {

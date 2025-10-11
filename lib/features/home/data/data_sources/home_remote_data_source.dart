@@ -616,6 +616,23 @@ class HomeRemoteDatasource {
     return getFeaturedProducts();
   }
 
+  Future<GetProductListingWithFiltersModel> getRecommendedProducts(
+      Map<String, dynamic> params) {
+    GetClient<GetProductListingWithFiltersModel> getRecommendedProducts =
+        GetClient<GetProductListingWithFiltersModel>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+        endpoint: WebAppEndPoints.productRecommendedEP,
+        queryParameters: params,
+        response: ResponseValue<GetProductListingWithFiltersModel>(
+            fromJson: (response) =>
+                GetProductListingWithFiltersModel.fromJson(response)),
+      ),
+    );
+
+    return getRecommendedProducts();
+  }
+
   Future<Comment> addComment(Map<String, dynamic> params) {
     PostClient<Comment> addComment = PostClient<Comment>(
       serverName: ServerName.market,

@@ -86,6 +86,7 @@ abstract class AppAssets {
   static String get addShippingAddressWhiteSvg =>
       'add_shipping_address_white'.svg;
   static String get productFeaturesSvg => 'product_features'.svg;
+  static String get productRecommendSvg => 'recommend_product'.svg;
   static String get flashDealSvg => 'flash_deal'.svg;
   static String get lableSvg => 'lable'.svg;
   static String get bestPriceSvg => 'best_price'.svg;
@@ -126,8 +127,10 @@ abstract class AppAssets {
   static String get electronicActiveSvg => 'electronic_active'.svg;
   static String get electronicInactiveSvg => 'electronic_inactive'.svg;
   static String get cartSvg => 'cart'.svg;
+  static String get addBagNewSvg => 'add_bag_new'.svg;
   static String get favoriteSvg => 'favorite'.svg;
   static String get sizeIconSvg => 'size_icon'.svg;
+  static String get recommendNewSvg => 'recommend_new'.svg;
   static String get coloredSizeIconSvg => 'colored_size_icon'.svg;
   static String get recyclingSvg => 'recycling'.svg;
   static String get searchSvg => 'search'.svg;
@@ -339,6 +342,7 @@ abstract class AppAssets {
 
   ///! JPG  Section
   ///! PNG  Section
+  static String get recommendPng => 'recommend'.png;
   static String get image1Png => 'image1'.png;
   static String get image2Png => 'image2'.png;
   static String get color1Png => 'color1'.png;

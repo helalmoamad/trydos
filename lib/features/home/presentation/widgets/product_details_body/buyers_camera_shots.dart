@@ -12,7 +12,7 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -91,16 +91,8 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Container(
       height: 50,

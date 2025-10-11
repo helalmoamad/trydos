@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
+import 'package:trydos/main.dart';
 import '../../service/language_service.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'handling_exception.dart';
@@ -38,7 +39,7 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
         'User-Agent': 'device OS:' +
             (Platform.isAndroid ? 'Android' : 'IOS') +
             ' '
-                ', application version: 1.0.0',
+                ', application version: $applicationVersion',
       });
     }
     options = Options(headers: headers);

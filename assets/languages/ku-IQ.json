@@ -247,7 +247,7 @@
   "more_options": "هەلبژاردەی زیاتر",
   "share_this_product_with": "هاوبەشی ئەم بەرهەمە بکە لەگەڵ",
   "please_select_the_appropriate": "تکایە قەبارەی گونجاو هەڵبژێرە",
-  "not_available_now_stock": "ئێستا بەردەست نییە، کۆگا فڕا",
+  "not_available_now_stock": "ئێستا بەردەست نییە، هەموو کۆگا فرۆشرا",
   "need_help_finding_your_size": "یارمەتی پێویستە بۆ دۆزینەوەی قەبارەکەت؟",
   "recommended": "پێشنیارکراو",
   "for_you": "بۆ تۆ",
@@ -259,7 +259,7 @@
   "n_sizes": "قەبارەکان",
   "you_will_get_a": "دەستووردەبێتەوە",
   "refund": "گەڕاندنەوەی پارە",
-  "of_the_product_price_if_shipping": "لە نرخی بەرهەمەکە ئەگەر گەیاندن درەنگ بوو",
+
   "product_shipping_delivery": "گەیاندنی بەرهەم و گەیەناندن",
   "failed_to_get_location": "هەڵە لە وەرگرتنی شوێن",
   "at_your_address_in": "لە ناونیشانتدا لە",
@@ -489,7 +489,7 @@
   "clarification": "ڕوونکردنەوە",
   "about_cancel_order": "دەربارەی هەڵوەشاندنەوەی داواکاری",
   "you_will_not_charged_fees": "هیچ خەرجێکت لەسەر ناكرێت",
-  "you_will_receive_your_refund_within": "پارەکەت لە ماوەی",
+  "you_will_receive_your_refund_within": "دەگەیتە پارەکەتەوە لە ماوەی ...دا",
   "hours": "کاتژمێر",
   "repeated_cancellations_affect_rating": "هەڵوەشاندنەوەی دووبارە دووبارە کاریگەری هەیە لەسەر هەڵسەنگاندنت",
   "terms_of_cancellation_term": "مەرجەکانی هەڵوەشاندنەوە",
@@ -507,7 +507,7 @@
   "hide_this_product": "شاردنەوەی ئەم بەرهەمە",
   "hide_this_product_from_list": "شاردنەوە لە لیستمەوە",
   "you_can_return_product_without_conditions": "دەتوانیت بەبێ مەرج بەرهەمەکە بگەڕێنیتەوە بەپێی",
-  "return_policy_get_full_refund": "سیاسەتی گەڕاندنەوە و گەڕاندنەوەی پارە بە تەواوی",
+  "return_policy_get_full_refund": "پارەکەتەوە لە ماوەی دەگەیتەوە",
   "to_your_account": "بۆ هەژمارەکەت.",
   "why_was_product_return": "بۆچی بەرهەمەکە گەڕێندرایەوە؟",
   "i_didnt_like": "حەزم پێ نەبوو",
@@ -638,16 +638,30 @@
   "all_recommendations_are_genuine_from_customers_who_purchased_and": "هەموو پێشنیارەکان ڕاستەقینەن لە کڕیارانی کڕیوە و",
   "actually_received_the_product_through": "بەڕاستی وەرگیراون لە بەرهەمەکە لە ڕێگەی",
   "return_problem_resolved": "کێشەی گەڕاندن چارەسەر کرا.",
-  "out_for_return": "لە ڕێگادایە بۆ گەڕاندنەوە"
-  ,"country_not_available": "وڵاتەکەت لەم بەرنامەیەدا بەردەست نییە"
-  ,"choose_a_country": "وڵاتێک هەڵبژێرە:"
-  ,"you_have_to_choose_a_country": "پێویستە وڵاتێک هەڵبژێریت"
-  ,"ok_and_continue": "باشە و بەردەوام بە"
-  ,"press_here_for_more": "بۆ زیاتر لێرە کرتە بکە",
+  "out_for_return": "لە ڕێگادایە بۆ گەڕاندنەوە",
+  "country_not_available": "وڵاتەکەت لەم بەرنامەیەدا بەردەست نییە",
+  "choose_a_country": "وڵاتێک هەڵبژێرە:",
+  "you_have_to_choose_a_country": "پێویستە وڵاتێک هەڵبژێریت",
+  "ok_and_continue": "باشە و بەردەوام بە",
+  "press_here_for_more": "بۆ زیاتر لێرە کرتە بکە",
   "product_shared_successfully": "بەرهەمەکە بە سەرکەوتوویی هاوبەش کرا",
   "report_story": "ڕاپۆرتکردنی چیرۆک",
   "confirm_report_story": "دڵنیایت دەتەوێت ئەم چیرۆکە ڕاپۆرت بکەیت؟",
-  "download_the_app_here": "لێرە دەتوانیت بەرنامەکەدابگری"
-
+  "download_the_app_here": "لێرە دەتوانیت بەرنامەکەدابگری",
+  "today_shipping": "نێردنی ئەمڕۆ",
+  "if_buy_before": "ئەگەر پێشوەختە بکڕیت",
+  "of_the_product_price_if_shipping": "لە نرخی بەرهەمەکە ئەگەر نێردن درەنگ بوو",
+  "today_shipping_short": "نێردنی ئەمڕۆ",
+  "selected_color": "ڕەنگی هەڵبژێردراو",
+  "get": "وەرگرە",
+  "select_your_required_size": "قەبارەی پێویستت هەڵبژێرە",
+  "take_a_look_at_other_colors": "سەیری ڕەنگەکانی تر بکە",
+  "only": "تەنها",
+  "added": "زیادکرا",
+  "to_your_bag": "بۆ سەبەتەکەت",
+ 
+  "add_more_to_bag": "زیاتر بۆ سەبەتەکەت زیاد بکە",
+  "delivery_worker": "کارمەندی گەیاندن",
+  "recommend_products": "پێشنیاری بەرهەمەکان"
 }
 

@@ -64,13 +64,13 @@ class NotificationProcess {
     }
     print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
-      GetIt.I<AuthBloc>().add(
+      /*  GetIt.I<AuthBloc>().add(
         StoreFcmTokenEvent(
           userId: GetIt.I<PrefsRepository>().myStoriesId ?? 0,
           fcmToken: myFcmToken!,
           serverName: ServerName.stories,
         ),
-      );
+      );*/
       GetIt.I<AuthBloc>().add(
         StoreFcmTokenEvent(
           userId: GetIt.I<PrefsRepository>().myChatId ?? 0,

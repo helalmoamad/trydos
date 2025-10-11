@@ -8,6 +8,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CountDownTimer extends StatefulWidget {
   const CountDownTimer({super.key, required this.cartId});
@@ -32,8 +33,8 @@ class _CountDownTimerState extends State<CountDownTimer> {
       countdownTimerController = CountdownTimerController(
           endTime: endTime ?? 0,
           onEnd: () {
-            homeBloc.add(GetOldCartItemEvent());
-            homeBloc.add(GetCartItemEvent());
+            homeBloc.add(const GetOldCartItemEvent());
+            homeBloc.add(const GetCartItemEvent());
           });
     }
 
@@ -43,16 +44,8 @@ class _CountDownTimerState extends State<CountDownTimer> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Directionality(
         textDirection: TextDirection.ltr,
@@ -67,7 +60,7 @@ class _CountDownTimerState extends State<CountDownTimer> {
             return Text('$minets : $seconds ',
                 style: context.textTheme.bodyMedium?.ba.copyWith(
                   fontSize: 12,
-                  color: Color(0xffA28E5B),
+                  color: const Color(0xffA28E5B),
                 ));
           },
           controller: countdownTimerController,

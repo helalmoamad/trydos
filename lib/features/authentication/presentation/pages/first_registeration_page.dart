@@ -28,6 +28,7 @@ import 'package:trydos/features/authentication/presentation/widgets/verify_otp.d
 import '../../../../common/constant/design/assets_provider.dart';
 import '../widgets/adding_name.dart';
 import '../widgets/verification_methods.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class RegistrationPage extends StatefulWidget {
   final bool? fromLogOut;
@@ -57,6 +58,7 @@ class _RegistrationPageState extends State<RegistrationPage>
   late AppBloc appBloc;
   @override
   void initState() {
+    LastPagesTracker.push('RegistrationPage');
     /* if (widget.fromExpiredToken ?? false) {
       Future.delayed(
         Duration(microseconds: 50),
@@ -95,9 +97,8 @@ class _RegistrationPageState extends State<RegistrationPage>
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return PopScope(
       canPop: (widget.fromLogOut ?? false) ? false : true,

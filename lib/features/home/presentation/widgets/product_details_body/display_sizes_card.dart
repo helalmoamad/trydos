@@ -33,6 +33,7 @@ import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_event.dart';
 import '../../manager/homeBloc/home_state.dart';
 import 'dart:ui' as ui;
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class DisplaySizesCard extends StatefulWidget {
   const DisplaySizesCard(
@@ -225,16 +226,8 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (p, c) =>
@@ -856,6 +849,10 @@ class SizeItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       width: width,
       height: height,

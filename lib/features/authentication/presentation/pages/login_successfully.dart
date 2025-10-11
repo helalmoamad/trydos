@@ -17,6 +17,7 @@ import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class LoginSuccessfully extends StatefulWidget {
   const LoginSuccessfully({required this.phoneNumber, Key? key})
@@ -46,12 +47,16 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
   }
 
   @override
+  void initState() {
+    LastPagesTracker.push('LoginSuccessfully');
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      debugPrint('error $error');
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Scaffold(
       backgroundColor: const Color(0xffE0FFEE),

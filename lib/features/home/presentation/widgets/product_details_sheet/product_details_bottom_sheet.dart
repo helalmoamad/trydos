@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart' as translate;
+/*import 'package:easy_localization/easy_localization.dart' as translate;
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -380,9 +380,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       : 433,
                           minHeight: (widget.fromListingPage ?? false) ? 0 : 78,
                           onPanelClosed: () {
-                            BlocProvider.of<HomeBloc>(context).add(
-                                const IsChangedColorBeforOpenPanelEvent(
-                                    iChangedColorBeforOpenPanelEvent: false));
+                           
                             Future.delayed(const Duration(milliseconds: 300),
                                 () {
                               widget.tapIndexToAddProductToCart?.value = -1;
@@ -509,12 +507,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             widget.currentActiveTab.value = -1;
                           },
                           onPanelOpened: () {
-                            Future.delayed(
-                                const Duration(milliseconds: 50),
-                                () => BlocProvider.of<HomeBloc>(context).add(
-                                    const IsChangedColorBeforOpenPanelEvent(
-                                        iChangedColorBeforOpenPanelEvent:
-                                            true)));
+                      
                             if (sizesForEachProduct.length == 0) {
                               if (!colorsQuantityForEachProduct.isNullOrEmpty) {
                                 if (colorsQuantityForEachProduct[
@@ -853,11 +846,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           listener: (context, state) {
                                             if (state.deleteItemInCartStatus ==
                                                 DeleteItemInCartStatus
-                                                    .success) {
-                                              showAnimatedMessageFunc(
-                                                  state.animatedCartMessage ??
-                                                      "");
-                                            }
+                                                    .success) {}
                                           },
                                           child:
                                               BlocListener<HomeBloc, HomeState>(
@@ -871,11 +860,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                     if (state
                                                             .updateItemInCartStatus ==
                                                         UpdateItemInCartStatus
-                                                            .success) {
-                                                      showAnimatedMessageFunc(
-                                                          state.animatedCartMessage ??
-                                                              "");
-                                                    }
+                                                            .success) {}
                                                   },
                                                   child:
                                                       BlocListener<HomeBloc,
@@ -891,11 +876,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                             if (state
                                                                     .addItemInCartStatus ==
                                                                 AddItemInCartStatus
-                                                                    .success) {
-                                                              showAnimatedMessageFunc(
-                                                                  state.animatedCartMessage ??
-                                                                      "");
-                                                            }
+                                                                    .success) {}
                                                           },
                                                           child:
                                                               ValueListenableBuilder<
@@ -1123,7 +1104,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                   .productDescription,
                                                           productItem: widget
                                                               .productItem,
-                                                          focusNode: _focusNode,
                                                           scrollController:
                                                               currentTab == 1
                                                                   ? controller
@@ -1646,3 +1626,4 @@ class CustomBoxShadow extends BoxShadow {
     return result;
   }
 }
+*/

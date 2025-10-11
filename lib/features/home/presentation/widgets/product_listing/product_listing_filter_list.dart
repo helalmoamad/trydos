@@ -41,7 +41,7 @@ import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../../data/models/get_product_filters_model.dart' as filter_model;
 import '../../manager/homeBloc/home_bloc.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'categories_filter_list.dart';
 import 'color_list_filter.dart';
 import 'filters_loding_list.dart';
@@ -136,6 +136,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
 /*FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
@@ -2556,6 +2560,10 @@ class FilterCircleWidget extends StatefulWidget {
 class _FilterCircleWidgetState extends State<FilterCircleWidget> {
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Padding(
       padding: EdgeInsetsDirectional.only(end: widget.paddingValue),
       child: Container(
@@ -2647,6 +2655,10 @@ class FilterImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       width: width,
       height: height,
@@ -2716,6 +2728,10 @@ class FilterSelectedMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Stack(
       children: [
         Container(

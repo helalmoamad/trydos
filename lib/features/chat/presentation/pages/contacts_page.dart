@@ -29,6 +29,7 @@ import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_state.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class MyContactsPage extends StatefulWidget {
   const MyContactsPage({Key? key}) : super(key: key);
@@ -45,6 +46,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
 
   @override
   void initState() {
+    LastPagesTracker.push('MyContactsPage');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     chatBloc.add(const GetContactsEvent());
     super.initState();
@@ -53,12 +55,8 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "My_Contacts_Page"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error);
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),

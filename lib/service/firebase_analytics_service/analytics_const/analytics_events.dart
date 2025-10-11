@@ -9,10 +9,14 @@ class AnalyticsEventsConst {
   static const PROGRAMMING_EVENT = "programming_event";
   static const VIEW_PRODUCT_EVENT = "view_product_event";
   static const VIEW_BOUTIQUE_EVENT = "view_boutique_event";
+  static const ENABLE_PRODUCT_NOTIFICATIONS = "enable_product_notifications";
   static const LOGIN = "login";
   static const SIGN_UP = "sign_up";
   static const SCREEN_VIEW = "screen_view_event";
+  static const VIEW_IMAGE = "view_image";
   static const LOGIN_START = "login_start";
+  static const VIEW_COMMENTS = "view_comments";
+  static const READ_MORE_ABOUT_PRODUCT = "read_more_about_product";
   static const CONFIRM_PHONE_NUMBER = "confirm_phone_number";
   static const VERIFY_OTP = "verify_otp";
   static const VERIFY_OTP_SIGNIN = "verify_otp_login";
@@ -20,6 +24,7 @@ class AnalyticsEventsConst {
   static const TIMER_EXPIRED = "timer_expired";
   static const SEND_OTP = "send_otp";
   static const RESEND_OTP = "resend_otp";
+  static const CHANGE_SIZE = "change_size";
   static const EXCEPTION = "exception";
   static const CANCEL_LOGIN = "cancel_login";
   static const SIGNUP_START = "sign_up_start";
@@ -34,6 +39,7 @@ class AnalyticsEventsConst {
   static const beginCheckout = "begin_checkout";
   static const addPaymentInfo = "add_payment_info";
   static const addShippingInfo = "add_shipping_info";
+
   static const purchase = "purchase";
   static const refund = "refund";
   static const postPurchaseRating = "post_purchase_rating";
@@ -41,10 +47,13 @@ class AnalyticsEventsConst {
   static const viewBoutique = "view_boutique";
   static const viewCategory = "view_category";
   static const viewItemList = "view_item_list";
+  static const viewTimeProduct = "view_time_product";
   static const viewItem = "view_item";
+  static const changeColor = "change_color";
   static const itemVariantExchange = "item_variant_exchange";
   static const search = "search";
   static const viewPromotion = "view_promotion";
+  static const applyFilter = "apply_filter";
   static const viewStory = "view_story";
   static const customEventWithPreviousButton =
       "custom_event_with_previous_button";

@@ -37,6 +37,7 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartItems;
@@ -76,6 +77,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
   List<Map<String, String>> cartImages = [];
   @override
   void initState() {
+    LastPagesTracker.push("CartDelivaryAddress Page");
     animationController =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
     cartImages = widget.cartItems;
@@ -85,7 +87,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
 
     ////////////////////
 
-    //  orderBloc.add(GetCustomerAddressesEvent());
+    orderBloc.add(GetCustomerAddressesEvent(setDefault: true));
     orderBloc.add(const GetProvincesByIsoEvent());
 
     homeBloc.add(const GetCoutryBoundaryByIsoEvent());
@@ -131,16 +133,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return WillPopScope(
       onWillPop: () async {
@@ -200,10 +194,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
               Future.delayed(
                 const Duration(milliseconds: 200),
                 () {
-                  if (orderState.setCustomerAddressDefaultStatus !=
-                          SetCustomerAddressDefaultStatus.loading &&
-                      orderState.getCustomerAddressStatus !=
-                          GetCustomerAddressesStatus.loading) {
+                  if (orderState.setCustomerAddressDefaultStatus ==
+                          SetCustomerAddressDefaultStatus.success &&
+                      orderState.getCustomerAddressStatus ==
+                          GetCustomerAddressesStatus.success) {
                     indexTap.value = orderState.currentAddressChoosed ?? 0;
                   }
                 },
@@ -568,8 +562,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             check = false;
           }
           return (orderState.applyCouponStatus == ApplyCouponStatus.loading ||
-                  orderState.setCustomerAddressDefaultStatus ==
-                      SetCustomerAddressDefaultStatus.loading ||
+                  orderState.setCustomerAddressDefaultStatus !=
+                      SetCustomerAddressDefaultStatus.success ||
+                  orderState.getCustomerAddressStatus !=
+                      GetCustomerAddressesStatus.success ||
                   orderState.addAddressToOrderStatus ==
                       AddAddressToOrderStatus.loading ||
                   orderState.editAddressToOrderStatus ==

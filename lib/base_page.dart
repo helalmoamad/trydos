@@ -1,18 +1,20 @@
+import 'dart:async';
 import 'dart:convert' as convert;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
+
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
-import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:trydos/features/app/available_countries_list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:flutter/services.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
@@ -31,7 +33,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import 'package:trydos/service/language_service.dart';
+
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -59,7 +61,8 @@ import 'package:trydos/routes/router.dart';
 import 'common/constant/design/assets_provider.dart';
 import 'common/test_utils/widgets_keys.dart';
 import 'features/app/app_widgets/tabs_bar.dart';
-
+import 'features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart'
+    as user;
 import 'features/calls/presentation/pages/in_app_view.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/chat/data/models/my_chats_response_model.dart';
@@ -352,7 +355,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   final ValueNotifier<bool> appearTrendingAndHistory = ValueNotifier(true);
   List<Widget>? pages;
   bool showUpgradeApp = true;
-
+  Timer? _logoutTimer;
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
@@ -376,6 +379,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     smartLook.stop();
+    _logoutTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     FirebasePresence.disconnect();
     super.dispose();
@@ -389,6 +393,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    _checkUserTimeoutAndStartTimer();
+    LastPagesTracker.push("Base Page");
     GetIt.I<PrefsRepository>()..setTagsInUrlToFilter([]);
     // GetIt.I<PrefsRepository>().remove()
     pages = [
@@ -452,12 +458,75 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void didChangeDependencies() async {
+    _checkUserTimeoutAndStartTimer();
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
     super.didChangeDependencies();
+  }
+
+  Future<void> _checkUserTimeoutAndStartTimer() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastUserId = prefs.getString('last_user_market_id');
+    final lastTime = prefs.getInt('last_user_info_time');
+    if (lastUserId != null && lastTime != null) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final elapsed = now - lastTime;
+      const halfHourMs = 1800000;
+      if (prefsRepository.myMarketId == lastUserId) {
+        if (elapsed >= halfHourMs) {
+          _logoutUser();
+        } else {
+          _logoutTimer?.cancel();
+          _logoutTimer =
+              Timer(Duration(milliseconds: halfHourMs - elapsed), () {
+            _logoutUser();
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _logoutUser() async {
+    BlocProvider.of<HomeBloc>(context).add(const ClearAllAppCashEvent());
+    clearCustomCashe();
+    prefsRepository.setIsFoundDataCashed(false);
+    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
+    BlocProvider.of<HomeBloc>(context).add(SaveUserInfoFromAuthEvent(
+        userInfo: user.User(
+      alternativePhone: "",
+      email: "",
+      image: "",
+      isPhoneVerified: 0,
+      lastOtpIdToken: "",
+      name: "",
+      phone: "",
+    )));
+    prefsRepository.setVerifiedPhone(false);
+    prefsRepository.setPhoneNumber("");
+    prefsRepository.setChatToken("");
+    prefsRepository.setMarketToken(null);
+    prefsRepository.setMyMarketName("");
+    prefsRepository.setMyChatName("");
+    prefsRepository.setMyStoriesName("");
+    prefsRepository.setVerifiedPhonePeforeExpiredToken(false);
+
+    prefsRepository.setMyProfilePhoto("");
+    String? deviceId = await HelperFunctions.getDeviceId();
+
+    BlocProvider.of<AuthBloc>(context)
+        .add(RegisterGuestEvent(deviceId: deviceId ?? ""));
+    HydratedBloc.storage.clear();
+    BlocProvider.of<ChatBloc>(context).add(const ClearChatEvent());
+
+    Future.delayed(
+      const Duration(microseconds: 3000),
+      () {
+        GoRouter.of(context).go("/");
+      },
+    );
   }
 
   void onMessage() {
@@ -634,21 +703,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      debugPrint('error $error');
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     _prefsRepository.setTokenExpired(false);
     return BlocListener<ChatBloc, ChatState>(
@@ -708,20 +764,17 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 child: Scaffold(
                     backgroundColor: colorScheme.surface,
                     bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                        buildWhen: (p, c) => p.showBars != c.showBars,
+                        buildWhen: (p, c) =>
+                            p.showBars != c.showBars ||
+                            p.hideBottomNavigationBar !=
+                                c.hideBottomNavigationBar,
                         builder: (context, state) {
                           if (state.showBars == true) {
-                            return BlocBuilder<AppBloc, AppState>(
-                                buildWhen: (p, c) =>
-                                    p.hideBottomNavigationBar !=
-                                    c.hideBottomNavigationBar,
-                                builder: (context, state) {
-                                  return state.hideBottomNavigationBar
-                                      ? const SizedBox.shrink()
-                                      : AppBottomNavBar(
-                                          isShowPanelForVerified:
-                                              isShowPanelForVerified);
-                                });
+                            return state.hideBottomNavigationBar
+                                ? const SizedBox.shrink()
+                                : AppBottomNavBar(
+                                    isShowPanelForVerified:
+                                        isShowPanelForVerified);
                           } else {
                             return const SizedBox.shrink();
                           }
@@ -805,6 +858,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                   categorySlugs: [],
                                                   cashedOrginalBoutique: true,
                                                   boutiqueSlug: "*flashDeal*"));
+                                          GetIt.I<BoutiqueBloc>().add(
+                                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                  categorySlugs: [],
+                                                  cashedOrginalBoutique: true,
+                                                  boutiqueSlug:
+                                                      "*recommended*"));
                                         }
 
                                         /* if (prefsRepository.marketToken != null) {
@@ -946,7 +1005,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                               true &&
                                                           state.currentIndex ==
                                                               0) {
-                                                        return TrydosAppBar(
+                                                        return const SizedBox
+                                                            .shrink(); /*TrydosAppBar(
                                                           appBarParams:
                                                               AppBarParams(
                                                                   hasLeading:
@@ -1047,7 +1107,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                   ],
                                                                   withShadow:
                                                                       false),
-                                                        );
+                                                        );*/
                                                       } else if (state.showBars ==
                                                                   true &&
                                                               state.currentIndex ==

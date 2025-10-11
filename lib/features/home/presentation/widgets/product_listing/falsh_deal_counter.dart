@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'dart:ui' as ui;
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class FlashDealCountdownTimerWidget extends StatefulWidget {
   final String endDateString;
@@ -99,6 +101,10 @@ class _FlashDealCountdownTimerWidgetState
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Directionality(
         textDirection: LanguageService.languageCode == "ar"
             ? ui.TextDirection.rtl
@@ -107,14 +113,13 @@ class _FlashDealCountdownTimerWidgetState
           alignment: LanguageService.languageCode == "ar"
               ? Alignment.centerRight
               : Alignment.centerLeft,
-          width: 75,
           height: 20,
           child: Text(
             _duration > Duration.zero ? _formatDuration(_duration) : "",
             style: context.textTheme.bodyMedium?.mr.copyWith(
               color: const Color(0xffFF6200),
               letterSpacing: 0.18,
-              fontSize: 9,
+              fontSize: 9.sp,
               height: 1.3,
             ),
             textAlign: TextAlign.center,

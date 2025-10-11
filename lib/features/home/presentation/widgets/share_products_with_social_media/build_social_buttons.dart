@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as product;
 import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/social_media_type.dart';
 import 'package:trydos/service/language_service.dart';
 
@@ -14,7 +16,8 @@ Widget buildSocialButtons(
     required String productSlugForULr,
     required String productId,
     required String currentColor,
-    required String currentSize}) {
+    required String currentSize,
+    required product.Products product}) {
   String urlProductToShare =
       "${dotenv.env['WEB_CALLS_URL']!}/tr-${LanguageService.languageCode == "ar" ? "ar" : LanguageService.languageCode == "tr" ? "tr" : "en"}/products/$productSlugForULr" +
           (currentColor.length > 1 || currentSize.length > 1 ? "?" : "") +
@@ -36,6 +39,7 @@ Widget buildSocialButtons(
               text: text,
               urlShare: urlProductToShare,
               productId: productId,
+              product: product,
             );
             //////////////////////////////
             // FirebaseAnalyticsService.logEventForSession(
@@ -57,6 +61,7 @@ Widget buildSocialButtons(
               text: text,
               urlShare: urlProductToShare,
               productId: productId,
+              product: product,
             );
             //////////////////////////////
             // FirebaseAnalyticsService.logEventForSession(
@@ -85,6 +90,7 @@ Widget buildSocialButtons(
               text: text,
               urlShare: urlProductToShare,
               productId: productId,
+              product: product,
             );
             //////////////////////////////
             // FirebaseAnalyticsService.logEventForSession(
@@ -106,6 +112,7 @@ Widget buildSocialButtons(
               text: text,
               urlShare: urlProductToShare,
               productId: productId,
+              product: product,
             );
             //////////////////////////////
             // FirebaseAnalyticsService.logEventForSession(
@@ -127,6 +134,7 @@ Widget buildSocialButtons(
               text: text,
               urlShare: urlProductToShare,
               productId: productId,
+              product: product,
             );
             //////////////////////////////
             // FirebaseAnalyticsService.logEventForSession(

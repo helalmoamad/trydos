@@ -24,6 +24,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductCollectionInCartPage1 extends StatefulWidget {
   ProductCollectionInCartPage1({
@@ -56,16 +57,8 @@ class _ProductCollectionInCartPage1State
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     final List<Cart>? cartCollection;
     final List<OldCart>? oldCartCollection;

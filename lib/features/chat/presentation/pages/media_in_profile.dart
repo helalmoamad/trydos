@@ -39,7 +39,7 @@ import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 
 import '../manager/chat_bloc.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../manager/chat_state.dart';
 
 class MediaInProfile extends StatefulWidget {
@@ -60,6 +60,7 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
 
   @override
   void initState() {
+    LastPagesTracker.push('MediaInProfile');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     super.initState();
   }
@@ -67,12 +68,8 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Media_In_Profile"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error);
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     List<Widget> chatPages = [
       ImageInProfile(

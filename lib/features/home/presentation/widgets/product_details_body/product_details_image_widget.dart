@@ -17,6 +17,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart' show LocaleKeys;
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductDetailsImageWidget extends StatelessWidget {
   const ProductDetailsImageWidget(
@@ -75,18 +76,9 @@ class ProductDetailsImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-
     return InteractiveViewer(
       minScale: 0.1,
       maxScale: 4.0,

@@ -39,6 +39,7 @@ import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage(
@@ -67,6 +68,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
   late final HomeBloc homeBloc;
   @override
   void initState() {
+    LastPagesTracker.push('SearchPage');
     BlocProvider.of<BoutiqueBloc>(context).add(ChangeSelectedFiltersEvent(
         fromHomePageSearch: true, boutiqueSlug: 'search'));
     widget.appearTrendingAndHistory.value = true;
@@ -120,16 +122,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Scaffold(
       backgroundColor: colorScheme.white,

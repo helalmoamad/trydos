@@ -100,11 +100,15 @@ class GetOrdersByCartGroupIDEvent extends OrderEvent {
 class GetCustomerWalletEvent extends OrderEvent {
   final int limit;
   final int offset;
-  GetCustomerWalletEvent({required this.limit, required this.offset});
+  final bool statusInitToRefreshAmount;
+  GetCustomerWalletEvent(
+      {required this.limit,
+      required this.offset,
+      this.statusInitToRefreshAmount = false});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [limit, offset];
+  List<Object?> get props => [limit, offset, statusInitToRefreshAmount];
 }
 
 class GetOrdersEvent extends OrderEvent {

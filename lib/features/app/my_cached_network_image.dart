@@ -136,7 +136,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
         ),
       );
     }
-
+    print("url is empty or null or undefined${url}");
     return Container(
       key: ValueKey(url),
       alignment: Alignment.center,

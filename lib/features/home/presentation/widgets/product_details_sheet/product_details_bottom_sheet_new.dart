@@ -1,53 +1,56 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart' as translate;
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_comments_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_header.dart';
-import 'dart:ui' as ui;
-import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_more_options_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/select_size_sheet.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 
 import 'package:trydos/service/language_service.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 
-import '../../../../../trydos_application.dart';
 import '../../manager/homeBloc/home_bloc.dart';
-import '../product_details_body/product_details_image_widget.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
-import '../product_listing/product_listing_image_widget.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductDetailsBottomSheetNew extends StatefulWidget {
   final productListingModel.Products productItem;
   final int currentColor;
-
+  final ValueNotifier<bool>? showShadowForPanel;
   final int boutiqueId;
-  final int? qtyForproductWithoutVariant;
+  final String currentVariant;
   final String boutiqueIcon;
   final String currentColorName;
   final String currentColorOption;
@@ -60,6 +63,9 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
   final int countOfPieces;
   final bool? isGetFullProductDetails;
   final bool? fromListingPage;
+  final String? flashDealEndDate;
+  final bool? isFlashDealEnded;
+  final ValueNotifier<bool>? visibleFlashDeal;
   final double initPrice;
   final double initOfferPrice;
   final bool isRedeem;
@@ -71,6 +77,7 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<int>? tapIndexToAddProductToCart;
   final ValueNotifier<int> currentActiveTab;
+  final ValueNotifier<bool> visibleRedeemNotifier;
   final ValueNotifier<String?> productNotAvailableNotifier;
   ProductDetailsBottomSheetNew(
       {super.key,
@@ -78,8 +85,14 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
       required this.redeemVariantPrice,
       required this.redeemPrice,
       required this.isRedeem,
+      required this.visibleRedeemNotifier,
       this.currentSelectedColorAfterChangeVariant,
       this.tapIndexToAddProductToCart,
+      this.showShadowForPanel,
+      required this.flashDealEndDate,
+      required this.isFlashDealEnded,
+      required this.visibleFlashDeal,
+      required this.currentVariant,
       required this.productIdForCashData,
       required this.isGetFullProductDetails,
       required this.collectedAfterOrdering,
@@ -92,7 +105,6 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
       this.fromListingPage = false,
       required this.productSlugForTopic,
       required this.productDescription,
-      required this.qtyForproductWithoutVariant,
       required this.maxAllowedToAddCart,
       required this.countOfPieces,
       required this.currentColornum,
@@ -122,17 +134,16 @@ class _ProductDetailsBottomSheetNewState
   List<String> sizesForEachProduct = [];
   bool requestToNotifyMeFormFirstSize = true;
   List<int> colorsQuantityForEachProduct = [];
-  Gallery3DController? gallery3dControllerForCircles;
+  Timer? debounce;
   List<productListingModel.SyncColorImage> syncColorImageList = [];
   List<String> images = [];
   late int currentIndexInSlider;
-  final GlobalKey colorsGallerySliderKey = GlobalKey();
-  Offset? offsetOfColorsGallerySlider;
-  double valueOfBlur = 10;
+
   late HomeBloc homeBloc;
-  List<double>? orginalHeight;
-  List<double>? orginalWidth;
-  bool isMoving = false;
+
+  final ScrollController singleChildScrollViewsScrollController =
+      ScrollController();
+  bool isFirstOpenPanel = true;
   final ValueNotifier<String?> animatedMessage = ValueNotifier(null);
   final ValueNotifier<bool> showAnimatedMessage = ValueNotifier(false);
 
@@ -150,1423 +161,1642 @@ class _ProductDetailsBottomSheetNewState
     homeBloc = BlocProvider.of<HomeBloc>(context);
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
-    syncColorImageList = [
-      ...syncColorImageList,
-      ...syncColorImageList,
-    ];
+
     images = syncColorImageList.map((e) => e.images![0].filePath!).toList();
-
-    orginalHeight = syncColorImageList
-        .map((e) => double.tryParse(e.images![0].originalHeight!) ?? 0)
-        .toList();
-    orginalWidth = syncColorImageList
-        .map((e) => double.tryParse(e.images![0].originalWidth!) ?? 0)
-        .toList();
-
-    _focusNode.addListener(_onFocusChange);
-
-    /*if (syncColorImageList.length <= 8) {
-      currentIndexInSlider = 0;
-    } else {
-      currentIndexInSlider = syncColorImageList.length ~/ 4;
-    }*/
 
     super.initState();
   }
 
   @override
   void dispose() {
-    _focusNode.addListener(_onFocusChange);
+    debounce?.cancel();
+    pageController.dispose();
+    singleChildScrollViewsScrollController.dispose();
     super.dispose();
   }
-
-  void _onFocusChange() {
-    setState(() {});
-  }
-
-  final _focusNode = FocusNode();
-
-  bool userWantToScrollHorizontally = false;
-
-  bool firstOpenOfPanel = true;
-  bool hide = false;
 
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
-    return BlocListener<HomeBloc, HomeState>(
-      listenWhen: (previous, current) =>
-          previous.isChangedColorBeforeOpenPanel == false &&
-          current.isChangedColorBeforeOpenPanel == true,
-      listener: (context, state) {
-        if (state.isChangedColorBeforeOpenPanel == true) {
-          Future.delayed(
-            const Duration(milliseconds: 100),
-            () {
-              colorsQuantityForEachProduct =
-                  state.colorsQuantitiesForEachProduct ?? [];
-              colorsForEachProduct = state.colorsForEachProduct ?? [];
-              sizesForEachProduct = state.sizesForEachColor ?? [];
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.changeSizesForEveryProduct !=
+              current.changeSizesForEveryProduct ||
+          previous.isChangedvariationWhenQtyZero !=
+              current.isChangedvariationWhenQtyZero ||
+          previous.currentSelectedColorForEveryProductStatus !=
+              current.currentSelectedColorForEveryProductStatus ||
+          previous.currentHeightWhenAddToBag !=
+              current.currentHeightWhenAddToBag,
+      builder: (context, state) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (singleChildScrollViewsScrollController.hasClients) {
+              singleChildScrollViewsScrollController.jumpTo(
+                  singleChildScrollViewsScrollController
+                      .position.maxScrollExtent);
+            }
+          });
+        });
+        colorsQuantityForEachProduct =
+            state.colorsQuantitiesForEachProduct ?? [];
+        colorsForEachProduct = state.colorsForEachProduct ?? [];
+        sizesForEachProduct = state.sizesForEachColor ?? [];
 
-              try {
-                gallery3dControllerForCircles?.animateTo(
-                    widget.currentColor, true);
-              } catch (e) {}
-
-              sizeIsNotAvailableNotifier.value = null;
-              colorIsNotAvailableNotifier.value = null;
-
-              Future.delayed(
-                const Duration(milliseconds: 300),
-                () {
-                  if (sizesForEachProduct.length != 0) {
-                    requestToNotifyMeFormFirstSize = true;
-                  }
-
-                  if (sizesForEachProduct.length == 0 &&
-                      colorsQuantityForEachProduct.length > 0) {
-                    if (colorsQuantityForEachProduct[widget.currentColor] ==
-                            0 &&
-                        !widget.collectedAfterOrdering) {
-                      colorIsNotAvailableNotifier.value =
-                          colorsForEachProduct[widget.currentColor];
-                    } else {
-                      colorIsNotAvailableNotifier.value = null;
-                    }
-                  }
-                },
-              );
-              currentIndexInSlider = widget.currentColor;
-              homeBloc.add(AddCurrentSelectedColorEvent(
-                  currentSelectedColor: widget.currentColor,
-                  productSlug: widget.productItem.slug.toString()));
-            },
-          );
-        }
-      },
-      child: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (previous, current) =>
-            previous.changeSizesForEveryProduct !=
-                current.changeSizesForEveryProduct ||
-            previous.isChangedvariationWhenQtyZero !=
-                current.isChangedvariationWhenQtyZero ||
-            previous.currentSelectedColorForEveryProductStatus !=
-                current.currentSelectedColorForEveryProductStatus,
-        builder: (context, state) {
-          if (state.isChangedvariationWhenQtyZero &&
-              (widget.fromListingPage ?? false)) {
-            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
-                isChangedVariationWhenQtyZero: false));
-            gallery3dControllerForCircles = syncColorImageList.isNullOrEmpty ||
-                    syncColorImageList.length < 3
-                ? null
-                : Gallery3DController(
-                    itemCount: syncColorImageList.length,
-                    autoLoop: false,
-                    minScale: (syncColorImageList.length) == 4
-                        ? 0.7
-                        : (syncColorImageList.length) <= 8
-                            ? 0.55
-                            : 0.4,
-                    initialIndex: state.currentSelectedColorForEveryProduct[
-                            widget.productItem.slug.toString()] ??
-                        0,
-                    primaryshiftingOffsetDivision:
-                        (syncColorImageList.length) == 4
-                            ? 4.5
-                            : (syncColorImageList.length) <= 8
-                                ? 1.6
-                                : 1.6,
-                    scrollTime: 1);
-            currentIndexInSlider = state.currentSelectedColorForEveryProduct[
-                    widget.productItem.slug.toString()] ??
-                0;
-          }
-          print(
-              "DDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE${state.isChangedvariationWhenQtyZero}${widget.currentSelectedColorAfterChangeVariant}${!(widget.fromListingPage ?? false)}");
-
-          if (state.isChangedvariationWhenQtyZero &&
-              widget.currentSelectedColorAfterChangeVariant != -1 &&
-              !(widget.fromListingPage ?? false)) {
-            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
-                isChangedVariationWhenQtyZero: false));
-
-            gallery3dControllerForCircles = syncColorImageList.isNullOrEmpty ||
-                    syncColorImageList.length < 3
-                ? null
-                : Gallery3DController(
-                    itemCount: syncColorImageList.length,
-                    autoLoop: false,
-                    minScale: (syncColorImageList.length) == 4
-                        ? 0.7
-                        : (syncColorImageList.length) <= 8
-                            ? 0.55
-                            : 0.4,
-                    initialIndex:
-                        widget.currentSelectedColorAfterChangeVariant ?? 0,
-                    primaryshiftingOffsetDivision:
-                        (syncColorImageList.length) == 4
-                            ? 4.5
-                            : (syncColorImageList.length) <= 8
-                                ? 1.6
-                                : 1.6,
-                    scrollTime: 1);
-            currentIndexInSlider =
-                widget.currentSelectedColorAfterChangeVariant ?? 0;
-          }
-          colorsQuantityForEachProduct =
-              state.colorsQuantitiesForEachProduct ?? [];
-          colorsForEachProduct = state.colorsForEachProduct ?? [];
-          sizesForEachProduct = state.sizesForEachColor ?? [];
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ValueListenableBuilder<int>(
-                  valueListenable: widget.currentActiveTab,
-                  builder: (context, currentTab, _) {
-                    return ValueListenableBuilder<double>(
-                        valueListenable: workOnBlurNotifier,
-                        child: SlidingUpPanel(
-                          denyVericalSliding: currentTab == 3
-                              ? (currentPosition) {
-                                  if (widget.panelController.panelPosition !=
-                                      1) {
-                                    return false;
-                                  }
-                                  if (gallery3dControllerForCircles != null) {
-                                    if (offsetOfColorsGallerySlider == null) {
-                                      final renderBox = colorsGallerySliderKey
-                                          .currentContext
-                                          ?.findRenderObject();
-                                      if (renderBox is RenderBox &&
-                                          renderBox.hasSize) {
-                                        offsetOfColorsGallerySlider = renderBox
-                                            .localToGlobal(Offset.zero);
-                                      }
-                                    }
-                                    if (currentPosition.dx >=
-                                            offsetOfColorsGallerySlider!.dx &&
-                                        currentPosition.dx <=
-                                            (offsetOfColorsGallerySlider!.dx +
-                                                200) &&
-                                        currentPosition.dy >=
-                                            (288.h + (35.w + 10.h)) &&
-                                        currentPosition.dy <=
-                                            (288.h + (70.w + 70.w + 10.h))) {
-                                      userWantToScrollHorizontally = true;
-                                    }
-                                  }
-                                  return userWantToScrollHorizontally;
-                                }
-                              : null,
-                          controller: widget.panelController,
-                          maxHeight: currentTab == -1
-                              ? 78
-                              : _focusNode.hasFocus
-                                  ? 575
-                                  : currentTab == 3
-                                      ? 1.sh - 179 //330.h + 70.w + 305
-                                      : 433,
-                          minHeight: (widget.fromListingPage ?? false) ? 0 : 78,
-                          onPanelClosed: () {
-                            BlocProvider.of<HomeBloc>(context).add(
-                                const IsChangedColorBeforOpenPanelEvent(
-                                    iChangedColorBeforOpenPanelEvent: false));
-                            Future.delayed(const Duration(milliseconds: 300),
-                                () {
-                              widget.tapIndexToAddProductToCart?.value = -1;
-                            });
-                            widget.addToBagButtonShapeNotifier.value = 0;
-
-                            /*   if ((prefsRepository.isTokenExpired ??
-                                          false ||
-                                              prefsRepository.marketToken == "" ||
-                                              prefsRepository.marketToken == null) &&
-                                      GetIt.I<AuthBloc>().state.registerGuestStatus !=
-                                          RegisterGuestStatus.loading) {
-                                    Future.delayed(
-                                        Duration(seconds: 1),
-                                        () => showDialog(
-                                              context: context,
-                                              builder: (context) => Center(
-                                                  child: Container(
-                                                alignment: Alignment.center,
-                                                width: 400,
-                                                height: 300,
-                                                child: AlertDialog(
-                                                  title: MyTextWidget(
-                                                    "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
+        return SingleChildScrollView(
+            controller: singleChildScrollViewsScrollController,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ValueListenableBuilder<int>(
+                    valueListenable: widget.currentActiveTab,
+                    builder: (context, currentTab, _) {
+                      if (currentTab == 0) {
+                        FirebaseAnalyticsService.logEventForSession(
+                          executedEventName: AnalyticsButtonsEventNameConst
+                              .VIEW_COMMENTS_BUTTON,
+                          eventName: AnalyticsEventsConst.VIEW_COMMENTS,
+                          extraParams: {
+                            'item_id': widget.productItem.productId.toString(),
+                            'item_name': widget.productItem.name.toString(),
+                            'price': widget.productItem.price.toString(),
+                            'brand': widget.productItem.brand == null
+                                ? ""
+                                : widget.productItem.brand!.name.toString(),
+                            'category': widget.productItem.categories!
+                                .map(
+                                  (e) => e.id.toString(),
+                                )
+                                .toList()
+                                .toString(),
+                            'count_likes':
+                                widget.productItem.countOfLikes.toString(),
+                            'review_count':
+                                widget.productItem.reviewsCount.toString(),
+                            'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                          },
+                        );
+                      }
+                      LastPagesTracker.push(
+                          'ProductDetailsBottomSheetNew currentTab : $currentTab');
+                      return ValueListenableBuilder<double>(
+                          valueListenable: workOnBlurNotifier,
+                          child: SizedBox(
+                              width: 1.sw,
+                              height: currentTab == 3
+                                  ? 1.sh -
+                                      ((widget.fromListingPage ?? false)
+                                          ? ((state.currentHeightWhenAddToBag ??
+                                                  0) +
+                                              10)
+                                          : ((state.currentHeightWhenAddToBag ??
+                                                  0) -
+                                              2))
+                                  : currentTab == -1
+                                      ? 75
+                                      : 450,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  currentTab != 3
+                                      ? const SizedBox.shrink()
+                                      : Container(
+                                          alignment: Alignment.topCenter,
+                                          width: 80,
+                                          height: 60.h,
+                                          padding: EdgeInsets.only(
+                                              top: 10.h, left: 15, right: 15),
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xff513AAF),
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(15),
+                                                topRight: Radius.circular(15),
+                                              )),
+                                          child: SizedBox(
+                                              width: 50,
+                                              height: 20,
+                                              child: Row(
+                                                children: [
+                                                  SvgPicture.asset(
+                                                      AppAssets.buyNewSvg),
+                                                  const SizedBox(
+                                                    width: 5,
                                                   ),
-                                                  actions: <Widget>[
-                                                    Container(
-                                                      alignment: Alignment.center,
-                                                      width: 300,
-                                                      child: Row(
-                                                        mainAxisAlignment: (prefsRepository
-                                                                    .isVerifiedPhonePeforeExpiredToken ??
-                                                                false)
-                                                            ? MainAxisAlignment.center
-                                                            : MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: [
-                                                          (prefsRepository
-                                                                      .isVerifiedPhonePeforeExpiredToken ??
-                                                                  false)
-                                                              ? SizedBox.shrink()
-                                                              : Container(
-                                                                  alignment:
-                                                                      Alignment.center,
-                                                                  width: 130,
-                                                                  child:
-                                                                      AppElevatedButton(
-                                                                    textStyle: TextStyle(
-                                                                        fontSize: 16),
-                                                                    onPressed: () async {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                      String? deviceId =
-                                                                          await HelperFunctions
-                                                                              .getDeviceId();
-                
-                                                                      GetIt.I<AuthBloc>().add(RegisterGuestEvent(
-                                                                          oldGuestUserId:
-                                                                              prefsRepository
-                                                                                  .myMarketId
-                                                                                  .toString(),
-                                                                          deviceId:
-                                                                              deviceId!));
-                                                                    },
-                                                                    text:
-                                                                        "${LocaleKeys.reset_your_count.tr()}",
-                                                                  ),
-                                                                ),
-                                                          Container(
-                                                            alignment: Alignment.center,
-                                                            width: 130,
-                                                            child: AppElevatedButton(
-                                                              textStyle:
-                                                                  TextStyle(fontSize: 16),
-                                                              onPressed: () {
-                                                                Navigator.of(context)
-                                                                    .pop();
-                
-                                                                Navigator.of(context)
-                                                                    .push(
-                                                                        PageRouteBuilder(
-                                                                  pageBuilder: (context,
-                                                                          animation,
-                                                                          secondaryAnimation) =>
-                                                                      RegistrationPage(
-                                                                    fromExpiredToken:
-                                                                        true,
-                                                                  ),
-                                                                ));
-                                                              },
-                                                              text:
-                                                                  '${LocaleKeys.go_to_log_in.tr()}',
+                                                  MyTextWidget(
+                                                      LocaleKeys.buy.tr(),
+                                                      style: context.textTheme
+                                                          .titleMedium?.mr
+                                                          .copyWith(
+                                                        fontSize: 13,
+                                                        color: Colors.white,
+                                                      ))
+                                                ],
+                                              ))),
+                                  SlidingUpPanel(
+                                    controller: widget.panelController,
+                                    maxHeight: currentTab == -1
+                                        ? 45
+                                        : currentTab == 3
+                                            ? 620.h //330.h + 70.w + 305
+                                            : 433,
+                                    minHeight: (widget.fromListingPage ?? false)
+                                        ? 0
+                                        : 45,
+                                    onPanelClosed: () {
+                                      isFirstOpenPanel = true;
+                                      Future.delayed(
+                                          const Duration(milliseconds: 300),
+                                          () {
+                                        widget.showShadowForPanel?.value =
+                                            false;
+                                      });
+
+                                      Future.delayed(
+                                          const Duration(milliseconds: 300),
+                                          () {
+                                        widget.tapIndexToAddProductToCart
+                                            ?.value = -1;
+                                      });
+                                      widget.addToBagButtonShapeNotifier.value =
+                                          0;
+
+                                      sizeIsNotAvailableNotifier.value = null;
+                                      colorIsNotAvailableNotifier.value = null;
+
+                                      widget.currentActiveTab.value = -1;
+                                    },
+                                    onPanelOpened: () {
+                                      if (isFirstOpenPanel) {
+                                        Future.delayed(
+                                            const Duration(milliseconds: 100),
+                                            () {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                            if (singleChildScrollViewsScrollController
+                                                .hasClients) {
+                                              singleChildScrollViewsScrollController
+                                                  .jumpTo(
+                                                      singleChildScrollViewsScrollController
+                                                          .position
+                                                          .maxScrollExtent);
+                                            }
+                                          });
+                                        });
+                                        widget.showShadowForPanel?.value = true;
+
+                                        if (sizesForEachProduct.length == 0) {
+                                          if (!colorsQuantityForEachProduct
+                                              .isNullOrEmpty) {
+                                            if (colorsQuantityForEachProduct[
+                                                        widget.currentColor] ==
+                                                    0 &&
+                                                !widget
+                                                    .collectedAfterOrdering) {
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 300),
+                                                  () => colorIsNotAvailableNotifier
+                                                          .value =
+                                                      colorsForEachProduct[
+                                                          widget.currentColor]);
+                                            } else {
+                                              colorIsNotAvailableNotifier
+                                                  .value = null;
+                                            }
+                                          } else {
+                                            colorIsNotAvailableNotifier.value =
+                                                null;
+                                          }
+                                          if (!colorsQuantityForEachProduct
+                                              .isNullOrEmpty) {
+                                            if (colorsQuantityForEachProduct[
+                                                        widget.currentColor] ==
+                                                    0 &&
+                                                !widget
+                                                    .collectedAfterOrdering) {
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 300),
+                                                  () => colorIsNotAvailableNotifier
+                                                          .value =
+                                                      colorsForEachProduct[
+                                                          widget.currentColor]);
+                                            } else {
+                                              colorIsNotAvailableNotifier
+                                                  .value = null;
+                                            }
+                                          } else {
+                                            colorIsNotAvailableNotifier.value =
+                                                null;
+                                          }
+                                        }
+                                        isFirstOpenPanel = false;
+                                      }
+                                    },
+                                    boxShadow: const [
+                                      CustomBoxShadow(
+                                          color: Color.fromARGB(
+                                              255, 212, 209, 209),
+                                          blurRadius: 0.1,
+                                          blurStyle: BlurStyle.outer)
+                                    ],
+                                    isDraggable:
+                                        (currentTab == -1 ? false : true),
+                                    panelBuilder: (controller) =>
+                                        currentTab == 3
+                                            ? Column(
+                                                children: [
+                                                  SizedBox(
+                                                    height: 5.h,
+                                                  ),
+                                                  Divider(
+                                                    thickness: 2,
+                                                    radius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                    endIndent: (1.sw - 40) / 2,
+                                                    indent: (1.sw - 40) / 2,
+                                                    color:
+                                                        const Color(0xffC4C2C2),
+                                                  ),
+                                                  productInfoWidget(),
+                                                  (widget
+                                                                  .productItem
+                                                                  .syncColorImages
+                                                                  ?.length ??
+                                                              0) ==
+                                                          0
+                                                      ? const SizedBox.shrink()
+                                                      : _availableColorWidget(
+                                                          state: state),
+                                                  widget
+                                                          .productItem
+                                                          .choiceOptions
+                                                          .isNullOrEmpty
+                                                      ? const SizedBox.shrink()
+                                                      : (widget
+                                                                      .productItem
+                                                                      .choiceOptions?[
+                                                                          0]
+                                                                      .options
+                                                                      ?.length ??
+                                                                  0) ==
+                                                              0
+                                                          ? const SizedBox
+                                                              .shrink()
+                                                          : _availableSizeWidget(),
+                                                  const Spacer(),
+                                                  SizedBox(
+                                                    height: 12.h,
+                                                  ),
+                                                  Container(
+                                                      decoration: BoxDecoration(
+                                                          boxShadow: const [
+                                                            BoxShadow(
+                                                              color: Color(
+                                                                  0x1a000000),
+                                                              offset:
+                                                                  Offset(0, -2),
+                                                              blurRadius: 4,
+                                                            ),
+                                                          ],
+                                                          border: Border(
+                                                            top: BorderSide(
+                                                              color: widget
+                                                                      .isRedeem
+                                                                  ? const Color(
+                                                                      0xffFF6200)
+                                                                  : Colors
+                                                                      .white,
                                                             ),
                                                           ),
-                                                        ],
-                                                      ),
-                                                    )
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                  .only(
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          30),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          30))),
+                                                      child: _headerWidget()),
+                                                  SizedBox(
+                                                    height: 5.h,
+                                                  )
+                                                ],
+                                              )
+                                            : SingleChildScrollView(
+                                                child: Column(
+                                                  children: [
+                                                    Stack(
+                                                      alignment:
+                                                          Alignment.topCenter,
+                                                      children: [
+                                                        _headerWidget(),
+                                                        currentTab != -1
+                                                            ? Positioned(
+                                                                top: 7,
+                                                                child:
+                                                                    SvgPicture
+                                                                        .asset(
+                                                                  AppAssets
+                                                                      .minusMarkSvg,
+                                                                  width: 25,
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade200,
+                                                                ))
+                                                            : const SizedBox
+                                                                .shrink(),
+                                                      ],
+                                                    ),
+                                                    currentTab < 3 &&
+                                                            currentTab >= 0
+                                                        ? SizedBox(
+                                                            height: 425.h,
+                                                            child: currentTab ==
+                                                                    0
+                                                                ? ProductDetailsSheetCommentsContent(
+                                                                    productSlugForTopic:
+                                                                        widget
+                                                                            .productSlugForTopic,
+                                                                    productSlug:
+                                                                        widget.productItem.slug ??
+                                                                            "",
+                                                                    productId: widget
+                                                                        .productItem
+                                                                        .productId
+                                                                        .toString(),
+                                                                    scrollController: currentTab == 0
+                                                                        ? controller
+                                                                        : null)
+                                                                : currentTab ==
+                                                                        1
+                                                                    ? BlocBuilder<
+                                                                            HomeBloc,
+                                                                            HomeState>(
+                                                                        buildWhen: (p, c) =>
+                                                                            p.currentColorSizeForCart?["choiceOption"] !=
+                                                                            c.currentColorSizeForCart?["choiceOption"],
+                                                                        builder: (context, state) {
+                                                                          return ProductDetailsSheetShareContent(
+                                                                              currentSize: state.currentColorSizeForCart != null ? state.currentColorSizeForCart!["choiceOption"] ?? "" : "",
+                                                                              currentColor: widget.currentColorName,
+                                                                              productDescription: widget.productDescription,
+                                                                              productItem: widget.productItem,
+                                                                              scrollController: currentTab == 1 ? controller : null,
+                                                                              idsOfChatCardsToShare: idsOfChatCardsToShare);
+                                                                        })
+                                                                    : currentTab == 2
+                                                                        ? ProductDetailsSheetMoreOptionsContent(
+                                                                            productSlugForTopic:
+                                                                                widget.productSlugForTopic,
+                                                                            productSlug:
+                                                                                widget.productItem.slug ?? "",
+                                                                            scrollController: currentTab == 2
+                                                                                ? controller
+                                                                                : null,
+                                                                            productId:
+                                                                                widget.productItem.productId.toString(),
+                                                                          )
+                                                                        : const SizedBox.shrink())
+                                                        : const SizedBox.shrink(),
                                                   ],
                                                 ),
-                                              )),
-                                            ));
-                                    return;
-                                  }*/
-                            /*homeBloc.add(
-                                AddMultiItemsToCartEvent(
-                                  maxAllowed: widget.maxAllowedToAddCart,
-                                  boutiqueIcon: widget.boutiqueIcon,
-                                  productSlugForTopic: widget.productSlugForTopic,
-                                  boutiqueId: widget.boutiqueId,
-                                  products: widget.productItem,
-                                  id: widget.productItem.productId.toString(),
+                                              ),
+                                    border: Border(
+                                      top: BorderSide(
+                                        color: widget.isRedeem
+                                            ? const Color(0xffFF6200)
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(30.0),
+                                        topRight: Radius.circular(30.0)),
+                                  )
+                                ],
+                              )),
+                          builder: (context, blurValue, child) {
+                            return child!;
+                          });
+                    }),
+                ValueListenableBuilder<List<String>>(
+                    valueListenable: idsOfChatCardsToShare,
+                    builder: (context, channelIds, _) {
+                      return channelIds.isEmpty
+                          ? BlocBuilder<HomeBloc, HomeState>(
+                              buildWhen: (p, c) =>
+                                  p.currentColorSizeForCart?["choiceOption"] !=
+                                  c.currentColorSizeForCart?["choiceOption"],
+                              builder: (context, state) {
+                                return ProductDetailsSheetBottomBarNew(
+                                    isRedeem: widget.isRedeem,
+                                    redeemVariantPrice:
+                                        widget.redeemVariantPrice,
+                                    flashDealEndDate: widget.flashDealEndDate,
+                                    isFlashDealEnded: widget.isFlashDealEnded,
+                                    visibleFlashDeal: widget.visibleFlashDeal,
+                                    visibleRedeemNotifier:
+                                        widget.visibleRedeemNotifier,
+                                    colorOption: widget.currentColorOption,
+                                    isGetFullProductDetails:
+                                        widget.isGetFullProductDetails ?? false,
+                                    choiceOption: state.currentColorSizeForCart !=
+                                            null
+                                        ? state.currentColorSizeForCart!["choiceOption"] ??
+                                            ""
+                                        : "",
+                                    productNotAvailableNotifier:
+                                        widget.productNotAvailableNotifier,
+                                    products: widget.productItem,
+                                    collectedAfterOrder:
+                                        widget.collectedAfterOrdering,
+                                    colorIsNotAvailableNotifier:
+                                        colorIsNotAvailableNotifier,
+                                    productSlug: widget.productItem.slug ?? "",
+                                    countOfPieces: widget.countOfPieces,
+                                    colorNum: widget.currentColornum,
+                                    size: state.currentColorSizeForCart != null
+                                        ? state.currentColorSizeForCart!["size"] ??
+                                            ""
+                                        : "",
+                                    colorName: widget.currentColorName,
+                                    productIdForCashProducts:
+                                        widget.productIdForCashData,
+                                    productIdForRequestApi:
+                                        widget.productItem.productId.toString(),
+                                    imageUrl: !widget.productItem
+                                            .syncColorImages.isNullOrEmpty
+                                        ? widget
+                                                .productItem
+                                                .syncColorImages![
+                                                    widget.currentColor]
+                                                .images![0]
+                                                .filePath ??
+                                            ""
+                                        : (widget.productItem.images?.isNotEmpty ??
+                                                false)
+                                            ? widget.productItem.images![widget.currentColor].filePath ?? ""
+                                            : "",
+                                    panelController: widget.panelController,
+                                    clickOnComments: () {
+                                      widget.panelController.open();
+                                      widget.currentActiveTab.value = 0;
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback(
+                                        (_) {
+                                          pageController.jumpToPage(0);
+                                        },
+                                      );
+                                      //////////////////////////////
+                                      // FirebaseAnalyticsService.logEventForSession(
+                                      //   eventName:
+                                      //       AnalyticsEventsConst.buttonClicked,
+                                      //   executedEventName:
+                                      //       AnalyticsButtonsEventNameConst
+                                      //           .showCommentsButton,
+                                      // );
+                                    },
+                                    clickOnFavorite: () {
+                                      widget.currentActiveTab.value = -1;
+                                    },
+                                    clickOnMoreOptions: () {
+                                      widget.panelController.open();
+                                      widget.currentActiveTab.value = 2;
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback(
+                                        (_) {
+                                          pageController.jumpToPage(2);
+                                        },
+                                      );
+                                      //////////////////////////////
+                                      // FirebaseAnalyticsService.logEventForSession(
+                                      //   eventName:
+                                      //       AnalyticsEventsConst.buttonClicked,
+                                      //   executedEventName:
+                                      //       AnalyticsButtonsEventNameConst
+                                      //           .moreOptionsButton,
+                                      // );
+                                    },
+                                    clickOnShare: () {
+                                      widget.panelController.open();
+                                      widget.currentActiveTab.value = 1;
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback(
+                                        (_) {
+                                          pageController.jumpToPage(1);
+                                        },
+                                      );
+                                      if (GetIt.I<PrefsRepository>()
+                                              .chatToken !=
+                                          null) {
+                                        BlocProvider.of<ChatBloc>(context)
+                                            .add(const GetChatsEvent());
+                                        BlocProvider.of<ChatBloc>(context)
+                                            .add(const SaveContactsEvent());
+                                      }
+                                      //////////////////////////////
+                                      // FirebaseAnalyticsService.logEventForSession(
+                                      //   eventName:
+                                      //       AnalyticsEventsConst.buttonClicked,
+                                      //   executedEventName:
+                                      //       AnalyticsButtonsEventNameConst
+                                      //           .shareProductButton,
+                                      // );
+                                    },
+                                    currentActiveTab: widget.currentActiveTab,
+                                    sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
+                                    addToBagButtonShapeNotifier: widget.addToBagButtonShapeNotifier);
+                              })
+                          : ShareButton(
+                              onTap: () {
+                                BlocProvider.of<ChatBloc>(context).add(
+                                    ShareProductWithContactsOrChannelsEvent(
+                                        product: widget.productItem,
+                                        productId: widget.productItem.productId
+                                            .toString(),
+                                        productName:
+                                            widget.productItem.name.toString(),
+                                        productSlug:
+                                            widget.productItem.slug.toString(),
+                                        productDescription: widget
+                                            .productItem.details
+                                            .toString(),
+                                        originalImageWidth: "320",
+                                        originalImageHeight: "464",
+                                        productImageUrl:
+                                            // gallery3dControllerForCircles != null
+                                            widget
+                                                .productItem.images![0].filePath
+                                                .toString(),
+                                        channelIds: channelIds));
+                                idsOfChatCardsToShare.value = [];
+                                widget.currentActiveTab.value = -1;
+                                widget.panelController.close();
+                                widget.showShadowForPanel?.value = false;
+                                //////////////////////////////
+                                // FirebaseAnalyticsService.logEventForSession(
+                                //   eventName: AnalyticsEventsConst.buttonClicked,
+                                //   executedEventName:
+                                //       AnalyticsButtonsEventNameConst
+                                //           .sendProductToChatButton,
+                                // );
+                              },
+                            );
+                    }),
+              ],
+            ));
+      },
+    );
+  }
+
+  Widget productInfoWidget() {
+    return Padding(
+        padding: EdgeInsets.all(12.0.h),
+        child: SizedBox(
+          height: 170.h,
+          width: 1.sw,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 170.h,
+                width: 1.sw,
+                child: Row(
+                  children: [
+                    BlocBuilder<HomeBloc, HomeState>(
+                      buildWhen: (previous, current) =>
+                          previous.currentSelectedColorForEveryProduct[
+                              widget.productItem.slug.toString()] !=
+                          current.currentSelectedColorForEveryProduct[
+                              widget.productItem.slug.toString()],
+                      builder: (context, state) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                      color: widget.isRedeem
+                                          ? const Color(0xffFF6200)
+                                          : Colors.white)),
+                              child: MyCachedNetworkImage(
+                                innerShadowYOffset: 1,
+                                withInnerShadow: true,
+                                imageUrl: (widget.productItem.syncColorImages
+                                        .isNullOrEmpty)
+                                    ? widget.productItem.images![0].filePath ??
+                                        ''
+                                    : widget
+                                            .productItem
+                                            .syncColorImages![
+                                                state.currentSelectedColorForEveryProduct[
+                                                        widget.productItem.slug
+                                                            .toString()] ??
+                                                    0]
+                                            .images?[0]
+                                            .filePath ??
+                                        '',
+                                imageFit: BoxFit.contain,
+                                width: 123.w,
+                                height: 170.h,
+                              )),
+                        );
+                      },
+                    ),
+                    ///////////////////
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ///////////////////
+                    Expanded(
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 5.h,
+                        ),
+                        SvgNetworkWidget(
+                          svgUrl:
+                              widget.productItem.brand?.icon?.filePath ?? '',
+                          color: const Color(0xff1D1D1D),
+                          height: 10.h,
+                        ),
+
+                        ///////////////////
+                        SizedBox(
+                          height: 5.h,
+                        ),
+                        ///////////////////
+                        Text(
+                          widget.productItem.name ?? '',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: const Color(0xff1D1D1D),
+                            letterSpacing: 0.18,
+                            fontSize: 11.sp,
+                            height: 1.3,
+                          ),
+                        ),
+                        ///////////////////
+                        SizedBox(
+                          height: 5.h,
+                        ),
+                        ///////////////////
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.orderAddressSvg,
+                              color: const Color(0xff1D1D1D),
+                              height: 13,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              '${LocaleKeys.shipping.tr()}:',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff8D8D8D),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              ' 3 ${LocaleKeys.day.tr()} ',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.mr.copyWith(
+                                color: const Color(0xff505050),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              '${LocaleKeys.details.tr()}',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.mr.copyWith(
+                                decoration: TextDecoration.underline,
+                                decorationColor: const Color(0xff505050),
+                                color: const Color(0xff505050),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.9,
+                              ),
+                            ),
+                            ///////////////////
+
+                            ///////////////////
+                          ],
+                        ),
+                        ///////////////////
+                        SizedBox(
+                          height: 5.h,
+                        ),
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.shappingCartNew,
+                              color: const Color(0xff388CFF),
+                              height: 13,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              LocaleKeys.today_shipping.tr(),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff388CFF),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              " ${LocaleKeys.if_buy_before.tr()} ",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff8D8D8D),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              '13:00',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff505050),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              '  ${LocaleKeys.today.tr()}',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff8D8D8D),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            ///////////////////
+
+                            ///////////////////
+                          ],
+                        ),
+                        ///////////////////
+                        SizedBox(
+                          height: 5.h,
+                        ),
+                        ///////////////////
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.deliveredBlackSvg,
+                              color: const Color(0xff388CFF),
+                              height: 13,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              '${LocaleKeys.at_your_address_in.tr()} Lebanon Monday ',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              '2.Jun',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.br.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 10.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            SizedBox(width: 10.w),
+                            SvgPicture.asset(
+                              AppAssets.deliveryGuranteeSvg,
+                              height: 13,
+                            ),
+
+                            ///////////////////
+
+                            ///////////////////
+                          ],
+                        ),
+                        ///////////////////
+                        SizedBox(
+                          height: 5.h,
+                        ),
+                        ///////////////////
+                        Row(
+                          children: [
+                            Text(
+                              '${LocaleKeys.get_a.tr()} ',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 9.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              '25% ${LocaleKeys.refund.tr()} ',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff388CFF),
+                                letterSpacing: 0.18,
+                                fontSize: 9.sp,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              LocaleKeys.of_the_product_price_if_shipping.tr(),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 9.sp,
+                                height: 1.3,
+                              ),
+                            ),
+
+                            ///////////////////
+
+                            ///////////////////
+                          ],
+                        ),
+                        const Spacer(),
+
+                        ///////////////////
+                        Container(
+                          width: 1.sw,
+                          height: 20.h,
+                          child: Row(
+                            children: [
+                              MyTextWidget(
+                                HelperFunctions.formatNumber(
+                                    number: double.parse(
+                                        (widget.productItem.price! *
+                                                homeBloc
+                                                    .state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!)
+                                            .toString())),
+                                //  .toStringAsFixed(widget.decimalPoint),
+                                style: context.textTheme.headlineMedium?.rq
+                                    .copyWith(
+                                  color: const Color(0xffC4C2C2),
+                                  fontSize: 13.sp,
+                                  decoration: TextDecoration.lineThrough,
+                                  height: 0,
                                 ),
-                              );*/
-                            /*   homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                      imageForAddToCart: ImageForAddToCart(),
-                                      operation: "remove",
-                                      productId: widget.productItem.id.toString(),
-                                      resetTheList: true));*/
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              MyTextWidget(
+                                HelperFunctions.formatNumber(
+                                    number: double.parse(
+                                        (widget.productItem.offerPrice! *
+                                                homeBloc
+                                                    .state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!)
+                                            .toString())),
+                                //      .toStringAsFixed(widget.decimalPoint),
+                                style: context.textTheme.headlineMedium?.bq
+                                    .copyWith(
+                                  fontSize: 13.sp,
+                                  decoration: widget.isRedeem
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  color: const Color(0xff505050),
+                                  height: 0,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              widget.isRedeem
+                                  ? const SizedBox.shrink()
+                                  : MyTextWidget(
+                                      homeBloc.state.getCurrencyForCountryModel!
+                                              .data!.currency!.symbol ??
+                                          "",
+                                      style: context.textTheme.titleMedium?.lr
+                                          .copyWith(
+                                        fontSize: 11.sp,
+                                        color: const Color(0xffC4C2C2),
+                                        height: 0,
+                                      ),
+                                    ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              widget.isRedeem
+                                  ? MyTextWidget(
+                                      HelperFunctions.formatNumber(
+                                          number: widget.redeemVariantPrice *
+                                              homeBloc
+                                                  .state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!),
+                                      //      .toStringAsFixed(widget.decimalPoint),
+                                      style: context
+                                          .textTheme.headlineMedium?.bq
+                                          .copyWith(
+                                        fontSize: 13.sp,
+                                        color: Colors.deepOrangeAccent,
+                                        height: 0,
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
+                              widget.isRedeem
+                                  ? MyTextWidget(
+                                      homeBloc.state.getCurrencyForCountryModel!
+                                              .data!.currency!.symbol ??
+                                          "",
+                                      style: context.textTheme.titleMedium?.lr
+                                          .copyWith(
+                                        fontSize: 11.sp,
+                                        color: Colors.deepOrangeAccent,
+                                        height: 0,
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
+                            ],
+                          ),
+                        ),
+
+                        Text(
+                          '${LocaleKeys.all_inclusive_without_additions.tr()}',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: const Color(0xff1D1D1D),
+                            letterSpacing: 0.18,
+                            fontSize: 10.sp,
+                            height: 1.3,
+                          ),
+                        ),
+
+                        ///////////////////
+                      ],
+                    ))
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Widget _availableColorWidget({required HomeState state}) {
+    int tapIndex = state.currentSelectedColorForEveryProduct[
+            widget.productItem.slug.toString()] ??
+        0;
+
+    Future.delayed(
+      const Duration(milliseconds: 300),
+      () {
+        if (sizesForEachProduct.length == 0) {
+          if (colorsQuantityForEachProduct.length > 0) {
+            if (colorsQuantityForEachProduct[tapIndex] == 0 &&
+                !widget.collectedAfterOrdering) {
+              colorIsNotAvailableNotifier.value =
+                  colorsForEachProduct[tapIndex];
+            } else {
+              colorIsNotAvailableNotifier.value = null;
+            }
+          } else {
+            colorIsNotAvailableNotifier.value = null;
+          }
+        }
+      },
+    );
+    return Padding(
+        padding: EdgeInsets.all(12.0.h),
+        child: SizedBox(
+          width: 1.sw,
+          height: 128.h,
+          child: Column(
+            children: [
+              Container(
+                width: 1.sw,
+                height: 28.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xffF8F8F8),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    SvgPicture.asset(
+                      AppAssets.colorPickerSvg,
+                      height: 14.h,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    MyTextWidget(
+                      '${LocaleKeys.selected_color.tr()}',
+                      style: context.textTheme.titleLarge?.rq.copyWith(
+                          color: const Color(0xff1D1D1D), fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              SizedBox(
+                width: 1.sw,
+                height: 88.h,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  itemCount: widget.productItem.syncColorImages?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      width: 52,
+                      height: 88.h,
+                      child: GestureDetector(
+                          onTap: () {
+                            if (index ==
+                                state.currentSelectedColorForEveryProduct[
+                                    widget.productItem.slug.toString()]) {
+                              return;
+                            }
+                            FirebaseAnalyticsService.logEventForSession(
+                              executedEventName: AnalyticsButtonsEventNameConst
+                                  .CHOOSE_AVAILABLE_COLOR_BUTTON,
+                              eventName: AnalyticsEventsConst.changeColor,
+                              extraParams: {
+                                'item_id':
+                                    widget.productItem.productId.toString(),
+                                'item_name': widget.productItem.name.toString(),
+                                'brand':
+                                    widget.productItem.brand!.name.toString(),
+                                'category': widget.productItem.categories!
+                                    .map(
+                                      (e) => e.name,
+                                    )
+                                    .toList()
+                                    .toString(),
+                                'selected_color':
+                                    widget.productItem.colors![index].name ??
+                                        ''.toString(),
+                                'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                                'selected_size':
+                                    BlocProvider.of<HomeBloc>(context)
+                                                .state
+                                                .currentColorSizeForCart?[
+                                            'choiceOption'] ??
+                                        ''
+                              },
+                            );
                             sizeIsNotAvailableNotifier.value = null;
                             colorIsNotAvailableNotifier.value = null;
-                            firstOpenOfPanel = true;
-                            denySlidingBackForSlidingUpPanels.value = false;
-                            widget.currentActiveTab.value = -1;
+                            BlocProvider.of<HomeBloc>(context).add(
+                                AddCurrentSelectedColorEvent(
+                                    currentSelectedColor: index,
+                                    productSlug:
+                                        widget.productItem.slug.toString()));
                           },
-                          onPanelOpened: () {
-                            Future.delayed(
-                                const Duration(milliseconds: 50),
-                                () => BlocProvider.of<HomeBloc>(context).add(
-                                    const IsChangedColorBeforOpenPanelEvent(
-                                        iChangedColorBeforOpenPanelEvent:
-                                            true)));
-                            if (sizesForEachProduct.length == 0) {
-                              if (!colorsQuantityForEachProduct.isNullOrEmpty) {
-                                if (colorsQuantityForEachProduct[
-                                            widget.currentColor] ==
-                                        0 &&
-                                    !widget.collectedAfterOrdering) {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 300),
-                                      () => colorIsNotAvailableNotifier.value =
-                                          colorsForEachProduct[
-                                              widget.currentColor]);
-                                } else {
-                                  colorIsNotAvailableNotifier.value = null;
-                                }
-                              } else {
-                                colorIsNotAvailableNotifier.value = null;
-                              }
-                              if (!colorsQuantityForEachProduct.isNullOrEmpty) {
-                                if (colorsQuantityForEachProduct[
-                                            widget.currentColor] ==
-                                        0 &&
-                                    !widget.collectedAfterOrdering) {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 300),
-                                      () => colorIsNotAvailableNotifier.value =
-                                          colorsForEachProduct[
-                                              widget.currentColor]);
-                                } else {
-                                  colorIsNotAvailableNotifier.value = null;
-                                }
-                              } else {
-                                colorIsNotAvailableNotifier.value = null;
-                              }
-                            }
-                            denySlidingBackForSlidingUpPanels.value = true;
-                            firstOpenOfPanel = false;
-                          },
-                          color: currentTab == 3
-                              ? Colors.transparent
-                              : Colors.white,
-                          boxShadow: const [
-                            CustomBoxShadow(
-                                color: Colors.transparent,
-                                offset: Offset(10.0, 10.0),
-                                blurRadius: 10.0,
-                                blurStyle: BlurStyle.outer)
-                          ],
-                          isDraggable: (currentTab == -1 ? false : true),
-                          onPanelSlide: currentTab == 3
-                              ? (percentOfOpenPart) {
-                                  workOnBlurNotifier.value =
-                                      20 * (percentOfOpenPart - 0.6);
-                                  if (!firstOpenOfPanel &&
-                                      percentOfOpenPart <=
-                                          1 - ((290) / (330.h + 70.w + 305)) &&
-                                      percentOfOpenPart >= 0.1) {
-                                    widget.currentActiveTab.value = -1;
-                                    return;
-                                  }
-                                  if (percentOfOpenPart == 1) {
-                                    userWantToScrollHorizontally = false;
-                                  }
-                                }
-                              : null,
-                          panelBuilder: (controller) => SizedBox(
-                              width: 1.sw,
-                              height: 1.sh,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  //mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (currentTab == 3) ...{
-                                      Container(
-                                          alignment: Alignment.center,
-                                          width: 1.sw,
-                                          child: Stack(
-                                            children: [
-                                              Center(
-                                                child:
-                                                    ProductDetailsImageWidget(
-                                                  width: 198.w,
-                                                  height: 280.h,
-                                                  imageWidth: 320,
-                                                  imageHeight: 464,
-                                                  orginalWidth: double.tryParse(
-                                                      gallery3dControllerForCircles !=
-                                                              null
-                                                          ? orginalWidth![
-                                                                  currentIndexInSlider]
-                                                              .toString()
-                                                          : widget
-                                                              .productItem
-                                                              .images![0]
-                                                              .originalWidth
-                                                              .toString()),
-                                                  orginalHeight: double.tryParse(
-                                                      gallery3dControllerForCircles !=
-                                                              null
-                                                          ? orginalHeight![
-                                                                  currentIndexInSlider]
-                                                              .toString()
-                                                          : widget
-                                                              .productItem
-                                                              .images![0]
-                                                              .originalHeight
-                                                              .toString()),
-                                                  imageUrl:
-                                                      gallery3dControllerForCircles !=
-                                                              null
-                                                          ? images[
-                                                              currentIndexInSlider]
-                                                          : widget
-                                                              .productItem
-                                                              .images![0]
-                                                              .filePath,
-                                                ),
-                                              ),
-                                              AnimatedPositioned(
-                                                  duration: const Duration(
-                                                      milliseconds: 1700),
-                                                  top: isMoving ? -300 : 0,
-                                                  left: LanguageService
-                                                              .languageCode ==
-                                                          "ar"
-                                                      ? isMoving
-                                                          ? -300
-                                                          : (1.sw / 2) - 100.w
-                                                      : null,
-                                                  right: LanguageService
-                                                              .languageCode !=
-                                                          "ar"
-                                                      ? isMoving
-                                                          ? -300
-                                                          : (1.sw / 2) - 100.w
-                                                      : null,
-                                                  child: AnimatedOpacity(
-                                                    duration: const Duration(),
-                                                    opacity: isMoving ? 1 : 0,
-                                                    child:
-                                                        ProductDetailsImageWidget(
-                                                      width: 200.w,
-                                                      height: 280.h,
-                                                      imageWidth: 320,
-                                                      imageHeight: 464,
-                                                      orginalWidth: double.tryParse(
-                                                          gallery3dControllerForCircles !=
-                                                                  null
-                                                              ? orginalWidth![
-                                                                      currentIndexInSlider]
-                                                                  .toString()
-                                                              : widget
-                                                                  .productItem
-                                                                  .images![0]
-                                                                  .originalWidth
-                                                                  .toString()),
-                                                      orginalHeight: double.tryParse(
-                                                          gallery3dControllerForCircles !=
-                                                                  null
-                                                              ? orginalHeight![
-                                                                      currentIndexInSlider]
-                                                                  .toString()
-                                                              : widget
-                                                                  .productItem
-                                                                  .images![0]
-                                                                  .originalHeight
-                                                                  .toString()),
-                                                      imageUrl:
-                                                          gallery3dControllerForCircles !=
-                                                                  null
-                                                              ? images[
-                                                                  currentIndexInSlider]
-                                                              : widget
-                                                                  .productItem
-                                                                  .images![0]
-                                                                  .filePath,
-                                                    ),
-                                                  ))
-                                            ],
-                                          )),
-                                      5.verticalSpace,
-                                      Material(
-                                        color: Colors.transparent,
-                                        child: gallery3dControllerForCircles !=
-                                                null
-                                            ? Directionality(
-                                                textDirection:
-                                                    TextDirection.ltr,
-                                                child: Gallery3D(
-                                                    key: colorsGallerySliderKey,
-                                                    // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                                                    controller:
-                                                        gallery3dControllerForCircles!,
-                                                    width: 200,
-                                                    stopScrollingOnEdges:
-                                                        (double primaryDelta) {
-                                                      return (primaryDelta <=
-                                                                  0 &&
-                                                              gallery3dControllerForCircles!
-                                                                      .currentIndex ==
-                                                                  (syncColorImageList
-                                                                              .length ~/
-                                                                          2 -
-                                                                      1)) ||
-                                                          (primaryDelta >= 0 &&
-                                                              gallery3dControllerForCircles!
-                                                                      .currentIndex ==
-                                                                  0);
-                                                    },
-                                                    changingPagesScrollOffset:
-                                                        0.1,
-                                                    isClip: false,
-                                                    onItemChanged: (index) {
-                                                      sizeIsNotAvailableNotifier
-                                                          .value = null;
-                                                      colorIsNotAvailableNotifier
-                                                          .value = null;
-
-                                                      Future.delayed(
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                        () {
-                                                          if (sizesForEachProduct
-                                                                  .length !=
-                                                              0) {
-                                                            requestToNotifyMeFormFirstSize =
-                                                                true;
-                                                          }
-
-                                                          if (sizesForEachProduct
-                                                                  .length ==
-                                                              0) {
-                                                            if (colorsQuantityForEachProduct[
-                                                                        index] ==
-                                                                    0 &&
-                                                                !widget
-                                                                    .collectedAfterOrdering) {
-                                                              colorIsNotAvailableNotifier
-                                                                      .value =
-                                                                  colorsForEachProduct[
-                                                                      index];
-                                                            } else {
-                                                              colorIsNotAvailableNotifier
-                                                                  .value = null;
-                                                            }
-                                                          }
-                                                        },
-                                                      );
-
-                                                      currentIndexInSlider =
-                                                          index;
-                                                      homeBloc.add(AddCurrentSelectedColorEvent(
-                                                          currentSelectedColor: index %
-                                                              (syncColorImageList
-                                                                      .length ~/
-                                                                  2),
-                                                          productSlug: widget
-                                                              .productItem.slug
-                                                              .toString()));
-                                                    },
-                                                    itemConfig:
-                                                        GalleryItemConfig(
-                                                            width: 70.w,
-                                                            height: 70.w,
-                                                            radius: 180,
-                                                            isShowTransformMask:
-                                                                false,
-                                                            shadows: const [
-                                                          BoxShadow(
-                                                            color: Color(
-                                                                0x19000000),
-                                                            offset:
-                                                                Offset(0, 3),
-                                                            blurRadius: 6,
-                                                          ),
-                                                        ]),
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return Visibility(
-                                                        visible: ((gallery3dControllerForCircles
-                                                                            ?.currentIndex ??
-                                                                        0) <
-                                                                    (syncColorImageList
-                                                                            .length ~/
-                                                                        2) &&
-                                                                index <
-                                                                    (syncColorImageList
-                                                                            .length ~/
-                                                                        2)) ||
-                                                            ((gallery3dControllerForCircles
-                                                                            ?.currentIndex ??
-                                                                        0) >=
-                                                                    (syncColorImageList
-                                                                            .length ~/
-                                                                        2) &&
-                                                                index >=
-                                                                    (syncColorImageList
-                                                                            .length ~/
-                                                                        2)),
-                                                        child:
-                                                            ProductListingImageWidget(
-                                                          // orginalHeight:
-                                                          //     orginalHeight![index],
-                                                          // orginalWidth:
-                                                          //     orginalWidth![index],
-                                                          width: 70.w,
-                                                          height: 70.w,
-                                                          imageWidth: 70,
-                                                          imageHeight: 70,
-                                                          imageUrl:
-                                                              images[index],
-                                                          innerShadowYOffset: 4,
-                                                          borderColor: index ==
-                                                                  currentIndexInSlider
-                                                              ? Color(int.parse(
-                                                                  '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
-                                                              : Colors.white,
-                                                          circleShape: true,
-                                                        ),
-                                                      );
-                                                    }),
-                                              )
-                                            : SizedBox(
-                                                height: 70.w,
-                                              ),
-                                      ),
-                                      SizedBox(
-                                        height: state
-                                                .sizesForEachColor.isNullOrEmpty
-                                            ? 290.h
-                                            : 5,
-                                      ),
-                                      BlocListener<HomeBloc, HomeState>(
-                                          listenWhen: (previous, current) =>
-                                              previous.deleteItemInCartStatus !=
-                                              current.deleteItemInCartStatus,
-                                          listener: (context, state) {
-                                            if (state.deleteItemInCartStatus ==
-                                                DeleteItemInCartStatus
-                                                    .success) {
-                                              showAnimatedMessageFunc(
-                                                  state.animatedCartMessage ??
-                                                      "");
-                                            }
-                                          },
-                                          child:
-                                              BlocListener<HomeBloc, HomeState>(
-                                                  listenWhen: (previous,
-                                                          current) =>
-                                                      previous
-                                                          .updateItemInCartStatus !=
-                                                      current
-                                                          .updateItemInCartStatus,
-                                                  listener: (context, state) {
-                                                    if (state
-                                                            .updateItemInCartStatus ==
-                                                        UpdateItemInCartStatus
-                                                            .success) {
-                                                      showAnimatedMessageFunc(
-                                                          state.animatedCartMessage ??
-                                                              "");
-                                                    }
-                                                  },
-                                                  child:
-                                                      BlocListener<HomeBloc,
-                                                              HomeState>(
-                                                          listenWhen: (previous,
-                                                                  current) =>
-                                                              previous
-                                                                  .addItemInCartStatus !=
-                                                              current
-                                                                  .addItemInCartStatus,
-                                                          listener:
-                                                              (context, state) {
-                                                            if (state
-                                                                    .addItemInCartStatus ==
-                                                                AddItemInCartStatus
-                                                                    .success) {
-                                                              showAnimatedMessageFunc(
-                                                                  state.animatedCartMessage ??
-                                                                      "");
-                                                            }
-                                                          },
-                                                          child:
-                                                              ValueListenableBuilder<
-                                                                      bool>(
-                                                                  valueListenable:
-                                                                      showAnimatedMessage,
-                                                                  builder:
-                                                                      (context,
-                                                                          show,
-                                                                          _) {
-                                                                    return ValueListenableBuilder<
-                                                                        String?>(
-                                                                      valueListenable:
-                                                                          animatedMessage,
-                                                                      builder:
-                                                                          (context,
-                                                                              msg,
-                                                                              _) {
-                                                                        if (!show ||
-                                                                            msg ==
-                                                                                null) {
-                                                                          return const SizedBox
-                                                                              .shrink();
-                                                                        }
-                                                                        return AnimatedSlide(
-                                                                          offset: show
-                                                                              ? const Offset(0, 0)
-                                                                              : const Offset(0, -1),
-                                                                          duration:
-                                                                              const Duration(milliseconds: 500),
-                                                                          child:
-                                                                              AnimatedOpacity(
-                                                                            opacity: show
-                                                                                ? 1.0
-                                                                                : 0.0,
-                                                                            duration:
-                                                                                const Duration(milliseconds: 500),
-                                                                            child:
-                                                                                Container(
-                                                                              margin: EdgeInsets.symmetric(horizontal: 28.w),
-                                                                              width: 1.sw,
-                                                                              height: 38.h,
-                                                                              decoration: BoxDecoration(
-                                                                                color: const Color(0xffCEFFE6),
-                                                                                borderRadius: BorderRadius.only(
-                                                                                  topLeft: Radius.circular(20.r),
-                                                                                  topRight: Radius.circular(20.r),
-                                                                                ),
-                                                                              ),
-                                                                              child: Center(
-                                                                                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                                                                  Text(
-                                                                                    msg,
-                                                                                    style: context.textTheme.bodySmall?.rr.copyWith(color: const Color(0xff3C3C3C), fontSize: 14),
-                                                                                    textAlign: TextAlign.center,
-                                                                                  ),
-                                                                                  5.horizontalSpace,
-                                                                                  Stack(
-                                                                                    alignment: Alignment.center,
-                                                                                    children: [
-                                                                                      SvgPicture.asset(
-                                                                                        AppAssets.success1Svg,
-                                                                                        height: 15,
-                                                                                      ),
-                                                                                      SvgPicture.asset(
-                                                                                        AppAssets.success2Svg,
-                                                                                        height: 5,
-                                                                                      )
-                                                                                    ],
-                                                                                  ),
-                                                                                ]),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  })))),
-                                    },
-                                    Stack(
-                                      alignment: Alignment.topCenter,
-                                      children: [
-                                        BlocBuilder<HomeBloc, HomeState>(
-                                            buildWhen: (previous, current) =>
-                                                previous.getCurrencyForCountryModel !=
-                                                    current
-                                                        .getCurrencyForCountryModel ||
-                                                previous.currentColorSizeForCart?[
-                                                        "choiceOption"] !=
-                                                    current.currentColorSizeForCart?[
-                                                        "choiceOption"] ||
-                                                previous.currentSelectedColorForEveryProduct !=
-                                                    current
-                                                        .currentSelectedColorForEveryProduct,
-                                            builder: (context, state) {
-                                              return ProductDetailsSheetHeader(
-                                                redeemVariantPrice: widget
-                                                        .redeemVariantPrice *
-                                                    state
-                                                        .getCurrencyForCountryModel!
-                                                        .data!
-                                                        .currency!
-                                                        .exchangeRate!,
-                                                isRedeem: widget.isRedeem,
-                                                redeemPrice: widget
-                                                        .redeemPrice *
-                                                    state
-                                                        .getCurrencyForCountryModel!
-                                                        .data!
-                                                        .currency!
-                                                        .exchangeRate!,
-                                                currentActiveTab:
-                                                    widget.currentActiveTab,
-                                                initOfferPrice: (widget
-                                                            .initOfferPrice *
-                                                        state
-                                                            .getCurrencyForCountryModel!
-                                                            .data!
-                                                            .currency!
-                                                            .exchangeRate!)
-                                                    .toString(),
-                                                initPrice: (widget.initPrice *
-                                                        state
-                                                            .getCurrencyForCountryModel!
-                                                            .data!
-                                                            .currency!
-                                                            .exchangeRate!)
-                                                    .toString(),
-                                                shippingCost: widget.productItem
-                                                        .shippingCost ??
-                                                    0,
-                                                decimalPoint: state
-                                                        .startingSetting
-                                                        ?.decimalPointSettings ??
-                                                    2,
-                                                priceSymbol: state
-                                                        .getCurrencyForCountryModel!
-                                                        .data!
-                                                        .currency!
-                                                        .symbol ??
-                                                    "",
-                                                addToBagButtonShapeNotifier: widget
-                                                    .addToBagButtonShapeNotifier,
-                                                price: (widget.productItem
-                                                            .price! *
-                                                        state
-                                                            .getCurrencyForCountryModel!
-                                                            .data!
-                                                            .currency!
-                                                            .exchangeRate!)
-                                                    .toString(),
-                                                offerPrice: (widget.productItem
-                                                            .offerPrice! *
-                                                        state
-                                                            .getCurrencyForCountryModel!
-                                                            .data!
-                                                            .currency!
-                                                            .exchangeRate!)
-                                                    .toString(),
-                                              );
-                                            }),
-                                        currentTab != -1
-                                            ? Positioned(
-                                                top: 7,
-                                                child: SvgPicture.asset(
-                                                  AppAssets.minusMarkSvg,
-                                                  width: 25,
-                                                  color: Colors.grey.shade200,
-                                                ))
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    ),
-                                    currentTab < 3 && currentTab >= 0
-                                        ? SizedBox(
-                                            height: 358.h,
-                                            child: PageView(
-                                              physics: const cupertino
-                                                  .ClampingScrollPhysics(),
-                                              scrollBehavior: const cupertino
-                                                  .CupertinoScrollBehavior(),
-                                              controller: pageController,
-                                              onPageChanged: (index) {
-                                                widget.currentActiveTab.value =
-                                                    index;
-                                                if (idsOfChatCardsToShare
-                                                    .value.isNotEmpty) {
-                                                  idsOfChatCardsToShare.value =
-                                                      [];
-                                                }
-                                              },
-                                              children: [
-                                                ProductDetailsSheetCommentsContent(
-                                                    productSlugForTopic: widget
-                                                        .productSlugForTopic,
-                                                    productSlug: widget
-                                                            .productItem.slug ??
-                                                        "",
-                                                    productId: widget
-                                                        .productItem.productId
-                                                        .toString(),
-                                                    scrollController:
-                                                        currentTab == 0
-                                                            ? controller
-                                                            : null),
-                                                BlocBuilder<HomeBloc,
-                                                        HomeState>(
-                                                    buildWhen: (p, c) =>
-                                                        p.currentColorSizeForCart?[
-                                                            "choiceOption"] !=
-                                                        c.currentColorSizeForCart?[
-                                                            "choiceOption"],
-                                                    builder: (context, state) {
-                                                      return ProductDetailsSheetShareContent(
-                                                          currentSize: state
-                                                                      .currentColorSizeForCart !=
-                                                                  null
-                                                              ? state.currentColorSizeForCart![
-                                                                      "choiceOption"] ??
-                                                                  ""
-                                                              : "",
-                                                          currentColor: widget
-                                                              .currentColorName,
-                                                          productDescription:
-                                                              widget
-                                                                  .productDescription,
-                                                          productItem: widget
-                                                              .productItem,
-                                                          focusNode: _focusNode,
-                                                          scrollController:
-                                                              currentTab == 1
-                                                                  ? controller
-                                                                  : null,
-                                                          idsOfChatCardsToShare:
-                                                              idsOfChatCardsToShare);
-                                                    }),
-                                                ProductDetailsSheetMoreOptionsContent(
-                                                  productSlugForTopic: widget
-                                                      .productSlugForTopic,
-                                                  productSlug:
-                                                      widget.productItem.slug ??
-                                                          "",
-                                                  scrollController:
-                                                      currentTab == 2
-                                                          ? controller
-                                                          : null,
-                                                  productId: widget
-                                                      .productItem.productId
-                                                      .toString(),
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        : currentTab == 3
-                                            ? BlocBuilder<HomeBloc, HomeState>(
-                                                buildWhen: (p, c) =>
-                                                    p.currentSelectedColorForEveryProduct[
-                                                            widget.productItem
-                                                                .slug
-                                                                .toString()] !=
-                                                        c.currentSelectedColorForEveryProduct[
-                                                            widget.productItem
-                                                                .slug
-                                                                .toString()] ||
-                                                    p.currentColorSizeForCart?[
-                                                            "choiceOption"] !=
-                                                        c.currentColorSizeForCart?[
-                                                            "choiceOption"],
-                                                builder: (context, state) {
-                                                  return SelectSizeContent(
-                                                    choiceOptions: widget
-                                                        .productItem
-                                                        .choiceOptions,
-                                                    fromListingPage: widget
-                                                            .fromListingPage ??
-                                                        false,
-                                                    requestToNotifyMeFormFirstSize:
-                                                        requestToNotifyMeFormFirstSize,
-                                                    collectedAfterOrdering: widget
-                                                        .collectedAfterOrdering,
-                                                    colorIsNotAvailableNotifier:
-                                                        colorIsNotAvailableNotifier,
-                                                    productId: widget
-                                                        .productItem.productId
-                                                        .toString(),
-                                                    scrollController:
-                                                        controller,
-                                                    selectedColorName: widget
-                                                            .productItem
-                                                            .colors
-                                                            .isNullOrEmpty
-                                                        ? null
-                                                        : widget
-                                                            .productItem
-                                                            .colors![state.currentSelectedColorForEveryProduct[widget
-                                                                    .productItem
-                                                                    .slug
-                                                                    .toString()] ??
-                                                                (widget.productItem.syncColorImages
-                                                                            ?.length ??
-                                                                        0) ~/
-                                                                    2]
-                                                            .option
-                                                            .toString(),
-                                                    selectedColor: widget
-                                                            .productItem
-                                                            .colors
-                                                            .isNullOrEmpty
-                                                        ? null
-                                                        : Color(int.parse(
-                                                            '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.slug.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
-                                                    sizeIsNotAvailableNotifier:
-                                                        sizeIsNotAvailableNotifier,
-                                                    addToBagButtonShapeNotifier:
-                                                        widget
-                                                            .addToBagButtonShapeNotifier,
-                                                  );
-                                                },
-                                              )
-                                            : const SizedBox.shrink(),
-                                  ],
-                                ),
-                              )),
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(30.0),
-                              topRight: Radius.circular(30.0)),
-                        ),
-                        builder: (context, blurValue, child) {
-                          return Stack(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ClipRect(
-                                child: BackdropFilter(
-                                    filter: ui.ImageFilter.blur(
-                                        sigmaX: currentTab == 3 ? blurValue : 0,
-                                        sigmaY:
-                                            currentTab == 3 ? blurValue : 0),
-                                    child: child!),
-                              ),
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Container(
+                                    width: 50,
+                                    height: 74.h,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                            color: index ==
+                                                    state.currentSelectedColorForEveryProduct[
+                                                        widget.productItem.slug
+                                                            .toString()]
+                                                ? const Color(0xff513AAF)
+                                                : Colors.transparent)),
+                                    child: MyCachedNetworkImage(
+                                      withInnerShadow: true,
+                                      imageFit: BoxFit.contain,
+                                      innerShadowYOffset: 1,
+                                      imageUrl: widget
+                                              .productItem
+                                              .syncColorImages?[index]
+                                              .images?[0]
+                                              .filePath ??
+                                          '',
+                                      radius: 6,
+                                      width: 50,
+                                      height: 73.h,
+                                    ),
+                                  )),
+                              const Spacer(),
+                              (widget.productItem.syncColorImages?[index]
+                                          .colorTrend ??
+                                      false)
+                                  ? MyTextWidget(
+                                      "${LocaleKeys.get.tr()} 15%",
+                                      style: context.textTheme.titleLarge?.br
+                                          .copyWith(
+                                              color: const Color(0xff513AAF),
+                                              fontSize: 7.sp),
+                                    )
+                                  : MyTextWidget(
+                                      widget.productItem.syncColorImages?[index]
+                                              .colorName ??
+                                          "",
+                                      style: context.textTheme.titleLarge?.sbt
+                                          .copyWith(
+                                              color: const Color(0xff505050),
+                                              fontSize: 7.sp),
+                                    ),
                             ],
-                          );
-                        });
-                  }),
-              ValueListenableBuilder<int>(
-                  valueListenable: widget.currentActiveTab,
-                  builder: (context, currentTab, _) {
-                    return currentTab == 3
-                        ? const SizedBox.shrink()
-                        : Divider(
-                            height: 0.h,
-                            color: const Color(0xffE6E6E6),
-                          );
-                  }),
-              ValueListenableBuilder<List<String>>(
-                  valueListenable: idsOfChatCardsToShare,
-                  builder: (context, channelIds, _) {
-                    return channelIds.isEmpty
-                        ? BlocBuilder<HomeBloc, HomeState>(
-                            buildWhen: (p, c) =>
-                                p.currentColorSizeForCart?["choiceOption"] !=
-                                c.currentColorSizeForCart?["choiceOption"],
-                            builder: (context, state) {
-                              return ProductDetailsSheetBottomBarNew(
-                                  isRedeem: widget.isRedeem,
-                                  redeemVariantPrice: widget.redeemVariantPrice,
-                                  colorOption: widget.currentColorOption,
-                                  isGetFullProductDetails:
-                                      widget.isGetFullProductDetails ?? false,
-                                  choiceOption: state.currentColorSizeForCart !=
-                                          null
-                                      ? state.currentColorSizeForCart!["choiceOption"] ??
-                                          ""
-                                      : "",
-                                  productNotAvailableNotifier:
-                                      widget.productNotAvailableNotifier,
-                                  products: widget.productItem,
-                                  collectedAfterOrder:
-                                      widget.collectedAfterOrdering,
-                                  qtyForproductWithoutVariant:
-                                      widget.qtyForproductWithoutVariant,
-                                  colorIsNotAvailableNotifier:
-                                      colorIsNotAvailableNotifier,
-                                  productSlug: widget.productItem.slug ?? "",
-                                  countOfPieces: widget.countOfPieces,
-                                  colorNum: widget.currentColornum,
-                                  size: state.currentColorSizeForCart != null
-                                      ? state.currentColorSizeForCart!["size"] ??
-                                          ""
-                                      : "",
-                                  colorName: widget.currentColorName,
-                                  productIdForCashproducts:
-                                      widget.productIdForCashData,
-                                  productIdForRequestApi:
-                                      widget.productItem.productId.toString(),
-                                  imageUrl: !widget.productItem.syncColorImages
-                                          .isNullOrEmpty
-                                      ? widget.productItem.syncColorImages![widget.currentColor].images![0].filePath ??
-                                          ""
-                                      : (widget.productItem.images?.isNotEmpty ??
-                                              false)
-                                          ? widget
-                                                  .productItem
-                                                  .images![widget.currentColor]
-                                                  .filePath ??
-                                              ""
-                                          : "",
-                                  onFinishBuying: (quantity) {
-                                    /*   if ((prefsRepository.isTokenExpired ??
-                                                  false ||
-                                                      prefsRepository.marketToken == "" ||
-                                                      prefsRepository.marketToken ==
-                                                          null) &&
-                                              GetIt.I<AuthBloc>()
-                                                      .state
-                                                      .registerGuestStatus !=
-                                                  RegisterGuestStatus.loading) {
-                                            Future.delayed(
-                                                Duration(seconds: 1),
-                                                () => showDialog(
-                                                      context: context,
-                                                      builder: (context) => Center(
-                                                          child: Container(
-                                                        alignment: Alignment.center,
-                                                        width: 400,
-                                                        height: 300,
-                                                        child: AlertDialog(
-                                                          title: MyTextWidget(
-                                                            "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
-                                                          ),
-                                                          actions: <Widget>[
-                                                            Container(
-                                                              alignment: Alignment.center,
-                                                              width: 300,
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    (prefsRepository
-                                                                                .isVerifiedPhonePeforeExpiredToken ??
-                                                                            false)
-                                                                        ? MainAxisAlignment
-                                                                            .center
-                                                                        : MainAxisAlignment
-                                                                            .spaceAround,
-                                                                children: [
-                                                                  (prefsRepository
-                                                                              .isVerifiedPhonePeforeExpiredToken ??
-                                                                          false)
-                                                                      ? SizedBox.shrink()
-                                                                      : Container(
-                                                                          alignment:
-                                                                              Alignment
-                                                                                  .center,
-                                                                          width: 130,
-                                                                          child:
-                                                                              AppElevatedButton(
-                                                                            textStyle:
-                                                                                TextStyle(
-                                                                                    fontSize:
-                                                                                        16),
-                                                                            onPressed:
-                                                                                () async {
-                                                                              Navigator.of(
-                                                                                      context)
-                                                                                  .pop();
-                                                                              String?
-                                                                                  deviceId =
-                                                                                  await HelperFunctions
-                                                                                      .getDeviceId();
-                
-                                                                              GetIt.I<AuthBloc>().add(RegisterGuestEvent(
-                                                                                  oldGuestUserId: prefsRepository
-                                                                                      .myMarketId
-                                                                                      .toString(),
-                                                                                  deviceId:
-                                                                                      deviceId!));
-                                                                            },
-                                                                            text:
-                                                                                "${LocaleKeys.reset_your_count.tr()}",
-                                                                          ),
-                                                                        ),
-                                                                  Container(
-                                                                    alignment:
-                                                                        Alignment.center,
-                                                                    width: 130,
-                                                                    child:
-                                                                        AppElevatedButton(
-                                                                      textStyle:
-                                                                          TextStyle(
-                                                                              fontSize:
-                                                                                  16),
-                                                                      onPressed: () {
-                                                                        Navigator.of(
-                                                                                context)
-                                                                            .pop();
-                
-                                                                        Navigator.of(
-                                                                                context)
-                                                                            .push(
-                                                                                PageRouteBuilder(
-                                                                          pageBuilder: (context,
-                                                                                  animation,
-                                                                                  secondaryAnimation) =>
-                                                                              RegistrationPage(
-                                                                            fromExpiredToken:
-                                                                                true,
-                                                                          ),
-                                                                        ));
-                                                                      },
-                                                                      text:
-                                                                          '${LocaleKeys.go_to_log_in.tr()}',
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      )),
-                                                    ));
-                                            return;
-                                          }*/
-                                    /*homeBloc.add(
-                                        AddMultiItemsToCartEvent(
-                                          maxAllowed: widget.maxAllowedToAddCart,
-                                          boutiqueIcon: widget.boutiqueIcon,
-                                          productSlugForTopic:
-                                              widget.productSlugForTopic,
-                                          boutiqueId: widget.boutiqueId,
-                                          products: widget.productItem,
-                                          id: widget.productItem.productId
-                                              .toString(),
-                                        ),
-                                      );*/
-                                    Future.delayed(
-                                        const Duration(milliseconds: 300),
-                                        () => setState(() {
-                                              isMoving = true;
-                                            }));
-
-                                    Future.delayed(
-                                        const Duration(seconds: 2),
-                                        () => setState(() {
-                                              isMoving = false;
-                                            }));
-                                  },
-                                  panelController: widget.panelController,
-                                  clickOnComments: () {
-                                    widget.panelController.open();
-                                    widget.currentActiveTab.value = 0;
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback(
-                                      (_) {
-                                        pageController.jumpToPage(0);
-                                      },
-                                    );
-                                    //////////////////////////////
-                                    // FirebaseAnalyticsService.logEventForSession(
-                                    //   eventName:
-                                    //       AnalyticsEventsConst.buttonClicked,
-                                    //   executedEventName:
-                                    //       AnalyticsButtonsEventNameConst
-                                    //           .showCommentsButton,
-                                    // );
-                                  },
-                                  clickOnFavorite: () {
-                                    widget.currentActiveTab.value = -1;
-                                    //////////////////////////////
-                                    // FirebaseAnalyticsService.logEventForSession(
-                                    //   eventName:
-                                    //       AnalyticsEventsConst.buttonClicked,
-                                    //   executedEventName:
-                                    //       AnalyticsButtonsEventNameConst
-                                    //           .likeProductButton,
-                                    // );
-                                  },
-                                  clickOnMoreOptions: () {
-                                    widget.panelController.open();
-                                    widget.currentActiveTab.value = 2;
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback(
-                                      (_) {
-                                        pageController.jumpToPage(2);
-                                      },
-                                    );
-                                    //////////////////////////////
-                                    // FirebaseAnalyticsService.logEventForSession(
-                                    //   eventName:
-                                    //       AnalyticsEventsConst.buttonClicked,
-                                    //   executedEventName:
-                                    //       AnalyticsButtonsEventNameConst
-                                    //           .moreOptionsButton,
-                                    // );
-                                  },
-                                  clickOnShare: () {
-                                    widget.panelController.open();
-                                    widget.currentActiveTab.value = 1;
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback(
-                                      (_) {
-                                        pageController.jumpToPage(1);
-                                      },
-                                    );
-                                    if (GetIt.I<PrefsRepository>().chatToken !=
-                                        null) {
-                                      BlocProvider.of<ChatBloc>(context)
-                                          .add(const GetChatsEvent());
-                                      BlocProvider.of<ChatBloc>(context)
-                                          .add(const SaveContactsEvent());
-                                    }
-                                    //////////////////////////////
-                                    // FirebaseAnalyticsService.logEventForSession(
-                                    //   eventName:
-                                    //       AnalyticsEventsConst.buttonClicked,
-                                    //   executedEventName:
-                                    //       AnalyticsButtonsEventNameConst
-                                    //           .shareProductButton,
-                                    // );
-                                  },
-                                  currentActiveTab: widget.currentActiveTab,
-                                  sizeIsNotAvailableNotifier:
-                                      sizeIsNotAvailableNotifier,
-                                  addToBagButtonShapeNotifier:
-                                      widget.addToBagButtonShapeNotifier);
-                            })
-                        : ShareButton(
-                            onTap: () {
-                              BlocProvider.of<ChatBloc>(context).add(
-                                  ShareProductWithContactsOrChannelsEvent(
-                                      productId: widget.productItem.productId
-                                          .toString(),
-                                      productName:
-                                          widget.productItem.name.toString(),
-                                      productSlug:
-                                          widget.productItem.slug.toString(),
-                                      productDescription:
-                                          widget.productItem.details.toString(),
-                                      originalImageWidth:
-                                          gallery3dControllerForCircles != null
-                                              ? (orginalWidth?[currentIndexInSlider])
-                                                  .toString()
-                                              : widget.productItem.images![0]
-                                                  .originalWidth,
-                                      originalImageHeight:
-                                          gallery3dControllerForCircles != null
-                                              ? (orginalHeight?[currentIndexInSlider])
-                                                  .toString()
-                                              : widget.productItem.images![0]
-                                                  .originalHeight,
-                                      productImageUrl:
-                                          gallery3dControllerForCircles != null
-                                              ? images[currentIndexInSlider]
-                                              : widget.productItem.images![0]
-                                                  .filePath
-                                                  .toString(),
-                                      channelIds: channelIds));
-                              idsOfChatCardsToShare.value = [];
-                              widget.currentActiveTab.value = -1;
-                              //////////////////////////////
-                              // FirebaseAnalyticsService.logEventForSession(
-                              //   eventName: AnalyticsEventsConst.buttonClicked,
-                              //   executedEventName:
-                              //       AnalyticsButtonsEventNameConst
-                              //           .sendProductToChatButton,
-                              // );
-                            },
-                          );
-                  }),
+                          )),
+                    );
+                  },
+                ),
+              ),
             ],
-          );
-        },
+          ),
+        ));
+  }
+
+  Widget _availableSizeWidget() {
+    return BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (p, c) =>
+            p.currentSelectedColorForEveryProduct[
+                    widget.productItem.slug.toString()] !=
+                c.currentSelectedColorForEveryProduct[
+                    widget.productItem.slug.toString()] ||
+            p.changeSizesForEveryProduct != c.changeSizesForEveryProduct ||
+            p.getFirebaseSettingForNotificationStatus !=
+                c.getFirebaseSettingForNotificationStatus ||
+            p.currentColorSizeForCart?["choiceOption"] !=
+                c.currentColorSizeForCart?["choiceOption"],
+        builder: (context, state) {
+          List<String> sizes = [];
+          List<int> sizesQuantities = [];
+          sizes = state.sizesForEachColor ?? [];
+          int tappedIndex = 0;
+          sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
+          tappedIndex = sizes.indexWhere((element) =>
+              element == state.currentColorSizeForCart?["choiceOption"]);
+          if (sizes.isEmpty || sizesQuantities.isEmpty) {
+            return const SizedBox.shrink();
+          }
+          if (debounce?.isActive ?? false) {
+            debounce!.cancel();
+          }
+          debounce = Timer(const Duration(milliseconds: 600), () {
+            FirebaseAnalyticsService.logEventForSession(
+              executedEventName: AnalyticsButtonsEventNameConst.SIZE_SLIDE,
+              eventName: AnalyticsEventsConst.CHANGE_SIZE,
+              extraParams: {
+                'item_id': widget.productItem.productId.toString(),
+                'item_name': widget.productItem.name.toString(),
+                'brand': widget.productItem.brand!.name.toString(),
+                'category': widget.productItem.categories!
+                    .map(
+                      (e) => e.name,
+                    )
+                    .toList()
+                    .toString(),
+                'selected_size': sizes[tappedIndex],
+                'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                'selected_color': widget
+                        .productItem
+                        .colors?[state.currentSelectedColorForEveryProduct[
+                                widget.productItem.slug.toString()] ??
+                            0]
+                        .name ??
+                    ''
+              },
+            );
+            if (tappedIndex == -1) {
+              tappedIndex = (sizes.length) ~/ 2;
+            }
+            print("sizesQuantities: ${sizesQuantities[tappedIndex]}");
+            if (sizesQuantities[tappedIndex] == 0 &&
+                !widget.collectedAfterOrdering) {
+              Future.delayed(const Duration(milliseconds: 300), () {
+                sizeIsNotAvailableNotifier.value = sizes[tappedIndex];
+                colorIsNotAvailableNotifier.value = widget
+                    .productItem
+                    .colors?[state.currentSelectedColorForEveryProduct[
+                            widget.productItem.slug.toString()] ??
+                        0]
+                    .option;
+              });
+            } else {
+              Future.delayed(const Duration(milliseconds: 300), () {
+                sizeIsNotAvailableNotifier.value = null;
+                colorIsNotAvailableNotifier.value = null;
+              });
+            }
+          });
+          print("selectedSizeByUser:++++++++++++ ${tappedIndex} ");
+
+          print(
+              "selectedSizeByUser:++++++++++++ ${sizesQuantities[tappedIndex]} ");
+
+          return Padding(
+              padding: EdgeInsets.all(12.0.h),
+              child: SizedBox(
+                width: 1.sw,
+                height: 150.h,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 1.sw,
+                      height: 28.h,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF8F8F8),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          SvgPicture.asset(AppAssets.sizeIconSvg,
+                              height: 14, color: const Color(0xff1D1D1D)),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          MyTextWidget(
+                            '${LocaleKeys.select_your_required_size.tr()}',
+                            style: context.textTheme.titleLarge?.rq.copyWith(
+                                color: const Color(0xff1D1D1D), fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                    SizedBox(
+                      width: 1.sw,
+                      height: 21.h,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            _sizesType(" CM ", const Color(0xffF4F4F4)),
+                            const SizedBox(
+                              width: 2,
+                            ),
+                            _sizesType(" INC ", null),
+                            const Spacer(),
+                            _sizesType(" Standart ", const Color(0xffF4F4F4)),
+                            const SizedBox(
+                              width: 2,
+                            ),
+                            _sizesType(" EU ", null),
+                            const SizedBox(
+                              width: 2,
+                            ),
+                            _sizesType(" IN ", null),
+                            const SizedBox(
+                              width: 2,
+                            ),
+                            _sizesType(" US ", null),
+                            const SizedBox(
+                              width: 2,
+                            ),
+                            _sizesType(" Uk ", null),
+                            const SizedBox(
+                              width: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    SizedBox(
+                      width: 1.sw,
+                      height: 52.h,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) => GestureDetector(
+                            onTap: () {
+                              homeBloc.add(AddCurrentColorSizeEvent(
+                                  choice_1: widget
+                                      .productItem.choiceOptions?[0].options
+                                      ?.firstWhere((element) =>
+                                          element.option == sizes[index])
+                                      .name,
+                                  choiceOption: sizes[index]));
+                            },
+                            child: ValueListenableBuilder<String?>(
+                                valueListenable: colorIsNotAvailableNotifier,
+                                builder: (context, _colorIsNotAvailableNotifier,
+                                    child) {
+                                  return ValueListenableBuilder<String?>(
+                                      valueListenable:
+                                          sizeIsNotAvailableNotifier,
+                                      builder: (context, _selectedSizeByUser,
+                                          child) {
+                                        String variant =
+                                            "${widget.currentColorOption}${(_selectedSizeByUser != null && widget.currentColorOption != "" ? "-" : "")}${_selectedSizeByUser ?? ""}";
+                                        bool isVariantRequestNotification =
+                                            false;
+                                        if (sizes[index] ==
+                                            _selectedSizeByUser) {
+                                          state
+                                              .firebaseSettingForNotificationModel
+                                              ?.data
+                                              ?.firebaseSettings
+                                              ?.subscribedTopics
+                                              ?.forEach((element) {
+                                            if (element.topic?.contains(
+                                                    "product_availability_${widget.productIdForCashData}") ??
+                                                false) {
+                                              if (variant == "") {
+                                                isVariantRequestNotification =
+                                                    false;
+                                              } else if (element.variants!
+                                                  .contains(variant)) {
+                                                isVariantRequestNotification =
+                                                    true;
+                                              }
+                                            } else {
+                                              isVariantRequestNotification =
+                                                  false;
+                                            }
+                                          });
+                                        }
+
+                                        return Stack(children: [
+                                          _sizesWidget(
+                                              '${widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes[index]).name ?? ""} ',
+                                              "",
+                                              sizeIsNotAvailableNotifier
+                                                          .value ==
+                                                      sizes[index]
+                                                  ? const Color(0xffFFF2F2)
+                                                  : sizes[index] ==
+                                                          state.currentColorSizeForCart?[
+                                                              "choiceOption"]
+                                                      ? const Color(0xffF4F4F4)
+                                                      : null,
+                                              sizesQuantities[index] == 0
+                                                  ? const Color(0xffFF5F61)
+                                                  : sizes[index] ==
+                                                          state.currentColorSizeForCart?[
+                                                              "choiceOption"]
+                                                      ? const Color(0xff513AAF)
+                                                      : null),
+                                          isVariantRequestNotification
+                                              ? Positioned(
+                                                  left: 8,
+                                                  top: 0,
+                                                  child: SvgPicture.asset(
+                                                      AppAssets
+                                                          .notificationIconSvg,
+                                                      height: 12,
+                                                      color: const Color(
+                                                          0xff513AAF)))
+                                              : const SizedBox.shrink()
+                                        ]);
+                                      });
+                                })),
+                        itemCount: widget
+                            .productItem.choiceOptions?[0].options?.length,
+                      ),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                        height: 15.h,
+                        width: 1.sw,
+                        child: ValueListenableBuilder<String?>(
+                          valueListenable: sizeIsNotAvailableNotifier,
+                          builder: (context, selectedSizeByUser, child) {
+                            return sizeIsNotAvailableNotifier.value != null
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      MyTextWidget(
+                                        '${widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == state.currentColorSizeForCart?["choiceOption"]).name ?? ""} ',
+                                        style: context.textTheme.titleLarge?.br
+                                            .copyWith(
+                                                height: 1.1,
+                                                fontSize: 11,
+                                                color: const Color(0xffFF5F61)),
+                                      ),
+                                      MyTextWidget(
+                                        LocaleKeys.not_available_now_stock.tr(),
+                                        style: context.textTheme.titleLarge?.rr
+                                            .copyWith(
+                                                height: 1.0,
+                                                fontSize: 11,
+                                                color: const Color(0xffFF5F61)),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        AppAssets.recommendPng,
+                                        width: 14,
+                                        height: 14,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      MyTextWidget(
+                                        '${widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == state.currentColorSizeForCart?["choiceOption"]).name ?? ""} ',
+                                        style: context.textTheme.titleLarge?.br
+                                            .copyWith(
+                                                height: 1.3,
+                                                fontSize: 11,
+                                                color: const Color(0xff404040)),
+                                      ),
+                                      MyTextWidget(
+                                        "${LocaleKeys.recommended.tr()} ",
+                                        style: context.textTheme.titleLarge?.rr
+                                            .copyWith(
+                                                height: 1.1,
+                                                fontSize: 11,
+                                                color: const Color(0xff404040)),
+                                      ),
+                                      MyTextWidget(
+                                        "${LocaleKeys.size.tr()} ",
+                                        style: context.textTheme.titleLarge?.br
+                                            .copyWith(
+                                                height: 1.1,
+                                                fontSize: 11,
+                                                color: const Color(0xff404040)),
+                                      ),
+                                      MyTextWidget(
+                                        "${LocaleKeys.for_you.tr()} ",
+                                        style: context.textTheme.titleLarge?.rr
+                                            .copyWith(
+                                                height: 1.1,
+                                                fontSize: 11,
+                                                color: const Color(0xff404040)),
+                                      ),
+                                      sizesQuantities[tappedIndex] < 11
+                                          ? MyTextWidget(
+                                              "${LocaleKeys.last.tr()} ${sizesQuantities[tappedIndex]}",
+                                              style: context
+                                                  .textTheme.titleLarge?.rr
+                                                  .copyWith(
+                                                      height: 1.1,
+                                                      fontSize: 11,
+                                                      color: const Color(
+                                                          0xffFF6200)),
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ],
+                                  );
+                          },
+                        ))
+                  ],
+                ),
+              ));
+        });
+  }
+
+  Widget _sizesType(String text, Color? color) {
+    return Container(
+      alignment: Alignment.center,
+      height: 22.h,
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+          color: color ?? const Color(0xffFCFCFC),
+          border: Border.all(color: const Color(0xffD3D3D3)),
+          borderRadius: BorderRadius.circular(6)),
+      child: MyTextWidget(
+        text,
+        style: context.textTheme.titleLarge?.rr
+            .copyWith(fontSize: 11, color: const Color(0xff1D1D1D)),
       ),
     );
+  }
+
+  Widget _sizesWidget(
+      String text, String? num, Color? color, Color? borderColor) {
+    return Container(
+        margin: EdgeInsets.only(
+          left: LanguageService.languageCode != "ar" ? 0 : 3,
+          right: LanguageService.languageCode == "ar" ? 0 : 3,
+        ),
+        alignment: Alignment.center,
+        height: 46.h,
+        width: 50.w,
+        decoration: BoxDecoration(
+            color: color ?? const Color(0xffFCFCFC),
+            border: Border.all(color: borderColor ?? const Color(0xffD3D3D3)),
+            borderRadius: BorderRadius.circular(6)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            MyTextWidget(
+              text,
+              style: context.textTheme.titleLarge?.rr
+                  .copyWith(fontSize: 11, color: const Color(0xff1D1D1D)),
+            ),
+            num == null || num == ""
+                ? const SizedBox.shrink()
+                : MyTextWidget(
+                    num,
+                    style: context.textTheme.titleLarge?.rr
+                        .copyWith(fontSize: 11, color: const Color(0xff1D1D1D)),
+                  ),
+          ],
+        ));
+  }
+
+  Widget _headerWidget() {
+    return BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (previous, current) =>
+            previous.getCurrencyForCountryModel !=
+                current.getCurrencyForCountryModel ||
+            previous.currentColorSizeForCart?["choiceOption"] !=
+                current.currentColorSizeForCart?["choiceOption"] ||
+            previous.currentSelectedColorForEveryProduct !=
+                current.currentSelectedColorForEveryProduct,
+        builder: (context, state) {
+          return ProductDetailsSheetHeader(
+            productId: widget.productItem.productId ?? 0,
+            currentVariant: widget.currentVariant,
+            redeemVariantPrice: widget.redeemVariantPrice *
+                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!,
+            isRedeem: widget.isRedeem,
+            redeemPrice: widget.redeemPrice *
+                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!,
+            currentActiveTab: widget.currentActiveTab,
+            initOfferPrice: (widget.initOfferPrice *
+                    state.getCurrencyForCountryModel!.data!.currency!
+                        .exchangeRate!)
+                .toString(),
+            initPrice: (widget.initPrice *
+                    state.getCurrencyForCountryModel!.data!.currency!
+                        .exchangeRate!)
+                .toString(),
+            shippingCost: widget.productItem.shippingCost ?? 0,
+            decimalPoint: state.startingSetting?.decimalPointSettings ?? 2,
+            priceSymbol:
+                state.getCurrencyForCountryModel!.data!.currency!.symbol ?? "",
+            addToBagButtonShapeNotifier: widget.addToBagButtonShapeNotifier,
+            price: (widget.productItem.price! *
+                    state.getCurrencyForCountryModel!.data!.currency!
+                        .exchangeRate!)
+                .toString(),
+            offerPrice: (widget.productItem.offerPrice! *
+                    state.getCurrencyForCountryModel!.data!.currency!
+                        .exchangeRate!)
+                .toString(),
+          );
+        });
   }
 }
 
@@ -1577,6 +1807,10 @@ class ShareButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Column(
       children: [
         12.verticalSpace,

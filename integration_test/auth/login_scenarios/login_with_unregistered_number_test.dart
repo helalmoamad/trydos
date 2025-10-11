@@ -15,9 +15,10 @@ void main() {
   testWidgets(
     'Login with Number has not registered yet , complete SignUp and Enter UserName  , without complete my profile',
     (WidgetTester tester) async {
+      TestVariables.kTestMode = true;
       app.main();
       await tester.pumpAndSettle();
-      TestVariables.kTestMode = true;
+
       //////////////////////////
       await SharedScenarios.goToVerifyOtp(
         tester: tester,
@@ -41,7 +42,7 @@ void main() {
       //////////////////////////
       await Future.delayed(const Duration(seconds: 2));
       final Finder createNewAccountContinueButton =
-          find.byKey(Key(WidgetsKeys.createNewAccountContinueKey));
+          find.byKey(const Key(WidgetsKeys.createNewAccountContinueKey));
       await tester.tap(createNewAccountContinueButton);
       await tester.pumpAndSettle();
       //////////////////////////

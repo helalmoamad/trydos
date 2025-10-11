@@ -51,7 +51,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 
 import 'package:trydos/features/search/presentation/widgets/search_image_preview_widget.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
@@ -133,6 +133,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   // TextEditingController qtyOfReturnController = TextEditingController();
   @override
   void initState() {
+    LastPagesTracker.push("OrderDetails2 Page");
     order = widget.order;
 
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -175,7 +176,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
         _isLoading = false; // إنهاء التحميل
       });
     }*/
-
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return WillPopScope(
       onWillPop: () async {
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
@@ -775,7 +779,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             height: 12,
                                           ),
                                           ///////////////////
-                                          (order?.canReturnOrder ?? false)
+                                          (order?.returnRequestId != null)
                                               ? Container(
                                                   width: double.infinity,
                                                   height: 1,
@@ -801,9 +805,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     ?.orders
                                                     ?.forEach((element) {
                                                   if (element.returnRequestId !=
-                                                          null &&
-                                                      (element.canReturnOrder ??
-                                                          false)) {
+                                                          null /* &&
+                                                      (element.editReturnRequest ??
+                                                          false)*/
+                                                      ) {
                                                     returnRequestIdsToCancel.add(
                                                         element.returnRequestId ??
                                                             "");
@@ -2090,6 +2095,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     "",
                                     "",
                                     true,
+                                    true,
                                     true)
                                 : (returnRequestsData!.status?.value
                                             ?.contains("cancelled") ??
@@ -2102,6 +2108,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         "",
                                         "",
                                         true,
+                                        true,
                                         true)
                                     : (returnRequestsData!.status?.value
                                                 ?.contains("rejected") ??
@@ -2113,6 +2120,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             "",
                                             "",
                                             "",
+                                            true,
                                             true,
                                             true)
                                         : Column(
@@ -2145,7 +2153,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           .status?.value
                                                           ?.contains(
                                                               "pending") ??
-                                                      false),
+                                                      false,
+                                                  true),
                                               statusOfReturned(
                                                   AppAssets.returnedBlacSvg,
                                                   LocaleKeys
@@ -2164,7 +2173,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           .status?.value
                                                           ?.contains(
                                                               "approved") ??
-                                                      false),
+                                                      false,
+                                                  true),
                                               statusOfReturned(
                                                   AppAssets.returnedBlacSvg,
                                                   LocaleKeys.out_for_return
@@ -2181,7 +2191,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           .status?.value
                                                           ?.contains(
                                                               "out_for_return") ??
-                                                      false),
+                                                      false,
+                                                  true),
                                               statusOfReturned(
                                                   AppAssets.returnedBlacSvg,
                                                   LocaleKeys
@@ -2202,7 +2213,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           .status?.value
                                                           ?.contains(
                                                               "returned_to_location") ??
-                                                      false))) /*,
+                                                      false)),
+                                                  false) /*,
                                 statusOfReturned(
                                     AppAssets.returnedBlacSvg,
                                     LocaleKeys.product_return_has_been_requested
@@ -2220,8 +2232,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   height: 10,
                 ),
                 ((orderDetail.returnRequestProductId == null ||
-                            order?.returnRequestId == null) ||
-                        (!(order?.canReturnOrder ?? false)))
+                        order?.returnRequestId ==
+                            null) /*||
+                        (!(order?.editReturnRequest ?? false))*/
+                    )
                     ? const SizedBox.shrink()
                     : state.cancelReturnRequestProductStatus ==
                                 CancelReturnRequestProductStatus.loading ||
@@ -2278,7 +2292,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   }
 
   Widget statusOfReturned(String svg, String tilte, String body, String time,
-      String timer, bool isBlak, bool isTextBlak) {
+      String timer, bool isBlak, bool isTextBlak, bool isWaiting) {
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       width: 1.sw,
@@ -2339,7 +2353,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         width: 20,
                       ),
                       Text(
-                        "${LocaleKeys.waiting.tr()}",
+                        isWaiting ? "${LocaleKeys.waiting.tr()}" : "",
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: !isTextBlak
                               ? const Color(0xffC4C2C2)
@@ -2601,8 +2615,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               listener: (context, state) {
                                 if (state.getOrderRecipientIdStatus ==
                                     GetOrderRecipientIdStatus.success) {
-                                  String receiverName = "DW";
-                                  String fullReceiverName = "Delivery Worker";
+                                  String receiverName = HelperFunctions
+                                      .getTheFirstTwoLettersOfName(
+                                          LocaleKeys.delivery_worker.tr());
+                                  String fullReceiverName =
+                                      LocaleKeys.delivery_worker.tr();
                                   String? recipientUserId =
                                       state.recipientUserId;
                                   if (recipientUserId == null) {
@@ -2670,15 +2687,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       GetIt.I<PrefsRepository>()
                                                           .myMarketId
                                                           .toString(),
-                                                  orderId:
-                                                      orderReturnDetail?.status
-                                                                  ?.value ==
-                                                              "out_for_return"
-                                                          ? orderReturnDetail!
-                                                              .returnRequestId
-                                                              .toString()
-                                                          : order!.id
-                                                              .toString()));
+                                                  parentOrderId:
+                                                      orderReturnDetail == null
+                                                          ? null
+                                                          : orderReturnDetail
+                                                                      .status
+                                                                      ?.value ==
+                                                                  "out_for_return"
+                                                              ? order!.id
+                                                                  .toString()
+                                                              : null,
+                                                  orderId: orderReturnDetail
+                                                              ?.status?.value ==
+                                                          "out_for_return"
+                                                      ? orderReturnDetail!
+                                                          .returnRequestId
+                                                          .toString()
+                                                      : order!.id.toString()));
                                         },
                                         child: Row(
                                           children: [
@@ -9343,6 +9368,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 .reasonAeEn ??
                                             ''), // يمكنك تعديل العرض حسب الحاجة أو حسب طول النص
                                         () {
+                                          if (reason.isCostBySystem == 0 &&
+                                              ((reason.cost ?? 0) >
+                                                  (order
+                                                          ?.details?[
+                                                              indexTap.value]
+                                                          .productDetails
+                                                          ?.offerPrice ??
+                                                      0))) {
+                                            return;
+                                          }
                                           if (optionReturn.value == reason.id) {
                                             optionReturn.value = 0;
                                             reasonCost.value = 0;

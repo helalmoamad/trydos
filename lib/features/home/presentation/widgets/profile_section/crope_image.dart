@@ -17,6 +17,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CopperImage extends StatefulWidget {
   File image;
@@ -52,6 +53,7 @@ class _CopperImageState extends State<CopperImage> {
 
   @override
   void initState() {
+    LastPagesTracker.push('CopperImage');
     orderBloc = BlocProvider.of<OrderBloc>(context);
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     _image = FileImage(widget.image);
@@ -60,6 +62,10 @@ class _CopperImageState extends State<CopperImage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     Future<ui.Image> convertImageProviderToUiImage(
         ImageProvider imageProvider) async {
       final ImageStream stream =

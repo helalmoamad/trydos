@@ -13,7 +13,7 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:vibration/vibration.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
@@ -61,6 +61,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late ChatBloc chatBloc;
   @override
   void initState() {
+    LastPagesTracker.push('AgoraInAppWebView');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     debugPrint("asdafsd{${widget.channelId}");
     debugPrint("asdafsd{${widget.messageId}");
@@ -100,14 +101,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      print(
-          "///////*************7777777777777777777777777///////////////////////////////////////////${error}");
-
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Agora_In_AppWeb_View"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     return BlocListener<CallsBloc, CallsState>(

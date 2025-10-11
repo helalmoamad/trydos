@@ -20,6 +20,7 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
@@ -30,16 +31,15 @@ import '../../../../../core/utils/theme_state.dart';
 import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_event.dart';
 import '../../manager/homeBloc/home_state.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class DisplaySizesCardNew extends StatefulWidget {
   const DisplaySizesCardNew(
       {super.key,
-      required this.scrollController,
       required this.variation,
       required this.productItem,
       required this.currentColorForProduct});
 
-  final ScrollController scrollController;
   final List<Variation>? variation;
   final product.Products productItem;
   final int currentColorForProduct;
@@ -114,16 +114,8 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (p, c) =>
@@ -284,7 +276,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
 
           FirebaseAnalyticsService.logEventForSession(
             executedEventName: AnalyticsButtonsEventNameConst.SIZE_SLIDE,
-            eventName: AnalyticsEventsConst.itemVariantExchange,
+            eventName: AnalyticsEventsConst.CHANGE_SIZE,
             extraParams: {
               'item_id': widget.productItem.productId.toString(),
               'item_name': widget.productItem.name.toString(),
@@ -295,7 +287,11 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                   )
                   .toList()
                   .toString(),
-              'item_variant': sizes?[index] ?? ''
+              'selected_size': sizes?[index] ?? '',
+              'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+              'selected_color': widget.productItem
+                      .colors?[widget.currentColorForProduct].name ??
+                  ''
             },
           );
         },

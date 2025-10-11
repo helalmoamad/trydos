@@ -21,6 +21,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
@@ -31,7 +32,7 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_event.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 import 'package:get_it/get_it.dart';
@@ -102,16 +103,8 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return Padding(
       padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.0),
@@ -214,13 +207,19 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                           ?.attributes ??
                                       []);
                               if (!isSelected) {
-                                // FirebaseAnalyticsService.logEventForSession(
-                                //   eventName: AnalyticsEventsConst.buttonClicked,
-                                //   executedEventName:
-                                //       AnalyticsButtonsEventNameConst
-                                //           .addFilterButton,
-                                // );
-                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.applyFilter,
+                                  extraParams: {
+                                    'filter_type': "size",
+                                    'filter_value':
+                                        widget.attribute.options![index],
+                                    'screen_name': GlobalScreenConst
+                                        .PRODUCT_LISTING_SCREEN,
+                                  },
+                                  executedEventName:
+                                      AnalyticsButtonsEventNameConst
+                                          .applyFilterButton,
+                                );
                                 String size = widget.attribute.options![index];
                                 if (prevChoosedOrAppliedFilterToAddToIt ==
                                     null) {

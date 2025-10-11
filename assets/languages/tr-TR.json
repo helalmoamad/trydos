@@ -248,6 +248,7 @@
   "share_this_product_with": "Bu Ürünü Şununla Paylaş",
   "please_select_the_appropriate": "Lütfen Uygun Olanı Seçin",
   "not_available_now_stock": "Şu Anda Mevcut Değil, Stok Tükendi",
+  "take_a_look_at_other_colors": "Diğer renklere göz atın",
   "need_help_finding_your_size": "Bedeninizi Bulmak İçin Yardıma İhtiyacınız Var Mı?",
   "recommended": "Önerilen",
   "for_you": "sizin için",
@@ -488,7 +489,7 @@
   "clarification": "Açıklama",
   "about_cancel_order": "Siparişinizi İptal Etme Hakkında",
   "you_will_not_charged_fees": "Hiçbir Ücret Ödemeyeceksiniz.",
-  "you_will_receive_your_refund_within": "Tam İadenizi Şu Süre İçerisinde Alacaksınız:",
+  "you_will_receive_your_refund_within": "İadenizi şu süre içinde alacaksınız",
   "hours": "Saat",
   "repeated_cancellations_affect_rating": "Tekrarlanan iptaller, puanınızı etkileyecek ve bu da bizden yeni teklifler veya fırsatlar alabilmenizi etkileyecektir.",
   "terms_of_cancellation_term": "İptal Şartları Şartları",
@@ -506,8 +507,9 @@
   "hide_this_product": "Bu Ürünü Gizle",
   "hide_this_product_from_list": "Bu Ürünü Listemden Gizle",
   "you_can_return_product_without_conditions": "Ürünü Herhangi Bir Şart Olmadan İade Edebilirsiniz",
-  "return_policy_get_full_refund": "İade Politikası ve Tam Para İadesi Alın",
+  "return_policy_get_full_refund": "İadenizi alacaksınız",
   "to_your_account": "Hesabınıza.",
+  "product_shared_successfully": "Ürün başarıyla paylaşıldı",
   "why_was_product_return": "Ürün Neden İade Edildi?",
   "i_didnt_like": "Beğenmedim",
   "bad_quality": "Kötü Kalite",
@@ -612,41 +614,18 @@
   ,"good_quality": "İyi Kalite"
   ,"recommend_it_by": "Şunun Tarafından Öneriliyor"
   ,"made_in": "Menşei"
-  ,"today_shipping_if_buy_before": "Şu Saatten Önce Alınırsa Bugün Kargo"
-  ,"fast_packing": "Hızlı Paketleme"
-  ,"best_sell": "En Çok Satan"
-  ,"best_price": "En İyi Fiyat"
-  ,"expected_shipping_delivery_date": "Beklenen Kargo ve Teslimat Tarihi"
-  ,"work_days_at_your_address_in": "Adresinizdeki İş Günleri"
-  ,"after_receiving_product_return_without_conditions": "Ürünü aldıktan sonra koşulsuz iade edebilirsiniz"
-  ,"or_reasons_with_complete_ease_and": "veya herhangi bir neden olmadan kolaylıkla"
-
-  ,"buyers_product_rate": "Alıcıların Ürün Puanı"
-  ,"all_reviews_are_genuine_from_customers_who_purchased_and_actually": "Tüm Yorumlar Satın Alan ve Gerçekten"
-  ,"received_the_product_through": "Ürünü Aldıkları Müşterilerden Orijinaldir"
-  ,"buyer_rate": "Alıcı Puanı"
-  ,"overall_good_quality": "Genel İyi Kalite"
-  ,"views_product": "Ürün Görüntüleme"
-  ,"views_product_with_count": "{count} Ürün Görüntüleme"
-  ,"twenty_thousand_views_product": "200K Ürün Görüntüleme"
-  ,"very_bad": "Çok Kötü"
-  ,"bad": "Kötü"
-  ,"normal": "Normal"
-  ,"good": "İyi"
-  ,"very_good": "Çok İyi"
-  ,"buyers_product_recommend_to_buy": "Alıcıların Ürünü Satın Alma Önerisi"
-  ,"all_recommendations_are_genuine_from_customers_who_purchased_and": "Tüm Öneriler Satın Alan"
-  ,"actually_received_the_product_through": "Müşterilerden Orijinaldir ve Gerçekten Ürünü Aldıkları"
-  ,"return_problem_resolved": "İade sorunu çözüldü."
-  ,"out_for_return": "İade için yolda"
-  ,"country_not_available": "Ülkeniz bu uygulamada mevcut değil"
-  ,"choose_a_country": "Bir ülke seçin:"
-  ,"you_have_to_choose_a_country": "Bir ülke seçmelisiniz"
-  ,"ok_and_continue": "Tamam ve Devam"
-  ,"press_here_for_more": "Daha fazlası için buraya tıklayın",
-  "product_shared_successfully": "Ürün başarıyla paylaşıldı",
-  "report_story": "Hikayeyi Bildir",
-  "confirm_report_story": "Bu hikayeyi bildirmek istediğinizden emin misiniz?",
-  "download_the_app_here": "Uygulamayı buradan indirin"
-
+  ,"today_shipping": "Bugün Kargo"
+  ,"if_buy_before": "Eğer Önce Alırsanız"
+ 
+  ,"today_shipping_short": "Bugün Kargo"
+  ,"selected_color": "Seçilen Renk"
+  ,"get": "Al"
+  ,"select_your_required_size": "Gerekli Bedeninizi Seçin"
+  ,"only": "Sadece"
+  ,"added": "Eklendi"
+  ,"to_your_bag": "Çantana"
+  ,"today_shipping_if_buy_before": "Ve bugün kargo, eğer önce alırsan"
+  ,"add_more_to_bag": "Daha fazla çantaya ekle"
+  ,"delivery_worker": "Teslimat Görevlisi"
+  ,"recommend_products": "Önerilen Ürünler"
 }

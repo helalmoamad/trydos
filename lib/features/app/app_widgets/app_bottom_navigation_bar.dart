@@ -21,6 +21,7 @@ import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/app/user_info_page.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
@@ -120,23 +121,19 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                   .getProductListingWithFiltersPaginationModels[
                                       "*flashDeal*withoutFilter"]
                                   ?.paginationStatus ||
+                          previous
+                                  .getProductListingWithFiltersPaginationModels[
+                                      "*recommended*withoutFilter"]
+                                  ?.paginationStatus !=
+                              current
+                                  .getProductListingWithFiltersPaginationModels[
+                                      "*recommended*withoutFilter"]
+                                  ?.paginationStatus ||
                           previous.getProductFiltersStatus["*flashDeal*"] !=
                               current.getProductFiltersStatus["*flashDeal*"],
                       builder: (context, boutiqueState) {
                         return InkWell(
                           onTap: () {
-                            if (boutiqueState
-                                        .getProductListingWithFiltersPaginationModels[
-                                            "*featured*withoutFilter"]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading ||
-                                boutiqueState
-                                        .getProductListingWithFiltersPaginationModels[
-                                            "*flashDeal*withoutFilter"]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading) {
-                              return;
-                            }
                             if (boutiqueState.currentMainCategoryTaped !=
                                     "Empty" &&
                                 boutiqueState.currentMainCategoryTaped != "") {
@@ -146,16 +143,38 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                 ChangeCurrentIndexForMainCategoryEvent(
                                     index: -1),
                               );
-                              boutiqueBloc.add(
-                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                      categorySlugs: [],
-                                      cashedOrginalBoutique: true,
-                                      boutiqueSlug: "*featured*"));
-                              boutiqueBloc.add(
-                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                      categorySlugs: [],
-                                      cashedOrginalBoutique: true,
-                                      boutiqueSlug: "*flashDeal*"));
+                              if (!(boutiqueState
+                                          .getProductListingWithFiltersPaginationModels[
+                                              "*featured*withoutFilter"]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading ||
+                                  boutiqueState
+                                          .getProductListingWithFiltersPaginationModels[
+                                              "*recommended*withoutFilter"]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading ||
+                                  boutiqueState
+                                          .getProductListingWithFiltersPaginationModels[
+                                              "*flashDeal*withoutFilter"]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading)) {
+                                boutiqueBloc.add(
+                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                        categorySlugs: [],
+                                        cashedOrginalBoutique: true,
+                                        boutiqueSlug: "*featured*"));
+                                boutiqueBloc.add(
+                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                        categorySlugs: [],
+                                        cashedOrginalBoutique: true,
+                                        boutiqueSlug: "*flashDeal*"));
+                                boutiqueBloc.add(
+                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                        categorySlugs: [],
+                                        cashedOrginalBoutique: true,
+                                        boutiqueSlug: "*recommended*"));
+                              }
+
                               appBloc.add(ChangeTab(-1));
                               categoryBloc.add(
                                 ChangeCurrentIndexForMainCategoryEvent(
@@ -421,37 +440,34 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     top: 0,
                                                     right: 0,
                                                     child: Visibility(
-                                                        visible: state
-                                                                .unReadMessagesFromAllChats >
-                                                            0,
-                                                        child: Positioned(
-                                                          top: 0,
-                                                          right: 0,
-                                                          child: Row(
-                                                            children: [
-                                                              MyTextWidget(
-                                                                state
-                                                                    .unReadMessagesFromAllChats
-                                                                    .toString(),
-                                                                maxLines: 1,
-                                                                style: context
-                                                                    .textTheme
-                                                                    .titleMedium
-                                                                    ?.rr
-                                                                    .copyWith(
-                                                                        color: const Color(
-                                                                            0xff007CFF)),
-                                                              ),
-                                                              2.horizontalSpace,
-                                                              SvgPicture.asset(
-                                                                AppAssets
-                                                                    .chatNotificationSvg,
-                                                                height: 12.h,
-                                                                width: 12.h,
-                                                              ),
-                                                            ],
+                                                      visible: state
+                                                              .unReadMessagesFromAllChats >
+                                                          0,
+                                                      child: Row(
+                                                        children: [
+                                                          MyTextWidget(
+                                                            state
+                                                                .unReadMessagesFromAllChats
+                                                                .toString(),
+                                                            maxLines: 1,
+                                                            style: context
+                                                                .textTheme
+                                                                .titleMedium
+                                                                ?.rr
+                                                                .copyWith(
+                                                                    color: const Color(
+                                                                        0xff007CFF)),
                                                           ),
-                                                        )))
+                                                          2.horizontalSpace,
+                                                          SvgPicture.asset(
+                                                            AppAssets
+                                                                .chatNotificationSvg,
+                                                            height: 12.h,
+                                                            width: 12.h,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ))
                                               ],
                                             ));
                                       }),
@@ -565,11 +581,22 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                             context,
                                                             MaterialPageRoute(
                                                                 builder: (_) =>
+                                                                    const UserInfoPage()));
+                                                      },
+                                                      child: const MyTextWidget(
+                                                          'add user info'),
+                                                    ),
+                                                    /*  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
                                                                     FilesExistPage()));
                                                       },
                                                       child: const MyTextWidget(
                                                           'files exists'),
-                                                    ),
+                                                    ),*/
                                                     /*      TextButton(
                                                       onPressed: () {
                                                         Navigator.push(

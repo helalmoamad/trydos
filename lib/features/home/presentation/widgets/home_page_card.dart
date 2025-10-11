@@ -4,12 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+
 import '../../../../service/language_service.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class HomePageCard extends StatelessWidget {
   const HomePageCard({Key? key, required this.showWhite}) : super(key: key);
@@ -17,16 +14,8 @@ class HomePageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return SizedBox(
       width: 1.sw,

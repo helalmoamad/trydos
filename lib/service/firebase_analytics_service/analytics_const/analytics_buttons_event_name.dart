@@ -62,7 +62,12 @@ class AnalyticsButtonsEventNameConst {
   //     'product_listing_filter_icon_button';
   // static const backAppButton = 'back_app_button';
   // static const applySearchResultButton = 'apply_search_result_button';
-  // static const applyFilterButton = 'apply_filter_button';
+  static const applyFilterButton = 'apply_filter_button';
+  static const VIEW_COMMENTS_BUTTON = "view_comments_button";
+  static const READ_MORE_ABOUT_PRODUCT_BUTTON =
+      "read_more_about_product_button";
+  static const ENABLE_PRODUCT_NOTIFICATIONS_BUTTON =
+      "enable_product_notifications_button";
   // static const resetCloseIconButton = 'reset_closeicon_button';
   // static const searchForFiltersEvent = 'search_for_filters_event';
   // static const resetButton = 'reset_button';
@@ -97,7 +102,7 @@ class AnalyticsButtonsEventNameConst {
   // static const decreaseQtyButton = 'decrease_qty_button';
   // static const addProductToBagButton = 'add_product_to_bag_button';
   // static const addedProductEvent = 'added_product_event';
-
+  static const PLACE_ORDER_BUTTON = "place_order_button";
   static const I_HAVE_ALREADY_ACCOUNT_BUTTON = "i_have_already_account_button";
   static const register_cancel_button = "register_cancel_button";
   static const CART_ICON = "cart_nav_bar_button";
@@ -106,9 +111,12 @@ class AnalyticsButtonsEventNameConst {
   static const NOTIFY_ME_BUTTON = "notify_me_button";
   static const BACK_ICON_IN_ADD_TO_CART_WIDGET =
       "back_icon_in_add_to_cart_widget";
+  static const CHOOSE_AVAILABLE_COLOR_BUTTON = "choose_available_color_button";
   static const COLOR_SLIDE = "slide_choose_color_event";
+  static const VIEW_ITEM_BUTTON = "view_item_button";
   static const SIZE_SLIDE = "slide_choose_size_event";
   static const ADD_TO_CART_BUTTON = "add_to_bag_button";
+  static const SHOW_PRODUCT_PHOTOS_BUTTON = "show_product_photos_button";
   static const APPBAR_BACKICON_BUTTON = "appbar_backicon_button";
   static const REMOVE_OLD_PRODUCTS_BUTTON = "remove_old_products_button";
   static const REMOVE_OLD_PRODUCT_ITEM_BUTTON =
@@ -182,7 +190,7 @@ class AnalyticsButtonsEventNameConst {
   static const CONFIRM_COMMENT_BUTTON = "confirm_comment_button";
   static const SHOW_BUYERS_CAMERA_INFO_MESSAGE =
       "show_buyers_camera_info_message";
-  static const CHOOSE_AVAILABLE_COLOR_BUTTON = "choose_available_color_button";
+
   static const CHOOSE_AVAILABLE_SIZE_BUTTON = "choose_available_size_button";
   static const SHOW_AVAILABLE_COLOR_INFO_MESSAGE =
       "show_available_color_info_message";
@@ -193,6 +201,9 @@ class AnalyticsButtonsEventNameConst {
   static const LIKE_PRODUCT_BUTTON = "like_product_button";
   static const SHOW_COMMENTS_BUTTON = "show_comments_button";
   static const SHARE_PRODUCT_BUTTON = "share_product_button";
+  static const LIKE_ITEM_BUTTON = "like_item_button";
+  static const SHARE_CONTENT_BUTTON = "share_content_button";
+
   static const MORE_OPTIONS_BUTTON = "more_options_button";
   static const AT_YOUR_ADDRESS_BUTTON = "at_your_address_button";
   static const SHARE_WITH_FACEBOOK_BUTTON = "share_with_facebook_button";

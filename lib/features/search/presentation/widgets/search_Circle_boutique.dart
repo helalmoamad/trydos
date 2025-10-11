@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -71,16 +71,8 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocBuilder<BoutiqueBloc, BoutiqueState>(
       builder: (context, state) {

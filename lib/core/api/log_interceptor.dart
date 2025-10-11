@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -197,16 +198,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       }
     } catch (e) {}
     try {
-      if (err.stackTrace.toString().contains("HomeRemoteDatasource")) {
-        GetIt.I<HomeBloc>().add(SendErrorToMobileErrorLogEvent(
-            errorExption:
-                jsonDecode(err.response.toString())["message"].toString(),
-            errorPath: "Back End Error",
-            urlBackend:
-                err.stackTrace.toString().split("#4")[1].substring(0, 100),
-            messageFromeBackend:
-                jsonDecode(err.response.toString())["message"].toString()));
-      }
+      GetIt.I<HomeBloc>().add(SendErrorToMobileErrorLogEvent(
+          errorExption:
+              jsonDecode(err.response.toString())["message"].toString(),
+          errorPath: "Back End Error",
+          urlBackend: err.stackTrace.toString(),
+          messageFromeBackend:
+              jsonDecode(err.response.toString())["message"].toString(),
+          lastForPageHasBeenVisited: LastPagesTracker.lastPages.join(' > ')));
     } catch (e) {}
 
     if (kDebugMode) {

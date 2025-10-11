@@ -7,7 +7,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -24,16 +24,8 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return SlidingUpPanel(
         borderRadius: const BorderRadius.only(
@@ -357,13 +349,13 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                             height: 16 / 13,
                             color: const Color(0xff1D1D1D)),
                       ),
-                      MyTextWidget(
+                      /*  MyTextWidget(
                         '${LocaleKeys.full.tr()} ',
                         style: context.textTheme.titleLarge?.mr.copyWith(
                             fontSize: 11,
                             height: 16 / 13,
                             color: const Color(0xff388CFF)),
-                      ),
+                      ),*/
                       MyTextWidget(
                         LocaleKeys.the_product_price_when_returned.tr(),
                         overflow: TextOverflow.ellipsis,

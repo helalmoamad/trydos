@@ -248,6 +248,7 @@
   "share_this_product_with": "مشاركة هذا المنتج مع ",
   "please_select_the_appropriate": "الرجاء اختيار القياس المناسب",
   "not_available_now_stock": "غير متوفر الآن، تم بيع المخزون بالكامل",
+  "take_a_look_at_other_colors": "شاهد ألوان أخرى",
   "need_help_finding_your_size": "هل تحتاج إلى مساعدة في العثور على مقاسك؟",
   "recommended": "مستحسن",
   "for_you": "من أجلك",
@@ -489,7 +490,7 @@
   "clarification": "إيضاح",
   "about_cancel_order": "حول إلغاء طلبك",
   "you_will_not_charged_fees": "لن يتم فرض أي رسوم عليك.",
-  "you_will_receive_your_refund_within": "سوف تتلقى المبلغ المسترد بالكامل خلال",
+  "you_will_receive_your_refund_within": "سوف تستلم المبلغ المسترد خلال",
   "hours": "ساعة",
   "repeated_cancellations_affect_rating": "ستؤثر عمليات الإلغاء المتكررة على تقييمك، مما سيؤثر بدوره على قدرتك على تلقي عروض أو فرص جديدة منا.",
   "terms_of_cancellation_term": "شروط الإلغاء",
@@ -507,9 +508,10 @@
   "hide_this_product": "إخفاء هذا المنتج",
   "hide_this_product_from_list": "إخفاء هذا المنتج من قائمتي",
   "you_can_return_product_without_conditions": "يمكنك إرجاع المنتج دون أي شروط وفقًا لـ",
-  "return_policy_get_full_refund": "سياسة الإرجاع والحصول على استرداد كامل",
+  "return_policy_get_full_refund": "سوف تستلم المبلغ المسترد ",
   "to_your_account": "إلى حسابك.",
   "why_was_product_return": "لماذا تم إرجاع المنتج؟",
+  "product_shared_successfully": "تم مشاركة المنتج بنجاح",
   "i_didnt_like": "لم يعجبني",
   "bad_quality": "جودة سيئة",
   "it_arrived_damaged": "لقد وصلت تالفة",
@@ -590,7 +592,7 @@
   "new_update_available": "تحديث جديد متاح",
   "newer_version_available_message": "هناك إصدار أحدث من التطبيق متاح، يرجى تحديثه الآن.",
   "update_now": "حدث الآن"
-  ,"only_this_piece": "هذه القطعة فقط"
+  ,"only_this_piece": "فقط هذه القطعة"
   ,"quick_video": "فيديو سريع"
   ,"buyers_comment": "تعليق المشترين"
   ,"faq_buyer_seller": "الأسئلة الشائعة للمشتري والبائع"
@@ -629,24 +631,18 @@
   ,"good_quality": "جودة جيدة"
   ,"recommend_it_by": "أوصى به"
   ,"made_in": "صنع في"
-  ,"today_shipping_if_buy_before": "شحن اليوم إذا اشتريت قبل"
-  ,"fast_packing": "تعبئة سريعة"
-  ,"best_sell": "الأكثر مبيعاً"
-  ,"best_price": "أفضل سعر"
-  ,"expected_shipping_delivery_date": "تاريخ الشحن والتوصيل المتوقع"
-  ,"work_days_at_your_address_in": "أيام العمل في عنوانك في"
-  ,"after_receiving_product_return_without_conditions": "بعد استلام المنتج يمكنك إرجاعه بدون شروط"
-  ,"or_reasons_with_complete_ease_and": "أو أسباب بسهولة تامة و"
-  ,"return_problem_resolved": "تم حل مشكلة الإرجاع"
-  ,"out_for_return": "في طريقه للإرجاع"
-  ,"country_not_available": "بلدك غير متاح في هذا التطبيق"
-  ,"choose_a_country": "اختر دولة:"
-  ,"you_have_to_choose_a_country": "يجب أن تختار دولة"
-  ,"ok_and_continue": "حسناً، تابع"
-  ,"press_here_for_more": "اضغط هنا للمزيد",
-  "product_shared_successfully": "تمت مشاركة المنتج بنجاح",
-  "report_story": "الإبلاغ عن القصة",
-  "confirm_report_story": "هل أنت متأكد أنك تريد الإبلاغ عن هذه القصة؟",
-  
-  "download_the_app_here": "قم بتحميل تطبيق من هنا"
+  ,"today_shipping": "شحن اليوم"
+  ,"if_buy_before": "إذا اشتريت قبل"
+
+  ,"today_shipping_short": "شحن اليوم"
+  ,"selected_color": "اختر اللون"
+  ,"get": "احصل على"
+  ,"select_your_required_size": "اختر المقاس المطلوب"
+  ,"only": "فقط"
+  ,"added": "تمت الإضافة"
+  ,"to_your_bag": "إلى حقيبتك"
+  ,"today_shipping_if_buy_before": "وشحن اليوم إذا اشتريت قبل"
+  ,"add_more_to_bag": "أضف المزيد إلى السلة"
+  ,"delivery_worker": "عامل التوصيل"
+  ,"recommend_products": "المنتجات الموصى بها"
 }

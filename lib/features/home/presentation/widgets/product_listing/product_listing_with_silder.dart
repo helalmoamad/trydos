@@ -28,7 +28,7 @@ import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.d
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'package:video_player/video_player.dart';
@@ -47,7 +47,6 @@ class ProductListingWithSlider extends StatefulWidget {
     required this.visibleRedeem,
     required this.productItem,
     required this.visibleFlashDeal,
-    this.productIsFlashDeal,
     this.fromFlashDeal,
     this.videoSource,
     this.fromHomePage = false,
@@ -76,8 +75,6 @@ class ProductListingWithSlider extends StatefulWidget {
   final bool? fromFlashDeal;
   final String? videoSource;
   final productListingModel.Products productItem;
-  //final ValueNotifier<int> currentChosenColor;
-  final ValueNotifier<bool>? productIsFlashDeal;
 
   @override
   State<ProductListingWithSlider> createState() =>
@@ -124,6 +121,10 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: _buildSimpleProductCard(),
@@ -864,7 +865,6 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
         _homeBloc.add(const ChangeStatusOFGetProductsDetailsToSuccessEvent(
           isStatusInitaial: true,
         ));
-        // widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
 
         Future.delayed(
           const Duration(milliseconds: 600),

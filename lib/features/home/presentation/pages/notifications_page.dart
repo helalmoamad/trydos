@@ -10,7 +10,7 @@ import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/my_cached_network_image.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../data/models/get_user_notifications_model.dart';
 import '../manager/homeBloc/home_bloc.dart';
 import '../manager/homeBloc/home_event.dart';
@@ -30,6 +30,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   void initState() {
+    LastPagesTracker.push("Notifications Page");
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetUserNotificationEvent(getWithPagination: false));
 
@@ -65,6 +66,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Scaffold(
       appBar: AppBar(),
       resizeToAvoidBottomInset: true,

@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:html/parser.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 enum SocialMediaType {
@@ -19,6 +20,7 @@ Future share(
     {required SocialMediaType socialPlatform,
     required String text,
     required String productId,
+    required Products product,
     required String urlShare}) async {
   text = parseFragment(text).text ?? "";
 
@@ -44,6 +46,7 @@ Future share(
         GetIt.I<ChatBloc>().add(IncreaseSharedProductCountOnSocialAppEvent(
             socialMediaName: socialPlatform.name,
             productId: productId,
+            product: product,
             sharedCount: 1));
         print(
             "___________________________________________________________________${value}");

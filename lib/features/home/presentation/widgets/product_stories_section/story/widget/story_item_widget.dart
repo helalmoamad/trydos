@@ -18,7 +18,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/pages/story_collection.dart';
-
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 class StoryItemWidget extends StatefulWidget {
@@ -53,10 +53,8 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
   Widget build(BuildContext context) {
     resizeUserImageOnClick.value = false;
     FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error.toString());
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
     return BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
