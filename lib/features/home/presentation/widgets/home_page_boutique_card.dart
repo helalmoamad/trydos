@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -51,12 +52,13 @@ class HomePageBoutiqueCard extends StatelessWidget {
 
     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
     return SizedBox(
-      height: (boutique.mainCategoriesForProductIds!.length) == 0 ? 250 : 352,
+      height:
+          (boutique.mainCategoriesForProductIds!.length) == 0 ? 252.h : 354.h,
       width: 1.sw,
       child: Column(
         children: [
           Container(
-            height: 250,
+            height: 252.h,
             width: 1.sw,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
@@ -70,7 +72,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
             ),
             child: Container(
                 width: 1.sw,
-                height: 250,
+                height: 252.h,
                 decoration: BoxDecoration(
                   color: const Color(0xffE3E7EA).withOpacity(0.5),
                   borderRadius: BorderRadius.circular(2),
@@ -136,20 +138,43 @@ class HomePageBoutiqueCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2),
                         child: Stack(
                           children: [
-                            MyCachedNetworkImage(
-                              imageUrl: boutique.banners![0].filePath!,
-                              imageFit: BoxFit.fitWidth,
-                              width: 1.sw,
-                              height: 250,
-                              imageSource: 'home_page_boutique_card',
-                            ),
+                            withSlidingImages
+                                ? CarouselSlider.builder(
+                                    itemCount: boutique.banners!.length,
+                                    itemBuilder: (context, index, _) {
+                                      return MyCachedNetworkImage(
+                                        imageUrl:
+                                            boutique.banners![0].filePath!,
+                                        imageFit: BoxFit.cover,
+                                        width: 1.sw,
+                                        height: 250.h,
+                                        imageSource: 'home_page_boutique_card',
+                                      );
+                                    },
+                                    options: CarouselOptions(
+                                      autoPlay: true,
+                                      autoPlayInterval:
+                                          const Duration(seconds: 5),
+                                      autoPlayAnimationDuration:
+                                          const Duration(milliseconds: 300),
+                                      height: 250.h,
+                                      viewportFraction: 1.0,
+                                      pauseAutoPlayInFiniteScroll: true,
+                                    ))
+                                : MyCachedNetworkImage(
+                                    imageUrl: boutique.banners![0].filePath!,
+                                    imageFit: BoxFit.cover,
+                                    width: 1.sw,
+                                    height: 250.h,
+                                    imageSource: 'home_page_boutique_card',
+                                  ),
                             Positioned(
-                                bottom: 6,
+                                bottom: 6.h,
                                 left: LanguageService.rtl ? null : 12,
                                 right: !LanguageService.rtl ? null : 12,
                                 child: SizedBox(
-                                  width: 1.sw - 100,
-                                  height: 45,
+                                  width: 1.sw - 100.w,
+                                  height: 46.h,
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -179,7 +204,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
           (boutique.mainCategoriesForProductIds!.length) == 0
               ? const SizedBox.shrink()
               : SizedBox(
-                  height: 102,
+                  height: 102.h,
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
                     physics: const ClampingScrollPhysics(),
@@ -192,8 +217,8 @@ class HomePageBoutiqueCard extends StatelessWidget {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return Container(
-                          width: 90,
-                          height: 90,
+                          width: 90.w,
+                          height: 90.h,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: const Color(0xffE3E7EA).withOpacity(0.5),
@@ -217,31 +242,30 @@ class HomePageBoutiqueCard extends StatelessWidget {
                                   filtersAppliedByUser: GetProductFiltersModel(
                                     filters: Filter(categories: [
                                       filters.Category(
-                                          slug: boutique
-                                              .mainCategoriesForProductIds![
-                                                  index]
-                                              .categorySlug,
-                                          name: boutique
-                                              .mainCategoriesForProductIds![
-                                                  index]
-                                              .categoryName,
-                                          id: boutique
-                                              .mainCategoriesForProductIds![
-                                                  index]
-                                              .categoryId,
-                                          isSelected: true,
-                                          flatPhotoPath: CategoryBanner(
-                                              filePath: boutique
-                                                  .mainCategoriesForProductIds![
-                                                      index]
-                                                  .mostViewedProductThumbnail
-                                                  ?.filePath),
-                                          mostViewedProductThumbnail: CategoryBanner(
-                                              filePath: boutique
-                                                  .mainCategoriesForProductIds![
-                                                      index]
-                                                  .mostViewedProductThumbnail
-                                                  ?.filePath))
+                                        slug: boutique
+                                            .mainCategoriesForProductIds![index]
+                                            .categorySlug,
+                                        name: boutique
+                                            .mainCategoriesForProductIds![index]
+                                            .categoryName,
+                                        id: boutique
+                                            .mainCategoriesForProductIds![index]
+                                            .categoryId,
+                                        isSelected: true,
+                                        flatPhotoPath: CategoryBanner(
+                                            filePath: boutique
+                                                .mainCategoriesForProductIds![
+                                                    index]
+                                                .flatPhotoPath
+                                                ?.filePath),
+                                        mostViewedProductThumbnail:
+                                            CategoryBanner(
+                                                filePath: boutique
+                                                    .mainCategoriesForProductIds![
+                                                        index]
+                                                    .mostViewedProductThumbnail
+                                                    ?.filePath),
+                                      )
                                     ]),
                                   ),
                                   boutiqueSlug: boutique.slug!,
@@ -294,14 +318,14 @@ class HomePageBoutiqueCard extends StatelessWidget {
                                         ));
                               },
                               child: MyCachedNetworkImage(
-                                  radius: 15,
+                                  radius: 15.r,
                                   imageUrl: boutique
                                       .mainCategoriesForProductIds![index]
                                       .mostViewedProductThumbnail!
                                       .filePath!,
-                                  width: 90,
+                                  width: 90.w,
                                   imageFit: BoxFit.contain,
-                                  height: 90)));
+                                  height: 90.h)));
                     },
                   ),
                 ),

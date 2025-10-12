@@ -290,7 +290,7 @@ void clearvideoProductInListingController({required String productSlug}) {
   }
 }
 
-int applicationVersion = 24;
+int applicationVersion = 25;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();

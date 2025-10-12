@@ -351,11 +351,11 @@ String addSuitableWidthAndHeightToImage({
   int fHeight = 0;
   int fWidth = 0;
   if (height > 200 && width > 200) {
-    fWidth = (width * 1.3).toInt();
-    fHeight = (height * 1.3).toInt();
+    fWidth = (width * 2).toInt();
+    fHeight = (height * 2).toInt();
   } else {
-    fWidth = (width * 1.3).toInt();
-    fHeight = (height * 1.3).toInt();
+    fWidth = (width * 2).toInt();
+    fHeight = (height * 2).toInt();
   }
 
   List<String> list = imageUrl.split('upload');
@@ -376,7 +376,8 @@ String addSuitableWidthAndHeightToImage({
   } else {*/
   // 🔧 إصلاح: حالة عدم وجود الأبعاد الأصلية (مثل home page)
   // استخدام استراتيجية ذكية بدلاً من h_ فقط
-  if (width >= height) {
+  print("width < height ${width} ${height}");
+  if (width < height) {
     // الصورة أعرض من الارتفاع - استخدم العرض
     url = list[0] +
         'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,w_${fWidth}' +
