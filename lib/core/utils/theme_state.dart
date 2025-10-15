@@ -6,6 +6,7 @@ abstract class ThemeState<T extends StatefulWidget> extends State<T> {
   ColorScheme get colorScheme => Theme.of(context).colorScheme;
 }
 
+// ignore: must_be_immutable
 abstract class ThemeStateless extends StatelessWidget {
   ThemeStateless({
     Key? key,

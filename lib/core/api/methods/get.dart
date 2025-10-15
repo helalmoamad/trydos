@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
-import '../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../enums/status_code_type.dart';
 import '../../domin/repositories/prefs_repository.dart';
 import '../api.dart';

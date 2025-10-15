@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
-import 'package:trydos/base_page.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -37,7 +36,6 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
     super.initState();
   }
 
-  final bool _eventLogged = false;
   /* @override
   void didChangeDependencies() async {
     if (!_eventLogged) {

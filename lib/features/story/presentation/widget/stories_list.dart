@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'dart:ui' as ui;
 
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:shimmer/shimmer.dart';
@@ -29,9 +28,6 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
@@ -232,6 +228,7 @@ class _StoriesListState extends State<StoriesList> {
                                                                               BorderRadius.circular(20.0),
                                                                           color: (prefsRepository.myProfilePhoto == null || prefsRepository.myProfilePhoto == "")
                                                                               ? Colors.grey
+                                                                              // ignore: deprecated_member_use
                                                                               : Colors.grey.withOpacity(0.7),
                                                                         ),
                                                                         width:
@@ -684,6 +681,7 @@ class _StoriesListState extends State<StoriesList> {
                                                                   BoxShadow(
                                                                     color: const Color(
                                                                             0xff000000)
+                                                                        // ignore: deprecated_member_use
                                                                         .withOpacity(
                                                                             0.4),
                                                                     offset:

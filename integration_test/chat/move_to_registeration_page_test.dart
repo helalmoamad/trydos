@@ -25,7 +25,7 @@ void main() {
       await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: true);
       ////////////////////////////
       final Finder chatNavBarButton = find.byKey(
-        Key(
+        const Key(
           WidgetsKeys.chatNavBarKey,
         ),
       );

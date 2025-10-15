@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -15,6 +13,7 @@ import '../../../../core/utils/responsive_padding.dart';
 
 double offset = 0;
 
+// ignore: must_be_immutable
 class PhoneFormField extends StatelessWidget {
   PhoneFormField({
     Key? key,
@@ -88,6 +87,7 @@ class PhoneFormField extends StatelessWidget {
   final String? initialValue;
   final Brightness? keyboardAppearance;
   final TextAlignVertical? textAlignVertical;
+  // ignore: deprecated_member_use
   final ToolbarOptions? toolbarOptions;
   final TextCapitalization textCapitalization;
   final TextAlign textAlign;
@@ -189,6 +189,7 @@ class PhoneFormField extends StatelessWidget {
                 keyboardAppearance: keyboardAppearance,
                 textAlignVertical: TextAlignVertical.center,
                 textCapitalization: textCapitalization,
+                // ignore: deprecated_member_use
                 toolbarOptions: toolbarOptions,
                 inputFormatters: [PhoneNumberFormatter()],
                 style: context.textTheme.headlineSmall?.ra.copyWith(

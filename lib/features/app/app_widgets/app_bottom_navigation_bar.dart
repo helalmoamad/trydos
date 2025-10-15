@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,19 +17,15 @@ import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
-import 'package:trydos/features/app/country_dropdown.dart';
-import 'package:trydos/features/app/language_dropdown.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/user_info_page.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart'
     show ChatBloc;
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
-import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
@@ -42,18 +37,11 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/notification_service/setting_fitrbase_notification.dart';
-import 'package:trydos/splash_page.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
-import '../../../routes/router.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
-import '../../feed_back/presentation/pages/edit_urls_page.dart';
 import '../../home/presentation/pages/notifications_page.dart';
-import '../../home/presentation/pages/Order/orders_page.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
@@ -97,7 +85,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
             color: colorScheme.white,
             boxShadow: [
               BoxShadow(
-                  color: colorScheme.black.withOpacity(0.1), blurRadius: 6)
+                  // ignore: deprecated_member_use
+                  color: colorScheme.black.withOpacity(0.1),
+                  blurRadius: 6)
             ],
           ),
           child: Row(

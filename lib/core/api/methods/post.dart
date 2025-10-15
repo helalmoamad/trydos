@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
-import '../log_interceptor.dart';
 import 'detect_server.dart';
 
 typedef whenComplete = FutureOr<void> Function();
@@ -98,7 +94,6 @@ class PostClient<T> extends BaseApi<T> {
             backGroundColor: Colors.red,
             hasError: true,
             showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG,
           );
         }
         onUploadingFinished?.call(false);

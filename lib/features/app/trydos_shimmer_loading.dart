@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/features/app/memory_management_helper.dart';
-
-import 'package:flutter/foundation.dart';
 
 class TrydosShimmerLoading extends StatefulWidget {
   const TrydosShimmerLoading({
@@ -31,8 +28,6 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
   Animation<double>? _opacityAnimation;
   bool _isDisposed = false;
   bool _useStaticMode = false;
-
-  static const bool _isFirstLaunch = true;
   static int _shimmerCount = 0;
 
   @override

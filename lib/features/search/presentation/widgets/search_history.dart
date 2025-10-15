@@ -17,9 +17,7 @@ import 'package:trydos/features/search/presentation/widgets/search_history_chip.
 
 import '../../../../common/constant/design/assets_provider.dart';
 
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
-import 'package:get_it/get_it.dart';
 
 class SearchHistory extends StatefulWidget {
   final List<String> items;

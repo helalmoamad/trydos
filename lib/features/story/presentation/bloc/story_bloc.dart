@@ -9,17 +9,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:stream_transform/stream_transform.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/error/error_manager.dart';
-import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
@@ -27,10 +24,6 @@ import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.d
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/delete_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
-import 'package:trydos/main.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 

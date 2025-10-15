@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -13,7 +12,6 @@ import 'package:trydos/features/home/domain/use_cases/update_return_request_prod
 import 'package:trydos/features/home/domain/use_cases/upload_images_product_return_useCase.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import '../../../../../common/helper/show_message.dart';
 import '../../../../../core/data/model/pagination_model.dart';

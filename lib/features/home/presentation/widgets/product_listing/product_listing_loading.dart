@@ -36,6 +36,7 @@ class ProductListingLoading extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20.0),
                         boxShadow: [
                           BoxShadow(
+                            // ignore: deprecated_member_use
                             color: const Color(0xff000000).withOpacity(0.4),
                             offset: const Offset(0, 3),
                             blurRadius: 6,
@@ -48,6 +49,7 @@ class ProductListingLoading extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20.0),
                             boxShadow: [
                               BoxShadow(
+                                // ignore: deprecated_member_use
                                 color: const Color(0xff000000).withOpacity(0.6),
                                 offset: const Offset(0, 3),
                                 blurRadius: 6,

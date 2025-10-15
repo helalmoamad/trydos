@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../manager/auth_bloc.dart';
 
@@ -16,6 +14,7 @@ List<FocusNode> focusNodes = List.generate(6, (index) => FocusNode());
 int currentToType = 0;
 bool checkingOtp = false;
 
+// ignore: must_be_immutable
 class PinItem extends StatefulWidget {
   final TextEditingController controller;
   bool isExpired;

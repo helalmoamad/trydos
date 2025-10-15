@@ -62,6 +62,7 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
               // width: isBackButtonEnabled ? 245.w : 299.w,
               height: 37.5.h,
               radius: 25.sp,
+              // ignore: deprecated_member_use
               backColor: Colors.white.withOpacity(0.6),
               borderColor: Colors.transparent,
               childWidget: Center(
@@ -91,7 +92,9 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
                     backgroundColor: colorScheme.tertiary,
                     child: Center(
                       child: SvgPicture.asset(AppAssets.searchSvg,
-                          color: colorScheme.primary, height: 14.h),
+                          // ignore: deprecated_member_use
+                          color: colorScheme.primary,
+                          height: 14.h),
                     ),
                   ),
                 ],

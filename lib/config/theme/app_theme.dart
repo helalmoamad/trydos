@@ -1,7 +1,5 @@
 import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 part 'light_color_scheme.dart';
@@ -16,20 +14,19 @@ class AppTheme {
 
   static ThemeData get light {
     final textTheme = appTextTheme(
-        _builtInLightTheme.textTheme, _lightColorScheme.onBackground);
+        _builtInLightTheme.textTheme, _lightColorScheme.onSurface);
 
     return _builtInLightTheme.copyWith(
         colorScheme: _lightColorScheme,
         textTheme: textTheme,
-        useMaterial3: true,
-        pageTransitionsTheme: PageTransitionsTheme(
+        pageTransitionsTheme: const PageTransitionsTheme(
             builders: {
-              TargetPlatform.android: CupertinoPageTransitionsBuilderCustomBackGestureWidth(),
-              TargetPlatform.iOS: CupertinoPageTransitionsBuilderCustomBackGestureWidth(),
+              TargetPlatform.android: const CupertinoPageTransitionsBuilderCustomBackGestureWidth(),
+              TargetPlatform.iOS: const CupertinoPageTransitionsBuilderCustomBackGestureWidth(),
             }
         ),
         typography: Typography.material2018(),
-        scaffoldBackgroundColor: _lightColorScheme.background,
+        scaffoldBackgroundColor: _lightColorScheme.surface,
         primaryColor: _lightColorScheme.primary,
     );
   }

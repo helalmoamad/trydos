@@ -26,7 +26,7 @@ void main() {
           await SharedScenarios.goToVerifyOtp(tester: tester, isForLogin: true);
           ////////////////////////////
           final Finder otpRemainingTime =
-              find.byKey(Key(WidgetsKeys.otpRemainingTimeKey));
+              find.byKey(const Key(WidgetsKeys.otpRemainingTimeKey));
           await GlobalTestFunctions.findWidget(
             tester: tester,
             actual: otpRemainingTime,
@@ -55,7 +55,7 @@ void main() {
           await tester.pumpAndSettle();
 
           final Finder resendCodeButton =
-              find.byKey(Key(WidgetsKeys.resendCodeButtonKey));
+              find.byKey(const Key(WidgetsKeys.resendCodeButtonKey));
           await GlobalTestFunctions.findWidget(
             tester: tester,
             actual: resendCodeButton,

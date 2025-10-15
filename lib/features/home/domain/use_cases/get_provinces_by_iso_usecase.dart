@@ -4,7 +4,6 @@ import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
 
-import '../../data/models/get_story_for_product_model.dart';
 import '../repositories/home_repository.dart';
 
 @injectable

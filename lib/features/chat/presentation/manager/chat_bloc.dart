@@ -1,20 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mime/mime.dart';
 import 'package:stream_transform/stream_transform.dart';
-import 'package:trydos/common/helper/show_message.dart';
-import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/domain/use_cases/change_chat_property_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/delete_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_contacts_usecase.dart';
@@ -35,17 +29,14 @@ import 'package:trydos/features/chat/domain/use_cases/share_product_on_social_ap
 import 'package:trydos/features/chat/domain/use_cases/update_profile_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart';
-import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/domin/usecases/upload_file_cloudinary_usecase.dart';
-import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import 'chat_event.dart';
@@ -298,6 +289,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     final response = await sendMessageUseCase(
       SendMessageParams(
           content: event.content,
+          orderChatParticipantId: state.chatOrderParticipantId,
           extraFields: event.extraFields,
           isForward: event.isForward,
           mediaContent: event.mediaContent,
@@ -633,6 +625,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
     emit(state.copyWith(
         getChatsStatus: GetChatsStatus.loading,
+        chatOrderParticipantId: "",
         firstRequestForGetChats: !(event.getWithPagination ?? false)));
     final response = await getMyChatsUseCase(GetMyChatsParams(
         limit: event.limit,
@@ -878,6 +871,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         emit(
           state.copyWith(
             recipientUserId: r.data?.recipient?.id.toString(),
+            chatOrderParticipantId: r.data?.chatParticipant?.id.toString(),
             chats: newChats, // changed ? newChats : state.chats,
             newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
               ...(/*changed ?*/ newChats /*: state.chats*/),
@@ -1893,21 +1887,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     });
   }*/
 
-  _onGetMediaCountEvent(
-      GetMediaCountEvent event, Emitter<ChatState> emit) async {
-    emit(state.copyWith(getMediaCountStatus: GetMediaCountStatus.loading));
-    final response = await getMediaCountUseCase(
-        GetMediaCountParams(channelId: event.channelId));
-    response.fold(
-        (l) => emit(
-            state.copyWith(getMediaCountStatus: GetMediaCountStatus.failure)),
-        (r) => emit(state.copyWith(
-            getMediaCountStatus: GetMediaCountStatus.success,
-            fileCountInEachChat: r.data?.fileMessagesCount ?? 0,
-            imageCountInEachChat: r.data?.imageMessagesCount ?? 0,
-            videoCountInEachChat: r.data?.videoMessagesCount ?? 0)));
-  }
-
   _onChangeSlop(ChangeSlop event, Emitter<ChatState> emit) {
     emit(state.copyWith(slopMessageId: event.messageId));
     state.isSlpoing
@@ -2032,20 +2011,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           .firstWhere((element) => element.id == event.channelId);
     }
     bool isAFileMessageRemoved = false;
-    bool isAimageMessageRemoved = false;
-    bool isAdocumentMessageRemoved = false;
-
-    bool isAvideoMessageRemoved = false;
 
     int index =
         chat.messages!.indexWhere((element) => element.id == event.messageId);
-    isAimageMessageRemoved =
-        chat.messages![index].messageType!.name == 'ImageMessage';
-    isAdocumentMessageRemoved =
-        chat.messages![index].messageType!.name == 'FileMessage';
-
-    isAvideoMessageRemoved =
-        chat.messages![index].messageType!.name == 'VideoMessage';
 
     isAFileMessageRemoved =
         !chat.messages![index].messageType!.name!.contains('Call') &&

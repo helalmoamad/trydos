@@ -7,7 +7,6 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
@@ -20,11 +19,8 @@ import '../../../../../common/test_utils/widgets_keys.dart';
 
 import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_with_filters_model.dart';
-import '../../manager/homeBloc/home_event.dart';
 
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
-import 'package:get_it/get_it.dart';
 
 class CategoriesFilterList extends StatelessWidget {
   const CategoriesFilterList(

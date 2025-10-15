@@ -30,6 +30,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
               boxShadow: appBarParams.withShadow
                   ? [
                       BoxShadow(
+                          // ignore: deprecated_member_use
                           color: context.colorScheme.black.withOpacity(0.1),
                           blurRadius: 6)
                     ]
@@ -120,6 +121,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                       AppAssets.backIconArrowSvg,
                       matchTextDirection: true,
                       width: 12.w,
+                      // ignore: deprecated_member_use
                       color:
                           appBarParams.backIconColor ?? const Color(0xff388CFF),
                     ),

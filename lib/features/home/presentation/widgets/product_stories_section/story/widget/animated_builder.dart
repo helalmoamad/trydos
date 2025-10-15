@@ -42,6 +42,7 @@ class AnimatedBar extends StatelessWidget {
                               state.currentStoryInEachCollection[
                                   collectionIndex]!
                           ? Colors.white
+                          // ignore: deprecated_member_use
                           : Colors.white.withOpacity(0.5),
                     ),
                     position ==

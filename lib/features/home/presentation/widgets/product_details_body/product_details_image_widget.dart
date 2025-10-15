@@ -8,10 +8,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_deal_counter.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
@@ -108,6 +105,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
               boxShadow: withBackGroundShadow
                   ? [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: context.colorScheme.black.withOpacity(0.01),
                         blurRadius: blurRadius ?? 10,
                       ),
@@ -223,6 +221,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                                   SvgPicture.asset(
                                     AppAssets.flashDealSvg,
                                     height: 12,
+                                    // ignore: deprecated_member_use
                                     color: const Color(0xffFF6200),
                                   ),
                                   const SizedBox(

@@ -4,8 +4,6 @@ import 'package:trydos/features/authentication/data/models/send_otp_response_mod
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
-import '../../data/models/login_to_chat_response_model.dart';
-import '../../data/models/store_fcm_token_response_model.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable

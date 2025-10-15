@@ -174,6 +174,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                                   ),
                                   SvgPicture.asset(
                                     AppAssets.infoSvg,
+                                    // ignore: deprecated_member_use
                                     color: const Color(0xff402CDD),
                                     width: 25.w,
                                   ),
@@ -238,6 +239,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
               ),
               SvgPicture.asset(
                 AppAssets.chatWithQuestionSvg,
+                // ignore: deprecated_member_use
                 color: const Color(0xffD3D3D3),
                 height: 15,
               ),

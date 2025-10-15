@@ -6,11 +6,6 @@ import 'package:trydos/config/theme/typography.dart';
 
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class OfferTimeWidget extends StatefulWidget {

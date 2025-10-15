@@ -15,15 +15,11 @@ import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
-import 'package:get_it/get_it.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 
 class PriceFilter extends StatefulWidget {
@@ -166,6 +162,7 @@ class _PriceFilterState extends State<PriceFilter> {
                                             blurRadius: 3,
                                             offset: const Offset(0, 3),
                                             color:
+                                                // ignore: deprecated_member_use
                                                 Colors.black.withOpacity(0.05))
                                       ]),
                                 );
@@ -192,6 +189,7 @@ class _PriceFilterState extends State<PriceFilter> {
                                             blurRadius: 3,
                                             offset: const Offset(0, 3),
                                             color:
+                                                // ignore: deprecated_member_use
                                                 Colors.black.withOpacity(0.05))
                                       ]),
                                 );
@@ -320,6 +318,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             ),
                             SvgPicture.asset(
                               AppAssets.registerInfoSvg,
+                              // ignore: deprecated_member_use
                               color: const Color(0xffD3D3D3),
                             ),
                             BlocBuilder<BoutiqueBloc, BoutiqueState>(
@@ -363,6 +362,7 @@ class RPSCustomPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
+      // ignore: deprecated_member_use
       ..color = const Color(0xfff8f8f8).withOpacity(1.0)
       ..strokeWidth = 2
       ..style = PaintingStyle.fill;

@@ -737,276 +737,300 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 HelperFunctions.showVersionDialog(context);
               }
             },
-            child: WillPopScope(
-                onWillPop: () async {
-                  // إذا كانت صفحة البحث مفتوحة (currentIndex == 4)
-                  //  print(
-                  //     "FFFFFFFFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDDDDD${appBloc.state.currentIndex}");
-                  if (appBloc.state.currentIndex != 0) {
-                    // إذا كان الكيبورد مفتوح، أغلق الكيبورد فقط
-                    if (MediaQuery.of(context).viewInsets.bottom > 0) {
-                      FocusScope.of(context).unfocus();
-                      return false;
-                    }
+            child:
+                // ignore: deprecated_member_use
+                WillPopScope(
+                    onWillPop: () async {
+                      // إذا كانت صفحة البحث مفتوحة (currentIndex == 4)
+                      //  print(
+                      //     "FFFFFFFFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDDDDD${appBloc.state.currentIndex}");
+                      if (appBloc.state.currentIndex != 0) {
+                        // إذا كان الكيبورد مفتوح، أغلق الكيبورد فقط
+                        if (MediaQuery.of(context).viewInsets.bottom > 0) {
+                          FocusScope.of(context).unfocus();
+                          return false;
+                        }
 
-                    // نفذ منطق البحث
-                    controller.clear();
-                    appBloc.add(ChangeBasePage(0));
-                    GetIt.I<BoutiqueBloc>()
-                        .add(ResetAllSelectedAppliedFilterEvent());
-                    appBloc.add(HideBottomNavigationBar(false));
-                    return false;
-                  }
+                        // نفذ منطق البحث
+                        controller.clear();
+                        appBloc.add(ChangeBasePage(0));
+                        GetIt.I<BoutiqueBloc>()
+                            .add(ResetAllSelectedAppliedFilterEvent());
+                        appBloc.add(HideBottomNavigationBar(false));
+                        return false;
+                      }
 
-                  // للصفحات الأخرى، اسمح بالخروج العادي
-                  return true;
-                },
-                child: Scaffold(
-                    backgroundColor: colorScheme.surface,
-                    bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                        buildWhen: (p, c) =>
-                            p.showBars != c.showBars ||
-                            p.hideBottomNavigationBar !=
-                                c.hideBottomNavigationBar,
-                        builder: (context, state) {
-                          if (state.showBars == true) {
-                            return state.hideBottomNavigationBar
-                                ? const SizedBox.shrink()
-                                : AppBottomNavBar(
-                                    isShowPanelForVerified:
-                                        isShowPanelForVerified);
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                    body: BlocBuilder<HomeBloc, HomeState>(
-                        buildWhen: (p, c) =>
-                            p.getAllowedCountriesModel !=
-                                c.getAllowedCountriesModel ||
-                            p.getAllowedCountriesStatus !=
-                                c.getAllowedCountriesStatus,
-                        builder: (context, homestate) {
-                          return BlocBuilder<AuthBloc, AuthState>(
-                              buildWhen: (p, c) =>
-                                  p.getCustomerCountryStatus !=
-                                  c.getCustomerCountryStatus,
-                              builder: (context, authstate) {
-                                if ((homestate.getAllowedCountriesModel?.data
-                                            ?.countries?.length ??
-                                        0) ==
-                                    0) {
-                                  if (homestate.getAllowedCountriesStatus ==
-                                      GetAllowedCountriesStatus.failure) {
-                                    return Center(
-                                      child: Container(
-                                        width: 200,
-                                        height: 200,
-                                        child: TryAgainWidget(tryAgain: () {
-                                          homeBloc
-                                              .add(GetAllowedCountriesEvent());
-                                          GetIt.I<StoryBloc>().add(
-                                              const GetStoryEvent(
-                                                  withPaginition: false));
-                                          GetIt.I<AuthBloc>()
-                                              .add(GetUserCountryEvent());
-                                          Future.delayed(
-                                              const Duration(seconds: 3),
-                                              () => context.go("/"));
-                                        }),
-                                      ),
-                                    );
-                                  }
-                                  return Center(
-                                    child: TrydosLoader(),
-                                  );
-                                }
-                                visibleCountries.value = (homestate
-                                        .getAllowedCountriesModel!
-                                        .data!
-                                        .countries!
-                                        .any((element) {
-                                      return element.iso ==
-                                          (_prefsRepository.countryIso ?? "");
-                                    }) ||
-                                    _prefsRepository.userCountryIsAvailable ==
-                                        1);
-                                return ValueListenableBuilder<bool>(
-                                    valueListenable: visibleCountries,
-                                    builder: (context, visible, _) {
-                                      if (visible &&
-                                          !requestMainCategoriesDone) {
-                                        requestMainCategoriesDone = true;
-                                        // homeBloc.add(GetHomeBoutiqesEvent(
-                                        //     getWithPrefetchForBoutiques: true,
-                                        //     categorySlug: "Empty",
-                                        //     offset: "1",
-                                        //     context: context,
-                                        //     getWithPagination: false));
-                                        if (!(prefsRepository
-                                                .isFoundDataCashed ??
-                                            false)) {
-                                          categoryBloc.add(
-                                              GetMainCategoriesEvent(
-                                                  context: context));
-                                          GetIt.I<BoutiqueBloc>().add(
-                                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                                  categorySlugs: [],
-                                                  cashedOrginalBoutique: true,
-                                                  boutiqueSlug: "*featured*"));
-                                          GetIt.I<BoutiqueBloc>().add(
-                                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                                  categorySlugs: [],
-                                                  cashedOrginalBoutique: true,
-                                                  boutiqueSlug: "*flashDeal*"));
-                                          GetIt.I<BoutiqueBloc>().add(
-                                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                                  categorySlugs: [],
-                                                  cashedOrginalBoutique: true,
-                                                  boutiqueSlug:
-                                                      "*recommended*"));
-                                        }
+                      // للصفحات الأخرى، اسمح بالخروج العادي
+                      return true;
+                    },
+                    child: Scaffold(
+                        backgroundColor: colorScheme.surface,
+                        bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                            buildWhen: (p, c) =>
+                                p.showBars != c.showBars ||
+                                p.hideBottomNavigationBar !=
+                                    c.hideBottomNavigationBar,
+                            builder: (context, state) {
+                              if (state.showBars == true) {
+                                return state.hideBottomNavigationBar
+                                    ? const SizedBox.shrink()
+                                    : AppBottomNavBar(
+                                        isShowPanelForVerified:
+                                            isShowPanelForVerified);
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            }),
+                        body: BlocBuilder<HomeBloc, HomeState>(
+                            buildWhen: (p, c) =>
+                                p.getAllowedCountriesModel !=
+                                    c.getAllowedCountriesModel ||
+                                p.getAllowedCountriesStatus !=
+                                    c.getAllowedCountriesStatus,
+                            builder: (context, homestate) {
+                              return BlocBuilder<AuthBloc, AuthState>(
+                                  buildWhen: (p, c) =>
+                                      p.getCustomerCountryStatus !=
+                                      c.getCustomerCountryStatus,
+                                  builder: (context, authstate) {
+                                    if ((homestate.getAllowedCountriesModel
+                                                ?.data?.countries?.length ??
+                                            0) ==
+                                        0) {
+                                      if (homestate.getAllowedCountriesStatus ==
+                                          GetAllowedCountriesStatus.failure) {
+                                        return Center(
+                                          child: Container(
+                                            width: 200,
+                                            height: 200,
+                                            child: TryAgainWidget(tryAgain: () {
+                                              homeBloc.add(
+                                                  GetAllowedCountriesEvent());
+                                              GetIt.I<StoryBloc>().add(
+                                                  const GetStoryEvent(
+                                                      withPaginition: false));
+                                              GetIt.I<AuthBloc>()
+                                                  .add(GetUserCountryEvent());
+                                              Future.delayed(
+                                                  const Duration(seconds: 3),
+                                                  () => context.go("/"));
+                                            }),
+                                          ),
+                                        );
+                                      }
+                                      return Center(
+                                        child: TrydosLoader(),
+                                      );
+                                    }
+                                    visibleCountries.value = (homestate
+                                            .getAllowedCountriesModel!
+                                            .data!
+                                            .countries!
+                                            .any((element) {
+                                          return element.iso ==
+                                              (_prefsRepository.countryIso ??
+                                                  "");
+                                        }) ||
+                                        _prefsRepository
+                                                .userCountryIsAvailable ==
+                                            1);
+                                    return ValueListenableBuilder<bool>(
+                                        valueListenable: visibleCountries,
+                                        builder: (context, visible, _) {
+                                          if (visible &&
+                                              !requestMainCategoriesDone) {
+                                            requestMainCategoriesDone = true;
+                                            // homeBloc.add(GetHomeBoutiqesEvent(
+                                            //     getWithPrefetchForBoutiques: true,
+                                            //     categorySlug: "Empty",
+                                            //     offset: "1",
+                                            //     context: context,
+                                            //     getWithPagination: false));
+                                            if (!(prefsRepository
+                                                    .isFoundDataCashed ??
+                                                false)) {
+                                              categoryBloc.add(
+                                                  GetMainCategoriesEvent(
+                                                      context: context));
+                                              GetIt.I<BoutiqueBloc>().add(
+                                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                      categorySlugs: [],
+                                                      cashedOrginalBoutique:
+                                                          true,
+                                                      boutiqueSlug:
+                                                          "*featured*"));
+                                              GetIt.I<BoutiqueBloc>().add(
+                                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                      categorySlugs: [],
+                                                      cashedOrginalBoutique:
+                                                          true,
+                                                      boutiqueSlug:
+                                                          "*flashDeal*"));
+                                              GetIt.I<BoutiqueBloc>().add(
+                                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                                      categorySlugs: [],
+                                                      cashedOrginalBoutique:
+                                                          true,
+                                                      boutiqueSlug:
+                                                          "*recommended*"));
+                                            }
 
-                                        /* if (prefsRepository.marketToken != null) {
+                                            /* if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());
                                       homeBloc.add(GetCartItemEvent());
                                       homeBloc
                                           .add(GetProductsListInCartEvent());
                                     }*/
-                                      }
+                                          }
 
-                                      visible
-                                          ? appBloc.add(
-                                              HideBottomNavigationBar(false))
-                                          : appBloc.add(
-                                              HideBottomNavigationBar(true));
-                                      return !visible
-                                          ? Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 1.sh / 3),
-                                              child: Directionality(
-                                                textDirection:
-                                                    TextDirection.ltr,
-                                                child: Column(
-                                                  children: [
-                                                    MyTextWidget(
-                                                      LocaleKeys
-                                                          .country_not_available
-                                                          .tr(),
-                                                      style: const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    MyTextWidget(
-                                                      LocaleKeys
-                                                          .choose_a_country
-                                                          .tr(),
-                                                      style: const TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Center(
-                                                        child: SizedBox(
-                                                      width: 1.sw,
-                                                      child:
-                                                          AvailableCountriesList(
-                                                        fromHomepage: false,
-                                                        key: TestVariables
-                                                                .kTestMode
-                                                            ? const Key(WidgetsKeys
-                                                                .countryDropDownKey)
-                                                            : null,
-                                                      ),
-                                                    )),
-                                                    const SizedBox(height: 80),
-                                                    ElevatedButton(
-                                                      key: TestVariables
-                                                              .kTestMode
-                                                          ? const Key(WidgetsKeys
-                                                              .chooseCountryButtonKey)
-                                                          : null,
-                                                      onPressed: () {
-                                                        if (_prefsRepository
-                                                                .userChoosedCountryIso !=
-                                                            null) {
-                                                          visibleCountries
-                                                              .value = !visible;
-                                                          _prefsRepository
-                                                              .setUserCountryIsAvailable(
-                                                                  1);
-                                                          ///////////////////
-
-                                                          FirebaseAnalyticsService
-                                                              .logEventForSession(
-                                                            executedEventName:
-                                                                AnalyticsButtonsEventNameConst
-                                                                    .chooseCountryAndContinueButton,
-                                                            eventName:
-                                                                AnalyticsEventsConst
-                                                                    .CLICK,
-                                                            extraParams: {
-                                                              'button_name':
-                                                                  AnalyticsButtonsEventNameConst
-                                                                      .chooseCountryAndContinueButton,
-                                                            },
-                                                          );
-                                                        } else {
-                                                          showMessage(
-                                                              LocaleKeys
-                                                                  .you_have_to_choose_a_country
-                                                                  .tr(),
-                                                              backGroundColor:
-                                                                  Colors.black,
-                                                              foreGroundColor:
-                                                                  Colors.white);
-                                                        }
-                                                      },
-                                                      child: MyTextWidget(
+                                          visible
+                                              ? appBloc.add(
+                                                  HideBottomNavigationBar(
+                                                      false))
+                                              : appBloc.add(
+                                                  HideBottomNavigationBar(
+                                                      true));
+                                          return !visible
+                                              ? Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 1.sh / 3),
+                                                  child: Directionality(
+                                                    textDirection:
+                                                        TextDirection.ltr,
+                                                    child: Column(
+                                                      children: [
+                                                        MyTextWidget(
                                                           LocaleKeys
-                                                              .ok_and_continue
-                                                              .tr()),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            )
-                                          : Stack(
-                                              alignment: Alignment.topCenter,
-                                              children: [
-                                                BlocBuilder<AppBloc, AppState>(
-                                                  buildWhen: (oldState,
-                                                          newState) =>
-                                                      oldState.currentIndex !=
-                                                      newState.currentIndex,
-                                                  builder: (_, state) {
-                                                    return pages![
-                                                        state.currentIndex];
-                                                  },
-                                                ),
-                                                BlocBuilder<AppBloc, AppState>(
-                                                    buildWhen: (p, c) =>
-                                                        p.showBars !=
-                                                            c.showBars ||
-                                                        p.hideBottomNavigationBar !=
-                                                            c
-                                                                .hideBottomNavigationBar ||
-                                                        p.currentIndex !=
-                                                            c.currentIndex,
-                                                    builder: (context, state) {
-                                                      if (state.hideBottomNavigationBar ==
-                                                              true &&
-                                                          state.currentIndex ==
-                                                              0) {
-                                                        return const SizedBox
-                                                            .shrink(); /*TrydosAppBar(
+                                                              .country_not_available
+                                                              .tr(),
+                                                          style: const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        MyTextWidget(
+                                                          LocaleKeys
+                                                              .choose_a_country
+                                                              .tr(),
+                                                          style: const TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Center(
+                                                            child: SizedBox(
+                                                          width: 1.sw,
+                                                          child:
+                                                              AvailableCountriesList(
+                                                            fromHomepage: false,
+                                                            key: TestVariables
+                                                                    .kTestMode
+                                                                ? const Key(
+                                                                    WidgetsKeys
+                                                                        .countryDropDownKey)
+                                                                : null,
+                                                          ),
+                                                        )),
+                                                        const SizedBox(
+                                                            height: 80),
+                                                        ElevatedButton(
+                                                          key: TestVariables
+                                                                  .kTestMode
+                                                              ? const Key(
+                                                                  WidgetsKeys
+                                                                      .chooseCountryButtonKey)
+                                                              : null,
+                                                          onPressed: () {
+                                                            if (_prefsRepository
+                                                                    .userChoosedCountryIso !=
+                                                                null) {
+                                                              visibleCountries
+                                                                      .value =
+                                                                  !visible;
+                                                              _prefsRepository
+                                                                  .setUserCountryIsAvailable(
+                                                                      1);
+                                                              ///////////////////
+
+                                                              FirebaseAnalyticsService
+                                                                  .logEventForSession(
+                                                                executedEventName:
+                                                                    AnalyticsButtonsEventNameConst
+                                                                        .chooseCountryAndContinueButton,
+                                                                eventName:
+                                                                    AnalyticsEventsConst
+                                                                        .CLICK,
+                                                                extraParams: {
+                                                                  'button_name':
+                                                                      AnalyticsButtonsEventNameConst
+                                                                          .chooseCountryAndContinueButton,
+                                                                },
+                                                              );
+                                                            } else {
+                                                              showMessage(
+                                                                  LocaleKeys
+                                                                      .you_have_to_choose_a_country
+                                                                      .tr(),
+                                                                  backGroundColor:
+                                                                      Colors
+                                                                          .black,
+                                                                  foreGroundColor:
+                                                                      Colors
+                                                                          .white);
+                                                            }
+                                                          },
+                                                          child: MyTextWidget(
+                                                              LocaleKeys
+                                                                  .ok_and_continue
+                                                                  .tr()),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              : Stack(
+                                                  alignment:
+                                                      Alignment.topCenter,
+                                                  children: [
+                                                    BlocBuilder<AppBloc,
+                                                        AppState>(
+                                                      buildWhen: (oldState,
+                                                              newState) =>
+                                                          oldState
+                                                              .currentIndex !=
+                                                          newState.currentIndex,
+                                                      builder: (_, state) {
+                                                        return pages![
+                                                            state.currentIndex];
+                                                      },
+                                                    ),
+                                                    BlocBuilder<AppBloc,
+                                                            AppState>(
+                                                        buildWhen: (p, c) =>
+                                                            p.showBars !=
+                                                                c.showBars ||
+                                                            p.hideBottomNavigationBar !=
+                                                                c
+                                                                    .hideBottomNavigationBar ||
+                                                            p.currentIndex !=
+                                                                c.currentIndex,
+                                                        builder:
+                                                            (context, state) {
+                                                          if (state.hideBottomNavigationBar ==
+                                                                  true &&
+                                                              state.currentIndex ==
+                                                                  0) {
+                                                            return const SizedBox
+                                                                .shrink(); /*TrydosAppBar(
                                                           appBarParams:
                                                               AppBarParams(
                                                                   hasLeading:
@@ -1108,30 +1132,30 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                   withShadow:
                                                                       false),
                                                         );*/
-                                                      } else if (state.showBars ==
-                                                                  true &&
+                                                          } else if (state.showBars ==
+                                                                      true &&
+                                                                  state.currentIndex ==
+                                                                      0 ||
                                                               state.currentIndex ==
-                                                                  0 ||
-                                                          state.currentIndex ==
-                                                              4) {
-                                                        return TabsBar(
-                                                          controller:
-                                                              controller,
-                                                          buildSearchResult:
-                                                              buildSearchResult,
-                                                          appearTrendingAndHistory:
-                                                              appearTrendingAndHistory,
-                                                        );
-                                                      } else {
-                                                        return const SizedBox
-                                                            .shrink();
-                                                      }
-                                                    })
-                                              ],
-                                            );
-                                    });
-                              });
-                        })))),
+                                                                  4) {
+                                                            return TabsBar(
+                                                              controller:
+                                                                  controller,
+                                                              buildSearchResult:
+                                                                  buildSearchResult,
+                                                              appearTrendingAndHistory:
+                                                                  appearTrendingAndHistory,
+                                                            );
+                                                          } else {
+                                                            return const SizedBox
+                                                                .shrink();
+                                                          }
+                                                        })
+                                                  ],
+                                                );
+                                        });
+                                  });
+                            })))),
       ),
     );
   }

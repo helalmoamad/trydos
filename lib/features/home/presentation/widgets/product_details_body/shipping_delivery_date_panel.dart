@@ -10,11 +10,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class ShippingDeliveryDatePanel extends StatelessWidget {
   const ShippingDeliveryDatePanel({super.key, required this.panelController});
@@ -60,6 +55,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                 ),
                 SvgPicture.asset(
                   AppAssets.deliveryPathSvg,
+                  // ignore: deprecated_member_use
                   color: const Color(0xff1D1D1D),
                   height: 30,
                 ),

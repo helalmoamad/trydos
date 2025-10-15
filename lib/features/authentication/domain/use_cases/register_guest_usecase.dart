@@ -1,8 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';

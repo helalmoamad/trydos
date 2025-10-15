@@ -136,7 +136,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
   }*/
 
   /// 🖼️ عرض صورة واحدة فقط (أول صورة) - مع الـ loading الأصلي
-  Widget _buildSingleImage(bool isRedeem) {
+/*  Widget _buildSingleImage(bool isRedeem) {
     // الحصول على أول صورة متاحة
     String? imageUrl;
     double imageHeight = 290;
@@ -200,7 +200,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                   )),
           );
         });
-  }
+  }*/
 
   /// 💰 معلومات المنتج المبسطة
   Widget _buildProductInfo() {

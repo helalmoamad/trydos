@@ -12,7 +12,6 @@ import 'package:trydos/core/api/methods/post.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
-import '../models/upload_story_response_model.dart';
 import '../models/delete_story_model.dart';
 import '../../data/models/get_stories_model.dart';
 

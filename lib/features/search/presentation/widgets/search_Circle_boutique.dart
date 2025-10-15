@@ -12,8 +12,6 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
@@ -22,10 +20,6 @@ import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/data/models/get_product_filters_model.dart';
-
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-
-import 'package:get_it/get_it.dart';
 
 class SearchChipBoutique extends StatefulWidget {
   final String title;
@@ -120,6 +114,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                           SvgPicture.asset(
                             AppAssets.backArrowArabic,
                             matchTextDirection: true,
+                            // ignore: deprecated_member_use
                             color: const Color(0xffC4C2C2),
                             width: 10,
                             height: 10,

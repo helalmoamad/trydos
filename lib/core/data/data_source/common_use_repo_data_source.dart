@@ -1,7 +1,6 @@
 import 'package:injectable/injectable.dart';
 
 import '../../../common/constant/configuration/cloudinary_url_routes.dart';
-import '../../../service/local_notification_service.dart';
 import '../../../service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import '../../api/client_config.dart';
 import '../../api/methods/detect_server.dart';

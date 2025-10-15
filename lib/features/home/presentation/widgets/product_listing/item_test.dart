@@ -11,7 +11,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -93,23 +92,6 @@ class _ProductListing3DSliderOptimizedState
   // 🛡️ COMPREHENSIVE RANGE ERROR PROTECTION HELPERS
 
   /// 🔒 Safe Index Access Helper
-  int _getSafeColorIndex(int index) {
-    if (_processedColorImages?.isEmpty ?? true) return 0;
-    return index.clamp(0, _processedColorImages!.length - 1);
-  }
-
-  /// 🔒 Safe Image Index Access Helper
-  int _getSafeImageIndex(int index, List<dynamic>? list) {
-    if (list?.isEmpty ?? true) return 0;
-    return index.clamp(0, list!.length - 1);
-  }
-
-  /// 🔒 Safe Array Access Helper
-  T? _safeArrayAccess<T>(List<T>? array, int index, {T? defaultValue}) {
-    if (array?.isEmpty ?? true) return defaultValue;
-    if (index < 0 || index >= array!.length) return defaultValue;
-    return array[index];
-  }
 
   @override
   void initState() {
@@ -449,6 +431,7 @@ class _ProductListing3DSliderOptimizedState
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.white.withOpacity(0.5),
               offset: const Offset(0, 3),
               inset: true,
@@ -482,6 +465,7 @@ class _ProductListing3DSliderOptimizedState
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.white.withOpacity(0.5),
                       offset: const Offset(0, 3),
                       inset: true,
@@ -745,8 +729,6 @@ class _ProductListing3DSliderOptimizedState
   /// ⭕ Optimized Color Circles - FIXED: منع الحركة التلقائية
   Widget _buildColorCircles() {
     if (_processedColorImages?.isEmpty ?? true) return const SizedBox();
-
-    final colorCount = _processedColorImages!.length;
 
     return Gallery3D(
       controller: _colorController,
@@ -1018,32 +1000,6 @@ class _ProductListing3DSliderOptimizedState
   }
 
   // 🔧 Helper Methods
-
-  /// 🛑 Should Stop Image Scrolling - FIXED: تمرير محسن
-  bool _shouldStopImageScrolling(double primaryDelta) {
-    final productImages = widget.productItem.images ?? [];
-    if (productImages.isEmpty) return true;
-
-    final maxIndex = productImages.length - 1;
-    final currentIndex = _imageController.currentIndex.clamp(0, maxIndex);
-
-    // 🔥 تحسين: السماح بالتمرير الدائري مع حماية الحدود
-    return false; // السماح بالتمرير دائماً للحصول على تجربة أفضل
-  }
-
-  /// 🛑 Should Stop Color Scrolling - FIXED: تمرير محسن للألوان
-  bool _shouldStopColorScrolling(double primaryDelta) {
-    if (_processedColorImages?.isEmpty ?? true) return true;
-
-    final colorCount = _processedColorImages!.length;
-    if (colorCount <= 3) return false; // السماح بالتمرير للقوائم القصيرة
-
-    final currentIndex = _colorController.currentIndex.clamp(0, colorCount - 1);
-
-    // 🚀 تحسين: تقليل القيود لتحسين التجربة
-    return (primaryDelta <= 0 && currentIndex >= colorCount - 2) ||
-        (primaryDelta >= 0 && currentIndex <= 1);
-  }
 
   /// 👁️ Should Show Color Circle - FIXED: إظهار جميع الدوائر المتاحة
   bool _shouldShowColorCircle(int index) {

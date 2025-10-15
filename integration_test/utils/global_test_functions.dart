@@ -72,12 +72,12 @@ class GlobalTestFunctions {
   }) async {
     await Future.delayed(const Duration(seconds: 5));
 
-    final Finder otpItem1 = find.byKey(Key('otp_item_1'));
-    final Finder otpItem2 = find.byKey(Key('otp_item_2'));
-    final Finder otpItem3 = find.byKey(Key('otp_item_3'));
-    final Finder otpItem4 = find.byKey(Key('otp_item_4'));
-    final Finder otpItem5 = find.byKey(Key('otp_item_5'));
-    final Finder otpItem6 = find.byKey(Key('otp_item_6'));
+    final Finder otpItem1 = find.byKey(const Key('otp_item_1'));
+    final Finder otpItem2 = find.byKey(const Key('otp_item_2'));
+    final Finder otpItem3 = find.byKey(const Key('otp_item_3'));
+    final Finder otpItem4 = find.byKey(const Key('otp_item_4'));
+    final Finder otpItem5 = find.byKey(const Key('otp_item_5'));
+    final Finder otpItem6 = find.byKey(const Key('otp_item_6'));
 
     await tester.enterText(otpItem1, number);
     await tester.pumpAndSettle();

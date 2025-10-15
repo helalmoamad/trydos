@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
@@ -144,6 +142,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                           boxShadow: [
                                             BoxShadow(
                                               color: const Color(0xff000000)
+                                                  // ignore: deprecated_member_use
                                                   .withOpacity(0.2),
                                               offset: const Offset(0, 3),
                                               blurRadius: 6,

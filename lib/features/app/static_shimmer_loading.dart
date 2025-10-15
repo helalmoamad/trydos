@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trydos/common/constant/design/assets_provider.dart';
 
 /// Shimmer ثابت محسن للأداء - بدون animation معقدة
 class StaticShimmerLoading extends StatelessWidget {
@@ -108,6 +106,7 @@ class StaticShimmerLoading extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(8),
       ),

@@ -159,6 +159,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                   borderRadius: BorderRadius.circular(15.0),
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: const Color(0xff000000).withOpacity(0.1),
                       offset: const Offset(0, 3),
                       blurRadius: 10,
@@ -312,6 +313,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                             boxShadow: [
                                               BoxShadow(
                                                   color: Colors.white
+                                                      // ignore: deprecated_member_use
                                                       .withOpacity(0.7),
                                                   offset: const Offset(0, 3),
                                                   blurRadius: 6,
@@ -381,6 +383,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                   borderRadius: BorderRadius.circular(15.0),
                                   boxShadow: [
                                     BoxShadow(
+                                        // ignore: deprecated_member_use
                                         color: Colors.white.withOpacity(0.7),
                                         offset: const Offset(0, 3),
                                         blurRadius: 6,
@@ -840,6 +843,7 @@ class ProductItemCircle extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: const Color(0xff000000).withOpacity(0.16),
                         offset: const Offset(0, 3),
                         blurRadius: 3,
@@ -864,6 +868,7 @@ class ProductItemCircle extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
+                          // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.7),
                           offset: const Offset(0, 4),
                           blurRadius: 6,
@@ -885,6 +890,7 @@ class ProductItemCircle extends StatelessWidget {
                               blurRadius: 3,
                             ),
                             BoxShadow(
+                              // ignore: deprecated_member_use
                               color: Colors.white.withOpacity(0.5),
                               inset: true,
                               offset: const Offset(0, 4),

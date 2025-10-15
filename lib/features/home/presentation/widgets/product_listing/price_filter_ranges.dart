@@ -17,12 +17,8 @@ import 'package:trydos/service/firebase_analytics_service/firebase_analytics_ser
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import '../../manager/homeBloc/home_bloc.dart';
-import '../../manager/homeBloc/home_event.dart';
 
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
-import 'package:get_it/get_it.dart';
 
 class PriceFiltersRangesList extends StatefulWidget {
   const PriceFiltersRangesList({

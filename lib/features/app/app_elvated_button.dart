@@ -122,6 +122,7 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
         shape: defaultElevatedTheme.style?.shape?.resolve({}),
         surfaceTintColor: colorScheme.primary,
         elevation: 0.0,
+        // ignore: deprecated_member_use
         shadowColor: colorScheme.white.withOpacity(0.1),
       ),
     );

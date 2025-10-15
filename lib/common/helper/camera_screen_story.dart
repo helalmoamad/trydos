@@ -5,17 +5,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:video_player/video_player.dart';
 import '../../features/app/my_text_widget.dart';
 
+// ignore: must_be_immutable
 class CameraScreenStory extends StatefulWidget {
   List<CameraDescription> cameras;
 
@@ -116,9 +114,7 @@ class _CameraScreenState extends State<CameraScreenStory>
   FlashMode? _currentFlashMode;
   File? imageFile;
   //todo exposure values
-  double _minAvailableExposureOffset = 0.0;
-  double _maxAvailableExposureOffset = 0.0;
-  final double _currentExposureOffset = 0.0;
+
   XFile? rawImage;
   File? videoFile;
   //todo zoom values
@@ -165,14 +161,6 @@ class _CameraScreenState extends State<CameraScreenStory>
       cameraController
           .getMinZoomLevel()
           .then((value) => _minAvailableZoom = value);
-//todo exposure
-      cameraController
-          .getMinExposureOffset()
-          .then((value) => _minAvailableExposureOffset = value);
-
-      cameraController
-          .getMaxExposureOffset()
-          .then((value) => _maxAvailableExposureOffset = value);
     } on CameraException catch (e) {
       debugPrint('Error initializing camera: $e');
     }
@@ -188,6 +176,7 @@ class _CameraScreenState extends State<CameraScreenStory>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:delayed_display/delayed_display.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -27,7 +26,6 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
-import 'package:trydos/features/app/memory_management_helper.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
     as product;
 
@@ -42,22 +40,14 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet_new.dart';
-import 'package:trydos/features/home/presentation/widgets/product_listing/item_test.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
-import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/language_service.dart';
-import 'package:tuple/tuple.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -126,7 +116,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   late HomeBloc homeBloc;
   late BoutiqueBloc boutiqueBloc;
   late CategoryBloc categoryBloc;
-  double? _previousOffset;
+
   final FocusNode focusNode = FocusNode();
 
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
@@ -338,47 +328,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    /* homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
-        isChangedVariationWhenQtyZero: false));
-    homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
-        isChangedVariationWhenQtyZero: false));
 
-    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
-        sizeAndColorFilterinTextToSearch: {}));
-    appBloc.add(HideBottomNavigationBar(false));
-    appBloc.add(ShowOrHideBars(true));
-    appBloc.add(ChangeIndexForSearch(1));*/
-    // if (!widget.fromSearch) {
-    //   homeBloc.add(GetProductsWithoutFiltersEvent(
-    //     boutiqueSlug: widget.boutiqueSlug!,
-    //     category: widget.category,
-    //     offset: 1,
-    //   ));
-    // }
-    // if (!widget.fromSearch) {
-    //   homeBloc.add(GetProductFiltersEvent(
-    //       getProductsFilterPreFetch: true,
-    //       getWithoutFilter: true,
-    //       cashedOrginalBoutique: true,
-    //       fromHomePageSearch: widget.fromSearch,
-    //       boutiqueSlug: widget.boutiqueSlug,
-    //       category: widget.category,
-    //       searchText: widget.fromSearch ? widget.searchText : null));
-    // }
-    /* if (boutiqueBloc.state.boutiquesThatDidPrefetch[key] == true &&
-        homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[
-                key] ==
-            null) {
-      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] =
-          true;
-      boutiqueBloc.PrefetchProductsForFirstFiveFilter(
-          boutiqueSlug: widget.boutiqueSlug,
-          categorySlug: widget.category,
-          filter: boutiqueBloc.state.getProductFiltersModel[key]?.filters);
-    } else if (boutiqueBloc.state.boutiquesThatDidPrefetch[key] == null) {
-      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] =
-          true;
-    }*/
     if (widget.fromNotificationCategory ?? false) {
       homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
           isChangedVariationWhenQtyZero: false));
@@ -433,10 +383,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void dispose() {
-    productSlugToSaveVideoTimer = [];
+    //   productSlugToSaveVideoTimer = [];
     try {
-      clearvideoProductInListingController(
-          productSlug: ""); // 🚀 تحسين الأداء عند إغلاق الصفحة لتسريع الانتقال
+//clearvideoProductInListingController(
+      //     productSlug: ""); // 🚀 تحسين الأداء عند إغلاق الصفحة لتسريع الانتقال
       debugPrint('🏁 Product listing dispose started');
 
       // إيقاف الـ listeners أولاً لمنع العمليات غير الضرورية
@@ -502,7 +452,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return WillPopScope(
+    return
+        // ignore: deprecated_member_use
+        WillPopScope(
       onWillPop: () async {
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
           FocusScope.of(context).unfocus();
@@ -985,6 +937,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 AppAssets.searchOutlinedSvg,
                                                                                 height: 20,
                                                                                 width: 20,
+                                                                                // ignore: deprecated_member_use
                                                                                 color: const Color(0xff388CFF),
                                                                               ),
                                                                             ),
@@ -1079,6 +1032,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   AppAssets.searchOutlinedSvg,
                                                                                   height: 20,
                                                                                   width: 20,
+                                                                                  // ignore: deprecated_member_use
                                                                                   color: const Color(0xff388CFF),
                                                                                 ),
                                                                               ),
@@ -1274,6 +1228,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           AppAssets.filtersSvg,
                                                                                           width: 20,
                                                                                           height: 20,
+                                                                                          // ignore: deprecated_member_use
                                                                                           color: isExpanded ? const Color(0xffFF5F61) : null,
                                                                                         ),
                                                                                       ));
@@ -1331,6 +1286,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               AppAssets.shareSvg,
                                                                                               width: 20,
                                                                                               height: 20,
+                                                                                              // ignore: deprecated_member_use
                                                                                               color: const Color(0xff3C3C3C),
                                                                                             )
                                                                                           : SvgPicture.asset(
@@ -1338,6 +1294,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               AppAssets.closeSvg,
                                                                                               width: 15,
                                                                                               height: 15,
+                                                                                              // ignore: deprecated_member_use
                                                                                               color: const Color(0xffFF5F61),
                                                                                             ),
                                                                                       SizedBox(width: !isExpanded ? 10.0 : 12.5)
@@ -1509,7 +1466,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           decoration: BoxDecoration(
                                                                                             borderRadius: BorderRadius.circular(15.0),
                                                                                             boxShadow: [
-                                                                                              BoxShadow(color: Colors.white.withOpacity(0.7), offset: const Offset(0, 3), blurRadius: 6, inset: true),
+                                                                                              BoxShadow(
+                                                                                                  // ignore: deprecated_member_use
+                                                                                                  color:
+
+                                                                                                      // ignore: deprecated_member_use
+                                                                                                      Colors.white.withOpacity(0.7),
+                                                                                                  offset: const Offset(0, 3),
+                                                                                                  blurRadius: 6,
+                                                                                                  inset: true),
                                                                                             ],
                                                                                           ),
                                                                                         ),
@@ -1824,10 +1789,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 isExpanded = state
                                                         .isExpandedForListingPage ??
                                                     false;
-                                                GetProductFiltersModel?
-                                                    appliedFiltersByUser =
-                                                    state.appliedFiltersByUser[
-                                                        key];
+
                                                 // String? currentAppliedFilterSllug =
                                                 //     "null";
                                                 /* if (!isExpanded &&
@@ -2435,6 +2397,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       BoxShadow(
                                         offset: const Offset(0, 3),
                                         blurRadius: 6,
+                                        // ignore: deprecated_member_use
                                         color: Colors.white.withOpacity(0.16),
                                         inset: true,
                                       ),
@@ -2463,6 +2426,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           child: Container(
                             height: 1.sh,
                             width: 1.sw,
+                            // ignore: deprecated_member_use
                             color: Colors.black.withOpacity(0.55),
                           ))
                       : const SizedBox.shrink();

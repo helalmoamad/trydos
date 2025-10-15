@@ -6,10 +6,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
-import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
-import 'package:trydos/features/home/data/models/upload_images_for_return_product_model.dart';
 
-import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 import 'package:trydos/service/language_service.dart';
 

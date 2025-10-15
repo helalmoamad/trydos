@@ -1,9 +1,7 @@
-import 'dart:math';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -17,18 +15,13 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:tuple/tuple.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/theme_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../data/models/get_product_detail_without_related_products_model.dart'
     show ChoiceOption;
 
+// ignore: must_be_immutable
 class SelectSizeContent extends StatefulWidget {
   SelectSizeContent({
     super.key,
@@ -135,6 +128,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
             color: colorScheme.white,
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.1),
                 offset: const Offset(0, -3),
                 blurRadius: 10,
@@ -216,6 +210,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   decoration: BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
+                                        // ignore: deprecated_member_use
                                         color: Colors.black.withOpacity(0.1),
                                         offset: const Offset(0, 3),
                                         blurRadius: 3,

@@ -19,7 +19,6 @@ import 'package:trydos/service/screen_service.dart';
 import 'package:trydos/service/service_provider.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
-import 'service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class TrydosApplication extends StatefulWidget {
   const TrydosApplication({Key? key, required this.navKey}) : super(key: key);

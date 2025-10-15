@@ -11,19 +11,14 @@ extension MyColorScheme on ColorScheme {
       400: Color(_primaryGreyValue),
       500: Color(0xff707070),
       600: Color(0xff383838),
-      700:Color(0xFFBFBFBF),
-      800:Color(0xff848484),
+      700: Color(0xFFBFBFBF),
+      800: Color(0xff848484),
     },
   );
 
   static const int _primaryGreyValue = 0xff585858;
 
-  static const MaterialColor _blackPrimary = MaterialColor(
-    _blackPrimaryValue,
-    <int, Color>{},
-  );
-
-  static const int _blackPrimaryValue = 0xff1f6e1a;
+  //static const int _blackPrimaryValue = 0xff1f6e1a;
 
   static const MaterialColor _hint = MaterialColor(
     _primaryHintValue,
@@ -70,13 +65,14 @@ extension MyColorScheme on ColorScheme {
   Color get grey600 =>
       brightness == Brightness.light ? _grey.shade600 : _grey.shade600;
 
-
   Color get drawer => brightness == Brightness.light ? _drawer : _drawer;
 
   Color get white => brightness == Brightness.light ? _white : _white;
 
-  Color get grey700 => brightness == Brightness.light ? _grey.shade700 : _grey.shade700 ;
-  Color get grey800 => brightness == Brightness.light ? _grey.shade700 : _grey.shade700 ;
+  Color get grey700 =>
+      brightness == Brightness.light ? _grey.shade700 : _grey.shade700;
+  Color get grey800 =>
+      brightness == Brightness.light ? _grey.shade700 : _grey.shade700;
 
   Color get dividerColor => const Color(0xffDFDFDF);
 

@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -270,6 +267,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                     children: [
                       SvgPicture.asset(
                         AppAssets.addPhotoSvg,
+                        // ignore: deprecated_member_use
                         color: const Color(0xffFFFFFF),
                       ),
                       const SizedBox(width: 10),
@@ -299,6 +297,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                       child: SvgPicture.asset(
                         width: 50,
                         AppAssets.trySvg,
+                        // ignore: deprecated_member_use
                         color: const Color(0xffD3D3D3),
                       ),
                     )

@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'dart:ui' as ui;
 
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:shimmer/shimmer.dart';
@@ -16,11 +13,7 @@ import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
-import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart'
     show CollectionStoryModel, Story;
@@ -670,6 +663,7 @@ class _StoriesListState extends State<StoriesList> {
                                                                   BoxShadow(
                                                                     color: const Color(
                                                                             0xff000000)
+                                                                        // ignore: deprecated_member_use
                                                                         .withOpacity(
                                                                             0.4),
                                                                     offset:

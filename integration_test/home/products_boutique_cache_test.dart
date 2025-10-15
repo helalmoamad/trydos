@@ -6,8 +6,6 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/main.dart' as app;
@@ -24,7 +22,7 @@ void main() {
   }) async {
     // ///////////  no loading  /////////
     Finder boutiqueProductListingLoadingWidget =
-        find.byKey(Key(WidgetsKeys.boutiqueProductListingLoadingKey));
+        find.byKey(const Key(WidgetsKeys.boutiqueProductListingLoadingKey));
     await GlobalTestFunctions.findNoWidget(
       tester: tester,
       actual: boutiqueProductListingLoadingWidget,
@@ -45,7 +43,7 @@ void main() {
     expect(boutiqueState.getProductFiltersModel, isNot(equals({})));
     // ///////////  Find product List and filters  /////////
     Finder productListFilterWidget =
-        find.byKey(Key(WidgetsKeys.productListFilterKey));
+        find.byKey(const Key(WidgetsKeys.productListFilterKey));
     ///////////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -56,7 +54,7 @@ void main() {
     );
     //////////////////////////////
     final Finder productsList = find.byKey(
-      Key(WidgetsKeys.productsListKey),
+      const Key(WidgetsKeys.productsListKey),
     );
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -77,7 +75,7 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ////////////// Find Boutiques HomePageCard //////////////
       final Finder boutiquesSuccessStatus =
-          find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
+          find.byKey(const Key(WidgetsKeys.boutiquesSuccessStatusKey));
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,
@@ -87,7 +85,7 @@ void main() {
       );
       ////////////////////////////
       final Finder boutiqueCard1 = find.byKey(
-        Key('${WidgetsKeys.boutiqueCardKey}0'),
+        const Key('${WidgetsKeys.boutiqueCardKey}0'),
       );
       ////////////////////////////
       final boutiqueId1 =
@@ -111,7 +109,7 @@ void main() {
       List<String> oldCacheDate = [];
 
       Finder productListingScroll =
-          find.byKey(Key(WidgetsKeys.productListingScrollKey));
+          find.byKey(const Key(WidgetsKeys.productListingScrollKey));
 
       bool reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
@@ -172,13 +170,13 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
       /////////////  Go Back  ////////////
       final Finder appBarGoBackArrow = find.byKey(
-        Key(WidgetsKeys.appBarGoBackArrowKey),
+        const Key(WidgetsKeys.appBarGoBackArrowKey),
       );
       await tester.tap(appBarGoBackArrow);
       await tester.pumpAndSettle();
       /////////////// Tap on the second  boutique //////////
       final Finder boutiqueCard2 = find.byKey(
-        Key('${WidgetsKeys.boutiqueCardKey}1'),
+        const Key('${WidgetsKeys.boutiqueCardKey}1'),
       );
       ////////////////////////////
       final boutiqueId2 =
@@ -198,7 +196,7 @@ void main() {
       //////////// Test products in the second Boutique belong to it  //////////////
       int productIndex2 = 0;
       productListingScroll =
-          find.byKey(Key(WidgetsKeys.productListingScrollKey));
+          find.byKey(const Key(WidgetsKeys.productListingScrollKey));
       reachedEnd = false;
 
       while (!reachedEnd) {
@@ -251,7 +249,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
       //////////////  Go Back ///////////
       final Finder appBarGoBackArrow2 = find.byKey(
-        Key(WidgetsKeys.appBarGoBackArrowKey),
+        const Key(WidgetsKeys.appBarGoBackArrowKey),
       );
       await tester.tap(appBarGoBackArrow2);
       await tester.pumpAndSettle();
@@ -270,7 +268,7 @@ void main() {
       productIndex1 = 0;
 
       productListingScroll =
-          find.byKey(Key(WidgetsKeys.productListingScrollKey));
+          find.byKey(const Key(WidgetsKeys.productListingScrollKey));
 
       reachedEnd = false;
 

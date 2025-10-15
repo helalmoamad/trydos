@@ -28,7 +28,7 @@ import '../../manager/orderBloc/order_state.dart';
 import 'order_details1_page.dart';
 
 class OrdersPage extends StatefulWidget {
-  bool? fromNotification;
+  final bool? fromNotification;
   final String? groupId;
   final String? orderIdFormNotification;
   final String? parentOrderIdFormNotification;

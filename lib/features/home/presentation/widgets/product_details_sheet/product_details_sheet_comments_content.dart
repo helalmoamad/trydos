@@ -3,29 +3,25 @@ import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
 
@@ -304,7 +300,9 @@ class CommentCard extends StatelessWidget {
                       width: 20,
                       height: 20,
                       child: MyCachedNetworkImage(
-                          imageUrl: imageUrl,
+                          imageUrl: imageUrl.contains("cloudinary")
+                              ? imageUrl
+                              : '${dotenv.env['Images_Url']}$imageUrl',
                           width: 20,
                           imageFit: cupertino.BoxFit.cover,
                           height: 20)),
@@ -317,6 +315,7 @@ class CommentCard extends StatelessWidget {
                         BoxShadow(
                           offset: const Offset(0, 3),
                           blurRadius: 6,
+                          // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.5),
                           inset: true,
                         ),

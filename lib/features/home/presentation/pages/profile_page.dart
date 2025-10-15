@@ -326,6 +326,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     AppAssets.closeSvg,
                     height: 15,
                     width: 30,
+                    // ignore: deprecated_member_use
                     color: const Color(0xffFF5F61),
                   )),
             ),
@@ -592,6 +593,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             children: [
               SvgPicture.asset(
                 AppAssets.trydosWalletSvg,
+                // ignore: deprecated_member_use
                 color: const Color(0xff3C3C3C),
                 width: 25,
               ),
@@ -815,11 +817,13 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                       children: [
                                         SvgPicture.asset(
                                           AppAssets.succuessProfileSvg,
+                                          // ignore: deprecated_member_use
                                           color: const Color(0xff707070),
                                           height: 16,
                                           width: 16,
                                         ),
                                         SvgPicture.asset(AppAssets.success2Svg,
+                                            // ignore: deprecated_member_use
                                             color: const Color(0xff707070),
                                             height: 5,
                                             width: 5),

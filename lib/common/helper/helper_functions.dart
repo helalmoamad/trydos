@@ -14,12 +14,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:store_redirect/store_redirect.dart';
+
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,7 +27,6 @@ import '../../features/app/my_text_widget.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:ui' as ui;
 
 import '../constant/design/assets_provider.dart';
 
@@ -99,6 +97,7 @@ class HelperFunctions {
   }
 
   static Locale getInitLocale() {
+    // ignore: deprecated_member_use
     final devicelang = WidgetsBinding.instance.window.locale.languageCode;
     return _prefsRepository.language == null
         ? mpaLanguageCodeToLocale[devicelang] ?? defaultLocal
@@ -106,6 +105,7 @@ class HelperFunctions {
   }
 
   static Country getDefaultCountry() {
+    // ignore: deprecated_member_use
     final deviceCountryCode = WidgetsBinding.instance.window.locale.countryCode;
     return countries.singleWhere(
       (element) => element.code == deviceCountryCode,
@@ -401,7 +401,7 @@ class HelperFunctions {
         String message = LocaleKeys.newer_version_available_message.tr();
         String btnLabel1 = LocaleKeys.update_now.tr();
         String btnLabel2 = LocaleKeys.not_now.tr();
-
+        // ignore: deprecated_member_use
         return WillPopScope(
           onWillPop: () => Future.value(true),
           child: Platform.isIOS
@@ -481,6 +481,7 @@ class HelperFunctions {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
+                          // ignore: deprecated_member_use
                           color: const Color(0xFF007AFF).withOpacity(0.12),
                           shape: BoxShape.circle,
                         ),
@@ -598,13 +599,6 @@ class HelperFunctions {
     }
   }
 
-  _openStoreUrl() {
-    StoreRedirect.redirect(
-      androidAppId: 'ae.clearance.app',
-      iOSAppId: '1637100307',
-    );
-  }
-
   static slidingNavigation(
     BuildContext context,
     Widget page,
@@ -642,6 +636,7 @@ class HelperFunctions {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xffF4F4F4),
+      // ignore: deprecated_member_use
       barrierColor: const Color(0xff1D1D1D).withOpacity(0.75),
       builder: (ctx) {
         return Container(

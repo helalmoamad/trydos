@@ -247,6 +247,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                   ),
                                   SvgPicture.asset(
                                     AppAssets.infoSvg,
+                                    // ignore: deprecated_member_use
                                     color: const Color(0xff402CDD),
                                     width: 25.w,
                                   ),
@@ -293,6 +294,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
               SvgPicture.asset(
                 AppAssets.availableCountrySvg,
                 height: 15,
+                // ignore: deprecated_member_use
                 color: const Color(0xff707070),
               ),
               const SizedBox(
@@ -311,6 +313,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
               ),
               SvgPicture.asset(
                 AppAssets.chatWithQuestionSvg,
+                // ignore: deprecated_member_use
                 color: const Color(0xffD3D3D3),
                 height: 15,
               ),
@@ -364,6 +367,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
               SvgPicture.asset(
                 AppAssets.availableCountrySvg,
                 height: 15,
+                // ignore: deprecated_member_use
                 color: const Color(0xff707070),
               ),
               const SizedBox(
@@ -382,6 +386,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
               ),
               SvgPicture.asset(
                 AppAssets.chatWithQuestionSvg,
+                // ignore: deprecated_member_use
                 color: const Color(0xffD3D3D3),
                 height: 15,
               ),

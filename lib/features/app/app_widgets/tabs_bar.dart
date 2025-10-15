@@ -1,16 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mime/mime.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -18,7 +13,6 @@ import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
@@ -34,17 +28,14 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/test_utils/widgets_keys.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../home/data/models/get_product_filters_model.dart';
 import '../../home/presentation/manager/homeBloc/home_bloc.dart';
-import '../../home/presentation/manager/homeBloc/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
@@ -487,6 +478,7 @@ class _TabsBarState extends State<TabsBar> {
                                   AppAssets.searchOutlinedSvg,
                                   height: 20,
                                   width: 40,
+                                  // ignore: deprecated_member_use
                                   color: const Color(0xff388CFF),
                                 ),
                               ),
@@ -613,6 +605,7 @@ class _TabsBarState extends State<TabsBar> {
                                     AppAssets.searchOutlinedSvg,
                                     height: 20,
                                     width: 40,
+                                    // ignore: deprecated_member_use
                                     color: const Color(0xff388CFF),
                                   ),
                                 ),

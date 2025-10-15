@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,12 +23,6 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import '../../manager/homeBloc/home_bloc.dart';
-import '../../manager/homeBloc/home_event.dart';
-
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-
-import 'package:get_it/get_it.dart';
 
 class ColorsListFilter extends StatefulWidget {
   const ColorsListFilter(
@@ -118,6 +111,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                 ),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
+                  // ignore: deprecated_member_use
                   color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
@@ -268,6 +262,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                       '0xff${widget.colors[index].substring(1)}')),
                                   boxShadow: [
                                     BoxShadow(
+                                        // ignore: deprecated_member_use
                                         color: Colors.black.withOpacity(0.05),
                                         blurRadius: 3,
                                         offset: const Offset(0, 3))

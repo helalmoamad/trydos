@@ -10,9 +10,6 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../generated/locale_keys.g.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../my_text_widget.dart';
 
 class GalleryAndCameraDialogWidget extends StatelessWidget {

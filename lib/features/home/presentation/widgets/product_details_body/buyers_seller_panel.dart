@@ -8,18 +8,12 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 
-import 'package:trydos/features/home/presentation/widgets/product_details_body/star_ratting_product.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class BuyerSellerPanel extends StatelessWidget {
   const BuyerSellerPanel({super.key, required this.panelController});
@@ -71,6 +65,7 @@ class BuyerSellerPanel extends StatelessWidget {
                     padding: const EdgeInsetsGeometry.symmetric(horizontal: 10),
                     child: SvgPicture.asset(
                       AppAssets.faqSvg,
+                      // ignore: deprecated_member_use
                       color: const Color(0xff1D1D1D),
                       height: 30,
                     )),

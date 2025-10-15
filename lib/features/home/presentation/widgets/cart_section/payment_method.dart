@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -12,7 +11,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
@@ -583,6 +581,7 @@ class PaymentMethodCard extends StatelessWidget {
           children: [
             SvgPicture.asset(
               svg,
+              // ignore: deprecated_member_use
               color: paymentMethod.contains(currentPaymentMethod) &&
                       !fromSuccessOrder
                   ? const Color(0xff1D1D1D)

@@ -86,6 +86,7 @@ class AppTextField extends StatelessWidget {
   final String? initialValue;
   final Brightness? keyboardAppearance;
   final TextAlignVertical? textAlignVertical;
+  // ignore: deprecated_member_use
   final ToolbarOptions? toolbarOptions;
   final TextCapitalization textCapitalization;
   final TextAlign textAlign;
@@ -148,6 +149,7 @@ class AppTextField extends StatelessWidget {
       keyboardAppearance: keyboardAppearance,
       textAlignVertical: textAlignVertical,
       textCapitalization: textCapitalization,
+      // ignore: deprecated_member_use
       toolbarOptions: toolbarOptions,
       inputFormatters: [
         if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),

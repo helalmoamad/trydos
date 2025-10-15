@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
@@ -24,8 +23,6 @@ import 'package:trydos/features/home/domain/use_cases/get_featured_products_usec
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_recommend_products_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/upload_images_product_return_useCase.dart';
-import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
 
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';

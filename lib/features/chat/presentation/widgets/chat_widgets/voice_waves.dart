@@ -1,6 +1,5 @@
 import 'package:audio_wave/audio_wave.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class VoiceWaves extends StatefulWidget {

@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -10,7 +9,6 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/r
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
-import '../../../../../trydos_application.dart';
 import '../../../../app/my_text_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 

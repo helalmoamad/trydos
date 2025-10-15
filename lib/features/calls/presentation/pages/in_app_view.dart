@@ -2,22 +2,18 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:vibration/vibration.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
-import '../../../chat/presentation/manager/chat_event.dart';
 
+// ignore: must_be_immutable
 class AgoraInAppWebView extends StatefulWidget {
   String type;
   String channelId;
@@ -113,7 +109,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         }
       },
       listenWhen: (p, c) => p.stopRingToneReason != c.stopRingToneReason,
-      child: WillPopScope(
+      child:
+          // ignore: deprecated_member_use
+          WillPopScope(
         onWillPop: () => Future.value(false),
         child: Scaffold(
           body: Stack(

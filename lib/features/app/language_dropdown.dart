@@ -2,20 +2,13 @@ import 'package:easy_localization/easy_localization.dart' as local;
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
-import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
-import 'package:trydos/service/service_provider.dart';
-import 'package:trydos/trydos_application.dart';
 
 class LanguageDropdown extends StatefulWidget {
   final List<Language> language;

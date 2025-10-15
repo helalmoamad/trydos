@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../common/helper/show_message.dart';
@@ -27,10 +26,10 @@ class SensitiveConnectivityBloc
         "***|| 🌐 ${event.connectivityResult.name.toUpperCase()} 🌐 ||***");
 
     if (event.connectivityResult == ConnectivityResult.mobile) {
-      showMessage('Internet connected', hasError: false, showInRelease: true);
+      showMessage('Internet connected', showInRelease: true);
       emit(ConnectivityCellularState());
     } else if (event.connectivityResult == ConnectivityResult.wifi) {
-      showMessage('Internet connected', hasError: false, showInRelease: true);
+      showMessage('Internet connected', showInRelease: true);
       emit(ConnectivityWifiState());
     } else if (event.connectivityResult == ConnectivityResult.none) {
       showMessage('No Internet connection.',

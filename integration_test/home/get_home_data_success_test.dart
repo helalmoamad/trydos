@@ -22,7 +22,7 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ///////////////////////////////////////////
       final Finder mainCategoriesTabNull =
-          find.byKey(Key(WidgetsKeys.mainCategoriesTabNullKey));
+          find.byKey(const Key(WidgetsKeys.mainCategoriesTabNullKey));
       await GlobalTestFunctions.findNoWidget(
         tester: tester,
         actual: mainCategoriesTabNull,
@@ -32,7 +32,7 @@ void main() {
       );
       ////////////////////////////
       final Finder mainCategoriesTab =
-          find.byKey(Key(WidgetsKeys.mainCategoriesTabKey));
+          find.byKey(const Key(WidgetsKeys.mainCategoriesTabKey));
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: mainCategoriesTab,
@@ -44,7 +44,7 @@ void main() {
       await tester.pumpAndSettle();
       ////////////////////////////
       final Finder storiesFailureStatus =
-          find.byKey(Key(WidgetsKeys.storiesFailureStatusKey));
+          find.byKey(const Key(WidgetsKeys.storiesFailureStatusKey));
       await GlobalTestFunctions.findNoWidget(
         tester: tester,
         actual: storiesFailureStatus,
@@ -54,7 +54,7 @@ void main() {
       );
       ////////////////////////////
       final Finder storiesSuccessStatus =
-          find.byKey(Key(WidgetsKeys.storiesSuccessStatusKey));
+          find.byKey(const Key(WidgetsKeys.storiesSuccessStatusKey));
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: storiesSuccessStatus,
@@ -66,7 +66,7 @@ void main() {
       await tester.pumpAndSettle();
       ////////////////////////////
       final Finder boutiquesFailureStatus =
-          find.byKey(Key(WidgetsKeys.boutiquesFailureStatusKey));
+          find.byKey(const Key(WidgetsKeys.boutiquesFailureStatusKey));
       await GlobalTestFunctions.findNoWidget(
         tester: tester,
         actual: boutiquesFailureStatus,
@@ -76,7 +76,7 @@ void main() {
       );
       ////////////////////////////
       final Finder boutiquesSuccessStatus =
-          find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
+          find.byKey(const Key(WidgetsKeys.boutiquesSuccessStatusKey));
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,

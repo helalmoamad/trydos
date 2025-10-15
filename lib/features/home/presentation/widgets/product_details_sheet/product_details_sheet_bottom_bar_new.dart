@@ -521,6 +521,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                         SvgPicture.asset(
                                                                                           AppAssets.flashDealSvg,
                                                                                           height: 9.sp,
+                                                                                          // ignore: deprecated_member_use
                                                                                           color: const Color(0xffFF6200),
                                                                                         ),
                                                                                         const SizedBox(
@@ -553,6 +554,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                   ),
                                                                                   Row(
                                                                                     children: [
+                                                                                      // ignore: deprecated_member_use
                                                                                       SvgPicture.asset(AppAssets.fastPackingManIconSvg, color: const Color(0xff388CFF), height: 12),
                                                                                       Text(
                                                                                         " ${LocaleKeys.fast_packing.tr()} ",
@@ -886,7 +888,9 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                                     child: Center(
                                                                                                       child: SvgPicture.asset(
                                                                                                         (allCart.length == 1 && allCart[0].values.first.length == 1) ? AppAssets.binSvg : AppAssets.minusMarkSvg,
+
                                                                                                         height: (allCart.length == 1 && allCart[0].values.first.length == 1) ? 15 : 3,
+                                                                                                        // ignore: deprecated_member_use
                                                                                                         color: (allCart.length == 1 && allCart[0].values.first.length == 1) ? const Color(0xffFF5F61) : const Color(0xff513AAF),
                                                                                                       ),
                                                                                                     ),
@@ -904,6 +908,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                               ),
                                                                                               SvgPicture.asset(
                                                                                                 AppAssets.plusMarkSvg,
+                                                                                                // ignore: deprecated_member_use
                                                                                                 color: const Color(0xff513AAF),
                                                                                                 height: 15,
                                                                                               ),
@@ -1207,6 +1212,7 @@ class BarWidget extends StatelessWidget {
                   children: [
                     SvgPicture.asset(
                       svgPath,
+                      // ignore: deprecated_member_use
                       color: color,
                       height: 25,
                     ),

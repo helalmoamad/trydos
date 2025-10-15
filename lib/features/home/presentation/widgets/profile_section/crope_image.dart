@@ -4,23 +4,19 @@ import 'dart:ui' as ui;
 import 'package:trydos/config/theme/typography.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simple_image_cropper/simple_image_cropper.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CopperImage extends StatefulWidget {
-  File image;
+  final File image;
   final bool? fromOrder;
   final bool? forSearchImage;
   final bool? fromSearch;

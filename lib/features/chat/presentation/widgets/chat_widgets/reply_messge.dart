@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -15,6 +13,7 @@ import 'image_message.dart';
 import 'video_message.dart';
 import 'voice_message.dart';
 
+// ignore: must_be_immutable
 class ReplayMessage extends StatefulWidget {
   ReplayMessage({
     Key? key,

@@ -9,7 +9,6 @@ import 'package:trydos/features/story/data/models/get_stories_model.dart';
 import 'package:trydos/features/story/domain/repository/story_repository.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
-import '../../data/models/upload_story_response_model.dart';
 
 @injectable
 class UploadStoryUseCase

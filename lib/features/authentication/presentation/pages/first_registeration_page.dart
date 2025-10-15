@@ -14,7 +14,6 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -243,6 +242,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                       SizedBox(
                         height: 1.sh / 2.5,
                         width: 1.sw,
+                        // ignore: deprecated_member_use
                         child: WillPopScope(
                             child: PageView(
                                 physics: const NeverScrollableScrollPhysics(),

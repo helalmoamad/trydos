@@ -7,9 +7,6 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/social_media_type.dart';
 import 'package:trydos/service/language_service.dart';
 
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 Widget buildSocialButtons(
     {required String text,

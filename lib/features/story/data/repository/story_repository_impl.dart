@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 
-import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
 import 'package:trydos/features/story/data/models/delete_story_model.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../data/models/get_stories_model.dart';

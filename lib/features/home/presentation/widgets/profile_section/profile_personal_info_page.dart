@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
-import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,12 +9,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mime_type/mime_type.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
-import 'package:trydos/common/helper/camera_screen.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -27,17 +21,14 @@ import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/widgets/profile_section/camera_profile.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class ProfilePersonalInfoPage extends StatefulWidget {
   final ValueNotifier<String?> changeGender;
@@ -105,6 +96,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     return ValueListenableBuilder<bool>(
         valueListenable: widget.visibleSave,
         builder: (context, _visibleSave, _) {
+          // ignore: deprecated_member_use
           return WillPopScope(
               onWillPop: () async {
                 // إذا كان الكيبورد مفتوح، أغلق الكيبورد فقط
@@ -266,6 +258,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                       ),
                                       SvgPicture.asset(
                                         AppAssets.infoSvg,
+                                        // ignore: deprecated_member_use
                                         color: const Color(0xff402CDD),
                                         width: 25.w,
                                       ),
@@ -298,6 +291,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                     SvgPicture.asset(
                                       AppAssets.personalInfoSvg,
                                       height: 15,
+                                      // ignore: deprecated_member_use
                                       color: const Color(0xff1D1D1D),
                                     ),
                                     const SizedBox(
@@ -317,6 +311,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                     ),
                                     SvgPicture.asset(
                                       AppAssets.chatWithQuestionSvg,
+                                      // ignore: deprecated_member_use
                                       color: const Color(0xffD3D3D3),
                                       height: 15,
                                     ),
@@ -502,6 +497,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                   AppAssets.closeSvg,
                   height: 15,
                   width: 30,
+                  // ignore: deprecated_member_use
                   color: const Color(0xffFF5F61),
                 )),
           ),
@@ -1194,7 +1190,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     return "${countryCode}${(digitsOnly.length == 0) ? formatted.toString() : (" " + formatted.toString())}";
   }
 
-  String _getCountryCodeFromNumber(String num) {
+  /* String _getCountryCodeFromNumber(String num) {
     Country newCountry = countries.firstWhere(
         (element) =>
             '+${num.toLowerCase()}'.startsWith(element.dialCode.toLowerCase()),
@@ -1209,5 +1205,5 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
       return newCountry.dialCode.split("+").toList()[1];
     }
     return "";
-  }
+  }*/
 }

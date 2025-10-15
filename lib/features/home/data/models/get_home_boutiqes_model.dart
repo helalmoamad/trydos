@@ -208,10 +208,12 @@ class BunnerBoutique {
         filePath: json["file_path"]?.contains("cloudinary")
             ? json["file_path"]
             : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
-        originalWidth:
-            json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight:
-            json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalWidth: (json["original_width"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalHeight: (json["original_height"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {
@@ -228,6 +230,7 @@ class ChildCategoriesForProductId {
   final String? productName;
   final int? countProducts;
   final BunnerBoutique? mostViewedProductThumbnail;
+  final BunnerBoutique? flatPhotoPath;
 
   ChildCategoriesForProductId({
     this.categoryId,
@@ -235,6 +238,7 @@ class ChildCategoriesForProductId {
     this.categoryName,
     this.productName,
     this.countProducts,
+    this.flatPhotoPath,
     this.mostViewedProductThumbnail,
   });
 
@@ -242,6 +246,7 @@ class ChildCategoriesForProductId {
     int? categoryId,
     String? categorySlug,
     String? categoryName,
+    BunnerBoutique? flatPhotoPath,
     String? productName,
     int? countProducts,
     BunnerBoutique? mostViewedProductThumbnail,
@@ -249,6 +254,7 @@ class ChildCategoriesForProductId {
       ChildCategoriesForProductId(
         categoryId: categoryId ?? this.categoryId,
         categorySlug: categorySlug ?? this.categorySlug,
+        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
         categoryName: categoryName ?? this.categoryName,
         productName: productName ?? this.productName,
         countProducts: countProducts ?? this.countProducts,
@@ -262,6 +268,9 @@ class ChildCategoriesForProductId {
         categorySlug: json["slug"],
         categoryName: json["name"],
         productName: json["most_viewed_product_name"],
+        flatPhotoPath: json["flat_photo_path"] == null
+            ? null
+            : BunnerBoutique.fromJson(json["flat_photo_path"]),
         countProducts: json["num_available_product"],
         mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] ==
                 null
@@ -272,6 +281,7 @@ class ChildCategoriesForProductId {
   Map<String, dynamic> toJson() => {
         "id": categoryId,
         "slug": categorySlug,
+        "flat_photo_path": flatPhotoPath?.toJson(),
         "name": categoryName,
         "most_viewed_product_name": productName,
         "num_available_product": countProducts,

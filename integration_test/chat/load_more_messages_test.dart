@@ -50,7 +50,7 @@ void main() {
       ////////////////////////////
       await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: false);
       ////////////////////////////
-      final Finder chatNavBarButton = find.byKey(Key(
+      final Finder chatNavBarButton = find.byKey(const Key(
         WidgetsKeys.chatNavBarKey,
       ));
       await Future.delayed(const Duration(seconds: 1));
@@ -91,7 +91,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       ////////////////////////////
-      final Finder messagesList = find.byKey(Key(
+      final Finder messagesList = find.byKey(const Key(
         WidgetsKeys.messagesListKey,
       ));
       ////////////////////////////
@@ -106,7 +106,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
       ///////////////////////////
       await tester.drag(
-          messagesList, Offset(0, 600)); // Adjust the offset if needed
+          messagesList, const Offset(0, 600)); // Adjust the offset if needed
       await tester.pumpAndSettle();
       await tester.pumpAndSettle();
       ///////////////////////////

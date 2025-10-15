@@ -14,9 +14,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
@@ -104,8 +102,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                 const SizedBox(
                                   width: 20,
                                 ),
-                                Container(
-                                    child: Text(
+                                Text(
                                   LocaleKeys.notify_me_about_the_product_when
                                       .tr(),
                                   style: context.textTheme.bodyMedium?.rr
@@ -114,7 +111,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                           letterSpacing: 0.18,
                                           fontSize: 16,
                                           height: 0.8),
-                                ))
+                                )
                               ],
                             ),
                           ),

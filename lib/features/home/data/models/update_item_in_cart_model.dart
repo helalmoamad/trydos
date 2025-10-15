@@ -3,7 +3,6 @@
 //     final updateItemInCartModel = updateItemInCartModelFromJson(jsonString);
 import 'dart:convert';
 
-import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 
 UpdateItemInCartModel addItemToCartModelFromJson(String str) =>
     UpdateItemInCartModel.fromJson(json.decode(str));

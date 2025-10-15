@@ -1,27 +1,20 @@
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 
 import 'package:trydos/config/theme/typography.dart';
 
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_body/star_ratting_product.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../core/utils/theme_state.dart';
-import '../../manager/homeBloc/home_bloc.dart';
 
 class BuyerSellerChat extends StatefulWidget {
   const BuyerSellerChat({
@@ -52,6 +45,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           Padding(
               padding: const EdgeInsets.all(10),
               child: SvgPicture.asset(AppAssets.faqSvg,
+                  // ignore: deprecated_member_use
                   color: const Color(0xff1D1D1D))),
           Padding(
               padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
@@ -69,6 +63,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                     AppAssets.registerInfoSvg,
                     height: 10,
                     width: 10,
+                    // ignore: deprecated_member_use
                     color: const Color(0xffC4C2C2),
                   ),
                 ],

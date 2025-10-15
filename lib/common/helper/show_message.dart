@@ -4,10 +4,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:easy_localization/easy_localization.dart' as tran;
-import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -118,6 +116,7 @@ Widget _buildSuccessWidget(
                 border: Border.all(color: const Color(0xFF2CDD92)),
                 boxShadow: [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
@@ -161,6 +160,7 @@ Widget _buildSuccessWidget(
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 1),
@@ -232,6 +232,7 @@ Widget _buildErrorWidget(
                 border: Border.all(color: const Color(0xFF402CDD)),
                 boxShadow: [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
@@ -275,6 +276,7 @@ Widget _buildErrorWidget(
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 1),
@@ -346,6 +348,7 @@ Widget _buildWarningWidget(
                 border: Border.all(color: const Color(0xFF402CDD)),
                 boxShadow: [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
@@ -389,6 +392,7 @@ Widget _buildWarningWidget(
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 1),
@@ -476,6 +480,7 @@ void _showCustomToast(BuildContext context, String message,
                           : const Color(0xFF402CDD)),
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.black.withOpacity(0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
@@ -519,6 +524,7 @@ void _showCustomToast(BuildContext context, String message,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
+                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 4,
                           offset: const Offset(0, 1),
@@ -592,6 +598,7 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
                             : const Color(0xFF402CDD)),
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
@@ -643,6 +650,7 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
+                            // ignore: deprecated_member_use
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 1),
@@ -669,6 +677,7 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
 Future<void> callInProgressDialog(BuildContext context) async {
   await showDialog<String>(
       context: context,
+      // ignore: deprecated_member_use
       barrierColor: Colors.white.withOpacity(0),
       barrierDismissible: false,
       builder: (BuildContext context) => BackdropFilter(

@@ -16,22 +16,22 @@ class FilesExistPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<String> files = prefsRepository.getExistenceFiles();
     return Scaffold(
-      backgroundColor: context.colorScheme.background,
+      backgroundColor: context.colorScheme.surface,
       body: files.length == 0
-          ? Center(
+          ? const Center(
               child: MyTextWidget('No Files'),
             )
           : ListView.builder(
               itemBuilder: (context, index) {
                 Map file = jsonDecode(files[index]);
                 return Container(
-                  padding: EdgeInsets.all(8),
-                  margin: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black, blurRadius: 5)
+                      boxShadow: const [
+                        BoxShadow(blurRadius: 5)
                       ]),
                   child: Directionality(
                     textDirection: TextDirection.ltr,

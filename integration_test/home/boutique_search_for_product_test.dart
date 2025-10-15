@@ -31,7 +31,7 @@ void main() {
 
       // Define the Finder for the boutiques success status
       final Finder boutiquesSuccessStatus =
-          find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
+          find.byKey(const Key(WidgetsKeys.boutiquesSuccessStatusKey));
 
       /////////// Test Find Boutiques HomePageCard/////////////////
       // Verify the presence of the Boutique HomePageCard widget
@@ -46,7 +46,7 @@ void main() {
       ////////////////////////////
       // Find the first boutique card
       final Finder boutiqueCard1 = find.byKey(
-        Key('${WidgetsKeys.boutiqueCardKey}0'),
+        const Key('${WidgetsKeys.boutiqueCardKey}0'),
       );
 
       ////////////////////////////
@@ -64,7 +64,7 @@ void main() {
       ///////////////////////////////
       // Find the product list widget on the boutique page
       final Finder productsList = find.byKey(
-        Key(WidgetsKeys.productsListKey),
+        const Key(WidgetsKeys.productsListKey),
       );
 
       //////////////////////////
@@ -86,7 +86,7 @@ void main() {
 
       //////////// Get first product name & ID before search //////////////
       // Get the name and ID of the first product in the list before searching
-      final productKey = Key('${WidgetsKeys.productInBoutiqueListKey}0');
+      const productKey = Key('${WidgetsKeys.productInBoutiqueListKey}0');
 
       String productNameBeforeSearch = tester
           .widget<ProductItem>(find.byKey(productKey))
@@ -107,7 +107,7 @@ void main() {
       //////////// Tap to search /////////////
       // Tap on the search icon to initiate the product search
       final Finder productListingSearchIcon = find.byKey(
-        Key(WidgetsKeys.productListingSearchIconKey),
+        const Key(WidgetsKeys.productListingSearchIconKey),
       );
       await tester.tap(productListingSearchIcon);
       await tester.pumpAndSettle();
@@ -115,7 +115,7 @@ void main() {
       //////////////////////////
       // Verify the presence of the search input field
       final Finder productListingSearchInput = find.byKey(
-        Key(WidgetsKeys.productListingSearchInputKey),
+        const Key(WidgetsKeys.productListingSearchInputKey),
       );
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -137,7 +137,7 @@ void main() {
       ///////////// Test find loading ///////////////
       // Verify that the loading indicator appears while searching
       final Finder boutiqueProductListingLoading = find.byKey(
-        Key(WidgetsKeys.boutiqueProductListingLoadingKey),
+        const Key(WidgetsKeys.boutiqueProductListingLoadingKey),
       );
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -151,7 +151,7 @@ void main() {
       //////////// Test that the search text matches the input in the filter widget ////////////////
       final searchText = tester
           .widget<StackedFiltersList>(
-              find.byKey(Key(WidgetsKeys.productListFilterKey)))
+              find.byKey(const Key(WidgetsKeys.productListFilterKey)))
           .searchText
           .toString();
       expect(searchText, equals(inputTextSearch));

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
@@ -13,10 +12,7 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
-import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../enums/status_code_type.dart';
-import '../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
 
@@ -81,14 +77,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       );
     }
     //////////////////// For analytics /////////////////////////////
-    String apiStatus = '';
-    if (response.statusCode == StatusCode.operationSucceeded.code) {
-      apiStatus = 'Succeeded';
-    } else {
-      apiStatus = 'Failed';
-    }
-    /////////
-    String apiPath = response.requestOptions.path;
+
     // FirebaseAnalyticsService.logEventForSession(
     //   eventName: AnalyticsEventsConst.programmingEvent,
     //   executedEventName: AnalyticsButtonsEventNameConst.apiResponseEvent,

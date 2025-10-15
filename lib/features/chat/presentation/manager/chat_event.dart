@@ -447,10 +447,10 @@ class IncreaseSharedProductCountOnSocialAppEvent extends ChatEvent {
 }*/
 
 class AddMediaCountEvent extends ChatEvent {
-  int images = 0;
-  int videos = 0;
+  final int images;
+  final int videos;
 
-  int file = 0;
+  final int file;
 
   AddMediaCountEvent(
       {required this.images, required this.videos, required this.file});
@@ -538,8 +538,8 @@ class GetDateTimeEvent extends ChatEvent {
 }
 
 class SendErrorChatToServerEvent extends ChatEvent {
-  String error;
-  String lastPage;
+  final String error;
+  final String lastPage;
   SendErrorChatToServerEvent({required this.error, required this.lastPage});
   @override
   // TODO: implement props

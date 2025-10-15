@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -29,6 +28,7 @@ import 'no_image_widget.dart';
 import 'text_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
+// ignore: must_be_immutable
 class DocumentMessage extends StatefulWidget {
   DocumentMessage(
       {Key? key,

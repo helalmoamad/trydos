@@ -1,15 +1,11 @@
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'package:trydos/config/theme/typography.dart';
@@ -18,11 +14,6 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -201,6 +192,7 @@ class _NotifyWhenAvailableInCountryButtonState
                                                       : AppAssets
                                                           .notificationOutlinedIconSvg,
                                                   height: 20,
+                                                  // ignore: deprecated_member_use
                                                   color:
                                                       !isVariantRequestNotification
                                                           ? const Color(
@@ -269,6 +261,7 @@ class _NotifyWhenAvailableInCountryButtonState
                                 ? AppAssets.notificationOutlinedIconSvg
                                 : AppAssets.notificationIconSvg,
                             height: 15,
+                            // ignore: deprecated_member_use
                             color: !isVariantRequestNotification
                                 ? const Color(0xff513AAF)
                                 : null,

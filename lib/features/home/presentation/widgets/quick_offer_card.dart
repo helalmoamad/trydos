@@ -6,14 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_text_widget.dart';
-import 'home_page_card2.dart';
 import 'offer_time_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
@@ -43,6 +37,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
             borderRadius: BorderRadius.circular(15.0),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: const Color(0xff000000).withOpacity(0.1),
                 offset: const Offset(0, 3),
                 blurRadius: 10,
@@ -75,6 +70,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
               ),
               child: Container(
                 decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
                     color: const Color(0xffffffff).withOpacity(0.8)),
               ),
             ),
@@ -170,6 +166,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       borderRadius: BorderRadius.circular(15.0),
                       boxShadow: [
                         BoxShadow(
+                            // ignore: deprecated_member_use
                             color: Colors.white.withOpacity(0.7),
                             offset: const Offset(0, 3),
                             blurRadius: 6,

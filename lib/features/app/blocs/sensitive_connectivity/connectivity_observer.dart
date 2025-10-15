@@ -1,15 +1,9 @@
-import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/main.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../chat/presentation/manager/chat_event.dart';
-import '../../../story/presentation/bloc/story_bloc.dart';
 import 'sensitive_connectivity_bloc.dart';
 
 class ConnectivityObserver {

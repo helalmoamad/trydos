@@ -7,13 +7,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/trydos_shimmer_loading.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductStoryVideoItem extends StatefulWidget {
@@ -73,6 +67,7 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
                       borderRadius: BorderRadius.circular(30.0.r),
                       boxShadow: [
                         BoxShadow(
+                          // ignore: deprecated_member_use
                           color: colorScheme.black.withOpacity(0.1),
                           offset: const Offset(0, 3),
                           blurRadius: 6,

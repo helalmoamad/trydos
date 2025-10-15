@@ -1,11 +1,9 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
-import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -145,6 +143,7 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
                                     bufferedColor: Colors.white,
                                     playedColor: const Color(0xff388CFF),
                                     backgroundColor:
+                                        // ignore: deprecated_member_use
                                         Colors.white.withOpacity(0.3)),
                               ),
                             ),

@@ -6,10 +6,8 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 GetProductFiltersModel getProductFiltersModelFromJson(String str) =>
     GetProductFiltersModel.fromJson(json.decode(str));
@@ -217,10 +215,12 @@ class CategoryBanner {
         filePath: json["file_path"]?.contains("cloudinary")
             ? json["file_path"]
             : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
-        originalWidth:
-            json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight:
-            json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalWidth: (json["original_width"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalHeight: (json["original_height"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {
@@ -387,10 +387,12 @@ class Thumbnail {
         filePath: json["file_path"]?.contains("cloudinary")
             ? json["file_path"]
             : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
-        originalWidth:
-            json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight:
-            json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalWidth: (json["original_width"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalHeight: (json["original_height"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {

@@ -1,10 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
-import '../../data/models/verify_guest_phone_response_model.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable

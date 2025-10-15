@@ -5,13 +5,9 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
-import 'package:get_it/get_it.dart';
 
 class SearchHistoryChip extends StatelessWidget {
   final ValueNotifier<int> buildSearchResult;

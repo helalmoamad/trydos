@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_svg_image/flutter_svg_image.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 
 class SvgNetworkWidget extends StatefulWidget {
   final double? width;
@@ -71,7 +70,6 @@ class _SvgNetworkWidgetState extends State<SvgNetworkWidget>
             width: widget.width, height: widget.height),
       );
     }
-    ;
   }
 
   @override

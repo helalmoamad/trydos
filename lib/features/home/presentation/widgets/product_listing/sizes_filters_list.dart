@@ -30,12 +30,7 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import '../../manager/homeBloc/home_bloc.dart';
-import '../../manager/homeBloc/home_event.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-
-import 'package:get_it/get_it.dart';
 
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
@@ -128,6 +123,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                 ),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
+                  // ignore: deprecated_member_use
                   color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(

@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'dart:ui' as ui;
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/services.dart';
@@ -15,7 +14,6 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../base_page.dart';
 import '../../../../core/di/di_container.dart';

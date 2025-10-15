@@ -15,17 +15,12 @@ const _lightColorScheme = ColorScheme.light(
 
   error : Color(0xFFFF0000),
   errorContainer : Color(0xFFF9DEDC),
-
-  onError : Color(0xFFFFFFFF),
   onErrorContainer : Color(0xFF410E0B),
-
-  background : Color(0xFFFFFFFF),
-  onBackground : Color(0xFF191C1D),
 
   surface : Color(0xFFFBFDFD),
   onSurface : Color(0xFF191C1D),
 
-  surfaceVariant : Color(0xffF4F4F4),
+  surfaceContainerHighest : Color(0xffF4F4F4),
   onSurfaceVariant : Color(0xFF49454F),
 
   outline : Color(0xFF79747E),

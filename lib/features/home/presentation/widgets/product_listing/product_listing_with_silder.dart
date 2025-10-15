@@ -131,7 +131,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
     );
   }
 
-  @override
+  /* @override
   void dispose() {
     if (disDebounce?.isActive ?? false) {
       disDebounce!.cancel();
@@ -151,7 +151,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
     });
 
     super.dispose();
-  }
+  }*/
 
   /// 🎯 بطاقة منتج بسيطة - أداء ممتاز
   Widget _buildSimpleProductCard() {
@@ -260,11 +260,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
           final bool hasVideo =
               (widget.videoSource != null && widget.videoSource!.isNotEmpty);
 
-          return Container(
-            width: 200,
+          return SizedBox(
             height: 290,
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.zero,
             child: (imageUrl != null
                 ? Stack(alignment: Alignment.bottomCenter, children: [
                     hasVideo
@@ -475,6 +472,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                           ? Row(children: [
                                               SvgPicture.asset(
                                                 AppAssets.redeemClockSvg,
+                                                // ignore: deprecated_member_use
                                                 color: const Color(0xffFF6200),
                                               ),
                                               const SizedBox(

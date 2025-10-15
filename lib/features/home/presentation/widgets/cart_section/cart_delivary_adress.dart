@@ -28,12 +28,8 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/place_ord
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
@@ -103,7 +99,6 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     super.initState();
   }
 
-  final bool _eventLogged = false;
   @override
   void didChangeDependencies() {
     /*  if (!_eventLogged) {
@@ -136,7 +131,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return WillPopScope(
+    return
+
+        // ignore: deprecated_member_use
+        WillPopScope(
       onWillPop: () async {
         // didCallOnWillPop = true;
         if (Navigator.canPop(context)) {
@@ -583,6 +581,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                         horizontal: 10, vertical: 10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
+                      // ignore: deprecated_member_use
                       color: const Color(0xffC4C2C2).withOpacity(0.5),
                     ),
                     child: Center(
@@ -672,23 +671,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                     }
                     if (check) {
                       /////////////////////////////////
-                      String analyticsPayMethods = '';
-                      int index = 0;
-                      paymentMethods.value.forEach((e) {
-                        if (e == PaymentMethods.trydosWallet) {
-                          analyticsPayMethods += GA_PAYMENTS.WALLET;
-                        } else if (e == PaymentMethods.cod) {
-                          analyticsPayMethods += GA_PAYMENTS.COD;
-                        } else if (e == PaymentMethods.card) {
-                          analyticsPayMethods += GA_PAYMENTS.CREDIT;
-                        } else if (e == PaymentMethods.crypto) {
-                          analyticsPayMethods += GA_PAYMENTS.CRYPTO;
-                        }
-                        if (index != paymentMethods.value.length - 1) {
-                          analyticsPayMethods += '-';
-                        }
-                        index++;
-                      });
+
                       ////////////////////////////////////////////
                       List<Map<String, String>> analyticsCartList = [];
                       if (homeBloc.state.cartCollection != null) {
@@ -1080,6 +1063,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       AppAssets.deliveryAddressSvg,
                       width: 18,
                       height: 18,
+                      // ignore: deprecated_member_use
                       color: const Color(0xff1D1D1D),
                     ),
                   ),
@@ -1422,6 +1406,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                                 .deliveryAddressSvg,
                                                             width: 15,
                                                             height: 15,
+                                                            // ignore: deprecated_member_use
                                                             color: const Color(
                                                                 0xff8D8D8D),
                                                           ),
@@ -1597,6 +1582,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                           AppAssets.expandDetaileSvg,
                           height: 8,
                           width: 12,
+                          // ignore: deprecated_member_use
                           color: const Color(0xff8D8D8D),
                         ),
                       ),
@@ -1684,6 +1670,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
           ),
           SvgPicture.asset(
             AppAssets.deletecartSvg,
+            // ignore: deprecated_member_use
             color: const Color(0xffFFFFFF),
             width: 50,
             height: 50,
@@ -1908,6 +1895,7 @@ Widget addressInfoWithContactInfoCart({
               children: [
                 SvgPicture.asset(
                   AppAssets.homeInactiveSvg,
+                  // ignore: deprecated_member_use
                   color: isDelete
                       ? const Color(0xffFFFFFF)
                       : index != indexTap
@@ -2020,6 +2008,7 @@ Widget addressInfoWithContactInfoCart({
               children: [
                 SvgPicture.asset(
                   AppAssets.phoneCallSvg,
+                  // ignore: deprecated_member_use
                   color: isDelete
                       ? const Color(0xffFFFFFF)
                       : index != indexTap
@@ -2052,6 +2041,7 @@ Widget addressInfoWithContactInfoCart({
                     children: [
                       SvgPicture.asset(
                         AppAssets.personSvg,
+                        // ignore: deprecated_member_use
                         color: isDelete
                             ? const Color(0xffFFFFFF)
                             : index != indexTap
@@ -2083,6 +2073,7 @@ Widget addressInfoWithContactInfoCart({
                     ? const SizedBox.shrink()
                     : SvgPicture.asset(
                         AppAssets.shareSvg,
+                        // ignore: deprecated_member_use
                         color: isDelete || cartChoosed
                             ? const Color(0xffFFFFFF)
                             : const Color(0xff388CFF),

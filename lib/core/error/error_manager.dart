@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 
 class ErrorManager {
   static final Map<String, int> _retryCounts = {};

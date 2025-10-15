@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,8 +36,6 @@ import '../../../home/presentation/manager/homeBloc/home_bloc.dart';
 import '../../../home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SearchPage extends StatefulWidget {
@@ -484,11 +481,13 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                           boxShadow: [
                                             BoxShadow(
                                                 color: Colors.black
+                                                    // ignore: deprecated_member_use
                                                     .withOpacity(0.1),
                                                 blurRadius: 6,
                                                 offset: const Offset(0, 3)),
                                             BoxShadow(
                                               color:
+                                                  // ignore: deprecated_member_use
                                                   Colors.white.withOpacity(0.4),
                                               blurRadius: 6,
                                               offset: const Offset(0, 3),
@@ -562,11 +561,13 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                           boxShadow: [
                                             BoxShadow(
                                                 color: Colors.black
+                                                    // ignore: deprecated_member_use
                                                     .withOpacity(0.1),
                                                 blurRadius: 6,
                                                 offset: const Offset(0, 3)),
                                             BoxShadow(
                                               color:
+                                                  // ignore: deprecated_member_use
                                                   Colors.white.withOpacity(0.4),
                                               blurRadius: 6,
                                               offset: const Offset(0, 3),

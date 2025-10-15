@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -16,9 +15,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
 
@@ -88,6 +84,7 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                       ),
                       SvgPicture.asset(
                         AppAssets.infoSvg,
+                        // ignore: deprecated_member_use
                         color: const Color(0xff402CDD),
                         width: 25.w,
                       ),
@@ -117,6 +114,7 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                     SvgPicture.asset(
                       AppAssets.bankCardSvg,
                       height: 15,
+                      // ignore: deprecated_member_use
                       color: const Color(0xff707070),
                     ),
                     const SizedBox(
@@ -135,6 +133,7 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                     ),
                     SvgPicture.asset(
                       AppAssets.chatWithQuestionSvg,
+                      // ignore: deprecated_member_use
                       color: const Color(0xffD3D3D3),
                       height: 15,
                     ),

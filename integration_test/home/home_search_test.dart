@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
+
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/categories_filter_list.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/main.dart' as app;
@@ -31,7 +29,7 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ////////////// Find Home Search Icon //////////////
       final Finder homeSearchIconWidget =
-          find.byKey(Key(WidgetsKeys.homeSearchIconKey));
+          find.byKey(const Key(WidgetsKeys.homeSearchIconKey));
 
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -53,7 +51,7 @@ void main() {
       );
       //////////////////  Scroll until find best saller /////////////////////////////////////
       final Finder searchPageBoutiqueListWidget =
-          find.byKey(Key(WidgetsKeys.searchPageBoutiqueListKey));
+          find.byKey(const Key(WidgetsKeys.searchPageBoutiqueListKey));
 
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -119,8 +117,8 @@ void main() {
       expect(isFound, isTrue);
 
       ////////////// Get Boutique Id  /////////////////////////
-      BoutiqueBloc boutiqueBloc = GetIt.I<BoutiqueBloc>();
-      BoutiqueState boutiqueState = BoutiqueState();
+      //  BoutiqueBloc boutiqueBloc = GetIt.I<BoutiqueBloc>();
+      BoutiqueState boutiqueState = const BoutiqueState();
 
       String key1 = 'search';
       Filter filters =
@@ -148,7 +146,7 @@ void main() {
       ///////////////////// Search ////////////////////////////////
 
       final Finder searchButtonInSearchPageKey =
-          find.byKey(Key(WidgetsKeys.searchButtonInSearchPageKey));
+          find.byKey(const Key(WidgetsKeys.searchButtonInSearchPageKey));
       final Finder scrollableFinder = find.byType(SearchPage);
 
       await tester.drag(scrollableFinder, const Offset(0, 2000));
@@ -162,7 +160,7 @@ void main() {
       /////////////////////////////////////////////////////
       /////////////////////  product listing filter icon button ////////////////////////
       final Finder filterIconButton = find.byKey(
-        Key(WidgetsKeys.filterIconKey),
+        const Key(WidgetsKeys.filterIconKey),
       );
 
       expect(filterIconButton, findsOneWidget);
@@ -191,7 +189,7 @@ void main() {
 
       print('key2 : $key2');
 
-      boutiqueState = BoutiqueState();
+      boutiqueState = const BoutiqueState();
 
       Filter? filters2 =
           boutiqueState.getProductFiltersModel[key2]?.filters != null

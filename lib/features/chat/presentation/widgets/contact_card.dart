@@ -1,8 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
@@ -13,17 +11,12 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:uuid/uuid.dart';
-import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../routes/router.dart';
 import '../../../../service/language_service.dart';
-import '../../../app/blocs/app_bloc/app_bloc.dart';
-import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
-import '../pages/single_page_chat.dart';
 import 'chat_widgets/no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 

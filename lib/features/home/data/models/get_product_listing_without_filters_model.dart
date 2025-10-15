@@ -735,10 +735,14 @@ class Thumbnail {
             : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
         originalWidth: json["original_width"] == null
             ? "0"
-            : json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
+            : (json["original_width"] ?? "")
+                .toString()
+                .replaceAll(RegExp(r'[^0-9.]'), ''),
         originalHeight: json["original_width"] == null
             ? ""
-            : json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
+            : (json["original_height"] ?? "")
+                .toString()
+                .replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {

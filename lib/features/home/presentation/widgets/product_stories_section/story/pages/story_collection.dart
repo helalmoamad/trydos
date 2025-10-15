@@ -4,13 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:trydos/base_page.dart';
-import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -30,7 +25,6 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
@@ -353,12 +347,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                       widget.collectionIndex]!]
                                   .photoPath!,
                               callWhenDisplayImage: () {
-                                Story story = state
-                                    .storiesCollections[widget.collectionIndex]
-                                    .stories![state
-                                        .currentStoryInEachCollection[
-                                    widget.collectionIndex]!];
-
                                 /* if (!(story.isSeen ?? false)) {
                                   GetIt.I<HomeBloc>().add(IncreaseViewersEvent(
                                       collectionId: state

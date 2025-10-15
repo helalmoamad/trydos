@@ -100,6 +100,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                           AppAssets.registerInfoSvg,
                           width: 15,
                           height: 15,
+                          // ignore: deprecated_member_use
                           color: const Color(0xff388CFF),
                         ),
                         10.horizontalSpace,

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 
@@ -71,6 +70,7 @@ class ChatState {
   List<Chat> chats;
   final List<Chat> pinnedChats;
   late final List<String> currentMessage;
+  final String? chatOrderParticipantId;
   final List<String> currentFailedMessage;
   final List<String> currentFailedMediaMessage;
   final PaginationModel<String>? resultOfSearchTextInChat;
@@ -102,6 +102,7 @@ class ChatState {
     this.duration,
     this.slopMessageId = "",
     this.isSlpoing = false,
+    this.chatOrderParticipantId,
     this.firstRequestForGetChats = true,
     this.height = 0,
     this.imageCountInEachChat = 0,
@@ -163,6 +164,7 @@ class ChatState {
     final Duration? duration,
     final GetOrderRecipientIdStatus? getOrderRecipientIdStatus,
     final bool? firstRequestForGetChats,
+    final String? chatOrderParticipantId,
     final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
     final String? recipientUserId,
@@ -209,6 +211,8 @@ class ChatState {
       isSlpoing: isSlpoing ?? this.isSlpoing,
       firstRequestForGetChats:
           firstRequestForGetChats ?? this.firstRequestForGetChats,
+      chatOrderParticipantId:
+          chatOrderParticipantId ?? this.chatOrderParticipantId,
       height: height ?? this.height,
       resendMessageStatus: resendMessageStatus ?? this.resendMessageStatus,
       imageCountInEachChat: imageCountInEachChat ?? this.imageCountInEachChat,

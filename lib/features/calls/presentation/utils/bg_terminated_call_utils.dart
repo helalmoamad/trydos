@@ -35,7 +35,7 @@ Future<void> checkAndNavigationCallingPage(BuildContext context,
     return;
   }
   Future.delayed(
-    Duration(seconds: 3),
+    const Duration(seconds: 3),
     whereToNavigationAfterCheck,
   );
 }

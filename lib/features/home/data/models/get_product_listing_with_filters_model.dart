@@ -219,10 +219,12 @@ class Thumbnail {
 
   factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
         filePath: json["file_path"],
-        originalWidth:
-            json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight:
-            json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalWidth: (json["original_width"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalHeight: (json["original_height"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {
@@ -475,10 +477,12 @@ class MostViewedProductThumbnail {
   factory MostViewedProductThumbnail.fromJson(Map<String, dynamic> json) =>
       MostViewedProductThumbnail(
         filePath: json["file_path"],
-        originalHeight:
-            json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalWidth:
-            json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalHeight: (json["original_height"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalWidth: (json["original_width"] ?? "")
+            .toString()
+            .replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {

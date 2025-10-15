@@ -85,7 +85,9 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
           return Scaffold(
             backgroundColor:
                 index == 0 ? const Color(0xffFFF9F0) : const Color(0xffF4FFF4),
-            body: WillPopScope(
+            body:
+                // ignore: deprecated_member_use
+                WillPopScope(
               onWillPop: () async {
                 if (pageController.page == 1) {
                   BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
@@ -120,6 +122,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                       AppAssets.registerInfoSvg,
                                       width: 15,
                                       height: 15,
+                                      // ignore: deprecated_member_use
                                       color: const Color(0xffFCAC2D),
                                     ),
                                     10.horizontalSpace,

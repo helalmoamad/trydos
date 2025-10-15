@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:trydos/features/chat/data/models/media_count.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
 import '../../../../core/error/failures.dart';

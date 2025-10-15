@@ -2,15 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:trydos/common/helper/show_message.dart';
-import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/crope_image.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
@@ -19,7 +13,7 @@ class CameraProfile extends StatefulWidget {
   final ValueNotifier<bool> visibleSave;
   final ValueNotifier<File?> visiblePersonPhoto;
   final ValueNotifier<bool> visibleNewImage;
-  List<CameraDescription> cameras;
+  final List<CameraDescription> cameras;
 
   CameraProfile(this.cameras, this.visiblePersonPhoto, this.visiblecamera,
       this.visibleNewImage, this.visibleSave,
@@ -34,19 +28,6 @@ class _CameraProfileState extends State<CameraProfile>
   late AnimationController animatedController;
 
   //todo start timer for recording video
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _seconds++;
-      });
-    });
-  }
-
-  void _resetTimer() {
-    setState(() {
-      _seconds = 0;
-    });
-  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -70,7 +51,6 @@ class _CameraProfileState extends State<CameraProfile>
 
   @override
   void dispose() {
-    _timer?.cancel();
     // if(mounted) {
     //   setState(() {
     //     controller!.setFlashMode(
@@ -95,14 +75,9 @@ class _CameraProfileState extends State<CameraProfile>
   }
 
 //todo timer for recording video
-  Timer? _timer;
-  int _seconds = 0;
 
 //todo for flash camera check is the front or back camera mode
   bool _isRearCameraSelected = true;
-
-//  todo flash
-  FlashMode? _currentFlashMode;
 
   //todo exposure values
 
@@ -161,7 +136,6 @@ class _CameraProfileState extends State<CameraProfile>
         _isCameraInitialized = controller!.value.isInitialized;
       });
     }
-    _currentFlashMode = controller!.value.flashMode;
   }
 
   @override

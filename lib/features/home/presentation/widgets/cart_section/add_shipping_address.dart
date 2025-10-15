@@ -27,13 +27,9 @@ import 'package:trydos/features/home/data/models/get_allowed_country_model.dart'
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart'
     as address;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
@@ -189,6 +185,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           polygonId: const PolygonId('mask'),
           points: worldRect,
           holes: [mapSyriaBorders],
+          // ignore: deprecated_member_use
           fillColor: Colors.black.withOpacity(0.3), // تظليل أسود مع شفافية
           strokeWidth: 0,
         ),
@@ -774,32 +771,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           });
     }
 
-    Future<void> getAddressFromCoordinates(
-        double latitude, double longitude) async {
-      /* List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude).onError(
-        (error, stackTrace) {
-          showFulMap.value = false;
-          return [];
-        },
-      );
-      Placemark place = placemarks[0];
-      print("111${place.administrativeArea ?? "  "}");
-
-      print("22${place.name ?? "  "}3");
-
-      print("33${place.locality ?? place.subLocality ?? " "}");
-
-      print("44${place.street ?? place.thoroughfare ?? " "}");
-
-      finishSelectedByUser = [
-        place.administrativeArea ?? "  ",
-        place.subLocality ?? "  ",
-        place.locality ?? place.subLocality ?? " ",
-        place.street?.split(",")[0] ?? place.thoroughfare ?? " "
-      ];*/
-    }
-
     Widget AddressInfoWidgetOptional(
         {required String title,
         required String title2,
@@ -1038,1012 +1009,926 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           });
     }
 
-    return WillPopScope(
-        onWillPop: () async {
-          // didCallOnWillPop = true;
-          if (showFulMap.value == true) {
-            showFulMap.value = false;
-            loadingToGoCurrentLoacation.value = false;
-            return false;
-          }
-          if (MediaQuery.of(context).viewInsets.bottom > 0) {
-            FocusManager.instance.primaryFocus?.unfocus();
-            return false;
-          }
-          if (panelController.isPanelOpen) {
-            panelController.close();
-            showPanel.value = false;
-            return false;
-          }
-          if (Navigator.canPop(context)) {
-            if (Navigator.of(context).canPop()) {
-              orderBloc.add(SaveLastAddress(
-                  lastAddress: address.CustomerAddressesInfo(
-                addressDetail: detailsAddressController.text,
-                contactInfo: address.ContactInfo(
-                  alternativePhone: alternativePhoneController.text,
-                  name: reciptionNameController.text,
-                  phone: contactPhoneController.text,
-                ),
-                address: addressTitleController.text,
-                location: address.Location(
-                    latitude: _currentLocation?.latitude.toString() ?? "",
-                    longitude: _currentLocation?.longitude.toString() ?? ""),
-                regionDetails: address.RegionDetails(
-                  zip: finishSelectedByUser.length > 0
-                      ? finishSelectedByUser[0].zip
-                      : "",
-                  building: finishSelectedByUser.length > 0
-                      ? finishSelectedByUser[0].building
-                      : "",
-                  city: finishSelectedByUser.length > 0
-                      ? finishSelectedByUser[0].city
-                      : "",
-                  country: "${country?.name}",
-                  province: finishSelectedByUser[0].province,
-                  street: finishSelectedByUser.length > 0
-                      ? finishSelectedByUser[0].street
-                      : "",
-                  town: finishSelectedByUser.length > 0
-                      ? finishSelectedByUser[0].town
-                      : "",
-                ),
-              )));
-              Navigator.of(context).pop();
+    return
+        // ignore: deprecated_member_use
+        WillPopScope(
+            onWillPop: () async {
+              // didCallOnWillPop = true;
+              if (showFulMap.value == true) {
+                showFulMap.value = false;
+                loadingToGoCurrentLoacation.value = false;
+                return false;
+              }
+              if (MediaQuery.of(context).viewInsets.bottom > 0) {
+                FocusManager.instance.primaryFocus?.unfocus();
+                return false;
+              }
+              if (panelController.isPanelOpen) {
+                panelController.close();
+                showPanel.value = false;
+                return false;
+              }
+              if (Navigator.canPop(context)) {
+                if (Navigator.of(context).canPop()) {
+                  orderBloc.add(SaveLastAddress(
+                      lastAddress: address.CustomerAddressesInfo(
+                    addressDetail: detailsAddressController.text,
+                    contactInfo: address.ContactInfo(
+                      alternativePhone: alternativePhoneController.text,
+                      name: reciptionNameController.text,
+                      phone: contactPhoneController.text,
+                    ),
+                    address: addressTitleController.text,
+                    location: address.Location(
+                        latitude: _currentLocation?.latitude.toString() ?? "",
+                        longitude:
+                            _currentLocation?.longitude.toString() ?? ""),
+                    regionDetails: address.RegionDetails(
+                      zip: finishSelectedByUser.length > 0
+                          ? finishSelectedByUser[0].zip
+                          : "",
+                      building: finishSelectedByUser.length > 0
+                          ? finishSelectedByUser[0].building
+                          : "",
+                      city: finishSelectedByUser.length > 0
+                          ? finishSelectedByUser[0].city
+                          : "",
+                      country: "${country?.name}",
+                      province: finishSelectedByUser[0].province,
+                      street: finishSelectedByUser.length > 0
+                          ? finishSelectedByUser[0].street
+                          : "",
+                      town: finishSelectedByUser.length > 0
+                          ? finishSelectedByUser[0].town
+                          : "",
+                    ),
+                  )));
+                  Navigator.of(context).pop();
 
-              return false;
-              // منع الإغلاق بعد تنفيذ pop
-            }
+                  return false;
+                  // منع الإغلاق بعد تنفيذ pop
+                }
 
-            // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
-          }
-          return true;
-        },
-        child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            body: BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                return ValueListenableBuilder<bool>(
-                    valueListenable: showPanel,
-                    builder: (context, _showPanel, _) {
-                      return Form(
-                        key: formKey,
-                        child: BlocBuilder<OrderBloc, OrderState>(
-                          buildWhen: (previous, current) =>
-                              previous.getAddressByCoordinatesStatus !=
-                              current.getAddressByCoordinatesStatus,
-                          builder: (context, state) {
-                            if (state.getAddressByCoordinatesStatus ==
-                                    GetAddressByCoordinatesStatus.success &&
-                                !((fromEditeTodenychangeDetailAddress ??
-                                    false)) &&
-                                state.getAddressByCoordinatesModel?.data
-                                        ?.province !=
-                                    null) {
-                              finishSelectedByUser = [
-                                address.RegionDetails(
-                                  building: state.getAddressByCoordinatesModel
-                                          ?.data?.building ??
-                                      "",
-                                  city: state.getAddressByCoordinatesModel?.data
-                                          ?.city ??
-                                      "",
-                                  country: "",
-                                  province: state.getAddressByCoordinatesModel
-                                          ?.data?.province ??
-                                      "",
-                                  street: state.getAddressByCoordinatesModel
-                                          ?.data?.street ??
-                                      "",
-                                  town: state.getAddressByCoordinatesModel?.data
-                                          ?.town ??
-                                      "",
-                                )
-                              ];
-                              finishSelectedByUser.removeWhere(
-                                (element) => element == "",
-                              );
-                            }
+                // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
+              }
+              return true;
+            },
+            child: Scaffold(
+                resizeToAvoidBottomInset: true,
+                body: BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) {
+                    return ValueListenableBuilder<bool>(
+                        valueListenable: showPanel,
+                        builder: (context, _showPanel, _) {
+                          return Form(
+                            key: formKey,
+                            child: BlocBuilder<OrderBloc, OrderState>(
+                              buildWhen: (previous, current) =>
+                                  previous.getAddressByCoordinatesStatus !=
+                                  current.getAddressByCoordinatesStatus,
+                              builder: (context, state) {
+                                if (state.getAddressByCoordinatesStatus ==
+                                        GetAddressByCoordinatesStatus.success &&
+                                    !((fromEditeTodenychangeDetailAddress ??
+                                        false)) &&
+                                    state.getAddressByCoordinatesModel?.data
+                                            ?.province !=
+                                        null) {
+                                  finishSelectedByUser = [
+                                    address.RegionDetails(
+                                      building: state
+                                              .getAddressByCoordinatesModel
+                                              ?.data
+                                              ?.building ??
+                                          "",
+                                      city: state.getAddressByCoordinatesModel
+                                              ?.data?.city ??
+                                          "",
+                                      country: "",
+                                      province: state
+                                              .getAddressByCoordinatesModel
+                                              ?.data
+                                              ?.province ??
+                                          "",
+                                      street: state.getAddressByCoordinatesModel
+                                              ?.data?.street ??
+                                          "",
+                                      town: state.getAddressByCoordinatesModel
+                                              ?.data?.town ??
+                                          "",
+                                    )
+                                  ];
+                                  finishSelectedByUser.removeWhere(
+                                    (element) => element == "",
+                                  );
+                                }
 
-                            fromEditeTodenychangeDetailAddress = false;
-                            return Stack(
-                              children: [
-                                Column(
+                                fromEditeTodenychangeDetailAddress = false;
+                                return Stack(
                                   children: [
-                                    Container(
-                                      margin: EdgeInsets.only(top: 60.h),
-                                      width: 1.sw,
-                                      height: 50.h,
-                                      child: Container(
-                                        height: 50.h,
-                                        child: Row(
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                if (showFulMap.value == true) {
-                                                  loadingToGoCurrentLoacation
-                                                      .value = false;
-                                                  showFulMap.value = false;
-                                                  return;
-                                                }
-                                                // didCallOnWillPop = true;
-                                                if (Navigator.canPop(context)) {
-                                                  orderBloc.add(SaveLastAddress(
-                                                      lastAddress: address
-                                                          .CustomerAddressesInfo(
-                                                    addressDetail:
-                                                        detailsAddressController
-                                                            .text,
-                                                    contactInfo:
-                                                        address.ContactInfo(
-                                                      alternativePhone:
-                                                          alternativePhoneController
-                                                              .text,
-                                                      name:
-                                                          reciptionNameController
-                                                              .text,
-                                                      phone:
-                                                          contactPhoneController
-                                                              .text,
-                                                    ),
-                                                    address:
-                                                        addressTitleController
-                                                            .text,
-                                                    location: address.Location(
-                                                        latitude: _currentLocation
-                                                                ?.latitude
-                                                                .toString() ??
-                                                            "",
-                                                        longitude:
-                                                            _currentLocation
+                                    Column(
+                                      children: [
+                                        Container(
+                                          margin: EdgeInsets.only(top: 60.h),
+                                          width: 1.sw,
+                                          height: 50.h,
+                                          child: Container(
+                                            height: 50.h,
+                                            child: Row(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    if (showFulMap.value ==
+                                                        true) {
+                                                      loadingToGoCurrentLoacation
+                                                          .value = false;
+                                                      showFulMap.value = false;
+                                                      return;
+                                                    }
+                                                    // didCallOnWillPop = true;
+                                                    if (Navigator.canPop(
+                                                        context)) {
+                                                      orderBloc.add(
+                                                          SaveLastAddress(
+                                                              lastAddress: address
+                                                                  .CustomerAddressesInfo(
+                                                        addressDetail:
+                                                            detailsAddressController
+                                                                .text,
+                                                        contactInfo:
+                                                            address.ContactInfo(
+                                                          alternativePhone:
+                                                              alternativePhoneController
+                                                                  .text,
+                                                          name:
+                                                              reciptionNameController
+                                                                  .text,
+                                                          phone:
+                                                              contactPhoneController
+                                                                  .text,
+                                                        ),
+                                                        address:
+                                                            addressTitleController
+                                                                .text,
+                                                        location: address.Location(
+                                                            latitude: _currentLocation
+                                                                    ?.latitude
+                                                                    .toString() ??
+                                                                "",
+                                                            longitude: _currentLocation
                                                                     ?.longitude
                                                                     .toString() ??
                                                                 ""),
-                                                    regionDetails:
-                                                        address.RegionDetails(
-                                                      zip: finishSelectedByUser
-                                                                  .length >
-                                                              0
-                                                          ? finishSelectedByUser[
-                                                                  0]
-                                                              .zip
-                                                          : "",
-                                                      building: finishSelectedByUser
-                                                                  .length >
-                                                              0
-                                                          ? finishSelectedByUser[
-                                                                  0]
-                                                              .building
-                                                          : "",
-                                                      city: finishSelectedByUser
-                                                                  .length >
-                                                              0
-                                                          ? finishSelectedByUser[
-                                                                  0]
-                                                              .city
-                                                          : "",
-                                                      country:
-                                                          "${country?.name}",
-                                                      province:
-                                                          finishSelectedByUser[
-                                                                  0]
-                                                              .province,
-                                                      street: finishSelectedByUser
-                                                                  .length >
-                                                              0
-                                                          ? finishSelectedByUser[
-                                                                  0]
-                                                              .street
-                                                          : "",
-                                                      town: finishSelectedByUser
-                                                                  .length >
-                                                              0
-                                                          ? finishSelectedByUser[
-                                                                  0]
-                                                              .town
-                                                          : "",
-                                                    ),
-                                                  )));
-                                                  if (Navigator.of(context)
-                                                      .canPop()) {
-                                                    Navigator.of(context).pop();
-                                                    return;
-                                                    // منع الإغلاق بعد تنفيذ pop
-                                                  }
+                                                        regionDetails: address
+                                                            .RegionDetails(
+                                                          zip: finishSelectedByUser
+                                                                      .length >
+                                                                  0
+                                                              ? finishSelectedByUser[
+                                                                      0]
+                                                                  .zip
+                                                              : "",
+                                                          building: finishSelectedByUser
+                                                                      .length >
+                                                                  0
+                                                              ? finishSelectedByUser[
+                                                                      0]
+                                                                  .building
+                                                              : "",
+                                                          city: finishSelectedByUser
+                                                                      .length >
+                                                                  0
+                                                              ? finishSelectedByUser[
+                                                                      0]
+                                                                  .city
+                                                              : "",
+                                                          country:
+                                                              "${country?.name}",
+                                                          province:
+                                                              finishSelectedByUser[
+                                                                      0]
+                                                                  .province,
+                                                          street: finishSelectedByUser
+                                                                      .length >
+                                                                  0
+                                                              ? finishSelectedByUser[
+                                                                      0]
+                                                                  .street
+                                                              : "",
+                                                          town: finishSelectedByUser
+                                                                      .length >
+                                                                  0
+                                                              ? finishSelectedByUser[
+                                                                      0]
+                                                                  .town
+                                                              : "",
+                                                        ),
+                                                      )));
+                                                      if (Navigator.of(context)
+                                                          .canPop()) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        return;
+                                                        // منع الإغلاق بعد تنفيذ pop
+                                                      }
 
-                                                  // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
+                                                      // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
 
-                                                  return;
-                                                } else {}
-                                              },
-                                              child: Container(
-                                                  width: 40,
-                                                  child: Transform.rotate(
-                                                    angle: LanguageService
-                                                                .languageCode ==
-                                                            "ar"
-                                                        ? pi
-                                                        : 0,
-                                                    child: SvgPicture.asset(
-                                                      AppAssets
-                                                          .backIconArrowSvg,
-                                                      height: 20,
-                                                    ),
-                                                  )),
-                                            ),
-                                            const Spacer(),
-                                            Center(
-                                              child: Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    height: 18,
-                                                    AppAssets
-                                                        .addShippingAddressSvg,
-                                                  ),
-                                                  Positioned(
-                                                    height: 18,
-                                                    top: -2,
-                                                    child: SvgPicture.asset(
-                                                      AppAssets
-                                                          .addShippingAddressWhiteSvg,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 5.w,
-                                            ),
-                                            Text(
-                                                "${LocaleKeys.add_shipping_address.tr()} ",
-                                                style: context
-                                                    .textTheme.bodyMedium?.mr
-                                                    .copyWith(
-                                                        color: const Color(
-                                                            0xff1D1D1D),
-                                                        letterSpacing: 0.2,
-                                                        fontSize: 14,
-                                                        height: 1.33)),
-                                            SizedBox(
-                                              width: 120.w,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ValueListenableBuilder<bool>(
-                                          valueListenable: showFulMap,
-                                          builder: (context, isShowFulMap, _) {
-                                            return Scaffold(
-                                              resizeToAvoidBottomInset: false,
-                                              body: SingleChildScrollView(
-                                                  physics: isShowFulMap
-                                                      ? const NeverScrollableScrollPhysics()
-                                                      : const ClampingScrollPhysics(),
+                                                      return;
+                                                    } else {}
+                                                  },
                                                   child: Container(
-                                                      alignment:
-                                                          Alignment.topCenter,
-                                                      child: Center(
-                                                          child: Column(
-                                                              children: [
-                                                            Container(
-                                                              decoration: BoxDecoration(
-                                                                  color: const Color(
-                                                                      0xffF8F8F8),
-                                                                  border: Border.all(
+                                                      width: 40,
+                                                      child: Transform.rotate(
+                                                        angle: LanguageService
+                                                                    .languageCode ==
+                                                                "ar"
+                                                            ? pi
+                                                            : 0,
+                                                        child: SvgPicture.asset(
+                                                          AppAssets
+                                                              .backIconArrowSvg,
+                                                          height: 20,
+                                                        ),
+                                                      )),
+                                                ),
+                                                const Spacer(),
+                                                Center(
+                                                  child: Stack(
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        height: 18,
+                                                        AppAssets
+                                                            .addShippingAddressSvg,
+                                                      ),
+                                                      Positioned(
+                                                        height: 18,
+                                                        top: -2,
+                                                        child: SvgPicture.asset(
+                                                          AppAssets
+                                                              .addShippingAddressWhiteSvg,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 5.w,
+                                                ),
+                                                Text(
+                                                    "${LocaleKeys.add_shipping_address.tr()} ",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.mr
+                                                        .copyWith(
+                                                            color: const Color(
+                                                                0xff1D1D1D),
+                                                            letterSpacing: 0.2,
+                                                            fontSize: 14,
+                                                            height: 1.33)),
+                                                SizedBox(
+                                                  width: 120.w,
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: ValueListenableBuilder<bool>(
+                                              valueListenable: showFulMap,
+                                              builder:
+                                                  (context, isShowFulMap, _) {
+                                                return Scaffold(
+                                                  resizeToAvoidBottomInset:
+                                                      false,
+                                                  body: SingleChildScrollView(
+                                                      physics: isShowFulMap
+                                                          ? const NeverScrollableScrollPhysics()
+                                                          : const ClampingScrollPhysics(),
+                                                      child: Container(
+                                                          alignment: Alignment
+                                                              .topCenter,
+                                                          child: Center(
+                                                              child: Column(
+                                                                  children: [
+                                                                Container(
+                                                                  decoration: BoxDecoration(
                                                                       color: const Color(
-                                                                          0xffD3D3D3))),
-                                                              height: 50,
-                                                              child: Row(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    width: 20.w,
-                                                                  ),
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    AppAssets
-                                                                        .enterInfoSvg,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 10.w,
-                                                                  ),
-                                                                  Container(
-                                                                    width:
-                                                                        370.w,
-                                                                    height: 32,
-                                                                    child:
-                                                                        Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceEvenly,
-                                                                      children: [
-                                                                        Text(
-                                                                          "${LocaleKeys.entering_the_information_below_clearly.tr()} ",
-                                                                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                              color: const Color(0xff8D8D8D),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 11,
-                                                                              height: 0.8),
-                                                                        ),
-                                                                        Text(
-                                                                          "${LocaleKeys.your_order_arrives_without_problems.tr()} ",
-                                                                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                              color: const Color(0xff8D8D8D),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 11,
-                                                                              height: 0.8),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            isShowFulMap
-                                                                ? const SizedBox
-                                                                    .shrink()
-                                                                : const SizedBox(
-                                                                    height: 10,
-                                                                  ),
-                                                            isShowFulMap
-                                                                ? Stack(
+                                                                          0xffF8F8F8),
+                                                                      border: Border.all(
+                                                                          color:
+                                                                              const Color(0xffD3D3D3))),
+                                                                  height: 50,
+                                                                  child: Row(
                                                                     children: [
-                                                                      Container(
-                                                                        width: 1
-                                                                            .sw,
-                                                                        height: 1.sh /
-                                                                            1.7,
-                                                                        margin: const EdgeInsets
-                                                                            .only(
-                                                                            left:
-                                                                                15,
-                                                                            right:
-                                                                                15,
-                                                                            top:
-                                                                                15),
-                                                                        decoration: BoxDecoration(
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(15.r),
-                                                                            border: Border.all(color: const Color(0xffD3D3D3))),
-                                                                        child:
-                                                                            Container(
-                                                                          clipBehavior:
-                                                                              Clip.antiAlias,
-                                                                          width:
-                                                                              1.sw,
-                                                                          height:
-                                                                              1.sh / 1.7,
-                                                                          margin: const EdgeInsets
-                                                                              .all(
-                                                                              10),
-                                                                          decoration: BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(15.r),
-                                                                              border: Border.all(color: const Color(0xffD3D3D3))),
-                                                                          child:
-                                                                              GoogleMap(
-                                                                            onCameraMove:
-                                                                                (position) {
-                                                                              currentZoom = position.zoom;
-                                                                            },
-                                                                            cameraTargetBounds:
-                                                                                CameraTargetBounds(bounds),
-                                                                            minMaxZoomPreference:
-                                                                                const MinMaxZoomPreference(5, 24),
-                                                                            polygons:
-                                                                                polygons,
-                                                                            initialCameraPosition:
-                                                                                _kinitialPosition,
-                                                                            markers:
-                                                                                _markers.toSet(),
-                                                                            onTap:
-                                                                                (argument) {
-                                                                              _markers = [];
-
-                                                                              if (countryBorders.isNotEmpty) {
-                                                                                bool inside = geodesy.isGeoPointInPolygon(geod.LatLng(argument.latitude, argument.longitude), countryBorders);
-                                                                                if (!inside) {
-                                                                                  // عرض رسالة
-                                                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                                                    SnackBar(duration: const Duration(seconds: 2), content: Text("${LocaleKeys.outside_available_area.tr()}")),
-                                                                                  );
-                                                                                  return;
-                                                                                }
-                                                                              }
-                                                                              if (currentZoom < 14) {
-                                                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                                                  SnackBar(duration: const Duration(seconds: 2), content: Text("${LocaleKeys.you_must_zoom_on_map_dd_location.tr()}")),
-                                                                                );
-                                                                                return;
-                                                                              }
-
-                                                                              _markers.add(Marker(markerId: const MarkerId('current_location'), position: LatLng(argument.latitude, argument.longitude)));
-                                                                              _currentLocation = LatLng(argument.latitude, argument.longitude);
-                                                                              setState(() {});
-                                                                            },
-                                                                            onMapCreated:
-                                                                                (GoogleMapController controller) {
-                                                                              mapController = controller;
-
-                                                                              //    controller.animateCamera(CameraUpdate.newLatLng(LatLng()))
-                                                                            },
-                                                                          ),
-                                                                        ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            20.w,
                                                                       ),
-                                                                      ValueListenableBuilder<
-                                                                              bool>(
-                                                                          valueListenable:
-                                                                              loadingToGoCurrentLoacation,
-                                                                          builder: (context,
-                                                                              _loadingToGoCurrentLoacation,
-                                                                              _) {
-                                                                            return Positioned(
-                                                                                bottom: 120,
-                                                                                right: 35,
-                                                                                child: _loadingToGoCurrentLoacation
-                                                                                    ? Container(
-                                                                                        width: 50,
-                                                                                        height: 50,
-                                                                                        color: const Color(0xffFFFFFF),
-                                                                                        child: TrydosLoader(
-                                                                                          color: const Color(0xff1D1D1D),
-                                                                                          size: 15,
-                                                                                        ),
-                                                                                      )
-                                                                                    : InkWell(
-                                                                                        onTap: () async {
-                                                                                          var status = await Permission.location.status;
-
-                                                                                          if (!status.isGranted) {
-                                                                                            // إذا لم يكن الإذن ممنوحًا، اطلبه
-                                                                                            if (await Permission.location.request().isGranted) {
-                                                                                              // إذا تم منح الإذن، تابع الحصول على الموقع
-                                                                                              _goToCurrentLocation(latlng: null);
-                                                                                            } else {
-                                                                                              // إذا تم رفض الإذن، يمكنك إظهار رسالة للمستخدم
-                                                                                              print('إذن الموقع مرفوض.');
-                                                                                            }
-                                                                                          } else {
-                                                                                            // إذا كان الإذن ممنوحًا، تابع الحصول على الموقع
-                                                                                            _goToCurrentLocation(latlng: null);
-                                                                                          }
-                                                                                        },
-                                                                                        child: Container(
-                                                                                          color: Colors.black12,
-                                                                                          alignment: Alignment.center,
-                                                                                          width: 50,
-                                                                                          height: 50,
-                                                                                          child: const Icon(Icons.my_location),
-                                                                                        ),
-                                                                                      ));
-                                                                          })
+                                                                      SvgPicture
+                                                                          .asset(
+                                                                        AppAssets
+                                                                            .enterInfoSvg,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            10.w,
+                                                                      ),
+                                                                      Container(
+                                                                        width:
+                                                                            370.w,
+                                                                        height:
+                                                                            32,
+                                                                        child:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceEvenly,
+                                                                          children: [
+                                                                            Text(
+                                                                              "${LocaleKeys.entering_the_information_below_clearly.tr()} ",
+                                                                              style: context.textTheme.bodyMedium?.ra.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 11, height: 0.8),
+                                                                            ),
+                                                                            Text(
+                                                                              "${LocaleKeys.your_order_arrives_without_problems.tr()} ",
+                                                                              style: context.textTheme.bodyMedium?.ra.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 11, height: 0.8),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      )
                                                                     ],
-                                                                  )
-                                                                : ValueListenableBuilder<
-                                                                        bool>(
-                                                                    valueListenable:
-                                                                        validateBox,
-                                                                    builder:
-                                                                        (context,
+                                                                  ),
+                                                                ),
+                                                                isShowFulMap
+                                                                    ? const SizedBox
+                                                                        .shrink()
+                                                                    : const SizedBox(
+                                                                        height:
+                                                                            10,
+                                                                      ),
+                                                                isShowFulMap
+                                                                    ? Stack(
+                                                                        children: [
+                                                                          Container(
+                                                                            width:
+                                                                                1.sw,
+                                                                            height:
+                                                                                1.sh / 1.7,
+                                                                            margin: const EdgeInsets.only(
+                                                                                left: 15,
+                                                                                right: 15,
+                                                                                top: 15),
+                                                                            decoration:
+                                                                                BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: const Color(0xffD3D3D3))),
+                                                                            child:
+                                                                                Container(
+                                                                              clipBehavior: Clip.antiAlias,
+                                                                              width: 1.sw,
+                                                                              height: 1.sh / 1.7,
+                                                                              margin: const EdgeInsets.all(10),
+                                                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: const Color(0xffD3D3D3))),
+                                                                              child: GoogleMap(
+                                                                                onCameraMove: (position) {
+                                                                                  currentZoom = position.zoom;
+                                                                                },
+                                                                                cameraTargetBounds: CameraTargetBounds(bounds),
+                                                                                minMaxZoomPreference: const MinMaxZoomPreference(5, 24),
+                                                                                polygons: polygons,
+                                                                                initialCameraPosition: _kinitialPosition,
+                                                                                markers: _markers.toSet(),
+                                                                                onTap: (argument) {
+                                                                                  _markers = [];
+
+                                                                                  if (countryBorders.isNotEmpty) {
+                                                                                    bool inside = geodesy.isGeoPointInPolygon(geod.LatLng(argument.latitude, argument.longitude), countryBorders);
+                                                                                    if (!inside) {
+                                                                                      // عرض رسالة
+                                                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                                                        SnackBar(duration: const Duration(seconds: 2), content: Text("${LocaleKeys.outside_available_area.tr()}")),
+                                                                                      );
+                                                                                      return;
+                                                                                    }
+                                                                                  }
+                                                                                  if (currentZoom < 14) {
+                                                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                                                      SnackBar(duration: const Duration(seconds: 2), content: Text("${LocaleKeys.you_must_zoom_on_map_dd_location.tr()}")),
+                                                                                    );
+                                                                                    return;
+                                                                                  }
+
+                                                                                  _markers.add(Marker(markerId: const MarkerId('current_location'), position: LatLng(argument.latitude, argument.longitude)));
+                                                                                  _currentLocation = LatLng(argument.latitude, argument.longitude);
+                                                                                  setState(() {});
+                                                                                },
+                                                                                onMapCreated: (GoogleMapController controller) {
+                                                                                  mapController = controller;
+
+                                                                                  //    controller.animateCamera(CameraUpdate.newLatLng(LatLng()))
+                                                                                },
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          ValueListenableBuilder<bool>(
+                                                                              valueListenable: loadingToGoCurrentLoacation,
+                                                                              builder: (context, _loadingToGoCurrentLoacation, _) {
+                                                                                return Positioned(
+                                                                                    bottom: 120,
+                                                                                    right: 35,
+                                                                                    child: _loadingToGoCurrentLoacation
+                                                                                        ? Container(
+                                                                                            width: 50,
+                                                                                            height: 50,
+                                                                                            color: const Color(0xffFFFFFF),
+                                                                                            child: TrydosLoader(
+                                                                                              color: const Color(0xff1D1D1D),
+                                                                                              size: 15,
+                                                                                            ),
+                                                                                          )
+                                                                                        : InkWell(
+                                                                                            onTap: () async {
+                                                                                              var status = await Permission.location.status;
+
+                                                                                              if (!status.isGranted) {
+                                                                                                // إذا لم يكن الإذن ممنوحًا، اطلبه
+                                                                                                if (await Permission.location.request().isGranted) {
+                                                                                                  // إذا تم منح الإذن، تابع الحصول على الموقع
+                                                                                                  _goToCurrentLocation(latlng: null);
+                                                                                                } else {
+                                                                                                  // إذا تم رفض الإذن، يمكنك إظهار رسالة للمستخدم
+                                                                                                  print('إذن الموقع مرفوض.');
+                                                                                                }
+                                                                                              } else {
+                                                                                                // إذا كان الإذن ممنوحًا، تابع الحصول على الموقع
+                                                                                                _goToCurrentLocation(latlng: null);
+                                                                                              }
+                                                                                            },
+                                                                                            child: Container(
+                                                                                              color: Colors.black12,
+                                                                                              alignment: Alignment.center,
+                                                                                              width: 50,
+                                                                                              height: 50,
+                                                                                              child: const Icon(Icons.my_location),
+                                                                                            ),
+                                                                                          ));
+                                                                              })
+                                                                        ],
+                                                                      )
+                                                                    : ValueListenableBuilder<
+                                                                            bool>(
+                                                                        valueListenable:
+                                                                            validateBox,
+                                                                        builder: (context,
                                                                             isValidateBox,
                                                                             _) {
-                                                                      return Container(
-                                                                          width: 1
-                                                                              .sw,
-                                                                          margin: EdgeInsets.symmetric(
-                                                                              horizontal: 15
-                                                                                  .w),
-                                                                          decoration: BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(15.r),
-                                                                              border: Border.all(color: const Color(0xffD3D3D3))),
-                                                                          height: 118,
-                                                                          child: Column(
-                                                                            children: [
-                                                                              Stack(
-                                                                                alignment: Alignment.center,
+                                                                          return Container(
+                                                                              width: 1.sw,
+                                                                              margin: EdgeInsets.symmetric(horizontal: 15.w),
+                                                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: const Color(0xffD3D3D3))),
+                                                                              height: 118,
+                                                                              child: Column(
                                                                                 children: [
-                                                                                  Container(
-                                                                                    clipBehavior: Clip.antiAlias,
-                                                                                    height: 80,
-                                                                                    margin: EdgeInsets.all(10.w),
-                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: const Color(0xffD3D3D3))),
-                                                                                    child: IgnorePointer(
-                                                                                      child: GoogleMap(
-                                                                                        zoomControlsEnabled: false,
-                                                                                        compassEnabled: false,
-                                                                                        markers: _markersInSmallMap.toSet(),
-                                                                                        zoomGesturesEnabled: false,
-                                                                                        initialCameraPosition: _kinitialPosition,
-                                                                                        onMapCreated: (GoogleMapController controller) {
-                                                                                          mapController = controller;
-                                                                                        },
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  InkWell(
-                                                                                    onTap: () {
-                                                                                      if ((_locationFromSearch?.latitude != null && _locationFromSearch?.longitude != null)) {
-                                                                                        _goToCurrentLocation(latlng: _locationFromSearch);
-                                                                                      }
-
-                                                                                      showFulMap.value = true;
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      child: Row(
-                                                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                                                        children: [
-                                                                                          Text(
-                                                                                            "${LocaleKeys.locate_your_location_on_map.tr()} ",
-                                                                                            style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xffF4F4F4), letterSpacing: 0.18, fontSize: 12, height: 0.8),
-                                                                                          ),
-                                                                                          SvgPicture.asset(
-                                                                                            AppAssets.navigationSvg,
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                      height: 35,
-                                                                                      width: 210.w,
-                                                                                      margin: EdgeInsets.all(10.w),
-                                                                                      decoration: BoxDecoration(
-                                                                                        color: const Color.fromRGBO(43, 44, 44, 0.7),
-                                                                                        borderRadius: BorderRadius.circular(15.r),
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              Text(
-                                                                                "${LocaleKeys.location_is_accurate_making_it_easy_to_receive_shipments.tr()} ",
-                                                                                style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 0.8),
-                                                                              ),
-                                                                            ],
-                                                                          ));
-                                                                    }),
-                                                            isShowFulMap
-                                                                ? SizedBox
-                                                                    .fromSize()
-                                                                : const SizedBox(
-                                                                    height: 28,
-                                                                  ),
-                                                            isShowFulMap
-                                                                ? SizedBox
-                                                                    .fromSize()
-                                                                : Container(
-                                                                    height: 280,
-                                                                    width: 1.sw,
-                                                                    margin: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            15.w),
-                                                                    child:
-                                                                        Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Container(
-                                                                          height:
-                                                                              15,
-                                                                          width:
-                                                                              116,
-                                                                          margin:
-                                                                              EdgeInsets.symmetric(horizontal: 10.w),
-                                                                          child:
-                                                                              Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            children: [
-                                                                              SvgPicture.asset(
-                                                                                AppAssets.addressInfoSvg,
-                                                                              ),
-                                                                              Text(
-                                                                                "${LocaleKeys.address_info.tr()} ",
-                                                                                style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff404040), letterSpacing: 0.18, fontSize: 12, height: LanguageService.languageCode == "ar" ? 0.8 : 1.2),
-                                                                              ),
-                                                                              SvgPicture.asset(
-                                                                                AppAssets.chatWithQuestionSvg,
-                                                                                color: const Color(0xffD3D3D3),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                10),
-                                                                        Container(
-                                                                          height:
-                                                                              50,
-                                                                          width:
-                                                                              1.sw,
-                                                                          decoration: BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(15.r),
-                                                                              border: Border.all(color: const Color(0xffD3D3D3))),
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.symmetric(horizontal: 8),
-                                                                            child:
-                                                                                Column(
-                                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                Text(
-                                                                                  LocaleKeys.countr_region.tr(),
-                                                                                  style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 0.8),
-                                                                                ),
-                                                                                const SizedBox(
-                                                                                  height: 5,
-                                                                                ),
-                                                                                Container(
-                                                                                  width: 250.w,
-                                                                                  child: Row(
+                                                                                  Stack(
+                                                                                    alignment: Alignment.center,
                                                                                     children: [
-                                                                                      country?.iso?.toUpperCase() == "SY"
-                                                                                          ? SvgPicture.asset(
-                                                                                              AppAssets.syriaFlagSvg,
-                                                                                            )
-                                                                                          : Container(
-                                                                                              width: 18,
-                                                                                              height: 18,
-                                                                                              child: CountryFlag.fromCountryCode(
-                                                                                                "${country?.iso}",
-                                                                                                height: 18.h,
-                                                                                                width: 18.w,
-                                                                                                borderRadius: 4.r,
-                                                                                              )),
-                                                                                      SizedBox(
-                                                                                        width: 8.w,
+                                                                                      Container(
+                                                                                        clipBehavior: Clip.antiAlias,
+                                                                                        height: 80,
+                                                                                        margin: EdgeInsets.all(10.w),
+                                                                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: const Color(0xffD3D3D3))),
+                                                                                        child: IgnorePointer(
+                                                                                          child: GoogleMap(
+                                                                                            zoomControlsEnabled: false,
+                                                                                            compassEnabled: false,
+                                                                                            markers: _markersInSmallMap.toSet(),
+                                                                                            zoomGesturesEnabled: false,
+                                                                                            initialCameraPosition: _kinitialPosition,
+                                                                                            onMapCreated: (GoogleMapController controller) {
+                                                                                              mapController = controller;
+                                                                                            },
+                                                                                          ),
+                                                                                        ),
                                                                                       ),
-                                                                                      Text(
-                                                                                        "${country?.name}",
-                                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                                      InkWell(
+                                                                                        onTap: () {
+                                                                                          if ((_locationFromSearch?.latitude != null && _locationFromSearch?.longitude != null)) {
+                                                                                            _goToCurrentLocation(latlng: _locationFromSearch);
+                                                                                          }
+
+                                                                                          showFulMap.value = true;
+                                                                                        },
+                                                                                        child: Container(
+                                                                                          child: Row(
+                                                                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                                            children: [
+                                                                                              Text(
+                                                                                                "${LocaleKeys.locate_your_location_on_map.tr()} ",
+                                                                                                style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xffF4F4F4), letterSpacing: 0.18, fontSize: 12, height: 0.8),
+                                                                                              ),
+                                                                                              SvgPicture.asset(
+                                                                                                AppAssets.navigationSvg,
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                          height: 35,
+                                                                                          width: 210.w,
+                                                                                          margin: EdgeInsets.all(10.w),
+                                                                                          decoration: BoxDecoration(
+                                                                                            color: const Color.fromRGBO(43, 44, 44, 0.7),
+                                                                                            borderRadius: BorderRadius.circular(15.r),
+                                                                                          ),
+                                                                                        ),
                                                                                       ),
                                                                                     ],
                                                                                   ),
-                                                                                )
-                                                                              ],
+                                                                                  Text(
+                                                                                    "${LocaleKeys.location_is_accurate_making_it_easy_to_receive_shipments.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 0.8),
+                                                                                  ),
+                                                                                ],
+                                                                              ));
+                                                                        }),
+                                                                isShowFulMap
+                                                                    ? SizedBox
+                                                                        .fromSize()
+                                                                    : const SizedBox(
+                                                                        height:
+                                                                            28,
+                                                                      ),
+                                                                isShowFulMap
+                                                                    ? SizedBox
+                                                                        .fromSize()
+                                                                    : Container(
+                                                                        height:
+                                                                            280,
+                                                                        width: 1
+                                                                            .sw,
+                                                                        margin: EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                15.w),
+                                                                        child:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            Container(
+                                                                              height: 15,
+                                                                              width: 116,
+                                                                              margin: EdgeInsets.symmetric(horizontal: 10.w),
+                                                                              child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                children: [
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.addressInfoSvg,
+                                                                                  ),
+                                                                                  Text(
+                                                                                    "${LocaleKeys.address_info.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff404040), letterSpacing: 0.18, fontSize: 12, height: LanguageService.languageCode == "ar" ? 0.8 : 1.2),
+                                                                                  ),
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.chatWithQuestionSvg,
+                                                                                    // ignore: deprecated_member_use
+                                                                                    color: const Color(0xffD3D3D3),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                        ),
-                                                                        ValueListenableBuilder<
-                                                                                bool>(
-                                                                            valueListenable:
-                                                                                validateBox,
-                                                                            builder: (context,
-                                                                                isValidateBox,
-                                                                                _) {
-                                                                              if (isValidateBox && (finishSelectedByUserToAppear.length == 0)) {
-                                                                                animationController.forward();
-                                                                                Future.delayed(
-                                                                                  const Duration(seconds: 2),
-                                                                                  () => animationController.reset(),
-                                                                                );
-                                                                              }
-                                                                              return ValueListenableBuilder<bool>(
-                                                                                  valueListenable: showPanel,
-                                                                                  builder: (context, _showPanel, _) {
-                                                                                    if (finishSelectedByUser.length > 0) {
-                                                                                      finishSelectedByUserToAppear = [
-                                                                                        finishSelectedByUser[0].province ?? "",
-                                                                                        finishSelectedByUser[0].city ?? "",
-                                                                                        finishSelectedByUser[0].town ?? "",
-                                                                                        finishSelectedByUser[0].street ?? "",
-                                                                                        finishSelectedByUser[0].building ?? ""
-                                                                                      ];
-                                                                                      finishSelectedByUserToAppear.removeWhere(
-                                                                                        (element) => element == "",
-                                                                                      );
-                                                                                    }
-                                                                                    return InkWell(
-                                                                                        highlightColor: Colors.transparent,
-                                                                                        hoverColor: Colors.transparent,
-                                                                                        splashColor: Colors.transparent,
-                                                                                        onTap: () {
-                                                                                          showShadowForPanel.value = true;
-                                                                                          showPanel.value = true;
-                                                                                          panelController.open();
-                                                                                        },
-                                                                                        child: AnimatedBuilder(
-                                                                                          animation: animationController,
-                                                                                          builder: (context, child) => Transform.translate(
-                                                                                            offset: Offset(!(finishSelectedByUserToAppear.length == 0) ? 0 : sin(3 * 2 * pi * animationController.value) * 5, 0),
-                                                                                            child: state.getAddressByCoordinatesStatus == GetAddressByCoordinatesStatus.loading
-                                                                                                ? Shimmer.fromColors(
-                                                                                                    baseColor: Colors.grey[500]!,
-                                                                                                    highlightColor: Colors.grey[200]!,
-                                                                                                    child: Container(
-                                                                                                      margin: EdgeInsets.symmetric(vertical: 10.h),
-                                                                                                      width: 1.sw,
-                                                                                                      height: 53.h,
-                                                                                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : const Color(0xffD3D3D3))),
-                                                                                                      child: const Padding(
-                                                                                                        padding: EdgeInsets.all(8.0),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  )
-                                                                                                : Container(
-                                                                                                    margin: EdgeInsets.symmetric(vertical: 10.h),
-                                                                                                    width: 1.sw,
-                                                                                                    height: 53,
-                                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : const Color(0xffD3D3D3))),
-                                                                                                    child: Padding(
-                                                                                                      padding: const EdgeInsets.all(8.0),
-                                                                                                      child: Column(
-                                                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                        children: [
-                                                                                                          Text(
-                                                                                                            finishSelectedByUserToAppear.length > 0 ? LocaleKeys.change_from_list.tr() : LocaleKeys.select_from_list.tr(),
-                                                                                                            style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: LanguageService.languageCode == "ar" ? 0.6 : 0.5),
-                                                                                                          ),
-                                                                                                          Container(
-                                                                                                            width: 350.w,
-                                                                                                            child: Row(
-                                                                                                              children: [
-                                                                                                                SvgPicture.asset(
-                                                                                                                  AppAssets.detectedSvg,
-                                                                                                                  color: finishSelectedByUserToAppear.length > 0 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3),
-                                                                                                                  height: 16,
-                                                                                                                ),
-                                                                                                                SizedBox(
-                                                                                                                  width: 5.w,
-                                                                                                                ),
-                                                                                                                finishSelectedByUserToAppear.length > 0
-                                                                                                                    ? Container(
-                                                                                                                        width: 300.w,
-                                                                                                                        height: 20,
-                                                                                                                        child: ListView.builder(
-                                                                                                                          scrollDirection: Axis.horizontal,
-                                                                                                                          itemCount: finishSelectedByUserToAppear.length,
-                                                                                                                          itemBuilder: (context, index) => Text(
-                                                                                                                            index == finishSelectedByUserToAppear.length - 1 ? "${finishSelectedByUserToAppear[index]}." : "${finishSelectedByUserToAppear[index]} | ",
-                                                                                                                            style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.3),
-                                                                                                                          ),
-                                                                                                                        ),
-                                                                                                                      )
-                                                                                                                    : Text(
-                                                                                                                        LocaleKeys.province_district_town_street.tr(),
-                                                                                                                        style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xffD3D3D3), letterSpacing: 0.18, fontSize: 14, height: 0.8),
-                                                                                                                      ),
-                                                                                                              ],
-                                                                                                            ),
-                                                                                                          )
-                                                                                                        ],
-                                                                                                      ),
-                                                                                                    )),
+                                                                            const SizedBox(height: 10),
+                                                                            Container(
+                                                                              height: 50,
+                                                                              width: 1.sw,
+                                                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: const Color(0xffD3D3D3))),
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                                                child: Column(
+                                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                  children: [
+                                                                                    Text(
+                                                                                      LocaleKeys.countr_region.tr(),
+                                                                                      style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 0.8),
+                                                                                    ),
+                                                                                    const SizedBox(
+                                                                                      height: 5,
+                                                                                    ),
+                                                                                    Container(
+                                                                                      width: 250.w,
+                                                                                      child: Row(
+                                                                                        children: [
+                                                                                          country?.iso?.toUpperCase() == "SY"
+                                                                                              ? SvgPicture.asset(
+                                                                                                  AppAssets.syriaFlagSvg,
+                                                                                                )
+                                                                                              : Container(
+                                                                                                  width: 18,
+                                                                                                  height: 18,
+                                                                                                  child: CountryFlag.fromCountryCode(
+                                                                                                    "${country?.iso}",
+                                                                                                    height: 18.h,
+                                                                                                    width: 18.w,
+                                                                                                    borderRadius: 4.r,
+                                                                                                  )),
+                                                                                          SizedBox(
+                                                                                            width: 8.w,
                                                                                           ),
-                                                                                        ));
-                                                                                  });
-                                                                            }),
-                                                                        AddressInfoWidget(
-                                                                            controller:
-                                                                                detailsAddressController,
-                                                                            context:
-                                                                                context,
-                                                                            isPhone:
-                                                                                false,
-                                                                            isComplate:
-                                                                                false,
-                                                                            height:
-                                                                                72,
-                                                                            title2:
-                                                                                "",
-                                                                            hint2:
-                                                                                '${LocaleKeys.street_address_building_flat_door_unit.tr()}.',
-                                                                            title:
-                                                                                LocaleKeys.detailed_address_note.tr(),
-                                                                            hint: '${LocaleKeys.write_the_address_clearly_including.tr()}'),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                10),
-                                                                        AddressInfoWidget(
-                                                                            controller:
-                                                                                addressTitleController,
-                                                                            context:
-                                                                                context,
-                                                                            isPhone:
-                                                                                false,
-                                                                            isComplate:
-                                                                                false,
-                                                                            height:
-                                                                                50,
-                                                                            title2:
-                                                                                "",
-                                                                            hint2:
-                                                                                "",
-                                                                            title:
-                                                                                LocaleKeys.address_title.tr(),
-                                                                            hint: '${LocaleKeys.ex_home.tr()}'),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                            isShowFulMap
-                                                                ? SizedBox
-                                                                    .fromSize()
-                                                                : const SizedBox(
-                                                                    height: 20,
-                                                                  ),
-                                                            isShowFulMap
-                                                                ? SizedBox
-                                                                    .fromSize()
-                                                                : Container(
-                                                                    height: 197,
-                                                                    width: 1.sw,
-                                                                    margin: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            15.w),
-                                                                    child:
-                                                                        Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Container(
-                                                                          height:
-                                                                              15,
-                                                                          width:
-                                                                              116,
-                                                                          margin:
-                                                                              EdgeInsets.symmetric(horizontal: 10.w),
-                                                                          child:
-                                                                              Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            children: [
-                                                                              SvgPicture.asset(
-                                                                                AppAssets.personSvg,
+                                                                                          Text(
+                                                                                            "${country?.name}",
+                                                                                            style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    )
+                                                                                  ],
+                                                                                ),
                                                                               ),
-                                                                              Text(
-                                                                                "${LocaleKeys.contact_info.tr()} ",
-                                                                                style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff404040), letterSpacing: 0.18, fontSize: 12, height: LanguageService.languageCode == "ar" ? 1 : 1.2),
-                                                                              ),
-                                                                              SvgPicture.asset(
-                                                                                AppAssets.chatWithQuestionSvg,
-                                                                                color: const Color(0xffD3D3D3),
-                                                                              ),
-                                                                            ],
-                                                                          ),
+                                                                            ),
+                                                                            ValueListenableBuilder<bool>(
+                                                                                valueListenable: validateBox,
+                                                                                builder: (context, isValidateBox, _) {
+                                                                                  if (isValidateBox && (finishSelectedByUserToAppear.length == 0)) {
+                                                                                    animationController.forward();
+                                                                                    Future.delayed(
+                                                                                      const Duration(seconds: 2),
+                                                                                      () => animationController.reset(),
+                                                                                    );
+                                                                                  }
+                                                                                  return ValueListenableBuilder<bool>(
+                                                                                      valueListenable: showPanel,
+                                                                                      builder: (context, _showPanel, _) {
+                                                                                        if (finishSelectedByUser.length > 0) {
+                                                                                          finishSelectedByUserToAppear = [
+                                                                                            finishSelectedByUser[0].province ?? "",
+                                                                                            finishSelectedByUser[0].city ?? "",
+                                                                                            finishSelectedByUser[0].town ?? "",
+                                                                                            finishSelectedByUser[0].street ?? "",
+                                                                                            finishSelectedByUser[0].building ?? ""
+                                                                                          ];
+                                                                                          finishSelectedByUserToAppear.removeWhere(
+                                                                                            (element) => element == "",
+                                                                                          );
+                                                                                        }
+                                                                                        return InkWell(
+                                                                                            highlightColor: Colors.transparent,
+                                                                                            hoverColor: Colors.transparent,
+                                                                                            splashColor: Colors.transparent,
+                                                                                            onTap: () {
+                                                                                              showShadowForPanel.value = true;
+                                                                                              showPanel.value = true;
+                                                                                              panelController.open();
+                                                                                            },
+                                                                                            child: AnimatedBuilder(
+                                                                                              animation: animationController,
+                                                                                              builder: (context, child) => Transform.translate(
+                                                                                                offset: Offset(!(finishSelectedByUserToAppear.length == 0) ? 0 : sin(3 * 2 * pi * animationController.value) * 5, 0),
+                                                                                                child: state.getAddressByCoordinatesStatus == GetAddressByCoordinatesStatus.loading
+                                                                                                    ? Shimmer.fromColors(
+                                                                                                        baseColor: Colors.grey[500]!,
+                                                                                                        highlightColor: Colors.grey[200]!,
+                                                                                                        child: Container(
+                                                                                                          margin: EdgeInsets.symmetric(vertical: 10.h),
+                                                                                                          width: 1.sw,
+                                                                                                          height: 53.h,
+                                                                                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : const Color(0xffD3D3D3))),
+                                                                                                          child: const Padding(
+                                                                                                            padding: EdgeInsets.all(8.0),
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      )
+                                                                                                    : Container(
+                                                                                                        margin: EdgeInsets.symmetric(vertical: 10.h),
+                                                                                                        width: 1.sw,
+                                                                                                        height: 53,
+                                                                                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : const Color(0xffD3D3D3))),
+                                                                                                        child: Padding(
+                                                                                                          padding: const EdgeInsets.all(8.0),
+                                                                                                          child: Column(
+                                                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                            children: [
+                                                                                                              Text(
+                                                                                                                finishSelectedByUserToAppear.length > 0 ? LocaleKeys.change_from_list.tr() : LocaleKeys.select_from_list.tr(),
+                                                                                                                style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: LanguageService.languageCode == "ar" ? 0.6 : 0.5),
+                                                                                                              ),
+                                                                                                              Container(
+                                                                                                                width: 350.w,
+                                                                                                                child: Row(
+                                                                                                                  children: [
+                                                                                                                    SvgPicture.asset(
+                                                                                                                      AppAssets.detectedSvg,
+                                                                                                                      // ignore: deprecated_member_use
+                                                                                                                      color: finishSelectedByUserToAppear.length > 0 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3),
+                                                                                                                      height: 16,
+                                                                                                                    ),
+                                                                                                                    SizedBox(
+                                                                                                                      width: 5.w,
+                                                                                                                    ),
+                                                                                                                    finishSelectedByUserToAppear.length > 0
+                                                                                                                        ? Container(
+                                                                                                                            width: 300.w,
+                                                                                                                            height: 20,
+                                                                                                                            child: ListView.builder(
+                                                                                                                              scrollDirection: Axis.horizontal,
+                                                                                                                              itemCount: finishSelectedByUserToAppear.length,
+                                                                                                                              itemBuilder: (context, index) => Text(
+                                                                                                                                index == finishSelectedByUserToAppear.length - 1 ? "${finishSelectedByUserToAppear[index]}." : "${finishSelectedByUserToAppear[index]} | ",
+                                                                                                                                style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.3),
+                                                                                                                              ),
+                                                                                                                            ),
+                                                                                                                          )
+                                                                                                                        : Text(
+                                                                                                                            LocaleKeys.province_district_town_street.tr(),
+                                                                                                                            style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xffD3D3D3), letterSpacing: 0.18, fontSize: 14, height: 0.8),
+                                                                                                                          ),
+                                                                                                                  ],
+                                                                                                                ),
+                                                                                                              )
+                                                                                                            ],
+                                                                                                          ),
+                                                                                                        )),
+                                                                                              ),
+                                                                                            ));
+                                                                                      });
+                                                                                }),
+                                                                            AddressInfoWidget(
+                                                                                controller: detailsAddressController,
+                                                                                context: context,
+                                                                                isPhone: false,
+                                                                                isComplate: false,
+                                                                                height: 72,
+                                                                                title2: "",
+                                                                                hint2: '${LocaleKeys.street_address_building_flat_door_unit.tr()}.',
+                                                                                title: LocaleKeys.detailed_address_note.tr(),
+                                                                                hint: '${LocaleKeys.write_the_address_clearly_including.tr()}'),
+                                                                            const SizedBox(height: 10),
+                                                                            AddressInfoWidget(
+                                                                                controller: addressTitleController,
+                                                                                context: context,
+                                                                                isPhone: false,
+                                                                                isComplate: false,
+                                                                                height: 50,
+                                                                                title2: "",
+                                                                                hint2: "",
+                                                                                title: LocaleKeys.address_title.tr(),
+                                                                                hint: '${LocaleKeys.ex_home.tr()}'),
+                                                                          ],
                                                                         ),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                10),
-                                                                        AddressInfoWidget(
-                                                                            controller:
-                                                                                reciptionNameController,
-                                                                            isPhone:
-                                                                                false,
-                                                                            title2:
-                                                                                "",
-                                                                            context:
-                                                                                context,
-                                                                            isComplate:
-                                                                                false,
-                                                                            height:
-                                                                                50,
-                                                                            hint2:
-                                                                                "",
-                                                                            title:
-                                                                                LocaleKeys.recipient_name.tr(),
-                                                                            hint: '${LocaleKeys.enter_ful_recipient_name.tr()}'),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                10),
-                                                                        AddressInfoWidget(
-                                                                            controller:
-                                                                                contactPhoneController,
-                                                                            isPhone:
-                                                                                true,
-                                                                            context:
-                                                                                context,
-                                                                            isComplate:
-                                                                                false,
-                                                                            title2:
-                                                                                "",
-                                                                            height:
-                                                                                50,
-                                                                            hint2:
-                                                                                "",
-                                                                            title:
-                                                                                LocaleKeys.contact_phone.tr(),
-                                                                            hint: "${LocaleKeys.county_code.tr()} + " + '${LocaleKeys.enter_recipient_phone.tr()}'),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                10),
-                                                                        AddressInfoWidgetOptional(
-                                                                            height:
-                                                                                50,
-                                                                            context:
-                                                                                context,
-                                                                            isPhone:
-                                                                                true,
-                                                                            isComplate:
-                                                                                false,
-                                                                            controller:
-                                                                                alternativePhoneController,
-                                                                            hint2:
-                                                                                "",
-                                                                            hint:
-                                                                                "${LocaleKeys.county_code.tr()} + " + LocaleKeys.enter_alternative_recipient_phone.tr(),
-                                                                            title: LocaleKeys.alternative_phone.tr(),
-                                                                            title2: LocaleKeys.optional.tr())
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                            const SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                          ])))),
-                                            );
-                                          }),
-                                    ),
-                                    _showPanel
-                                        ? SizedBox.fromSize()
-                                        : ValueListenableBuilder<bool>(
-                                            valueListenable: showFulMap,
-                                            builder:
-                                                (context, isShowFulMap, _) {
-                                              return Container(
-                                                height: 92,
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                    color: const Color.fromRGBO(
-                                                        255, 255, 255, 1),
-                                                  ),
-                                                  boxShadow: const [
-                                                    BoxShadow(
-                                                      blurRadius: 10,
-                                                      blurStyle:
-                                                          BlurStyle.solid,
-                                                      color: Color(0xffF1F1F1),
-                                                    )
-                                                  ],
-                                                  color: const Color.fromRGBO(
-                                                      255, 255, 255, 1),
-                                                ),
-                                                width: 1.sw,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    validateBox.value = true;
-                                                    formKey.currentState!
-                                                        .validate();
-                                                    FocusScope.of(context)
-                                                        .unfocus();
-                                                    Future.delayed(
-                                                      const Duration(
-                                                          seconds: 2),
-                                                      () => validateBox.value =
-                                                          false,
-                                                    );
-                                                  },
-                                                  child: isShowFulMap
-                                                      ? Container(
-                                                          height: 70,
-                                                          width: 1.sw,
-                                                          child: Row(
-                                                            children: [
-                                                              InkWell(
-                                                                onTap:
-                                                                    () async {
-                                                                  loadingToGoCurrentLoacation
-                                                                          .value =
-                                                                      false;
-                                                                  showFulMap
-                                                                          .value =
-                                                                      false;
-                                                                  _markers = [];
-                                                                  fromEditeTodenychangeDetailAddress =
-                                                                      false;
-                                                                  orderBloc.add(GetAddressByCoordinatesEvent(
-                                                                      latitude:
-                                                                          _currentLocation?.latitude ??
+                                                                      ),
+                                                                isShowFulMap
+                                                                    ? SizedBox
+                                                                        .fromSize()
+                                                                    : const SizedBox(
+                                                                        height:
+                                                                            20,
+                                                                      ),
+                                                                isShowFulMap
+                                                                    ? SizedBox
+                                                                        .fromSize()
+                                                                    : Container(
+                                                                        height:
+                                                                            197,
+                                                                        width: 1
+                                                                            .sw,
+                                                                        margin: EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                15.w),
+                                                                        child:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            Container(
+                                                                              height: 15,
+                                                                              width: 116,
+                                                                              margin: EdgeInsets.symmetric(horizontal: 10.w),
+                                                                              child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                children: [
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.personSvg,
+                                                                                  ),
+                                                                                  Text(
+                                                                                    "${LocaleKeys.contact_info.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff404040), letterSpacing: 0.18, fontSize: 12, height: LanguageService.languageCode == "ar" ? 1 : 1.2),
+                                                                                  ),
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.chatWithQuestionSvg,
+                                                                                    // ignore: deprecated_member_use
+                                                                                    color: const Color(0xffD3D3D3),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(height: 10),
+                                                                            AddressInfoWidget(
+                                                                                controller: reciptionNameController,
+                                                                                isPhone: false,
+                                                                                title2: "",
+                                                                                context: context,
+                                                                                isComplate: false,
+                                                                                height: 50,
+                                                                                hint2: "",
+                                                                                title: LocaleKeys.recipient_name.tr(),
+                                                                                hint: '${LocaleKeys.enter_ful_recipient_name.tr()}'),
+                                                                            const SizedBox(height: 10),
+                                                                            AddressInfoWidget(
+                                                                                controller: contactPhoneController,
+                                                                                isPhone: true,
+                                                                                context: context,
+                                                                                isComplate: false,
+                                                                                title2: "",
+                                                                                height: 50,
+                                                                                hint2: "",
+                                                                                title: LocaleKeys.contact_phone.tr(),
+                                                                                hint: "${LocaleKeys.county_code.tr()} + " + '${LocaleKeys.enter_recipient_phone.tr()}'),
+                                                                            const SizedBox(height: 10),
+                                                                            AddressInfoWidgetOptional(
+                                                                                height: 50,
+                                                                                context: context,
+                                                                                isPhone: true,
+                                                                                isComplate: false,
+                                                                                controller: alternativePhoneController,
+                                                                                hint2: "",
+                                                                                hint: "${LocaleKeys.county_code.tr()} + " + LocaleKeys.enter_alternative_recipient_phone.tr(),
+                                                                                title: LocaleKeys.alternative_phone.tr(),
+                                                                                title2: LocaleKeys.optional.tr())
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                const SizedBox(
+                                                                  height: 20,
+                                                                ),
+                                                              ])))),
+                                                );
+                                              }),
+                                        ),
+                                        _showPanel
+                                            ? SizedBox.fromSize()
+                                            : ValueListenableBuilder<bool>(
+                                                valueListenable: showFulMap,
+                                                builder:
+                                                    (context, isShowFulMap, _) {
+                                                  return Container(
+                                                    height: 92,
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                        color: const Color
+                                                            .fromRGBO(
+                                                            255, 255, 255, 1),
+                                                      ),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                          blurRadius: 10,
+                                                          blurStyle:
+                                                              BlurStyle.solid,
+                                                          color:
+                                                              Color(0xffF1F1F1),
+                                                        )
+                                                      ],
+                                                      color:
+                                                          const Color.fromRGBO(
+                                                              255, 255, 255, 1),
+                                                    ),
+                                                    width: 1.sw,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        validateBox.value =
+                                                            true;
+                                                        formKey.currentState!
+                                                            .validate();
+                                                        FocusScope.of(context)
+                                                            .unfocus();
+                                                        Future.delayed(
+                                                          const Duration(
+                                                              seconds: 2),
+                                                          () => validateBox
+                                                              .value = false,
+                                                        );
+                                                      },
+                                                      child: isShowFulMap
+                                                          ? Container(
+                                                              height: 70,
+                                                              width: 1.sw,
+                                                              child: Row(
+                                                                children: [
+                                                                  InkWell(
+                                                                    onTap:
+                                                                        () async {
+                                                                      loadingToGoCurrentLoacation
+                                                                              .value =
+                                                                          false;
+                                                                      showFulMap
+                                                                              .value =
+                                                                          false;
+                                                                      _markers =
+                                                                          [];
+                                                                      fromEditeTodenychangeDetailAddress =
+                                                                          false;
+                                                                      orderBloc.add(GetAddressByCoordinatesEvent(
+                                                                          latitude: _currentLocation?.latitude ??
                                                                               0,
-                                                                      longitude:
-                                                                          _currentLocation?.longitude ??
-                                                                              0));
-                                                                  /* await getAddressFromCoordinates(
+                                                                          longitude:
+                                                                              _currentLocation?.longitude ?? 0));
+                                                                      /* await getAddressFromCoordinates(
                                                                                                   preLocation!
                                                                                                       .latitude,
                                                                                                   preLocation!
@@ -2058,156 +1943,136 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                 stackTrace) {
                                                                                                },
                                                                                           );*/
-                                                                },
-                                                                child:
-                                                                    Container(
-                                                                  height: 70,
-                                                                  width: 280.w,
-                                                                  margin: const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          20,
-                                                                      vertical:
-                                                                          10),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            20.r),
-                                                                    color: const Color(
-                                                                        0xff346BFF),
-                                                                  ),
-                                                                  child: Center(
-                                                                      child:
-                                                                          Text(
-                                                                    LocaleKeys
-                                                                        .select
-                                                                        .tr(),
-                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(
+                                                                    },
+                                                                    child:
+                                                                        Container(
+                                                                      height:
+                                                                          70,
+                                                                      width:
+                                                                          280.w,
+                                                                      margin: const EdgeInsets
+                                                                          .symmetric(
+                                                                          horizontal:
+                                                                              20,
+                                                                          vertical:
+                                                                              10),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20.r),
                                                                         color: const Color(
-                                                                            0xffFEFEFE),
-                                                                        letterSpacing:
-                                                                            0.18,
-                                                                        fontSize:
-                                                                            18,
-                                                                        height:
-                                                                            0.8),
-                                                                  )),
-                                                                ),
+                                                                            0xff346BFF),
+                                                                      ),
+                                                                      child: Center(
+                                                                          child: Text(
+                                                                        LocaleKeys
+                                                                            .select
+                                                                            .tr(),
+                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(
+                                                                            color: const Color(
+                                                                                0xffFEFEFE),
+                                                                            letterSpacing:
+                                                                                0.18,
+                                                                            fontSize:
+                                                                                18,
+                                                                            height:
+                                                                                0.8),
+                                                                      )),
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 20.w,
+                                                                  ),
+                                                                  InkWell(
+                                                                    onTap: () {
+                                                                      showFulMap
+                                                                              .value =
+                                                                          false;
+                                                                      _currentLocation =
+                                                                          null;
+
+                                                                      _markers =
+                                                                          [];
+                                                                    },
+                                                                    child: Container(
+                                                                        alignment: Alignment.center,
+                                                                        height: 70,
+                                                                        width: 70.w,
+                                                                        child: Text(
+                                                                          "${LocaleKeys.cansel.tr()} ",
+                                                                          style: context.textTheme.bodyMedium?.mr.copyWith(
+                                                                              color: const Color(0xff1D1D1D),
+                                                                              letterSpacing: 0.18,
+                                                                              fontSize: 18,
+                                                                              height: 1.2),
+                                                                        )),
+                                                                  )
+                                                                ],
                                                               ),
-                                                              SizedBox(
-                                                                width: 20.w,
-                                                              ),
-                                                              InkWell(
-                                                                onTap: () {
-                                                                  showFulMap
-                                                                          .value =
-                                                                      false;
-                                                                  _currentLocation =
-                                                                      null;
+                                                            )
+                                                          : ValueListenableBuilder<
+                                                                  bool>(
+                                                              valueListenable:
+                                                                  fillAllContainers,
+                                                              builder: (context,
+                                                                  isFillAllContainers,
+                                                                  _) {
+                                                                return InkWell(
+                                                                  onTap: () {
+                                                                    validateBox
+                                                                            .value =
+                                                                        true;
+                                                                    formKey
+                                                                        .currentState!
+                                                                        .validate();
+                                                                    FocusScope.of(
+                                                                            context)
+                                                                        .unfocus();
+                                                                    Future
+                                                                        .delayed(
+                                                                      const Duration(
+                                                                          seconds:
+                                                                              2),
+                                                                      () => validateBox
+                                                                              .value =
+                                                                          false,
+                                                                    );
+                                                                    if ((reciptionNameController.text.length > 0 &&
+                                                                        (finishSelectedByUserToAppear.length) >
+                                                                            0 &&
+                                                                        addressTitleController.text.length >
+                                                                            0 &&
+                                                                        detailsAddressController.text.length >
+                                                                            0 &&
+                                                                        contactPhoneController.text.length >
+                                                                            0)) {
+                                                                      if (!(widget
+                                                                              .fromEdid ??
+                                                                          false)) {
+                                                                        //////////////////////////////////////////
 
-                                                                  _markers = [];
-                                                                },
-                                                                child: Container(
-                                                                    alignment: Alignment.center,
-                                                                    height: 70,
-                                                                    width: 70.w,
-                                                                    child: Text(
-                                                                      "${LocaleKeys.cansel.tr()} ",
-                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(
-                                                                          color: const Color(
-                                                                              0xff1D1D1D),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          fontSize:
-                                                                              18,
-                                                                          height:
-                                                                              1.2),
-                                                                    )),
-                                                              )
-                                                            ],
-                                                          ),
-                                                        )
-                                                      : ValueListenableBuilder<
-                                                              bool>(
-                                                          valueListenable:
-                                                              fillAllContainers,
-                                                          builder: (context,
-                                                              isFillAllContainers,
-                                                              _) {
-                                                            return InkWell(
-                                                              onTap: () {
-                                                                validateBox
-                                                                        .value =
-                                                                    true;
-                                                                formKey
-                                                                    .currentState!
-                                                                    .validate();
-                                                                FocusScope.of(
-                                                                        context)
-                                                                    .unfocus();
-                                                                Future.delayed(
-                                                                  const Duration(
-                                                                      seconds:
-                                                                          2),
-                                                                  () => validateBox
-                                                                          .value =
-                                                                      false,
-                                                                );
-                                                                if ((reciptionNameController.text.length > 0 &&
-                                                                    (finishSelectedByUserToAppear
-                                                                            .length) >
-                                                                        0 &&
-                                                                    addressTitleController
-                                                                            .text
-                                                                            .length >
-                                                                        0 &&
-                                                                    detailsAddressController
-                                                                            .text
-                                                                            .length >
-                                                                        0 &&
-                                                                    contactPhoneController
-                                                                            .text
-                                                                            .length >
-                                                                        0)) {
-                                                                  if (!(widget
-                                                                          .fromEdid ??
-                                                                      false)) {
-                                                                    //////////////////////////////////////////
+                                                                        List<Map<String, String>>
+                                                                            analyticsCartList =
+                                                                            [];
+                                                                        if (homeBloc.state.cartCollection !=
+                                                                            null) {
+                                                                          homeBloc
+                                                                              .state
+                                                                              .cartCollection!
+                                                                              .forEach((element) {
+                                                                            Map<String, String>
+                                                                                item =
+                                                                                {
+                                                                              'item_id': element.productId.toString(),
+                                                                              'item_name': element.name.toString(),
+                                                                              'quantity': element.quantity.toString(),
+                                                                            };
 
-                                                                    List<Map<String, String>>
-                                                                        analyticsCartList =
-                                                                        [];
-                                                                    if (homeBloc
-                                                                            .state
-                                                                            .cartCollection !=
-                                                                        null) {
-                                                                      homeBloc
-                                                                          .state
-                                                                          .cartCollection!
-                                                                          .forEach(
-                                                                              (element) {
-                                                                        Map<String,
-                                                                                String>
-                                                                            item =
-                                                                            {
-                                                                          'item_id': element
-                                                                              .productId
-                                                                              .toString(),
-                                                                          'item_name': element
-                                                                              .name
-                                                                              .toString(),
-                                                                          'quantity': element
-                                                                              .quantity
-                                                                              .toString(),
-                                                                        };
-
-                                                                        analyticsCartList
-                                                                            .add(item);
-                                                                      });
-                                                                    }
-                                                                    /////////////////////////////////
-                                                                    /*  Future
+                                                                            analyticsCartList.add(item);
+                                                                          });
+                                                                        }
+                                                                        /////////////////////////////////
+                                                                        /*  Future
                                                                         .delayed(
                                                                       Duration(
                                                                           milliseconds:
@@ -2228,63 +2093,38 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         );
                                                                       },
                                                                     );*/
-                                                                    //////////////////////////////////////////
-                                                                    orderBloc
-                                                                        .add(
-                                                                      AddAddressInfoClassEvent(
-                                                                        addressInfoClassToSave:
-                                                                            address.CustomerAddressesInfo(
-                                                                          addressDetail:
-                                                                              detailsAddressController.text,
-                                                                          contactInfo:
-                                                                              address.ContactInfo(
-                                                                            alternativePhone:
-                                                                                alternativePhoneController.text,
-                                                                            name:
-                                                                                reciptionNameController.text,
-                                                                            phone:
-                                                                                contactPhoneController.text,
-                                                                          ),
-                                                                          address:
-                                                                              addressTitleController.text,
-                                                                          location: address.Location(
-                                                                              latitude: ((_currentLocation?.latitude ?? _locationFromSearch?.latitude) ?? "").toString(),
-                                                                              longitude: ((_currentLocation?.longitude ?? _locationFromSearch?.longitude) ?? "").toString()),
-                                                                          regionDetails:
-                                                                              address.RegionDetails(
-                                                                            zip: finishSelectedByUser.length > 0
-                                                                                ? finishSelectedByUser[0].zip
-                                                                                : "",
-                                                                            building: finishSelectedByUser.length > 0
-                                                                                ? finishSelectedByUser[0].building
-                                                                                : "",
-                                                                            city: finishSelectedByUser.length > 0
-                                                                                ? finishSelectedByUser[0].city
-                                                                                : "",
-                                                                            country:
-                                                                                "${country?.name}",
-                                                                            province:
-                                                                                finishSelectedByUser[0].province,
-                                                                            street: finishSelectedByUser.length > 0
-                                                                                ? finishSelectedByUser[0].street
-                                                                                : "",
-                                                                            town: finishSelectedByUser.length > 0
-                                                                                ? finishSelectedByUser[0].town
-                                                                                : "",
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    );
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                  } else {
-                                                                    orderBloc.add(
-                                                                        EditAdressInfoClassEvent(
-                                                                            preIdToEdit: widget.addressInfoClassToEdid!.id ??
-                                                                                0,
+                                                                        //////////////////////////////////////////
+                                                                        orderBloc
+                                                                            .add(
+                                                                          AddAddressInfoClassEvent(
                                                                             addressInfoClassToSave:
                                                                                 address.CustomerAddressesInfo(
+                                                                              addressDetail: detailsAddressController.text,
+                                                                              contactInfo: address.ContactInfo(
+                                                                                alternativePhone: alternativePhoneController.text,
+                                                                                name: reciptionNameController.text,
+                                                                                phone: contactPhoneController.text,
+                                                                              ),
+                                                                              address: addressTitleController.text,
+                                                                              location: address.Location(latitude: ((_currentLocation?.latitude ?? _locationFromSearch?.latitude) ?? "").toString(), longitude: ((_currentLocation?.longitude ?? _locationFromSearch?.longitude) ?? "").toString()),
+                                                                              regionDetails: address.RegionDetails(
+                                                                                zip: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].zip : "",
+                                                                                building: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].building : "",
+                                                                                city: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].city : "",
+                                                                                country: "${country?.name}",
+                                                                                province: finishSelectedByUser[0].province,
+                                                                                street: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].street : "",
+                                                                                town: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].town : "",
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        );
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      } else {
+                                                                        orderBloc.add(EditAdressInfoClassEvent(
+                                                                            preIdToEdit: widget.addressInfoClassToEdid!.id ?? 0,
+                                                                            addressInfoClassToSave: address.CustomerAddressesInfo(
                                                                               regionDetails: address.RegionDetails(
                                                                                 building: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].building : "",
                                                                                 zip: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].zip : "",
@@ -2304,55 +2144,44 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               location: address.Location(latitude: _currentLocation?.latitude.toString() ?? "", longitude: _currentLocation?.longitude.toString() ?? ""),
                                                                             )));
 
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                  }
-                                                                }
-                                                              },
-                                                              child: Container(
-                                                                height: 70,
-                                                                margin: const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        20,
-                                                                    vertical:
-                                                                        10),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    height: 70,
+                                                                    margin: const EdgeInsets
+                                                                        .symmetric(
+                                                                        horizontal:
+                                                                            20,
+                                                                        vertical:
+                                                                            10),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
                                                                               20.r),
-                                                                  color: (reciptionNameController.text.length > 0 &&
-                                                                          (finishSelectedByUserToAppear.length) >
-                                                                              0 &&
-                                                                          addressTitleController.text.length >
-                                                                              0 &&
-                                                                          detailsAddressController.text.length >
-                                                                              0 &&
-                                                                          contactPhoneController.text.length >
-                                                                              0)
-                                                                      ? const Color(
-                                                                          0xff346BFF)
-                                                                      : const Color(
-                                                                          0xffC4C2C2),
-                                                                ),
-                                                                child: Center(
-                                                                    child: Text(
-                                                                  (widget.fromEdid ??
-                                                                          false)
-                                                                      ? LocaleKeys
-                                                                          .save
-                                                                          .tr()
-                                                                      : LocaleKeys
-                                                                          .add_save
-                                                                          .tr(),
-                                                                  style: context
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.mr
-                                                                      .copyWith(
+                                                                      color: (reciptionNameController.text.length > 0 &&
+                                                                              (finishSelectedByUserToAppear.length) > 0 &&
+                                                                              addressTitleController.text.length > 0 &&
+                                                                              detailsAddressController.text.length > 0 &&
+                                                                              contactPhoneController.text.length > 0)
+                                                                          ? const Color(0xff346BFF)
+                                                                          : const Color(0xffC4C2C2),
+                                                                    ),
+                                                                    child: Center(
+                                                                        child: Text(
+                                                                      (widget.fromEdid ??
+                                                                              false)
+                                                                          ? LocaleKeys
+                                                                              .save
+                                                                              .tr()
+                                                                          : LocaleKeys
+                                                                              .add_save
+                                                                              .tr(),
+                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(
                                                                           color: const Color(
                                                                               0xffFEFEFE),
                                                                           letterSpacing:
@@ -2361,440 +2190,402 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               18,
                                                                           height:
                                                                               0.8),
-                                                                )),
-                                                              ),
-                                                            );
-                                                          }),
-                                                ),
-                                              );
-                                            })
-                                  ],
-                                ),
-                                ValueListenableBuilder<bool>(
-                                    valueListenable: showShadowForPanel,
-                                    builder:
-                                        (context, isShowShadowForPanel, _) {
-                                      return !isShowShadowForPanel
-                                          ? const SizedBox.shrink()
-                                          : InkWell(
-                                              onTap: () {
-                                                showShadowForPanel.value =
-                                                    false;
-                                                Future.delayed(
-                                                  const Duration(
-                                                      microseconds: 300),
-                                                  () {
-                                                    panelController.close();
+                                                                    )),
+                                                                  ),
+                                                                );
+                                                              }),
+                                                    ),
+                                                  );
+                                                })
+                                      ],
+                                    ),
+                                    ValueListenableBuilder<bool>(
+                                        valueListenable: showShadowForPanel,
+                                        builder:
+                                            (context, isShowShadowForPanel, _) {
+                                          return !isShowShadowForPanel
+                                              ? const SizedBox.shrink()
+                                              : InkWell(
+                                                  onTap: () {
                                                     showShadowForPanel.value =
                                                         false;
-                                                  },
-                                                );
-                                              },
-                                              child: Container(
-                                                height: 1.sh,
-                                                width: 1.sw,
-                                                color: const Color.fromRGBO(
-                                                    29, 29, 29, 0.6),
-                                              ),
-                                            );
-                                    }),
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: showPanel,
-                                  builder: (context, isShowPanel, _) {
-                                    return BlocBuilder<OrderBloc, OrderState>(
-                                      buildWhen: (p, c) =>
-                                          p.getAddressByTextStatus !=
-                                          c.getAddressByTextStatus,
-                                      builder: (context, orderState) {
-                                        filterResultSearch = [];
-                                        filterLatLngSearch = [];
-                                        orderState.resultSearch?.forEach(
-                                          (element) {
-                                            filterResultSearch.add(
-                                                address.RegionDetails(
-                                                    zip: element.zip ?? "",
-                                                    building: element.building,
-                                                    city: element.city,
-                                                    country: "",
-                                                    province: element.province,
-                                                    street: element.street,
-                                                    town: element.town));
-                                            filterLatLngSearch.add(LatLng(
-                                                element.coordinates?[0].lat ??
-                                                    0,
-                                                element.coordinates?[0].lon ??
-                                                    0));
-                                          },
-                                        );
-                                        return ValueListenableBuilder<
-                                            List<String>>(
-                                          valueListenable:
-                                              listOfAddressTilteSeletedByUser,
-                                          builder: (context,
-                                              addressTilteSeletedByUser, _) {
-                                            if (listOfAddressTilteSeletedByUser
-                                                    .value.length >
-                                                0) {
-                                              panelController.close();
-                                            }
-                                            return Positioned(
-                                              bottom: 0,
-                                              child: Container(
-                                                width: 1.sw,
-                                                height: isShowPanel ? 400 : 0,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius
-                                                        .only(
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    30.r),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    30.r))),
-                                                child: BlocBuilder<HomeBloc,
-                                                    HomeState>(
-                                                  buildWhen: (p, c) =>
-                                                      p.getCartItemsStatus !=
-                                                      c.getCartItemsStatus,
-                                                  builder:
-                                                      (context, homeState) {
-                                                    return SlidingUpPanel(
-                                                      controller:
-                                                          panelController,
-                                                      borderRadius: ((homeState
-                                                                      .cartCollection ==
-                                                                  null ||
-                                                              homeState
-                                                                  .cartCollection!
-                                                                  .isEmpty))
-                                                          ? null
-                                                          : BorderRadius.only(
-                                                              topLeft: Radius
-                                                                  .circular(
-                                                                      30.r),
-                                                              topRight: Radius
-                                                                  .circular(
-                                                                      30.r)),
-                                                      onPanelClosed: () {
-                                                        finishSelectedByUser = [
-                                                          address.RegionDetails(
-                                                            province: addressTilteSeletedByUser
-                                                                        .length >
-                                                                    0
-                                                                ? addressTilteSeletedByUser[
-                                                                    0]
-                                                                : "",
-                                                            city: addressTilteSeletedByUser
-                                                                        .length >
-                                                                    1
-                                                                ? addressTilteSeletedByUser[
-                                                                    1]
-                                                                : "",
-                                                            town: addressTilteSeletedByUser
-                                                                        .length >
-                                                                    2
-                                                                ? addressTilteSeletedByUser[
-                                                                    2]
-                                                                : "",
-                                                            street: addressTilteSeletedByUser
-                                                                        .length >
-                                                                    3
-                                                                ? addressTilteSeletedByUser[
-                                                                    3]
-                                                                : "",
-                                                            building: addressTilteSeletedByUser
-                                                                        .length >
-                                                                    4
-                                                                ? addressTilteSeletedByUser[
-                                                                    4]
-                                                                : "",
-                                                            zip: addressTilteSeletedByUser
-                                                                        .length >
-                                                                    5
-                                                                ? addressTilteSeletedByUser[
-                                                                    5]
-                                                                : "",
-                                                          )
-                                                        ];
-
-                                                        searchController.text =
-                                                            "";
-                                                        FocusScope.of(context)
-                                                            .unfocus();
+                                                    Future.delayed(
+                                                      const Duration(
+                                                          microseconds: 300),
+                                                      () {
+                                                        panelController.close();
                                                         showShadowForPanel
                                                             .value = false;
-                                                        showPanel.value = false;
-                                                        listOfAddressTilteSeletedByUser
-                                                            .value = [];
-                                                        fillAllContainers
-                                                                .value =
-                                                            !fillAllContainers
-                                                                .value;
                                                       },
-                                                      onPanelOpened: () {},
-                                                      minHeight: 0,
-                                                      maxHeight: 400,
-                                                      panelBuilder: (sc) =>
-                                                          Container(
-                                                        height: 400,
-                                                        width: 1.sw,
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            const SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            Center(
-                                                              child: Container(
-                                                                width: 125,
-                                                                height: 20,
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: [
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                      AppAssets
-                                                                          .detectedSvg,
-                                                                      color: const Color(
-                                                                          0xff1D1D1D),
-                                                                    ),
-                                                                    Text(
-                                                                      "${LocaleKeys.select_from_list.tr()} ",
-                                                                      style: context.textTheme.bodyMedium?.rr.copyWith(
-                                                                          color: const Color(
-                                                                              0xff1D1D1D),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          fontSize:
-                                                                              14,
-                                                                          height:
-                                                                              1.2),
-                                                                    )
-                                                                  ],
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height: 1.sh,
+                                                    width: 1.sw,
+                                                    color: const Color.fromRGBO(
+                                                        29, 29, 29, 0.6),
+                                                  ),
+                                                );
+                                        }),
+                                    ValueListenableBuilder<bool>(
+                                      valueListenable: showPanel,
+                                      builder: (context, isShowPanel, _) {
+                                        return BlocBuilder<OrderBloc,
+                                            OrderState>(
+                                          buildWhen: (p, c) =>
+                                              p.getAddressByTextStatus !=
+                                              c.getAddressByTextStatus,
+                                          builder: (context, orderState) {
+                                            filterResultSearch = [];
+                                            filterLatLngSearch = [];
+                                            orderState.resultSearch?.forEach(
+                                              (element) {
+                                                filterResultSearch.add(
+                                                    address.RegionDetails(
+                                                        zip: element.zip ?? "",
+                                                        building:
+                                                            element.building,
+                                                        city: element.city,
+                                                        country: "",
+                                                        province:
+                                                            element.province,
+                                                        street: element.street,
+                                                        town: element.town));
+                                                filterLatLngSearch.add(LatLng(
+                                                    element.coordinates?[0]
+                                                            .lat ??
+                                                        0,
+                                                    element.coordinates?[0]
+                                                            .lon ??
+                                                        0));
+                                              },
+                                            );
+                                            return ValueListenableBuilder<
+                                                List<String>>(
+                                              valueListenable:
+                                                  listOfAddressTilteSeletedByUser,
+                                              builder: (context,
+                                                  addressTilteSeletedByUser,
+                                                  _) {
+                                                if (listOfAddressTilteSeletedByUser
+                                                        .value.length >
+                                                    0) {
+                                                  panelController.close();
+                                                }
+                                                return Positioned(
+                                                  bottom: 0,
+                                                  child: Container(
+                                                    width: 1.sw,
+                                                    height:
+                                                        isShowPanel ? 400 : 0,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        30.r),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        30.r))),
+                                                    child: BlocBuilder<HomeBloc,
+                                                        HomeState>(
+                                                      buildWhen: (p, c) =>
+                                                          p.getCartItemsStatus !=
+                                                          c.getCartItemsStatus,
+                                                      builder:
+                                                          (context, homeState) {
+                                                        return SlidingUpPanel(
+                                                          controller:
+                                                              panelController,
+                                                          borderRadius: ((homeState
+                                                                          .cartCollection ==
+                                                                      null ||
+                                                                  homeState
+                                                                      .cartCollection!
+                                                                      .isEmpty))
+                                                              ? null
+                                                              : BorderRadius.only(
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          30.r),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          30.r)),
+                                                          onPanelClosed: () {
+                                                            finishSelectedByUser =
+                                                                [
+                                                              address
+                                                                  .RegionDetails(
+                                                                province: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        0
+                                                                    ? addressTilteSeletedByUser[
+                                                                        0]
+                                                                    : "",
+                                                                city: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        1
+                                                                    ? addressTilteSeletedByUser[
+                                                                        1]
+                                                                    : "",
+                                                                town: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        2
+                                                                    ? addressTilteSeletedByUser[
+                                                                        2]
+                                                                    : "",
+                                                                street: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        3
+                                                                    ? addressTilteSeletedByUser[
+                                                                        3]
+                                                                    : "",
+                                                                building: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        4
+                                                                    ? addressTilteSeletedByUser[
+                                                                        4]
+                                                                    : "",
+                                                                zip: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        5
+                                                                    ? addressTilteSeletedByUser[
+                                                                        5]
+                                                                    : "",
+                                                              )
+                                                            ];
+
+                                                            searchController
+                                                                .text = "";
+                                                            FocusScope.of(
+                                                                    context)
+                                                                .unfocus();
+                                                            showShadowForPanel
+                                                                .value = false;
+                                                            showPanel.value =
+                                                                false;
+                                                            listOfAddressTilteSeletedByUser
+                                                                .value = [];
+                                                            fillAllContainers
+                                                                    .value =
+                                                                !fillAllContainers
+                                                                    .value;
+                                                          },
+                                                          onPanelOpened: () {},
+                                                          minHeight: 0,
+                                                          maxHeight: 400,
+                                                          panelBuilder: (sc) =>
+                                                              Container(
+                                                            height: 400,
+                                                            width: 1.sw,
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                const SizedBox(
+                                                                  height: 20,
                                                                 ),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 10),
-                                                            Container(
-                                                              margin:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          10),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  Container(
-                                                                      width: 18,
-                                                                      height:
-                                                                          18,
-                                                                      child: country?.iso?.toUpperCase() ==
-                                                                              "SY"
-                                                                          ? SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.syriaFlagSvg,
-                                                                              width: 18.w,
-                                                                            )
-                                                                          : CountryFlag
-                                                                              .fromCountryCode(
-                                                                              "${country?.iso}",
-                                                                              height: 18.h,
-                                                                              width: 18.w,
-                                                                              borderRadius: 4.r,
-                                                                            )),
-                                                                  Text(
-                                                                    " ${country?.name} ",
-                                                                    style: context.textTheme.bodyMedium?.rr.copyWith(
-                                                                        color: const Color(
-                                                                            0xff1D1D1D),
-                                                                        letterSpacing:
-                                                                            0.18,
-                                                                        fontSize:
-                                                                            14,
-                                                                        height:
-                                                                            1.2),
+                                                                Center(
+                                                                  child:
+                                                                      Container(
+                                                                    width: 125,
+                                                                    height: 20,
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: [
+                                                                        SvgPicture
+                                                                            .asset(
+                                                                          AppAssets
+                                                                              .detectedSvg,
+                                                                          // ignore: deprecated_member_use
+                                                                          color:
+                                                                              const Color(0xff1D1D1D),
+                                                                        ),
+                                                                        Text(
+                                                                          "${LocaleKeys.select_from_list.tr()} ",
+                                                                          style: context.textTheme.bodyMedium?.rr.copyWith(
+                                                                              color: const Color(0xff1D1D1D),
+                                                                              letterSpacing: 0.18,
+                                                                              fontSize: 14,
+                                                                              height: 1.2),
+                                                                        )
+                                                                      ],
+                                                                    ),
                                                                   ),
-                                                                  addressTilteSeletedByUser
-                                                                              .length ==
-                                                                          0
-                                                                      ? Text(
-                                                                          " | ${LocaleKeys.province.tr()}",
-                                                                          style: context.textTheme.bodyMedium?.mr.copyWith(
-                                                                              color: const Color(0xff1D1D1D),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        )
-                                                                      : Text(
-                                                                          " | ${addressTilteSeletedByUser[0]}",
-                                                                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                                                                              color: const Color(0xff1D1D1D),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        ),
-                                                                  addressTilteSeletedByUser
-                                                                              .length <=
-                                                                          1
-                                                                      ? Text(
-                                                                          " | ${LocaleKeys.district.tr()}",
-                                                                          style: context.textTheme.bodyMedium?.mr.copyWith(
-                                                                              color: addressTilteSeletedByUser.length == 1 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        )
-                                                                      : Text(
-                                                                          " | ${addressTilteSeletedByUser[1]}",
-                                                                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                                                                              color: const Color(0xff1D1D1D),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        ),
-                                                                  addressTilteSeletedByUser
-                                                                              .length <=
-                                                                          2
-                                                                      ? Text(
-                                                                          " | ${LocaleKeys.town.tr()}",
-                                                                          style: context.textTheme.bodyMedium?.mr.copyWith(
-                                                                              color: addressTilteSeletedByUser.length == 2 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        )
-                                                                      : Text(
-                                                                          " | ${addressTilteSeletedByUser[2]}",
-                                                                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                                                                              color: const Color(0xff1D1D1D),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        ),
-                                                                  addressTilteSeletedByUser
-                                                                              .length <=
-                                                                          3
-                                                                      ? Text(
-                                                                          " | ${LocaleKeys.street.tr()}",
-                                                                          style: context.textTheme.bodyMedium?.mr.copyWith(
-                                                                              color: addressTilteSeletedByUser.length == 3 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        )
-                                                                      : Text(
-                                                                          " | ${addressTilteSeletedByUser[3]}",
-                                                                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                                                                              color: const Color(0xff1D1D1D),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 14,
-                                                                              height: 1.2),
-                                                                        )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 20),
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 10),
+                                                                Container(
+                                                                  margin: const EdgeInsets
                                                                       .symmetric(
                                                                       horizontal:
                                                                           10),
-                                                              margin:
-                                                                  const EdgeInsets
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Container(
+                                                                          width:
+                                                                              18,
+                                                                          height:
+                                                                              18,
+                                                                          child: country?.iso?.toUpperCase() == "SY"
+                                                                              ? SvgPicture.asset(
+                                                                                  AppAssets.syriaFlagSvg,
+                                                                                  width: 18.w,
+                                                                                )
+                                                                              : CountryFlag.fromCountryCode(
+                                                                                  "${country?.iso}",
+                                                                                  height: 18.h,
+                                                                                  width: 18.w,
+                                                                                  borderRadius: 4.r,
+                                                                                )),
+                                                                      Text(
+                                                                        " ${country?.name} ",
+                                                                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                                                                            color: const Color(
+                                                                                0xff1D1D1D),
+                                                                            letterSpacing:
+                                                                                0.18,
+                                                                            fontSize:
+                                                                                14,
+                                                                            height:
+                                                                                1.2),
+                                                                      ),
+                                                                      addressTilteSeletedByUser.length ==
+                                                                              0
+                                                                          ? Text(
+                                                                              " | ${LocaleKeys.province.tr()}",
+                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            )
+                                                                          : Text(
+                                                                              " | ${addressTilteSeletedByUser[0]}",
+                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            ),
+                                                                      addressTilteSeletedByUser.length <=
+                                                                              1
+                                                                          ? Text(
+                                                                              " | ${LocaleKeys.district.tr()}",
+                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: addressTilteSeletedByUser.length == 1 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            )
+                                                                          : Text(
+                                                                              " | ${addressTilteSeletedByUser[1]}",
+                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            ),
+                                                                      addressTilteSeletedByUser.length <=
+                                                                              2
+                                                                          ? Text(
+                                                                              " | ${LocaleKeys.town.tr()}",
+                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: addressTilteSeletedByUser.length == 2 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            )
+                                                                          : Text(
+                                                                              " | ${addressTilteSeletedByUser[2]}",
+                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            ),
+                                                                      addressTilteSeletedByUser.length <=
+                                                                              3
+                                                                          ? Text(
+                                                                              " | ${LocaleKeys.street.tr()}",
+                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: addressTilteSeletedByUser.length == 3 ? const Color(0xff1D1D1D) : const Color(0xffD3D3D3), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            )
+                                                                          : Text(
+                                                                              " | ${addressTilteSeletedByUser[3]}",
+                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2),
+                                                                            )
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 20),
+                                                                Container(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          10),
+                                                                  margin: const EdgeInsets
                                                                       .symmetric(
                                                                       horizontal:
                                                                           15),
-                                                              height: 40,
-                                                              width: 1.sw,
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(12
+                                                                  height: 40,
+                                                                  width: 1.sw,
+                                                                  decoration: BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(12
                                                                               .r),
-                                                                  color: const Color(
-                                                                      0xffF8F8F8)),
-                                                              child:
-                                                                  AppTextField(
-                                                                textInputAction:
-                                                                    TextInputAction
-                                                                        .done,
-                                                                onChange:
-                                                                    (val) {
-                                                                  if (val.length >
-                                                                      1) {
-                                                                    orderBloc.add(GetAddressByTextEvent(
-                                                                        reset:
-                                                                            false,
-                                                                        query:
-                                                                            val));
-                                                                  } else {
-                                                                    orderBloc.add(GetAddressByTextEvent(
-                                                                        reset:
-                                                                            true,
-                                                                        query:
-                                                                            val));
-                                                                  }
-                                                                },
-                                                                onTap: () {},
-                                                                controller:
-                                                                    searchController,
-                                                                onFieldSubmitted:
-                                                                    (val) {
-                                                                  FocusScope.of(
-                                                                          context)
-                                                                      .unfocus();
-                                                                },
-                                                                contentPadding:
-                                                                    const EdgeInsets
-                                                                        .only(),
-                                                                filledColor:
-                                                                    const Color(
-                                                                        0xffF8F8F8),
-                                                                bordersColor:
-                                                                    const Color(
-                                                                        0xffF8F8F8),
-                                                                icon: orderState
-                                                                            .getAddressByTextStatus ==
-                                                                        GetAddressByTextStatus
-                                                                            .loading
-                                                                    ? Container(
-                                                                        width:
-                                                                            15,
-                                                                        height:
-                                                                            15,
-                                                                        child:
-                                                                            TrydosLoader(
-                                                                          size:
-                                                                              12,
-                                                                        ),
-                                                                      )
-                                                                    : SvgPicture
-                                                                        .asset(
-                                                                        AppAssets
-                                                                            .searchOutlinedSvg,
-                                                                        height:
-                                                                            18,
-                                                                        width:
-                                                                            18,
-                                                                        color: const Color(
-                                                                            0xff388CFF),
-                                                                      ),
-                                                                hintText:
-                                                                    "${LocaleKeys.search.tr()} ${LocaleKeys.province_district_town_street.tr()}",
-                                                                hintTextStyle: context
-                                                                    .textTheme
-                                                                    .bodyMedium
-                                                                    ?.lr
-                                                                    .copyWith(
+                                                                      color: const Color(
+                                                                          0xffF8F8F8)),
+                                                                  child:
+                                                                      AppTextField(
+                                                                    textInputAction:
+                                                                        TextInputAction
+                                                                            .done,
+                                                                    onChange:
+                                                                        (val) {
+                                                                      if (val.length >
+                                                                          1) {
+                                                                        orderBloc.add(GetAddressByTextEvent(
+                                                                            reset:
+                                                                                false,
+                                                                            query:
+                                                                                val));
+                                                                      } else {
+                                                                        orderBloc.add(GetAddressByTextEvent(
+                                                                            reset:
+                                                                                true,
+                                                                            query:
+                                                                                val));
+                                                                      }
+                                                                    },
+                                                                    onTap:
+                                                                        () {},
+                                                                    controller:
+                                                                        searchController,
+                                                                    onFieldSubmitted:
+                                                                        (val) {
+                                                                      FocusScope.of(
+                                                                              context)
+                                                                          .unfocus();
+                                                                    },
+                                                                    contentPadding:
+                                                                        const EdgeInsets
+                                                                            .only(),
+                                                                    filledColor:
+                                                                        const Color(
+                                                                            0xffF8F8F8),
+                                                                    bordersColor:
+                                                                        const Color(
+                                                                            0xffF8F8F8),
+                                                                    icon: orderState.getAddressByTextStatus ==
+                                                                            GetAddressByTextStatus
+                                                                                .loading
+                                                                        ? Container(
+                                                                            width:
+                                                                                15,
+                                                                            height:
+                                                                                15,
+                                                                            child:
+                                                                                TrydosLoader(
+                                                                              size: 12,
+                                                                            ),
+                                                                          )
+                                                                        : SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.searchOutlinedSvg,
+                                                                            height:
+                                                                                18,
+                                                                            width:
+                                                                                18,
+                                                                            // ignore: deprecated_member_use
+                                                                            color:
+                                                                                const Color(0xff388CFF),
+                                                                          ),
+                                                                    hintText:
+                                                                        "${LocaleKeys.search.tr()} ${LocaleKeys.province_district_town_street.tr()}",
+                                                                    hintTextStyle: context.textTheme.bodyMedium?.lr.copyWith(
                                                                         color: const Color(
                                                                             0xffC4C2C2),
                                                                         letterSpacing:
@@ -2803,120 +2594,104 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             14,
                                                                         height:
                                                                             0.8),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 5),
-                                                            Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .topCenter,
-                                                              height: 260,
-                                                              margin:
-                                                                  const EdgeInsets
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 5),
+                                                                Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .topCenter,
+                                                                  height: 260,
+                                                                  margin: const EdgeInsets
                                                                       .symmetric(
                                                                       horizontal:
                                                                           15),
-                                                              child: ListView
-                                                                  .separated(
-                                                                      controller:
-                                                                          sc,
-                                                                      padding:
-                                                                          const EdgeInsets
+                                                                  child: ListView
+                                                                      .separated(
+                                                                          controller:
+                                                                              sc,
+                                                                          padding: const EdgeInsets
                                                                               .all(
                                                                               0),
-                                                                      itemBuilder:
-                                                                          (context,
-                                                                              index) {
-                                                                        String
-                                                                            apprearfilterResultSearch =
-                                                                            "";
-                                                                        if ((searchController.text.length) >
-                                                                            0) {
-                                                                          apprearfilterResultSearch =
-                                                                              " ${filterResultSearch[index].province ?? ""} ${filterResultSearch[index].city ?? ""} ${filterResultSearch[index].town ?? ""} ${filterResultSearch[index].street ?? ""} ${filterResultSearch[index].street ?? ""} ${filterResultSearch[index].building ?? ""}";
-                                                                        }
-
-                                                                        return InkWell(
-                                                                          onTap:
-                                                                              () {
+                                                                          itemBuilder:
+                                                                              (context,
+                                                                                  index) {
+                                                                            String
+                                                                                apprearfilterResultSearch =
+                                                                                "";
                                                                             if ((searchController.text.length) >
                                                                                 0) {
-                                                                              _locationFromSearch = filterLatLngSearch[index];
-                                                                              setState(() {});
-                                                                              address.RegionDetails filterSearchTadd = filterResultSearch[index];
-                                                                              listOfAddressTilteSeletedByUser.value = [
-                                                                                ...[
-                                                                                  filterSearchTadd.province ?? "",
-                                                                                  filterSearchTadd.city ?? "",
-                                                                                  filterSearchTadd.town ?? "",
-                                                                                  filterSearchTadd.street ?? "",
-                                                                                  filterSearchTadd.building ?? "",
-                                                                                  filterSearchTadd.zip ?? ""
-                                                                                ]
-                                                                              ];
-                                                                              panelController.close();
-                                                                            } else {
-                                                                              listOfAddressTilteSeletedByUser.value = [
-                                                                                ...addressTilteSeletedByUser,
-                                                                                addressTilte[index]
-                                                                              ];
+                                                                              apprearfilterResultSearch = " ${filterResultSearch[index].province ?? ""} ${filterResultSearch[index].city ?? ""} ${filterResultSearch[index].town ?? ""} ${filterResultSearch[index].street ?? ""} ${filterResultSearch[index].street ?? ""} ${filterResultSearch[index].building ?? ""}";
                                                                             }
+
+                                                                            return InkWell(
+                                                                              onTap: () {
+                                                                                if ((searchController.text.length) > 0) {
+                                                                                  _locationFromSearch = filterLatLngSearch[index];
+                                                                                  setState(() {});
+                                                                                  address.RegionDetails filterSearchTadd = filterResultSearch[index];
+                                                                                  listOfAddressTilteSeletedByUser.value = [
+                                                                                    ...[
+                                                                                      filterSearchTadd.province ?? "",
+                                                                                      filterSearchTadd.city ?? "",
+                                                                                      filterSearchTadd.town ?? "",
+                                                                                      filterSearchTadd.street ?? "",
+                                                                                      filterSearchTadd.building ?? "",
+                                                                                      filterSearchTadd.zip ?? ""
+                                                                                    ]
+                                                                                  ];
+                                                                                  panelController.close();
+                                                                                } else {
+                                                                                  listOfAddressTilteSeletedByUser.value = [
+                                                                                    ...addressTilteSeletedByUser,
+                                                                                    addressTilte[index]
+                                                                                  ];
+                                                                                }
+                                                                              },
+                                                                              child: Container(
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 35),
+                                                                                alignment: LanguageService.languageCode == "ar" ? Alignment.centerRight : Alignment.centerLeft,
+                                                                                child: RichText(
+                                                                                  text: TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? apprearfilterResultSearch.substring(0, (searchController.text.length)) : addressTilte[index], children: [
+                                                                                    TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? apprearfilterResultSearch.substring(searchController.text.length) : "")
+                                                                                  ]),
+                                                                                ),
+                                                                                decoration: BoxDecoration(color: const Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12.r)),
+                                                                                height: 50,
+                                                                              ),
+                                                                            );
                                                                           },
-                                                                          child:
-                                                                              Container(
-                                                                            padding:
-                                                                                const EdgeInsets.symmetric(horizontal: 35),
-                                                                            alignment: LanguageService.languageCode == "ar"
-                                                                                ? Alignment.centerRight
-                                                                                : Alignment.centerLeft,
-                                                                            child:
-                                                                                RichText(
-                                                                              text: TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? apprearfilterResultSearch.substring(0, (searchController.text.length)) : addressTilte[index], children: [
-                                                                                TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? apprearfilterResultSearch.substring(searchController.text.length) : "")
-                                                                              ]),
-                                                                            ),
-                                                                            decoration:
-                                                                                BoxDecoration(color: const Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12.r)),
-                                                                            height:
-                                                                                50,
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                      separatorBuilder:
-                                                                          (context, index) =>
+                                                                          separatorBuilder: (context, index) =>
                                                                               const SizedBox(
                                                                                 height: 2,
                                                                               ),
-                                                                      itemCount: (searchController.text.length) >
-                                                                              0
-                                                                          ? filterResultSearch
-                                                                              .length
-                                                                          : addressTilte
-                                                                              .length),
+                                                                          itemCount: (searchController.text.length) > 0
+                                                                              ? filterResultSearch.length
+                                                                              : addressTilte.length),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                );
+                                              },
                                             );
                                           },
                                         );
                                       },
-                                    );
-                                  },
-                                )
-                              ],
-                            );
-                          },
-                        ),
-                      );
-                    });
-              },
-            )));
+                                    )
+                                  ],
+                                );
+                              },
+                            ),
+                          );
+                        });
+                  },
+                )));
   }
 }
 

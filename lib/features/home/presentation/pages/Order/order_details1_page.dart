@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart' as local;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,11 +8,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart'
     show PanelController, SlidingUpPanel;
-import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -41,7 +38,6 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/star_rating_widget.dart';
-import 'package:trydos/main.dart' show navigatorKey;
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
@@ -201,365 +197,334 @@ class _OrderDetails1State extends State<OrderDetails1> {
           const Duration(seconds: 3)); // ❌ تم حذف التأخير المصطنع
     }
 
-    return WillPopScope(
-        onWillPop: () async {
-          // didCallOnWillPop = true;
-          orderBloc.add(ChangeOrderByGroupStatus());
-          try {
-            if (panelController.isPanelOpen) {
-              agreeToPolicies.value = false;
-              panelController.close();
-              showPanel.value = false;
-              optionModifyPanel.value = null;
-              optionCanselOrReturn.value = [];
-              enableChangeAddress.value = false;
-              showShadowForPanel.value = false;
-              showShadowForChangeAddress.value = false;
-              showShadowForCanselOrder.value = false;
+    return
+        // ignore: deprecated_member_use
+        WillPopScope(
+            onWillPop: () async {
+              // didCallOnWillPop = true;
+              orderBloc.add(ChangeOrderByGroupStatus());
+              try {
+                if (panelController.isPanelOpen) {
+                  agreeToPolicies.value = false;
+                  panelController.close();
+                  showPanel.value = false;
+                  optionModifyPanel.value = null;
+                  optionCanselOrReturn.value = [];
+                  enableChangeAddress.value = false;
+                  showShadowForPanel.value = false;
+                  showShadowForChangeAddress.value = false;
+                  showShadowForCanselOrder.value = false;
 
-              return false;
-            }
-          } catch (e) {
-            return true;
-          }
-          return true;
-        },
-        child: BlocListener<OrderBloc, OrderState>(
-            listenWhen: (p, c) =>
-                p.getOrdersByOrderGroupIDStatus !=
-                c.getOrdersByOrderGroupIDStatus,
-            listener: (context, state) {
-              if (state.getOrdersByOrderGroupIDStatus ==
-                  GetOrdersByOrderGroupIDStatus.success) {
-                if (orders[indexTapPackage.value].orderGroupId ==
-                    state.getOrdersByOrderGroupIDModel
-                        ?.orders?[indexTapPackage.value].orderGroupId) {
-                  orders = state.getOrdersByOrderGroupIDModel?.orders ?? [];
-                  orders.forEach(
-                    (element) {
-                      if (element.returnRequestId != null) {
-                        canFetchReturnDetails = true;
-                      }
-                    },
-                  );
+                  return false;
                 }
-                if (!firstOpenPage) {
-                  indexTapAddress.value = orderBloc
-                          .state.listOfAddressInfoClassToSave
-                          ?.indexWhere((element) =>
-                              element.id ==
-                              orders[indexTapPackage.value]
-                                  .shippingAddressData
-                                  ?.id) ??
-                      -1;
-                  print(
-                      "Fffffffffffffffffffffffffffffffffffffffffffffff${indexTapAddress.value}");
-                  firstAddressChoosed = indexTapAddress.value;
-                  orderBloc.add(GetOrdersEvent(
-                      status: widget.currentStatus ?? '',
-                      orders: orders,
-                      index: widget.indexGroupe,
-                      getWithPagination: false));
-                }
+              } catch (e) {
+                return true;
               }
-              if (state.getOrdersByOrderGroupIDStatus !=
-                      GetOrdersByOrderGroupIDStatus.loading &&
-                  state.getOrdersByOrderGroupIDStatus !=
-                      GetOrdersByOrderGroupIDStatus.init) {
-                firstOpenPage = false;
-              }
+              return true;
             },
-            child: BlocBuilder<OrderBloc, OrderState>(
-                buildWhen: (p, c) =>
+            child: BlocListener<OrderBloc, OrderState>(
+                listenWhen: (p, c) =>
                     p.getOrdersByOrderGroupIDStatus !=
                     c.getOrdersByOrderGroupIDStatus,
-                builder: (context, state) {
-                  return ValueListenableBuilder<int>(
-                      valueListenable: indexTapPackage,
-                      builder: (context, _indexTapPackage, _) {
-                        addressParts = [
-                          orders[_indexTapPackage].shippingAddressData?.country,
-                          orders[_indexTapPackage]
-                              .shippingAddressData
-                              ?.province,
-                          orders[_indexTapPackage].shippingAddressData?.city,
-                          orders[_indexTapPackage].shippingAddressData?.town,
-                          orders[_indexTapPackage].shippingAddressData?.street,
-                          orders[_indexTapPackage]
-                              .shippingAddressData
-                              ?.building,
-                        ];
-                        print(addressParts);
-                        final addressString = addressParts
-                            .where((part) =>
-                                part != null &&
-                                part != 'null' &&
-                                part.isNotEmpty)
-                            .join(' | ');
+                listener: (context, state) {
+                  if (state.getOrdersByOrderGroupIDStatus ==
+                      GetOrdersByOrderGroupIDStatus.success) {
+                    if (orders[indexTapPackage.value].orderGroupId ==
+                        state.getOrdersByOrderGroupIDModel
+                            ?.orders?[indexTapPackage.value].orderGroupId) {
+                      orders = state.getOrdersByOrderGroupIDModel?.orders ?? [];
+                      orders.forEach(
+                        (element) {
+                          if (element.returnRequestId != null) {
+                            canFetchReturnDetails = true;
+                          }
+                        },
+                      );
+                    }
+                    if (!firstOpenPage) {
+                      indexTapAddress.value = orderBloc
+                              .state.listOfAddressInfoClassToSave
+                              ?.indexWhere((element) =>
+                                  element.id ==
+                                  orders[indexTapPackage.value]
+                                      .shippingAddressData
+                                      ?.id) ??
+                          -1;
+                      print(
+                          "Fffffffffffffffffffffffffffffffffffffffffffffff${indexTapAddress.value}");
+                      firstAddressChoosed = indexTapAddress.value;
+                      orderBloc.add(GetOrdersEvent(
+                          status: widget.currentStatus ?? '',
+                          orders: orders,
+                          index: widget.indexGroupe,
+                          getWithPagination: false));
+                    }
+                  }
+                  if (state.getOrdersByOrderGroupIDStatus !=
+                          GetOrdersByOrderGroupIDStatus.loading &&
+                      state.getOrdersByOrderGroupIDStatus !=
+                          GetOrdersByOrderGroupIDStatus.init) {
+                    firstOpenPage = false;
+                  }
+                },
+                child: BlocBuilder<OrderBloc, OrderState>(
+                    buildWhen: (p, c) =>
+                        p.getOrdersByOrderGroupIDStatus !=
+                        c.getOrdersByOrderGroupIDStatus,
+                    builder: (context, state) {
+                      return ValueListenableBuilder<int>(
+                          valueListenable: indexTapPackage,
+                          builder: (context, _indexTapPackage, _) {
+                            addressParts = [
+                              orders[_indexTapPackage]
+                                  .shippingAddressData
+                                  ?.country,
+                              orders[_indexTapPackage]
+                                  .shippingAddressData
+                                  ?.province,
+                              orders[_indexTapPackage]
+                                  .shippingAddressData
+                                  ?.city,
+                              orders[_indexTapPackage]
+                                  .shippingAddressData
+                                  ?.town,
+                              orders[_indexTapPackage]
+                                  .shippingAddressData
+                                  ?.street,
+                              orders[_indexTapPackage]
+                                  .shippingAddressData
+                                  ?.building,
+                            ];
+                            print(addressParts);
+                            final addressString = addressParts
+                                .where((part) =>
+                                    part != null &&
+                                    part != 'null' &&
+                                    part.isNotEmpty)
+                                .join(' | ');
 
-                        return Container(
-                          color: const Color(0xffFFFFFF),
-                          child: Material(
-                            child: Stack(
-                              children: [
-                                Scaffold(
-                                  resizeToAvoidBottomInset: true,
-                                  backgroundColor: const Color(0xffF8F8F8),
-                                  appBar: TrydosAppBar(
-                                    appBarParams: AppBarParams(
-                                      backgroundColor: const Color(0xffFFFFFF),
-                                      scrolledUnderElevation: 0,
-                                      backIconColor: Colors.black,
-                                      withShadow: false,
-                                      action: [
-                                        const Spacer(),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const SizedBox(
-                                              width: 12,
+                            return Container(
+                              color: const Color(0xffFFFFFF),
+                              child: Material(
+                                child: Stack(
+                                  children: [
+                                    Scaffold(
+                                      resizeToAvoidBottomInset: true,
+                                      backgroundColor: const Color(0xffF8F8F8),
+                                      appBar: TrydosAppBar(
+                                        appBarParams: AppBarParams(
+                                          backgroundColor:
+                                              const Color(0xffFFFFFF),
+                                          scrolledUnderElevation: 0,
+                                          backIconColor: Colors.black,
+                                          withShadow: false,
+                                          action: [
+                                            const Spacer(),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const SizedBox(
+                                                  width: 12,
+                                                ),
+                                                SvgPicture.asset(
+                                                  AppAssets.bagsSvg,
+                                                  width: 23,
+                                                ),
+                                                ///////////////////////////
+                                                const SizedBox(
+                                                  width: 4,
+                                                ),
+                                                ///////////////////////////
+                                                Text(
+                                                  LocaleKeys.order_details.tr(),
+                                                  style: context
+                                                      .textTheme.bodyMedium?.mq
+                                                      .copyWith(
+                                                    color:
+                                                        const Color(0xff1D1D1D),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 14,
+                                                    height: 1.3,
+                                                  ),
+                                                ),
+                                                ///////////////////////////
+                                                const SizedBox(
+                                                  width: 15,
+                                                ),
+                                                ///////////////////////////
+                                              ],
                                             ),
-                                            SvgPicture.asset(
-                                              AppAssets.bagsSvg,
-                                              width: 23,
-                                            ),
-                                            ///////////////////////////
-                                            const SizedBox(
-                                              width: 4,
-                                            ),
-                                            ///////////////////////////
-                                            Text(
-                                              LocaleKeys.order_details.tr(),
-                                              style: context
-                                                  .textTheme.bodyMedium?.mq
-                                                  .copyWith(
-                                                color: const Color(0xff1D1D1D),
-                                                letterSpacing: 0.18,
-                                                fontSize: 14,
-                                                height: 1.3,
+                                            const Spacer(),
+                                            ////////////
+                                            InkWell(
+                                              onTap: () {
+                                                if (state
+                                                        .getOrdersByOrderGroupIDStatus ==
+                                                    GetOrdersByOrderGroupIDStatus
+                                                        .loading) {
+                                                  return;
+                                                }
+                                                optionModifyPanel.value =
+                                                    "All_Order";
+                                                showPanel.value = true;
+                                                panelController.open();
+                                                showShadowForPanel.value = true;
+                                              },
+                                              child: Container(
+                                                width: 40,
+                                                height: 20,
+                                                child: state.getOrdersByOrderGroupIDStatus ==
+                                                        GetOrdersByOrderGroupIDStatus
+                                                            .loading
+                                                    ? TrydosLoader(
+                                                        size: 16,
+                                                      )
+                                                    : SvgPicture.asset(
+                                                        AppAssets.orderMenuSvg,
+                                                        width: 20,
+                                                      ),
                                               ),
                                             ),
                                             ///////////////////////////
                                             const SizedBox(
-                                              width: 15,
+                                              width: 12,
                                             ),
-                                            ///////////////////////////
                                           ],
                                         ),
-                                        const Spacer(),
-                                        ////////////
-                                        InkWell(
-                                          onTap: () {
-                                            if (state
-                                                    .getOrdersByOrderGroupIDStatus ==
-                                                GetOrdersByOrderGroupIDStatus
-                                                    .loading) {
-                                              return;
-                                            }
-                                            optionModifyPanel.value =
-                                                "All_Order";
-                                            showPanel.value = true;
-                                            panelController.open();
-                                            showShadowForPanel.value = true;
-                                          },
-                                          child: Container(
-                                            width: 40,
-                                            height: 20,
-                                            child: state.getOrdersByOrderGroupIDStatus ==
-                                                    GetOrdersByOrderGroupIDStatus
-                                                        .loading
-                                                ? TrydosLoader(
-                                                    size: 16,
-                                                  )
-                                                : SvgPicture.asset(
-                                                    AppAssets.orderMenuSvg,
-                                                    width: 20,
-                                                  ),
-                                          ),
-                                        ),
-                                        ///////////////////////////
-                                        const SizedBox(
-                                          width: 12,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  body: RefreshIndicator(
-                                    backgroundColor: Colors.white,
-                                    color: Colors.black,
-                                    onRefresh: _refreshData,
-                                    child: SingleChildScrollView(
-                                      physics:
-                                          const AlwaysScrollableScrollPhysics(),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 11.h,
-                                          ),
-                                          ///////////////////
-                                          BlocBuilder<HomeBloc, HomeState>(
-                                            buildWhen: (previous, current) => (previous
-                                                    .getCurrencyForCountryModel !=
-                                                current
-                                                    .getCurrencyForCountryModel),
-                                            builder: (context, state) {
-                                              String currencySymbol = state
-                                                      .getCurrencyForCountryModel!
-                                                      .data!
-                                                      .currency!
-                                                      .symbol ??
-                                                  "";
-                                              double orderAmount = 0;
-                                              orders.forEach((element) =>
-                                                  orderAmount = orderAmount +
-                                                      (element.orderAmount! *
-                                                          state
-                                                              .getCurrencyForCountryModel!
-                                                              .data!
-                                                              .currency!
-                                                              .exchangeRate!));
+                                      ),
+                                      body: RefreshIndicator(
+                                        backgroundColor: Colors.white,
+                                        color: Colors.black,
+                                        onRefresh: _refreshData,
+                                        child: SingleChildScrollView(
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 11.h,
+                                              ),
+                                              ///////////////////
+                                              BlocBuilder<HomeBloc, HomeState>(
+                                                buildWhen: (previous,
+                                                        current) =>
+                                                    (previous
+                                                            .getCurrencyForCountryModel !=
+                                                        current
+                                                            .getCurrencyForCountryModel),
+                                                builder: (context, state) {
+                                                  String currencySymbol = state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .symbol ??
+                                                      "";
+                                                  double orderAmount = 0;
+                                                  orders.forEach((element) =>
+                                                      orderAmount = orderAmount +
+                                                          (element.orderAmount! *
+                                                              state
+                                                                  .getCurrencyForCountryModel!
+                                                                  .data!
+                                                                  .currency!
+                                                                  .exchangeRate!));
 
-                                              return SizedBox(
-                                                height: 95,
-                                                child: buildFirstSection(
-                                                  context: context,
-                                                  orderNumber:
-                                                      orders[_indexTapPackage]
+                                                  return SizedBox(
+                                                    height: 95,
+                                                    child: buildFirstSection(
+                                                      context: context,
+                                                      orderNumber: orders[
+                                                                  _indexTapPackage]
                                                               .orderGroupId ??
                                                           '',
-                                                  orderDate: HelperFunctions
-                                                      .orderFormatDate(
-                                                    DateTime.tryParse(
-                                                            orders[_indexTapPackage]
+                                                      orderDate: HelperFunctions
+                                                          .orderFormatDate(
+                                                        DateTime.tryParse(orders[
+                                                                        _indexTapPackage]
                                                                     .createdAt ??
                                                                 '') ??
-                                                        DateTime.now(),
-                                                  ),
-                                                  orderAmount: HelperFunctions
-                                                      .formatNumber(
-                                                          number: orderAmount,
-                                                          isNeedRounding:
-                                                              false),
-                                                  orderCurrency: currencySymbol,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                          SizedBox(
-                                            height: 8.h,
-                                          ),
-                                          ///////////////////////
-                                          SizedBox(
-                                            height: 85,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
+                                                            DateTime.now(),
+                                                      ),
+                                                      orderAmount: HelperFunctions
+                                                          .formatNumber(
+                                                              number:
+                                                                  orderAmount,
+                                                              isNeedRounding:
+                                                                  false),
+                                                      orderCurrency:
+                                                          currencySymbol,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              ///////////////////////
+                                              SizedBox(
+                                                height: 85,
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
                                                       horizontal: 10),
-                                              child: state.getOrdersByOrderGroupIDStatus ==
-                                                      GetOrdersByOrderGroupIDStatus
-                                                          .loading
-                                                  ? TrydosLoader(
-                                                      size: 16,
-                                                    )
-                                                  : buildDetailsMainInfoWidget(
-                                                      context: context,
-                                                      firstItem: Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          orders[_indexTapPackage]
-                                                                      .orderGroupStatus
-                                                                      ?.value ==
-                                                                  'canceled'
-                                                              ? SvgPicture
-                                                                  .asset(
-                                                                  AppAssets
-                                                                      .orderCanselSvg,
-                                                                  width: 20,
-                                                                )
-                                                              : orders[_indexTapPackage]
+                                                  child: state.getOrdersByOrderGroupIDStatus ==
+                                                          GetOrdersByOrderGroupIDStatus
+                                                              .loading
+                                                      ? TrydosLoader(
+                                                          size: 16,
+                                                        )
+                                                      : buildDetailsMainInfoWidget(
+                                                          context: context,
+                                                          firstItem: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              orders[_indexTapPackage]
                                                                           .orderGroupStatus
                                                                           ?.value ==
-                                                                      'pending'
+                                                                      'canceled'
                                                                   ? SvgPicture
                                                                       .asset(
                                                                       AppAssets
-                                                                          .pendingBagSvg,
+                                                                          .orderCanselSvg,
                                                                       width: 20,
-                                                                    )
-                                                                  : SvgPicture
-                                                                      .asset(
-                                                                      AppAssets
-                                                                          .pendingBagSvg,
-                                                                      width: 15,
-                                                                    ),
-                                                          ////////////////////
-                                                          const SizedBox(
-                                                            width: 3,
-                                                          ),
-                                                          ///////////////////
-
-                                                          orders[_indexTapPackage]
-                                                                      .orderGroupStatus
-                                                                      ?.value ==
-                                                                  'canceled'
-                                                              ? const SizedBox
-                                                                  .shrink()
-                                                              : orders[_indexTapPackage]
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'pending'
-                                                                  ? SvgPicture
-                                                                      .asset(
-                                                                      AppAssets
-                                                                          .whiteBagSvg,
-                                                                      width: 15,
                                                                     )
                                                                   : orders[_indexTapPackage]
                                                                               .orderGroupStatus
                                                                               ?.value ==
-                                                                          'preparing'
+                                                                          'pending'
                                                                       ? SvgPicture
                                                                           .asset(
                                                                           AppAssets
-                                                                              .preparingBagSvg,
+                                                                              .pendingBagSvg,
                                                                           width:
                                                                               20,
                                                                         )
                                                                       : SvgPicture
                                                                           .asset(
                                                                           AppAssets
-                                                                              .preparingBagSvg,
+                                                                              .pendingBagSvg,
                                                                           width:
                                                                               15,
                                                                         ),
-                                                          ////////////////////
-                                                          const SizedBox(
-                                                            width: 3,
-                                                          ),
-                                                          ///////////////////
-                                                          orders[_indexTapPackage]
-                                                                      .orderGroupStatus
-                                                                      ?.value ==
-                                                                  'canceled'
-                                                              ? const SizedBox
-                                                                  .shrink()
-                                                              : orders[_indexTapPackage]
+                                                              ////////////////////
+                                                              const SizedBox(
+                                                                width: 3,
+                                                              ),
+                                                              ///////////////////
+
+                                                              orders[_indexTapPackage]
                                                                           .orderGroupStatus
                                                                           ?.value ==
-                                                                      'pending'
-                                                                  ? SvgPicture
-                                                                      .asset(
-                                                                      AppAssets
-                                                                          .whiteBagSvg,
-                                                                      width: 15,
-                                                                    )
+                                                                      'canceled'
+                                                                  ? const SizedBox
+                                                                      .shrink()
                                                                   : orders[_indexTapPackage]
                                                                               .orderGroupStatus
                                                                               ?.value ==
-                                                                          'preparing'
+                                                                          'pending'
                                                                       ? SvgPicture
                                                                           .asset(
                                                                           AppAssets
@@ -568,42 +533,32 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                               15,
                                                                         )
                                                                       : orders[_indexTapPackage].orderGroupStatus?.value ==
-                                                                              'shipped'
+                                                                              'preparing'
                                                                           ? SvgPicture
                                                                               .asset(
-                                                                              AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                                                              AppAssets.preparingBagSvg,
                                                                               width: 20,
                                                                             )
                                                                           : SvgPicture
                                                                               .asset(
-                                                                              AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                                                              AppAssets.preparingBagSvg,
                                                                               width: 15,
                                                                             ),
-                                                          ////////////////////
-                                                          const SizedBox(
-                                                            width: 3,
-                                                          ),
-                                                          ///////////////////
-                                                          orders[_indexTapPackage]
-                                                                      .orderGroupStatus
-                                                                      ?.value ==
-                                                                  'canceled'
-                                                              ? const SizedBox
-                                                                  .shrink()
-                                                              : orders[_indexTapPackage]
+                                                              ////////////////////
+                                                              const SizedBox(
+                                                                width: 3,
+                                                              ),
+                                                              ///////////////////
+                                                              orders[_indexTapPackage]
                                                                           .orderGroupStatus
                                                                           ?.value ==
-                                                                      'pending'
-                                                                  ? SvgPicture
-                                                                      .asset(
-                                                                      AppAssets
-                                                                          .whiteBagSvg,
-                                                                      width: 15,
-                                                                    )
-                                                                  : orders[_indexTapPackage].orderGroupStatus?.value ==
-                                                                              'preparing' ||
-                                                                          orders[_indexTapPackage].orderGroupStatus?.value ==
-                                                                              'canceled'
+                                                                      'canceled'
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : orders[_indexTapPackage]
+                                                                              .orderGroupStatus
+                                                                              ?.value ==
+                                                                          'pending'
                                                                       ? SvgPicture
                                                                           .asset(
                                                                           AppAssets
@@ -612,383 +567,439 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                               15,
                                                                         )
                                                                       : orders[_indexTapPackage].orderGroupStatus?.value ==
-                                                                              'shipped'
+                                                                              'preparing'
                                                                           ? SvgPicture
                                                                               .asset(
                                                                               AppAssets.whiteBagSvg,
                                                                               width: 15,
                                                                             )
-                                                                          : orders[_indexTapPackage].orderGroupStatus?.value == 'delivered'
+                                                                          : orders[_indexTapPackage].orderGroupStatus?.value == 'shipped'
                                                                               ? SvgPicture.asset(
-                                                                                  AppAssets.delivered_bagSvg,
+                                                                                  AppAssets.shippedAndOutOfDeliveryBagSvg,
                                                                                   width: 20,
                                                                                 )
                                                                               : SvgPicture.asset(
-                                                                                  AppAssets.delivered_bagSvg,
+                                                                                  AppAssets.shippedAndOutOfDeliveryBagSvg,
                                                                                   width: 15,
                                                                                 ),
-                                                        ],
-                                                      ),
-                                                      title: LocaleKeys
-                                                          .order_status
-                                                          .tr(),
-                                                      value: orders[_indexTapPackage]
-                                                                  .orderGroupStatus
-                                                                  ?.value ==
-                                                              'delivered'
-                                                          ? '${orders[_indexTapPackage].orderGroupStatus?.label} ${LocaleKeys.to.tr()} ${orders[_indexTapPackage].shippingAddressData?.contactPersonName ?? ''}'
-                                                          : orders[_indexTapPackage]
-                                                                  .orderGroupStatus
-                                                                  ?.label ??
-                                                              "",
-                                                      amount: '',
-                                                      isTextSpan: false,
-                                                      titleIcons: buildTitleIcons(
-                                                          status: orders[
-                                                                      _indexTapPackage]
-                                                                  .orderGroupStatus
-                                                                  ?.value ??
-                                                              ""),
-                                                      valueIcons: buildValueIcons(
-                                                          status: orders[
-                                                                      _indexTapPackage]
-                                                                  .orderGroupStatus
-                                                                  ?.value ??
-                                                              ""),
-                                                      currency: '',
-                                                    ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 8.h,
-                                          ),
-                                          Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            decoration: const BoxDecoration(
-                                                color: Color(0xffF4F4F4),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(15))),
-                                            child: Row(
-                                              children: [
-                                                ...List.generate(
-                                                    orders.length,
-                                                    (index) => InkWell(
-                                                          onTap: () =>
-                                                              indexTapPackage
-                                                                      .value =
-                                                                  index,
-                                                          child: Container(
-                                                            height: 30,
-                                                            width: (1.sw - 40) /
-                                                                (orders.length),
-                                                            decoration: BoxDecoration(
-                                                                border: index !=
-                                                                        _indexTapPackage
-                                                                    ? null
-                                                                    : Border.all(
-                                                                        color: const Color(
-                                                                            0xff402CDD)),
-                                                                borderRadius:
-                                                                    const BorderRadius
-                                                                        .all(
-                                                                        Radius.circular(
-                                                                            15))),
-                                                            alignment: Alignment
-                                                                .center,
-                                                            child: Text(
-                                                              "Pack ${orders[index].id}",
-                                                              style: index !=
-                                                                      _indexTapPackage
-                                                                  ? context
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.rr
-                                                                      .copyWith(
-                                                                      color: const Color(
-                                                                          0xff5D5C5D),
-                                                                      letterSpacing:
-                                                                          0.18,
-                                                                      fontSize:
-                                                                          12,
-                                                                      height:
-                                                                          1.3,
-                                                                    )
-                                                                  : context
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.mr
-                                                                      .copyWith(
-                                                                      color: const Color(
-                                                                          0xff1D1D1D),
-                                                                      letterSpacing:
-                                                                          0.18,
-                                                                      fontSize:
-                                                                          12,
-                                                                      height:
-                                                                          1.3,
-                                                                    ),
-                                                            ),
+                                                              ////////////////////
+                                                              const SizedBox(
+                                                                width: 3,
+                                                              ),
+                                                              ///////////////////
+                                                              orders[_indexTapPackage]
+                                                                          .orderGroupStatus
+                                                                          ?.value ==
+                                                                      'canceled'
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : orders[_indexTapPackage]
+                                                                              .orderGroupStatus
+                                                                              ?.value ==
+                                                                          'pending'
+                                                                      ? SvgPicture
+                                                                          .asset(
+                                                                          AppAssets
+                                                                              .whiteBagSvg,
+                                                                          width:
+                                                                              15,
+                                                                        )
+                                                                      : orders[_indexTapPackage].orderGroupStatus?.value == 'preparing' ||
+                                                                              orders[_indexTapPackage].orderGroupStatus?.value ==
+                                                                                  'canceled'
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.whiteBagSvg,
+                                                                              width: 15,
+                                                                            )
+                                                                          : orders[_indexTapPackage].orderGroupStatus?.value == 'shipped'
+                                                                              ? SvgPicture.asset(
+                                                                                  AppAssets.whiteBagSvg,
+                                                                                  width: 15,
+                                                                                )
+                                                                              : orders[_indexTapPackage].orderGroupStatus?.value == 'delivered'
+                                                                                  ? SvgPicture.asset(
+                                                                                      AppAssets.delivered_bagSvg,
+                                                                                      width: 20,
+                                                                                    )
+                                                                                  : SvgPicture.asset(
+                                                                                      AppAssets.delivered_bagSvg,
+                                                                                      width: 15,
+                                                                                    ),
+                                                            ],
                                                           ),
-                                                        ))
-                                              ],
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 8.h,
-                                          ),
-                                          ///////////////////
-                                          SizedBox(
-                                            height: 85,
-                                            child: state.getOrdersByOrderGroupIDStatus ==
-                                                    GetOrdersByOrderGroupIDStatus
-                                                        .loading
-                                                ? TrydosLoader(
-                                                    size: 16,
-                                                  )
-                                                : buildSecondSection(
-                                                    context: context,
-                                                    expectedDeliveryDate:
-                                                        'Monday 2.Jun | 3 Work Days',
-                                                    orderStatus:
-                                                        orders[_indexTapPackage]
-                                                                .orderStatus
-                                                                ?.value ??
-                                                            '',
-                                                    orderStatusLable:
-                                                        orders[_indexTapPackage]
-                                                                .orderStatus
-                                                                ?.label ??
-                                                            '',
-                                                    deliverdTo: orders[
-                                                                _indexTapPackage]
-                                                            .shippingAddressData
-                                                            ?.contactPersonName ??
-                                                        '',
-                                                  ),
-                                          ),
-                                          ///////////////////
-                                          SizedBox(
-                                            height: 8.h,
-                                          ),
-                                          ///////////////////
-                                          orders[_indexTapPackage]
-                                                      .orderStatus
-                                                      ?.value ==
-                                                  "delivered"
-                                              ? buildThirdSectionForRating()
-                                              : buildThirdSection(
-                                                  context: context,
-                                                  contactInfo: orders[
-                                                              _indexTapPackage]
-                                                          .shippingAddressData
-                                                          ?.phone ??
-                                                      '',
-                                                  recipientName: orders[
-                                                              _indexTapPackage]
-                                                          .shippingAddressData
-                                                          ?.contactPersonName ??
-                                                      '',
-                                                  shippingDeliveryAddress:
-                                                      addressString,
+                                                          title: LocaleKeys
+                                                              .order_status
+                                                              .tr(),
+                                                          value: orders[_indexTapPackage]
+                                                                      .orderGroupStatus
+                                                                      ?.value ==
+                                                                  'delivered'
+                                                              ? '${orders[_indexTapPackage].orderGroupStatus?.label} ${LocaleKeys.to.tr()} ${orders[_indexTapPackage].shippingAddressData?.contactPersonName ?? ''}'
+                                                              : orders[_indexTapPackage]
+                                                                      .orderGroupStatus
+                                                                      ?.label ??
+                                                                  "",
+                                                          amount: '',
+                                                          isTextSpan: false,
+                                                          titleIcons: buildTitleIcons(
+                                                              status: orders[
+                                                                          _indexTapPackage]
+                                                                      .orderGroupStatus
+                                                                      ?.value ??
+                                                                  ""),
+                                                          valueIcons: buildValueIcons(
+                                                              status: orders[
+                                                                          _indexTapPackage]
+                                                                      .orderGroupStatus
+                                                                      ?.value ??
+                                                                  ""),
+                                                          currency: '',
+                                                        ),
                                                 ),
-                                          ///////////////////
-                                          SizedBox(
-                                            height: 8.h,
-                                          ),
-                                          ///////////////////
-                                          BlocListener<OrderBloc, OrderState>(
-                                              listenWhen: (previous, current) =>
-                                                  previous
-                                                      .orderReturnDetailsStatus !=
-                                                  current
-                                                      .orderReturnDetailsStatus,
-                                              listener: (context, state) {
-                                                if (state.orderReturnDetailsStatus ==
-                                                        OrderReturnDetailsStatus
-                                                            .success &&
-                                                    requestReturnApi) {
-                                                  requestReturnApi = false;
-                                                  HelperFunctions
-                                                      .slidingNavigation(
-                                                    context,
-                                                    OrderDetails2(
-                                                      indexGroupe:
-                                                          widget.indexGroupe,
-                                                      indexPackage:
-                                                          _indexTapPackage,
-                                                      fromNotification: widget
-                                                          .fromNotification,
-                                                      order: orders[
-                                                          _indexTapPackage],
+                                              ),
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10),
+                                                decoration: const BoxDecoration(
+                                                    color: Color(0xffF4F4F4),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                15))),
+                                                child: Row(
+                                                  children: [
+                                                    ...List.generate(
+                                                        orders.length,
+                                                        (index) => InkWell(
+                                                              onTap: () =>
+                                                                  indexTapPackage
+                                                                          .value =
+                                                                      index,
+                                                              child: Container(
+                                                                height: 30,
+                                                                width: (1.sw -
+                                                                        40) /
+                                                                    (orders
+                                                                        .length),
+                                                                decoration: BoxDecoration(
+                                                                    border: index !=
+                                                                            _indexTapPackage
+                                                                        ? null
+                                                                        : Border.all(
+                                                                            color: const Color(
+                                                                                0xff402CDD)),
+                                                                    borderRadius:
+                                                                        const BorderRadius
+                                                                            .all(
+                                                                            Radius.circular(15))),
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Text(
+                                                                  "Pack ${orders[index].id}",
+                                                                  style: index !=
+                                                                          _indexTapPackage
+                                                                      ? context
+                                                                          .textTheme
+                                                                          .bodyMedium
+                                                                          ?.rr
+                                                                          .copyWith(
+                                                                          color:
+                                                                              const Color(0xff5D5C5D),
+                                                                          letterSpacing:
+                                                                              0.18,
+                                                                          fontSize:
+                                                                              12,
+                                                                          height:
+                                                                              1.3,
+                                                                        )
+                                                                      : context
+                                                                          .textTheme
+                                                                          .bodyMedium
+                                                                          ?.mr
+                                                                          .copyWith(
+                                                                          color:
+                                                                              const Color(0xff1D1D1D),
+                                                                          letterSpacing:
+                                                                              0.18,
+                                                                          fontSize:
+                                                                              12,
+                                                                          height:
+                                                                              1.3,
+                                                                        ),
+                                                                ),
+                                                              ),
+                                                            ))
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              ///////////////////
+                                              SizedBox(
+                                                height: 85,
+                                                child: state.getOrdersByOrderGroupIDStatus ==
+                                                        GetOrdersByOrderGroupIDStatus
+                                                            .loading
+                                                    ? TrydosLoader(
+                                                        size: 16,
+                                                      )
+                                                    : buildSecondSection(
+                                                        context: context,
+                                                        expectedDeliveryDate:
+                                                            'Monday 2.Jun | 3 Work Days',
+                                                        orderStatus:
+                                                            orders[_indexTapPackage]
+                                                                    .orderStatus
+                                                                    ?.value ??
+                                                                '',
+                                                        orderStatusLable:
+                                                            orders[_indexTapPackage]
+                                                                    .orderStatus
+                                                                    ?.label ??
+                                                                '',
+                                                        deliverdTo: orders[
+                                                                    _indexTapPackage]
+                                                                .shippingAddressData
+                                                                ?.contactPersonName ??
+                                                            '',
+                                                      ),
+                                              ),
+                                              ///////////////////
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              ///////////////////
+                                              orders[_indexTapPackage]
+                                                          .orderStatus
+                                                          ?.value ==
+                                                      "delivered"
+                                                  ? buildThirdSectionForRating()
+                                                  : buildThirdSection(
+                                                      context: context,
+                                                      contactInfo: orders[
+                                                                  _indexTapPackage]
+                                                              .shippingAddressData
+                                                              ?.phone ??
+                                                          '',
+                                                      recipientName: orders[
+                                                                  _indexTapPackage]
+                                                              .shippingAddressData
+                                                              ?.contactPersonName ??
+                                                          '',
+                                                      shippingDeliveryAddress:
+                                                          addressString,
                                                     ),
-                                                  );
-                                                }
-                                              },
-                                              child: BlocBuilder<OrderBloc,
+                                              ///////////////////
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              ///////////////////
+                                              BlocListener<OrderBloc,
                                                       OrderState>(
-                                                  buildWhen: (previous,
+                                                  listenWhen: (previous,
                                                           current) =>
                                                       previous
                                                           .orderReturnDetailsStatus !=
                                                       current
                                                           .orderReturnDetailsStatus,
-                                                  builder: (context, state) {
-                                                    ReturnRequestsDatum?
-                                                        orderReturnDetail;
-
-                                                    if (state
-                                                            .orderReturnDetailsModel !=
-                                                        null) {
-                                                      if (state
-                                                              .orderReturnDetailsModel!
-                                                              .data
-                                                              ?.returnRequestsData !=
-                                                          null) {
-                                                        orderReturnDetail = state
-                                                            .orderReturnDetailsModel!
-                                                            .data!
-                                                            .returnRequestsData!
-                                                            .firstWhere(
-                                                          (element) =>
-                                                              element.orderId ==
-                                                              orders[_indexTapPackage]
-                                                                  .id,
-                                                          orElse: () =>
-                                                              ReturnRequestsDatum(),
-                                                        );
-                                                      }
-                                                    }
-                                                    return GestureDetector(
-                                                      onTapUp: (details) {
-                                                        final double dx =
-                                                            details
-                                                                .localPosition
-                                                                .dx;
-                                                        print(dx);
-
-                                                        if ((dx > (1.sw - 75) &&
-                                                            (orders[_indexTapPackage]
-                                                                        .orderStatus
-                                                                        ?.value ==
-                                                                    "out_for_delivery" ||
-                                                                (orderReturnDetail !=
-                                                                        null
-                                                                    ? orderReturnDetail
-                                                                            .status
-                                                                            ?.value ==
-                                                                        "out_for_return"
-                                                                    : false)))) {
-                                                          return;
-                                                        }
-                                                        if (state
-                                                                .orderReturnDetailsStatus ==
+                                                  listener: (context, state) {
+                                                    if (state.orderReturnDetailsStatus ==
                                                             OrderReturnDetailsStatus
-                                                                .success) {
-                                                          HelperFunctions
-                                                              .slidingNavigation(
-                                                            context,
-                                                            OrderDetails2(
-                                                              indexGroupe: widget
-                                                                  .indexGroupe,
-                                                              indexPackage:
-                                                                  _indexTapPackage,
-                                                              fromNotification:
-                                                                  widget
-                                                                      .fromNotification,
-                                                              order: orders[
-                                                                  _indexTapPackage],
-                                                            ),
-                                                          );
-                                                          return;
-                                                        }
-                                                        if (orders[_indexTapPackage]
-                                                                .orderHasReturnRequest ??
-                                                            false) {
-                                                          requestReturnApi =
-                                                              true;
-                                                          if (canFetchReturnDetails) {
-                                                            orderBloc.add(
-                                                                FetchOrderReturnDetailsEvent(
-                                                                    orders[_indexTapPackage]
-                                                                            .orderGroupId ??
-                                                                        ""));
-                                                          }
+                                                                .success &&
+                                                        requestReturnApi) {
+                                                      requestReturnApi = false;
+                                                      HelperFunctions
+                                                          .slidingNavigation(
+                                                        context,
+                                                        OrderDetails2(
+                                                          indexGroupe: widget
+                                                              .indexGroupe,
+                                                          indexPackage:
+                                                              _indexTapPackage,
+                                                          fromNotification: widget
+                                                              .fromNotification,
+                                                          order: orders[
+                                                              _indexTapPackage],
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                  child: BlocBuilder<OrderBloc,
+                                                          OrderState>(
+                                                      buildWhen: (previous,
+                                                              current) =>
+                                                          previous
+                                                              .orderReturnDetailsStatus !=
+                                                          current
+                                                              .orderReturnDetailsStatus,
+                                                      builder:
+                                                          (context, state) {
+                                                        ReturnRequestsDatum?
+                                                            orderReturnDetail;
 
-                                                          return;
-                                                        } else {
-                                                          requestReturnApi =
-                                                              false;
+                                                        if (state
+                                                                .orderReturnDetailsModel !=
+                                                            null) {
+                                                          if (state
+                                                                  .orderReturnDetailsModel!
+                                                                  .data
+                                                                  ?.returnRequestsData !=
+                                                              null) {
+                                                            orderReturnDetail = state
+                                                                .orderReturnDetailsModel!
+                                                                .data!
+                                                                .returnRequestsData!
+                                                                .firstWhere(
+                                                              (element) =>
+                                                                  element
+                                                                      .orderId ==
+                                                                  orders[_indexTapPackage]
+                                                                      .id,
+                                                              orElse: () =>
+                                                                  ReturnRequestsDatum(),
+                                                            );
+                                                          }
                                                         }
-                                                        HelperFunctions
-                                                            .slidingNavigation(
-                                                          context,
-                                                          OrderDetails2(
-                                                            indexGroupe: widget
-                                                                .indexGroupe,
-                                                            indexPackage:
-                                                                _indexTapPackage,
-                                                            fromNotification: widget
-                                                                .fromNotification,
-                                                            order: orders[
-                                                                _indexTapPackage],
-                                                          ),
+                                                        return GestureDetector(
+                                                          onTapUp: (details) {
+                                                            final double dx =
+                                                                details
+                                                                    .localPosition
+                                                                    .dx;
+                                                            print(dx);
+
+                                                            if ((dx >
+                                                                    (1.sw -
+                                                                        75) &&
+                                                                (orders[_indexTapPackage]
+                                                                            .orderStatus
+                                                                            ?.value ==
+                                                                        "out_for_delivery" ||
+                                                                    (orderReturnDetail !=
+                                                                            null
+                                                                        ? orderReturnDetail.status?.value ==
+                                                                            "out_for_return"
+                                                                        : false)))) {
+                                                              return;
+                                                            }
+                                                            if (state
+                                                                    .orderReturnDetailsStatus ==
+                                                                OrderReturnDetailsStatus
+                                                                    .success) {
+                                                              HelperFunctions
+                                                                  .slidingNavigation(
+                                                                context,
+                                                                OrderDetails2(
+                                                                  indexGroupe:
+                                                                      widget
+                                                                          .indexGroupe,
+                                                                  indexPackage:
+                                                                      _indexTapPackage,
+                                                                  fromNotification:
+                                                                      widget
+                                                                          .fromNotification,
+                                                                  order: orders[
+                                                                      _indexTapPackage],
+                                                                ),
+                                                              );
+                                                              return;
+                                                            }
+                                                            if (orders[_indexTapPackage]
+                                                                    .orderHasReturnRequest ??
+                                                                false) {
+                                                              requestReturnApi =
+                                                                  true;
+                                                              if (canFetchReturnDetails) {
+                                                                orderBloc.add(
+                                                                    FetchOrderReturnDetailsEvent(
+                                                                        orders[_indexTapPackage].orderGroupId ??
+                                                                            ""));
+                                                              }
+
+                                                              return;
+                                                            } else {
+                                                              requestReturnApi =
+                                                                  false;
+                                                            }
+                                                            HelperFunctions
+                                                                .slidingNavigation(
+                                                              context,
+                                                              OrderDetails2(
+                                                                indexGroupe: widget
+                                                                    .indexGroupe,
+                                                                indexPackage:
+                                                                    _indexTapPackage,
+                                                                fromNotification:
+                                                                    widget
+                                                                        .fromNotification,
+                                                                order: orders[
+                                                                    _indexTapPackage],
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: buildFourthSection(
+                                                              context: context,
+                                                              itemsCount: orders[
+                                                                      _indexTapPackage]
+                                                                  .details!
+                                                                  .length
+                                                                  .toString()),
                                                         );
-                                                      },
-                                                      child: buildFourthSection(
-                                                          context: context,
-                                                          itemsCount: orders[
-                                                                  _indexTapPackage]
-                                                              .details!
-                                                              .length
-                                                              .toString()),
-                                                    );
-                                                  })),
-                                          ///////////////////
-                                          SizedBox(
-                                            height: 8.h,
+                                                      })),
+                                              ///////////////////
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              ///////////////////
+                                              buildFifthSection(
+                                                  details:
+                                                      orders[_indexTapPackage]
+                                                          .details,
+                                                  orderStatus:
+                                                      orders[_indexTapPackage]
+                                                              .orderStatus
+                                                              ?.value ??
+                                                          "",
+                                                  orderStatusLabel:
+                                                      orders[_indexTapPackage]
+                                                              .orderStatus
+                                                              ?.label ??
+                                                          ""),
+                                              ///////////////////
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              ///////////////////
+                                            ],
                                           ),
-                                          ///////////////////
-                                          buildFifthSection(
-                                              details: orders[_indexTapPackage]
-                                                  .details,
-                                              orderStatus:
-                                                  orders[_indexTapPackage]
-                                                          .orderStatus
-                                                          ?.value ??
-                                                      "",
-                                              orderStatusLabel:
-                                                  orders[_indexTapPackage]
-                                                          .orderStatus
-                                                          ?.label ??
-                                                      ""),
-                                          ///////////////////
-                                          SizedBox(
-                                            height: 8.h,
-                                          ),
-                                          ///////////////////
-                                        ],
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    shadowForPanel(),
+                                    panelWidget(),
+                                    ValueListenableBuilder<int>(
+                                        valueListenable: indexTapAddress,
+                                        builder: (context, _indexTap, _) {
+                                          return shadowForChangeAddressContent(
+                                              _indexTap);
+                                        }),
+                                    shadowForCanselOrRutuenOrder(false)
+                                  ],
                                 ),
-                                shadowForPanel(),
-                                panelWidget(),
-                                ValueListenableBuilder<int>(
-                                    valueListenable: indexTapAddress,
-                                    builder: (context, _indexTap, _) {
-                                      return shadowForChangeAddressContent(
-                                          _indexTap);
-                                    }),
-                                shadowForCanselOrRutuenOrder(false)
-                              ],
-                            ),
-                          ),
-                        );
-                      });
-                })));
+                              ),
+                            );
+                          });
+                    })));
   }
 
   Widget shadowForCanselOrRutuenOrder(bool isReturn) {
@@ -1105,6 +1116,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       SvgPicture.asset(AppAssets.detectedSvg,
+                                          // ignore: deprecated_member_use
                                           color: _agreeToPolicies
                                               ? const Color(0xff388CFF)
                                               : const Color(0xff8E8E8E)),
@@ -1376,6 +1388,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           SvgPicture.asset(
                             AppAssets.orderChangeAddressSvg,
                             width: 50,
+                            // ignore: deprecated_member_use
                             color: Colors.white,
                           ),
                           SizedBox(
@@ -1559,6 +1572,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         children: [
                                           SvgPicture.asset(
                                               AppAssets.detectedSvg,
+                                              // ignore: deprecated_member_use
                                               color: _agreeToPolicies
                                                   ? const Color(0xff388CFF)
                                                   : const Color(0xff8E8E8E)),
@@ -1840,6 +1854,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 children: [
                   SvgPicture.asset(
                     AppAssets.homeInactiveSvg,
+                    // ignore: deprecated_member_use
                     color: (isChange && index != indexTap)
                         ? const Color(0xffD3D3D3)
                         : (isChange && index == indexTap)
@@ -1958,6 +1973,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 children: [
                   SvgPicture.asset(
                     AppAssets.phoneCallSvg,
+                    // ignore: deprecated_member_use
                     color: (isChange && index != indexTap)
                         ? const Color(0xffD3D3D3)
                         : isChange
@@ -1994,6 +2010,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       children: [
                         SvgPicture.asset(
                           AppAssets.personSvg,
+                          // ignore: deprecated_member_use
                           color: (isChange && index != indexTap)
                               ? const Color(0xffD3D3D3)
                               : isChange
@@ -3714,6 +3731,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               : SvgPicture.asset(
                                   image2,
                                   width: 10,
+                                  // ignore: deprecated_member_use
                                   color: const Color(0xff402CDD),
                                 ),
                     ],
@@ -4421,6 +4439,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 children: [
                   SvgPicture.asset(
                     AppAssets.groupStarsRattingSvg,
+                    // ignore: deprecated_member_use
                     color: const Color(0xffFFD800),
                   ),
                   const SizedBox(
@@ -4439,6 +4458,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   ),
                   SvgPicture.asset(
                     AppAssets.groupStarsRattingSvg,
+                    // ignore: deprecated_member_use
                     color: const Color(0xffFFD800),
                   ),
                 ],

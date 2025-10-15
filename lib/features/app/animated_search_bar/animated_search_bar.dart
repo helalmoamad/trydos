@@ -5,9 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/test_utils/widgets_keys.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../blocs/app_bloc/app_state.dart';
 
 class AnimatedSearchBar extends StatefulWidget {
@@ -291,6 +288,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                         AppAssets.closeSvg,
                                         height: 15,
                                         width: 30,
+                                        // ignore: deprecated_member_use
                                         color: const Color(0xffFF5F61),
                                       ),
                                       const SizedBox(

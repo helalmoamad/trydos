@@ -6,17 +6,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
-import '../../../../../common/helper/file_saving.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -30,6 +27,7 @@ import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
+// ignore: must_be_immutable
 class SharedProductMessage extends StatefulWidget {
   SharedProductMessage(
       {Key? key,
@@ -550,7 +548,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
               if (onError != null) onError();
             },
           ));
-    } catch (e, s) {
+    } catch (e) {
       // GetIt.I<StoryBloc>().add(LoadFailureEvent());
     }
     return completer.future;

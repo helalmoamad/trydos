@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../features/app/my_text_widget.dart';
 
+// ignore: must_be_immutable
 class CameraScreen extends StatefulWidget {
   List<CameraDescription> cameras;
 
@@ -29,12 +29,6 @@ class _CameraScreenState extends State<CameraScreen>
       setState(() {
         _seconds++;
       });
-    });
-  }
-
-  void _resetTimer() {
-    setState(() {
-      _seconds = 0;
     });
   }
 
@@ -105,9 +99,6 @@ class _CameraScreenState extends State<CameraScreen>
   FlashMode? _currentFlashMode;
 
   //todo exposure values
-  double _minAvailableExposureOffset = 0.0;
-  double _maxAvailableExposureOffset = 0.0;
-  final double _currentExposureOffset = 0.0;
 
   //todo zoom values
   double _minAvailableZoom = 1.0;
@@ -154,13 +145,6 @@ class _CameraScreenState extends State<CameraScreen>
           .getMinZoomLevel()
           .then((value) => _minAvailableZoom = value);
 //todo exposure
-      cameraController
-          .getMinExposureOffset()
-          .then((value) => _minAvailableExposureOffset = value);
-
-      cameraController
-          .getMaxExposureOffset()
-          .then((value) => _maxAvailableExposureOffset = value);
     } on CameraException catch (e) {
       debugPrint('Error initializing camera: $e');
     }

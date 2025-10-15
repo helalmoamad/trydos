@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'dart:math';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -26,8 +28,6 @@ import '../../../../chat/data/models/my_chats_response_model.dart';
 import '../../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
   const ProductDetailsSheetShareContent(
@@ -76,6 +76,7 @@ class _ProductDetailsSheetShareContentState
             children: [
               SvgPicture.asset(
                 AppAssets.shareSvg,
+                // ignore: deprecated_member_use
                 color: const Color(0xff505050),
                 height: 20,
               ),
@@ -217,6 +218,7 @@ class _ProductDetailsSheetShareContentState
                                                       .toString());
                                             }
                                             widget.idsOfChatCardsToShare
+                                                // ignore: invalid_use_of_protected_member
                                                 .notifyListeners();
                                           },
                                           selected: channelIds.contains(
@@ -344,6 +346,7 @@ class ChatCardForShare extends StatelessWidget {
                                 BoxShadow(
                                   offset: const Offset(0, 3),
                                   blurRadius: 6,
+                                  // ignore: deprecated_member_use
                                   color: Colors.white.withOpacity(0.5),
                                   inset: true,
                                 ),
@@ -374,6 +377,7 @@ class ChatCardForShare extends StatelessWidget {
                       child: SvgPicture.asset(
                         AppAssets.shareSvg,
                         height: 20,
+                        // ignore: deprecated_member_use
                         color: const Color(0xff0859D9),
                       ))
                   : const SizedBox.shrink()

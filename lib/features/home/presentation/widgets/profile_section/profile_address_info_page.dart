@@ -14,7 +14,6 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
@@ -179,6 +178,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                                   ),
                                                   SvgPicture.asset(
                                                     AppAssets.infoSvg,
+                                                    // ignore: deprecated_member_use
                                                     color:
                                                         const Color(0xff402CDD),
                                                     width: 25.w,
@@ -214,6 +214,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                                 SvgPicture.asset(
                                                   AppAssets.addressSvg,
                                                   height: 15,
+                                                  // ignore: deprecated_member_use
                                                   color:
                                                       const Color(0xff404040),
                                                 ),
@@ -235,6 +236,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                                 const SizedBox(width: 15),
                                                 SvgPicture.asset(
                                                   AppAssets.chatWithQuestionSvg,
+                                                  // ignore: deprecated_member_use
                                                   color:
                                                       const Color(0xffD3D3D3),
                                                   height: 15,
@@ -284,6 +286,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
           ),
           SvgPicture.asset(
             AppAssets.deletecartSvg,
+            // ignore: deprecated_member_use
             color: const Color(0xffFFFFFF),
             width: 50,
             height: 50,
@@ -639,6 +642,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                 children: [
                   SvgPicture.asset(
                     AppAssets.homeInactiveSvg,
+                    // ignore: deprecated_member_use
                     color: isDelete
                         ? const Color(0xffFFFFFF)
                         : index != indexTap
@@ -751,6 +755,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                 children: [
                   SvgPicture.asset(
                     AppAssets.phoneCallSvg,
+                    // ignore: deprecated_member_use
                     color: isDelete
                         ? const Color(0xffFFFFFF)
                         : index != indexTap
@@ -783,6 +788,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                       children: [
                         SvgPicture.asset(
                           AppAssets.personSvg,
+                          // ignore: deprecated_member_use
                           color: isDelete
                               ? const Color(0xffFFFFFF)
                               : index != indexTap

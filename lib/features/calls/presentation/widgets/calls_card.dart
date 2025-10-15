@@ -9,7 +9,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
@@ -22,7 +21,6 @@ import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/calls/presentation/pages/in_app_view.dart';
 import 'package:trydos/features/calls/presentation/utils/caller_info.dart';
 import 'package:trydos/features/calls/presentation/widgets/no_image_widget.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
@@ -268,8 +266,8 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                 : const Color(0xffFFC05C)),
                   ),
                   child: widget.photoPath != ""
-                      ? Container(
-                          /* decoration: BoxDecoration(
+                      ?
+                      /* decoration: BoxDecoration(
                             border: Border.all(
                                 width: 1.0, color: const Color(0xff388cff)),
                             boxShadow: const [
@@ -280,18 +278,17 @@ class _CallsCardState extends ThemeState<CallsCard> {
                               ),
                             ],
                           ),*/
-                          child: MyCachedNetworkImage(
-                            imageUrl: (widget.photoPath
-                                        .toString()
-                                        .contains("cloudinary")
-                                    ? ""
-                                    : "${dotenv.env['Images_Url']}") +
-                                widget.photoPath,
-                            imageFit: BoxFit.cover,
-                            progressIndicatorBuilderWidget: TrydosLoader(),
-                            height: 55,
-                            width: 55.w,
-                          ),
+                      MyCachedNetworkImage(
+                          imageUrl: (widget.photoPath
+                                      .toString()
+                                      .contains("cloudinary")
+                                  ? ""
+                                  : "${dotenv.env['Images_Url']}") +
+                              widget.photoPath,
+                          imageFit: BoxFit.cover,
+                          progressIndicatorBuilderWidget: TrydosLoader(),
+                          height: 55,
+                          width: 55.w,
                         )
                       : NoImageWidget(
                           height: 40,

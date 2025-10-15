@@ -19,7 +19,6 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/language_service.dart';
 
 class ProductItem extends StatefulWidget {
@@ -70,16 +69,11 @@ class _ProductItemState extends State<ProductItem> {
   @override
   void initState() {
     super.initState();
-    if (!widget.fromHomePage) {
-      if (productSlugToSaveVideoTimer.length > 8) {
-        productSlugToSaveVideoTimer.removeLast();
-      }
-      if (!productSlugToSaveVideoTimer
-          .contains(widget.productItem.slug.toString())) {
-        productSlugToSaveVideoTimer.insert(
-            0, widget.productItem.slug.toString());
-      }
-    }
+/*
+    if (!productSlugToSaveVideoTimer
+        .contains(widget.productItem.slug.toString())) {
+      productSlugToSaveVideoTimer.insert(0, widget.productItem.slug.toString());
+    }*/
 
 //    productIdToSaveRedeemTimer.add(widget.productItem.productId.toString());
 
@@ -454,6 +448,7 @@ class _ProductItemState extends State<ProductItem> {
                                                 SvgPicture.asset(
                                                   AppAssets.flashDealSvg,
                                                   height: 12,
+                                                  // ignore: deprecated_member_use
                                                   color:
                                                       const Color(0xffFF6200),
                                                 ),

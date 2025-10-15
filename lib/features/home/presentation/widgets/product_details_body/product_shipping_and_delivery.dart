@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -13,8 +12,6 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
 
@@ -78,6 +75,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                 SvgPicture.asset(
                                   AppAssets.chatWithQuestionSvg,
                                   height: 12,
+                                  // ignore: deprecated_member_use
                                   color: const Color(0xffC4C2C2),
                                 ),
                               ]),

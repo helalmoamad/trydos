@@ -8,7 +8,6 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/form_utils.dart';
@@ -83,6 +82,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                         child: SvgPicture.asset(
                           AppAssets.backFromCallSvg,
                           width: 8.w,
+                          // ignore: deprecated_member_use
                           color: const Color(0xff388CFF),
                         ),
                       ),

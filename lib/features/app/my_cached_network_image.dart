@@ -147,6 +147,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
         boxShadow: widget.withImageShadow
             ? [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: context.colorScheme.white.withOpacity(0.1),
                   offset: const Offset(0, 3),
                   blurRadius: 6,
@@ -174,14 +175,15 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           cacheManager: CustomCacheManagers(),
           height: widget.height,
           // 🔧 إصلاح: إعادة تفعيل memory cache للأداء الأفضل
-          memCacheHeight: widget.height.ceil(),
+          memCacheHeight:
+              (widget.height * MediaQuery.devicePixelRatioOf(context)).round(),
 
           placeholder: (context, url) {
             widget.callWhenLoadingImage?.call();
             return _buildSimpleShimmer();
           },
-          memCacheWidth: widget.width.ceil(),
-
+          memCacheWidth:
+              (widget.width * MediaQuery.devicePixelRatioOf(context)).round(),
           // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
           fadeInDuration: const Duration(),
           placeholderFadeInDuration: const Duration(),
@@ -213,6 +215,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
                                     Offset(0, widget.innerShadowYOffset ?? 12),
                                 blurRadius: 24,
                                 inset: true,
+                                // ignore: deprecated_member_use
                                 color: Colors.black.withOpacity(0.44),
                               ),
                             ],
@@ -376,16 +379,16 @@ String addSuitableWidthAndHeightToImage({
   } else {*/
   // 🔧 إصلاح: حالة عدم وجود الأبعاد الأصلية (مثل home page)
   // استخدام استراتيجية ذكية بدلاً من h_ فقط
-  print("width < height ${width} ${height}");
-  if (width < height) {
+
+  if (width > height) {
     // الصورة أعرض من الارتفاع - استخدم العرض
     url = list[0] +
-        'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,w_${fWidth}' +
+        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_auto,q_auto' +
         list[1];
   } else {
     // الصورة أطول من العرض - استخدم الارتفاع
     url = list[0] +
-        'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,h_${fHeight}' +
+        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_auto,q_auto' +
         list[1];
   }
   //}

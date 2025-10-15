@@ -1,13 +1,11 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get_it/get_it.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 extension ScopeApi on String {
   String get _api => 'api';
 
-  String get _previousVersion => 'v1';
+  // String get _previousVersion => 'v1';
 
-  String get _currentVersion => 'v2';
+  // String get _currentVersion => 'v2';
 
   String noScope({bool current = false}) => '$_api/$this';
 

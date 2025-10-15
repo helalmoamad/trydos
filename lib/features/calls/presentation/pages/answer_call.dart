@@ -6,29 +6,23 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/routes/router.dart';
 import 'package:vibration/vibration.dart';
-import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../config/theme/typography.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../chat/presentation/manager/chat_event.dart';
 import '../widgets/call_status_widget.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
-import 'agora_webview.dart';
 
+// ignore: must_be_immutable
 class AnswerCall extends StatefulWidget {
   String channelName;
   String messageId;
@@ -109,6 +103,7 @@ class _AnswerCallState extends State<AnswerCall> {
                                 boxShadow: [
                                   BoxShadow(
                                       color:
+                                          // ignore: deprecated_member_use
                                           colorScheme.white.withOpacity(0.35),
                                       offset: const Offset(0, 10),
                                       blurRadius: 30,

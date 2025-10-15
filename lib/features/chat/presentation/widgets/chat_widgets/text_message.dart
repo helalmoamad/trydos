@@ -27,6 +27,7 @@ import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
+// ignore: must_be_immutable
 class TextMessage extends StatefulWidget {
   TextMessage({
     Key? key,
@@ -230,6 +231,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                       ? [
                                           BoxShadow(
                                               color: colorScheme.black
+                                                  // ignore: deprecated_member_use
                                                   .withOpacity(0.05),
                                               offset: const Offset(0, 3),
                                               blurRadius: 6)

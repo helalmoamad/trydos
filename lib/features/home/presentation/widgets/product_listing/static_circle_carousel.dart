@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/app/trydos_shimmer_loading.dart';
-import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StaticCircleCarousel extends StatelessWidget {

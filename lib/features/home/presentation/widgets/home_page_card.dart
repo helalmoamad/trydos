@@ -47,7 +47,9 @@ class HomePageCard extends StatelessWidget {
                 end: const Alignment(1, -3),
                 colors: [
                   const Color(0x00ffffff),
+                  // ignore: deprecated_member_use
                   const Color(0x00ffffff).withOpacity(0.6),
+                  // ignore: deprecated_member_use
                   const Color(0x00ffffff).withOpacity(0.3)
                 ],
                 stops: const [0.0, 0.559, 1.0],
@@ -116,6 +118,7 @@ class HomePageCard extends StatelessWidget {
                   offset: Offset(20.w, -30),
                   child: SvgPicture.asset(
                     AppAssets.textSvg,
+                    // ignore: deprecated_member_use
                     color: showWhite
                         ? const Color(0xff137AC9)
                         : context.colorScheme.white,

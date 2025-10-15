@@ -521,6 +521,7 @@ class _CartPageState extends State<CartPage> {
                                   AppAssets.shareSvg,
                                   height: 20,
                                   width: 20,
+                                  // ignore: deprecated_member_use
                                   color: const Color(0xff3C3C3C),
                                 )
                               ],
@@ -615,7 +616,9 @@ class _CartPageState extends State<CartPage> {
                                           height: 20,
                                           child: SvgPicture.asset(
                                             AppAssets.cartSvg,
+                                            // ignore: deprecated_member_use
                                             color: const Color(0xff8E8E8E),
+
                                             height: 20,
                                           ),
                                         ),
@@ -1036,6 +1039,7 @@ class _CartPageState extends State<CartPage> {
                                                                             children: [
                                                                               SvgPicture.asset(
                                                                                 AppAssets.countItemSvg,
+                                                                                // ignore: deprecated_member_use
                                                                                 color: const Color(0xff1D1D1D),
                                                                                 height: 12,
                                                                               ),
@@ -1156,6 +1160,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     child: SvgPicture.asset(
                                                                                       AppAssets.totalDiscountCartSvg,
+                                                                                      // ignore: deprecated_member_use
                                                                                       color: const Color(0xffFE0364),
                                                                                       height: 12,
                                                                                     ),
@@ -1237,6 +1242,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10.w : 2, left: LanguageService.languageCode != "ar" ? 2 : 10.w),
                                                                                     child: SvgPicture.asset(
                                                                                       AppAssets.giftCartSvg,
+                                                                                      // ignore: deprecated_member_use
                                                                                       color: const Color(0xff5BA260),
                                                                                       height: 12,
                                                                                     ),
@@ -1313,6 +1319,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10 : 2, left: LanguageService.languageCode != "ar" ? 2 : 10),
                                                                                     child: SvgPicture.asset(
                                                                                       AppAssets.shappingCartSvg,
+                                                                                      // ignore: deprecated_member_use
                                                                                       color: const Color(0xffBEF4CD),
                                                                                       height: 12,
                                                                                     ),
@@ -1640,6 +1647,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     AppAssets.closeSvg,
                                                                                     height: 15,
                                                                                     width: 30,
+                                                                                    // ignore: deprecated_member_use
                                                                                     color: const Color(0xffFF5F61),
                                                                                   )),
                                                                             ),

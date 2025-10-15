@@ -262,7 +262,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return WillPopScope(
+    return
+        // ignore: deprecated_member_use
+        WillPopScope(
       onWillPop: () {
         try {
           if (widget.fromCart ?? false) {
@@ -1377,6 +1379,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         child: Container(
                           height: 1.sh,
                           width: 1.sw,
+                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.55),
                         ))
                     : const SizedBox.shrink();
@@ -1646,10 +1649,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               return ValueListenableBuilder<bool>(
                                   valueListenable: visibleFlashDeal,
                                   builder: (context, _visibleFlashDeal, _) {
-                                    bool isFlashDealEnded = false;
                                     DateTime endDate;
-                                    Duration _duration = const Duration();
-                                    final now = DateTime.now();
+
                                     try {
                                       endDate =
                                           DateFormat('MM/dd/yyyy', 'en_US')
@@ -1661,11 +1662,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     } catch (e) {
                                       endDate = DateTime.now();
                                       print('Error parsing date: $e');
-                                    }
-                                    _duration = endDate.difference(now);
-                                    if (_duration.isNegative ||
-                                        _duration.inSeconds < 1) {
-                                      isFlashDealEnded = true;
                                     }
 
                                     return Container(
@@ -1828,6 +1824,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                               AppAssets.bagSvg,
                                               height: 30.h,
                                               width: 30.w,
+                                              // ignore: deprecated_member_use
                                               color: Colors.grey.shade600,
                                             ),
                                           ),
@@ -1868,6 +1865,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                 AppAssets.favoriteSvg,
                                                 height: 30.h,
                                                 width: 30.w,
+                                                // ignore: deprecated_member_use
                                                 color: Colors.grey.shade600,
                                               ),
                                             ),
@@ -1903,6 +1901,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                 AppAssets.chatMarkSvg,
                                                 height: 30.h,
                                                 width: 30.w,
+                                                // ignore: deprecated_member_use
                                                 color: Colors.grey.shade600,
                                               ),
                                             ),
@@ -1938,6 +1937,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                 AppAssets.shareSvg,
                                                 height: 30.h,
                                                 width: 30.w,
+                                                // ignore: deprecated_member_use
                                                 color: Colors.grey.shade600,
                                               ),
                                             ),
@@ -1968,6 +1968,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                             AppAssets.moreOptionSvg,
                                             height: 30.h,
                                             width: 30.w,
+                                            // ignore: deprecated_member_use
                                             color: Colors.grey.shade600,
                                           ),
                                         ),
@@ -2404,6 +2405,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     SvgPicture.asset(
                       AppAssets.bagsOrderSvg,
                       width: 20,
+                      // ignore: deprecated_member_use
                       color: const Color(0xff513AAF),
                     ),
                   ])
@@ -2473,6 +2475,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             SvgPicture.asset(
                               AppAssets.bagsOrderSvg,
                               width: 20,
+                              // ignore: deprecated_member_use
                               color: const Color(0xff513AAF),
                             ),
                           ],
@@ -2536,6 +2539,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               AppAssets.registerInfoSvg,
                               height: 10,
                               width: 10,
+                              // ignore: deprecated_member_use
                               color: const Color(0xffC4C2C2),
                             ),
                           ],
@@ -2652,6 +2656,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 AppAssets.bagSvg,
                                 height: 30.h,
                                 width: 30.w,
+                                // ignore: deprecated_member_use
                                 color: Colors.grey.shade600,
                               ),
                             ),
@@ -2688,6 +2693,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   AppAssets.favoriteSvg,
                                   height: 30.h,
                                   width: 30.w,
+                                  // ignore: deprecated_member_use
                                   color: Colors.grey.shade600,
                                 ),
                               ),
@@ -2718,6 +2724,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   AppAssets.chatMarkSvg,
                                   height: 30.h,
                                   width: 30.w,
+                                  // ignore: deprecated_member_use
                                   color: Colors.grey.shade600,
                                 ),
                               ),
@@ -2748,6 +2755,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   AppAssets.shareSvg,
                                   height: 30.h,
                                   width: 30.w,
+                                  // ignore: deprecated_member_use
                                   color: Colors.grey.shade600,
                                 ),
                               ),
@@ -2775,6 +2783,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               AppAssets.moreOptionSvg,
                               height: 30.h,
                               width: 30.w,
+                              // ignore: deprecated_member_use
                               color: Colors.grey.shade600,
                             ),
                           ),
@@ -3149,6 +3158,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 child: SvgPicture.asset(
                                   AppAssets.cancelSvg,
                                   width: 10,
+                                  // ignore: deprecated_member_use
                                   color: const Color(0xffFF5F61),
                                 ),
                               )));

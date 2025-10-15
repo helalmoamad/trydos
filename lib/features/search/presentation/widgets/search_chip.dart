@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -40,6 +39,7 @@ class SearchChip extends StatelessWidget {
                 ),
                 SvgPicture.asset(
                   AppAssets.backArrowArabic,
+                  // ignore: deprecated_member_use
                   color: const Color(0xffC4C2C2),
                   width: 10,
                   height: 10,

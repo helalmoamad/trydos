@@ -7,7 +7,6 @@ import 'package:mime_type/mime_type.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:trydos/features/home/data/models/upload_images_for_return_product_model.dart';
 
-import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
 import '../../../../core/error/failures.dart';

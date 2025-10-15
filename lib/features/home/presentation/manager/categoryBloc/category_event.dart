@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
 
 abstract class CategoryEvent extends Equatable {
   const CategoryEvent();

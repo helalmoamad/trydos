@@ -68,7 +68,9 @@ class _PaymentWebviewState extends State<PaymentWebview> {
       FlutterError.dumpErrorToConsole(error);
     };
     return SafeArea(
-      child: WillPopScope(
+      child:
+          // ignore: deprecated_member_use
+          WillPopScope(
         onWillPop: () async {
           if (Navigator.canPop(context)) {
             if (Navigator.of(context).canPop()) {

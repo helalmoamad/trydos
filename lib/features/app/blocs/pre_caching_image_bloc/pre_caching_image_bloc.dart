@@ -8,11 +8,9 @@ import 'package:flutter/material.dart';
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:sync/semaphore.dart';
 
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_state.dart';
 
-import 'package:trydos/main.dart';
 
 import '../../my_cached_network_image.dart';
 
@@ -21,7 +19,7 @@ part 'pre_caching_image_event.dart';
 @LazySingleton()
 class PreCachingImageBloc
     extends HydratedBloc<PreCachingImageEvent, PreCachingImageState> {
-  PreCachingImageBloc() : super(PreCachingImageState()) {
+  PreCachingImageBloc() : super(const PreCachingImageState()) {
     on<PreCachingImageEvent>((event, emit) {});
     on<CacheImageEvent>(_onCacheImageEvent);
     on<CacheSvgEvent>(_onCacheSvgEvent);

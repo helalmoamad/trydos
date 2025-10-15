@@ -13,7 +13,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -61,6 +60,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
     if (authBloc.state.sendOtpStatus == SendOtpStatus.failure ||
         authBloc.state.sendOtpStatus == SendOtpStatus.success) {
       // Reset to initial state
+      // ignore: invalid_use_of_visible_for_testing_member
       authBloc.emit(authBloc.state.copyWith(
         sendOtpStatus: SendOtpStatus.init,
       ));
@@ -108,6 +108,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
     // Optionally reset the SendOTP status when leaving the page
     // This ensures clean state for next time
     if (authBloc.state.sendOtpStatus == SendOtpStatus.failure) {
+      // ignore: invalid_use_of_visible_for_testing_member
       authBloc.emit(authBloc.state.copyWith(
         sendOtpStatus: SendOtpStatus.init,
       ));

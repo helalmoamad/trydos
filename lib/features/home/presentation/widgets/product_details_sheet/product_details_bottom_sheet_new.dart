@@ -506,6 +506,7 @@ class _ProductDetailsBottomSheetNewState
                                                                   AppAssets
                                                                       .minusMarkSvg,
                                                                   width: 25,
+                                                                  // ignore: deprecated_member_use
                                                                   color: Colors
                                                                       .grey
                                                                       .shade200,
@@ -853,6 +854,7 @@ class _ProductDetailsBottomSheetNewState
                           children: [
                             SvgPicture.asset(
                               AppAssets.orderAddressSvg,
+                              // ignore: deprecated_member_use
                               color: const Color(0xff1D1D1D),
                               height: 13,
                             ),
@@ -907,6 +909,7 @@ class _ProductDetailsBottomSheetNewState
                           children: [
                             SvgPicture.asset(
                               AppAssets.shappingCartNew,
+                              // ignore: deprecated_member_use
                               color: const Color(0xff388CFF),
                               height: 13,
                             ),
@@ -971,6 +974,7 @@ class _ProductDetailsBottomSheetNewState
                           children: [
                             SvgPicture.asset(
                               AppAssets.deliveredBlackSvg,
+                              // ignore: deprecated_member_use
                               color: const Color(0xff388CFF),
                               height: 13,
                             ),
@@ -1463,7 +1467,9 @@ class _ProductDetailsBottomSheetNewState
                             width: 10,
                           ),
                           SvgPicture.asset(AppAssets.sizeIconSvg,
-                              height: 14, color: const Color(0xff1D1D1D)),
+                              height: 14,
+                              // ignore: deprecated_member_use
+                              color: const Color(0xff1D1D1D)),
                           const SizedBox(
                             width: 5,
                           ),
@@ -1601,6 +1607,7 @@ class _ProductDetailsBottomSheetNewState
                                                       AppAssets
                                                           .notificationIconSvg,
                                                       height: 12,
+                                                      // ignore: deprecated_member_use
                                                       color: const Color(
                                                           0xff513AAF)))
                                               : const SizedBox.shrink()
@@ -1840,6 +1847,7 @@ class ShareButton extends StatelessWidget {
                   children: [
                     SvgPicture.asset(
                       AppAssets.shareSvg,
+                      // ignore: deprecated_member_use
                       color: Colors.white,
                       height: 20,
                     ),

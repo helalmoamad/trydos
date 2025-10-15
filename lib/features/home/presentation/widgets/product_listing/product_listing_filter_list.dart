@@ -32,9 +32,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -258,10 +255,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
+                                      // ignore: deprecated_member_use
                                       color: Colors.black.withOpacity(0.1),
                                       blurRadius: 6,
                                       offset: const Offset(0, 3)),
                                   BoxShadow(
+                                      // ignore: deprecated_member_use
                                       color: Colors.white.withOpacity(0.4),
                                       blurRadius: 6,
                                       offset: const Offset(0, 3),
@@ -535,6 +534,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               ),
                               SvgPicture.asset(
                                 AppAssets.registerInfoSvg,
+                                // ignore: deprecated_member_use
                                 color: const Color(0xffD3D3D3),
                               ),
                               if (state.getProductFiltersStatus[key] ==
@@ -1117,6 +1117,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   boxShadow: [
                                     BoxShadow(
                                         blurRadius: 6,
+                                        // ignore: deprecated_member_use
                                         color: Colors.black.withOpacity(0.1))
                                   ],
                                   borderRadius: BorderRadius.circular(10)),
@@ -1386,11 +1387,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               boxShadow: [
                                                 BoxShadow(
                                                     color: Colors.black
+                                                        // ignore: deprecated_member_use
                                                         .withOpacity(0.1),
                                                     blurRadius: 6,
                                                     offset: const Offset(0, 3)),
                                                 BoxShadow(
                                                     color: Colors.white
+                                                        // ignore: deprecated_member_use
                                                         .withOpacity(0.4),
                                                     blurRadius: 6,
                                                     offset: const Offset(0, 3),
@@ -1528,6 +1531,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             BoxShadow(
                                                                 color: Colors
                                                                     .black
+                                                                    // ignore: deprecated_member_use
                                                                     .withOpacity(
                                                                         0.1),
                                                                 blurRadius: 6,
@@ -1537,6 +1541,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             BoxShadow(
                                                                 color: Colors
                                                                     .white
+                                                                    // ignore: deprecated_member_use
                                                                     .withOpacity(
                                                                         0.4),
                                                                 blurRadius: 6,
@@ -1738,6 +1743,7 @@ Widget choosedOrAppliedFiltersWidget({
                           AppAssets.closeSvg,
                           width: 15,
                           height: 15,
+                          // ignore: deprecated_member_use
                           color: const Color(0xffFF5F61),
                         ),
                         const SizedBox(
@@ -1794,6 +1800,7 @@ Widget choosedOrAppliedFiltersWidget({
                           AppAssets.closeSvg,
                           width: 15,
                           height: 15,
+                          // ignore: deprecated_member_use
                           color: const Color(0xffFF5F61),
                         ),
                         const SizedBox(
@@ -2670,6 +2677,7 @@ class FilterImage extends StatelessWidget {
           boxShadow: withBackGroundShadow
               ? [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.white.withOpacity(0.6),
                     offset: const Offset(0, 3),
                     blurRadius: 3,
@@ -2706,6 +2714,7 @@ class FilterImage extends StatelessWidget {
                           BoxShadow(
                             offset: const Offset(0, 4),
                             blurRadius: 6,
+                            // ignore: deprecated_member_use
                             color: Colors.white.withOpacity(0.5),
                             inset: true,
                           ),
@@ -2750,6 +2759,7 @@ class FilterSelectedMark extends StatelessWidget {
           child: Center(
               child: SvgPicture.asset(
             AppAssets.filtersSvg,
+            // ignore: deprecated_member_use
             color: Colors.white,
             height: height / 2,
           )),
@@ -2764,6 +2774,7 @@ class FilterSelectedMark extends StatelessWidget {
               BoxShadow(
                 offset: const Offset(0, 4),
                 blurRadius: 6,
+                // ignore: deprecated_member_use
                 color: Colors.white.withOpacity(0.7),
                 inset: true,
               ),

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -12,18 +11,14 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
 import 'package:trydos/features/calls/presentation/widgets/call_status_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/routes/router_config.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
-import '../../../chat/presentation/manager/chat_event.dart';
 import '../widgets/no_image_widget.dart';
 
 class CreateCallPage extends StatefulWidget {
@@ -103,6 +98,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                         boxShadow: [
                                           BoxShadow(
                                               color: colorScheme.white
+                                                  // ignore: deprecated_member_use
                                                   .withOpacity(0.35),
                                               offset: const Offset(0, 10),
                                               blurRadius: 30,

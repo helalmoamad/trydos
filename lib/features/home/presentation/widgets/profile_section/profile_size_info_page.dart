@@ -1,8 +1,5 @@
-import 'dart:io';
 import 'dart:math';
 
-import 'package:camera/camera.dart';
-import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,12 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get_it/get_it.dart';
-import 'package:mime_type/mime_type.dart';
-import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
-import 'package:trydos/common/helper/camera_screen.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -27,15 +19,12 @@ import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/widgets/profile_section/camera_profile.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class ProfileSizeInfoPage extends StatefulWidget {
   const ProfileSizeInfoPage({super.key});
@@ -176,6 +165,7 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                               ),
                               SvgPicture.asset(
                                 AppAssets.infoSvg,
+                                // ignore: deprecated_member_use
                                 color: const Color(0xff402CDD),
                                 width: 25.w,
                               ),
@@ -207,6 +197,7 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                             SvgPicture.asset(
                               AppAssets.sizeLineSvg,
                               height: 15,
+                              // ignore: deprecated_member_use
                               color: const Color(0xff707070),
                             ),
                             Text(
@@ -219,6 +210,7 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
                             ),
                             SvgPicture.asset(
                               AppAssets.chatWithQuestionSvg,
+                              // ignore: deprecated_member_use
                               color: const Color(0xffD3D3D3),
                               height: 15,
                             ),

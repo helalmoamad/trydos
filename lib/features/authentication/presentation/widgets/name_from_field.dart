@@ -3,7 +3,6 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -12,6 +11,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../app/my_text_widget.dart';
 
+// ignore: must_be_immutable
 class NameFormField extends StatefulWidget {
   NameFormField({
     Key? key,
@@ -86,6 +86,7 @@ class NameFormField extends StatefulWidget {
   final String? initialValue;
   final Brightness? keyboardAppearance;
   final TextAlignVertical? textAlignVertical;
+  // ignore: deprecated_member_use
   final ToolbarOptions? toolbarOptions;
   final TextCapitalization textCapitalization;
   final TextAlign textAlign;
@@ -193,6 +194,7 @@ class _NameFormFieldState extends State<NameFormField> {
                   textAlignVertical: TextAlignVertical.center,
                   textCapitalization: widget.textCapitalization,
                   cursorHeight: 0,
+                  // ignore: deprecated_member_use
                   toolbarOptions: widget.toolbarOptions,
                   style: context.textTheme.displayMedium?.ra.copyWith(
                     color: const Color(0xff5D5C5D),

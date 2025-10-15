@@ -156,6 +156,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
+                          // ignore: deprecated_member_use
                           color: Colors.deepPurple.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 4),

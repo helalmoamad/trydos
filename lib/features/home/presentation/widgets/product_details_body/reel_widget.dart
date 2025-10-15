@@ -8,16 +8,9 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
-import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:like_button/like_button.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../app/trydos_favorite_buton.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class ReelWidget extends StatelessWidget {
   const ReelWidget({super.key});
@@ -51,6 +44,7 @@ class ReelWidget extends StatelessWidget {
                   const SizedBox(height: 25),
                   SvgPicture.asset(
                     AppAssets.shareSvg,
+                    // ignore: deprecated_member_use
                     color: const Color(0xff505050),
                   ),
                   const SizedBox(height: 25),
@@ -107,6 +101,7 @@ class ReelWidget extends StatelessWidget {
                             BoxShadow(
                               offset: const Offset(0, 3),
                               blurRadius: 6,
+                              // ignore: deprecated_member_use
                               color: Colors.white.withOpacity(0.5),
                               inset: true,
                             ),

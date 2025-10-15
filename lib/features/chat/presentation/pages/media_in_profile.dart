@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,15 +10,9 @@ import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/file_saving.dart';
-
-import 'package:trydos/config/theme/my_color_scheme.dart';
-
-import 'package:trydos/core/utils/form_state_mixin.dart';
 
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
@@ -29,9 +21,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/vedio_player.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:video_player/video_player.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 
@@ -106,6 +96,7 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
                         child: SvgPicture.asset(
                           AppAssets.backFromCallSvg,
                           width: 8.w,
+                          // ignore: deprecated_member_use
                           color: const Color(0xff388CFF),
                         ),
                       ),

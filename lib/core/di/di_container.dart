@@ -25,7 +25,6 @@ abstract class AppModule {
         receiveTimeout: const Duration(minutes: 2),
         sendTimeout: const Duration(minutes: 2),
         contentType: 'application/json',
-        responseType: ResponseType.json,
         headers: <String, String>{
           HttpHeaders.acceptHeader: 'application/json',
         },

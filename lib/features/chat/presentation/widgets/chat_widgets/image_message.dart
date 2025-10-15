@@ -32,6 +32,7 @@ import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
+// ignore: must_be_immutable
 class ImageMessage extends StatefulWidget {
   ImageMessage(
       {Key? key,
@@ -89,7 +90,7 @@ class _ImageMessageState extends State<ImageMessage>
   // إضافة متغيرات لحفظ حالة الصورة
   bool _isImageLoaded = false;
   bool _isDownloading = false;
-  String? _cachedImageUrl;
+
   File? _cachedImageFile; // ✅ حفظ مرجع للصورة المحملة
   bool _isFullScreenActive = false; // ✅ تتبع حالة FullScreen
 
@@ -117,8 +118,6 @@ class _ImageMessageState extends State<ImageMessage>
           "🔗 Image URL available, ready to download: '${widget.imageUrl}'");
       _loadingImage.value = 0; // جاهز للتحميل
     }
-
-    _cachedImageUrl = widget.imageUrl;
 
     if (widget.isSent) {
       // FileSaving().downloadFileToLocalStorage(
@@ -243,7 +242,6 @@ class _ImageMessageState extends State<ImageMessage>
 
     // إعادة تحميل الصورة فقط إذا تغير URL
     if (oldWidget.imageUrl != widget.imageUrl) {
-      _cachedImageUrl = widget.imageUrl;
       _isImageLoaded = false;
       _isDownloading = false;
       if (mounted) {
@@ -497,28 +495,13 @@ class _ImageMessageState extends State<ImageMessage>
               if (onError != null) onError();
             },
           ));
-    } catch (e, s) {
+    } catch (e) {
       // GetIt.I<StoryBloc>().add(LoadFailureEvent());
     }
     return completer.future;
   }
 
   // ✅ دالة للتحقق من وجود صورة صالحة للعرض
-  bool _hasValidImage() {
-    return (widget.imageFile != null && widget.imageFile!.existsSync()) ||
-        (_cachedImageFile != null && _cachedImageFile!.existsSync());
-  }
-
-  // ✅ دالة للحصول على الصورة المتاحة للعرض
-  File? _getDisplayImage() {
-    if (widget.imageFile != null && widget.imageFile!.existsSync()) {
-      return widget.imageFile;
-    }
-    if (_cachedImageFile != null && _cachedImageFile!.existsSync()) {
-      return _cachedImageFile;
-    }
-    return null;
-  }
 
   // ✅ دالة لبناء widget الصورة بمنطق مبسط
   Widget _buildImageWidget() {

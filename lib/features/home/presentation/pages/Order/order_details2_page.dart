@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 
@@ -17,7 +16,6 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -180,7 +178,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return WillPopScope(
+    return
+        // ignore: deprecated_member_use
+        WillPopScope(
       onWillPop: () async {
         if (MediaQuery.of(context).viewInsets.bottom > 0) {
           FocusScope.of(context).unfocus();
@@ -2391,6 +2391,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       ),
                       SvgPicture.asset(
                         AppAssets.orderClockSvg,
+                        // ignore: deprecated_member_use
                         color: isBlak ? const Color(0xff1D1D1D) : null,
                       ),
                     ],
@@ -2502,6 +2503,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 ),
                 SvgPicture.asset(
                   AppAssets.orderClockSvg,
+                  // ignore: deprecated_member_use
                   color: isBlac ? const Color(0xff1D1D1D) : null,
                 ),
               ],
@@ -3249,6 +3251,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       SvgPicture.asset(AppAssets.detectedSvg,
+                                          // ignore: deprecated_member_use
                                           color: _agreeToPolicies
                                               ? const Color(0xff388CFF)
                                               : const Color(0xff8E8E8E)),
@@ -3676,6 +3679,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       SvgPicture.asset(AppAssets.detectedSvg,
+                                          // ignore: deprecated_member_use
                                           color: _agreeToPolicies
                                               ? const Color(0xff388CFF)
                                               : const Color(0xff8E8E8E)),
@@ -4068,6 +4072,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       SvgPicture.asset(AppAssets.detectedSvg,
+                                          // ignore: deprecated_member_use
                                           color: _agreeToPolicies
                                               ? const Color(0xff388CFF)
                                               : const Color(0xff8E8E8E)),
@@ -4478,6 +4483,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       SvgPicture.asset(AppAssets.detectedSvg,
+                                          // ignore: deprecated_member_use
                                           color: _agreeToPolicies
                                               ? const Color(0xff388CFF)
                                               : const Color(0xff8E8E8E)),
@@ -5561,6 +5567,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           SvgPicture.asset(
                             AppAssets.orderChangeAddressSvg,
                             width: 50,
+                            // ignore: deprecated_member_use
                             color: Colors.white,
                           ),
                           SizedBox(
@@ -5722,6 +5729,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         children: [
                                           SvgPicture.asset(
                                               AppAssets.detectedSvg,
+                                              // ignore: deprecated_member_use
                                               color: _agreeToPolicies
                                                   ? const Color(0xff388CFF)
                                                   : const Color(0xff8E8E8E)),
@@ -7176,6 +7184,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 children: [
                   SvgPicture.asset(
                     AppAssets.homeInactiveSvg,
+                    // ignore: deprecated_member_use
                     color: (isChange && index != indexTap)
                         ? const Color(0xffD3D3D3)
                         : (isChange && index == indexTap)
@@ -7294,6 +7303,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 children: [
                   SvgPicture.asset(
                     AppAssets.phoneCallSvg,
+                    // ignore: deprecated_member_use
                     color: (isChange && index != indexTap)
                         ? const Color(0xffD3D3D3)
                         : isChange
@@ -7330,6 +7340,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       children: [
                         SvgPicture.asset(
                           AppAssets.personSvg,
+                          // ignore: deprecated_member_use
                           color: (isChange && index != indexTap)
                               ? const Color(0xffD3D3D3)
                               : isChange
@@ -8154,6 +8165,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
           SvgPicture.asset(
             AppAssets.changeProductRequestSvg,
             width: 30,
+            // ignore: deprecated_member_use
             color: const Color(0xff1D1D1D),
           ),
           ClipRRect(
@@ -9712,6 +9724,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                       .asset(
                                                                     AppAssets
                                                                         .addPhotoSvg,
+                                                                    // ignore: deprecated_member_use
                                                                     color: const Color(
                                                                         0xff402CDD),
                                                                     width: 20,
@@ -9853,6 +9866,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             SvgPicture.asset(
                                                               AppAssets
                                                                   .addPhotoSvg,
+                                                              // ignore: deprecated_member_use
                                                               color: const Color(
                                                                   0xff402CDD),
                                                               width: 20,
@@ -10351,6 +10365,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               : SvgPicture.asset(
                                   image2,
                                   width: 10,
+                                  // ignore: deprecated_member_use
                                   color: const Color(0xff402CDD),
                                 ),
                     ],

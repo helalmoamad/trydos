@@ -9,7 +9,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -28,8 +27,6 @@ import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/stories_page_content.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -144,7 +141,9 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return WillPopScope(
+    return
+        // ignore: deprecated_member_use
+        WillPopScope(
       onWillPop: () async {
         BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
         BlocProvider.of<BoutiqueBloc>(context)
@@ -219,6 +218,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                                     child: SvgPicture.asset(
                                       AppAssets.backFromCallSvg,
                                       width: 8.w,
+                                      // ignore: deprecated_member_use
                                       color: const Color(0xff388CFF),
                                     ),
                                   ),

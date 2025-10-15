@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:easy_localization/easy_localization.dart' as tran;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -14,12 +12,10 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -43,18 +39,15 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/flash_deal_products_page.dart';
 import 'package:trydos/features/home/presentation/widgets/features_products_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/flash_deal_products_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_boutique_card.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet_new.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/recommend_products_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
@@ -66,12 +59,8 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
-import '../widgets/home_page_card2.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter;
-import 'package:trydos/features/app/memory_management_helper.dart';
-import 'package:trydos/features/app/smart_cache_manager.dart';
-import 'package:trydos/features/app/home_page_image_protector.dart';
 
 class HomePage extends StatefulWidget {
   final ValueNotifier<bool> isShowPanelForVerified;
@@ -131,10 +120,6 @@ class _HomePageState extends State<HomePage> {
     debounce = Timer(
       const Duration(milliseconds: 600),
       () {
-        try {
-          videoProductInListingController
-              .forEach((key, value) => value.pause());
-        } catch (e) {}
         int lastIndexSeenByUser = (scrollController.position.pixels +
                 scrollController.position.viewportDimension +
                 235) ~/
@@ -613,7 +598,8 @@ class _HomePageState extends State<HomePage> {
 
             ///////////////////////////
             CustomScrollView(
-              cacheExtent: 0, // قيمة ثابتة فعالة لجميع الأجهزة
+              cacheExtent: 0,
+              // قيمة ثابتة فعالة لجميع الأجهزة
               key: TestVariables.kTestMode
                   ? const Key(WidgetsKeys.homepageScrollKey)
                   : null,
@@ -733,6 +719,7 @@ class _HomePageState extends State<HomePage> {
                                             boxShadow: [
                                               BoxShadow(
                                                 color: const Color(0xff000000)
+                                                    // ignore: deprecated_member_use
                                                     .withOpacity(0.4),
                                                 offset: const Offset(0, 3),
                                                 blurRadius: 6,
@@ -750,6 +737,7 @@ class _HomePageState extends State<HomePage> {
                                             boxShadow: [
                                               BoxShadow(
                                                 color: const Color(0xff000000)
+                                                    // ignore: deprecated_member_use
                                                     .withOpacity(0.6),
                                                 offset: const Offset(0, 3),
                                                 blurRadius: 6,
@@ -804,8 +792,7 @@ class _HomePageState extends State<HomePage> {
                                       tapIndexToAddProductToCart,
                                 )
                               : Padding(
-                                  padding:
-                                      HWEdgeInsets.symmetric(horizontal: 15.w),
+                                  padding: HWEdgeInsets.symmetric(),
                                   child: categoryState
                                           .getHomeBoutiquesPaginationObjectByMainCategory[
                                               currentSlug]!
@@ -928,6 +915,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           height: 1.sh,
                           width: 1.sw,
+                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.55),
                         ))
                     : const SizedBox.shrink();
@@ -1163,6 +1151,7 @@ class _HomePageState extends State<HomePage> {
                                                 AppAssets.closeSvg,
                                                 height: 15,
                                                 width: 30,
+                                                // ignore: deprecated_member_use
                                                 color: const Color(0xffFF5F61),
                                               )),
                                         ),

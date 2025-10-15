@@ -20,11 +20,9 @@ import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
 
 import 'package:get_it/get_it.dart';
 
-import 'package:sync/semaphore.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
@@ -44,7 +42,6 @@ import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/app/memory_management_helper.dart';
 
 @pragma('vm:entry-point')
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
@@ -278,19 +275,19 @@ bool notificationClicked = false;
 List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
 List<String> productIdToSaveRedeemTimer = [];
-List<String> productSlugToSaveVideoTimer = [];
+//List<String> productSlugToSaveVideoTimer = [];
 Map<String, VideoPlayerController> videoProductInListingController = {};
-void clearvideoProductInListingController({required String productSlug}) {
-  if (productSlug != "") {
+/*void clearvideoProductInListingController({required String productSlug}) {
+  /* if (productSlug != "") {
     videoProductInListingController[productSlug]?.dispose();
     videoProductInListingController.remove(productSlug);
   } else {
     videoProductInListingController.forEach((key, value) => value.dispose());
     videoProductInListingController = {};
-  }
-}
+  }*/
+}*/
 
-int applicationVersion = 25;
+int applicationVersion = 26;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();

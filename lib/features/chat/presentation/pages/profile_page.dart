@@ -20,7 +20,6 @@ import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
-import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
@@ -229,6 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             SvgPicture.asset(
                               AppAssets.callingSvg,
+                              // ignore: deprecated_member_use
                               color: const Color(0xff388CFF),
                               width: 25.sp,
                               height: 25.sp,
@@ -317,6 +317,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             SvgPicture.asset(
                               AppAssets.searchSvg,
+                              // ignore: deprecated_member_use
                               color: const Color(0xff388CFF),
                               width: 25.sp,
                               height: 25.sp,
@@ -588,6 +589,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: SvgPicture.asset(
                   AppAssets.backFromCallSvg,
                   height: 20,
+                  // ignore: deprecated_member_use
                   color: const Color(0xff388CFF),
                   width: 8,
                 ),

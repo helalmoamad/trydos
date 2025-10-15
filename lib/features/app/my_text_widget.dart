@@ -28,6 +28,7 @@ class MyTextWidget extends StatelessWidget {
       textAlign: textAlign,
       overflow: overflow,
       textDirection: textDirection,
+      // ignore: deprecated_member_use
       textScaleFactor: textScaleFactor ?? 1.0,
     );
   }

@@ -16,7 +16,6 @@ import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/authentication/presentation/widgets/pin_item.dart';
-import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';

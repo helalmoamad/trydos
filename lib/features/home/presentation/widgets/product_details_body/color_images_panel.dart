@@ -8,11 +8,6 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
 
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ColorImagesPanel extends StatelessWidget {

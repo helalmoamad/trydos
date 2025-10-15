@@ -8,18 +8,14 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
-import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
-    as color;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -359,11 +355,111 @@ class _ProductCollectionInCartPage1State
                               const SizedBox(
                                 height: 2,
                               ),
-                              Container(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    isOldCart &&
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  isOldCart &&
+                                              oldCartCollection![index]
+                                                  .variations
+                                                  .isNullOrEmpty ||
+                                          (!isOldCart &&
+                                              cartCollection![index]
+                                                  .variations
+                                                  .isNullOrEmpty)
+                                      ? const SizedBox.shrink()
+                                      : !isOldCart &&
+                                                  (cartCollection![index]
+                                                              .variations![0]
+                                                              .colorOption ==
+                                                          "" ||
+                                                      cartCollection[index]
+                                                              .variations![0]
+                                                              .colorOption ==
+                                                          null) ||
+                                              isOldCart &&
+                                                  (oldCartCollection![index]
+                                                              .variations![0]
+                                                              .colorOption ==
+                                                          "" ||
+                                                      oldCartCollection[index]
+                                                              .variations![0]
+                                                              .colorOption ==
+                                                          null)
+                                          ? const SizedBox.shrink()
+                                          : Container(
+                                              margin:
+                                                  const EdgeInsets.only(top: 5),
+                                              alignment: LanguageService
+                                                          .languageCode !=
+                                                      "ar"
+                                                  ? Alignment.centerLeft
+                                                  : Alignment.centerRight,
+                                              height: 17,
+                                              child: Row(
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    AppAssets.colorPickerSvg,
+                                                    height: 12,
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    "${LocaleKeys.color.tr()}: ",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.ra
+                                                        .copyWith(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 12,
+                                                            color: const Color(
+                                                                0xff8D8D8D),
+                                                            letterSpacing: 0.18,
+                                                            height: 1.33),
+                                                  ),
+                                                  Text(
+                                                    isOldCart
+                                                        ? !oldCartCollection![
+                                                                    index]
+                                                                .variations
+                                                                .isNullOrEmpty
+                                                            ? oldCartCollection[
+                                                                        index]
+                                                                    .variations![
+                                                                        0]
+                                                                    .color ??
+                                                                ""
+                                                            : ""
+                                                        : !cartCollection![
+                                                                    index]
+                                                                .variations
+                                                                .isNullOrEmpty
+                                                            ? cartCollection[
+                                                                        index]
+                                                                    .variations![
+                                                                        0]
+                                                                    .color ??
+                                                                ""
+                                                            : "",
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: context.textTheme
+                                                        .bodyMedium?.mr
+                                                        .copyWith(
+                                                      fontSize: 13,
+                                                      height: 1.33,
+                                                      color: const Color(
+                                                          (0xff505050)),
+                                                      letterSpacing: 0.18,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                  SizedBox(
+                                    width: isOldCart &&
                                                 oldCartCollection![index]
                                                     .variations
                                                     .isNullOrEmpty ||
@@ -371,7 +467,7 @@ class _ProductCollectionInCartPage1State
                                                 cartCollection![index]
                                                     .variations
                                                     .isNullOrEmpty)
-                                        ? const SizedBox.shrink()
+                                        ? 0
                                         : !isOldCart &&
                                                     (cartCollection![index]
                                                                 .variations![0]
@@ -390,222 +486,114 @@ class _ProductCollectionInCartPage1State
                                                                 .variations![0]
                                                                 .colorOption ==
                                                             null)
-                                            ? const SizedBox.shrink()
-                                            : Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 5),
-                                                alignment: LanguageService
-                                                            .languageCode !=
-                                                        "ar"
-                                                    ? Alignment.centerLeft
-                                                    : Alignment.centerRight,
-                                                height: 17,
-                                                child: Row(
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      AppAssets.colorPickerSvg,
-                                                      height: 12,
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    Text(
-                                                      "${LocaleKeys.color.tr()}: ",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.ra
-                                                          .copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              fontSize: 12,
-                                                              color: const Color(
-                                                                  0xff8D8D8D),
-                                                              letterSpacing:
-                                                                  0.18,
-                                                              height: 1.33),
-                                                    ),
-                                                    Text(
-                                                      isOldCart
-                                                          ? !oldCartCollection![
-                                                                      index]
-                                                                  .variations
-                                                                  .isNullOrEmpty
-                                                              ? oldCartCollection[
-                                                                          index]
-                                                                      .variations![
-                                                                          0]
-                                                                      .color ??
-                                                                  ""
-                                                              : ""
-                                                          : !cartCollection![
-                                                                      index]
-                                                                  .variations
-                                                                  .isNullOrEmpty
-                                                              ? cartCollection[
-                                                                          index]
-                                                                      .variations![
-                                                                          0]
-                                                                      .color ??
-                                                                  ""
-                                                              : "",
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: context.textTheme
-                                                          .bodyMedium?.mr
-                                                          .copyWith(
-                                                        fontSize: 13,
-                                                        height: 1.33,
-                                                        color: const Color(
-                                                            (0xff505050)),
-                                                        letterSpacing: 0.18,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                    SizedBox(
-                                      width: isOldCart &&
-                                                  oldCartCollection![index]
-                                                      .variations
-                                                      .isNullOrEmpty ||
-                                              (!isOldCart &&
-                                                  cartCollection![index]
-                                                      .variations
-                                                      .isNullOrEmpty)
-                                          ? 0
-                                          : !isOldCart &&
-                                                      (cartCollection![index]
-                                                                  .variations![
-                                                                      0]
-                                                                  .colorOption ==
-                                                              "" ||
-                                                          cartCollection[index]
-                                                                  .variations![
-                                                                      0]
-                                                                  .colorOption ==
-                                                              null) ||
-                                                  isOldCart &&
-                                                      (oldCartCollection![index]
-                                                                  .variations![
-                                                                      0]
-                                                                  .colorOption ==
-                                                              "" ||
-                                                          oldCartCollection[
-                                                                      index]
-                                                                  .variations![
-                                                                      0]
-                                                                  .colorOption ==
-                                                              null)
-                                              ? 0
-                                              : 10,
-                                    ),
-                                    !isOldCart &&
-                                                cartCollection![index]
-                                                    .variations
-                                                    .isNullOrEmpty ||
-                                            isOldCart &&
-                                                oldCartCollection![index]
-                                                    .variations
-                                                    .isNullOrEmpty
-                                        ? const SizedBox.shrink()
-                                        : (!isOldCart &&
-                                                    (cartCollection![index]
-                                                                .variations![0]
-                                                                .sizeOption ==
-                                                            "" ||
-                                                        cartCollection[index]
-                                                                .variations![0]
-                                                                .sizeOption ==
-                                                            null)) ||
-                                                (isOldCart &&
-                                                    (oldCartCollection![index]
-                                                                .variations![0]
-                                                                .sizeOption ==
-                                                            "" ||
-                                                        oldCartCollection[index]
-                                                                .variations![0]
-                                                                .sizeOption ==
-                                                            null))
-                                            ? const SizedBox.shrink()
-                                            : Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 5),
-                                                alignment: LanguageService
-                                                            .languageCode !=
-                                                        "ar"
-                                                    ? Alignment.centerLeft
-                                                    : Alignment.centerRight,
-                                                width: 100,
-                                                height: 15,
-                                                child: Row(
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      AppAssets.sizeIconSvg,
-                                                      height: 12,
+                                            ? 0
+                                            : 10,
+                                  ),
+                                  !isOldCart &&
+                                              cartCollection![index]
+                                                  .variations
+                                                  .isNullOrEmpty ||
+                                          isOldCart &&
+                                              oldCartCollection![index]
+                                                  .variations
+                                                  .isNullOrEmpty
+                                      ? const SizedBox.shrink()
+                                      : (!isOldCart &&
+                                                  (cartCollection![index]
+                                                              .variations![0]
+                                                              .sizeOption ==
+                                                          "" ||
+                                                      cartCollection[index]
+                                                              .variations![0]
+                                                              .sizeOption ==
+                                                          null)) ||
+                                              (isOldCart &&
+                                                  (oldCartCollection![index]
+                                                              .variations![0]
+                                                              .sizeOption ==
+                                                          "" ||
+                                                      oldCartCollection[index]
+                                                              .variations![0]
+                                                              .sizeOption ==
+                                                          null))
+                                          ? const SizedBox.shrink()
+                                          : Container(
+                                              margin:
+                                                  const EdgeInsets.only(top: 5),
+                                              alignment: LanguageService
+                                                          .languageCode !=
+                                                      "ar"
+                                                  ? Alignment.centerLeft
+                                                  : Alignment.centerRight,
+                                              width: 100,
+                                              height: 15,
+                                              child: Row(
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    AppAssets.sizeIconSvg,
+                                                    height: 12,
+                                                    // ignore: deprecated_member_use
+                                                    color:
+                                                        const Color(0xff48C8A8),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    "${LocaleKeys.size.tr()}: ",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.ra
+                                                        .copyWith(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 12,
+                                                            color: const Color(
+                                                                0xff8D8D8D),
+                                                            letterSpacing: 0.18,
+                                                            height: 1.2),
+                                                  ),
+                                                  Text(
+                                                    isOldCart
+                                                        ? !oldCartCollection![
+                                                                    index]
+                                                                .variations
+                                                                .isNullOrEmpty
+                                                            ? oldCartCollection[
+                                                                        index]
+                                                                    .variations![
+                                                                        0]
+                                                                    .size ??
+                                                                ""
+                                                            : ""
+                                                        : !cartCollection![
+                                                                    index]
+                                                                .variations
+                                                                .isNullOrEmpty
+                                                            ? cartCollection[
+                                                                        index]
+                                                                    .variations![
+                                                                        0]
+                                                                    .size ??
+                                                                ""
+                                                            : "",
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: context.textTheme
+                                                        .bodyMedium?.mr
+                                                        .copyWith(
+                                                      fontSize: 13,
+                                                      height: 1.2,
                                                       color: const Color(
-                                                          0xff48C8A8),
+                                                          (0xff505050)),
+                                                      letterSpacing: 0.18,
                                                     ),
-                                                    const SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    Text(
-                                                      "${LocaleKeys.size.tr()}: ",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.ra
-                                                          .copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              fontSize: 12,
-                                                              color: const Color(
-                                                                  0xff8D8D8D),
-                                                              letterSpacing:
-                                                                  0.18,
-                                                              height: 1.2),
-                                                    ),
-                                                    Text(
-                                                      isOldCart
-                                                          ? !oldCartCollection![
-                                                                      index]
-                                                                  .variations
-                                                                  .isNullOrEmpty
-                                                              ? oldCartCollection[
-                                                                          index]
-                                                                      .variations![
-                                                                          0]
-                                                                      .size ??
-                                                                  ""
-                                                              : ""
-                                                          : !cartCollection![
-                                                                      index]
-                                                                  .variations
-                                                                  .isNullOrEmpty
-                                                              ? cartCollection[
-                                                                          index]
-                                                                      .variations![
-                                                                          0]
-                                                                      .size ??
-                                                                  ""
-                                                              : "",
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: context.textTheme
-                                                          .bodyMedium?.mr
-                                                          .copyWith(
-                                                        fontSize: 13,
-                                                        height: 1.2,
-                                                        color: const Color(
-                                                            (0xff505050)),
-                                                        letterSpacing: 0.18,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
-                                  ],
-                                ),
+                                            ),
+                                ],
                               ),
                               const SizedBox(
                                 height: 2,
@@ -620,6 +608,7 @@ class _ProductCollectionInCartPage1State
                                   child: Row(
                                     children: [
                                       SvgPicture.asset(
+                                        // ignore: deprecated_member_use
                                         color: const Color(0xff8D8D8D),
                                         AppAssets.dressSvg,
                                         height: 12,
@@ -688,6 +677,7 @@ class _ProductCollectionInCartPage1State
                                               child: Row(
                                                 children: [
                                                   SvgPicture.asset(
+                                                    // ignore: deprecated_member_use
                                                     color:
                                                         const Color(0xff8D8D8D),
                                                     AppAssets.shappingCartNew,
@@ -1389,6 +1379,7 @@ class _ProductCollectionInCartPage1State
                                                 AppAssets.orderClockSvg,
                                                 width: 15,
                                                 height: 15,
+                                                // ignore: deprecated_member_use
                                                 color: const Color.fromARGB(
                                                     255, 42, 39, 228),
                                               ),

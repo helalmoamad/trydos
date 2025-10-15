@@ -27,6 +27,7 @@ import 'no_image_widget.dart';
 import 'text_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
+// ignore: must_be_immutable
 class VoiceMessage extends StatefulWidget {
   VoiceMessage({
     Key? key,
@@ -91,6 +92,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
     }
     await audioPlayer.setSource(audioSource);
     duration = (await audioPlayer.getDuration()) ?? Duration.zero;
+    // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
     audioPlayingNotifier.notifyListeners();
   }
 
@@ -115,6 +117,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
     });
     getAudioDuration();
     audioPlayer.onPositionChanged.listen((newDuration) {
+      // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
       audioPlayingNotifier.notifyListeners();
       if (newDuration.inSeconds.compareTo(position.inSeconds) > 0) {
         position = newDuration;

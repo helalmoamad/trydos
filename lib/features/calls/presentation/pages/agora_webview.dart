@@ -2,16 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../chat/presentation/manager/chat_event.dart';
 
+// ignore: must_be_immutable
 class AgoraWebView extends StatefulWidget {
   String type;
   String channelId;

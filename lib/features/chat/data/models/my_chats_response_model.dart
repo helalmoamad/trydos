@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-
 import '../../../../core/data/model/pagination_model.dart';
 
 MyChatsResponseModel myChatsResponseModelFromJson(String str) =>
@@ -204,12 +202,15 @@ class Message {
       localParentMessageId: json["localParentMessageId"].toString(),
       dateValue: json["dateValue"],
       isDateMessage: json["isDateMessage"] != null
+          // ignore: sdk_version_since
           ? bool.parse(json["isDateMessage"])
           : false,
       isFirstMessage: json["isFirstMessage"] != null
+          // ignore: sdk_version_since
           ? bool.parse(json["isFirstMessage"])
           : false,
       isFirstMessageForThisDay: json["isFirstMessageForThisDay"] != null
+          // ignore: sdk_version_since
           ? bool.parse(json["isFirstMessageForThisDay"])
           : false,
       senderUserId: json["sender_user_id"],

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mime_type/mime_type.dart';
 import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
 import 'package:trydos/core/data/model/upload_file_cloudinary_response.dart';
 import 'package:trydos/core/domin/repositories/common_use_repository.dart';

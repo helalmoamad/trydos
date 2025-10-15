@@ -13,7 +13,6 @@ import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
@@ -24,11 +23,6 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import '../../manager/homeBloc/home_event.dart';
-
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-
-import 'package:get_it/get_it.dart';
 
 class FiltersNormalList<T> extends StatefulWidget {
   const FiltersNormalList(
@@ -119,6 +113,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                 ),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
+                  // ignore: deprecated_member_use
                   color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
@@ -298,6 +293,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                   color: Colors.white,
                                   boxShadow: [
                                     BoxShadow(
+                                        // ignore: deprecated_member_use
                                         color: Colors.black.withOpacity(0.05),
                                         blurRadius: 3,
                                         offset: const Offset(0, 3))

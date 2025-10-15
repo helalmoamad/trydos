@@ -450,6 +450,7 @@ class _ProductListing3DSliderOptimizedState
                                           ? Row(children: [
                                               SvgPicture.asset(
                                                 AppAssets.redeemClockSvg,
+                                                // ignore: deprecated_member_use
                                                 color: const Color(0xffFF6200),
                                               ),
                                               const SizedBox(
@@ -659,9 +660,8 @@ class _ProductListing3DSliderOptimizedState
   /// 💰 Price Section - FIXED: أبعاد أصلية
   Widget _buildPriceSection() {
     return SizedBox(
-      width: 200,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getCurrencyForCountryModel !=
@@ -726,7 +726,7 @@ class _ProductListing3DSliderOptimizedState
                                   children: [
                                     Container(
                                         constraints:
-                                            const BoxConstraints(maxWidth: 42),
+                                            const BoxConstraints(maxWidth: 50),
                                         child: AutoSizeText(
                                           HelperFunctions.formatNumber(
                                               number: (price * exchangeRate))
@@ -753,7 +753,7 @@ class _ProductListing3DSliderOptimizedState
                                     ),
                                     Container(
                                         constraints:
-                                            const BoxConstraints(maxWidth: 42),
+                                            const BoxConstraints(maxWidth: 60),
                                         child: AutoSizeText(
                                           HelperFunctions.formatNumber(
                                               number: (((isFlashDealEnded ||

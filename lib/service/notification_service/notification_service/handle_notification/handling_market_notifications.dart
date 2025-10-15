@@ -14,7 +14,6 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/pages/Order/orders_page.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
@@ -39,6 +38,8 @@ enum TypeOfNotificationForMarketEnum {
   order_status_changed_to_canceled,
   order_status_changed_to_shipped,
   order_status_changed_to_delivered,
+  order_status_changed_to_out_for_return,
+  order_status_changed_to_out_for_delivery,
   seller_order_added,
   seller_comment_added,
   seller_product_stock_out,
@@ -49,6 +50,10 @@ Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.boutique_created: "boutique created",
   TypeOfNotificationForMarketEnum.seller_order_added: "seller order added",
   TypeOfNotificationForMarketEnum.seller_comment_added: "seller comment added",
+  TypeOfNotificationForMarketEnum.order_status_changed_to_out_for_return:
+      "order status changed to out for return",
+  TypeOfNotificationForMarketEnum.order_status_changed_to_out_for_delivery:
+      "order status changed to out for delivery",
   TypeOfNotificationForMarketEnum.seller_product_stock_out:
       "seller product stock out",
   TypeOfNotificationForMarketEnum.seller_order_status_changed:
@@ -123,6 +128,12 @@ class HandlingMarketNotifications {
                   .order_status_changed_to_delivered] ||
           data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_status_changed_to_out_for_return] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_status_changed_to_out_for_delivery] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .order_status_changed_to_canceled] ||
           data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
@@ -169,6 +180,12 @@ class HandlingMarketNotifications {
         data["type"] ==
             typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                 .order_status_changed_to_delivered] ||
+        data["type"] ==
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_status_changed_to_out_for_return] ||
+        data["type"] ==
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_status_changed_to_out_for_delivery] ||
         data["type"] ==
             typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                 .order_status_changed_to_canceled] ||

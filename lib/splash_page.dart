@@ -16,15 +16,11 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/routes/router.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/app/blocs/app_bloc/app_event.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'features/story/presentation/bloc/story_bloc.dart';
-import 'service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -119,8 +115,6 @@ class _SplashPageState extends State<SplashPage> {
     });
     super.initState();
   }
-
-  final bool _eventLogged = false;
 
   @override
   void didChangeDependencies() async {

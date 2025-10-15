@@ -12,7 +12,6 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/vedio_player.dart';
-import '../../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/file_saving.dart';
 import '../../../../../common/helper/helper_functions.dart';
@@ -28,7 +27,6 @@ import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'text_message.dart';
-import 'package:flutter/foundation.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class VideoMessage extends StatefulWidget {
@@ -83,7 +81,6 @@ class _VideoMessageState extends State<VideoMessage>
   // ✅ إدارة حالة التحميل
   bool _isVideoDownloaded = false;
   bool _isDownloading = false;
-  String? _cachedVideoUrl;
 
   @override
   bool get wantKeepAlive => true; // ✅ الحفاظ على حالة Widget
@@ -94,7 +91,6 @@ class _VideoMessageState extends State<VideoMessage>
     if (widget.videoFile != null) {
       _isVideoDownloaded = true;
     }
-    _cachedVideoUrl = widget.videoUrl;
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(const Duration(seconds: 4), () {
@@ -147,7 +143,6 @@ class _VideoMessageState extends State<VideoMessage>
 
     // ✅ إعادة تحميل الفيديو فقط إذا تغير URL
     if (oldWidget.videoUrl != widget.videoUrl) {
-      _cachedVideoUrl = widget.videoUrl;
       _isVideoDownloaded = false;
       _isDownloading = false;
       _initializeVideo();

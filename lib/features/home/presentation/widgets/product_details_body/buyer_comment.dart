@@ -1,27 +1,21 @@
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/star_ratting_product.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../core/utils/theme_state.dart';
-import '../../manager/homeBloc/home_bloc.dart';
 
 class BuyerComment extends StatefulWidget {
   const BuyerComment({
@@ -70,6 +64,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                     AppAssets.registerInfoSvg,
                     height: 10,
                     width: 10,
+                    // ignore: deprecated_member_use
                     color: const Color(0xffC4C2C2),
                   ),
                 ],
@@ -93,6 +88,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                 children: [
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
+                    // ignore: deprecated_member_use
                     color: const Color(0xff068D06),
                     width: 12,
                   ),
@@ -114,6 +110,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   const Spacer(),
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
+                    // ignore: deprecated_member_use
                     color: const Color(0xffFF6200),
                     width: 12,
                   ),
@@ -243,6 +240,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   ),
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
+                    // ignore: deprecated_member_use
                     color: const Color(0xff068D06),
                     width: 12,
                   ),

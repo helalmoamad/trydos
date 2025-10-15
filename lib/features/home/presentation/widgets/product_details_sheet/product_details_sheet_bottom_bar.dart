@@ -675,7 +675,7 @@ class _ProductDetailsSheetBottomBarState
                                                                             );
                                                                     },
                                                                   )
-                                                            : NotifyWhenAvailableInCountryButton(currentTap: currentTab, productItem: widget.products, productId: widget.productIdForRequestApi, unAvailableType: _productNotAvailableNotifier ?? ''));
+                                                            : NotifyWhenAvailableInCountryButton(currentTap: currentTab, productItem: widget.products, productId: widget.productIdForRequestApi, unAvailableType: _productNotAvailableNotifier));
                                                   });
                                             });
                                       });
@@ -841,6 +841,7 @@ class BarWidget extends StatelessWidget {
           children: [
             SvgPicture.asset(
               svgPath,
+              // ignore: deprecated_member_use
               color: color,
               height: 30.h,
             ),

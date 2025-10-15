@@ -71,7 +71,7 @@ void main() {
           );
           //////////////////////////
           final Finder registerCancelButton = find.byKey(
-            Key(WidgetsKeys.registerCancelKey),
+            const Key(WidgetsKeys.registerCancelKey),
           );
           ////////////////////////
           expect(registerCancelButton, findsOne);

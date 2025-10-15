@@ -32,57 +32,69 @@ String get _quickSandBoldFamily => 'Quicksand-Bold';
 String get _quickSandLightFamily => 'Quicksand-Light';
 
 extension FamilyUtils on TextStyle {
+  TextStyle get sbd =>
+      copyWith(fontWeight: _semiBold, fontFamily: _sFDisplaySemiBoldFamily);
 
+  TextStyle get bd =>
+      copyWith(fontWeight: _regular, fontFamily: _sFDisplayBoldFamily);
 
-  TextStyle get sbd => copyWith(fontWeight: _semiBold,fontFamily: _sFDisplaySemiBoldFamily);
+  TextStyle get rd =>
+      copyWith(fontWeight: _bold, fontFamily: _sFDisplayRegularFamily);
 
-  TextStyle get bd => copyWith(fontWeight: _regular,fontFamily: _sFDisplayBoldFamily);
+  TextStyle get sbt =>
+      copyWith(fontWeight: _semiBold, fontFamily: _sFTextSemiBoldFamily);
 
-  TextStyle get rd => copyWith(fontWeight: _bold,fontFamily: _sFDisplayRegularFamily);
+  TextStyle get td =>
+      copyWith(fontWeight: _thin, fontFamily: _sFDisplayThinFamily);
 
-  TextStyle get sbt => copyWith(fontWeight: _semiBold,fontFamily: _sFTextSemiBoldFamily);
+  TextStyle get rt =>
+      copyWith(fontWeight: _regular, fontFamily: _sFTextRegularFamily);
 
-  TextStyle get td => copyWith(fontWeight: _thin,fontFamily: _sFDisplayThinFamily);
+  TextStyle get ld =>
+      copyWith(fontWeight: _light, fontFamily: _sFDisplayLightFamily);
 
-  TextStyle get rt => copyWith(fontWeight: _regular,fontFamily: _sFTextRegularFamily);
+  TextStyle get lr =>
+      copyWith(fontWeight: _light, fontFamily: _sFRoundedLightFamily);
 
-  TextStyle get ld => copyWith(fontWeight: _light,fontFamily: _sFDisplayLightFamily);
+  TextStyle get rr =>
+      copyWith(fontWeight: _regular, fontFamily: _sFRoundedRegularFamily);
 
-  TextStyle get lr => copyWith(fontWeight: _light,fontFamily: _sFRoundedLightFamily);
+  TextStyle get mr =>
+      copyWith(fontWeight: _medium, fontFamily: _sFRoundedMediumFamily);
 
-  TextStyle get rr => copyWith(fontWeight: _regular,fontFamily: _sFRoundedRegularFamily);
+  TextStyle get br =>
+      copyWith(fontWeight: _bold, fontFamily: _sFRoundedBoldFamily);
 
-  TextStyle get mr => copyWith(fontWeight: _medium,fontFamily: _sFRoundedMediumFamily);
+  TextStyle get la =>
+      copyWith(fontWeight: _light, fontFamily: _adobeCleanLightFamily);
 
-  TextStyle get br => copyWith(fontWeight: _bold,fontFamily: _sFRoundedBoldFamily);
+  TextStyle get ra =>
+      copyWith(fontWeight: _regular, fontFamily: _adobeCleanRegularFamily);
 
-  TextStyle get la => copyWith(fontWeight: _light,fontFamily: _adobeCleanLightFamily);
+  TextStyle get ba =>
+      copyWith(fontWeight: _bold, fontFamily: _adobeCleanBoldFamily);
 
-  TextStyle get ra => copyWith(fontWeight: _regular,fontFamily: _adobeCleanRegularFamily);
+  TextStyle get rq =>
+      copyWith(fontWeight: _regular, fontFamily: _quickSandRegularFamily);
 
-  TextStyle get ba => copyWith(fontWeight: _bold,fontFamily: _adobeCleanBoldFamily);
+  TextStyle get mq =>
+      copyWith(fontWeight: _medium, fontFamily: _quickSandMediumFamily);
 
-  TextStyle get rq => copyWith(fontWeight: _regular,fontFamily: _quickSandRegularFamily);
+  TextStyle get lq =>
+      copyWith(fontWeight: _light, fontFamily: _quickSandLightFamily);
 
-  TextStyle get mq => copyWith(fontWeight: _medium,fontFamily: _quickSandMediumFamily);
-
-  TextStyle get lq => copyWith(fontWeight: _light,fontFamily: _quickSandLightFamily);
-
-  TextStyle get bq => copyWith(fontWeight: _bold,fontFamily: _quickSandBoldFamily);
-
-
+  TextStyle get bq =>
+      copyWith(fontWeight: _bold, fontFamily: _quickSandBoldFamily);
 }
 
 abstract class _FontSize {
+  // static double get huge => _hugeFontSize.sp;
 
-  static double get huge => _hugeFontSize.sp;
+//  static const double _hugeFontSize = 77;
 
-  static const double _hugeFontSize = 77;
+  // static double get heading_01 => _heading_01FontSize.sp;
 
-
-  static double get heading_01 => _heading_01FontSize.sp;
-
-  static const double _heading_01FontSize = 46;
+  // static const double _heading_01FontSize = 46;
 
   static double get heading_02 => _heading_02FontSize.sp;
 
@@ -92,13 +104,13 @@ abstract class _FontSize {
 
   static const double _heading_03FontSize = 30;
 
-  static double get heading_04 => _heading_04FontSize.sp;
+  //static double get heading_04 => _heading_04FontSize.sp;
 
-  static const double _heading_04FontSize = 24;
+  // const double _heading_04FontSize = 24;
 
   static double get heading_05 => _heading_05FontSize.sp;
 
-    static const double _heading_05FontSize = 20;
+  static const double _heading_05FontSize = 20;
 
   static double get heading_06 => _heading_06FontSize.sp;
 
@@ -112,9 +124,9 @@ abstract class _FontSize {
 
   static const double _subtitle_02FontSize = 16;
 
-  static double get button => _buttonFontSize.sp;
+  // static double get button => _buttonFontSize.sp;
 
-  static const double _buttonFontSize = 18;
+//  static const double _buttonFontSize = 18;
 
   static double get body_01 => _body_01FontSize.sp;
 

@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart' as app;
@@ -25,7 +24,7 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ////////////////////////////
       final Finder boutiquesSuccessStatus =
-          find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
+          find.byKey(const Key(WidgetsKeys.boutiquesSuccessStatusKey));
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,
@@ -35,7 +34,7 @@ void main() {
       );
       //////////////////////////
       final Finder boutiqueCardButton = find.byKey(
-        Key('${WidgetsKeys.boutiqueCardKey}0'),
+        const Key('${WidgetsKeys.boutiqueCardKey}0'),
       );
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueCardButton);
@@ -53,7 +52,7 @@ void main() {
         failedMessage: 'Find ProductListingPage  failed',
       );
       final Finder productListFilterWidget =
-          find.byKey(Key(WidgetsKeys.productListFilterKey));
+          find.byKey(const Key(WidgetsKeys.productListFilterKey));
       // /////////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -64,7 +63,7 @@ void main() {
       );
       /////////////////////////////
       final Finder productInBoutiqueButton = find.byKey(
-        Key('${WidgetsKeys.productInBoutiqueListKey}0'),
+        const Key('${WidgetsKeys.productInBoutiqueListKey}0'),
       );
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(productInBoutiqueButton);

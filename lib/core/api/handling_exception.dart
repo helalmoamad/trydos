@@ -14,6 +14,7 @@ abstract class HandlingExceptionRequest {
   }
 
   void prettyPrinterWtf(final String message) {
+    // ignore: deprecated_member_use
     Logger(printer: PrettyPrinter(methodCount: 0)).wtf(message);
   }
 
@@ -22,6 +23,7 @@ abstract class HandlingExceptionRequest {
   }
 
   void prettyPrinterV(final String message) {
+    // ignore: deprecated_member_use
     Logger(printer: PrettyPrinter(methodCount: 0)).v(message);
   }
 

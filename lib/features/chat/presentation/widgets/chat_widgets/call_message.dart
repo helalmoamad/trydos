@@ -58,6 +58,7 @@ class CallMessage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
+                            // ignore: deprecated_member_use
                             color: context.colorScheme.black.withOpacity(0.05),
                             offset: const Offset(0, 3),
                             blurRadius: 6)

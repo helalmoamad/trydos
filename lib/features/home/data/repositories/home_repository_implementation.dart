@@ -16,7 +16,6 @@ import 'package:trydos/features/home/data/models/get_boundary_cordinates_by_iso_
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 
-import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';

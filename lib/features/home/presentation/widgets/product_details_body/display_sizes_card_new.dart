@@ -1,8 +1,4 @@
-import 'dart:math';
-
-import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,12 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
@@ -158,6 +151,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                       children: [
                         SvgPicture.asset(
                           AppAssets.sizeIconSvg,
+                          // ignore: deprecated_member_use
                           color: const Color(0xff1D1D1D),
                           height: 20,
                         ),

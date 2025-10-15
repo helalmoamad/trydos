@@ -15,11 +15,6 @@ import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class BuyersCommentsPanel extends StatelessWidget {
@@ -237,6 +232,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                   ),
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
+                    // ignore: deprecated_member_use
                     color: const Color(0xff068D06),
                     width: 12,
                   ),

@@ -9,8 +9,6 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
 import 'package:trydos/main.dart' as app;
 import '../shared/shared_scenarios.dart';
@@ -32,7 +30,7 @@ void main() {
     await Future.delayed(const Duration(microseconds: 100));
     //////////////////////////////////////////////////////////////
     Finder boutiquesFailureStatus =
-        find.byKey(Key(WidgetsKeys.boutiquesFailureStatusKey));
+        find.byKey(const Key(WidgetsKeys.boutiquesFailureStatusKey));
     await GlobalTestFunctions.findNoWidget(
       tester: tester,
       actual: boutiquesFailureStatus,
@@ -42,7 +40,7 @@ void main() {
     );
     ///////////  Find boutiques List  /////////
     final Finder boutiquesSuccessStatus =
-        find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
+        find.byKey(const Key(WidgetsKeys.boutiquesSuccessStatusKey));
     //////////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -73,7 +71,7 @@ void main() {
     await tester.pump();
     await Future.delayed(const Duration(seconds: 2));
     Finder boutiqueProductListingLoadingWidget =
-        find.byKey(Key(WidgetsKeys.boutiqueProductListingLoadingKey));
+        find.byKey(const Key(WidgetsKeys.boutiqueProductListingLoadingKey));
     // ///////////  no loading  /////////
     await GlobalTestFunctions.findNoWidget(
       tester: tester,
@@ -95,7 +93,7 @@ void main() {
     expect(boutiqueBloc.getProductFiltersModel, isNot(equals({})));
     // ///////////  Find product List and filters  /////////
     Finder productListFilterWidget =
-        find.byKey(Key(WidgetsKeys.productListFilterKey));
+        find.byKey(const Key(WidgetsKeys.productListFilterKey));
     ///////////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -106,7 +104,7 @@ void main() {
     );
     //////////////////////////////
     final Finder productsList = find.byKey(
-      Key(WidgetsKeys.productsListKey),
+      const Key(WidgetsKeys.productsListKey),
     );
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -121,12 +119,12 @@ void main() {
 
     ////////////// Go Back ////////////////
     Finder appBarGoBackArrow =
-        find.byKey(Key(WidgetsKeys.appBarGoBackArrowKey));
+        find.byKey(const Key(WidgetsKeys.appBarGoBackArrowKey));
     await tester.tap(appBarGoBackArrow);
     await tester.pumpAndSettle();
   }
 
-  Future<void> checkFirstFiveFiltersArePreFetched({
+  /* Future<void> checkFirstFiveFiltersArePreFetched({
     required WidgetTester tester,
   }) async {
     // int preFetchedCount = 0;
@@ -213,7 +211,7 @@ void main() {
     //   }
     // }
     // print('/////  preFetchedCount :  $preFetchedCount ////////////////////');
-  }
+  }*/
 
   group(
     'Test Home prefetch',
@@ -228,7 +226,7 @@ void main() {
           await SharedScenarios.registerGuest(tester: tester);
           //////////// Find Main Categories Tab //////////////
           final Finder mainCategoriesTabNull =
-              find.byKey(Key(WidgetsKeys.mainCategoriesTabNullKey));
+              find.byKey(const Key(WidgetsKeys.mainCategoriesTabNullKey));
           await GlobalTestFunctions.findNoWidget(
             tester: tester,
             actual: mainCategoriesTabNull,
@@ -238,7 +236,7 @@ void main() {
           );
           ////////////////////////////
           final Finder mainCategoriesTab =
-              find.byKey(Key(WidgetsKeys.mainCategoriesTabKey));
+              find.byKey(const Key(WidgetsKeys.mainCategoriesTabKey));
           await GlobalTestFunctions.findWidget(
             tester: tester,
             actual: mainCategoriesTab,
@@ -360,7 +358,7 @@ void main() {
           await SharedScenarios.registerGuest(tester: tester);
           ////////////// Find Boutiques HomePageCard //////////////
           final Finder boutiquesSuccessStatus =
-              find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
+              find.byKey(const Key(WidgetsKeys.boutiquesSuccessStatusKey));
           await GlobalTestFunctions.findWidget(
             tester: tester,
             actual: boutiquesSuccessStatus,
@@ -371,7 +369,8 @@ void main() {
 
           int index = 0;
           String slug = '';
-          Finder homeScroll = find.byKey(Key(WidgetsKeys.homepageScrollKey));
+          Finder homeScroll =
+              find.byKey(const Key(WidgetsKeys.homepageScrollKey));
 
           BoutiqueBloc homeBloc = GetIt.I<BoutiqueBloc>();
           BoutiqueState boutiqueBloc = homeBloc.state;
@@ -449,9 +448,9 @@ void main() {
           //////////////// Scroll to start ////////////////////////
 
           Finder boutiqueCardWidget =
-              find.byKey(Key('${WidgetsKeys.boutiqueCardKey}0'));
+              find.byKey(const Key('${WidgetsKeys.boutiqueCardKey}0'));
 
-          homeScroll = find.byKey(Key(WidgetsKeys.homepageScrollKey));
+          homeScroll = find.byKey(const Key(WidgetsKeys.homepageScrollKey));
 
           expect(homeScroll, findsOneWidget);
 

@@ -7,10 +7,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
-import '../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class CountryDropdown extends StatefulWidget {
   final List<Country> countries;
@@ -30,8 +27,6 @@ class _CountryDropdownState extends State<CountryDropdown> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
-
-  final bool _eventLogged = false;
 
   @override
   void didChangeDependencies() async {

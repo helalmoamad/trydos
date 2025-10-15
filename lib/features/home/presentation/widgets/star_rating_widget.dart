@@ -31,7 +31,7 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
   late double _currentRating;
   late double _previousRating;
   Timer? _debounceTimer;
-  bool _showCommentDialog = false;
+
   final TextEditingController _commentController = TextEditingController();
 
   // إضافة ValueNotifier للتحكم في حالة الزر
@@ -79,7 +79,6 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
 
     // إنشاء Timer جديد لمدة ثانية واحدة
     _debounceTimer = Timer(const Duration(milliseconds: 1500), () {
-      _showCommentDialog = true;
       _showCommentBottomSheet();
     });
   }
@@ -89,6 +88,7 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      // ignore: deprecated_member_use
       builder: (context) => WillPopScope(
         onWillPop: () async {
           // عند إغلاق الرسالة بالضغط خارجها، نعيد التقييم للقيمة السابقة

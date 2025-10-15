@@ -52,7 +52,7 @@ void main() {
       ////////////////////////////
       await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: false);
       ////////////////////////////
-      final Finder chatNavBarButton = find.byKey(Key(
+      final Finder chatNavBarButton = find.byKey(const Key(
         WidgetsKeys.chatNavBarKey,
       ));
       await Future.delayed(const Duration(seconds: 1));
@@ -94,7 +94,7 @@ void main() {
 
       /////////// show profile for the user ///////////
       final Finder goToProfileButton = find.byKey(
-        Key(
+        const Key(
           WidgetsKeys.goToProfileButtonKey,
         ),
       );
@@ -112,15 +112,15 @@ void main() {
       );
       //////////////////////////
       ////////////////////////////
-      final Finder imageCountInEachChat = find.byKey(Key(
+      final Finder imageCountInEachChat = find.byKey(const Key(
         WidgetsKeys.imageCountInEachChatKey,
       ));
       ////////////////////////////
-      final Finder videoCountInEachChat = find.byKey(Key(
+      final Finder videoCountInEachChat = find.byKey(const Key(
         WidgetsKeys.videoCountInEachChatKey,
       ));
       ////////////////////////////
-      final Finder fileCountInEachChat = find.byKey(Key(
+      final Finder fileCountInEachChat = find.byKey(const Key(
         WidgetsKeys.fileCountInEachChatKey,
       ));
       ////////////////////////////
@@ -159,7 +159,7 @@ void main() {
       //////////////////////////
       await Future.delayed(const Duration(seconds: 5));
       final Finder backFromProfile = find.byKey(
-        Key(
+        const Key(
           WidgetsKeys.backFromProfileKey,
         ),
       );

@@ -4,7 +4,7 @@ extension ScopeApi on String {
   String get _api => 'api';
 
   String get _currentVersion => 'v1';
-  String get _Version10 => 'v10';
+//  String get _Version10 => 'v10';
 
   String phoneScope() => '$_api/${_currentVersion}/auth/phone/$this';
 

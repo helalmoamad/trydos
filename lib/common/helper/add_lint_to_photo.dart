@@ -16,6 +16,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+// ignore: must_be_immutable
 class AddLinkToStory extends StatefulWidget {
   File? imageFile;
   void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;

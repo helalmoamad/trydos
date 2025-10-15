@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
@@ -27,7 +24,6 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/place_order_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
@@ -91,7 +87,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return WillPopScope(
+    return
+        // ignore: deprecated_member_use
+        WillPopScope(
       onWillPop: () async {
         if (Navigator.canPop(context)) {
           if (Navigator.of(context).canPop()) {
@@ -537,6 +535,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
+                    // ignore: deprecated_member_use
                     color: const Color(0xffC4C2C2).withOpacity(0.5),
                   ),
                   child: Center(
@@ -738,6 +737,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
               children: [
                 SizedBox(width: 29.w),
                 SvgPicture.asset(AppAssets.detectedSvg,
+                    // ignore: deprecated_member_use
                     color: _agreeToPolicies
                         ? const Color(0xff388CFF)
                         : const Color(0xff8E8E8E)),

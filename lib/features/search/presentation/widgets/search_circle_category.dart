@@ -242,6 +242,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                           SvgPicture.asset(
                             AppAssets.backArrowArabic,
                             matchTextDirection: true,
+                            // ignore: deprecated_member_use
                             color: const Color(0xffC4C2C2),
                             width: 10,
                             height: 10,

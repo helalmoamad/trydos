@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/put.dart';
@@ -13,7 +12,6 @@ import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../core/api/client_config.dart';
@@ -289,7 +287,7 @@ class ChatRemoteDataSource {
               if (onError != null) onError();
             },
           ));
-    } catch (e, s) {
+    } catch (e) {
       // GetIt.I<StoryBloc>().add(LoadFailureEvent());
     }
     return completer.future;

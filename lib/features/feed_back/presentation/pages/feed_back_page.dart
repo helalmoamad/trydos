@@ -11,6 +11,7 @@ import '../../../app/my_text_widget.dart';
 import '../widgets/request_and_response_card.dart';
 import '../widgets/search_app_bar.dart';
 
+// ignore: must_be_immutable
 class FeedBackScreen extends StatelessWidget {
   FeedBackScreen({Key? key, required this.showRequests}) : super(key: key);
   static String routeName = 'FeedBackScreen';
@@ -33,7 +34,7 @@ class FeedBackScreen extends StatelessWidget {
           .removeWhere((element) => !element.containsKey('flutter_error'));
     }
     return Scaffold(
-      backgroundColor: context.colorScheme.background,
+      backgroundColor: context.colorScheme.surface,
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(56.0.h),
           child: SearchRequestsAppBar(

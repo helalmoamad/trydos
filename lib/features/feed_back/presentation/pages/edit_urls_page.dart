@@ -10,10 +10,8 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../core/utils/responsive_padding.dart';
-import '../../../../generated/locale_keys.g.dart';
 import '../../../app/app_elvated_button.dart';
 import '../../../app/app_widgets/app_text_field.dart';
-import '../../../app/my_text_widget.dart';
 
 class EditUrlsPage extends StatefulWidget {
   EditUrlsPage({super.key});
@@ -43,7 +41,7 @@ class _EditUrlsPageState extends State<EditUrlsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: context.colorScheme.background,
+        backgroundColor: context.colorScheme.surface,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -51,7 +49,7 @@ class _EditUrlsPageState extends State<EditUrlsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Market Url:'),
+                const Text('Market Url:'),
                 AppTextField(
                   controller: marketController,
                   filledColor: context.colorScheme.grey50,
@@ -62,7 +60,7 @@ class _EditUrlsPageState extends State<EditUrlsPage> {
                       HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
                 ),
                 15.verticalSpace,
-                Text('Chat Url:'),
+                const Text('Chat Url:'),
                 AppTextField(
                   controller: chatController,
                   filledColor: context.colorScheme.grey50,
@@ -73,7 +71,7 @@ class _EditUrlsPageState extends State<EditUrlsPage> {
                       HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
                 ),
                 15.verticalSpace,
-                Text('Story Url:'),
+                const Text('Story Url:'),
                 AppTextField(
                   controller: storyController,
                   filledColor: context.colorScheme.grey50,

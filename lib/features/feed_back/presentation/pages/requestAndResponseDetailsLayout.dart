@@ -21,9 +21,7 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
           preferredSize: Size.fromHeight(65.0.h),
           child: FeedBackAppBar(
             appBarParams: AppBarParams(
-              centerTitle: true,
               title: 'request details',
-              hasLeading: true,
             ),
           )),
       body: Stack(
@@ -33,7 +31,6 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
               padding: EdgeInsets.all(8.0.sp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   SelectableText.rich(
                     data.containsKey('flutter_error')
@@ -62,17 +59,18 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
                                       style: bodyStyle(context)),
                                 ],
                               ),
-                              if(data['response_time']!=null)
-                              TextSpan(
-                                children: <TextSpan>[
-                                  TextSpan(
-                                      text: 'Response Time: ',
-                                      style: titleStyle(context)),
-                                  TextSpan(
-                                      text: data['response_time'].toString() + '\n',
-                                      style: bodyStyle(context)),
-                                ],
-                              ),
+                              if (data['response_time'] != null)
+                                TextSpan(
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: 'Response Time: ',
+                                        style: titleStyle(context)),
+                                    TextSpan(
+                                        text: data['response_time'].toString() +
+                                            '\n',
+                                        style: bodyStyle(context)),
+                                  ],
+                                ),
                               TextSpan(
                                 children: <TextSpan>[
                                   TextSpan(
@@ -119,9 +117,9 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
                               ),
                             ],
                           ),
+                    // ignore: deprecated_member_use
                     toolbarOptions: const ToolbarOptions(
                       copy: true,
-                      selectAll: false,
                     ),
                   ),
                   40.verticalSpace

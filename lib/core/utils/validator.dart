@@ -1,6 +1,5 @@
 import 'package:form_field_validator/form_field_validator.dart';
 
-import '../../generated/locale_keys.g.dart';
 
 TextFieldValidator requiredValidator(
         {String? errorMessage, bool trim = true}) =>

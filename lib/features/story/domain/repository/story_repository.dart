@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:trydos/core/error/failures.dart';
-import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
 import 'package:trydos/features/story/data/models/delete_story_model.dart';
 
 import '../../data/models/image_detail.dart';

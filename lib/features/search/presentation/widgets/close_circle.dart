@@ -32,6 +32,7 @@ class CloseCircle extends StatelessWidget {
       child: Center(
         child: SvgPicture.asset(
           AppAssets.closeSvg,
+          // ignore: deprecated_member_use
           color: closeSvgColor,
           width: width / 2,
           height: height / 2,
