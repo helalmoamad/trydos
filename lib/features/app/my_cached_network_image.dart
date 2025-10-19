@@ -354,11 +354,11 @@ String addSuitableWidthAndHeightToImage({
   int fHeight = 0;
   int fWidth = 0;
   if (height > 200 && width > 200) {
-    fWidth = (width * 2).toInt();
-    fHeight = (height * 2).toInt();
+    fWidth = (width * 1.5).toInt();
+    fHeight = (height * 1.5).toInt();
   } else {
-    fWidth = (width * 2).toInt();
-    fHeight = (height * 2).toInt();
+    fWidth = (width * 1.5).toInt();
+    fHeight = (height * 1.5).toInt();
   }
 
   List<String> list = imageUrl.split('upload');

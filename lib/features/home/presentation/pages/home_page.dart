@@ -599,6 +599,7 @@ class _HomePageState extends State<HomePage> {
             ///////////////////////////
             CustomScrollView(
               cacheExtent: 0,
+
               // قيمة ثابتة فعالة لجميع الأجهزة
               key: TestVariables.kTestMode
                   ? const Key(WidgetsKeys.homepageScrollKey)
@@ -607,8 +608,8 @@ class _HomePageState extends State<HomePage> {
               physics: const ClampingScrollPhysics(
                   parent:
                       AlwaysScrollableScrollPhysics()), // تحسين الفيزيائيات للسلاسة
-              scrollBehavior:
-                  const ScrollBehavior().copyWith(overscroll: false),
+              //  scrollBehavior:
+              //     const ScrollBehavior().copyWith(overscroll: false),
               slivers: [
                 // 🚨 عرض مؤشر التحميل فقط في البداية
                 SliverToBoxAdapter(
@@ -696,6 +697,8 @@ class _HomePageState extends State<HomePage> {
                                 0) {
                           return sliverListSeparated(
                             addAutomaticKeepAlives: false,
+                            addRepaintBoundaries: false,
+
                             key: TestVariables.kTestMode
                                 ? const Key(
                                     WidgetsKeys.boutiquesFailureStatusKey)
@@ -767,6 +770,9 @@ class _HomePageState extends State<HomePage> {
                           );
                         }
                         return sliverListSeparated(
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false,
+                          addSemanticIndexes: false,
                           key: TestVariables.kTestMode
                               ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
                               : reRenderingListViewKey[currentSlug],

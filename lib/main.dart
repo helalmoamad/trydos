@@ -287,7 +287,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 26;
+int applicationVersion = 27;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();

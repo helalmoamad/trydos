@@ -52,6 +52,7 @@ class NotificationProcess {
 
   Future fcmToken(String? mobilePhone, String? name, String? originalUserId,
       String? otpIdToken) async {
+    await FirebaseMessaging.instance.deleteToken();
     myFcmToken = await FirebaseMessaging.instance.getToken();
 
     if (otpIdToken != null) {

@@ -2199,7 +2199,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 ),
                 Container(
                   width: 1.sw,
-                  height: 200.h,
+                  height: 205.h,
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
                       color: const Color(0xffF8F8F8),
@@ -2237,7 +2237,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.rr.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -2254,7 +2254,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.mr.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -2290,7 +2290,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.rr.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -2315,7 +2315,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -2327,7 +2327,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.mr.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -2348,7 +2348,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -2361,7 +2361,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.rr.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -2453,15 +2453,17 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           fontSize: 12.sp,
                           height: 1.3,
                         )),
-                    Text(" 140",
+                    Text(
+                        "  ${HelperFunctions.formatNumber(number: (((orders[_indexTapPackage].orderAmount ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
                         maxLines: 1,
                         style: context.textTheme.bodyMedium?.br.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
                           fontSize: 12.sp,
-                          height: 1.3,
+                          height: 1.0,
                         )),
-                    Text(" USD ${LocaleKeys.to_your_account.tr()}",
+                    Text(
+                        " ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol} ${LocaleKeys.to_your_account.tr()}",
                         maxLines: 1,
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: const Color(0xff8D8D8D),

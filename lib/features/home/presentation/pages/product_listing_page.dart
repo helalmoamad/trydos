@@ -661,6 +661,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                 return SafeArea(
                                     child: CustomScrollView(
+
                                         /*scrollBehavior:
                                       const ScrollBehavior().copyWith(
                                     overscroll: false,

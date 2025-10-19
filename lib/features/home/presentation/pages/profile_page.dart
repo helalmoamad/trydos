@@ -512,6 +512,15 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   Widget _ordersWidget() {
     return InkWell(
       onTap: () {
+        if (!(prefsRepository.isVerifiedPhone ?? false)) {
+          isVerified.value = false;
+          if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
+            authBloc.add(SendOtpEvent(
+                phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
+          }
+          return;
+        }
+
         HelperFunctions.slidingNavigation(
           context,
           OrdersPage(),

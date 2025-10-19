@@ -266,6 +266,13 @@ class CommentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String extractInitialsAndAppendXXX(String text) {
+      final words = text.trim().split(RegExp(r'\s+'));
+      final result =
+          words.where((w) => w.isNotEmpty).map((w) => '${w[0]}xxx').join(' ');
+      return result;
+    }
+
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
@@ -337,7 +344,7 @@ class CommentCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MyTextWidget(
-                      names,
+                      extractInitialsAndAppendXXX(names),
                       style: context.textTheme.bodySmall?.rq
                           .copyWith(color: const Color(0xff969696)),
                     ),

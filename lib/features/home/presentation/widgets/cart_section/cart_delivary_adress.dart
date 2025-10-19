@@ -53,7 +53,7 @@ class CartDelivaryAddress extends StatefulWidget {
 
 class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     with SingleTickerProviderStateMixin {
-  final ValueNotifier<bool> isExpanded = ValueNotifier(false);
+  final ValueNotifier<bool> isExpanded = ValueNotifier(true);
   final ValueNotifier<int> indexTap = ValueNotifier(0);
   final ValueNotifier<bool> showDeleteAddress = ValueNotifier(false);
   final ValueNotifier<bool> showPanel = ValueNotifier(false);

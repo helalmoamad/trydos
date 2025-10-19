@@ -13,6 +13,9 @@ import 'package:get_it/get_it.dart';
 
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart'
+    show GetOrdersByOrderGroupIDEvent;
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 
 import '../../../../base_page.dart';
@@ -88,8 +91,20 @@ class LocalNotificationService {
 
     if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
         message)) {
-      String imageUrl = "";
       Map? data = convert.jsonDecode(message.data["body"] ?? "") ?? {};
+      print(
+          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ${data?["type"]}");
+      if (data?["type"] ==
+          typeOfNotificationForMarket[
+              TypeOfNotificationForMarketEnum.order_status_changed]) {
+        GetIt.I<OrderBloc>().add(
+          GetOrdersByOrderGroupIDEvent(
+              status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
+              orderGroupId: data?["order_group_id"].toString() ?? ""),
+        );
+        return;
+      }
+      String imageUrl = "";
 
       if (data?["type"] ==
               typeOfNotificationForMarket[

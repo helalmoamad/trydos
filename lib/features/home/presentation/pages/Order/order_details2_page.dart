@@ -1077,7 +1077,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1094,7 +1094,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.mr.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1127,7 +1127,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1159,7 +1159,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.br.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1171,7 +1171,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.mr.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1187,7 +1187,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.br.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1200,7 +1200,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
@@ -4379,15 +4379,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       SizedBox(
                         height: 45.h,
                       ),
-                      Text(
-                        LocaleKeys.you_will_not_charged_fees.tr(),
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: Colors.white,
-                          letterSpacing: 0.18,
-                          fontSize: 16,
-                          height: 1.3,
-                        ),
-                      ),
+                      (optionModifyPanel.value == "Return_This_Product" &&
+                              reasonCost.value != 0)
+                          ? const SizedBox.shrink()
+                          : Text(
+                              LocaleKeys.you_will_not_charged_fees.tr(),
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 0.18,
+                                fontSize: 16,
+                                height: 1.3,
+                              ),
+                            ),
                       SizedBox(
                         height: 20.h,
                       ),
@@ -7790,7 +7793,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
       allOrder
           ? Container(
               width: 1.sw,
-              height: 200.h,
+              height: 205.h,
               margin: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                   color: const Color(0xffF8F8F8),
@@ -7825,7 +7828,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -7842,7 +7845,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.mr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -7875,7 +7878,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -7907,7 +7910,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.br.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -7919,7 +7922,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.mr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -7935,7 +7938,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.br.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -7948,7 +7951,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -8057,7 +8060,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 height: 1.3,
               )),
           Text(
-              "  ${HelperFunctions.formatNumber(number: (((order!.details?[indexTap.value].productDetails?.offerPrice ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
+              "  ${HelperFunctions.formatNumber(number: ((((allOrder ? order!.orderAmount! : order!.details?[indexTap.value].productDetails?.offerPrice ?? 0))) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
               maxLines: 1,
               style: context.textTheme.bodyMedium?.br.copyWith(
                 color: const Color(0xff8D8D8D),

@@ -1389,6 +1389,7 @@ class _ProductDetailsBottomSheetNewState
           sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
           tappedIndex = sizes.indexWhere((element) =>
               element == state.currentColorSizeForCart?["choiceOption"]);
+
           if (sizes.isEmpty || sizesQuantities.isEmpty) {
             return const SizedBox.shrink();
           }
@@ -1442,10 +1443,6 @@ class _ProductDetailsBottomSheetNewState
               });
             }
           });
-          print("selectedSizeByUser:++++++++++++ ${tappedIndex} ");
-
-          print(
-              "selectedSizeByUser:++++++++++++ ${sizesQuantities[tappedIndex]} ");
 
           return Padding(
               padding: EdgeInsets.all(12.0.h),

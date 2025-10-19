@@ -298,62 +298,56 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                           itemBuilder:
                                                               (context, index) {
                                                             return InkWell(
-                                                              onTap: () {
-                                                                GetIt.I<HomeBloc>().add(
-                                                                    const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                                                                        isStatusInitaial:
-                                                                            true));
-                                                                homeBloc.add(AddCurrentSelectedColorEvent(
-                                                                    currentSelectedColor:
-                                                                        0,
-                                                                    productSlug:
-                                                                        products[index]
-                                                                            .slug
-                                                                            .toString()));
+                                                                onTap: () {
+                                                                  GetIt.I<HomeBloc>().add(
+                                                                      const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                                          isStatusInitaial:
+                                                                              true));
+                                                                  homeBloc.add(AddCurrentSelectedColorEvent(
+                                                                      currentSelectedColor:
+                                                                          0,
+                                                                      productSlug: products[
+                                                                              index]
+                                                                          .slug
+                                                                          .toString()));
 
-                                                                Future.delayed(
-                                                                    const Duration(
-                                                                        milliseconds:
-                                                                            300),
-                                                                    () =>
-                                                                        Navigator.of(context)
-                                                                            .push(
-                                                                          MaterialPageRoute(
-                                                                            builder: (ctx) =>
-                                                                                ProductDetailsPageNew(
-                                                                              productItem: products[index],
+                                                                  Future.delayed(
+                                                                      const Duration(milliseconds: 300),
+                                                                      () => Navigator.of(context).push(
+                                                                            MaterialPageRoute(
+                                                                              builder: (ctx) => ProductDetailsPageNew(
+                                                                                productItem: products[index],
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                        ));
-                                                              },
-                                                              child:
-                                                                  ProductItem(
-                                                                colorImagesPanelController:
-                                                                    colorImagesPanelController,
-                                                                showShadowForColorImages:
-                                                                    showShadowForColorImages,
-                                                                tapIndexToShowColorImages:
-                                                                    tapIndexToShowColorImages,
-                                                                refreshFlashDeal:
-                                                                    refreshFlashDeal,
-                                                                itemIndex:
-                                                                    index,
-                                                                finishRedeem:
-                                                                    finishRedeem,
-                                                                fromFlashDeal:
-                                                                    true,
-                                                                tapIndexToAddProductToCart:
-                                                                    tapIndexToAddProductToCart,
-                                                                key: TestVariables
-                                                                        .kTestMode
-                                                                    ? Key(
-                                                                        '"featuresPtoduct"$index')
-                                                                    : null,
-                                                                productItem:
-                                                                    products[
-                                                                        index],
-                                                              ),
-                                                            );
+                                                                          ));
+                                                                },
+                                                                child:
+                                                                    ProductItem(
+                                                                  colorImagesPanelController:
+                                                                      colorImagesPanelController,
+                                                                  showShadowForColorImages:
+                                                                      showShadowForColorImages,
+                                                                  tapIndexToShowColorImages:
+                                                                      tapIndexToShowColorImages,
+                                                                  refreshFlashDeal:
+                                                                      refreshFlashDeal,
+                                                                  itemIndex:
+                                                                      index,
+                                                                  finishRedeem:
+                                                                      finishRedeem,
+                                                                  fromFlashDeal:
+                                                                      true,
+                                                                  tapIndexToAddProductToCart:
+                                                                      tapIndexToAddProductToCart,
+                                                                  key: TestVariables
+                                                                          .kTestMode
+                                                                      ? Key(
+                                                                          '"featuresPtoduct"$index')
+                                                                      : null,
+                                                                  productItem:
+                                                                      products[
+                                                                          index],
+                                                                ));
                                                           },
                                                         ),
                                                       ),

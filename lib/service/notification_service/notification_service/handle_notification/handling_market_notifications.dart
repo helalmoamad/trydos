@@ -43,12 +43,14 @@ enum TypeOfNotificationForMarketEnum {
   seller_order_added,
   seller_comment_added,
   seller_product_stock_out,
+  order_status_changed,
   seller_order_status_changed
 }
 
 Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.boutique_created: "boutique created",
   TypeOfNotificationForMarketEnum.seller_order_added: "seller order added",
+  TypeOfNotificationForMarketEnum.order_status_changed: "order status changed",
   TypeOfNotificationForMarketEnum.seller_comment_added: "seller comment added",
   TypeOfNotificationForMarketEnum.order_status_changed_to_out_for_return:
       "order status changed to out for return",

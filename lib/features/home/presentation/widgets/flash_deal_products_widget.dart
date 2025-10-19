@@ -275,41 +275,40 @@ class FlashDealProductsWidget extends StatelessWidget {
       List<filter.Products> products,
       int index) {
     return InkWell(
-      onTap: () {
-        try {
-          GetIt.I<HomeBloc>().add(
-              const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                  isStatusInitaial: true));
-          GetIt.I<HomeBloc>().add(AddCurrentSelectedColorEvent(
-              currentSelectedColor: 0,
-              productSlug: products[index].slug.toString()));
-          Future.delayed(
-              const Duration(milliseconds: 300),
-              () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => ProductDetailsPageNew(
-                        productItem: products[index],
+        onTap: () {
+          try {
+            GetIt.I<HomeBloc>().add(
+                const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                    isStatusInitaial: true));
+            GetIt.I<HomeBloc>().add(AddCurrentSelectedColorEvent(
+                currentSelectedColor: 0,
+                productSlug: products[index].slug.toString()));
+            Future.delayed(
+                const Duration(milliseconds: 300),
+                () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => ProductDetailsPageNew(
+                          productItem: products[index],
+                        ),
                       ),
-                    ),
-                  ));
-        } catch (e) {
-          debugPrint('❌ Error navigating to product details: $e');
-        }
-      },
-      child: ProductItem(
-        refreshFlashDeal: refreshFlashDeal,
-        fromFlashDeal: true,
-        finishRedeem: finishRedeem,
-        fromHomePage: true,
-        imageSource: 'flash_deal_products_widget',
-        productIsFlashDeal: productIsFlashDeal,
-        tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-        key: TestVariables.kTestMode
-            ? Key('*flashDeal*Product${products[index].slug}')
-            : null,
-        productItem: products[index],
-        itemIndex: index,
-      ),
-    );
+                    ));
+          } catch (e) {
+            debugPrint('❌ Error navigating to product details: $e');
+          }
+        },
+        child: ProductItem(
+          refreshFlashDeal: refreshFlashDeal,
+          fromFlashDeal: true,
+          finishRedeem: finishRedeem,
+          fromHomePage: true,
+          imageSource: 'flash_deal_products_widget',
+          productIsFlashDeal: productIsFlashDeal,
+          tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+          key: TestVariables.kTestMode
+              ? Key('*flashDeal*Product${products[index].slug}')
+              : null,
+          productItem: products[index],
+          itemIndex: index,
+        ));
   }
 }

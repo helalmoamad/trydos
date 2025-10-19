@@ -531,8 +531,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
+      print(
+          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////");
+
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
+        print(
+            "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////");
+
         LocalNotificationService()
             .showNotificationWithPayload(message: event, fromBackGround: 0);
         return;
