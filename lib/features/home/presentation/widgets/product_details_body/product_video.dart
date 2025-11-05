@@ -29,6 +29,7 @@ class _ProductVedioState extends State<ProductVedio> {
   Timer? disDebounce;
   late VideoPlayerController videoProductInListingController;
   Future<void>? _initializeVideoFuture;
+  late VoidCallback _videoListener;
 
   @override
   void initState() {
@@ -46,18 +47,24 @@ class _ProductVedioState extends State<ProductVedio> {
         videoProductInListingController.play();
       });
 
-      videoProductInListingController.addListener(() {
+      _videoListener = () {
         if (!mounted) return;
         setState(() {});
-      });
+      };
+      videoProductInListingController.addListener(_videoListener);
     }
   }
 
   @override
   void dispose() {
-    videoProductInListingController.pause();
-    videoProductInListingController.dispose();
-
+    // إزالة المستمع قبل التخلص
+    if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
+      videoProductInListingController.removeListener(_videoListener);
+      if (videoProductInListingController.value.isInitialized) {
+        videoProductInListingController.pause();
+      }
+      videoProductInListingController.dispose();
+    }
     super.dispose();
   }
 

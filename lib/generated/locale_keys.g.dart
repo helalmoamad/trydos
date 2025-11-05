@@ -20,6 +20,7 @@ abstract class LocaleKeys {
   static const the_product_price_when_returned =
       'the_product_price_when_returned';
   static const alert = 'alert';
+  static const waiting_for_supplier_response = 'waiting_for_supplier_response';
   static const typing = 'typing';
   static const recording = 'recording';
   static const sending_file = 'sending_file';
@@ -751,4 +752,23 @@ abstract class LocaleKeys {
   static const add_more_to_bag = 'add_more_to_bag';
   static const delivery_worker = 'delivery_worker';
   static const recommend_products = 'recommend_products';
+  static const edit_comment_title = 'edit_comment_title';
+  static const edit_comment_hint = 'edit_comment_hint';
+  static const must_login_to_edit_comment = 'must_login_to_edit_comment';
+  static const must_login_to_delete_comment = 'must_login_to_delete_comment';
+  static const confirm_delete_comment_title = 'confirm_delete_comment_title';
+  static const confirm_delete_comment_message =
+      'confirm_delete_comment_message';
+  static const confirm_delete = 'confirm_delete';
+  static const delete_comment_success = 'delete_comment_success';
+  static const delete_comment_failed = 'delete_comment_failed';
+  static const edit_comment_success = 'edit_comment_success';
+  static const edit_comment_failed = 'edit_comment_failed';
+  static const complaint = 'complaint';
+  static const quality = 'quality';
+  static const recommendation = 'recommendation';
+  static const no_commends_found = 'no_commends_found';
+  static const pack = 'pack';
+  static const dear = 'dear';
+  static const product = 'product';
 }

@@ -23,6 +23,7 @@ import 'package:trydos/features/app/svg_network_widget.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar_new.dart';
@@ -72,7 +73,7 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
   final double redeemPrice;
   final double redeemVariantPrice;
   final bool collectedAfterOrdering;
-
+  final ValueNotifier<bool>? isVerified;
   final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<int>? tapIndexToAddProductToCart;
@@ -89,6 +90,7 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
       this.currentSelectedColorAfterChangeVariant,
       this.tapIndexToAddProductToCart,
       this.showShadowForPanel,
+      this.isVerified,
       required this.flashDealEndDate,
       required this.isFlashDealEnded,
       required this.visibleFlashDeal,
@@ -129,13 +131,13 @@ class _ProductDetailsBottomSheetNewState
 
   final ValueNotifier<String?> colorIsNotAvailableNotifier =
       ValueNotifier(null);
-  final PageController pageController = PageController();
+
   List<String> colorsForEachProduct = [];
   List<String> sizesForEachProduct = [];
   bool requestToNotifyMeFormFirstSize = true;
   List<int> colorsQuantityForEachProduct = [];
   Timer? debounce;
-  List<productListingModel.SyncColorImage> syncColorImageList = [];
+  List<productListingModel.SyncColorImageProduct> syncColorImageList = [];
   List<String> images = [];
   late int currentIndexInSlider;
 
@@ -170,7 +172,7 @@ class _ProductDetailsBottomSheetNewState
   @override
   void dispose() {
     debounce?.cancel();
-    pageController.dispose();
+
     singleChildScrollViewsScrollController.dispose();
     super.dispose();
   }
@@ -522,9 +524,19 @@ class _ProductDetailsBottomSheetNewState
                                                             child: currentTab ==
                                                                     0
                                                                 ? ProductDetailsSheetCommentsContent(
-                                                                    productSlugForTopic:
+                                                                    productSlugForTopic: widget
+                                                                        .productSlugForTopic,
+                                                                    ownerId: widget
+                                                                        .productItem
+                                                                        .ownerId,
+                                                                    isVerified: widget
+                                                                        .isVerified,
+                                                                    ownerType: widget
+                                                                        .productItem
+                                                                        .ownerType,
+                                                                    currentVariant:
                                                                         widget
-                                                                            .productSlugForTopic,
+                                                                            .currentVariant,
                                                                     productSlug:
                                                                         widget.productItem.slug ??
                                                                             "",
@@ -540,9 +552,7 @@ class _ProductDetailsBottomSheetNewState
                                                                     ? BlocBuilder<
                                                                             HomeBloc,
                                                                             HomeState>(
-                                                                        buildWhen: (p, c) =>
-                                                                            p.currentColorSizeForCart?["choiceOption"] !=
-                                                                            c.currentColorSizeForCart?["choiceOption"],
+                                                                        buildWhen: (p, c) => p.currentColorSizeForCart?["choiceOption"] != c.currentColorSizeForCart?["choiceOption"],
                                                                         builder: (context, state) {
                                                                           return ProductDetailsSheetShareContent(
                                                                               currentSize: state.currentColorSizeForCart != null ? state.currentColorSizeForCart!["choiceOption"] ?? "" : "",
@@ -597,6 +607,7 @@ class _ProductDetailsBottomSheetNewState
                               builder: (context, state) {
                                 return ProductDetailsSheetBottomBarNew(
                                     isRedeem: widget.isRedeem,
+                                    isVerified: widget.isVerified,
                                     redeemVariantPrice:
                                         widget.redeemVariantPrice,
                                     flashDealEndDate: widget.flashDealEndDate,
@@ -648,12 +659,7 @@ class _ProductDetailsBottomSheetNewState
                                     clickOnComments: () {
                                       widget.panelController.open();
                                       widget.currentActiveTab.value = 0;
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                        (_) {
-                                          pageController.jumpToPage(0);
-                                        },
-                                      );
+
                                       //////////////////////////////
                                       // FirebaseAnalyticsService.logEventForSession(
                                       //   eventName:
@@ -669,12 +675,7 @@ class _ProductDetailsBottomSheetNewState
                                     clickOnMoreOptions: () {
                                       widget.panelController.open();
                                       widget.currentActiveTab.value = 2;
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                        (_) {
-                                          pageController.jumpToPage(2);
-                                        },
-                                      );
+
                                       //////////////////////////////
                                       // FirebaseAnalyticsService.logEventForSession(
                                       //   eventName:
@@ -687,12 +688,7 @@ class _ProductDetailsBottomSheetNewState
                                     clickOnShare: () {
                                       widget.panelController.open();
                                       widget.currentActiveTab.value = 1;
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                        (_) {
-                                          pageController.jumpToPage(1);
-                                        },
-                                      );
+
                                       if (GetIt.I<PrefsRepository>()
                                               .chatToken !=
                                           null) {
@@ -1396,6 +1392,9 @@ class _ProductDetailsBottomSheetNewState
           if (debounce?.isActive ?? false) {
             debounce!.cancel();
           }
+          if (tappedIndex == -1) {
+            tappedIndex = (sizes.length) ~/ 2;
+          }
           debounce = Timer(const Duration(milliseconds: 600), () {
             FirebaseAnalyticsService.logEventForSession(
               executedEventName: AnalyticsButtonsEventNameConst.SIZE_SLIDE,
@@ -1421,9 +1420,7 @@ class _ProductDetailsBottomSheetNewState
                     ''
               },
             );
-            if (tappedIndex == -1) {
-              tappedIndex = (sizes.length) ~/ 2;
-            }
+
             print("sizesQuantities: ${sizesQuantities[tappedIndex]}");
             if (sizesQuantities[tappedIndex] == 0 &&
                 !widget.collectedAfterOrdering) {
@@ -1578,7 +1575,13 @@ class _ProductDetailsBottomSheetNewState
 
                                         return Stack(children: [
                                           _sizesWidget(
-                                              '${widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes[index]).name ?? ""} ',
+                                              '${widget.productItem.choiceOptions?[0].options?.firstWhere(
+                                                    (element) =>
+                                                        element.option ==
+                                                        sizes[index],
+                                                    orElse: () => Options(
+                                                        name: "", option: ""),
+                                                  ).name ?? ""} ',
                                               "",
                                               sizeIsNotAvailableNotifier
                                                           .value ==
@@ -1656,7 +1659,14 @@ class _ProductDetailsBottomSheetNewState
                                         width: 5,
                                       ),
                                       MyTextWidget(
-                                        '${widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == state.currentColorSizeForCart?["choiceOption"]).name ?? ""} ',
+                                        '${widget.productItem.choiceOptions?[0].options?.firstWhere(
+                                              (element) =>
+                                                  element.option ==
+                                                  state.currentColorSizeForCart?[
+                                                      "choiceOption"],
+                                              orElse: () =>
+                                                  Options(name: "", option: ""),
+                                            ).name ?? ""} ',
                                         style: context.textTheme.titleLarge?.br
                                             .copyWith(
                                                 height: 1.3,
@@ -1735,7 +1745,7 @@ class _ProductDetailsBottomSheetNewState
         ),
         alignment: Alignment.center,
         height: 46.h,
-        width: 50.w,
+        width: 60,
         decoration: BoxDecoration(
             color: color ?? const Color(0xffFCFCFC),
             border: Border.all(color: borderColor ?? const Color(0xffD3D3D3)),

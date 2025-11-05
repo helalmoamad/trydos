@@ -54,7 +54,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
     return SizedBox(
       height:
-          (boutique.childCategoriesForProductIds!.length) == 0 ? 252.h : 354.h,
+          (boutique.mainCategoriesForProductIds!.length) == 0 ? 252.h : 354.h,
       width: 1.sw,
       child: Column(
         children: [
@@ -219,7 +219,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                       ],
                     ))),
           ),
-          (boutique.childCategoriesForProductIds!.length) == 0
+          (boutique.mainCategoriesForProductIds!.length) == 0
               ? const SizedBox.shrink()
               : SizedBox(
                   height: 102.h,
@@ -231,7 +231,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                     addRepaintBoundaries: false,
                     addSemanticIndexes: false,
                     scrollDirection: Axis.horizontal,
-                    itemCount: (boutique.childCategoriesForProductIds!.length),
+                    itemCount: (boutique.mainCategoriesForProductIds!.length),
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return Container(
@@ -262,30 +262,28 @@ class HomePageBoutiqueCard extends StatelessWidget {
                                     filters: Filter(categories: [
                                       filters.Category(
                                         slug: boutique
-                                            .childCategoriesForProductIds![
-                                                index]
+                                            .mainCategoriesForProductIds![index]
                                             .categorySlug,
                                         name: boutique
-                                            .childCategoriesForProductIds![
-                                                index]
+                                            .mainCategoriesForProductIds![index]
                                             .categoryName,
                                         id: boutique
-                                            .childCategoriesForProductIds![
-                                                index]
+                                            .mainCategoriesForProductIds![index]
                                             .categoryId,
                                         isSelected: true,
                                         flatPhotoPath: CategoryBanner(
                                             filePath: boutique
-                                                .childCategoriesForProductIds![
+                                                .mainCategoriesForProductIds![
                                                     index]
                                                 .flatPhotoPath
                                                 ?.filePath),
-                                        mostViewedProductThumbnail: CategoryBanner(
-                                            filePath: boutique
-                                                .childCategoriesForProductIds![
-                                                    index]
-                                                .mostViewedProductThumbnail
-                                                ?.filePath),
+                                        mostViewedProductThumbnail:
+                                            CategoryBanner(
+                                                filePath: boutique
+                                                    .mainCategoriesForProductIds![
+                                                        index]
+                                                    .mostViewedProductThumbnail
+                                                    ?.filePath),
                                       )
                                     ]),
                                   ),
@@ -341,7 +339,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                               child: MyCachedNetworkImage(
                                   radius: 15.r,
                                   imageUrl: boutique
-                                      .childCategoriesForProductIds![index]
+                                      .mainCategoriesForProductIds![index]
                                       .mostViewedProductThumbnail!
                                       .filePath!,
                                   width: 90.w,

@@ -19,8 +19,9 @@ class PutClient<T> extends BaseApi<T> {
         _data = requestPrams.data,
         _queryParameters = requestPrams.queryParameters,
         _endpoint = requestPrams.endpoint,
-  _receiveTimeout = requestPrams.receiveTimeout,
-  _sendTimeout = requestPrams.sendTimeout, super(serverName);
+        _receiveTimeout = requestPrams.receiveTimeout,
+        _sendTimeout = requestPrams.sendTimeout,
+        super(serverName);
 
   final RequestConfig<T> requestPrams;
   final Stopwatch stopWatch = Stopwatch();
@@ -34,7 +35,7 @@ class PutClient<T> extends BaseApi<T> {
   final dynamic _queryParameters;
   final dynamic _data;
   final String _endpoint;
-  final ServerName serverName ;
+  final ServerName serverName;
 
   @override
   Future<T> call() async {
@@ -49,7 +50,8 @@ class PutClient<T> extends BaseApi<T> {
           queryParameters: _queryParameters,
         ),
         options: options.copyWith(
-            receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout),
+            receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+            sendTimeout: _sendTimeout ?? options.sendTimeout),
         data: _data,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
@@ -64,8 +66,7 @@ class PutClient<T> extends BaseApi<T> {
           response.requestOptions.method,
           response.requestOptions.queryParameters,
           response.data is! FormData ? response.data : {'data': 'formData'},
-          responseTime: stopWatch.elapsed.toString()
-      );
+          responseTime: stopWatch.elapsed.toString());
       log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());
       if (response.statusCode == StatusCode.operationSucceeded.code) {
@@ -75,7 +76,9 @@ class PutClient<T> extends BaseApi<T> {
 
         return _fromJson!(response.data);
       } else {
-        throw getException(statusCode: response.statusCode!, message: response.data['message']);
+        throw getException(
+            statusCode: response.statusCode!,
+            message: response.data['message']);
       }
     } catch (exception) {
       rethrow;

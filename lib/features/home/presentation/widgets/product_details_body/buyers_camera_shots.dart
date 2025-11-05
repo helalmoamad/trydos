@@ -29,7 +29,7 @@ class BuyersCameraShots extends StatefulWidget {
 }
 
 class _BuyersCameraShotsState extends State<BuyersCameraShots> {
-  List<productListingModel.SyncColorImage>? syncColorImageList;
+  List<productListingModel.SyncColorImageProduct>? syncColorImageList;
 
   List<String> images = [];
 

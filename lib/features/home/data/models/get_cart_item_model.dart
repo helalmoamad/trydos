@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/common/helper/helper_functions.dart';
+
 GetCartShippingItemsModel getCartShippingItemsModelFromJson(String str) =>
     GetCartShippingItemsModel.fromJson(json.decode(str));
 
@@ -373,7 +375,9 @@ class Cart {
                         : List<VariationCart>.from(json["variations"]
                             .map((x) => VariationCart.fromJson(x)))
                 : [],
-        variant: json["variant"],
+        variant: json["variant"] == null
+            ? null
+            : HelperFunctions.replaceDashAfterFirst(json["variant"]),
         availableQuantity: json["available_quantity"],
         maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
@@ -670,11 +674,18 @@ class VariationCart {
       );
 
   factory VariationCart.fromJson(Map<String, dynamic> json) => VariationCart(
-        sizeOption: json["size_options"],
-        colorOption: json["color_options"],
-        size: json["Size"],
-        color: json["color"],
-      );
+      sizeOption: json["size_options"] == null
+          ? null
+          : json["size_options"].toString().replaceAll("-", "_"),
+      colorOption: json["color_options"] == null
+          ? null
+          : json["color_options"].toString().replaceAll("-", "_"),
+      size: json["Size"] == null
+          ? null
+          : json["Size"].toString().replaceAll("-", "_"),
+      color: json["color"] == null
+          ? null
+          : json["color"].toString().replaceAll("-", "_"));
 
   Map<String, dynamic> toJson() => {
         "size_options": sizeOption,

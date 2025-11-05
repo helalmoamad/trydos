@@ -54,11 +54,10 @@ class AddStoryCard extends StatelessWidget {
                             height: 60.r,
                             width: 60.r,
                             imageUrl: (collectionStoryModel.photoPath
-                                        .toString()
-                                        .contains("cloudinary")
-                                    ? collectionStoryModel.photoPath
-                                    : "${dotenv.env['Images_Url']}") +
-                                collectionStoryModel.photoPath,
+                                    .toString()
+                                    .contains("cloudinary")
+                                ? collectionStoryModel.photoPath
+                                : "${dotenv.env['Images_Url']}${collectionStoryModel.photoPath}"),
                             imageFit: BoxFit.cover,
                           ),
                     18.horizontalSpace,

@@ -70,6 +70,16 @@ class DeleteFcmTokenEvent extends AuthEvent {
   List<Object?> get props => [userId, fcmToken];
 }
 
+class GenerateTokenForCommentEvent extends AuthEvent {
+  final String? userId;
+  final String? mobilePhone;
+  final String? otpIdToken;
+  GenerateTokenForCommentEvent(
+      {this.userId, this.mobilePhone, this.otpIdToken});
+  @override
+  List<Object?> get props => [userId, mobilePhone, otpIdToken];
+}
+
 class SendOtpEvent extends AuthEvent {
   final int isViaWhatsApp;
   final String phone;

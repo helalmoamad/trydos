@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
+
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -82,7 +84,6 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.messageType);
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
@@ -46,8 +45,8 @@ class UpdateProfileParams {
         "name": name,
         "phone": phone,
         "email": email,
-        "image": image,
-        "id_token":idToken,
+        "image": (image ?? "").contains("/") ? image?.split("/").last : image,
+        "id_token": idToken,
         "tall": tall,
         "weight": weight,
         "gender": gender,

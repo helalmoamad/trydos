@@ -4,107 +4,287 @@
 
 import 'dart:convert';
 
-GetUserCountryResponseModel getUserCountryResponseModelFromJson(String str) => GetUserCountryResponseModel.fromJson(json.decode(str));
+GetUserCountryResponseModel getUserCountryResponseModelFromJson(String str) =>
+    GetUserCountryResponseModel.fromJson(json.decode(str));
 
-String getUserCountryResponseModelToJson(GetUserCountryResponseModel data) => json.encode(data.toJson());
+String getUserCountryResponseModelToJson(GetUserCountryResponseModel data) =>
+    json.encode(data.toJson());
 
 class GetUserCountryResponseModel {
-  final String? status;
+  final String? aboutUs;
+  final String? ip;
+  final bool? success;
+  final String? type;
+  final String? continent;
+  final String? continentCode;
   final String? country;
   final String? countryCode;
   final String? region;
-  final String? regionName;
+  final String? regionCode;
   final String? city;
-  final String? zip;
-  final double? lat;
-  final double? lon;
-  final String? timezone;
-  final String? isp;
-  final String? org;
-  final String? getUserCountryResponseModelAs;
-  final String? query;
+  final double? latitude;
+  final double? longitude;
+  final bool? isEu;
+  final String? postal;
+  final String? callingCode;
+  final String? capital;
+  final String? borders;
+  final Flag? flag;
+  final Connection? connection;
+  final Timezone? timezone;
 
   GetUserCountryResponseModel({
-    this.status,
+    this.aboutUs,
+    this.ip,
+    this.success,
+    this.type,
+    this.continent,
+    this.continentCode,
     this.country,
     this.countryCode,
     this.region,
-    this.regionName,
+    this.regionCode,
     this.city,
-    this.zip,
-    this.lat,
-    this.lon,
+    this.latitude,
+    this.longitude,
+    this.isEu,
+    this.postal,
+    this.callingCode,
+    this.capital,
+    this.borders,
+    this.flag,
+    this.connection,
     this.timezone,
-    this.isp,
-    this.org,
-    this.getUserCountryResponseModelAs,
-    this.query,
   });
 
   GetUserCountryResponseModel copyWith({
-    String? status,
+    String? aboutUs,
+    String? ip,
+    bool? success,
+    String? type,
+    String? continent,
+    String? continentCode,
     String? country,
     String? countryCode,
     String? region,
-    String? regionName,
+    String? regionCode,
     String? city,
-    String? zip,
-    double? lat,
-    double? lon,
-    String? timezone,
-    String? isp,
-    String? org,
-    String? getUserCountryResponseModelAs,
-    String? query,
+    double? latitude,
+    double? longitude,
+    bool? isEu,
+    String? postal,
+    String? callingCode,
+    String? capital,
+    String? borders,
+    Flag? flag,
+    Connection? connection,
+    Timezone? timezone,
   }) =>
       GetUserCountryResponseModel(
-        status: status ?? this.status,
+        aboutUs: aboutUs ?? this.aboutUs,
+        ip: ip ?? this.ip,
+        success: success ?? this.success,
+        type: type ?? this.type,
+        continent: continent ?? this.continent,
+        continentCode: continentCode ?? this.continentCode,
         country: country ?? this.country,
         countryCode: countryCode ?? this.countryCode,
         region: region ?? this.region,
-        regionName: regionName ?? this.regionName,
+        regionCode: regionCode ?? this.regionCode,
         city: city ?? this.city,
-        zip: zip ?? this.zip,
-        lat: lat ?? this.lat,
-        lon: lon ?? this.lon,
+        latitude: latitude ?? this.latitude,
+        longitude: longitude ?? this.longitude,
+        isEu: isEu ?? this.isEu,
+        postal: postal ?? this.postal,
+        callingCode: callingCode ?? this.callingCode,
+        capital: capital ?? this.capital,
+        borders: borders ?? this.borders,
+        flag: flag ?? this.flag,
+        connection: connection ?? this.connection,
         timezone: timezone ?? this.timezone,
-        isp: isp ?? this.isp,
-        org: org ?? this.org,
-        getUserCountryResponseModelAs: getUserCountryResponseModelAs ?? this.getUserCountryResponseModelAs,
-        query: query ?? this.query,
       );
 
-  factory GetUserCountryResponseModel.fromJson(Map<String, dynamic> json) => GetUserCountryResponseModel(
-    status: json["status"],
-    country: json["country"],
-    countryCode: json["countryCode"],
-    region: json["region"],
-    regionName: json["regionName"],
-    city: json["city"],
-    zip: json["zip"],
-    lat: json["lat"]?.toDouble(),
-    lon: json["lon"]?.toDouble(),
-    timezone: json["timezone"],
-    isp: json["isp"],
-    org: json["org"],
-    getUserCountryResponseModelAs: json["as"],
-    query: json["query"],
-  );
+  factory GetUserCountryResponseModel.fromJson(Map<String, dynamic> json) =>
+      GetUserCountryResponseModel(
+        aboutUs: json["About_Us"],
+        ip: json["ip"],
+        success: json["success"],
+        type: json["type"],
+        continent: json["continent"],
+        continentCode: json["continent_code"],
+        country: json["country"],
+        countryCode: json["country_code"],
+        region: json["region"],
+        regionCode: json["region_code"],
+        city: json["city"],
+        latitude: json["latitude"]?.toDouble(),
+        longitude: json["longitude"]?.toDouble(),
+        isEu: json["is_eu"],
+        postal: json["postal"],
+        callingCode: json["calling_code"],
+        capital: json["capital"],
+        borders: json["borders"],
+        flag: json["flag"] == null ? null : Flag.fromJson(json["flag"]),
+        connection: json["connection"] == null
+            ? null
+            : Connection.fromJson(json["connection"]),
+        timezone: json["timezone"] == null
+            ? null
+            : Timezone.fromJson(json["timezone"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "country": country,
-    "countryCode": countryCode,
-    "region": region,
-    "regionName": regionName,
-    "city": city,
-    "zip": zip,
-    "lat": lat,
-    "lon": lon,
-    "timezone": timezone,
-    "isp": isp,
-    "org": org,
-    "as": getUserCountryResponseModelAs,
-    "query": query,
-  };
+        "About_Us": aboutUs,
+        "ip": ip,
+        "success": success,
+        "type": type,
+        "continent": continent,
+        "continent_code": continentCode,
+        "country": country,
+        "country_code": countryCode,
+        "region": region,
+        "region_code": regionCode,
+        "city": city,
+        "latitude": latitude,
+        "longitude": longitude,
+        "is_eu": isEu,
+        "postal": postal,
+        "calling_code": callingCode,
+        "capital": capital,
+        "borders": borders,
+        "flag": flag?.toJson(),
+        "connection": connection?.toJson(),
+        "timezone": timezone?.toJson(),
+      };
+}
+
+class Connection {
+  final int? asn;
+  final String? org;
+  final String? isp;
+  final String? domain;
+
+  Connection({
+    this.asn,
+    this.org,
+    this.isp,
+    this.domain,
+  });
+
+  Connection copyWith({
+    int? asn,
+    String? org,
+    String? isp,
+    String? domain,
+  }) =>
+      Connection(
+        asn: asn ?? this.asn,
+        org: org ?? this.org,
+        isp: isp ?? this.isp,
+        domain: domain ?? this.domain,
+      );
+
+  factory Connection.fromJson(Map<String, dynamic> json) => Connection(
+        asn: json["asn"],
+        org: json["org"],
+        isp: json["isp"],
+        domain: json["domain"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "asn": asn,
+        "org": org,
+        "isp": isp,
+        "domain": domain,
+      };
+}
+
+class Flag {
+  final String? img;
+  final String? emoji;
+  final String? emojiUnicode;
+
+  Flag({
+    this.img,
+    this.emoji,
+    this.emojiUnicode,
+  });
+
+  Flag copyWith({
+    String? img,
+    String? emoji,
+    String? emojiUnicode,
+  }) =>
+      Flag(
+        img: img ?? this.img,
+        emoji: emoji ?? this.emoji,
+        emojiUnicode: emojiUnicode ?? this.emojiUnicode,
+      );
+
+  factory Flag.fromJson(Map<String, dynamic> json) => Flag(
+        img: json["img"],
+        emoji: json["emoji"],
+        emojiUnicode: json["emoji_unicode"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "img": img,
+        "emoji": emoji,
+        "emoji_unicode": emojiUnicode,
+      };
+}
+
+class Timezone {
+  final String? id;
+  final String? abbr;
+  final bool? isDst;
+  final int? offset;
+  final String? utc;
+  final DateTime? currentTime;
+
+  Timezone({
+    this.id,
+    this.abbr,
+    this.isDst,
+    this.offset,
+    this.utc,
+    this.currentTime,
+  });
+
+  Timezone copyWith({
+    String? id,
+    String? abbr,
+    bool? isDst,
+    int? offset,
+    String? utc,
+    DateTime? currentTime,
+  }) =>
+      Timezone(
+        id: id ?? this.id,
+        abbr: abbr ?? this.abbr,
+        isDst: isDst ?? this.isDst,
+        offset: offset ?? this.offset,
+        utc: utc ?? this.utc,
+        currentTime: currentTime ?? this.currentTime,
+      );
+
+  factory Timezone.fromJson(Map<String, dynamic> json) => Timezone(
+        id: json["id"],
+        abbr: json["abbr"],
+        isDst: json["is_dst"],
+        offset: json["offset"],
+        utc: json["utc"],
+        currentTime: json["current_time"] == null
+            ? null
+            : DateTime.parse(json["current_time"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "abbr": abbr,
+        "is_dst": isDst,
+        "offset": offset,
+        "utc": utc,
+        "current_time": currentTime?.toIso8601String(),
+      };
 }

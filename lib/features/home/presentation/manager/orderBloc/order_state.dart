@@ -20,13 +20,7 @@ part 'order_state.g.dart';
 
 enum PlaceOrderStatus { init, loading, success, failure, unavailable }
 
-enum GetOrdersByOrderGroupIDStatus {
-  init,
-  loading,
-  loadingForRating,
-  success,
-  failure
-}
+enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
 
 enum GetOrdersByCartGroupIDStatus { init, loading, success, failure }
 
@@ -60,9 +54,9 @@ enum GetProductColorSizeSyncAttributeStatus { init, loading, success, failure }
 
 enum ChangeOrderItemVariantStatus { init, loading, success, failure }
 
-enum AddOrderCommentStatus { init, loading, success, failure }
+//enum AddOrderCommentStatus { init, loading, success, failure }
 
-enum UpdateOrderCommentStatus { init, loading, success, failure }
+//enum UpdateOrderCommentStatus { init, loading, success, failure }
 
 enum GetReturnReasonsStatus { init, loading, success, failure }
 
@@ -126,8 +120,8 @@ class OrderState extends Equatable {
     this.resultSearch = const [],
     this.provincesByIso = const [],
     this.changeOrderItemVariantStatus = ChangeOrderItemVariantStatus.init,
-    this.addOrderCommentStatus = AddOrderCommentStatus.init,
-    this.updateOrderCommentStatus = UpdateOrderCommentStatus.init,
+    // this.addOrderCommentStatus = AddOrderCommentStatus.init,
+    //this.updateOrderCommentStatus = UpdateOrderCommentStatus.init,
     this.getReturnReasonsStatus = GetReturnReasonsStatus.init,
     this.returnReasonsModel,
     this.storeReturnRequestStatus,
@@ -177,9 +171,9 @@ class OrderState extends Equatable {
       getProductColorSizeSyncAttributeStatus;
   final ColorSizeForProductModel? colorSizeForProductModel;
   final ChangeOrderItemVariantStatus? changeOrderItemVariantStatus;
-  final AddOrderCommentStatus? addOrderCommentStatus;
+  //final AddOrderCommentStatus? addOrderCommentStatus;
   final UpdateReturnRequestProductStatus? updateReturnRequestProductStatus;
-  final UpdateOrderCommentStatus? updateOrderCommentStatus;
+  // final UpdateOrderCommentStatus? updateOrderCommentStatus;
   final GetReturnReasonsStatus? getReturnReasonsStatus;
   final ReturnReasonsModel? returnReasonsModel;
   final UploadImagesForReturnProductStatus uploadImagesForReturnProductStatus;
@@ -226,8 +220,8 @@ class OrderState extends Equatable {
         getProductColorSizeSyncAttributeStatus,
         colorSizeForProductModel,
         changeOrderItemVariantStatus,
-        addOrderCommentStatus,
-        updateOrderCommentStatus,
+        // addOrderCommentStatus,
+        // updateOrderCommentStatus,
         getReturnReasonsStatus,
         returnReasonsModel,
         storeReturnRequestProductStatus,
@@ -281,8 +275,8 @@ class OrderState extends Equatable {
         getProductColorSizeSyncAttributeStatus,
     final ColorSizeForProductModel? colorSizeForProductModel,
     final ChangeOrderItemVariantStatus? changeOrderItemVariantStatus,
-    final AddOrderCommentStatus? addOrderCommentStatus,
-    final UpdateOrderCommentStatus? updateOrderCommentStatus,
+    // final AddOrderCommentStatus? addOrderCommentStatus,
+    //final UpdateOrderCommentStatus? updateOrderCommentStatus,
     final GetReturnReasonsStatus? getReturnReasonsStatus,
     final ReturnReasonsModel? returnReasonsModel,
     final StoreReturnRequestProductStatus? storeReturnRequestProductStatus,
@@ -357,10 +351,10 @@ class OrderState extends Equatable {
           colorSizeForProductModel ?? this.colorSizeForProductModel,
       changeOrderItemVariantStatus:
           changeOrderItemVariantStatus ?? this.changeOrderItemVariantStatus,
-      addOrderCommentStatus:
-          addOrderCommentStatus ?? this.addOrderCommentStatus,
-      updateOrderCommentStatus:
-          updateOrderCommentStatus ?? this.updateOrderCommentStatus,
+      //   addOrderCommentStatus:
+      //       addOrderCommentStatus ?? this.addOrderCommentStatus,
+      //  updateOrderCommentStatus:
+      //    updateOrderCommentStatus ?? this.updateOrderCommentStatus,
       getReturnReasonsStatus:
           getReturnReasonsStatus ?? this.getReturnReasonsStatus,
       returnReasonsModel: returnReasonsModel ?? this.returnReasonsModel,

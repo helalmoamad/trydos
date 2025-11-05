@@ -93,7 +93,7 @@ class Data {
 
 class StartingSetting {
   final List<NotificationType>? notificationTypes;
-  final int? decimalPointSettings;
+  final double? decimalPointSettings;
   final List<Language>? languages;
   final int? androidMinVersion;
   final int? iosMinVersion;
@@ -116,7 +116,7 @@ class StartingSetting {
 
   StartingSetting copyWith({
     List<NotificationType>? notificationTypes,
-    int? decimalPointSettings,
+    double? decimalPointSettings,
     List<Language>? languages,
     int? androidMinVersion,
     int? iosMinVersion,
@@ -143,7 +143,8 @@ class StartingSetting {
             ? []
             : List<NotificationType>.from(json["notificationTypes"]!
                 .map((x) => NotificationType.fromJson(x))),
-        decimalPointSettings: json["decimal_point_settings"],
+        decimalPointSettings:
+            double.tryParse(json["decimal_point_settings"].toString()),
         languages: json["languages"] == null
             ? []
             : List<Language>.from(

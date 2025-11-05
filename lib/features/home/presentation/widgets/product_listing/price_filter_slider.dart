@@ -52,7 +52,7 @@ class PriceFilter extends StatefulWidget {
   final bool fromHomeSearch;
   final String? category;
   final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
-  final int decimalPoint;
+  final double decimalPoint;
 
   @override
   State<PriceFilter> createState() => _PriceFilterState();
@@ -239,7 +239,7 @@ class _PriceFilterState extends State<PriceFilter> {
                           return Row(
                             children: [
                               MyTextWidget(
-                                'Min ${filterData.item1.toStringAsFixed(widget.decimalPoint)} ',
+                                'Min ${filterData.item1.toStringAsFixed(widget.decimalPoint.round())} ',
                                 style: textTheme.titleMedium?.rq.copyWith(
                                     color: filterData.item1 >
                                             (widget.pricesFiltersRanges
@@ -270,7 +270,7 @@ class _PriceFilterState extends State<PriceFilter> {
                           return Row(
                             children: [
                               MyTextWidget(
-                                'Max ${filterData.item2.toStringAsFixed(widget.decimalPoint)} ',
+                                'Max ${filterData.item2.toStringAsFixed(widget.decimalPoint.round())} ',
                                 style: textTheme.titleMedium?.rq.copyWith(
                                     color: filterData.item2 <
                                             widget.pricesFiltersRanges

@@ -7,16 +7,18 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -25,21 +27,57 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
 
-class ProductDetailsSheetCommentsContent extends StatelessWidget {
+class ProductDetailsSheetCommentsContent extends StatefulWidget {
   final String productId;
   final String productSlug;
   final String productSlugForTopic;
+  final String currentVariant;
+  final String? ownerType;
+  final String? ownerId;
+  final ValueNotifier<bool>? isVerified;
+  final ScrollController? scrollController;
   ProductDetailsSheetCommentsContent(
       {super.key,
       this.scrollController,
       required this.productSlug,
+      required this.isVerified,
       required this.productSlugForTopic,
-      required this.productId});
+      required this.ownerType,
+      required this.ownerId,
+      required this.productId,
+      required this.currentVariant});
+
+  @override
+  State<ProductDetailsSheetCommentsContent> createState() =>
+      _ProductDetailsSheetCommentsContentState();
+}
+
+class _ProductDetailsSheetCommentsContentState
+    extends State<ProductDetailsSheetCommentsContent> {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-  final ScrollController? scrollController;
+
   final TextEditingController addCommentController = TextEditingController();
 //  final ValueNotifier<bool> addCommentButtonToggleNotifier =
   //     ValueNotifier(false);
+  @override
+  void initState() {
+    super.initState();
+    widget.scrollController?.addListener(() {
+      if (widget.scrollController!.offset >=
+          (widget.scrollController!.position.maxScrollExtent * 0.6)) {
+        GetIt.I<HomeBloc>().add(GetFqaCommentsEvent(
+          productId: widget.productId,
+        ));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.scrollController?.removeListener(() {});
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     LastPagesTracker.push("ProductDetailsSheetCommentsContent Page");
@@ -47,31 +85,56 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
+
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
-          previous.addCommentStatus != current.addCommentStatus,
+          previous.createCommentRatingStatus !=
+              current.createCommentRatingStatus ||
+          previous.deleteOrderCommentRatingStatus !=
+              current.deleteOrderCommentRatingStatus ||
+          previous.updateOrderCommentRatingStatus !=
+              current.updateOrderCommentRatingStatus ||
+          previous.getFqaCommentsPaginationModel?['all']?.paginationStatus !=
+              current.getFqaCommentsPaginationModel?['all']?.paginationStatus,
       builder: (context, state) {
-        /*if ((state.cachedProductWithoutRelatedProductsModel[productId]?.product
-                    ?.commentsCount ??
-                0) <
-            1) {
-          return cupertino.SizedBox.shrink();
-        }*/
         return ScrollConfiguration(
           behavior: const cupertino.CupertinoScrollBehavior(),
           child: ListView(
-            controller: scrollController,
-            physics: const cupertino.ClampingScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             padding: EdgeInsets.zero,
             children: [
               10.verticalSpace,
               !(prefsRepository.isVerifiedPhone ?? false)
                   ? Center(
-                      child: MyTextWidget(
-                          LocaleKeys.please_login_to_add_comment.tr(),
-                          style: context.textTheme.bodyMedium?.rr
-                              .copyWith(color: Colors.red, fontSize: 14)))
+                      child: GestureDetector(
+                          onTap: () {
+                            if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
+                                false)) {
+                              Future.delayed(const Duration(seconds: 1), () {
+                                widget.isVerified?.value = false;
+                                if ((GetIt.I<PrefsRepository>()
+                                        .isVerifiedPhonePeforeExpiredToken ??
+                                    false)) {
+                                  GetIt.I<AuthBloc>().add(SendOtpEvent(
+                                      phone: GetIt.I<PrefsRepository>()
+                                          .myPhoneNumber!,
+                                      isViaWhatsApp: 1));
+                                }
+                              });
+                            }
+                          },
+                          child: SizedBox(
+                              width: 1.sw,
+                              height: 30,
+                              child: Center(
+                                  child: MyTextWidget(
+                                      LocaleKeys.please_login_to_add_comment
+                                          .tr(),
+                                      style: context.textTheme.bodyMedium?.rr
+                                          .copyWith(
+                                              color: Colors.red,
+                                              fontSize: 14))))))
                   : Container(
                       height: 65,
                       decoration: BoxDecoration(
@@ -91,13 +154,14 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                   if (addCommentController.text.isEmpty) {
                                     return;
                                   }
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      AddCommentEvent(
-                                          productSlugForTopic:
-                                              productSlugForTopic,
-                                          productSlug: productSlug,
-                                          productId: productId,
-                                          comment: addCommentController.text));
+                                  BlocProvider.of<HomeBloc>(context)
+                                      .add(CreateCommentRatingEvent(
+                                    productId: widget.productId,
+                                    ownerId: widget.ownerId,
+                                    ownerType: widget.ownerType,
+                                    variant: widget.currentVariant,
+                                    text: val,
+                                  ));
 
                                   //////////////////////////////////////////////////////////
                                   // FirebaseAnalyticsService.logEventForSession(
@@ -119,8 +183,12 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                   padding: HWEdgeInsets.only(
                                       right: 20.0, top: 15, bottom: 15),
                                   child: IconButton(
-                                    icon: (state.addCommentStatus ==
-                                            AddCommentStatus.loading)
+                                    icon: (state.createCommentRatingStatus ==
+                                                CreateCommentRatingStatus
+                                                    .loading) ||
+                                            (state.updateOrderCommentRatingStatus ==
+                                                UpdateOrderCommentRatingStatus
+                                                    .loading)
                                         ? const Icon(
                                             Icons.hourglass_bottom_rounded,
                                             color: Colors.blue)
@@ -132,14 +200,14 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                       /*    if (addCommentController.text.isEmpty) {
                                         return;
                                       }*/
-                                      BlocProvider.of<HomeBloc>(context).add(
-                                          AddCommentEvent(
-                                              productSlugForTopic:
-                                                  productSlugForTopic,
-                                              productSlug: productSlug,
-                                              productId: productId,
-                                              comment:
-                                                  addCommentController.text));
+                                      BlocProvider.of<HomeBloc>(context)
+                                          .add(CreateCommentRatingEvent(
+                                        productId: widget.productId,
+                                        variant: widget.currentVariant,
+                                        ownerId: widget.ownerId,
+                                        ownerType: widget.ownerType,
+                                        text: addCommentController.text,
+                                      ));
 
                                       //////////////////////////////////////////////////////////
                                       // FirebaseAnalyticsService
@@ -201,49 +269,75 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              ...List.generate(
-                  state.cachedProductWithoutRelatedProductsModel[productId]
-                          ?.product?.comments?.length ??
-                      0,
-                  (index) => Column(
-                        children: [
-                          CommentCard(
-                            comment: state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productId]
-                                    ?.product
-                                    ?.comments?[index]
-                                    .comment ??
-                                "",
-                            imageUrl: state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productId]
-                                    ?.product
-                                    ?.comments?[index]
-                                    .customer!
-                                    .image ??
-                                "",
-                            names: state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productId]
-                                    ?.product
-                                    ?.comments?[index]
-                                    .customer!
-                                    .name ??
-                                "",
-                            date: HelperFunctions.getDatesInFormat(state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productId]
-                                    ?.product
-                                    ?.comments?[index]
-                                    .createdAt ??
-                                DateTime.now()),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          )
-                        ],
-                      ))
+              SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    controller: widget.scrollController,
+                    itemBuilder: (context, index) {
+                      if (index ==
+                          (state.getFqaCommentsPaginationModel?['all']?.items
+                                  .length ??
+                              0)) {
+                        return SizedBox(
+                            height: 120,
+                            width: 1.sw,
+                            child: state.getFqaCommentsPaginationModel?['all']
+                                        ?.paginationStatus ==
+                                    PaginationStatus.loading
+                                ? TrydosLoader(
+                                    size: 24,
+                                  )
+                                : const SizedBox.shrink());
+                      }
+                      return Padding(
+                        padding: HWEdgeInsets.symmetric(vertical: 2),
+                        child: CommentCard(
+                          state: state,
+                          commentHasReply: state
+                              .getFqaCommentsPaginationModel?['all']
+                              ?.items[index]
+                              .hasReply,
+                          userId: state.getFqaCommentsPaginationModel?['all']
+                                  ?.items[index].customer?.id ??
+                              "",
+                          tapIndex: state.tapCommentIndex,
+                          imageUrl: state.getFqaCommentsPaginationModel?['all']
+                                  ?.items[index].customer?.image ??
+                              "",
+                          index: index,
+                          ownerId: widget.ownerId,
+                          ownerType: widget.ownerType,
+                          commentId: state.getFqaCommentsPaginationModel?['all']
+                                  ?.items[index].id ??
+                              "",
+                          currentVariant: state
+                                  .getFqaCommentsPaginationModel?['all']
+                                  ?.items[index]
+                                  .variant ??
+                              "",
+                          productId: state.getFqaCommentsPaginationModel?['all']
+                                  ?.items[index].productId ??
+                              "",
+                          names: state.getFqaCommentsPaginationModel?['all']
+                                  ?.items[index].customer?.name ??
+                              "",
+                          comment: state.getFqaCommentsPaginationModel?['all']
+                                  ?.items[index].comment ??
+                              "",
+                          date: state.getFqaCommentsPaginationModel?['all']
+                                  ?.items[index].createdAt
+                                  ?.toString() ??
+                              "",
+                        ),
+                      );
+                    },
+                    itemCount: (state.getFqaCommentsPaginationModel?['all']
+                                ?.items.length ??
+                            0) +
+                        1,
+                    physics: const cupertino.ClampingScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                  )),
             ],
           ),
         );
@@ -252,20 +346,153 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class CommentCard extends StatelessWidget {
   final String imageUrl;
   final String date;
+  final int index;
+  final String? ownerType;
+  final String? ownerId;
   final String names;
+  final bool? commentHasReply;
+  final String userId;
   final String comment;
+  final String commentId;
+  final String currentVariant;
+  final String productId;
+  final HomeState state;
+  final int tapIndex;
   const CommentCard(
       {super.key,
       required this.imageUrl,
+      required this.commentHasReply,
+      required this.tapIndex,
+      required this.state,
+      required this.ownerType,
+      required this.ownerId,
+      required this.userId,
+      required this.index,
+      required this.productId,
+      required this.commentId,
+      required this.currentVariant,
       required this.names,
       required this.comment,
       required this.date});
 
   @override
   Widget build(BuildContext context) {
+    void _showEditBottomSheet(BuildContext context, String initialText) {
+      final TextEditingController _controller =
+          TextEditingController(text: initialText);
+      final ValueNotifier<bool> isNotEmptyNotifier =
+          ValueNotifier(_controller.text.trim().isNotEmpty);
+      _controller.addListener(() {
+        isNotEmptyNotifier.value = _controller.text.trim().isNotEmpty;
+      });
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        backgroundColor: Colors.white,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 24,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 48,
+                    height: 5,
+                    margin: const EdgeInsets.only(bottom: 18),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    LocaleKeys.edit_comment_title.tr(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: LocaleKeys.edit_comment_hint.tr(),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 14),
+                    ),
+                    maxLines: 6,
+                    minLines: 3,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    const Spacer(),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: isNotEmptyNotifier,
+                      builder: (context, isNotEmpty, _) {
+                        if (!isNotEmpty) return const SizedBox.shrink();
+                        return CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.green,
+                          child: IconButton(
+                            icon: const Icon(Icons.send, color: Colors.white),
+                            onPressed: () {
+                              BlocProvider.of<HomeBloc>(context)
+                                  .add(UpdateCommentRatingEvent(
+                                commentId: commentId,
+                                productId: productId,
+                                ownerId: ownerId,
+                                ownerType: ownerType,
+                                tapCommentIndex: index,
+                                variant: currentVariant,
+                                text: _controller.text,
+                              ));
+                              Navigator.pop(context);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
     String extractInitialsAndAppendXXX(String text) {
       final words = text.trim().split(RegExp(r'\s+'));
       final result =
@@ -363,6 +590,60 @@ class CommentCard extends StatelessWidget {
                     maxLines: 5,
                   ),
                 ),
+                userId != GetIt.I<PrefsRepository>().myMarketId
+                    ? const SizedBox.shrink()
+                    : Flexible(
+                        child: SizedBox(
+                            width: 1.sw,
+                            height: 40,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                state.deleteOrderCommentRatingStatus ==
+                                            DeleteOrderCommentRatingStatus
+                                                .loading &&
+                                        tapIndex == index
+                                    ? TrydosLoader(
+                                        size: 15,
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          BlocProvider.of<HomeBloc>(context)
+                                              .add(DeleteCommentRatingEvent(
+                                            commentId: commentId,
+                                            productId: productId,
+                                            tapCommentIndex: index,
+                                          ));
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppAssets.deletecartSvg,
+                                          height: 20,
+                                        )),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                (commentHasReply ?? false)
+                                    ? const SizedBox.shrink()
+                                    : state.updateOrderCommentRatingStatus ==
+                                                UpdateOrderCommentRatingStatus
+                                                    .loading &&
+                                            tapIndex == index
+                                        ? TrydosLoader(
+                                            size: 15,
+                                          )
+                                        : GestureDetector(
+                                            onTap: () {
+                                              _showEditBottomSheet(
+                                                  context, comment);
+                                            },
+                                            child: SvgPicture.asset(
+                                              AppAssets.editSvg,
+                                              // ignore: deprecated_member_use
+                                              color: Colors.green,
+                                              height: 20,
+                                            ))
+                              ],
+                            )))
               ],
             ),
           )

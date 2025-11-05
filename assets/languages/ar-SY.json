@@ -11,12 +11,14 @@
   "full": "كامل",
   "the_product_price_when_returned": "سعر المنتج عند الإرجاع",
   "alert": "تنبيه",
+  "waiting_for_supplier_response": "بانتظار رد المورد",
   "typing": "يكتب...",
   "recording": "يسجل مقطع صوتي...",
   "sending_file": "يرسل ملف...",
   "sending_picture": "يرسل صورة...",
   "sending_video": "يرسل مقطع فيديو...",
   "gallery": "المعرض",
+ 
   "camera": "الكاميرا",
   "choose_photo_or_video_from_gallery_or_camera": "اختر صورة او فيديو من المعرض او الكاميرا",
   "image_preview": "معاينة الصورة",
@@ -645,4 +647,28 @@
   ,"add_more_to_bag": "أضف المزيد إلى السلة"
   ,"delivery_worker": "عامل التوصيل"
   ,"recommend_products": "المنتجات الموصى بها"
+  ,"edit_comment_title": "تعديل التعليق"
+  ,"edit_comment_hint": "اكتب التعديل هنا ..."
+  ,"must_login_to_edit_comment": "يرجى تسجيل الدخول لتعديل التعليق"
+  ,"must_login_to_delete_comment": "يرجى تسجيل الدخول لحذف التعليق"
+  ,"confirm_delete_comment_title": "تأكيد حذف التعليق"
+  ,"confirm_delete_comment_message": "هل أنت متأكد أنك تريد حذف هذا التعليق؟"
+  ,"confirm_delete": "تأكيد الحذف"
+  ,"delete_comment_success": "تم حذف التعليق بنجاح"
+  ,"delete_comment_failed": "فشل حذف التعليق"
+  ,"edit_comment_success": "تم تعديل التعليق بنجاح"
+  ,"edit_comment_failed": "فشل تعديل التعليق"
+  ,"quality": "الجودة",
+  "complaint": "الشكوى",
+  "recommendation": "توصية",
+  "no_commends_found": "لا توجد تعليقات",
+  "choose_a_country": "اختر دولة",
+  "country_not_available": "الدولة غير متوفرة",
+  "expected_shipping_delivery_date": "تاريخ الشحن والتسليم المتوقع",
+  "work_days_at_your_address_in": "أيام العمل في عنوانك في",
+  "after_receiving_product_return_without_conditions": "بعد استلام المنتج يمكنك إرجاعه بدون شروط",
+  "or_reasons_with_complete_ease_and": "أو أسباب بكل سهولة و"
+  ,"pack": "طرد"
+  ,"dear": "عزيزي"
+  ,"product": "المنتج"
 }

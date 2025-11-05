@@ -697,7 +697,8 @@ class _HomePageState extends State<HomePage> {
                                 0) {
                           return sliverListSeparated(
                             addAutomaticKeepAlives: false,
-                            addRepaintBoundaries: false,
+
+                            addSemanticIndexes: false,
 
                             key: TestVariables.kTestMode
                                 ? const Key(
@@ -1334,7 +1335,9 @@ class _HomePageState extends State<HomePage> {
                                                                   .cartCollection,
                                                       builder:
                                                           (context, state) {
-                                                        List<filter.Color>?
+                                                        List<
+                                                                filter
+                                                                .ProductColor>?
                                                             productColors = [];
                                                         if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                                 GetProductDetailWithoutSimilarRelatedProductsStatus

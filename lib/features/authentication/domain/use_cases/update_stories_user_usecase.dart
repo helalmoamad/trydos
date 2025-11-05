@@ -36,6 +36,7 @@ class UpdateStoriesUserParams {
         "name": name,
         "otp_id_token": _prefsRepository.idToken,
         "mobile_phone": phone,
-        "photo_path": photo
+        "photo_path":
+            (photo ?? "").contains("/") ? photo?.split("/").last : photo,
       }..removeWhere((key, value) => key == "");
 }

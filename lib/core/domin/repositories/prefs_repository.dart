@@ -54,7 +54,7 @@ abstract class PrefsRepository {
   String? get myPhoneNumber;
 
   String? get myContactDetails;
-
+  String? get tokenForComment;
   String? get currentEvent;
   String? get language;
 
@@ -132,6 +132,7 @@ abstract class PrefsRepository {
   Future<bool> setMyChatName(String name);
 
   Future<bool> setMyStoriesName(String name);
+  Future<bool> setTokenForComment(String token);
   Future<bool> setMyProfilePhoto(String? photo);
   Future<bool> setMyChatPhoto(String? photo);
 

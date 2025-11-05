@@ -77,7 +77,7 @@ class _ProductListing3DSliderOptimizedState
   late CarouselSliderController _carouselController;
 
   // 💾 Cached Data - Computed Once
-  List<productListingModel.SyncColorImage>? _processedColorImages;
+  List<productListingModel.SyncColorImageProduct>? _processedColorImages;
   List<String>? _cachedImages;
   List<double>? _cachedOriginalWidths;
   List<double>? _cachedOriginalHeights;
@@ -130,7 +130,8 @@ class _ProductListing3DSliderOptimizedState
     if (_processedColorImages!.length > 1) {
       final originalLength = _processedColorImages!.length;
       final duplicatedImages =
-          List<productListingModel.SyncColorImage>.from(_processedColorImages!);
+          List<productListingModel.SyncColorImageProduct>.from(
+              _processedColorImages!);
 
       // Add only necessary duplicates for smooth circular scrolling
       _processedColorImages!.addAll(duplicatedImages);

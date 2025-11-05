@@ -657,7 +657,7 @@ class UpdateItemInCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class AddCommentEvent extends HomeEvent {
+/*class AddCommentEvent extends HomeEvent {
   final String productId;
   final String productSlug;
   final String productSlugForTopic;
@@ -671,7 +671,7 @@ class AddCommentEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [productId, comment];
-}
+}*/
 
 class AddQuantityForCartEvent extends HomeEvent {
   final String productId;
@@ -712,6 +712,120 @@ class AddProductIdToSaveRedeemTimerEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [productIdToSaveRedeemTimer];
+}
+
+/*class GetCommentsFromAnalyticsEvent extends HomeEvent {
+  final String? productId;
+
+  GetCommentsFromAnalyticsEvent({this.productId});
+  @override
+  List<Object?> get props => [productId];
+}*/
+
+class GetFqaCommentsEvent extends HomeEvent {
+  final String? productId;
+  final String currentFilter;
+  final bool getWithPagination;
+  GetFqaCommentsEvent(
+      {this.productId,
+      this.currentFilter = "all",
+      this.getWithPagination = false});
+  @override
+  List<Object?> get props => [productId, getWithPagination, currentFilter];
+}
+
+class GetBuyersCommentsEvent extends HomeEvent {
+  final String? productId;
+  final String currentFilter;
+  final bool getWithPagination;
+  GetBuyersCommentsEvent(
+      {this.productId,
+      this.currentFilter = "all",
+      this.getWithPagination = false});
+  @override
+  List<Object?> get props => [productId, getWithPagination, currentFilter];
+}
+
+class CreateCommentRatingEvent extends HomeEvent {
+  final String? text;
+  final String? productId;
+  final String? rating;
+  final String? variant;
+  final String? ownerType;
+  final String? ownerId;
+  final String? orderDetailsId;
+  CreateCommentRatingEvent(
+      {this.productId,
+      this.text,
+      this.rating,
+      this.ownerType,
+      this.ownerId,
+      this.orderDetailsId,
+      this.variant});
+  @override
+  List<Object?> get props =>
+      [productId, text, rating, orderDetailsId, variant, ownerType, ownerId];
+}
+
+class UpdateCommentRatingEvent extends HomeEvent {
+  final String? text;
+  final String? productId;
+  final String? rating;
+  final String? variant;
+  final String? orderDetailsId;
+  final String? commentId;
+  final String? ownerType;
+  final String? ownerId;
+  final int? tapCommentIndex;
+  final bool fromBuyerComments;
+  UpdateCommentRatingEvent(
+      {this.productId,
+      this.text,
+      this.ownerType,
+      this.fromBuyerComments = false,
+      this.ownerId,
+      this.rating,
+      this.tapCommentIndex,
+      this.orderDetailsId,
+      this.commentId,
+      this.variant});
+  @override
+  List<Object?> get props => [
+        productId,
+        text,
+        rating,
+        fromBuyerComments,
+        ownerType,
+        ownerId,
+        orderDetailsId,
+        variant,
+        commentId,
+        tapCommentIndex
+      ];
+}
+
+class DeleteCommentRatingEvent extends HomeEvent {
+  final String? commentId;
+  final String? productId;
+  final bool fromBuyerComments;
+  final int? tapCommentIndex;
+  DeleteCommentRatingEvent({
+    this.productId,
+    this.tapCommentIndex,
+    this.fromBuyerComments = false,
+    this.commentId,
+  });
+  @override
+  List<Object?> get props =>
+      [commentId, productId, tapCommentIndex, fromBuyerComments];
+}
+
+class GetOrderRatingEvent extends HomeEvent {
+  final List<int>? orderDetailIds;
+  final String? userId;
+  GetOrderRatingEvent({this.orderDetailIds, this.userId});
+  @override
+  List<Object?> get props => [orderDetailIds, userId];
 }
 
 class RemoveSearchTextfromHistoryEvent extends HomeEvent {

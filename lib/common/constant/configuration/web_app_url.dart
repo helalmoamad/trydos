@@ -11,6 +11,16 @@ abstract class WebAppEndPoints {
   static const homeBoutiquesEP = "api/home/boutiques";
   static const searchProductEP = "api/products/searchInCatalog";
   static const productFeaturedEP = "api/products/featured";
+  static const createOrderRatingEP = "public_comment/comments/create";
+  static String updateOrderRatingEP(String commentId) =>
+      "public_comment/comments/$commentId/update";
+  static String deleteOrderRatingEP(String commentId) =>
+      "public_comment/comments/$commentId/delete";
+  static const getFqaCommentsEP = "api/products/comments/fqa_comments";
+  static const getBuyersCommentsEP = "api/products/comments/buyers_comments";
+  static const generateTokenForCommentEP = "public_comment/auth/exchange_token";
+  static const getOrderRatingEP = "api/products/comments/order_rating";
+  static const getCommentsFromAnalyticsEP = "api/products/comments/comments";
   static const productRecommendedEP = "api/products/recomended";
   static String productDetailsEP(String slug) =>
       "api/mobile/product/details_without_similar_related_products/${slug}";

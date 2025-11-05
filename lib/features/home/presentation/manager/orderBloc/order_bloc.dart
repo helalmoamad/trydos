@@ -40,8 +40,6 @@ import '../../widgets/cart_section/payment_method.dart';
 import 'order_event.dart';
 import 'order_state.dart';
 import 'package:trydos/core/error/error_manager.dart';
-import '../../../domain/use_cases/add_order_comment_usecase.dart';
-import '../../../domain/use_cases/update_order_comment_usecase.dart';
 import '../../../domain/use_cases/get_return_reasons_usecase.dart';
 import '../../../domain/use_cases/store_return_request_product_usecase.dart';
 import '../../../domain/use_cases/cancel_return_request_usecase.dart';
@@ -73,8 +71,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final ConfirmReturnRequestUseCase confirmReturnRequestUseCase;
   final OrderReturnRequestsViewUseCase orderReturnRequestsViewUseCase;
   final ChangeOrderItemVariantUsecase changeOrderItemVariantUsecase;
-  final AddOrderCommentUseCase addOrderCommentUseCase;
-  final UpdateOrderCommentUseCase updateOrderCommentUseCase;
+  // final AddOrderCommentUseCase addOrderCommentUseCase;
+  // final UpdateOrderCommentUseCase updateOrderCommentUseCase;
   final GetReturnReasonsUseCase getReturnReasonsUseCase;
   final StoreReturnRequestProductUseCase storeReturnRequestProductUseCase;
   final CancelReturnRequestUseCase cancelReturnRequestUseCase;
@@ -107,8 +105,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     this.applyCouponUsecase,
     this.getProductColorSizeSyncAttributeUseCase,
     this.changeOrderItemVariantUsecase,
-    this.addOrderCommentUseCase,
-    this.updateOrderCommentUseCase,
+    //  this.addOrderCommentUseCase,
+    // this.updateOrderCommentUseCase,
     this.getReturnReasonsUseCase,
     this.storeReturnRequestProductUseCase,
     this.cancelReturnRequestUseCase,
@@ -201,8 +199,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       _onGetProductColorSizeSyncAttributeEvent,
     );
     on<ChangeOrderItemVariantEvent>(_onChangeOrderItemVariantEvent);
-    on<AddOrderCommentEvent>(_onAddOrderCommentEvent);
-    on<UpdateOrderCommentEvent>(_onUpdateOrderCommentEvent);
+    // on<AddOrderCommentEvent>(_onAddOrderCommentEvent);
+    //on<UpdateOrderCommentEvent>(_onUpdateOrderCommentEvent);
     on<GetReturnReasonsEvent>(_onGetReturnReasonsEvent);
     on<StoreReturnRequestProductEvent>(_onStoreReturnRequestProductEvent);
     on<CancelReturnRequestEvent>(_onCancelReturnRequestEvent);
@@ -258,11 +256,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     emit(state.copyWith(
-        getOrdersByOrderGroupIDStatus: event.getWithRating
-            ? GetOrdersByOrderGroupIDStatus.loadingForRating
-            : event.firstOpenPage
-                ? GetOrdersByOrderGroupIDStatus.init
-                : GetOrdersByOrderGroupIDStatus.loading));
+        getOrdersByOrderGroupIDStatus: event.firstOpenPage
+            ? GetOrdersByOrderGroupIDStatus.init
+            : GetOrdersByOrderGroupIDStatus.loading));
     final response = await getOrdersByOrderGroupIDUsecase(event.orderGroupId);
     response.fold(
       (l) {
@@ -296,7 +292,21 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
               hasReachedMax:
                   getOrdersModel[event.status]?.hasReachedMax ?? false);
         }
-
+        /* if (event.fromNotification) {
+          bool canFetchReturnDetails = false;
+          r.orders?.forEach(
+            (element) {
+              if (element.returnRequestId != null) {
+                canFetchReturnDetails = true;
+              }
+            },
+          );
+          if (canFetchReturnDetails) {
+            add(FetchOrderReturnDetailsEvent(
+              r.orders?[0].orderGroupId ?? "",
+            ));
+          }
+        }*/
         emit(state.copyWith(
             getOrdersByOrderGroupIDStatus:
                 GetOrdersByOrderGroupIDStatus.success,
@@ -1252,7 +1262,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
   }
 
-  Future<void> _onAddOrderCommentEvent(
+  /* Future<void> _onAddOrderCommentEvent(
       AddOrderCommentEvent event, Emitter<OrderState> emit) async {
     emit(state.copyWith(addOrderCommentStatus: AddOrderCommentStatus.loading));
     final result = await addOrderCommentUseCase(event.params);
@@ -1281,8 +1291,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       },
     );
   }
-
-  Future<void> _onUpdateOrderCommentEvent(
+*/
+  /* Future<void> _onUpdateOrderCommentEvent(
       UpdateOrderCommentEvent event, Emitter<OrderState> emit) async {
     emit(state.copyWith(
         updateOrderCommentStatus: UpdateOrderCommentStatus.loading));
@@ -1313,7 +1323,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       },
     );
   }
-
+*/
   Future<void> _onGetReturnReasonsEvent(
       GetReturnReasonsEvent event, Emitter<OrderState> emit) async {
     emit(

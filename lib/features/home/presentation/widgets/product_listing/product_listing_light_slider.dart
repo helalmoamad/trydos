@@ -1,4 +1,3 @@
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart' hide BoxShadow;
@@ -70,7 +69,7 @@ class _ProductListingLightSliderState
   late final ScrollController _colorsController;
 
   // Data
-  late final List<productListingModel.SyncColorImage>
+  late final List<productListingModel.SyncColorImageProduct>
       _colorImages; // may be empty
   late final List<String> _fallbackImages; // product images when no colors
 

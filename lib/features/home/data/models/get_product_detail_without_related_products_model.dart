@@ -5,6 +5,9 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
+import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 GetProductDetailWithoutRelatedProductsModel
@@ -49,13 +52,15 @@ class GetProductDetailWithoutRelatedProductsModel {
 class Product {
   final int? id;
   final dynamic description;
-
+  final String? sellerId;
+  final String? ownerType;
+  final String? ownerId;
   final bool? isActive;
   // final List<Variation>? variation;
   final List<ChoiceOption>? choiceOptions;
   final String? maxAllowedQty;
   final bool? hasDiscount;
-
+  final Seller? seller;
   final String? deliveryAt;
   final List<String>? labelNames;
   final String? flashDealEndDate;
@@ -71,6 +76,7 @@ class Product {
   final double? offerPrice;
   final String? offerPriceFormatted;
   final int? commentsCount;
+  final List<dynamic>? commentOffset;
   final int? countOfLikes;
   final int? collectedAfterOrdering;
   final int? countOfPieces;
@@ -82,19 +88,32 @@ class Product {
   final bool isProductNotifiedForUser;
   final bool? countryIsRestricted;
   final List<Thumbnail>? images;
-  final List<SyncColorImage>? syncColorImages;
+  final List<SyncColorImageProduct>? syncColorImages;
   final bool? isRedeem;
   final double? redeemPrice;
+  final BuyersCommentModel? buyersComment;
+  final FqaQuestions? fqaQuestions;
+  final List<RecommendationStat>? recommendationStats;
+  final List<RatingDetail>? ratingDetails;
+  final double? totalRating;
   final int? sharedCount;
-  final List<Comment>? comments;
-  final List<Color>? colors;
+  //final List<comment_model.Comment>? comments;
+  final List<ProductColor>? colors;
   Product({
     this.id,
     this.description,
     this.descriptors,
     this.isActive,
     this.isRedeem,
+    this.ownerType,
+    this.ownerId,
     this.redeemPrice,
+    this.buyersComment,
+    this.seller,
+    this.fqaQuestions,
+    this.ratingDetails,
+    this.recommendationStats,
+    this.totalRating,
     this.collectedAfterOrdering,
     this.countOfPieces,
     this.colors,
@@ -104,6 +123,7 @@ class Product {
     this.slug,
     this.shippingCostMultiplyWithQuantity,
     this.shippingCost,
+    this.commentOffset,
     this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
@@ -122,10 +142,11 @@ class Product {
     this.commentsCount,
     this.shippingDays,
     this.isFeatured,
+    this.sellerId,
     this.reviewsCount,
     this.viewsCount,
     this.labels,
-    this.comments,
+    //this.comments,
     required this.isProductNotifiedForUser,
     this.countryIsRestricted,
   });
@@ -139,17 +160,24 @@ class Product {
           dynamic features,
           String? slug,
           bool? isActive,
-          List<Color>? colors,
+          List<ProductColor>? colors,
           List<Thumbnail>? images,
-          List<SyncColorImage>? syncColorImages,
+          List<SyncColorImageProduct>? syncColorImages,
           //   List<Variation>? variation,
           List<ChoiceOption>? choiceOptions,
           bool? hasDiscount,
           bool? hasTax,
           String? priceFormatted,
+          BuyersCommentModel? buyersComment,
+          List<RatingDetail>? ratingDetails,
+          List<RecommendationStat>? recommendationStats,
+          double? totalRating,
+          FqaQuestions? fqaQuestions,
           double? price,
           double? offerPrice,
           String? offerPriceFormatted,
+          String? ownerType,
+          String? ownerId,
           String? deliveryAt,
           int? collectedAfterOrdering,
           String? tax,
@@ -160,9 +188,10 @@ class Product {
           int? availableQuantity,
           int? leftStock,
           int? reviewsCount,
-          dynamic sellerId,
+          String? sellerId,
           int? shippingDays,
           BoutiqueForCart? boutique,
+          List<dynamic>? commentOffset,
           int? countOfLikes,
           Seller? seller,
           Shop? shop,
@@ -178,7 +207,7 @@ class Product {
           List<Label>? labels,
           bool? isProductNotifiedForUser,
           bool? countryIsRestricted,
-          List<Comment>? comments,
+          // List<comment_model.Comment>? comments,
           int? commentsCount,
           int? sharedCount,
           bool? isFeatured}) =>
@@ -191,13 +220,19 @@ class Product {
         choiceOptions: choiceOptions ?? this.choiceOptions,
         hasDiscount: hasDiscount ?? this.hasDiscount,
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
+        buyersComment: buyersComment ?? this.buyersComment,
+        fqaQuestions: fqaQuestions ?? this.fqaQuestions,
         deliveryAt: deliveryAt ?? this.deliveryAt,
         shippingDays: shippingDays ?? this.shippingDays,
         colors: colors ?? this.colors,
         isRedeem: isRedeem ?? this.isRedeem,
         redeemPrice: redeemPrice ?? this.redeemPrice,
+        ratingDetails: ratingDetails ?? this.ratingDetails,
+        recommendationStats: recommendationStats ?? this.recommendationStats,
+        totalRating: totalRating ?? this.totalRating,
         syncColorImages: syncColorImages ?? this.syncColorImages,
         images: images ?? this.images,
+        seller: seller ?? this.seller,
         availableQuantity: availableQuantity ?? this.availableQuantity,
         leftStock: leftStock ?? this.leftStock,
         shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
@@ -206,6 +241,7 @@ class Product {
         price: price ?? this.price,
         priceFormatted: priceFormatted ?? this.priceFormatted,
         labelNames: labelNames ?? this.labelNames,
+        sellerId: sellerId ?? this.sellerId,
         flashDealEndDate: flashDealEndDate ?? this.flashDealEndDate,
         offerPrice: offerPrice ?? this.offerPrice,
         offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
@@ -217,7 +253,10 @@ class Product {
         countOfPieces: countOfPieces ?? this.countOfPieces,
         boutique: boutique ?? this.boutique,
         viewsCount: viewsCount ?? this.viewsCount,
-        comments: comments ?? this.comments,
+        ownerType: ownerType ?? this.ownerType,
+        ownerId: ownerId ?? this.ownerId,
+        commentOffset: commentOffset ?? this.commentOffset,
+        //comments: comments ?? this.comments,
         commentsCount: commentsCount ?? this.commentsCount,
         descriptors: descriptors ?? this.descriptors,
         labels: labels ?? this.labels,
@@ -232,17 +271,20 @@ class Product {
       description: json["description"],
       countOfPieces: json["count_of_pieces"],
       commentsCount: json["comments_count"],
+      commentOffset: json["comment_offset"],
+      seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
       slug: json["slug"],
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
       shippingCost: double.tryParse(json["shipping_cost"].toString()),
       colors: json["colors"] == null
           ? []
-          : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
+          : List<ProductColor>.from(
+              json["colors"]!.map((x) => ProductColor.fromJson(x))),
       syncColorImages: json["sync_color_images"] == null
           ? []
-          : List<SyncColorImage>.from(json["sync_color_images"]!
-              .map((x) => SyncColorImage.fromJson(x))),
+          : List<SyncColorImageProduct>.from(json["sync_color_images"]!
+              .map((x) => SyncColorImageProduct.fromJson(x))),
       images: json["images"] == null
           ? []
           : List<Thumbnail>.from(
@@ -252,10 +294,10 @@ class Product {
           : BoutiqueForCart.fromJson(json["boutique"]),
       collectedAfterOrdering: json["collected_after_ordering"],
       price: (json["price"] ?? 0).toDouble(),
-      comments: json["comments"] == null
+      /*  comments: json["comments"] == null
           ? []
-          : List<Comment>.from(
-              json["comments"]!.map((x) => Comment.fromJson(x))),
+          : List<comment_model.Comment>.from(
+              json["comments"]!.map((x) => comment_model.Comment.fromJson(x))),*/
       labelNames: json["label_names"] == null
           ? []
           : List<String>.from(json["label_names"]!.map((x) => x)),
@@ -263,6 +305,9 @@ class Product {
       priceFormatted: json["price_formatted"] ?? "",
       offerPriceFormatted: json["offer_price_formatted"] ?? "",
       offerPrice: (json["offer_price"] ?? 0).toDouble(),
+      ownerType: json["owner_type"],
+      ownerId: json["owner_id"].toString(),
+      sellerId: json["seller_id"] == null ? null : json["seller_id"].toString(),
       maxAllowedQty: json["max_allowed_qty"].toString(),
       countryIsRestricted: json["is_country_restricted"],
       isActive: json["is_active"],
@@ -278,7 +323,17 @@ class Product {
       isRedeem: json["is_redeem"],
       redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
       deliveryAt: json["delivery_at"],
+      ratingDetails: json["ratingDetails"] == null
+          ? []
+          : List<RatingDetail>.from(
+              json["ratingDetails"]!.map((x) => RatingDetail.fromJson(x))),
+      recommendationStats: json["recommendation_stats"] == null
+          ? []
+          : List<RecommendationStat>.from(json["recommendation_stats"]!.map((x) => RecommendationStat.fromJson(x))),
+      totalRating: json["total_rating"]?.toDouble(),
       sharedCount: json["shared_count"],
+      buyersComment: json["buyers_comment"] == null ? null : BuyersCommentModel.fromJson(json["buyers_comment"]),
+      fqaQuestions: json["fqa_questions"] == null ? null : FqaQuestions.fromJson(json["fqa_questions"]),
       countOfLikes: json["count_of_likes"],
       availableQuantity: (json["available_quantity"] ?? 0).toInt(),
       leftStock: json["Left_stock"],
@@ -287,13 +342,8 @@ class Product {
       isFeatured: json["is_featured"],
 
       // viewsCount: json["views_count"],
-      descriptors: json["descriptors"] == null
-          ? []
-          : List<DataDescriptor>.from(
-              json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
-      labels: json["labels"] == null
-          ? []
-          : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+      descriptors: json["descriptors"] == null ? [] : List<DataDescriptor>.from(json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
+      labels: json["labels"] == null ? [] : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
       isProductNotifiedForUser: json['is_product_notify_for_user'] ?? false);
 
   Map<String, dynamic> toJson() => {
@@ -302,7 +352,18 @@ class Product {
         "is_active": isActive,
         "boutique": boutique?.toJson(),
         "is_redeem": isRedeem,
+        "ratingDetails": ratingDetails == null
+            ? []
+            : List<dynamic>.from(ratingDetails!.map((x) => x.toJson())),
+        "recommendation_stats": recommendationStats == null
+            ? []
+            : List<dynamic>.from(recommendationStats!.map((x) => x.toJson())),
+        "total_rating": totalRating,
         "comments_count": commentsCount,
+        "seller_id": sellerId,
+        "buyers_comment": buyersComment?.toJson(),
+        "fqa_questions": fqaQuestions?.toJson(),
+        "seller": seller?.toJson(),
         "redeem_price": redeemPrice,
 
         "choice_options": choiceOptions == null
@@ -318,6 +379,9 @@ class Product {
 
         "flash_deal_end_date": flashDealEndDate,
         "collected_after_ordering": collectedAfterOrdering,
+        "comment_offset": commentOffset,
+        "owner_type": ownerType,
+        "owner_id": ownerId,
         "delivery_at": deliveryAt,
         "slug": slug,
         "is_country_restricted": countryIsRestricted,
@@ -331,9 +395,9 @@ class Product {
         "offer_price_formatted": offerPriceFormatted,
         "offer_price": offerPrice,
         "Left_stock": leftStock,
-        "comments": comments == null
+        /* "comments": comments == null
             ? []
-            : List<dynamic>.from(comments!.map((x) => x.toJson())),
+            : List<dynamic>.from(comments!.map((x) => x.toJson())),*/
         "colors": colors == null
             ? []
             : List<dynamic>.from(colors!.map((x) => x.toJson())),
@@ -362,96 +426,120 @@ class Product {
       };
 }
 
-class Comment {
-  final String? id;
-  final Customer? customer;
-  final String? productId;
-  final String? comment;
-  final DateTime? createdAt;
+class RatingDetail {
+  final int? ratingGroup;
+  final int? count;
 
-  Comment({
-    this.id,
-    this.customer,
-    this.productId,
-    this.comment,
-    this.createdAt,
+  RatingDetail({
+    this.ratingGroup,
+    this.count,
   });
 
-  Comment copyWith({
-    String? id,
-    Customer? customer,
-    String? productId,
-    String? comment,
-    DateTime? createdAt,
+  RatingDetail copyWith({
+    int? ratingGroup,
+    int? count,
   }) =>
-      Comment(
-        id: id ?? this.id,
-        customer: customer ?? this.customer,
-        productId: productId ?? this.productId,
-        comment: comment ?? this.comment,
-        createdAt: createdAt ?? this.createdAt,
+      RatingDetail(
+        ratingGroup: ratingGroup ?? this.ratingGroup,
+        count: count ?? this.count,
       );
 
-  factory Comment.fromJson(Map<String, dynamic> json) => Comment(
-        id: json["id"].toString(),
-        customer: json["customer"] == null
-            ? null
-            : Customer.fromJson(json["customer"]),
-        productId: json["product_id"].toString(),
-        comment: json["comment"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
+  factory RatingDetail.fromJson(Map<String, dynamic> json) => RatingDetail(
+        ratingGroup: json["ratingGroup"],
+        count: json["count"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "customer": customer?.toJson(),
-        "product_id": productId,
-        "comment": comment,
-        "created_at": createdAt?.toIso8601String(),
+        "ratingGroup": ratingGroup,
+        "count": count,
       };
 }
 
-class Customer {
-  final String? id;
-  final String? name;
-  final String? image;
+class BuyersCommentModel {
+  final List<BuyersComment>? comments;
+  final List<dynamic>? offset;
+  final int? total;
 
-  Customer({
-    this.id,
-    this.name,
-    this.image,
+  BuyersCommentModel({
+    this.comments,
+    this.offset,
+    this.total,
   });
 
-  Customer copyWith({
-    String? id,
-    String? name,
-    String? image,
+  BuyersCommentModel copyWith({
+    List<BuyersComment>? comments,
+    List<dynamic>? offset,
+    int? total,
   }) =>
-      Customer(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        image: image ?? this.image,
+      BuyersCommentModel(
+        comments: comments ?? this.comments,
+        offset: offset ?? this.offset,
+        total: total ?? this.total,
       );
 
-  factory Customer.fromJson(Map<String, dynamic> json) => Customer(
-        id: json["id"].toString(),
-        name: json["name"],
-        image: json["image"],
+  factory BuyersCommentModel.fromJson(Map<String, dynamic> json) =>
+      BuyersCommentModel(
+        comments: json["comments"] == null
+            ? []
+            : List<BuyersComment>.from(
+                json["comments"]!.map((x) => BuyersComment.fromJson(x))),
+        offset: json["offset"],
+        total: json["total"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "image": image,
+        "comments": comments == null
+            ? []
+            : List<dynamic>.from(comments!.map((x) => x.toJson())),
+        "offset": offset,
+        "total": total,
+      };
+}
+
+class FqaQuestions {
+  final List<FqaComment>? comments;
+  final List<dynamic>? offset;
+  final int? total;
+
+  FqaQuestions({
+    this.comments,
+    this.offset,
+    this.total,
+  });
+
+  FqaQuestions copyWith({
+    List<FqaComment>? comments,
+    List<dynamic>? offset,
+    int? total,
+  }) =>
+      FqaQuestions(
+        comments: comments ?? this.comments,
+        offset: offset ?? this.offset,
+        total: total ?? this.total,
+      );
+
+  factory FqaQuestions.fromJson(Map<String, dynamic> json) => FqaQuestions(
+        comments: json["comments"] == null
+            ? []
+            : List<FqaComment>.from(
+                json["comments"]!.map((x) => FqaComment.fromJson(x))),
+        offset: json["offset"],
+        total: json["total"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "comments": comments == null
+            ? []
+            : List<dynamic>.from(comments!.map((x) => x.toJson())),
+        "offset": offset,
+        "total": total,
       };
 }
 
 class ChoiceOption {
   final String? name;
   final String? title;
-  final List<Option>? options;
+  final List<Options>? options;
 
   ChoiceOption({
     this.name,
@@ -462,7 +550,7 @@ class ChoiceOption {
   ChoiceOption copyWith({
     String? name,
     String? title,
-    List<Option>? options,
+    List<Options>? options,
   }) =>
       ChoiceOption(
         name: name ?? this.name,
@@ -475,8 +563,8 @@ class ChoiceOption {
         title: json["title"],
         options: json["options"] == null
             ? []
-            : List<Option>.from(
-                json["options"]!.map((x) => Option.fromJson(x))),
+            : List<Options>.from(
+                json["options"]!.map((x) => Options.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -584,28 +672,31 @@ class Label {
       };
 }
 
-class Option {
+class Options {
   final String? name;
   final String? option;
 
-  Option({
+  Options({
     this.name,
     this.option,
   });
 
-  Option copyWith({
+  Options copyWith({
     String? name,
     String? option,
   }) =>
-      Option(
+      Options(
         name: name ?? this.name,
         option: option ?? this.option,
       );
 
-  factory Option.fromJson(Map<String, dynamic> json) => Option(
-        name: json["name"],
-        option: json["option"],
-      );
+  factory Options.fromJson(Map<String, dynamic> json) => Options(
+      name: json["name"] == null
+          ? null
+          : json["name"].toString().replaceAll("-", "_"),
+      option: json["option"] == null
+          ? null
+          : json["option"].toString().replaceAll("-", "_"));
 
   Map<String, dynamic> toJson() => {
         "name": name,
@@ -675,6 +766,42 @@ class Seller {
         "birthdate": birthdate,
         "review": review,
         "image": image,
+      };
+}
+
+class RecommendationStat {
+  final String? category;
+  final int? count;
+  final String? percentage;
+
+  RecommendationStat({
+    this.category,
+    this.count,
+    this.percentage,
+  });
+
+  RecommendationStat copyWith({
+    String? category,
+    int? count,
+    String? percentage,
+  }) =>
+      RecommendationStat(
+        category: category ?? this.category,
+        count: count ?? this.count,
+        percentage: percentage ?? this.percentage,
+      );
+
+  factory RecommendationStat.fromJson(Map<String, dynamic> json) =>
+      RecommendationStat(
+        category: json["category"],
+        count: json["count"],
+        percentage: json["percentage"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "category": category,
+        "count": count,
+        "percentage": percentage,
       };
 }
 
@@ -755,7 +882,7 @@ class Variation {
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
         variantNotifyForUser: json["variant_notify_for_user"] ?? false,
-        type: json["type"],
+        type: HelperFunctions.replaceDashAfterFirst(json["type"]),
         price: json["price"]?.toDouble(),
         priceFormated: json["price_formated"],
         offerPrice: json["offer_price"]?.toDouble(),

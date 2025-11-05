@@ -30,6 +30,10 @@ class UpdateProfileInChatParams {
     required this.photo,
     required this.name,
   });
-  Map<String, dynamic> get map =>
-      {"id": userId, "name": name, "mobile_phone": phone, "photo_path": photo};
+  Map<String, dynamic> get map => {
+        "id": userId,
+        "name": name,
+        "mobile_phone": phone,
+        "photo_path": (photo).contains("/") ? photo.split("/").last : photo,
+      };
 }

@@ -296,7 +296,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
             ),
             alignment: Alignment.center,
             height: 44,
-            width: 50,
+            width: 60,
             decoration: BoxDecoration(
                 color: color ?? const Color(0xffFCFCFC),
                 border: Border.all(color: const Color(0xffD3D3D3)),

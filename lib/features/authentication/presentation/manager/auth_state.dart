@@ -26,6 +26,8 @@ enum UpdateChatUserNameStatus { init, loading, success, failure }
 
 enum GetCustomerInfoStatus { init, loading, success, failure }
 
+enum GenerateTokenForCommentStatus { init, loading, success, failure }
+
 enum GetCustomerCountryStatus { loading, success, failure }
 
 class AuthState {
@@ -39,6 +41,7 @@ class AuthState {
     this.sendOtpError,
     this.signUpErrorMessage,
     this.getUserCountryResponseModel,
+    this.generateTokenForCommentStatus = GenerateTokenForCommentStatus.init,
     this.registerGuestStatus = RegisterGuestStatus.init,
     this.verifyOtpSignUpStatus = VerifyOtpSignUpStatus.init,
     this.verifyOtpSignInStatus = VerifyOtpSignInStatus.init,
@@ -70,6 +73,7 @@ class AuthState {
   final GetUserCountryResponseModel? getUserCountryResponseModel;
   final String? signInErrorMessage;
   final String? signUpErrorMessage;
+  final GenerateTokenForCommentStatus generateTokenForCommentStatus;
   final String? sendOtpError;
   final String? countryName;
   AuthState copyWith(
@@ -80,6 +84,7 @@ class AuthState {
       final String? signInErrorMessage,
       final String? countryName,
       final GetUserCountryResponseModel? getUserCountryResponseModel,
+      final GenerateTokenForCommentStatus? generateTokenForCommentStatus,
       final GetCustomerCountryStatus? getCustomerCountryStatus,
       final RegisterGuestStatus? registerGuestStatus,
       final VerifyOtpInProfileStatus? verifyOtpInProfileStatus,
@@ -109,6 +114,8 @@ class AuthState {
           getUserCountryResponseModel ?? this.getUserCountryResponseModel,
       getCustomerInfoStatus:
           getCustomerInfoStatus ?? this.getCustomerInfoStatus,
+      generateTokenForCommentStatus:
+          generateTokenForCommentStatus ?? this.generateTokenForCommentStatus,
       verifyOtpInProfileStatus:
           verifyOtpInProfileStatus ?? this.verifyOtpInProfileStatus,
       signUpErrorMessage: signUpErrorMessage ?? this.signUpErrorMessage,

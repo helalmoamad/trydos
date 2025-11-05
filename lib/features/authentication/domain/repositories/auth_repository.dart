@@ -33,6 +33,8 @@ abstract class AuthRepository {
   Future<Either<Failure, GetUserCountryResponseModel>> getUserCountry();
   Future<Either<Failure, StoreFcmTokenResponseModel>> storeFcmToken(
       Map<String, dynamic> params);
+  Future<Either<Failure, String>> generateTokenForComment(
+      Map<String, dynamic> params);
   Future<Either<Failure, SendOtpResponseModel>> sendOtp(
       Map<String, dynamic> params);
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> verifyOtpSignIn(

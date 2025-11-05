@@ -11,6 +11,7 @@
   "full": "تەواو",
   "the_product_price_when_returned": "نرخی بەرهەم کاتێک گەڕێندرایەوە",
   "alert": "ئاگادارکردنەوە",
+  "waiting_for_supplier_response": "چاوەڕوانی وەڵامی دابینکەر",
   "typing": "دەنووسێت...",
   "recording": "تۆمارکردن...",
   "sending_file": "ناردنی پەڕگە...",
@@ -639,8 +640,8 @@
   "actually_received_the_product_through": "بەڕاستی وەرگیراون لە بەرهەمەکە لە ڕێگەی",
   "return_problem_resolved": "کێشەی گەڕاندن چارەسەر کرا.",
   "out_for_return": "لە ڕێگادایە بۆ گەڕاندنەوە",
-  "country_not_available": "وڵاتەکەت لەم بەرنامەیەدا بەردەست نییە",
-  "choose_a_country": "وڵاتێک هەڵبژێرە:",
+ 
+  "choose_a_country": "وڵاتێک هەڵبژێرە",
   "you_have_to_choose_a_country": "پێویستە وڵاتێک هەڵبژێریت",
   "ok_and_continue": "باشە و بەردەوام بە",
   "press_here_for_more": "بۆ زیاتر لێرە کرتە بکە",
@@ -659,9 +660,26 @@
   "only": "تەنها",
   "added": "زیادکرا",
   "to_your_bag": "بۆ سەبەتەکەت",
- 
   "add_more_to_bag": "زیاتر بۆ سەبەتەکەت زیاد بکە",
   "delivery_worker": "کارمەندی گەیاندن",
-  "recommend_products": "پێشنیاری بەرهەمەکان"
+  "recommend_products": "پێشنیاری بەرهەمەکان",
+  "edit_comment_title": "دەستکاری کردنەوەی لێدوان",
+  "edit_comment_hint": "دەستکارییەکەت لێرە بنوسە...",
+  "must_login_to_edit_comment": "تکایە بچۆ ژوورەوە بۆ دەستکاری کردنی لێدوان"
+  ,"must_login_to_delete_comment": "تکایە بچۆ ژوورەوە بۆ سڕینەوەی لێدوان"
+  ,"confirm_delete_comment_title": "دڵنیابوونەوەی سڕینەوەی لێدوان"
+  ,"confirm_delete_comment_message": "دڵنیایت دەتەوێت ئەم لێدوانە بسڕیتەوە؟"
+  ,"confirm_delete": "دڵنیابوونەوەی سڕینەوە"
+  ,"delete_comment_success": "لێدوان بە سەرکەوتوویی سڕایەوە"
+  ,"delete_comment_failed": "سڕینەوەی لێدوان سەرکەوتوو نەبوو"
+  ,"edit_comment_success": "لێدوان بە سەرکەوتوویی نوێکرایەوە"
+  ,"edit_comment_failed": "نوێکردنەوەی لێدوان سەرکەوتوو نەبوو",
+  "quality":"کوالێتی",
+  "complaint":"سکاڵا",
+  "recommendation": "پێشنیار",
+  "no_commends_found": "هیچ لێدوانێك نەدۆزرایەوە",
+  "country_not_available": "وڵات بەردەست نییە",
+  "pack": "پاکەت",
+  "dear": "خۆشەویست",
+  "product": "منتج"
 }
-

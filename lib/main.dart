@@ -287,7 +287,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 27;
+int applicationVersion = 37;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
@@ -341,8 +341,6 @@ void main() async {
 
   await NotificationProcess().setupInteractedMessage();
 
-  //final Smartlook smartLook = Smartlook.instance;
-  // await smartLook.start();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);

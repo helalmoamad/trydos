@@ -9,6 +9,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StarRatingWidget extends StatefulWidget {
   final double initialRating;
+  final String initialComment;
   final Function(double, String) onRatingChanged;
   final bool isInteractive;
   final Color starColor;
@@ -17,6 +18,7 @@ class StarRatingWidget extends StatefulWidget {
   const StarRatingWidget({
     Key? key,
     this.initialRating = 0.0,
+    this.initialComment = "",
     required this.onRatingChanged,
     this.emptyStarColor = Colors.white,
     this.isInteractive = true,
@@ -42,6 +44,7 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
     super.initState();
     _currentRating = widget.initialRating;
     _previousRating = widget.initialRating;
+    _commentController.text = widget.initialComment;
 
     // تهيئة ValueNotifier
     _isCommentEmptyNotifier = ValueNotifier<bool>(true);
@@ -61,15 +64,19 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
 
   // دالة للتحقق من أن التعليق فارغ أم لا
   void _checkCommentEmpty() {
-    _isCommentEmptyNotifier.value = _commentController.text.trim().isEmpty;
+    _isCommentEmptyNotifier.value = (_commentController.text.trim().isEmpty ||
+        (_commentController.text == widget.initialComment &&
+            _currentRating == widget.initialRating));
   }
 
   @override
   void didUpdateWidget(StarRatingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialRating != widget.initialRating) {
+    if (oldWidget.initialRating != widget.initialRating ||
+        widget.initialComment != _commentController.text) {
       _currentRating = widget.initialRating;
       _previousRating = widget.initialRating;
+      _commentController.text = widget.initialComment;
     }
   }
 
@@ -78,7 +85,7 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
     _debounceTimer?.cancel();
 
     // إنشاء Timer جديد لمدة ثانية واحدة
-    _debounceTimer = Timer(const Duration(milliseconds: 1500), () {
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       _showCommentBottomSheet();
     });
   }
@@ -91,12 +98,13 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
       // ignore: deprecated_member_use
       builder: (context) => WillPopScope(
         onWillPop: () async {
-          // عند إغلاق الرسالة بالضغط خارجها، نعيد التقييم للقيمة السابقة
-          setState(() {
-            _currentRating = _previousRating;
-          });
-          // إلغاء Timer إذا كان موجود
-          _debounceTimer?.cancel();
+          if (mounted) {
+            setState(() {
+              _currentRating = _previousRating;
+            });
+            // إلغاء Timer إذا كان موجود
+            _debounceTimer?.cancel();
+          }
           return true;
         },
         child: Container(
@@ -120,7 +128,6 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Handle bar
                   Container(
                     width: 40,
                     height: 4,
@@ -129,14 +136,13 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  // Close button
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);
+                      if (!mounted) return;
                       setState(() {
                         _currentRating = _previousRating;
                       });
-                      // إلغاء Timer إذا كان موجود
                       _debounceTimer?.cancel();
                     },
                     icon: Icon(
@@ -148,19 +154,14 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Title
               Text(
                 LocaleKeys.add_comment_for_rating.tr(),
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800]),
               ),
               const SizedBox(height: 20),
-
-              // Rating display (نجوم تفاعلية)
               RatingBar.builder(
                 initialRating: _currentRating,
                 minRating: 1,
@@ -177,14 +178,13 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                 ),
                 unratedColor: Colors.grey[400],
                 onRatingUpdate: (rating) {
+                  if (!mounted) return;
                   setState(() {
                     _currentRating = rating;
                   });
                 },
               ),
               const SizedBox(height: 20),
-
-              // Comment text field
               TextField(
                 controller: _commentController,
                 maxLines: 3,
@@ -203,33 +203,25 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Buttons
               Row(
                 children: [
-                  // Cancel button
                   Expanded(
                     child: TextButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        if (!mounted) return;
                         setState(() {
                           _currentRating = _previousRating;
                         });
-                        // إلغاء Timer إذا كان موجود
                         _debounceTimer?.cancel();
                       },
                       child: Text(
                         LocaleKeys.cancel.tr(),
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
-
-                  // Send button
                   Expanded(
                     child: ValueListenableBuilder<bool>(
                       valueListenable: _isCommentEmptyNotifier,
@@ -239,6 +231,7 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                               ? null
                               : () {
                                   Navigator.pop(context);
+                                  if (!mounted) return;
                                   widget.onRatingChanged(
                                       _currentRating, _commentController.text);
                                   _previousRating = _currentRating;
@@ -258,14 +251,13 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                LocaleKeys.send.tr(),
+                                widget.initialRating > 0
+                                    ? LocaleKeys.edit.tr()
+                                    : LocaleKeys.add.tr(),
                                 style: const TextStyle(fontSize: 16),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(
-                                Icons.send,
-                                size: 18,
-                              ),
+                              const Icon(Icons.send, size: 18),
                             ],
                           ),
                         );

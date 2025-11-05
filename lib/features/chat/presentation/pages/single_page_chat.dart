@@ -1931,15 +1931,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
           isAnswerMessageRead: messageStatus?.isWatched ?? false,
           isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
           answeredFile: message.file,
-          message: parentMessage.messageContent?.content == null
-              ? parentMessage.messageType!.name == 'ImageMessage'
-                  ? LocaleKeys.photo.tr()
-                  : parentMessage.messageType!.name == 'FileMessage'
-                      ? LocaleKeys.file.tr()
-                      : parentMessage.messageType!.name == 'VideoMessage'
-                          ? LocaleKeys.vvideo.tr()
-                          : LocaleKeys.voice.tr()
-              : parentMessage.messageContent!.content.toString(),
+          message: parentMessage.messageType?.name == 'ShareProduct'
+              ? LocaleKeys.product.tr()
+              : parentMessage.messageContent?.content == null
+                  ? parentMessage.messageType!.name == 'ImageMessage'
+                      ? LocaleKeys.photo.tr()
+                      : parentMessage.messageType!.name == 'FileMessage'
+                          ? LocaleKeys.file.tr()
+                          : parentMessage.messageType!.name == 'VideoMessage'
+                              ? LocaleKeys.vvideo.tr()
+                              : LocaleKeys.voice.tr()
+                  : parentMessage.messageContent!.content.toString(),
           receivedAt: messageStatus?.receivedAt,
           messageAnswerId: message.id!,
           channalId: message.channelId!,
@@ -1978,15 +1980,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 (parentMessageStatus?.isReceived ?? 0) == 1,
             isAnswerMessageRead: messageStatus?.isWatched ?? false,
             isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-            message: parentMessage.messageContent?.content == null
-                ? parentMessage.messageType?.name == 'ImageMessage'
-                    ? LocaleKeys.photo.tr()
-                    : parentMessage.messageType?.name == 'FileMessage'
-                        ? LocaleKeys.file.tr()
-                        : parentMessage.messageType?.name == 'VideoMessage'
-                            ? LocaleKeys.vvideo.tr()
-                            : LocaleKeys.voice.tr()
-                : parentMessage.messageContent!.content.toString(),
+            message: parentMessage.messageType?.name == 'ShareProduct'
+                ? LocaleKeys.product.tr()
+                : parentMessage.messageContent?.content == null
+                    ? parentMessage.messageType?.name == 'ImageMessage'
+                        ? LocaleKeys.photo.tr()
+                        : parentMessage.messageType?.name == 'FileMessage'
+                            ? LocaleKeys.file.tr()
+                            : parentMessage.messageType?.name == 'VideoMessage'
+                                ? LocaleKeys.vvideo.tr()
+                                : LocaleKeys.voice.tr()
+                    : parentMessage.messageContent!.content.toString(),
             messageAnswerId: message.id!,
             channalId: message.channelId!);
       }

@@ -148,12 +148,12 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                     return;
                   }
                   BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                      true, 'image', widget.isSent,
+                      true, 'product', widget.isSent,
                       senderParentMessageId: widget.senderId,
                       imageUrl: widget.imageUrl,
                       messageId: widget.messageId,
                       time: widget.createAt,
-                      message: 'Photo'));
+                      message: 'Product'));
                 } else {}
               },
               iconSize: 0,

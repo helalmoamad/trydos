@@ -257,7 +257,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           if (prefsRepository.isTimerForOtpRunning ?? false) {
                             showWarningMessage(
                               context,
-                              ' LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
+                              ' ${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
                             );
                             return;
                           }
@@ -626,7 +626,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ),
                     )
                   : Text(
-                      '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${symbole}',
+                      '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed((GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2).round())} ${symbole}',
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,

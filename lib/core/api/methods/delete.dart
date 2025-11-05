@@ -16,7 +16,8 @@ class DeleteClient<T> extends BaseApi<T> {
         _queryParameters = requestPrams.queryParameters,
         _endpoint = requestPrams.endpoint,
         _receiveTimeout = requestPrams.receiveTimeout,
-        _sendTimeout = requestPrams.sendTimeout, super(serverName);
+        _sendTimeout = requestPrams.sendTimeout,
+        super(serverName);
 
   final RequestConfig<T> requestPrams;
   final FromJson<T>? _fromJson;
@@ -26,7 +27,7 @@ class DeleteClient<T> extends BaseApi<T> {
   final Stopwatch stopWatch = Stopwatch();
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
-  final ServerName serverName ;
+  final ServerName serverName;
 
   @override
   Future<T> call() async {
@@ -42,7 +43,8 @@ class DeleteClient<T> extends BaseApi<T> {
       stopWatch.start();
       final Response response = await client.deleteUri(uri,
           options: options.copyWith(
-              receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout));
+              receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+              sendTimeout: _sendTimeout ?? options.sendTimeout));
       stopWatch.stop();
       GetIt.I<PrefsRepository>().saveRequestsData(
           response.requestOptions.path,
@@ -52,8 +54,7 @@ class DeleteClient<T> extends BaseApi<T> {
           response.requestOptions.method,
           response.requestOptions.queryParameters,
           response.data is! FormData ? response.data : {'data': 'formData'},
-          responseTime: stopWatch.elapsed.toString()
-      );
+          responseTime: stopWatch.elapsed.toString());
       prettyPrinterI(stopWatch.elapsed.toString());
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {

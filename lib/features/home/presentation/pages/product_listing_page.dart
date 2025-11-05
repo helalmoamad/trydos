@@ -2503,7 +2503,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 products[tapIndex]
                                                         .syncColorImages ??
                                                     [];*/
-                                            List<productListingModel.Color>?
+                                            List<
+                                                    productListingModel
+                                                    .ProductColor>?
                                                 productColors = [];
                                             if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                     GetProductDetailWithoutSimilarRelatedProductsStatus

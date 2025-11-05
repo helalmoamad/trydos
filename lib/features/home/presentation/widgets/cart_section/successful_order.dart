@@ -32,7 +32,7 @@ class SuccessfullOrder extends StatefulWidget {
   final List<String> availablePaymentMethod;
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
-  final int decimalPointSetting;
+  final double decimalPointSetting;
   final String orderGroupId;
   final String currencySymbol;
   const SuccessfullOrder({

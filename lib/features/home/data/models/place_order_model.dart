@@ -1,3 +1,4 @@
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/features/home/data/models/get_orders_model.dart';
 
 class OrdersGroupModel {
@@ -581,7 +582,9 @@ class PlaceOrderDetailsModel {
         deliveryStatus: json["delivery_status"],
         paymentStatus: json["payment_status"],
         shippingMethodId: json["shipping_method_id"],
-        variant: json["variant"],
+        variant: json["variant"] == null
+            ? null
+            : HelperFunctions.replaceDashAfterFirst(json["variant"]),
         collectProductAfterOrdering: json["collect_product_after_ordering"],
         discountType: json["discount_type"],
         isStockDecreased: json["is_stock_decreased"],
@@ -660,11 +663,18 @@ class Variation {
       );
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
-        sizeOption: json["size_options"],
-        colorOption: json["color_options"],
-        size: json["Size"],
-        color: json["color"],
-      );
+      sizeOption: json["size_options"] == null
+          ? null
+          : json["size_options"].toString().replaceAll("-", "_"),
+      colorOption: json["color_options"] == null
+          ? null
+          : json["color_options"].toString().replaceAll("-", "_"),
+      size: json["Size"] == null
+          ? null
+          : json["Size"].toString().replaceAll("-", "_"),
+      color: json["color"] == null
+          ? null
+          : json["color"].toString().replaceAll("-", "_"));
 
   Map<String, dynamic> toJson() => {
         "size_options": sizeOption,

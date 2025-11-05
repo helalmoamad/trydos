@@ -30,6 +30,7 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
           : Duration(microseconds: (json['duration'] as num).toInt()),
       slopMessageId: json['slopMessageId'] as String? ?? "",
       isSlpoing: json['isSlpoing'] as bool? ?? false,
+      chatOrderParticipantId: json['chatOrderParticipantId'] as String?,
       firstRequestForGetChats: json['firstRequestForGetChats'] as bool? ?? true,
       height: (json['height'] as num?)?.toInt() ?? 0,
       imageCountInEachChat:
@@ -179,6 +180,7 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'chats': instance.chats.map((e) => e.toJson()).toList(),
       'pinnedChats': instance.pinnedChats.map((e) => e.toJson()).toList(),
       'currentMessage': instance.currentMessage,
+      'chatOrderParticipantId': instance.chatOrderParticipantId,
       'currentFailedMessage': instance.currentFailedMessage,
       'currentFailedMediaMessage': instance.currentFailedMediaMessage,
       'resultOfSearchTextInChat': instance.resultOfSearchTextInChat?.toJson(

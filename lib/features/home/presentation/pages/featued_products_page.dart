@@ -461,7 +461,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                   previous.cartCollection !=
                                                       current.cartCollection,
                                               builder: (context, state) {
-                                                List<filter.Color>?
+                                                List<filter.ProductColor>?
                                                     productColors = [];
                                                 if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                         GetProductDetailWithoutSimilarRelatedProductsStatus

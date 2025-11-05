@@ -11,12 +11,14 @@
   "full": "Full",
   "the_product_price_when_returned": "The Product Price When Returned",
   "alert": "Alert",
+  "waiting_for_supplier_response": "Waiting for supplier response",
   "typing": "Typing...",
   "recording": "Recording...",
   "sending_file": "sending file...",
   "sending_picture": "sending photo...",
   "sending_video": "sending video...",
   "gallery": "gallery",
+ 
   "camera": "camera",
   "choose_photo_or_video_from_gallery_or_camera": "choose  photo or video from gallery or camera",
   "image_preview": "Image Preview",
@@ -646,4 +648,28 @@
   ,"add_more_to_bag": "Add More To Bag"
   ,"delivery_worker": "Delivery Worker"
   ,"recommend_products": "Recommended Products"
+  ,"edit_comment_title": "Edit Comment"
+  ,"edit_comment_hint": "Write your edit here..."
+  ,"must_login_to_edit_comment": "Please login to edit the comment"
+  ,"must_login_to_delete_comment": "Please login to delete the comment"
+  ,"confirm_delete_comment_title": "Confirm Delete Comment"
+  ,"confirm_delete_comment_message": "Are you sure you want to delete this comment?"
+  ,"confirm_delete": "Confirm Delete"
+  ,"delete_comment_success": "Comment deleted successfully"
+  ,"delete_comment_failed": "Failed to delete the comment"
+  ,"edit_comment_success": "Comment updated successfully"
+  ,"edit_comment_failed": "Failed to update the comment",
+  "quality": "Quality",
+  "complaint": "Complaint",
+  "recommendation": "Recommendation",
+  "no_commends_found": "No comments found",
+  "choose_a_country": "Choose a country",
+  "country_not_available": "Country not available",
+  "expected_shipping_delivery_date": "Expected shipping and delivery date",
+  "work_days_at_your_address_in": "Work days at your address in",
+  "after_receiving_product_return_without_conditions": "After receiving the product you can return it without conditions",
+  "or_reasons_with_complete_ease_and": "or reasons with complete ease and"
+  ,"pack": "Pack"
+  , "dear": "Dear"
+  ,"product": "Product"
 }

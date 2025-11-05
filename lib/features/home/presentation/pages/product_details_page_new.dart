@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_html/flutter_html.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -27,6 +28,9 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -114,7 +118,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   int? initialColor;
 
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
-
+  String phoneNumber = '';
+  int isVisWhatsApp = 0;
+  final ValueNotifier<bool> isVerified = ValueNotifier(true);
   final PanelController panelControllerForBuyersCameraShots = PanelController();
   final PanelController panelControllerForReels = PanelController();
   final PanelController panelBuyersComments = PanelController();
@@ -129,7 +135,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   final ValueNotifier<bool> showShadowForPanel = ValueNotifier(false);
   final ValueNotifier<bool> visibleVedio = ValueNotifier(true);
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
-
+  final ValueNotifier<String> currentFilterForCommend = ValueNotifier("all");
+  final PageController pageController = PageController();
   bool isChangedvariationWhenQtyZeroForFirst = false;
   final ValueNotifier<String?> productNotAvailableNotifier =
       ValueNotifier(null);
@@ -141,21 +148,24 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   int currentSelectedColor = 0;
   int currentSelectedColorAfterChangeVariant = -1;
   List<String> productSlugToOnVoideo = [];
-
+  final FocusNode focusNode = FocusNode();
   Timer? _analyticsTimer;
-
+  String currentVariantType = "";
   @override
   void initState() {
     LastPagesTracker.push(
         "Product Details Page , Product Name:${widget.productItem?.name}");
-    try {
-      videoProductInListingController.forEach((key, value) {
-        if (value.value.isPlaying) {
-          value.pause();
-          productSlugToOnVoideo.add(key);
-        }
-      });
-    } catch (e) {}
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        videoProductInListingController.forEach((key, value) {
+          if (value.value.isPlaying) {
+            value.pause();
+            productSlugToOnVoideo.add(key);
+          }
+        });
+      } catch (e) {} // آمن هنا
+    });
+
     changeVariationIfQtyZero = true;
     if (widget.productItem != null) {
       productItem = widget.productItem!;
@@ -383,23 +393,25 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     }
                     if (state.getFullProductDetailsStatus ==
                         GetFullProductDetailsStatus.success) {
-                      if (state
-                              .productContentForStatusOfOpeningProductDetailsDirectly
-                              ?.countryIsRestricted ==
-                          true) {
-                        productNotAvailableNotifier.value = LocaleKeys
-                            .product_is_not_available_in_your_country
-                            .tr();
-                      } else if (state
-                              .productContentForStatusOfOpeningProductDetailsDirectly
-                              ?.isActive ==
-                          false) {
-                        productNotAvailableNotifier.value = LocaleKeys
-                            .this_product_is_not_available_in_store
-                            .tr();
-                      } else {
-                        productNotAvailableNotifier.value = null;
-                      }
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (state
+                                .productContentForStatusOfOpeningProductDetailsDirectly
+                                ?.countryIsRestricted ==
+                            true) {
+                          productNotAvailableNotifier.value = LocaleKeys
+                              .product_is_not_available_in_your_country
+                              .tr();
+                        } else if (state
+                                .productContentForStatusOfOpeningProductDetailsDirectly
+                                ?.isActive ==
+                            false) {
+                          productNotAvailableNotifier.value = LocaleKeys
+                              .this_product_is_not_available_in_store
+                              .tr();
+                        } else {
+                          productNotAvailableNotifier.value = null;
+                        }
+                      });
                     }
                     productItem = state
                         .productContentForStatusOfOpeningProductDetailsDirectly!;
@@ -438,7 +450,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               null) {
                             if (productItem != null) {
                               List<String> syncColorNames = [];
-                              List<productListingModel.SyncColorImage>
+                              List<productListingModel.SyncColorImageProduct>
                                   syncColorImagesFromListing =
                                   widget.productItem?.syncColorImages ?? [];
 
@@ -465,7 +477,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   }
                                 },
                               );
-                              List<productListingModel.Color>?
+                              List<productListingModel.ProductColor>?
                                   colorsFromListing =
                                   widget.productItem?.colors ?? [];
                               state
@@ -487,6 +499,16 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                         productItem?.productId.toString()]!
                                     .product
                                     ?.collectedAfterOrdering,
+                                ownerId: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.ownerId,
+                                ownerType: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.ownerType,
                                 countOfPieces: state
                                     .cachedProductWithoutRelatedProductsModel[
                                         productItem?.productId.toString()]!
@@ -1061,6 +1083,18 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                                   .toString()]!
                                                           .product
                                                           ?.syncColorImages,
+                                                      ownerId: state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem?.productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.ownerId,
+                                                      ownerType: state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem?.productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.ownerType,
                                                       choiceOptions: state
                                                           .cachedProductWithoutRelatedProductsModel[
                                                               productItem?.productId
@@ -1073,17 +1107,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                                   .toString()]!
                                                           .product
                                                           ?.colors,
-                                                      productId: state.cachedProductWithoutRelatedProductsModel[
-                                                                  productItem
-                                                                      ?.productId
-                                                                      .toString()] !=
+                                                      productId: state.cachedProductWithoutRelatedProductsModel[productItem
+                                                                  ?.productId
+                                                                  .toString()] !=
                                                               null
-                                                          ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product !=
-                                                                  null
-                                                              ? state
-                                                                  .cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!
-                                                                  .product!
-                                                                  .id
+                                                          ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product != null
+                                                              ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product!.id
                                                               : null
                                                           : null),
                                               currentColorForProduct:
@@ -1235,20 +1264,20 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               ),
                               // ProductStoriesCard(),
                               storySection(),
-                              InkWell(
-                                  onTap: () {
-                                    LastPagesTracker.push(
-                                        "BuyersCommentsPanel Page");
-                                    panelBuyersComments.open();
-                                  },
-                                  child: const BuyerComment()),
-                              InkWell(
-                                  onTap: () {
-                                    LastPagesTracker.push(
-                                        "BuyerSellerChat Page");
-                                    panelBuyersSeller.open();
-                                  },
-                                  child: const BuyerSellerChat()),
+                              BuyerComment(
+                                  panelBuyersComments: panelBuyersComments,
+                                  ownerId: productItem?.ownerId,
+                                  ownerType: productItem?.ownerType,
+                                  productId:
+                                      (productItem?.productId).toString()),
+                              BuyerSellerChat(
+                                  panelBuyersSeller: panelBuyersSeller,
+                                  isVerified: isVerified,
+                                  currentVariant: currentVariantType,
+                                  ownerId: productItem?.ownerId,
+                                  ownerType: productItem?.ownerType,
+                                  productId:
+                                      (productItem?.productId).toString()),
                               if (!state
                                       .cachedProductWithoutRelatedProductsModel
                                       .containsKey(
@@ -1289,6 +1318,18 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                                   .toString()]!
                                                           .product
                                                           ?.syncColorImages,
+                                                      ownerId: state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem?.productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.ownerId,
+                                                      ownerType: state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem?.productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.ownerType,
                                                       choiceOptions: state
                                                           .cachedProductWithoutRelatedProductsModel[
                                                               productItem?.productId
@@ -1301,17 +1342,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                                   .toString()]!
                                                           .product
                                                           ?.colors,
-                                                      productId: state.cachedProductWithoutRelatedProductsModel[
-                                                                  productItem
-                                                                      ?.productId
-                                                                      .toString()] !=
+                                                      productId: state.cachedProductWithoutRelatedProductsModel[productItem
+                                                                  ?.productId
+                                                                  .toString()] !=
                                                               null
-                                                          ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product !=
-                                                                  null
-                                                              ? state
-                                                                  .cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!
-                                                                  .product!
-                                                                  .id
+                                                          ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product != null
+                                                              ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product!.id
                                                               : null
                                                           : null),
                                               currentColorForProduct:
@@ -1487,6 +1523,16 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 productItem?.productId.toString()]!
                             .product
                             ?.collectedAfterOrdering,
+                        ownerId: state
+                            .cachedProductWithoutRelatedProductsModel[
+                                productItem?.productId.toString()]!
+                            .product
+                            ?.ownerId,
+                        ownerType: state
+                            .cachedProductWithoutRelatedProductsModel[
+                                productItem?.productId.toString()]!
+                            .product
+                            ?.ownerType,
                         countOfPieces: state
                             .cachedProductWithoutRelatedProductsModel[
                                 productItem?.productId.toString()]!
@@ -1578,7 +1624,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     }*/
                     String currentSelectedColorOption = "";
                     Variation? currentVariation;
-                    String currentVariantType = "";
+
                     if ((state
                                 .cachedProductWithoutRelatedProductsModel[
                                     productItem!.productId.toString()]
@@ -1613,9 +1659,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           return Variation(variantNotifyForUser: false);
                         },
                       );
-                      print(
-                          "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${currentVariation?.type}");
-                      print(currentVariation?.type);
 
                       Future.delayed(const Duration(milliseconds: 600),
                           () => visibleSizeAndColorCard.value = true);
@@ -1626,6 +1669,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             isChangedvariationWhenQtyZeroForFirst = true;
                             changeVariationWhenNotAvailable(
                                 currentVariation: currentVariation,
+                                collectAfterOrder: (state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.productId
+                                                    .toString()]
+                                            ?.product
+                                            ?.collectedAfterOrdering ??
+                                        0) ==
+                                    1,
                                 variation: state.authProductDetailsModel?.data
                                         ?.variation ??
                                     [],
@@ -2010,6 +2061,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 }
 
                                 return ProductDetailsBottomSheetNew(
+                                  isVerified: isVerified,
                                   showShadowForPanel: showShadowForPanel,
                                   currentVariant: currentVariantType,
                                   visibleRedeemNotifier: visibleRedeem,
@@ -2254,21 +2306,22 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                           .toString()]!
                                                   .product
                                                   ?.availableQuantity,
-                                      choiceOptions:
-                                          state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
-                                              ? []
-                                              : state
-                                                  .cachedProductWithoutRelatedProductsModel[
-                                                      productItem?.productId
-                                                          .toString()]!
-                                                  .product
-                                                  ?.choiceOptions,
-                                      colors: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                      ownerId: state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()]!
+                                          .product
+                                          ?.ownerId,
+                                      ownerType: state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()]!
+                                          .product
+                                          ?.ownerType,
+                                      choiceOptions: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
                                           ? []
-                                          : state
-                                              .cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!
-                                              .product
-                                              ?.colors,
+                                          : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.choiceOptions,
+                                      colors: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.colors,
                                       images: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.images,
                                       syncColorImages: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product?.syncColorImages,
                                       productId: int.tryParse(productId),
@@ -2294,11 +2347,72 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 panelController: panelControllerForBuyersCameraShots,
                 panelControllerForReels: panelControllerForReels),
             SlidingUpPanelForReels(panelController: panelControllerForReels),
-            BuyersProductRatePanel(panelController: panelBuyersProductRate),
-            BuyersCommentsPanel(panelController: panelBuyersComments),
-            BuyerSellerPanel(panelController: panelBuyersSeller),
-            ShippingDeliveryDatePanel(
-                panelController: panelShippingDeliveryDate),
+            BuyersProductRatePanel(
+                panelController: panelBuyersProductRate,
+                productFirstId: (productItem?.productId ?? "").toString()),
+            BuyersCommentsPanel(
+                currentFilterForCommend: currentFilterForCommend,
+                panelController: panelBuyersComments,
+                productFirstId: (productItem?.productId ?? "").toString()),
+            BuyerSellerPanel(
+                currentFilterForCommend: currentFilterForCommend,
+                panelController: panelBuyersSeller,
+                productFirstId: (productItem?.productId ?? "").toString()),
+            BlocBuilder<HomeBloc, HomeState>(buildWhen: (previous, current) {
+              return previous
+                          .getProductDetailWithoutSimilarRelatedProductsStatus !=
+                      current
+                          .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                  previous.getFullProductDetailsStatus !=
+                      current.getFullProductDetailsStatus;
+            }, builder: (context, state) {
+              String productId = (productItem?.productId ??
+                      (state
+                          .productContentForStatusOfOpeningProductDetailsDirectly
+                          ?.productId))
+                  .toString();
+              if (state.cachedProductWithoutRelatedProductsModel[productId] ==
+                  null) {
+                return const SizedBox.shrink();
+              }
+              return ShippingDeliveryDatePanel(
+                  countryName: state.getAllowedCountriesModel?.data?.countries
+                          ?.firstWhere((element) {
+                        return element.iso!.toLowerCase().contains(
+                            '${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso?.toLowerCase() : GetIt.I<PrefsRepository>().countryIso?.toLowerCase()}');
+                      },
+                              orElse: () =>
+                                  Country(id: 0, iso: "", name: "")).name ??
+                      "",
+                  shippingCost:
+                      (state.cachedProductWithoutRelatedProductsModel[productId] !=
+                              null
+                          ? state.cachedProductWithoutRelatedProductsModel[productId]!.product !=
+                                  null
+                              ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productId]!
+                                      .product!
+                                      .shippingCost ??
+                                  0
+                              : 0
+                          : 0),
+                  shippingDay: ((state.cachedProductWithoutRelatedProductsModel[productId] !=
+                                  null
+                              ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productId]!
+                                          .product !=
+                                      null
+                                  ? state.cachedProductWithoutRelatedProductsModel[productId]!
+                                          .product!.shippingDays ??
+                                      0
+                                  : 0
+                              : 0) +
+                          (state.startingSetting?.shippingDay ?? 0))
+                      .toString(),
+                  panelController: panelShippingDeliveryDate);
+            }),
             BlocBuilder<HomeBloc, HomeState>(
                 buildWhen: (previous, current) =>
                     previous.getFullProductDetailsStatus !=
@@ -2318,6 +2432,22 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             isProductNotifiedForUser: false),
                     visibleRedeem: visibleRedeem,
                     panelController: panelColorImages)),
+            ValueListenableBuilder<bool>(
+                valueListenable: isVerified,
+                builder: (context, _isverified, _) {
+                  return _isverified
+                      ? const SizedBox.shrink()
+                      : Container(
+                          width: 1.sw,
+                          height: 1.sh,
+                          color: const Color.fromRGBO(0, 0, 0, 0.5),
+                        );
+                }),
+            ValueListenableBuilder<bool>(
+                valueListenable: isVerified,
+                builder: (context, _isverified, _) {
+                  return _isverified ? const SizedBox.shrink() : _veryfiedOtp();
+                })
           ],
         ),
       ),
@@ -2930,94 +3060,75 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     //           .showProductPhotosButton,
                     // );
                   },
-                  child: ValueListenableBuilder<String?>(
-                      valueListenable: productNotAvailableNotifier,
-                      builder: (context, _productNotAvailableNotifier, _) {
-                        return _productNotAvailableNotifier != null
-                            ? const SizedBox.shrink()
-                            : ValueListenableBuilder<bool>(
-                                valueListenable: visibleFlashDeal,
-                                builder: (context, _visibleFlashDeal, _) {
-                                  bool isFlashDealEnded = false;
-                                  DateTime endDate;
-                                  Duration _duration = const Duration();
-                                  final now = DateTime.now();
-                                  try {
-                                    endDate = DateFormat('MM/dd/yyyy', 'en_US')
-                                        .parse(
-                                            productItem.flashDealEndDate ?? "");
-                                    endDate =
-                                        endDate.add(const Duration(days: 1));
-                                  } catch (e) {
-                                    endDate = DateTime.now();
-                                    print('Error parsing date: $e');
-                                  }
-                                  _duration = endDate.difference(now);
-                                  if (_duration.isNegative ||
-                                      _duration.inSeconds < 1) {
-                                    isFlashDealEnded = true;
-                                  }
+                  child: ValueListenableBuilder<bool>(
+                      valueListenable: visibleFlashDeal,
+                      builder: (context, _visibleFlashDeal, _) {
+                        bool isFlashDealEnded = false;
+                        DateTime endDate;
+                        Duration _duration = const Duration();
+                        final now = DateTime.now();
+                        try {
+                          endDate = DateFormat('MM/dd/yyyy', 'en_US')
+                              .parse(productItem.flashDealEndDate ?? "");
+                          endDate = endDate.add(const Duration(days: 1));
+                        } catch (e) {
+                          endDate = DateTime.now();
+                          print('Error parsing date: $e');
+                        }
+                        _duration = endDate.difference(now);
+                        if (_duration.isNegative || _duration.inSeconds < 1) {
+                          isFlashDealEnded = true;
+                        }
 
-                                  return ValueListenableBuilder<bool>(
-                                      valueListenable: visibleRedeem,
-                                      builder: (context, _visibleRedeem, _) {
-                                        print(
-                                            "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeeee4${(GetIt.I<PrefsRepository>().getRedeemDateForProduct(productItem.productId.toString())?.isAfter(DateTime.now().add(const Duration(seconds: 1))) == true && isRedeem == true) || (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(productItem.productId.toString()) ?? 0) > 0}");
-                                        return ProductDetailsImageWidget(
-                                          borderRadius:
-                                              BorderRadius.circular(0),
-                                          borderColor: (GetIt.I<PrefsRepository>()
-                                                              .getRedeemDateForProduct(
-                                                                  productItem
-                                                                      .productId
-                                                                      .toString())
-                                                              ?.isAfter(DateTime
-                                                                      .now()
-                                                                  .add(const Duration(
-                                                                      seconds:
-                                                                          1))) ==
-                                                          true &&
-                                                      isRedeem == true) ||
-                                                  (GetIt.I<PrefsRepository>()
-                                                              .getRedeemSecondRemainingForProduct(
-                                                                  productItem
-                                                                      .productId
-                                                                      .toString()) ??
-                                                          0) >
-                                                      0 ||
-                                                  (!isFlashDealEnded)
-                                              ? const Color(0xffFF6200)
-                                              : null,
-                                          visibleRedeemNotifier: visibleRedeem,
-                                          visibleRedeem: (GetIt.I<
-                                                              PrefsRepository>()
-                                                          .getRedeemDateForProduct(
-                                                              productItem
-                                                                  .productId
-                                                                  .toString())
-                                                          ?.isAfter(DateTime
-                                                                  .now()
-                                                              .add(const Duration(
-                                                                  seconds:
-                                                                      1))) ==
-                                                      true &&
-                                                  isRedeem == true) ||
-                                              (GetIt.I<PrefsRepository>()
-                                                          .getRedeemSecondRemainingForProduct(
-                                                              productItem
-                                                                  .productId
-                                                                  .toString()) ??
-                                                      0) >
-                                                  0,
-                                          visibleFlashDeal: visibleFlashDeal,
-                                          isFlashDealEnded: isFlashDealEnded,
-                                          index: index,
-                                          flashDealEndDate:
-                                              productItem.flashDealEndDate ??
-                                                  "",
-                                          productId: productItem.productId ?? 0,
-                                          isRedeem: isRedeem,
-                                          /*    flashDealTime: index != 0
+                        return ValueListenableBuilder<bool>(
+                            valueListenable: visibleRedeem,
+                            builder: (context, _visibleRedeem, _) {
+                              return ProductDetailsImageWidget(
+                                key: ValueKey(
+                                    "ProductDetailsImageWidget${productItem.productId}"),
+                                borderRadius: BorderRadius.circular(0),
+                                borderColor: (GetIt.I<PrefsRepository>()
+                                                    .getRedeemDateForProduct(
+                                                        productItem.productId
+                                                            .toString())
+                                                    ?.isAfter(DateTime.now()
+                                                        .add(const Duration(
+                                                            seconds: 1))) ==
+                                                true &&
+                                            isRedeem == true) ||
+                                        (GetIt.I<PrefsRepository>()
+                                                    .getRedeemSecondRemainingForProduct(
+                                                        productItem.productId
+                                                            .toString()) ??
+                                                0) >
+                                            0 ||
+                                        (!isFlashDealEnded)
+                                    ? const Color(0xffFF6200)
+                                    : null,
+                                visibleRedeemNotifier: visibleRedeem,
+                                visibleRedeem: (GetIt.I<PrefsRepository>()
+                                                .getRedeemDateForProduct(
+                                                    productItem.productId
+                                                        .toString())
+                                                ?.isAfter(DateTime.now().add(
+                                                    const Duration(
+                                                        seconds: 1))) ==
+                                            true &&
+                                        isRedeem == true) ||
+                                    (GetIt.I<PrefsRepository>()
+                                                .getRedeemSecondRemainingForProduct(
+                                                    productItem.productId
+                                                        .toString()) ??
+                                            0) >
+                                        0,
+                                visibleFlashDeal: visibleFlashDeal,
+                                isFlashDealEnded: isFlashDealEnded,
+                                index: index,
+                                flashDealEndDate:
+                                    productItem.flashDealEndDate ?? "",
+                                productId: productItem.productId ?? 0,
+                                isRedeem: isRedeem,
+                                /*    flashDealTime: index != 0
                                                   ? ""
                                                   : productItem!
                                                           .flashDealEndDate ??
@@ -3026,50 +3137,39 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                   ? []
                                                   : productItem!.labelNames ??
                                                       [],*/
-                                          height: 464,
-                                          width: 320,
-                                          orginalHeight: widget.productItem ==
-                                                  null
-                                              ? 0
-                                              : widget
-                                                      .productItem!
-                                                      .syncColorImages
-                                                      .isNullOrEmpty
-                                                  ? double.tryParse(productItem
-                                                      .images![index]
-                                                      .originalHeight!)
-                                                  : double.tryParse(productItem
-                                                      .syncColorImages![
-                                                          currentSelectedColor]
-                                                      .images![index]
-                                                      .originalHeight!),
-                                          orginalWidth: widget.productItem ==
-                                                  null
-                                              ? 0
-                                              : widget
-                                                      .productItem!
-                                                      .syncColorImages
-                                                      .isNullOrEmpty
-                                                  ? double.tryParse(productItem
-                                                      .images![index]
-                                                      .originalWidth!)
-                                                  : double.tryParse(productItem
-                                                      .syncColorImages![
-                                                          currentSelectedColor]
-                                                      .images![index]
-                                                      .originalWidth!),
-                                          imageUrl: productItem
-                                                  .syncColorImages.isNullOrEmpty
-                                              ? productItem
-                                                  .images![index].filePath!
-                                              : productItem
-                                                  .syncColorImages![
-                                                      currentSelectedColor]
-                                                  .images![index]
-                                                  .filePath,
-                                        );
-                                      });
-                                });
+                                height: 464,
+                                width: 320,
+                                orginalHeight: widget.productItem == null
+                                    ? 0
+                                    : widget.productItem!.syncColorImages
+                                            .isNullOrEmpty
+                                        ? double.tryParse(productItem
+                                            .images![index].originalHeight!)
+                                        : double.tryParse(productItem
+                                            .syncColorImages![
+                                                currentSelectedColor]
+                                            .images![index]
+                                            .originalHeight!),
+                                orginalWidth: widget.productItem == null
+                                    ? 0
+                                    : widget.productItem!.syncColorImages
+                                            .isNullOrEmpty
+                                        ? double.tryParse(productItem
+                                            .images![index].originalWidth!)
+                                        : double.tryParse(productItem
+                                            .syncColorImages![
+                                                currentSelectedColor]
+                                            .images![index]
+                                            .originalWidth!),
+                                imageUrl: productItem
+                                        .syncColorImages.isNullOrEmpty
+                                    ? productItem.images![index].filePath!
+                                    : productItem
+                                        .syncColorImages![currentSelectedColor]
+                                        .images![index]
+                                        .filePath,
+                              );
+                            });
                       }));
             },
             separatorBuilder: (context, index) {
@@ -3170,6 +3270,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   void changeVariationWhenNotAvailable(
       {required Variation? currentVariation,
       required String productId,
+      required bool collectAfterOrder,
       required String productSlug,
       required List<Variation> variation}) async {
     if (!widget.fromNotification &&
@@ -3177,7 +3278,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
         !(widget.fromCart ?? false) &&
         (changeVariationIfQtyZero ?? false) &&
         currentVariation?.qty != null &&
-        currentVariation?.qty == 0) {
+        currentVariation?.qty == 0 &&
+        (!(collectAfterOrder))) {
       if (currentVariation!.type!.contains("-")) {
         currentVariation = variation.firstWhere(
             (element) =>
@@ -3192,7 +3294,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 (currentVariation!.type!.split("-").toList()[0])) ??
             -1;
         currentSelectedColorAfterChangeVariant = index;
-
         await Future.delayed(
             const Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
@@ -3271,5 +3372,150 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
         const Duration(milliseconds: 300),
         () => homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
             isChangedVariationWhenQtyZero: true)));
+  }
+
+  Widget _veryfiedOtp() {
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        color: Colors.white,
+        height: 450,
+        width: 1.sw,
+        child: Scaffold(
+            body: SizedBox(
+                height: 400,
+                width: 1.sw,
+                child: Stack(children: [
+                  PageView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: pageController,
+                      children: (prefsRepository
+                                  .isVerifiedPhonePeforeExpiredToken ??
+                              false)
+                          ? [
+                              VerifyOtp(
+                                  fromProfile: false,
+                                  navigateToProfile: () {},
+                                  fromExpired: true,
+                                  isVisWhatsApp: 1,
+                                  navigateToAddName: () {},
+                                  navigateTocartOrProfile: () {
+                                    isVerified.value = true;
+                                  },
+                                  fromLogin: false,
+                                  onLoginFailed: () {
+                                    //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                  },
+                                  goBack: () {
+                                    // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                  },
+                                  methodIcon: AppAssets.whatsappSvg,
+                                  phoneNumber: prefsRepository.myPhoneNumber!),
+                            ]
+                          : [
+                              InsertPhoneTab(
+                                focusNode: focusNode,
+                                moveToNextStep: (String phoneNumber) {
+                                  this.phoneNumber =
+                                      phoneNumber.replaceAll(' ', '');
+                                  pageController.animateToPage(1,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  setState(() {});
+                                },
+                              ),
+                              VerificationMethods(
+                                isFromLogin: false,
+                                phoneNumber: phoneNumber,
+                                onChooseWhatsapp: () {
+                                  isVisWhatsApp = 1;
+                                  print(
+                                      "###################33333# isVisWhatsApp}");
+                                  pageController.animateToPage(2,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+
+                                  if (prefsRepository.isTimerForOtpRunning ??
+                                      false) {
+                                    showWarningMessage(
+                                      context,
+                                      ' ${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
+                                    );
+                                    return;
+                                  }
+                                  /*   authBloc.add(
+                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
+                                },
+                                goBackToPhone: () {
+                                  pageController.animateToPage(0,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                },
+                                onChooseSms: () {
+                                  isVisWhatsApp = 0;
+                                  pageController.animateToPage(3,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  /* authBloc.add(
+                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
+                                },
+                              ),
+                              VerifyOtp(
+                                  fromProfile: false,
+                                  navigateToProfile: () {},
+                                  fromExpired: true,
+                                  isVisWhatsApp: isVisWhatsApp,
+                                  navigateToAddName: () {},
+                                  navigateTocartOrProfile: () {
+                                    isVerified.value = true;
+                                  },
+                                  fromLogin: false,
+                                  onLoginFailed: () {
+                                    pageController.animateToPage(3,
+                                        duration:
+                                            const Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                  },
+                                  goBack: () {
+                                    pageController.animateToPage(1,
+                                        duration:
+                                            const Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                  },
+                                  methodIcon: isVisWhatsApp == 1
+                                      ? AppAssets.whatsappSvg
+                                      : AppAssets.smsSvg,
+                                  phoneNumber: phoneNumber),
+                            ]),
+                  Positioned(
+                    top: 0,
+                    left: LanguageService.languageCode != "ar" ? null : 0,
+                    right: LanguageService.languageCode != "ar" ? 0 : null,
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      height: 20,
+                      width: 40,
+                      child: InkWell(
+                          onTap: () => isVerified.value = true,
+                          child: SvgPicture.asset(
+                            AppAssets.closeSvg,
+                            height: 15,
+                            width: 30,
+                            // ignore: deprecated_member_use
+                            color: const Color(0xffFF5F61),
+                          )),
+                    ),
+                  )
+                ]))),
+      ),
+    );
   }
 }

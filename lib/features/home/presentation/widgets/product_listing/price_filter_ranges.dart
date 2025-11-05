@@ -18,8 +18,6 @@ import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
 
-
-
 class PriceFiltersRangesList extends StatefulWidget {
   const PriceFiltersRangesList({
     super.key,
@@ -40,7 +38,7 @@ class PriceFiltersRangesList extends StatefulWidget {
   final bool fromHomeSearch;
   final String? searchText;
   final double exchangeRate;
-  final int decimalPoint;
+  final double decimalPoint;
 
   @override
   State<PriceFiltersRangesList> createState() => _PriceFiltersRangesListState();
@@ -175,7 +173,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                         dashPattern: const [3, 3],
                         child: Center(
                           child: Text(
-                            '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint)} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
+                            '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint.round())} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
                             overflow: TextOverflow.ellipsis,
                             textDirection: TextDirection.ltr,
                             style: textTheme.titleLarge?.mq.copyWith(

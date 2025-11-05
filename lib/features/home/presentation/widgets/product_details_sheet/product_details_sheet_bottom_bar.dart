@@ -170,8 +170,7 @@ class _ProductDetailsSheetBottomBarState
                   .cachedProductWithoutRelatedProductsModel[
                       widget.productIdForCashproducts]
                   ?.product
-                  ?.sharedCount ||
-          previous.addCommentStatus != current.addCommentStatus,
+                  ?.sharedCount,
       builder: (context, state) {
         List<List<String>> allimages = [];
         List<String> cartIds = [];

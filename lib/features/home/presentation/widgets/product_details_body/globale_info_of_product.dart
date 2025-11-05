@@ -35,6 +35,7 @@ class GlobaleInfoProduct extends StatelessWidget {
         buildWhen: (p, c) =>
             p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                 c.getProductDetailWithoutSimilarRelatedProductsStatus ||
+            p.getFullProductDetailsStatus != c.getFullProductDetailsStatus ||
             p.cachedProductWithoutRelatedProductsModel[productId] !=
                 c.cachedProductWithoutRelatedProductsModel[productId] ||
             p.currentSelectedColorForEveryProduct !=
@@ -42,6 +43,14 @@ class GlobaleInfoProduct extends StatelessWidget {
             p.getAndAddCountViewOfProductStatus[productId] !=
                 c.getAndAddCountViewOfProductStatus[productId],
         builder: (context, state) {
+          int countOfPersonRating = 0;
+          (state.cachedProductWithoutRelatedProductsModel[productId]?.product
+              ?.ratingDetails
+              ?.forEach(
+            (element) {
+              countOfPersonRating = countOfPersonRating + (element.count ?? 0);
+            },
+          ));
           return Padding(
               padding: const EdgeInsetsGeometry.symmetric(
                   horizontal: 20, vertical: 10),
@@ -62,27 +71,41 @@ class GlobaleInfoProduct extends StatelessWidget {
                           svgWidth: 12,
                           isInteractive: false,
                           onRatingChanged: (p0) {},
-                          initialRating: 3,
+                          initialRating:
+                              state.cachedProductWithoutRelatedProductsModel[
+                                          productId] ==
+                                      null
+                                  ? 0
+                                  : (state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productId]
+                                          ?.product
+                                          ?.totalRating ??
+                                      0),
                           starColor: const Color(0xff1D1D1D),
                         ),
                       ),
                       const SizedBox(
                         width: 2,
                       ),
-                      MyTextWidget(
-                        "368 ",
-                        style: context.textTheme.titleMedium?.br.copyWith(
-                            height: 1.45,
-                            color: const Color(0xff1D1D1D),
-                            fontSize: 9),
-                      ),
-                      MyTextWidget(
-                        "${LocaleKeys.n_buyer_rate.tr()}  | ",
-                        style: context.textTheme.titleMedium?.rr.copyWith(
-                            height: 1.45,
-                            color: const Color(0xff1D1D1D),
-                            fontSize: 9),
-                      ),
+                      countOfPersonRating == 0
+                          ? const SizedBox.shrink()
+                          : MyTextWidget(
+                              "${countOfPersonRating} ",
+                              style: context.textTheme.titleMedium?.br.copyWith(
+                                  height: 1.45,
+                                  color: const Color(0xff1D1D1D),
+                                  fontSize: 9),
+                            ),
+                      countOfPersonRating == 0
+                          ? const SizedBox.shrink()
+                          : MyTextWidget(
+                              "${LocaleKeys.n_buyer_rate.tr()}  | ",
+                              style: context.textTheme.titleMedium?.rr.copyWith(
+                                  height: 1.45,
+                                  color: const Color(0xff1D1D1D),
+                                  fontSize: 9),
+                            ),
                       state.getAndAddCountViewOfProductStatus[productId] ==
                                   null ||
                               state.cachedProductWithoutRelatedProductsModel[
@@ -145,8 +168,8 @@ class GlobaleInfoProduct extends StatelessWidget {
                                                       .product!
                                                       .viewsCount
                                                       .toString()
-                                                  : "0"
-                                              : "0") +
+                                                  : "1"
+                                              : "1") +
                                           "  | ",
                                       style: context.textTheme.titleMedium?.rr
                                           .copyWith(
@@ -167,24 +190,36 @@ class GlobaleInfoProduct extends StatelessWidget {
                             color: const Color(0xff1D1D1D),
                             fontSize: 9),
                       ),
-                      SvgPicture.asset(AppAssets.recommendSvg),
+                      state.cachedProductWithoutRelatedProductsModel[productId]
+                                  ?.product?.recommendationStats?[0].count ==
+                              0
+                          ? const SizedBox.shrink()
+                          : SvgPicture.asset(AppAssets.recommendSvg),
                       const SizedBox(
                         width: 2,
                       ),
-                      MyTextWidget(
-                        "${LocaleKeys.recommend_it_by.tr()}",
-                        style: context.textTheme.titleMedium?.rr.copyWith(
-                            height: 1.4,
-                            color: const Color(0xff1D1D1D),
-                            fontSize: 9),
-                      ),
-                      MyTextWidget(
-                        " 215 ${LocaleKeys.buyer.tr()} | ",
-                        style: context.textTheme.titleMedium?.rr.copyWith(
-                            height: 1.4,
-                            color: const Color(0xff1D1D1D),
-                            fontSize: 9),
-                      ),
+                      state.cachedProductWithoutRelatedProductsModel[productId]
+                                  ?.product?.recommendationStats?[0].count ==
+                              0
+                          ? const SizedBox.shrink()
+                          : MyTextWidget(
+                              "${LocaleKeys.recommend_it_by.tr()}",
+                              style: context.textTheme.titleMedium?.rr.copyWith(
+                                  height: 1.4,
+                                  color: const Color(0xff1D1D1D),
+                                  fontSize: 9),
+                            ),
+                      state.cachedProductWithoutRelatedProductsModel[productId]
+                                  ?.product?.recommendationStats?[0].count ==
+                              0
+                          ? const SizedBox.shrink()
+                          : MyTextWidget(
+                              " ${state.cachedProductWithoutRelatedProductsModel[productId]?.product?.recommendationStats?[0].count} ${LocaleKeys.buyer.tr()} | ",
+                              style: context.textTheme.titleMedium?.rr.copyWith(
+                                  height: 1.4,
+                                  color: const Color(0xff1D1D1D),
+                                  fontSize: 9),
+                            ),
                       CountryFlag.fromCountryCode(
                         "TR",
                         height: 10,

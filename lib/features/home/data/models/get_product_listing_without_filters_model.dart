@@ -108,6 +108,8 @@ class Products {
   final String? boutiqueId;
   final String? name;
   final String? slug;
+  final BuyersCommentModel? buyersComment;
+  final FqaQuestions? fqaQuestions;
   final String? shareLink;
   final String? maxAllowedQty;
   final String? details;
@@ -123,8 +125,8 @@ class Products {
   final double? flashDealDiscount;
   final double? flashDealPrice;
   final Brand? brand;
-  final List<Color>? colors;
-  final List<SyncColorImage>? syncColorImages;
+  final List<ProductColor>? colors;
+  final List<SyncColorImageProduct>? syncColorImages;
   final double? price;
   final String? priceFormatted;
   final double? offerPrice;
@@ -155,16 +157,20 @@ class Products {
   final int? availableQuantity;
   final int? leftStock;
   final int? reviewsCount;
-  final dynamic sellerId;
+  final String? sellerId;
+  final String? ownerType;
+  final String? ownerId;
   final BoutiqueForCart? boutique;
   final Seller? seller;
   final Shop? shop;
   final bool? isFavSeller;
-
+  final List<RecommendationStat>? recommendationStats;
   final int? countOfLikes;
   final CategoryHierarchy? categoryHierarchy;
   final int? countOfPieces;
   final List<dynamic>? reviews;
+  final List<RatingDetail>? ratingDetails;
+  final double? totalRating;
   final bool? hasWholeSale;
   final dynamic wholeSaleLink;
   final int? viewsCount;
@@ -173,6 +179,9 @@ class Products {
   final String? categoriesTree;
   final int? shippingDays;
   final bool? isProductNotifiedForUser;
+  final List<dynamic>? commentOffset;
+  final int? commentsCount;
+//  final List<comment_model.Comment>? comments;
 
   Products({
     this.productId,
@@ -181,11 +190,16 @@ class Products {
     this.slug,
     this.shareLink,
     this.details,
+    this.buyersComment,
+    this.fqaQuestions,
     //this.thumbnail,
     this.maxAllowedQty,
     this.images,
     this.isRedeem,
     this.redeemPrice,
+    this.commentOffset,
+    this.commentsCount,
+    //this.comments,
     this.categories,
     this.hasRedeemDiscount,
     this.categoryHierarchy,
@@ -194,6 +208,8 @@ class Products {
     this.brand,
     this.colors,
     this.syncColorImages,
+    this.ownerType,
+    this.ownerId,
     this.price,
     this.priceFormatted,
     this.categoriesTree,
@@ -226,6 +242,9 @@ class Products {
     this.hasTax,
     this.deliveryAt,
     this.tax,
+    this.ratingDetails,
+    this.recommendationStats,
+    this.totalRating,
     this.boutique,
     this.unitPrice,
     this.availableQuantity,
@@ -254,6 +273,8 @@ class Products {
     bool? isRedeem,
     double? redeemPrice,
     String? details,
+    BuyersCommentModel? buyersComment,
+    FqaQuestions? fqaQuestions,
     Thumbnail? thumbnail,
     List<Thumbnail>? images,
     List<Category>? categories,
@@ -261,11 +282,16 @@ class Products {
     CategoryHierarchy? categoryHierarchy,
     String? categoriesTree,
     Brand? brand,
-    List<Color>? colors,
-    List<SyncColorImage>? syncColorImages,
+    List<dynamic>? commentOffset,
+    int? commentsCount,
+    //List<comment_model.Comment>? comments,
+    List<ProductColor>? colors,
+    List<SyncColorImageProduct>? syncColorImages,
     double? price,
     bool? shippingCostMultiplyWithQuantity,
     bool? hasRedeemDiscount,
+    String? ownerType,
+    String? ownerId,
     double? shippingCost,
     String? priceFormatted,
     double? offerPrice,
@@ -292,6 +318,9 @@ class Products {
     List<String>? labelNames,
     String? flashDealEndDate,
     bool? hasTax,
+    List<RatingDetail>? ratingDetails,
+    List<RecommendationStat>? recommendationStats,
+    double? totalRating,
     String? deliveryAt,
     String? tax,
     int? countOfPieces,
@@ -299,7 +328,7 @@ class Products {
     int? availableQuantity,
     int? leftStock,
     int? reviewsCount,
-    dynamic sellerId,
+    String? sellerId,
     int? shippingDays,
     BoutiqueForCart? boutique,
     int? countOfLikes,
@@ -320,9 +349,14 @@ class Products {
         boutiqueId: boutiqueId ?? this.boutiqueId,
         name: name ?? this.name,
         isRedeem: isRedeem ?? this.isRedeem,
+        buyersComment: buyersComment ?? this.buyersComment,
+        fqaQuestions: fqaQuestions ?? this.fqaQuestions,
         redeemPrice: redeemPrice ?? this.redeemPrice,
         slug: slug ?? this.slug,
         shareLink: shareLink ?? this.shareLink,
+        commentOffset: commentOffset ?? this.commentOffset,
+        commentsCount: commentsCount ?? this.commentsCount,
+        // comments: comments ?? this.comments,
         details: details ?? this.details,
         //thumbnail: thumbnail ?? this.thumbnail,
         hasRedeemDiscount: hasRedeemDiscount ?? this.hasRedeemDiscount,
@@ -345,6 +379,9 @@ class Products {
         isFavourite: isFavourite ?? this.isFavourite,
         isActive: isActive ?? this.isActive,
         rating: rating ?? this.rating,
+        ratingDetails: ratingDetails ?? this.ratingDetails,
+        recommendationStats: recommendationStats ?? this.recommendationStats,
+        totalRating: totalRating ?? this.totalRating,
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
         flashDealMaxAllowedQuantity:
             flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
@@ -363,6 +400,8 @@ class Products {
         flashDealEndDate: flashDealEndDate ?? this.flashDealEndDate,
         tax: tax ?? this.tax,
         unitPrice: unitPrice ?? this.unitPrice,
+        ownerType: ownerType ?? this.ownerType,
+        ownerId: ownerId ?? this.ownerId,
         countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
         shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
             this.shippingCostMultiplyWithQuantity,
@@ -397,6 +436,12 @@ class Products {
             : int.tryParse(json["id"].toString()),
         boutiqueId: json["boutique_id"].toString(),
         name: json["name"],
+        buyersComment: json["buyers_comment"] == null
+            ? null
+            : BuyersCommentModel.fromJson(json["buyers_comment"]),
+        fqaQuestions: json["fqa_questions"] == null
+            ? null
+            : FqaQuestions.fromJson(json["fqa_questions"]),
         slug: json["slug"],
         shareLink: json["share_link"],
         isRedeem: json["is_redeem"],
@@ -404,7 +449,24 @@ class Products {
         redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
         details: json["details"],
         countryIsRestricted: json["is_country_restricted"],
+        ownerType: json["owner_type"],
+        ownerId: json["owner_id"].toString(),
         hasRedeemDiscount: json["has_redeem_discount"],
+        commentOffset: json["comment_offset"],
+        ratingDetails: json["ratingDetails"] == null
+            ? []
+            : List<RatingDetail>.from(
+                json["ratingDetails"]!.map((x) => RatingDetail.fromJson(x))),
+        recommendationStats: json["recommendation_stats"] == null
+            ? []
+            : List<RecommendationStat>.from(json["recommendation_stats"]!
+                .map((x) => RecommendationStat.fromJson(x))),
+        totalRating: json["total_rating"]?.toDouble(),
+        commentsCount: json["comments_count"],
+        /*  comments: json["comments"] == null
+            ? []
+            : List<comment_model.Comment>.from(json["comments"]!
+                .map((x) => comment_model.Comment.fromJson(x))),*/
         shippingCostMultiplyWithQuantity:
             json["shipping_cost_multiply_with_quantity"],
         shippingCost: double.tryParse(json["shipping_cost"].toString()),
@@ -432,25 +494,18 @@ class Products {
         brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
         colors: json["colors"] == null
             ? []
-            : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
-        syncColorImages: json["sync_color_images"] == null
-            ? []
-            : List<SyncColorImage>.from(json["sync_color_images"]!
-                .map((x) => SyncColorImage.fromJson(x))),
+            : List<ProductColor>.from(json["colors"]!.map((x) => ProductColor.fromJson(x))),
+        syncColorImages: json["sync_color_images"] == null ? [] : List<SyncColorImageProduct>.from(json["sync_color_images"]!.map((x) => SyncColorImageProduct.fromJson(x))),
         price: json["price"].toDouble(),
         priceFormatted: json["price_formatted"],
-        videos: json["videos"] == null
-            ? []
-            : List<String>.from(json["videos"]!.map((x) => x)),
+        videos: json["videos"] == null ? [] : List<String>.from(json["videos"]!.map((x) => x)),
         offerPrice: json["offer_price"].toDouble(),
         maxAllowedQty: json["max_allowed_qty"],
         offerPriceFormatted: json["offer_price_formatted"],
         collectedAfterOrdering: json["collected_after_ordering"],
         isFavourite: json["is_favourite"],
         isActive: json["is_active"],
-        labelNames: json["label_names"] == null
-            ? []
-            : List<String>.from(json["label_names"]!.map((x) => x)),
+        labelNames: json["label_names"] == null ? [] : List<String>.from(json["label_names"]!.map((x) => x)),
         flashDealEndDate: json["flash_deal_end_date"],
         rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
         flashDealDetails: json["flash_deal_details"],
@@ -461,16 +516,9 @@ class Products {
         model: json["model"],
         features: json["features"],
         slugEnTopic: json["slug_en_topic"],
-        boutique: json["boutique"] == null
-            ? null
-            : BoutiqueForCart.fromJson(json["boutique"]),
-        variation: json["variation"] == null
-            ? []
-            : List<Variation>.from(
-                json["variation"]!.map((x) => Variation.fromJson(x))),
-        choiceOptions: json["choice_options"] == null
-            ? []
-            : List<ChoiceOption>.from(json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
+        boutique: json["boutique"] == null ? null : BoutiqueForCart.fromJson(json["boutique"]),
+        variation: json["variation"] == null ? [] : List<Variation>.from(json["variation"]!.map((x) => Variation.fromJson(x))),
+        choiceOptions: json["choice_options"] == null ? [] : List<ChoiceOption>.from(json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
         hasDiscount: json["has_discount"],
         hasTax: json["has_tax"],
         deliveryAt: json["delivery_at"],
@@ -480,7 +528,7 @@ class Products {
         availableQuantity: json["available_quantity"]?.toInt(),
         leftStock: json["Left_stock"],
         // reviewsCount: json["reviews_count"],
-        sellerId: json["seller_id"],
+        sellerId: json["seller_id"] == null ? null : json["seller_id"].toString(),
         shippingDays: json["shipping_days"],
         seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
@@ -503,9 +551,25 @@ class Products {
         "slug": slug,
         "share_link": shareLink,
         "flash_deal_status": flashDealStatus,
+        "owner_type": ownerType,
+        "owner_id": ownerId,
         "categories_tree": categoriesTree,
         "flash_deal_discount": flashDealDiscount,
+        "ratingDetails": ratingDetails == null
+            ? []
+            : List<dynamic>.from(ratingDetails!.map((x) => x.toJson())),
+        "recommendation_stats": recommendationStats == null
+            ? []
+            : List<dynamic>.from(recommendationStats!.map((x) => x.toJson())),
+        "total_rating": totalRating,
         "flash_deal_price": flashDealPrice,
+        "comment_offset": commentOffset,
+        "comments_count": commentsCount,
+        "buyers_comment": buyersComment?.toJson(),
+        "fqa_questions": fqaQuestions?.toJson(),
+        /*"comments": comments == null
+            ? []
+            : List<dynamic>.from(comments!.map((x) => x.toJson())),*/
         "has_redeem_discount": hasRedeemDiscount,
 
         "details": details,
@@ -752,31 +816,31 @@ class Thumbnail {
       };
 }
 
-class Color {
+class ProductColor {
   final String? name;
   final String? color;
   final String? option;
 
-  Color({
+  ProductColor({
     this.name,
     this.option,
     this.color,
   });
 
-  Color copyWith({
+  ProductColor copyWith({
     String? name,
     String? color,
     String? option,
   }) =>
-      Color(
+      ProductColor(
         name: name ?? this.name,
         option: option ?? this.option,
         color: color ?? this.color,
       );
 
-  factory Color.fromJson(Map<String, dynamic> json) {
+  factory ProductColor.fromJson(Map<String, dynamic> json) {
     print("12-----------------------------${json["option"]}");
-    return Color(
+    return ProductColor(
       name: json["name"],
       color: json["color"],
       option: json["option"],
@@ -819,33 +883,33 @@ class Rating {
       };
 }
 
-class SyncColorImage {
+class SyncColorImageProduct {
   final String? colorName;
   final List<Thumbnail>? images;
   final bool? colorTrend;
   final String? colorOption;
-  SyncColorImage({
+  SyncColorImageProduct({
     this.colorName,
     this.images,
     this.colorOption,
     this.colorTrend,
   });
 
-  SyncColorImage copyWith({
+  SyncColorImageProduct copyWith({
     String? colorName,
     String? colorOption,
     List<Thumbnail>? images,
     bool? colorTrend,
   }) =>
-      SyncColorImage(
+      SyncColorImageProduct(
         colorName: colorName ?? this.colorName,
         colorOption: colorOption ?? this.colorOption,
         images: images ?? this.images,
         colorTrend: colorTrend ?? this.colorTrend,
       );
 
-  factory SyncColorImage.fromJson(Map<String, dynamic> json) {
-    return SyncColorImage(
+  factory SyncColorImageProduct.fromJson(Map<String, dynamic> json) {
+    return SyncColorImageProduct(
       colorName: json["color_name"],
       colorOption: json["color_option"],
       images: json["images"] == null

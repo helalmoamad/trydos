@@ -82,33 +82,56 @@ class ProductShippingAndDelivery extends StatelessWidget {
                               const SizedBox(
                                 height: 5,
                               ),
-                              Row(
-                                children: [
-                                  MyTextWidget(
-                                    'Monday ',
-                                    style: context.textTheme.titleLarge?.rr
-                                        .copyWith(
-                                            height: 16 / 13,
-                                            fontSize: 11,
-                                            color: const Color(0xff1D1D1D)),
-                                  ),
-                                  MyTextWidget(
-                                    '2.Jun | ',
-                                    style: context.textTheme.titleLarge?.br
-                                        .copyWith(
-                                            height: 16 / 13,
-                                            fontSize: 11,
-                                            color: const Color(0xff1D1D1D)),
-                                  ),
-                                  MyTextWidget(
-                                    '3 ${LocaleKeys.work_days_at_your_address_in.tr()} Lebanon',
-                                    style: context.textTheme.titleLarge?.rr
-                                        .copyWith(
-                                            height: 16 / 13,
-                                            fontSize: 11,
-                                            color: const Color(0xff1D1D1D)),
-                                  ),
-                                ],
+                              Builder(
+                                builder: (context) {
+                                  // Parse shippingDay to int
+                                  final shippingDays =
+                                      int.tryParse(shippingDay) ?? 0;
+                                  // Calculate the delivery date
+                                  final deliveryDate = DateTime.now()
+                                      .add(Duration(days: shippingDays));
+
+                                  // Get current locale
+                                  final locale = context.locale.toString();
+
+                                  // Format day name (EEEE = full weekday name)
+                                  final dayName = DateFormat('EEEE', locale)
+                                      .format(deliveryDate);
+
+                                  // Format date (d MMM = day abbreviated month)
+                                  final formattedDate =
+                                      DateFormat('d MMM', locale)
+                                          .format(deliveryDate);
+
+                                  return Row(
+                                    children: [
+                                      MyTextWidget(
+                                        '$dayName ',
+                                        style: context.textTheme.titleLarge?.rr
+                                            .copyWith(
+                                                height: 16 / 13,
+                                                fontSize: 11,
+                                                color: const Color(0xff1D1D1D)),
+                                      ),
+                                      MyTextWidget(
+                                        '$formattedDate | ',
+                                        style: context.textTheme.titleLarge?.br
+                                            .copyWith(
+                                                height: 16 / 13,
+                                                fontSize: 11,
+                                                color: const Color(0xff1D1D1D)),
+                                      ),
+                                      MyTextWidget(
+                                        '${shippingDay} ${LocaleKeys.work_days_at_your_address_in.tr()} ${countryName}',
+                                        style: context.textTheme.titleLarge?.rr
+                                            .copyWith(
+                                                height: 16 / 13,
+                                                fontSize: 11,
+                                                color: const Color(0xff1D1D1D)),
+                                      ),
+                                    ],
+                                  );
+                                },
                               )
                             ])),
                     if (expanded) ...{

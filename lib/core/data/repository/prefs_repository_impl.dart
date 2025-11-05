@@ -1008,6 +1008,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
+  String? get tokenForComment =>
+      _preferences.getString(PrefsKey.tokenForComment);
+  @override
+  Future<bool> setTokenForComment(String token) {
+    return _preferences.setString(PrefsKey.tokenForComment, token);
+  }
+
+  @override
   Future<bool> setRedeemSecondRemainingForProduct(
       String productId, int secondsLeft) {
     Map<String, dynamic> map = _preferences

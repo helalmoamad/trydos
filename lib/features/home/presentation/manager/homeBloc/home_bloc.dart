@@ -21,7 +21,9 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:geodesy/geodesy.dart' as geod;
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
+import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
 
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
     as oldCart;
@@ -33,16 +35,15 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
-
-import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/convert_item_from_Cart_to_oldCart_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/create_comment_order_rating.dart';
+import 'package:trydos/features/home/domain/use_cases/delete_comment_order_rating.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_auth_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
-
 import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_country_boundary_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
@@ -50,6 +51,7 @@ import 'package:trydos/features/home/domain/use_cases/get_full_product_details_u
 import 'package:trydos/features/home/domain/use_cases/get_my_firebase_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_notification_type_for_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_old_cart_item_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_order_rating_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_popular_search_terms_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
 
@@ -62,6 +64,7 @@ import 'package:trydos/features/home/domain/use_cases/send_error_to_mobile_error
 import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/subscribe_topic_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/un_subscribe_topic_for_notification_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_comment_order_rating.dart';
 import 'package:trydos/features/home/domain/use_cases/update_email_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_firebase_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
@@ -95,7 +98,8 @@ import '../../../domain/use_cases/get_cart_overview_usecase.dart';
 import '../../../domain/use_cases/get_stories_for_product_usecase.dart';
 import '../../../domain/use_cases/get_user_notification_usecase.dart';
 import 'home_event.dart';
-
+import '../../../domain/use_cases/get_fqa_comments_usecase.dart';
+import '../../../domain/use_cases/get_buyer_comments_usecase.dart';
 import 'home_state.dart';
 
 const throttleDuration = Duration(minutes: 2);
@@ -121,7 +125,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.deleteLikeOfProductUsecase,
     this.addLikeToProductUsecase,
     this.updateItemInCartUseCase,
+    this.getFqaCommentsUsecase,
+    this.getBuyerCommentsUsecase,
     this.addItemToCartUseCase,
+    this.deleteOrderCommentRatingUseCase,
     //this.getCommentForProductUseCase,
     //this.getProductsListInCartUseCase,
     this.updateProfileUseCase,
@@ -136,9 +143,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.updateNotificationFrequencyUseCase,
     this.updateWhatsappNotificationUseCase,
     this.changeCountryLanguageFornotificationUseCase,
+    this.getOrderRatingUsecase,
+    this.updateOrderCommentRatingUseCase,
     this.subscribeTopicFornotificationUseCase,
     this.unSubscribeTopicFornotificationUseCase,
     this.getProductDetailWithoutRelatedProductsUseCase,
+    this.createOrderRatingUseCase,
     this.getStartingSettingsUseCase,
     this.getPopularSearchItemUseCase,
     this.uploadFileCloudinaryUseCase,
@@ -146,12 +156,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.hideItemsInOldCartUseCase,
     this.getFullProductDetailsUseCase,
     this.countryBoundaryByIsoUseCase,
+    //this.getCommentsFromAnalyticsUsecase,
     //this.getCustomerInfoUseCase,
     this.getAndAddCountViewOfProductUsecase,
     this.sendErrorToMobileErrorLogUseCase,
     this.getProductsWithoutFiltersUseCase,
     //  this.getColorsAndSizesForSearchUseCase,
-    this.addCommentUseCase,
+
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.checkAvailabilityProductCartUsecase,
     this.getCartOverviewUseCase,
@@ -174,13 +185,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<SaveUserInfoFromAuthEvent>(
       _onSaveUserInfoEvent,
     );
-
+    on<GetOrderRatingEvent>(
+      _onGetOrderRatingEvent,
+      transformer: restartable(),
+    );
     on<IncreaseCountShareOfProductEvent>(
       _onIncreaseCountShareOfProductEvent,
     );
 
     on<UpdateProfileEvent>(
       _onUpdateProfileEvent,
+    );
+
+    on<CreateCommentRatingEvent>(
+      _onCreateCommentRatingEvent,
     );
 
     on<GetCoutryBoundaryByIsoEvent>(
@@ -294,6 +312,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<UpdateItemInCartEvent>(
       _onUpdateItemInCartEvent,
     );
+    /*on<GetCommentsFromAnalyticsEvent>(
+      _onGetCommentsFromAnalyticsEvent,
+    );*/
     on<RemoveSearchTextfromHistoryEvent>(
       _onRemoveSearchTextToHistoryEvent,
     );
@@ -324,9 +345,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onRemoveItemToCartEvent,
     );
 
-    on<AddCommentEvent>(
+    /*on<AddCommentEvent>(
       _onAddCommentEvent,
-    );
+    );*/
     on<GetPopularSearchItemEvent>(
       _onGetPopularSearchItemEvent,
     );
@@ -372,23 +393,38 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetUserNotificationEvent>(
       _onGetUserNotificationEvent,
     );
+    on<DeleteCommentRatingEvent>(_onDeleteCommentRatingEvent);
+    on<UpdateCommentRatingEvent>(_onUpdateCommentRatingEvent);
+    on<GetFqaCommentsEvent>(
+      _onGetFqaCommentsEvent,
+      transformer: restartable(),
+    );
+    on<GetBuyersCommentsEvent>(
+      _onGetBuyersCommentsEvent,
+      transformer: restartable(),
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
       {};
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
-
+  final UpdateOrderCommentRatingUseCase updateOrderCommentRatingUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final UpdateUserPhotoUseCase uploadFileCloudinaryUseCase;
+  final DeleteOrderCommentRatingUseCase deleteOrderCommentRatingUseCase;
   final GetAuthProductDetailsUseCase getAuthProductDetailsUseCase;
   final GetCartItemUseCase getCartItemUseCase;
+  final GetFqaCommentsUsecase getFqaCommentsUsecase;
+  final GetBuyerCommentsUsecase getBuyerCommentsUsecase;
   final GetCartOverviewUseCase getCartOverviewUseCase;
+  //final GetCommentsFromAnalyticsUsecase getCommentsFromAnalyticsUsecase;
+  final GetOrderRatingUsecase getOrderRatingUsecase;
   final GetOldCartItemUseCase getOldCartItemUseCase;
+  final CreateOrderCommentRatingUseCase createOrderRatingUseCase;
   final GetNotificationTypeProductUseCase getNotificationTypeProductUseCase;
   final ConvertItemFromcartToOldCartUsecase convertItemFromcartToOldCartUsecase;
   final GetAndAddCountViewOfProductUsecase getAndAddCountViewOfProductUsecase;
-  final AddCommentUseCase addCommentUseCase;
   final CountryBoundaryByIsoUseCase countryBoundaryByIsoUseCase;
   // final GetProductsListInCartUseCase getProductsListInCartUseCase;
   final SendErrorToMobileErrorLogUseCase sendErrorToMobileErrorLogUseCase;
@@ -825,7 +861,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             GetFirebaseSettingForNotificationStatus.loading));
     final response = await subscribeTopicFornotificationUseCase(
         SubscribeTopicForNotificationParams(
-            topic: event.topic, variant: event.variant));
+            topic: event.topic, variant: event.variant?.replaceAll("_", "-")));
 
     response.fold((l) {
       if (ErrorManager.shouldRetry(
@@ -834,10 +870,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           Future.delayed(
               const Duration(seconds: 5),
               () => add(SubscribeTopicForNotificationEvent(
-                  topic: event.topic, variant: event.variant)));
+                  topic: event.topic,
+                  variant: event.variant?.replaceAll("_", "-"))));
         } else {
           add(SubscribeTopicForNotificationEvent(
-              topic: event.topic, variant: event.variant));
+              topic: event.topic,
+              variant: event.variant?.replaceAll("_", "-")));
         }
         ErrorManager.incrementRetry('SubscribeTopicForNotificationEvent');
       }
@@ -910,7 +948,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             GetFirebaseSettingForNotificationStatus.loading));
     final response = await unSubscribeTopicFornotificationUseCase(
         UnSubscribeTopicForNotificationParams(
-            topic: event.topic, variant: event.variant));
+            topic: event.topic, variant: event.variant?.replaceAll("_", "-")));
 
     response.fold((l) {
       if (ErrorManager.shouldRetry(
@@ -919,10 +957,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           Future.delayed(
               const Duration(seconds: 5),
               () => add(UnSubscribeTopicForNotificationEvent(
-                  topic: event.topic, variant: event.variant)));
+                  topic: event.topic,
+                  variant: event.variant?.replaceAll("_", "-"))));
         } else {
           add(UnSubscribeTopicForNotificationEvent(
-              topic: event.topic, variant: event.variant));
+              topic: event.topic,
+              variant: event.variant?.replaceAll("_", "-")));
         }
         ErrorManager.incrementRetry('UnSubscribeTopicForNotificationEvent');
       }
@@ -985,11 +1025,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     await smartLook.user.setIdentifier(deviceId);
     await smartLook.user
         .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
+    await smartLook.user
+        .setIdentifier(GetIt.I<PrefsRepository>().myMarketId ?? 'No_Id');
     await smartLook.start();
   }
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
+    print(
+        "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentSelectedColor}  ${event.productSlug}");
     emit(state.copyWith(
         currentSelectedColorForEveryProductStatus:
             CurrentSelectedColorForEveryProductStatus.loading));
@@ -1002,6 +1046,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       currentSelectedColorForEveryProduct[event.productSlug] =
           event.currentSelectedColor;
     }
+    print(
+        "888888888888888888888///////////////////////////////////****${currentSelectedColorForEveryProduct}");
+
     emit(state.copyWith(
         currentSelectedColorForEveryProductStatus:
             CurrentSelectedColorForEveryProductStatus.success,
@@ -1489,7 +1536,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   event.index!;
             }
           }
-
+          print(
+              "888888888888888888888///////////////////////////////////${currentSelectedColorForEveryProduct}");
           emit(state.copyWith(
               currentSelectedColorForEveryProduct:
                   Map.of(currentSelectedColorForEveryProduct),
@@ -1526,10 +1574,27 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         return;
       }
     }*/
-
+    PaginationModel<FqaComment> getFqaCommentsPaginationModel =
+        const PaginationModel<FqaComment>(
+            paginationStatus: PaginationStatus.loading,
+            items: [],
+            page: 0,
+            hasReachedMax: false,
+            offset: "");
+    PaginationModel<BuyersComment> getBuyersCommentsPaginationModel =
+        const PaginationModel<BuyersComment>(
+            paginationStatus: PaginationStatus.loading,
+            items: [],
+            page: 0,
+            hasReachedMax: false,
+            offset: "");
     emit(state.copyWith(
         getProductDetailWithoutSimilarRelatedProductsStatus:
             GetProductDetailWithoutSimilarRelatedProductsStatus.loading,
+        getBuyersCommentsPaginationModel: {
+          "all": getBuyersCommentsPaginationModel
+        },
+        getFqaCommentsPaginationModel: {"all": getFqaCommentsPaginationModel},
         currentSlugToRefreshFromNotification: event.productSlug));
 
     final response =
@@ -1574,24 +1639,74 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       Map<String, GetProductDetailWithoutRelatedProductsModel> newCached =
           Map.of(state.cachedProductWithoutRelatedProductsModel);
+      // إنشاء خريطة لترتيب الألوان
+      List<SyncColorImageProduct> syncColorImage =
+          r.product?.syncColorImages ?? [];
+      final syncColorImageOrder = {
+        for (var i = 0; i < syncColorImage.length; i++)
+          syncColorImage[i].colorOption: i
+      };
+
+      List<ProductColor> productColor = r.product?.colors ?? [];
+
+// ترتيب syncColorImages حسب ترتيب colors
+      productColor.sort(
+        (a, b) => (syncColorImageOrder[a.option] ?? 999)
+            .compareTo((syncColorImageOrder[b.option] ?? 999)),
+      );
+
+// بعد الترتيب، syncColorImages ستكون بترتيب: Green, Red, White
       newCached.removeWhere((key, value) => key == event.productId!);
       newCached.addAll({
         event.productId!: r.copyWith(
             data: r.product?.copyWith(
+          colors: productColor,
           slug: event.productSlug ?? r.product?.slug,
         ))
       });
       int index = -1;
+
       if (event.currentColorOption != null) {
-        index = r.product!.colors!.indexWhere(
+        index = productColor.indexWhere(
           (element) => element.option == event.currentColorOption,
         );
       }
 
+      /* PaginationModel<Comment>? getCommentsFromAnalyticsPaginationModel =
+          PaginationModel<Comment>(
+              paginationStatus: PaginationStatus.success,
+              items: r.product?.comments ?? [],
+              page: 0,
+              hasReachedMax: (r.product?.comments?.length ?? 0) < 10,
+              offset: r.product?.commentOffset?.toString());*/
+      PaginationModel<FqaComment>? getFqaCommentsPaginationModel =
+          PaginationModel<FqaComment>(
+              paginationStatus: PaginationStatus.success,
+              items: r.product?.fqaQuestions?.comments ?? [],
+              page: 0,
+              total: r.product?.fqaQuestions?.total,
+              hasReachedMax:
+                  (r.product?.fqaQuestions?.comments?.length ?? 0) < 10,
+              offset: r.product?.fqaQuestions?.offset?.toString());
+      PaginationModel<BuyersComment>? getBuyersCommentsPaginationModel =
+          PaginationModel<BuyersComment>(
+              paginationStatus: PaginationStatus.success,
+              items: r.product?.buyersComment?.comments ?? [],
+              page: 0,
+              total: r.product?.buyersComment?.total,
+              hasReachedMax:
+                  (r.product?.buyersComment?.comments?.length ?? 0) < 10,
+              offset: r.product?.buyersComment?.offset?.toString());
+
       emit(state.copyWith(
           cachedProductWithoutRelatedProductsModel: Map.of(newCached),
+          // getCommentsFromAnalyticsPaginationModel:
+          //     getCommentsFromAnalyticsPaginationModel,
+          getBuyersCommentsPaginationModel: {
+            "all": getBuyersCommentsPaginationModel
+          },
+          getFqaCommentsPaginationModel: {"all": getFqaCommentsPaginationModel},
           productStatus: Map.of(productStatus)));
-
       add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
           index: index,
           productSlug: event.productSlug ?? r.product?.slug ?? ""));
@@ -2068,7 +2183,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onSaveUserInfoEvent(
       SaveUserInfoFromAuthEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(userInfo: event.userInfo));
+    emit(state.copyWith(
+        userInfo: event.userInfo, statusCodeOfCommentProcess: "200"));
   }
 
   FutureOr<void> _onSendErrorToMobileErrorLogEvent(
@@ -2102,7 +2218,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       "flutterVersion": applicationVersion,
       "deviceInfo": await HelperFunctions.getDeviceId(),
       "clientIp":
-          "${GetIt.I<AuthBloc>().state.getUserCountryResponseModel?.query}  ${GetIt.I<AuthBloc>().state.getUserCountryResponseModel?.countryCode}",
+          "${GetIt.I<AuthBloc>().state.getUserCountryResponseModel?.ip}  ${GetIt.I<AuthBloc>().state.getUserCountryResponseModel?.countryCode}",
       "errorType": event.errorExption,
       "lastFourPageVisited": event.lastForPageHasBeenVisited,
       "userMarketId": prefsRepository.myMarketId ?? "",
@@ -2284,7 +2400,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     final response = await addItemToCartUseCase(
       AddITemToCartParams(
         image: event.image.split("/").last,
-        choice_1: event.choiceOption,
+        choice_1: event.choiceOption == null
+            ? null
+            : event.choiceOption!.replaceAll("_", "-"),
         isRedeem: event.isRedeem,
         color: event.color,
         id: event.products.productId.toString(),
@@ -3855,10 +3973,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     if (event.subsecribe) {
       add(SubscribeTopicForNotificationEvent(
-          topic: "product_availability_${event.productId}", variant: variant));
+          topic: "product_availability_${event.productId}",
+          variant: variant.replaceAll("_", "-")));
     } else {
       add(UnSubscribeTopicForNotificationEvent(
-          topic: "product_availability_${event.productId}", variant: variant));
+        topic: "product_availability_${event.productId}",
+        variant: variant.replaceAll("_", "-"),
+      ));
     }
     /*  if (isVariantRequestNotification
         .contains("${event.productId}_${variant}")) {
@@ -3990,9 +4111,22 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         return;
       }
+      List<SyncColorImageProduct> syncColorImage =
+          r.productItem?.syncColorImages ?? [];
+      final syncColorImageOrder = {
+        for (var i = 0; i < syncColorImage.length; i++)
+          syncColorImage[i].colorOption: i
+      };
+
+      List<ProductColor> productColor = r.productItem?.colors ?? [];
+// ترتيب syncColorImages حسب ترتيب colors
+      productColor.sort(
+        (a, b) => (syncColorImageOrder[a.option] ?? 999)
+            .compareTo((syncColorImageOrder[b.option] ?? 999)),
+      );
       if (event.currentColorName != null) {
         int index = -1;
-        index = r.productItem!.colors!.indexWhere(
+        index = productColor.indexWhere(
           (element) => element.option == event.currentColorName,
         );
         if (index != -1) {
@@ -4016,13 +4150,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           productStatus = Map.from(state.productStatus ?? {});
       productStatus[r.productItem!.productId.toString()] =
           GetProductDetailWithoutSimilarRelatedProductsStatus.success;
+
       GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel =
           r.getProductDetailWithoutRelatedProductsModel?.copyWith(
               data: r.getProductDetailWithoutRelatedProductsModel?.product
-                  ?.copyWith(
-        slug: event.productSlug,
-      ));
+                  ?.copyWith(slug: event.productSlug, colors: productColor));
+      cachedData.removeWhere(
+          (key, value) => key == r.productItem!.productId.toString());
       cachedData.addAll({
         r.productItem!.productId.toString():
             getProductDetailWithoutRelatedProductsModel!
@@ -4031,18 +4166,50 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         GetIt.I<PrefsRepository>()
             .setRedeemDateForProduct(r.productItem!.productId.toString(), "52");
       }
+      /*PaginationModel<Comment>? getCommentsFromAnalyticsPaginationModel =
+          PaginationModel<Comment>(
+              paginationStatus: PaginationStatus.success,
+              items: r.productItem?.comments ?? [],
+              page: 0,
+              hasReachedMax: (r.productItem?.comments?.length ?? 0) < 10,
+              offset: r.productItem?.commentOffset?.toString());*/
+
+      PaginationModel<FqaComment>? getFqaCommentsPaginationModel =
+          PaginationModel<FqaComment>(
+              paginationStatus: PaginationStatus.success,
+              items: r.productItem?.fqaQuestions?.comments ?? [],
+              page: 0,
+              hasReachedMax:
+                  (r.productItem?.fqaQuestions?.comments?.length ?? 0) < 10,
+              total: r.productItem?.fqaQuestions?.total,
+              offset: r.productItem?.fqaQuestions?.offset?.toString());
+      PaginationModel<BuyersComment>? getBuyersCommentsPaginationModel =
+          PaginationModel<BuyersComment>(
+              paginationStatus: PaginationStatus.success,
+              items: r.productItem?.buyersComment?.comments ?? [],
+              total: r.productItem?.buyersComment?.total,
+              page: 0,
+              hasReachedMax:
+                  (r.productItem?.buyersComment?.comments?.length ?? 0) < 10,
+              offset: r.productItem?.buyersComment?.offset?.toString());
       emit(state.copyWith(
         productStatus: productStatus,
+        getBuyersCommentsPaginationModel: {
+          "all": getBuyersCommentsPaginationModel
+        },
+        getFqaCommentsPaginationModel: {"all": getFqaCommentsPaginationModel},
         cachedProductWithoutRelatedProductsModel: cachedData,
-        productContentForStatusOfOpeningProductDetailsDirectly:
-            r.productItem?.copyWith(slug: event.productSlug),
+        // getCommentsFromAnalyticsPaginationModel:
+        //     getCommentsFromAnalyticsPaginationModel,
+        productContentForStatusOfOpeningProductDetailsDirectly: r.productItem
+            ?.copyWith(colors: productColor, slug: event.productSlug),
       ));
 
       add(const ChangeStatusOFGetProductsDetailsToSuccessEvent());
     });
   }
 
-  FutureOr<void> _onAddCommentEvent(
+  /*FutureOr<void> _onAddCommentEvent(
       AddCommentEvent event, Emitter<HomeState> emit) async {
     if (event.comment.length == 0) {
       return;
@@ -4086,7 +4253,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           cachedProductWithoutRelatedProductsModel: cachedProducts));
     });
   }
-
+*/
   FutureOr<void> _onStoreFcmTokenOfMarketEvent(
       StoreFcmTokenOfMarketEvent event, Emitter<HomeState> emit) async {
     if (event.userId == -1) {
@@ -4455,5 +4622,481 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ));
       },
     );
+  }
+
+  /* FutureOr<void> _onGetCommentsFromAnalyticsEvent(
+    GetCommentsFromAnalyticsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (state.getCommentsFromAnalyticsPaginationModel?.paginationStatus ==
+            PaginationStatus.loading ||
+        state.getCommentsFromAnalyticsPaginationModel?.hasReachedMax == true) {
+      return;
+    }
+    List<dynamic> offsetList = [];
+    offsetList.add(state.getCommentsFromAnalyticsPaginationModel?.offset
+        ?.split('[')
+        .last
+        .split(',')[0]);
+    offsetList.add(
+        '"${state.getCommentsFromAnalyticsPaginationModel?.offset?.split(',').last.split(']')[0]}"');
+    emit(state.copyWith(
+        getCommentsFromAnalyticsPaginationModel: state
+            .getCommentsFromAnalyticsPaginationModel
+            ?.copyWith(paginationStatus: PaginationStatus.loading)));
+    final response = await getCommentsFromAnalyticsUsecase(
+        getCommentsFromAnalyticsParams(
+            offset: offsetList.toString(), productId: event.productId));
+    response.fold((l) {
+      emit(state.copyWith(
+          getCommentsFromAnalyticsPaginationModel: state
+              .getCommentsFromAnalyticsPaginationModel
+              ?.copyWith(paginationStatus: PaginationStatus.failure)));
+    }, (r) {
+      emit(state.copyWith(
+          getCommentsFromAnalyticsPaginationModel:
+              state.getCommentsFromAnalyticsPaginationModel?.copyWith(
+        paginationStatus: PaginationStatus.success,
+        items: [
+          ...state.getCommentsFromAnalyticsPaginationModel?.items ?? [],
+          ...r.data?.comments ?? []
+        ],
+        hasReachedMax: (r.data?.comments?.length ?? 0) < 10,
+        offset: r.data?.searchAfter?.toString(),
+      )));
+    });
+  }*/
+
+  FutureOr<void> _onGetFqaCommentsEvent(
+    GetFqaCommentsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (event.getWithPagination &&
+        (state.getFqaCommentsPaginationModel?[event.currentFilter]
+                    ?.paginationStatus ==
+                PaginationStatus.loading ||
+            state.getFqaCommentsPaginationModel?[event.currentFilter]
+                    ?.hasReachedMax ==
+                true)) {
+      return;
+    }
+    Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+        Map.of(state.getFqaCommentsPaginationModel ?? {});
+    if (getFqaCommentsPaginationModel[event.currentFilter] == null) {
+      getFqaCommentsPaginationModel.addAll({
+        event.currentFilter: const PaginationModel<FqaComment>(
+            hasReachedMax: false,
+            items: [],
+            page: 0,
+            offset: "",
+            paginationStatus: PaginationStatus.initial,
+            total: 0)
+      });
+    }
+    List<dynamic> offsetList = [];
+    if (event.getWithPagination) {
+      offsetList.add(state
+          .getFqaCommentsPaginationModel?[event.currentFilter]?.offset
+          ?.split('[')
+          .last
+          .split(',')[0]);
+      offsetList.add(
+          '"${state.getFqaCommentsPaginationModel?[event.currentFilter]?.offset?.split(',').last.split(']')[0]}"');
+    }
+    getFqaCommentsPaginationModel[event.currentFilter] =
+        getFqaCommentsPaginationModel[event.currentFilter]!
+            .copyWith(paginationStatus: PaginationStatus.loading);
+
+    emit(state.copyWith(
+        getFqaCommentsPaginationModel: getFqaCommentsPaginationModel));
+
+    final response = await getFqaCommentsUsecase(GetFqaCommentsParams(
+        filter: event.currentFilter == "all" ? null : event.currentFilter,
+        offset: offsetList.toString(),
+        productId: event.productId));
+    response.fold((l) {
+      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+          Map.of(state.getFqaCommentsPaginationModel ?? {});
+      getFqaCommentsPaginationModel[event.currentFilter] =
+          getFqaCommentsPaginationModel[event.currentFilter]!
+              .copyWith(paginationStatus: PaginationStatus.failure);
+      emit(state.copyWith(
+          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel));
+    }, (r) {
+      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+          Map.of(state.getFqaCommentsPaginationModel ?? {});
+      getFqaCommentsPaginationModel[event.currentFilter] =
+          getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+        paginationStatus: PaginationStatus.success,
+        total: r.data?.total,
+        items: event.getWithPagination
+            ? [
+                ...getFqaCommentsPaginationModel[event.currentFilter]?.items ??
+                    [],
+                ...r.data?.fqaComments ?? []
+              ]
+            : [...r.data?.fqaComments ?? []],
+        hasReachedMax: (r.data?.fqaComments?.length ?? 0) < 10,
+        offset: r.data?.offset?.toString(),
+      );
+      emit(state.copyWith(
+          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel));
+    });
+  }
+
+  FutureOr<void> _onGetBuyersCommentsEvent(
+    GetBuyersCommentsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (event.getWithPagination &&
+        (state.getBuyersCommentsPaginationModel?[event.currentFilter]
+                    ?.paginationStatus ==
+                PaginationStatus.loading ||
+            state.getBuyersCommentsPaginationModel?[event.currentFilter]
+                    ?.hasReachedMax ==
+                true)) {
+      return;
+    }
+    Map<String, PaginationModel<BuyersComment>>
+        getBuyersCommentsPaginationModel =
+        Map.of(state.getBuyersCommentsPaginationModel ?? {});
+    if (getBuyersCommentsPaginationModel[event.currentFilter] == null) {
+      getBuyersCommentsPaginationModel.addAll({
+        event.currentFilter: const PaginationModel<BuyersComment>(
+            hasReachedMax: false,
+            items: [],
+            page: 0,
+            offset: "",
+            paginationStatus: PaginationStatus.initial,
+            total: 0)
+      });
+    }
+    List<dynamic> offsetList = [];
+    if (event.getWithPagination) {
+      offsetList.add(state
+          .getBuyersCommentsPaginationModel?[event.currentFilter]?.offset
+          ?.split('[')
+          .last
+          .split(',')[0]);
+      offsetList.add(
+          '"${state.getBuyersCommentsPaginationModel?[event.currentFilter]?.offset?.split(',').last.split(']')[0]}"');
+    }
+    getBuyersCommentsPaginationModel[event.currentFilter] =
+        getBuyersCommentsPaginationModel[event.currentFilter]!
+            .copyWith(paginationStatus: PaginationStatus.loading);
+    emit(state.copyWith(
+        getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel));
+    final response = await getBuyerCommentsUsecase(GetBuyersCommentsParams(
+        offset: (event.getWithPagination) ? "" : offsetList.toString(),
+        filter: event.currentFilter == "all" ? null : event.currentFilter,
+        productId: event.productId));
+    response.fold((l) {
+      Map<String, PaginationModel<BuyersComment>>
+          getBuyersCommentsPaginationModel =
+          Map.of(state.getBuyersCommentsPaginationModel ?? {});
+      getBuyersCommentsPaginationModel[event.currentFilter] =
+          getBuyersCommentsPaginationModel[event.currentFilter]!
+              .copyWith(paginationStatus: PaginationStatus.failure);
+      emit(state.copyWith(
+          getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel));
+    }, (r) {
+      Map<String, PaginationModel<BuyersComment>>
+          getBuyersCommentsPaginationModel =
+          Map.of(state.getBuyersCommentsPaginationModel ?? {});
+      getBuyersCommentsPaginationModel[event.currentFilter] =
+          getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
+        paginationStatus: PaginationStatus.success,
+        total: r.data?.total,
+        items: (event.getWithPagination)
+            ? [
+                ...getBuyersCommentsPaginationModel[event.currentFilter]
+                        ?.items ??
+                    [],
+                ...r.data?.buyersComments ?? []
+              ]
+            : [...r.data?.buyersComments ?? []],
+        hasReachedMax: (r.data?.buyersComments?.length ?? 0) < 10,
+        offset: r.data?.offset?.toString(),
+      );
+      emit(state.copyWith(
+          getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel));
+    });
+  }
+
+  FutureOr<void> _onGetOrderRatingEvent(
+    GetOrderRatingEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(state.copyWith(
+        getOrderRatingStatus: GetOrderRatingStatus.loading,
+        getOrderRatingComments: []));
+    final response = await getOrderRatingUsecase(getOrderRatingParams(
+        orderDetailIds: event.orderDetailIds, userId: event.userId));
+    response.fold((l) {
+      if (ErrorManager.shouldRetry('GetOrderRatingEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('GetOrderRatingEvent');
+        add(GetOrderRatingEvent(
+            orderDetailIds: event.orderDetailIds, userId: event.userId));
+        return;
+      }
+      emit(state.copyWith(getOrderRatingStatus: GetOrderRatingStatus.failure));
+    }, (r) {
+      ErrorManager.resetRetry('GetOrderRatingEvent');
+      emit(state.copyWith(
+          createCommentRatingStatus: CreateCommentRatingStatus.success,
+          getOrderRatingStatus: GetOrderRatingStatus.success,
+          getOrderRatingComments: r.data?.comments ?? []));
+    });
+  }
+
+  FutureOr<void> _onCreateCommentRatingEvent(
+    CreateCommentRatingEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(state.copyWith(
+        updateOrderCommentRatingStatus: UpdateOrderCommentRatingStatus.init,
+        createCommentRatingStatus: CreateCommentRatingStatus.loading));
+    final response = await createOrderRatingUseCase(
+        CreateOrderCommentRatingParams(
+            text: event.text,
+            productId: event.productId,
+            ownerId: event.ownerId,
+            ownerType: event.ownerType,
+            variant: event.variant?.replaceAll("_", "-"),
+            rating: event.rating,
+            orderDetailsId: event.orderDetailsId));
+    response.fold((l) {
+      if (ErrorManager.shouldRetry('CreateCommentRatingEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('CreateCommentRatingEvent');
+        add(CreateCommentRatingEvent(
+            text: event.text,
+            productId: event.productId,
+            ownerId: event.ownerId,
+            ownerType: event.ownerType,
+            variant: event.variant?.replaceAll("_", "-"),
+            rating: event.rating,
+            orderDetailsId: event.orderDetailsId));
+        return;
+      }
+      if (l.statusCode == 401) {
+        showMessage(LocaleKeys.please_login_to_add_comment.tr());
+      } else {
+        showMessage(l.message);
+      }
+      emit(state.copyWith(
+          createCommentRatingStatus: CreateCommentRatingStatus.failure,
+          statusCodeOfCommentProcess: l.statusCode.toString()));
+    }, (r) {
+      ErrorManager.resetRetry('CreateCommentRatingEvent');
+      add(UpdateLikeSocialSharedProductsEvent(
+        productId: event.productId ?? "",
+      ));
+      showMessage(r.message ?? "");
+      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+          Map.of(state.getFqaCommentsPaginationModel ?? {});
+      getFqaCommentsPaginationModel["all"] =
+          getFqaCommentsPaginationModel["all"]!.copyWith(
+        total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) + 1,
+        paginationStatus: PaginationStatus.success,
+        items: [
+          FqaComment(
+              comment: r.data?.text,
+              createdAt: r.data?.createdAt,
+              hasReply: false,
+              variant: r.data?.variant,
+              id: r.data?.commentId,
+              productId: r.data?.productId,
+              customer: CommentCustomer(
+                  id: r.data?.userId,
+                  image: r.data?.userAvatar,
+                  name: r.data?.userName)),
+          ...getFqaCommentsPaginationModel["all"]?.items ?? []
+        ],
+      );
+      emit(state.copyWith(
+          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+          createCommentRatingStatus: CreateCommentRatingStatus.success));
+    });
+  }
+
+  FutureOr<void> _onUpdateCommentRatingEvent(
+    UpdateCommentRatingEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(state.copyWith(
+        createCommentRatingStatus: CreateCommentRatingStatus.init,
+        tapCommentIndex: event.tapCommentIndex,
+        updateOrderCommentRatingStatus:
+            UpdateOrderCommentRatingStatus.loading));
+
+    final response = await updateOrderCommentRatingUseCase(
+        UpdateOrderCommentRatingParams(
+            text: event.text,
+            commentId: event.commentId,
+            productId: event.productId,
+            variant: event.variant,
+            ownerId: event.ownerId,
+            ownerType: event.ownerType,
+            rating: event.rating,
+            orderDetailsId: event.orderDetailsId));
+    response.fold((l) {
+      if (ErrorManager.shouldRetry('UpdateCommentRatingEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('UpdateCommentRatingEvent');
+        add(UpdateCommentRatingEvent(
+            text: event.text,
+            commentId: event.commentId,
+            productId: event.productId,
+            variant: event.variant,
+            ownerId: event.ownerId,
+            ownerType: event.ownerType,
+            tapCommentIndex: event.tapCommentIndex,
+            rating: event.rating,
+            orderDetailsId: event.orderDetailsId));
+        return;
+      }
+      if (l.statusCode == 401) {
+        showMessage(LocaleKeys.must_login_to_edit_comment.tr());
+      } else {
+        showMessage(l.message);
+      }
+
+      emit(state.copyWith(
+          updateOrderCommentRatingStatus:
+              UpdateOrderCommentRatingStatus.failure,
+          statusCodeOfCommentProcess: l.statusCode.toString()));
+    }, (r) {
+      ErrorManager.resetRetry('UpdateCommentRatingEvent');
+      add(UpdateLikeSocialSharedProductsEvent(
+        productId: event.productId ?? "",
+      ));
+      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+          Map.of(state.getFqaCommentsPaginationModel ?? {});
+      Map<String, PaginationModel<BuyersComment>>
+          getBuyersCommentsPaginationModel =
+          Map.of(state.getBuyersCommentsPaginationModel ?? {});
+      showMessage(r.message ?? "");
+      if (event.fromBuyerComments) {
+        List<BuyersComment> buyersCommentItems =
+            getBuyersCommentsPaginationModel["all"]?.items ?? [];
+        int index = buyersCommentItems
+            .indexWhere((element) => element.id == event.commentId);
+        if (index != -1) {
+          BuyersComment buyersComment = buyersCommentItems.removeAt(index);
+          buyersCommentItems.insert(
+              index,
+              buyersComment.copyWith(
+                comment: event.text,
+              ));
+        }
+
+        getBuyersCommentsPaginationModel["all"] =
+            getBuyersCommentsPaginationModel["all"]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                items: buyersCommentItems);
+      } else {
+        List<FqaComment> fqaCommentItems =
+            getFqaCommentsPaginationModel["all"]?.items ?? [];
+        int index = fqaCommentItems
+            .indexWhere((element) => element.id == event.commentId);
+        if (index != -1) {
+          FqaComment fqaComment = fqaCommentItems.removeAt(index);
+          fqaCommentItems.insert(
+              index,
+              fqaComment.copyWith(
+                comment: event.text,
+              ));
+        }
+
+        getFqaCommentsPaginationModel["all"] =
+            getFqaCommentsPaginationModel["all"]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                items: fqaCommentItems);
+      }
+      emit(state.copyWith(
+          getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+          updateOrderCommentRatingStatus:
+              UpdateOrderCommentRatingStatus.success));
+    });
+  }
+
+  FutureOr<void> _onDeleteCommentRatingEvent(
+    DeleteCommentRatingEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(state.copyWith(
+        tapCommentIndex: event.tapCommentIndex,
+        deleteOrderCommentRatingStatus:
+            DeleteOrderCommentRatingStatus.loading));
+    final response =
+        await deleteOrderCommentRatingUseCase(DeleteOrderCommentRatingParams(
+      commentId: event.commentId,
+    ));
+    response.fold((l) {
+      if (ErrorManager.shouldRetry('DeleteCommentRatingEvent', l.statusCode)) {
+        ErrorManager.incrementRetry('DeleteCommentRatingEvent');
+        add(DeleteCommentRatingEvent(
+            commentId: event.commentId,
+            productId: event.productId,
+            tapCommentIndex: event.tapCommentIndex));
+        return;
+      }
+      if (l.statusCode == 401) {
+        showMessage(LocaleKeys.must_login_to_delete_comment.tr());
+      } else {
+        showMessage(l.message);
+      }
+      emit(state.copyWith(
+          deleteOrderCommentRatingStatus:
+              DeleteOrderCommentRatingStatus.failure,
+          statusCodeOfCommentProcess: l.statusCode.toString()));
+    }, (r) {
+      ErrorManager.resetRetry('DeleteCommentRatingEvent');
+      add(UpdateLikeSocialSharedProductsEvent(
+        productId: event.productId ?? "",
+      ));
+      showMessage(r.message ?? "");
+      Map<String, PaginationModel<BuyersComment>>
+          getBuyersCommentsPaginationModel =
+          Map.of(state.getBuyersCommentsPaginationModel ?? {});
+      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+          Map.of(state.getFqaCommentsPaginationModel ?? {});
+
+      if (event.fromBuyerComments) {
+        List<BuyersComment> buyersCommentItems =
+            getBuyersCommentsPaginationModel["all"]?.items ?? [];
+        int index = buyersCommentItems
+            .indexWhere((element) => element.id == event.commentId);
+        if (index != -1) {
+          buyersCommentItems.removeAt(index);
+        }
+
+        getBuyersCommentsPaginationModel["all"] =
+            getBuyersCommentsPaginationModel["all"]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                total:
+                    (getBuyersCommentsPaginationModel["all"]?.total ?? 0) - 1,
+                items: buyersCommentItems);
+      } else {
+        List<FqaComment> fqaCommentItems =
+            state.getFqaCommentsPaginationModel?["all"]?.items ?? [];
+        int index = fqaCommentItems
+            .indexWhere((element) => element.id == event.commentId);
+        if (index != -1) {
+          fqaCommentItems.removeAt(index);
+        }
+
+        getFqaCommentsPaginationModel["all"] =
+            getFqaCommentsPaginationModel["all"]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) - 1,
+                items: fqaCommentItems);
+      }
+
+      emit(state.copyWith(
+          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+          deleteOrderCommentRatingStatus:
+              DeleteOrderCommentRatingStatus.success));
+    });
   }
 }

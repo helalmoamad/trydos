@@ -25,12 +25,38 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       updateEmailappNotificationStatus: $enumDecodeNullable(
           _$UpdateEmailappNotificationStatusEnumMap,
           json['updateEmailappNotificationStatus']),
+      tapCommentIndex: (json['tapCommentIndex'] as num?)?.toInt() ?? -1,
+      createCommentRatingStatus: $enumDecodeNullable(
+              _$CreateCommentRatingStatusEnumMap,
+              json['createCommentRatingStatus']) ??
+          CreateCommentRatingStatus.init,
       updateWhatsappNotificationStatus: $enumDecodeNullable(
           _$UpdateWhatsappNotificationStatusEnumMap,
           json['updateWhatsappNotificationStatus']),
       changeSizesForEveryProduct: $enumDecodeNullable(
           _$ChangeSizesForEveryProductEnumMap,
           json['changeSizesForEveryProduct']),
+      getFqaCommentsPaginationModel:
+          (json['getFqaCommentsPaginationModel'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+            k,
+            PaginationModel<FqaComment>.fromJson(e as Map<String, dynamic>,
+                (value) => FqaComment.fromJson(value as Map<String, dynamic>))),
+      ),
+      getBuyersCommentsPaginationModel:
+          (json['getBuyersCommentsPaginationModel'] as Map<String, dynamic>?)
+              ?.map(
+        (k, e) => MapEntry(
+            k,
+            PaginationModel<BuyersComment>.fromJson(
+                e as Map<String, dynamic>,
+                (value) =>
+                    BuyersComment.fromJson(value as Map<String, dynamic>))),
+      ),
+      getOrderRatingComments: (json['getOrderRatingComments'] as List<dynamic>?)
+              ?.map((e) => Comment.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       uploadUserPhotoCloudinaryStatus: $enumDecodeNullable(
           _$UploadUserPhotoCloudinaryStatusEnumMap,
           json['uploadUserPhotoCloudinaryStatus']),
@@ -60,13 +86,13 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           json['currentSelectedColorForEveryProductStatus']),
       isChangedvariationWhenQtyZero:
           json['isChangedvariationWhenQtyZero'] as bool? ?? false,
+      getOrderRatingStatus: $enumDecodeNullable(
+              _$GetOrderRatingStatusEnumMap, json['getOrderRatingStatus']) ??
+          GetOrderRatingStatus.init,
       getFullProductDetailsStatus: $enumDecodeNullable(
               _$GetFullProductDetailsStatusEnumMap,
               json['getFullProductDetailsStatus']) ??
           GetFullProductDetailsStatus.init,
-      addCommentStatus: $enumDecodeNullable(
-              _$AddCommentStatusEnumMap, json['addCommentStatus']) ??
-          AddCommentStatus.init,
       startingSetting: json['startingSetting'] == null
           ? null
           : StartingSetting.fromJson(
@@ -245,6 +271,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       popularSearchTerm: (json['popularSearchTerm'] as List<dynamic>?)
           ?.map((e) => PopularSearchTerm.fromJson(e as Map<String, dynamic>))
           .toList(),
+      updateOrderCommentRatingStatus: $enumDecodeNullable(
+              _$UpdateOrderCommentRatingStatusEnumMap,
+              json['updateOrderCommentRatingStatus']) ??
+          UpdateOrderCommentRatingStatus.init,
+      deleteOrderCommentRatingStatus: $enumDecodeNullable(
+              _$DeleteOrderCommentRatingStatusEnumMap,
+              json['deleteOrderCommentRatingStatus']) ??
+          DeleteOrderCommentRatingStatus.init,
       getCartOverviewStatus: $enumDecodeNullable(
               _$GetCartOverviewStatusEnumMap, json['getCartOverviewStatus']) ??
           GetCartOverviewStatus.init,
@@ -346,10 +380,28 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getCountryBoundaryByIsoStatus],
       'firebaseSettingForNotificationModel':
           instance.firebaseSettingForNotificationModel?.toJson(),
+      'deleteOrderCommentRatingStatus': _$DeleteOrderCommentRatingStatusEnumMap[
+          instance.deleteOrderCommentRatingStatus]!,
+      'updateOrderCommentRatingStatus': _$UpdateOrderCommentRatingStatusEnumMap[
+          instance.updateOrderCommentRatingStatus]!,
       'updateProfileStatus':
           _$UpdateProfileStatusEnumMap[instance.updateProfileStatus],
+      'getOrderRatingStatus':
+          _$GetOrderRatingStatusEnumMap[instance.getOrderRatingStatus]!,
       'getAllowedCountriesStatus': _$GetAllowedCountriesStatusEnumMap[
           instance.getAllowedCountriesStatus],
+      'getFqaCommentsPaginationModel':
+          instance.getFqaCommentsPaginationModel?.map((k, e) => MapEntry(
+              k,
+              e.toJson(
+                (value) => value.toJson(),
+              ))),
+      'getBuyersCommentsPaginationModel':
+          instance.getBuyersCommentsPaginationModel?.map((k, e) => MapEntry(
+              k,
+              e.toJson(
+                (value) => value.toJson(),
+              ))),
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
@@ -357,9 +409,12 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'currentSlugToRefreshFromNotification':
           instance.currentSlugToRefreshFromNotification,
       'userInfo': instance.userInfo?.toJson(),
+      'createCommentRatingStatus': _$CreateCommentRatingStatusEnumMap[
+          instance.createCommentRatingStatus]!,
       'storiesCollections':
           instance.storiesCollections.map((e) => e.toJson()).toList(),
       'currentPage': instance.currentPage,
+      'tapCommentIndex': instance.tapCommentIndex,
       'currentHeightWhenAddToBag': instance.currentHeightWhenAddToBag,
       'selectedVideoStatus':
           _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
@@ -367,6 +422,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getStoryWithPagintionStatusLoading':
           instance.getStoryWithPagintionStatusLoading,
       'finishGetAllStory': instance.finishGetAllStory,
+      'getOrderRatingComments':
+          instance.getOrderRatingComments.map((e) => e.toJson()).toList(),
       'storyLink': instance.storyLink,
       'selectedCollection': instance.selectedCollection,
       'currentStoryInEachCollection': instance.currentStoryInEachCollection
@@ -421,7 +478,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$UpdateItemInCartStatusEnumMap[instance.updateItemInCartStatus],
       'deleteItemInCartStatus':
           _$DeleteItemInCartStatusEnumMap[instance.deleteItemInCartStatus],
-      'addCommentStatus': _$AddCommentStatusEnumMap[instance.addCommentStatus]!,
       'addOrRemoveLikeOfProductStatus': _$AddOrRemoveLikeOfProductStatusEnumMap[
           instance.addOrRemoveLikeOfProductStatus]!,
       'countryCoordinatesBorders':
@@ -532,6 +588,13 @@ const _$UpdateEmailappNotificationStatusEnumMap = {
   UpdateEmailappNotificationStatus.failure: 'failure',
 };
 
+const _$CreateCommentRatingStatusEnumMap = {
+  CreateCommentRatingStatus.init: 'init',
+  CreateCommentRatingStatus.loading: 'loading',
+  CreateCommentRatingStatus.success: 'success',
+  CreateCommentRatingStatus.failure: 'failure',
+};
+
 const _$UpdateWhatsappNotificationStatusEnumMap = {
   UpdateWhatsappNotificationStatus.init: 'init',
   UpdateWhatsappNotificationStatus.loading: 'loading',
@@ -594,18 +657,18 @@ const _$CurrentSelectedColorForEveryProductStatusEnumMap = {
   CurrentSelectedColorForEveryProductStatus.failure: 'failure',
 };
 
+const _$GetOrderRatingStatusEnumMap = {
+  GetOrderRatingStatus.init: 'init',
+  GetOrderRatingStatus.loading: 'loading',
+  GetOrderRatingStatus.success: 'success',
+  GetOrderRatingStatus.failure: 'failure',
+};
+
 const _$GetFullProductDetailsStatusEnumMap = {
   GetFullProductDetailsStatus.init: 'init',
   GetFullProductDetailsStatus.loading: 'loading',
   GetFullProductDetailsStatus.success: 'success',
   GetFullProductDetailsStatus.failure: 'failure',
-};
-
-const _$AddCommentStatusEnumMap = {
-  AddCommentStatus.init: 'init',
-  AddCommentStatus.loading: 'loading',
-  AddCommentStatus.success: 'success',
-  AddCommentStatus.failure: 'failure',
 };
 
 const _$DeleteItemInCartStatusEnumMap = {
@@ -655,6 +718,20 @@ const _$SelectedVideoStatusEnumMap = {
   SelectedVideoStatus.loading: 'loading',
   SelectedVideoStatus.success: 'success',
   SelectedVideoStatus.failure: 'failure',
+};
+
+const _$UpdateOrderCommentRatingStatusEnumMap = {
+  UpdateOrderCommentRatingStatus.init: 'init',
+  UpdateOrderCommentRatingStatus.loading: 'loading',
+  UpdateOrderCommentRatingStatus.success: 'success',
+  UpdateOrderCommentRatingStatus.failure: 'failure',
+};
+
+const _$DeleteOrderCommentRatingStatusEnumMap = {
+  DeleteOrderCommentRatingStatus.init: 'init',
+  DeleteOrderCommentRatingStatus.loading: 'loading',
+  DeleteOrderCommentRatingStatus.success: 'success',
+  DeleteOrderCommentRatingStatus.failure: 'failure',
 };
 
 const _$GetCartOverviewStatusEnumMap = {

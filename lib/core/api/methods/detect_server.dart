@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
@@ -16,7 +17,9 @@ enum ServerName {
   cloudinary,
   gemini,
   elastic,
-  webApp
+  webApp,
+  comment,
+  get_comment_token
 }
 
 //todo make the return value dynamic to return the cloudinary as String
@@ -31,13 +34,17 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
     case ServerName.elastic:
       return ElasticUrls.baseUri;
     case ServerName.location:
-      return Uri.parse('http://ip-api.com');
+      return Uri.parse('https://ipwho.is/');
     case ServerName.cloudinary:
       return CloudinaryUrls.baseUri;
     case ServerName.webApp:
       return WebUrls.baseUri;
+    case ServerName.comment:
+      return WebUrls.baseUri;
     case ServerName.gemini:
       return Uri.parse("https://api.gemini.com");
+    case ServerName.get_comment_token:
+      return Uri.parse(dotenv.env['COMMENT_TOKEN_URL']!);
   }
 }
 
@@ -48,8 +55,12 @@ String? getServerToken(ServerName serverName) {
       return prefsRepository.chatToken;
     case ServerName.market:
       return prefsRepository.marketToken;
+    case ServerName.get_comment_token:
+      return prefsRepository.tokenForComment;
     case ServerName.stories:
       return prefsRepository.storiesToken;
+    case ServerName.comment:
+      return prefsRepository.tokenForComment;
     case ServerName.elastic:
       return null;
     case ServerName.location:

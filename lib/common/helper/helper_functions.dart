@@ -96,6 +96,42 @@ class HelperFunctions {
     }
   }
 
+  static String replaceDashAfterFirst(String input) {
+    int firstDashIndex = input.indexOf('-');
+    if (firstDashIndex == -1) {
+      // لا يوجد "-"
+      return input;
+    }
+
+    // البحث عن الظهور الثاني للمحرف "-"
+    int secondDashIndex = input.indexOf('-', firstDashIndex + 1);
+    if (secondDashIndex == -1) {
+      // لا يوجد إلا "-" واحد
+      return input;
+    }
+
+    // استبدال كل "-" بعد الظهور الأول بـ "_"
+    StringBuffer result = StringBuffer();
+    bool replacedSecondAndAfter = false;
+
+    for (int i = 0; i < input.length; i++) {
+      if (input[i] == '-') {
+        if (!replacedSecondAndAfter && i > firstDashIndex) {
+          replacedSecondAndAfter = true;
+        }
+        if (replacedSecondAndAfter) {
+          result.write('_');
+        } else {
+          result.write('-');
+        }
+      } else {
+        result.write(input[i]);
+      }
+    }
+
+    return result.toString();
+  }
+
   static Locale getInitLocale() {
     // ignore: deprecated_member_use
     final devicelang = WidgetsBinding.instance.window.locale.languageCode;
@@ -805,8 +841,9 @@ class HelperFunctions {
         result = ((((number.ceil()) / 1000).ceil())).toString();
       } else {
         result = (((number) / 1000).ceil()).toStringAsFixed(
-            GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
-                2);
+            (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
+                    2)
+                .round());
       }
 
       return '${formate.format(double.tryParse(result))}$thousand';
@@ -817,7 +854,8 @@ class HelperFunctions {
         return number.ceil().toString();
       }
       return number.toStringAsFixed(
-          GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
+          (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)
+              .round());
 
       //'1$thousand';
     } else {
@@ -828,7 +866,8 @@ class HelperFunctions {
       } else {
         result = (((((number.ceil())) / 1000).ceil()) / 1000).toStringAsFixed(
             (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
-                    2) +
+                        2)
+                    .round() +
                 3);
       }
 

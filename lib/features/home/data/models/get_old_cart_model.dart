@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 
 GetOldCartModel getOldCartModelFromJson(String str) =>
@@ -290,7 +291,9 @@ class OldCart {
                       : List<VariationCart>.from(json["variations"]
                           .map((x) => VariationCart.fromJson(x)))
               : [],
-      variant: json["variant"],
+      variant: json["variant"] == null
+          ? null
+          : HelperFunctions.replaceDashAfterFirst(json["variant"]),
       availableQuantity:
           double.tryParse(json["available_quantity"].toString())!.round(),
       maxAllowedQty: json["max_allowed_qty"],

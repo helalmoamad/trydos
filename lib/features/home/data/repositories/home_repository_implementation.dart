@@ -5,6 +5,7 @@ import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/apply_coupon_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
+import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/customer_wallet_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
@@ -15,7 +16,8 @@ import 'package:trydos/features/home/data/models/get_boundary_cordinates_by_iso_
 
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
-
+import 'package:trydos/features/home/data/models/get_order_rating_model.dart'
+    as order_rating;
 
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
@@ -51,7 +53,8 @@ import 'package:trydos/features/home/data/models/upload_images_for_return_produc
 import 'package:trydos/features/home/data/models/return_request_product_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
-
+import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
+import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 import '../../../../core/api/handling_exception.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../data_sources/home_remote_data_source.dart';
@@ -100,11 +103,60 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
         tryCall: () => dataSource.getRecommendedProducts(params));
   }
 
+  /* @override
+  Future<Either<Failure, comment.GetCommentsFromAnalyticsModel>>
+      getCommentsFromAnalytics(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getCommentsFromAnalytics(params));
+  }*/
+
+  @override
+  Future<Either<Failure, order_rating.GetOrderRatingFromAnalyticsModel>>
+      getOrderRating(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getOrderRating(params));
+  }
+
+  @override
+  Future<Either<Failure, CreateFqaCommentsModel>> createOrderCommentRating(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.createOrderCommentRating(params));
+  }
+
+  @override
+  Future<Either<Failure, ResponseOnlyMessageModel>> deleteOrderCommentRating(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.deleteOrderCommentRating(params));
+  }
+
+  @override
+  Future<Either<Failure, ResponseOnlyMessageModel>> updateOrderCommentRating(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateOrderCommentRating(params));
+  }
+
   @override
   Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
       String iso) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getCountryBoundaryByIso(iso));
+  }
+
+  @override
+  Future<Either<Failure, GetFqaCommentsModel>> getFqaComments(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getFqaComments(params));
+  }
+
+  @override
+  Future<Either<Failure, GetBuyersCommentsModel>> getBuyersComments(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getBuyersComments(params));
   }
 
   @override
@@ -431,11 +483,11 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
         tryCall: () => dataSource.getFullProductDetails(productSlug));
   }
 
-  @override
+  /* @override
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.addComment(params));
-  }
+  }*/
 
   @override
   Future<Either<Failure, OrderCommentModel>> addOrderComment(

@@ -148,6 +148,7 @@ class HandlingMarketNotifications {
                   .order_status_changed_to_shipped]) {
         GetIt.I<OrderBloc>().add(
           GetOrdersByOrderGroupIDEvent(
+              fromNotification: true,
               status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
               orderGroupId: data?["order_group_id"].toString() ?? ""),
         );

@@ -12,6 +12,7 @@ class PaginationModel<T> {
     this.items = const [],
     this.page = 0,
     this.offset = "",
+    this.total = 0,
     this.paginationStatus = PaginationStatus.initial,
     this.hasReachedMax = false,
   });
@@ -20,6 +21,7 @@ class PaginationModel<T> {
     required this.items,
     required this.page,
     this.offset,
+    this.total,
     required this.paginationStatus,
     required this.hasReachedMax,
   });
@@ -27,19 +29,21 @@ class PaginationModel<T> {
   final List<T> items;
   final PaginationStatus paginationStatus;
   final int page;
+  final int? total;
   final String? offset;
   final bool hasReachedMax;
 
-  PaginationModel<T> copyWith({
-    List<T>? items,
-    PaginationStatus? paginationStatus,
-    int? page,
-    final String? offset,
-    bool? hasReachedMax,
-  }) {
+  PaginationModel<T> copyWith(
+      {List<T>? items,
+      PaginationStatus? paginationStatus,
+      int? page,
+      String? offset,
+      int? total,
+      bool? hasReachedMax}) {
     return PaginationModel(
       items: items ?? this.items,
       offset: offset ?? this.offset,
+      total: total ?? this.total,
       paginationStatus: paginationStatus ?? this.paginationStatus,
       page: page ?? this.page,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
@@ -68,6 +72,7 @@ class PaginationModel<T> {
         other.paginationStatus == paginationStatus &&
         other.page == page &&
         other.offset == offset &&
+        other.total == total &&
         other.hasReachedMax == hasReachedMax;
   }
 
@@ -77,5 +82,6 @@ class PaginationModel<T> {
       offset.hashCode ^
       paginationStatus.hashCode ^
       page.hashCode ^
+      total.hashCode ^
       hasReachedMax.hashCode;
 }

@@ -364,7 +364,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         20.horizontalSpace,
                                       ],
                                     )
-                                  : state.replyType == 'file'
+                                  : state.replyType == 'product'
                                       ? Row(
                                           children: [
                                             20.horizontalSpace,
@@ -390,24 +390,54 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               ),
                                             ),
                                             20.horizontalSpace,
-                                            SvgPicture.asset(
-                                              AppAssets.documentSvg,
-                                              width: 25,
-                                              height: 25,
-                                            ),
+                                            state.imageUrl?.contains(
+                                                        'cloudinary') ??
+                                                    false
+                                                ? MyCachedNetworkImage(
+                                                    height: 40.sp,
+                                                    width: 40.sp,
+                                                    progressIndicatorBuilderWidget:
+                                                        TrydosLoader(),
+                                                    imageFit: BoxFit.cover,
+                                                    imageUrl: state.imageUrl!,
+                                                  )
+                                                : Container(
+                                                    width: 40.sp,
+                                                    height: 40.sp,
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: FileImage(File(
+                                                            state.imageUrl!)),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12.0),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                          color: Color.fromARGB(
+                                                              1, 0, 0, 0)
+//                                                  context
+//                                                      .colorScheme.black
+//                                                      .withOpacity(0.05)
+
+                                                          ,
+                                                          offset: Offset(0, 3),
+                                                          blurRadius: 6,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
                                             10.horizontalSpace,
-                                            SizedBox(
-                                              width: 200.w,
-                                              child: MyTextWidget(
-                                                state.message.toString(),
-                                                style: textTheme.titleMedium?.lr
-                                                    .copyWith(
-                                                        color:
-                                                            colorScheme.grey200,
-                                                        height: 1.66),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                                            MyTextWidget(
+                                              LocaleKeys.product.tr(),
+                                              style: textTheme.titleMedium?.lr
+                                                  .copyWith(
+                                                      color:
+                                                          colorScheme.grey200,
+                                                      height: 1.66),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                             const Spacer(),
                                             widget.senderUserImage != null
@@ -441,7 +471,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             20.horizontalSpace,
                                           ],
                                         )
-                                      : state.replyType == 'video'
+                                      : state.replyType == 'file'
                                           ? Row(
                                               children: [
                                                 20.horizontalSpace,
@@ -473,7 +503,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 ),
                                                 20.horizontalSpace,
                                                 SvgPicture.asset(
-                                                  AppAssets.lastMessageVideoSvg,
+                                                  AppAssets.documentSvg,
                                                   width: 25,
                                                   height: 25,
                                                 ),
@@ -506,7 +536,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                             widget
                                                                 .senderUserImage!,
                                                         imageFit: BoxFit.cover,
-                                                        withImageShadow: true,
                                                         progressIndicatorBuilderWidget:
                                                             TrydosLoader(),
                                                         radius: 8,
@@ -531,92 +560,195 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 20.horizontalSpace,
                                               ],
                                             )
-                                          : Row(
-                                              children: [
-                                                20.horizontalSpace,
-                                                SvgPicture.asset(
-                                                  AppAssets.replyOnMessageSvg,
-                                                  width: 20.w,
-                                                  height: 20,
-                                                ),
-                                                15.horizontalSpace,
-                                                InkWell(
-                                                  focusColor:
-                                                      Colors.transparent,
-                                                  splashColor:
-                                                      Colors.transparent,
-                                                  onTap: () {
-                                                    BlocProvider.of<AppBloc>(
-                                                            context)
-                                                        .add(
-                                                            RefreshChatInputField(
-                                                                false,
-                                                                '',
-                                                                false));
-                                                  },
-                                                  child: SvgPicture.asset(
-                                                    AppAssets.closeSvg,
-                                                    width: 15.w,
-                                                    height: 15,
-                                                  ),
-                                                ),
-                                                20.horizontalSpace,
-                                                SvgPicture.asset(
-                                                  AppAssets.voicePlayedSvg,
-                                                  width: 40.sp,
-                                                  height: 40.sp,
-                                                ),
-                                                10.horizontalSpace,
-                                                MyTextWidget(
-                                                  LocaleKeys.voice.tr(),
-                                                  style: textTheme
-                                                      .titleMedium?.lr
-                                                      .copyWith(
-                                                          color: colorScheme
-                                                              .grey200,
-                                                          height: 1.66),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                const Spacer(),
-                                                widget.senderUserImage != null
-                                                    ? MyCachedNetworkImage(
-                                                        imageUrl: (widget
-                                                                    .senderUserImage
-                                                                    .toString()
-                                                                    .contains(
-                                                                        "cloudinary")
-                                                                ? widget
-                                                                    .senderUserImage!
-                                                                : "${dotenv.env['Images_Url']}") +
-                                                            widget
-                                                                .senderUserImage!,
-                                                        imageFit: BoxFit.cover,
-                                                        radius: 8,
-                                                        progressIndicatorBuilderWidget:
-                                                            TrydosLoader(),
-                                                        width: 30.sp,
-                                                        height: 30.sp)
-                                                    : NoImageWidget(
-                                                        width: 30.sp,
-                                                        height: 30.sp,
-                                                        textStyle: context
-                                                            .textTheme
-                                                            .titleMedium
-                                                            ?.br
+                                          : state.replyType == 'video'
+                                              ? Row(
+                                                  children: [
+                                                    20.horizontalSpace,
+                                                    SvgPicture.asset(
+                                                      AppAssets
+                                                          .replyOnMessageSvg,
+                                                      width: 20.w,
+                                                      height: 20,
+                                                    ),
+                                                    15.horizontalSpace,
+                                                    InkWell(
+                                                      focusColor:
+                                                          Colors.transparent,
+                                                      splashColor:
+                                                          Colors.transparent,
+                                                      onTap: () {
+                                                        BlocProvider.of<
+                                                                    AppBloc>(
+                                                                context)
+                                                            .add(
+                                                                RefreshChatInputField(
+                                                                    false,
+                                                                    '',
+                                                                    false));
+                                                      },
+                                                      child: SvgPicture.asset(
+                                                        AppAssets.closeSvg,
+                                                        width: 15.w,
+                                                        height: 15,
+                                                      ),
+                                                    ),
+                                                    20.horizontalSpace,
+                                                    SvgPicture.asset(
+                                                      AppAssets
+                                                          .lastMessageVideoSvg,
+                                                      width: 25,
+                                                      height: 25,
+                                                    ),
+                                                    10.horizontalSpace,
+                                                    SizedBox(
+                                                      width: 200.w,
+                                                      child: MyTextWidget(
+                                                        state.message
+                                                            .toString(),
+                                                        style: textTheme
+                                                            .titleMedium?.lr
                                                             .copyWith(
-                                                                color: const Color(
-                                                                    0xff6638FF),
-                                                                letterSpacing:
-                                                                    0.18,
-                                                                height: 1.33),
-                                                        radius: 8,
-                                                        name:
-                                                            widget.senderName),
-                                                20.horizontalSpace,
-                                              ],
-                                            ),
+                                                                color:
+                                                                    colorScheme
+                                                                        .grey200,
+                                                                height: 1.66),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    const Spacer(),
+                                                    widget.senderUserImage !=
+                                                            null
+                                                        ? MyCachedNetworkImage(
+                                                            imageUrl: (widget
+                                                                        .senderUserImage
+                                                                        .toString()
+                                                                        .contains(
+                                                                            "cloudinary")
+                                                                    ? ""
+                                                                    : "${dotenv.env['Images_Url']}") +
+                                                                widget
+                                                                    .senderUserImage!,
+                                                            imageFit:
+                                                                BoxFit.cover,
+                                                            withImageShadow:
+                                                                true,
+                                                            progressIndicatorBuilderWidget:
+                                                                TrydosLoader(),
+                                                            radius: 8,
+                                                            width: 30.sp,
+                                                            height: 30.sp)
+                                                        : NoImageWidget(
+                                                            width: 30.sp,
+                                                            height: 30.sp,
+                                                            textStyle: context
+                                                                .textTheme
+                                                                .titleMedium
+                                                                ?.br
+                                                                .copyWith(
+                                                                    color: const Color(
+                                                                        0xff6638FF),
+                                                                    letterSpacing:
+                                                                        0.18,
+                                                                    height:
+                                                                        1.33),
+                                                            radius: 8,
+                                                            name: widget
+                                                                .senderName),
+                                                    20.horizontalSpace,
+                                                  ],
+                                                )
+                                              : Row(
+                                                  children: [
+                                                    20.horizontalSpace,
+                                                    SvgPicture.asset(
+                                                      AppAssets
+                                                          .replyOnMessageSvg,
+                                                      width: 20.w,
+                                                      height: 20,
+                                                    ),
+                                                    15.horizontalSpace,
+                                                    InkWell(
+                                                      focusColor:
+                                                          Colors.transparent,
+                                                      splashColor:
+                                                          Colors.transparent,
+                                                      onTap: () {
+                                                        BlocProvider.of<
+                                                                    AppBloc>(
+                                                                context)
+                                                            .add(
+                                                                RefreshChatInputField(
+                                                                    false,
+                                                                    '',
+                                                                    false));
+                                                      },
+                                                      child: SvgPicture.asset(
+                                                        AppAssets.closeSvg,
+                                                        width: 15.w,
+                                                        height: 15,
+                                                      ),
+                                                    ),
+                                                    20.horizontalSpace,
+                                                    SvgPicture.asset(
+                                                      AppAssets.voicePlayedSvg,
+                                                      width: 40.sp,
+                                                      height: 40.sp,
+                                                    ),
+                                                    10.horizontalSpace,
+                                                    MyTextWidget(
+                                                      LocaleKeys.voice.tr(),
+                                                      style: textTheme
+                                                          .titleMedium?.lr
+                                                          .copyWith(
+                                                              color: colorScheme
+                                                                  .grey200,
+                                                              height: 1.66),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    const Spacer(),
+                                                    widget.senderUserImage != null
+                                                        ? MyCachedNetworkImage(
+                                                            imageUrl: (widget
+                                                                        .senderUserImage
+                                                                        .toString()
+                                                                        .contains(
+                                                                            "cloudinary")
+                                                                    ? widget
+                                                                        .senderUserImage!
+                                                                    : "${dotenv.env['Images_Url']}") +
+                                                                widget
+                                                                    .senderUserImage!,
+                                                            imageFit:
+                                                                BoxFit.cover,
+                                                            radius: 8,
+                                                            progressIndicatorBuilderWidget:
+                                                                TrydosLoader(),
+                                                            width: 30.sp,
+                                                            height: 30.sp)
+                                                        : NoImageWidget(
+                                                            width: 30.sp,
+                                                            height: 30.sp,
+                                                            textStyle: context
+                                                                .textTheme
+                                                                .titleMedium
+                                                                ?.br
+                                                                .copyWith(
+                                                                    color: const Color(
+                                                                        0xff6638FF),
+                                                                    letterSpacing:
+                                                                        0.18,
+                                                                    height:
+                                                                        1.33),
+                                                            radius: 8,
+                                                            name: widget
+                                                                .senderName),
+                                                    20.horizontalSpace,
+                                                  ],
+                                                ),
                         ),
                       )
                     : const SizedBox.shrink(),

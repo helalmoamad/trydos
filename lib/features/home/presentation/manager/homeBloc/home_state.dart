@@ -11,8 +11,9 @@ import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
     as oldCart;
 import 'package:geodesy/geodesy.dart' as geod;
-import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
-
+import 'package:trydos/features/home/data/models/get_order_rating_model.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
+    hide BuyersCommentModel;
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
@@ -21,6 +22,8 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import '../../../../../core/data/model/pagination_model.dart';
 
 import '../../../data/models/check_availability_product_cart_model.dart';
+import '../../../data/models/get_fqa_comments_model.dart';
+import '../../../data/models/get_buyers_comments_model.dart';
 import '../../../data/models/get_cart_item_model.dart';
 import '../../../data/models/get_old_cart_model.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
@@ -28,7 +31,7 @@ import '../../../data/models/get_product_listing_without_filters_model.dart'
 import '../../../data/models/get_user_notifications_model.dart';
 import '../../../data/models/starting_settings_response_model.dart';
 import '../../../data/models/get_auth_product_details_model.dart';
-
+import '../../../data/models/get_order_rating_model.dart' as order_rating;
 part 'home_state.g.dart';
 
 enum GetStartingSettingsStatus { init, loading, success, failure }
@@ -77,7 +80,7 @@ enum UpdateItemInCartStatus { init, loading, success, failure }
 
 enum DeleteItemInCartStatus { init, loading, success, failure }
 
-enum AddCommentStatus { init, loading, success, failure }
+//enum AddCommentStatus { init, loading, success, failure }
 
 enum UploadUserPhotoCloudinaryStatus { init, loading, success, failure }
 
@@ -109,6 +112,14 @@ enum AddProductIdToSaveRedeemTimerStatus { init, on, off }
 
 enum EnableAddToCardAfterChangeVariantZero { init, loading, success, failure }
 
+enum GetOrderRatingStatus { init, loading, success, failure }
+
+enum UpdateOrderCommentRatingStatus { init, loading, success, failure }
+
+enum DeleteOrderCommentRatingStatus { init, loading, success, failure }
+
+enum CreateCommentRatingStatus { init, loading, success, failure }
+
 enum CurrentSelectedColorForEveryProductStatus {
   init,
   loading,
@@ -129,8 +140,14 @@ class HomeState extends Equatable {
         ConvertItemFromcartToOldCartStatus.init,
     this.hideItemInOldCartStatus,
     this.updateEmailappNotificationStatus,
+    this.tapCommentIndex = -1,
+    this.createCommentRatingStatus = CreateCommentRatingStatus.init,
     this.updateWhatsappNotificationStatus,
+    //this.getCommentsFromAnalyticsPaginationModel,
     this.changeSizesForEveryProduct,
+    this.getFqaCommentsPaginationModel,
+    this.getBuyersCommentsPaginationModel,
+    this.getOrderRatingComments = const [],
     this.uploadUserPhotoCloudinaryStatus,
     this.searchWithOutFilterOffset,
     this.updateProfileStatus,
@@ -143,8 +160,9 @@ class HomeState extends Equatable {
     // this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.currentSelectedColorForEveryProductStatus,
     this.isChangedvariationWhenQtyZero = false,
+    this.getOrderRatingStatus = GetOrderRatingStatus.init,
     this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
-    this.addCommentStatus = AddCommentStatus.init,
+    //this.addCommentStatus = AddCommentStatus.init,
     this.startingSetting,
     this.sizesForEachColor = const [],
     this.colorsForEachProduct = const [],
@@ -197,9 +215,12 @@ class HomeState extends Equatable {
     this.currentStoryInEachCollection = const {},
     this.productIdToSaveRedeemTimer = const [],
     this.popularSearchTerm,
+    this.updateOrderCommentRatingStatus = UpdateOrderCommentRatingStatus.init,
+    this.deleteOrderCommentRatingStatus = DeleteOrderCommentRatingStatus.init,
     this.getCartOverviewStatus = GetCartOverviewStatus.init,
     this.checkAvailabilityProductCartStatus =
         CheckAvailabilityProductCartStatus.init,
+    this.statusCodeOfCommentProcess = "",
     this.currentSlugToRefreshFromNotification,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.checkWithGetCartStatus = CheckWithGetCartStatus.init,
@@ -227,22 +248,34 @@ class HomeState extends Equatable {
   final GetCountryBoundaryByIsoStatus? getCountryBoundaryByIsoStatus;
   final FirebaseSettingForNotificationModel?
       firebaseSettingForNotificationModel;
+  final DeleteOrderCommentRatingStatus deleteOrderCommentRatingStatus;
+  final UpdateOrderCommentRatingStatus updateOrderCommentRatingStatus;
   final UpdateProfileStatus? updateProfileStatus;
+  final GetOrderRatingStatus getOrderRatingStatus;
   final GetAllowedCountriesStatus? getAllowedCountriesStatus;
+  //final PaginationModel<comment.Comment>?
+  //   getCommentsFromAnalyticsPaginationModel;
+  final Map<String, PaginationModel<FqaComment>>? getFqaCommentsPaginationModel;
+  final Map<String, PaginationModel<BuyersComment>>?
+      getBuyersCommentsPaginationModel;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   // final GetCommentForProductStatus getCommentForProductStatus;
   final String? currentSlugToRefreshFromNotification;
   // final Map<String, product.Products> productITemForCart;
   final User? userInfo;
+  final CreateCommentRatingStatus createCommentRatingStatus;
   final List<CollectionStoryModel> storiesCollections;
   final int currentPage;
+  final int tapCommentIndex;
   final int? currentHeightWhenAddToBag;
   final SelectedVideoStatus selectedVideoStatus;
   final int storyOffset;
   final bool getStoryWithPagintionStatusLoading;
   final bool finishGetAllStory;
+  final List<order_rating.Comment> getOrderRatingComments;
   final String? storyLink;
+  final String? statusCodeOfCommentProcess;
   final int? selectedCollection;
   final Map<int, int?> currentStoryInEachCollection;
 
@@ -284,7 +317,7 @@ class HomeState extends Equatable {
   final AddItemInCartStatus? addItemInCartStatus;
   final UpdateItemInCartStatus? updateItemInCartStatus;
   final DeleteItemInCartStatus? deleteItemInCartStatus;
-  final AddCommentStatus addCommentStatus;
+  // final AddCommentStatus addCommentStatus;
 
   final AddOrRemoveLikeOfProductStatus addOrRemoveLikeOfProductStatus;
 
@@ -365,16 +398,22 @@ class HomeState extends Equatable {
         updateProfileStatus,
         currentSelectedColorForEveryProductStatus,
         listitemForAddToCart,
+        getOrderRatingStatus,
         getAllowedCountriesModel,
         userInfo,
         popularSearchTerm,
         getCurrencyForCountryModel,
         enableAddToCardAfterChangeVariantZero,
         cartIdsHurryUPTimerStarted,
+        createCommentRatingStatus,
         currentSlugToRefreshFromNotification,
         currentStoryInEachCollection,
         finishLoadingAfterChangedVariationWhenQtyZero,
-        addCommentStatus,
+        // getCommentsFromAnalyticsPaginationModel,
+        // addCommentStatus,
+        getFqaCommentsPaginationModel,
+        getBuyersCommentsPaginationModel,
+        getOrderRatingComments,
         changeSizesForEveryProduct,
         hideItemInOldCartStatus,
         // moveUrlFromElasticToMarketServer,
@@ -443,11 +482,15 @@ class HomeState extends Equatable {
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus,
         productIdToSaveRedeemTimer,
+        tapCommentIndex,
         getAllowedCountriesStatus,
         //   geColorsAndSizesForSearchModel
         authProductDetailsStatus,
+        deleteOrderCommentRatingStatus,
+        updateOrderCommentRatingStatus,
         authProductDetailsModel,
         selectedVideoStatus,
+        statusCodeOfCommentProcess,
         finishGetAllStory,
         storyOffset,
         currentHeightWhenAddToBag,
@@ -459,6 +502,8 @@ class HomeState extends Equatable {
       final GetFirebaseSettingForNotificationStatus?
           getFirebaseSettingForNotificationStatus,
       final GetAllowedCountriesStatus? getAllowedCountriesStatus,
+      final DeleteOrderCommentRatingStatus? deleteOrderCommentRatingStatus,
+      final UpdateOrderCommentRatingStatus? updateOrderCommentRatingStatus,
       final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
@@ -467,10 +512,18 @@ class HomeState extends Equatable {
       final bool? isChangedVariationWhenQtyZero,
       final bool? finishLoadingAfterChangedVariationWhenQtyZero,
       final List<CollectionStoryModel>? storiesCollections,
+      final String? statusCodeOfCommentProcess,
       int? currentPage,
       SelectedVideoStatus? selectedVideoStatus,
+      final CreateCommentRatingStatus? createCommentRatingStatus,
+      final int? tapCommentIndex,
+      final GetOrderRatingStatus? getOrderRatingStatus,
       int? storyOffset,
       bool? getStoryWithPagintionStatusLoading,
+      final Map<String, PaginationModel<FqaComment>>?
+          getFqaCommentsPaginationModel,
+      final Map<String, PaginationModel<BuyersComment>>?
+          getBuyersCommentsPaginationModel,
       bool? finishGetAllStory,
       String? storyLink,
       int? selectedCollection,
@@ -478,6 +531,9 @@ class HomeState extends Equatable {
       final List<geod.LatLng>? countryCoordinatesBorders,
       final AddProductIdToSaveRedeemTimerStatus?
           addProductIdToSaveRedeemTimerStatus,
+      final List<order_rating.Comment>? getOrderRatingComments,
+      //final PaginationModel<comment.Comment>?
+      //    getCommentsFromAnalyticsPaginationModel,
       final EnableAddToCardAfterChangeVariantZero?
           enableAddToCardAfterChangeVariantZero,
       final UpdateProfileStatus? updateProfileStatus,
@@ -525,7 +581,7 @@ class HomeState extends Equatable {
       final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus,
       final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus,
       final GetOLdCartItemsStatus? getOldCartItemsStatus,
-      final AddCommentStatus? addCommentStatus,
+      // final AddCommentStatus? addCommentStatus,
       final Products? productContentForStatusOfOpeningProductDetailsDirectly,
       List<String>? sizesForEachColor,
       List<int>? sizesQuantitiesForEachColor,
@@ -569,23 +625,35 @@ class HomeState extends Equatable {
       enableAddToCardAfterChangeVariantZero:
           enableAddToCardAfterChangeVariantZero ??
               this.enableAddToCardAfterChangeVariantZero,
+      updateOrderCommentRatingStatus:
+          updateOrderCommentRatingStatus ?? this.updateOrderCommentRatingStatus,
+      deleteOrderCommentRatingStatus:
+          deleteOrderCommentRatingStatus ?? this.deleteOrderCommentRatingStatus,
       addVariationToCartId: addVariationToCartId ?? this.addVariationToCartId,
       updateProfileStatus: updateProfileStatus ?? this.updateProfileStatus,
       uploadUserPhotoCloudinaryStatus: uploadUserPhotoCloudinaryStatus ??
           this.uploadUserPhotoCloudinaryStatus,
       userInfo: userInfo ?? this.userInfo,
+      createCommentRatingStatus:
+          createCommentRatingStatus ?? this.createCommentRatingStatus,
+      statusCodeOfCommentProcess:
+          statusCodeOfCommentProcess ?? this.statusCodeOfCommentProcess,
       getCountryBoundaryByIsoStatus:
           getCoutryBoundaryByIsoStatus ?? this.getCountryBoundaryByIsoStatus,
       currentSlugToRefreshFromNotification:
           currentSlugToRefreshFromNotification ??
               this.currentSlugToRefreshFromNotification,
+      tapCommentIndex: tapCommentIndex ?? this.tapCommentIndex,
       selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
+      getOrderRatingStatus: getOrderRatingStatus ?? this.getOrderRatingStatus,
 
       storyLink: storyLink ?? this.storyLink,
       storiesCollections: storiesCollections ?? this.storiesCollections,
       currentPage: currentPage ?? this.currentPage,
       storyOffset: storyOffset ?? this.storyOffset,
       finishGetAllStory: finishGetAllStory ?? this.finishGetAllStory,
+      getOrderRatingComments:
+          getOrderRatingComments ?? this.getOrderRatingComments,
       getStoryWithPagintionStatusLoading: getStoryWithPagintionStatusLoading ??
           this.getStoryWithPagintionStatusLoading,
       currentStoryInEachCollection:
@@ -593,9 +661,15 @@ class HomeState extends Equatable {
       selectedCollection: selectedCollection ?? this.selectedCollection,
       productIdToSaveRedeemTimer:
           productIdToSaveRedeemTimer ?? this.productIdToSaveRedeemTimer,
-
+      getFqaCommentsPaginationModel:
+          getFqaCommentsPaginationModel ?? this.getFqaCommentsPaginationModel,
+      getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel ??
+          this.getBuyersCommentsPaginationModel,
       countryCoordinatesBorders:
           countryCoordinatesBorders ?? this.countryCoordinatesBorders,
+      // getCommentsFromAnalyticsPaginationModel:
+      //    getCommentsFromAnalyticsPaginationModel ??
+      //        this.getCommentsFromAnalyticsPaginationModel,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
 
@@ -663,7 +737,7 @@ class HomeState extends Equatable {
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
       sizesQuantitiesForEachColor:
           sizesQuantitiesForEachColor ?? this.sizesQuantitiesForEachColor,
-      addCommentStatus: addCommentStatus ?? this.addCommentStatus,
+      //  addCommentStatus: addCommentStatus ?? this.addCommentStatus,
 
       isVariantRequestNotification:
           isVariantRequestNotification ?? this.isVariantRequestNotification,

@@ -149,13 +149,6 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               _$ChangeOrderItemVariantStatusEnumMap,
               json['changeOrderItemVariantStatus']) ??
           ChangeOrderItemVariantStatus.init,
-      addOrderCommentStatus: $enumDecodeNullable(
-              _$AddOrderCommentStatusEnumMap, json['addOrderCommentStatus']) ??
-          AddOrderCommentStatus.init,
-      updateOrderCommentStatus: $enumDecodeNullable(
-              _$UpdateOrderCommentStatusEnumMap,
-              json['updateOrderCommentStatus']) ??
-          UpdateOrderCommentStatus.init,
       getReturnReasonsStatus: $enumDecodeNullable(
               _$GetReturnReasonsStatusEnumMap,
               json['getReturnReasonsStatus']) ??
@@ -256,13 +249,9 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
       'colorSizeForProductModel': instance.colorSizeForProductModel?.toJson(),
       'changeOrderItemVariantStatus': _$ChangeOrderItemVariantStatusEnumMap[
           instance.changeOrderItemVariantStatus],
-      'addOrderCommentStatus':
-          _$AddOrderCommentStatusEnumMap[instance.addOrderCommentStatus],
       'updateReturnRequestProductStatus':
           _$UpdateReturnRequestProductStatusEnumMap[
               instance.updateReturnRequestProductStatus],
-      'updateOrderCommentStatus':
-          _$UpdateOrderCommentStatusEnumMap[instance.updateOrderCommentStatus],
       'getReturnReasonsStatus':
           _$GetReturnReasonsStatusEnumMap[instance.getReturnReasonsStatus],
       'returnReasonsModel': instance.returnReasonsModel?.toJson(),
@@ -293,7 +282,6 @@ const _$PlaceOrderStatusEnumMap = {
 const _$GetOrdersByOrderGroupIDStatusEnumMap = {
   GetOrdersByOrderGroupIDStatus.init: 'init',
   GetOrdersByOrderGroupIDStatus.loading: 'loading',
-  GetOrdersByOrderGroupIDStatus.loadingForRating: 'loadingForRating',
   GetOrdersByOrderGroupIDStatus.success: 'success',
   GetOrdersByOrderGroupIDStatus.failure: 'failure',
 };
@@ -429,20 +417,6 @@ const _$ChangeOrderItemVariantStatusEnumMap = {
   ChangeOrderItemVariantStatus.loading: 'loading',
   ChangeOrderItemVariantStatus.success: 'success',
   ChangeOrderItemVariantStatus.failure: 'failure',
-};
-
-const _$AddOrderCommentStatusEnumMap = {
-  AddOrderCommentStatus.init: 'init',
-  AddOrderCommentStatus.loading: 'loading',
-  AddOrderCommentStatus.success: 'success',
-  AddOrderCommentStatus.failure: 'failure',
-};
-
-const _$UpdateOrderCommentStatusEnumMap = {
-  UpdateOrderCommentStatus.init: 'init',
-  UpdateOrderCommentStatus.loading: 'loading',
-  UpdateOrderCommentStatus.success: 'success',
-  UpdateOrderCommentStatus.failure: 'failure',
 };
 
 const _$GetReturnReasonsStatusEnumMap = {

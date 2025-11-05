@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/common/helper/helper_functions.dart';
+
 ColorSizeForProductModel colorSizeForProductModelFromJson(String str) =>
     ColorSizeForProductModel.fromJson(json.decode(str));
 
@@ -68,25 +70,38 @@ class Data {
   final List<ProductChoiceOption>? choiceOptions;
   final List<ProductColor>? colors;
   final List<ProductSyncColorImage>? syncColorImages;
+  final List<Variation>? variation;
+  final int? collectedAfterOrdering;
 
   Data({
     this.choiceOptions,
     this.colors,
+    this.variation,
     this.syncColorImages,
+    this.collectedAfterOrdering,
   });
 
   Data copyWith({
     List<ProductChoiceOption>? choiceOptions,
+    List<Variation>? variation,
     List<ProductColor>? colors,
     List<ProductSyncColorImage>? syncColorImages,
+    int? collectedAfterOrdering,
   }) =>
       Data(
         choiceOptions: choiceOptions ?? this.choiceOptions,
         colors: colors ?? this.colors,
+        variation: variation ?? this.variation,
         syncColorImages: syncColorImages ?? this.syncColorImages,
+        collectedAfterOrdering:
+            collectedAfterOrdering ?? this.collectedAfterOrdering,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
+        variation: json["variation"] == null
+            ? []
+            : List<Variation>.from(
+                json["variation"]!.map((x) => Variation.fromJson(x))),
         choiceOptions: json["choice_options"] == null
             ? []
             : List<ProductChoiceOption>.from(json["choice_options"]!
@@ -99,9 +114,13 @@ class Data {
             ? []
             : List<ProductSyncColorImage>.from(json["sync_color_images"]!
                 .map((x) => ProductSyncColorImage.fromJson(x))),
+        collectedAfterOrdering: json["collected_after_ordering"],
       );
 
   Map<String, dynamic> toJson() => {
+        "variation": variation == null
+            ? []
+            : List<dynamic>.from(variation!.map((x) => x.toJson())),
         "choice_options": choiceOptions == null
             ? []
             : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
@@ -111,6 +130,43 @@ class Data {
         "sync_color_images": syncColorImages == null
             ? []
             : List<dynamic>.from(syncColorImages!.map((x) => x.toJson())),
+        "collected_after_ordering": collectedAfterOrdering,
+      };
+}
+
+class Variation {
+  final String? type;
+  final int? qty;
+  final double? offerPrice;
+  Variation({
+    this.type,
+    this.qty,
+    this.offerPrice,
+  });
+
+  Variation copyWith({
+    String? type,
+    int? qty,
+    double? offerPrice,
+  }) =>
+      Variation(
+        type: type ?? this.type,
+        qty: qty ?? this.qty,
+        offerPrice: offerPrice ?? this.offerPrice,
+      );
+
+  factory Variation.fromJson(Map<String, dynamic> json) => Variation(
+        type: json["type"] == null
+            ? null
+            : HelperFunctions.replaceDashAfterFirst(json["type"]),
+        qty: json["qty"],
+        offerPrice: json["offer_price"]?.toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "type": type,
+        "qty": qty,
+        "offer_price": offerPrice,
       };
 }
 
@@ -174,8 +230,12 @@ class Option {
       );
 
   factory Option.fromJson(Map<String, dynamic> json) => Option(
-        name: json["name"],
-        option: json["option"],
+        name: json["name"] == null
+            ? null
+            : json["name"].toString().replaceAll("-", "_"),
+        option: json["option"] == null
+            ? null
+            : json["option"].toString().replaceAll("-", "_"),
       );
 
   Map<String, dynamic> toJson() => {

@@ -71,10 +71,9 @@ class OrderDetails2 extends StatefulWidget {
     required this.indexPackage,
     required this.indexGroupe,
     this.currentStatus = "",
-    this.fromNotification = false,
   });
   final String? currentStatus;
-  final bool fromNotification;
+
   final int indexGroupe;
   final int indexPackage;
   final OrderListModel order;
@@ -120,6 +119,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   List<ProductChoiceOption> productChoiceOptions = [];
   String? firstColorNum;
   String? firstColorOption;
+  String? firstVariant;
   String? firstSizeOption;
   String? firstColorName;
   String? firstSizeName;
@@ -2008,8 +2008,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   )),
                               ///////////////////
                               Container(
-                                width: 30,
-                                height: 15,
+                                width: 40,
+                                height: 25,
                                 child: BlocBuilder<OrderBloc, OrderState>(
                                   buildWhen: (previous, current) =>
                                       previous.getCustomerAddressStatus !=
@@ -2036,7 +2036,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         },
                                         child: Container(
                                           width: 40,
-                                          height: 20,
+                                          height: 25,
                                           child: SvgPicture.asset(
                                             AppAssets.orderMenuSvg,
                                             width: 20,
@@ -3353,7 +3353,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         .toString() ??
                                     "",
                                 choice1: sizeIndexTap.value == null
-                                    ? firstSizeOption ?? ""
+                                    ? (firstSizeOption ?? "")
+                                        .replaceAll("_", "-")
                                     : productChoiceOptions[0]
                                             .options?[sizeIndexTap.value!]
                                             .option ??
@@ -4426,37 +4427,39 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             ? 0.h
                             : 160.h,
                       ),
-                      Container(
-                        height: 130.h,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 24),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                        ),
-                        child: ListView.builder(
-                            itemCount: images.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) => Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  height: 130.h,
-                                  width: 100,
-                                  decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15))),
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(15)),
-                                    child: MyCachedNetworkImage(
-                                        imageUrl: images[index],
+                      optionModifyPanel.value != "Return_This_Product"
+                          ? const SizedBox.shrink()
+                          : Container(
+                              height: 130.h,
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 24),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(15)),
+                              ),
+                              child: ListView.builder(
+                                  itemCount: images.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) => Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 5),
+                                        height: 130.h,
                                         width: 100,
-                                        imageFit: BoxFit.contain,
-                                        height: 130.h),
-                                  ),
-                                )),
-                      ),
+                                        decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(15)),
+                                          child: MyCachedNetworkImage(
+                                              imageUrl: images[index],
+                                              width: 100,
+                                              imageFit: BoxFit.contain,
+                                              height: 130.h),
+                                        ),
+                                      )),
+                            ),
                       SvgPicture.asset(
                         AppAssets.termsCanselSvg,
                       ),
@@ -7537,6 +7540,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               listener: (context, state) {
                 if (state.getProductColorSizeSyncAttributeStatus ==
                     GetProductColorSizeSyncAttributeStatus.success) {
+                  firstVariant = order!.details![indexTap.value].variant;
                   productColors =
                       state.colorSizeForProductModel?.data?.colors ?? [];
                   productSyncColorImages =
@@ -8060,7 +8064,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 height: 1.3,
               )),
           Text(
-              "  ${HelperFunctions.formatNumber(number: ((((allOrder ? order!.orderAmount! : order!.details?[indexTap.value].productDetails?.offerPrice ?? 0))) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
+              "  ${HelperFunctions.formatNumber(number: ((((allOrder ? order!.orderAmount! : order!.details?[indexTap.value].productDetails?.offerPrice ?? 0))) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!) * (order!.details?[indexTap.value].qty ?? 0)), isNeedRounding: false)}",
               maxLines: 1,
               style: context.textTheme.bodyMedium?.br.copyWith(
                 color: const Color(0xff8D8D8D),
@@ -8543,6 +8547,85 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             horizontal: 5),
                                         child: InkWell(
                                           onTap: () {
+                                            String newVariant =
+                                                '${productSyncColorImages[index].colorOption}${(firstSizeOption == null || firstSizeOption == "") ? "" : '-'}${firstSizeOption}';
+                                            int? newVariantQty = state
+                                                .colorSizeForProductModel
+                                                ?.data
+                                                ?.variation
+                                                ?.firstWhere(
+                                                  (element) =>
+                                                      element.type ==
+                                                      newVariant,
+                                                )
+                                                .qty;
+                                            double? newVariantPrice = state
+                                                .colorSizeForProductModel
+                                                ?.data
+                                                ?.variation
+                                                ?.firstWhere(
+                                                  (element) =>
+                                                      element.type ==
+                                                      newVariant,
+                                                )
+                                                .offerPrice;
+                                            if ((order!.details?[indexTap.value]
+                                                            .qty ??
+                                                        0) >
+                                                    (newVariantQty ?? 0) &&
+                                                (state
+                                                        .colorSizeForProductModel
+                                                        ?.data
+                                                        ?.collectedAfterOrdering ==
+                                                    0)) {
+                                              showMessage(
+                                                  LocaleKeys
+                                                      .not_available_now_stock
+                                                      .tr(),
+                                                  hasError: true,
+                                                  context: context);
+                                              return;
+                                            }
+                                            if ((order!
+                                                        .details?[
+                                                            indexTap.value]
+                                                        .productDetails
+                                                        ?.offerPrice ??
+                                                    0) <
+                                                (newVariantPrice ?? 0)) {
+                                              if (((((newVariantPrice ?? 0) -
+                                                              (order!
+                                                                      .details?[
+                                                                          indexTap
+                                                                              .value]
+                                                                      .productDetails
+                                                                      ?.offerPrice ??
+                                                                  0)) *
+                                                          (order!
+                                                                  .details?[
+                                                                      indexTap
+                                                                          .value]
+                                                                  .qty ??
+                                                              0)) *
+                                                      (GetIt.I<HomeBloc>()
+                                                          .state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .exchangeRate!)) >
+                                                  (state
+                                                          .customerWalletModel
+                                                          ?.data
+                                                          .totalWalletBalance ??
+                                                      0)) {
+                                                showMessage(
+                                                    '${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()} , new price : ${(newVariantPrice ?? 0) * ((order!.details?[indexTap.value].qty ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)} ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
+                                                    hasError: true,
+                                                    context: context);
+                                                return;
+                                              }
+                                            }
+
                                             if (_colorIndexTap == index) {
                                               colorIndexTap.value = null;
                                               return;
@@ -8644,6 +8727,89 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 horizontal: 5),
                                             child: InkWell(
                                               onTap: () {
+                                                String newVariant =
+                                                    '${firstColorOption}${(firstColorOption == null || firstColorOption == "") ? "" : '-'}${productChoiceOptions[0].options?[index].option}';
+
+                                                int? newVariantQty = state
+                                                    .colorSizeForProductModel
+                                                    ?.data
+                                                    ?.variation
+                                                    ?.firstWhere(
+                                                      (element) =>
+                                                          element.type ==
+                                                          newVariant,
+                                                    )
+                                                    .qty;
+                                                double? newVariantPrice = state
+                                                    .colorSizeForProductModel
+                                                    ?.data
+                                                    ?.variation
+                                                    ?.firstWhere(
+                                                      (element) =>
+                                                          element.type ==
+                                                          newVariant,
+                                                    )
+                                                    .offerPrice;
+
+                                                if ((order!
+                                                                .details?[
+                                                                    indexTap
+                                                                        .value]
+                                                                .qty ??
+                                                            0) >
+                                                        (newVariantQty ?? 0) &&
+                                                    (state
+                                                            .colorSizeForProductModel
+                                                            ?.data
+                                                            ?.collectedAfterOrdering ==
+                                                        0)) {
+                                                  showMessage(
+                                                      LocaleKeys
+                                                          .not_available_now_stock
+                                                          .tr(),
+                                                      hasError: true,
+                                                      context: context);
+                                                  return;
+                                                }
+                                                if ((order!
+                                                            .details?[
+                                                                indexTap.value]
+                                                            .productDetails
+                                                            ?.offerPrice ??
+                                                        0) <
+                                                    (newVariantPrice ?? 0)) {
+                                                  if (((((newVariantPrice ??
+                                                                      0) -
+                                                                  (order!
+                                                                          .details?[indexTap
+                                                                              .value]
+                                                                          .productDetails
+                                                                          ?.offerPrice ??
+                                                                      0)) *
+                                                              (order!
+                                                                      .details?[
+                                                                          indexTap
+                                                                              .value]
+                                                                      .qty ??
+                                                                  0)) *
+                                                          (GetIt.I<HomeBloc>()
+                                                              .state
+                                                              .getCurrencyForCountryModel!
+                                                              .data!
+                                                              .currency!
+                                                              .exchangeRate!)) >
+                                                      (state
+                                                              .customerWalletModel
+                                                              ?.data
+                                                              .totalWalletBalance ??
+                                                          0)) {
+                                                    showMessage(
+                                                        '${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()} , new price : ${(newVariantPrice ?? 0) * ((order!.details?[indexTap.value].qty ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)} ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
+                                                        hasError: true,
+                                                        context: context);
+                                                    return;
+                                                  }
+                                                }
                                                 if (_sizeIndexTap == index) {
                                                   sizeIndexTap.value = null;
                                                   return;

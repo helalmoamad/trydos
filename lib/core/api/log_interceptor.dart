@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
@@ -157,7 +158,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
                   .contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
-          (err.requestOptions.path.contains("stories"))) {
+          (err.requestOptions.path.contains(dotenv.env['STORY_URL']!))) {
         _prefsRepository.setStoriesToken("");
       }
       if ((jsonDecode(err.response.toString())["message"]
@@ -165,7 +166,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
                   .contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
-          (err.requestOptions.path.contains("chating"))) {
+          (err.requestOptions.path.contains(dotenv.env['CHAT_URL']!))) {
         _prefsRepository.setChatToken("");
       }
       if ((jsonDecode(err.response.toString())["message"]
@@ -173,7 +174,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
                   .contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
-          (err.requestOptions.path.contains("trydos_staging")) &&
+          (err.requestOptions.path.contains(dotenv.env['COMMENT_TOKEN_URL']!) ||
+              err.requestOptions.path.contains(dotenv.env['MARKET_URL']!)) &&
           !(_prefsRepository.isTokenExpired ?? false)) {
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
             _prefsRepository.isVerifiedPhone ?? false);

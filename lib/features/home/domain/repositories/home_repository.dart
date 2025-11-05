@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
+import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
@@ -10,6 +11,8 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
+import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
+import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
@@ -33,6 +36,7 @@ import '../../../../core/error/failures.dart';
 import '../../data/models/apply_coupon_model.dart';
 import '../../data/models/check_availability_product_cart_model.dart';
 import '../../data/models/customer_wallet_model.dart';
+import '../../data/models/get_order_rating_model.dart' as order_rating;
 import '../../data/models/get_full_product_details_model.dart';
 import '../../data/models/get_orders_model.dart';
 import '../../data/models/get_product_filters_model.dart';
@@ -74,9 +78,12 @@ abstract class HomeRepository {
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(
       Map<String, dynamic> params);
-
+  Future<Either<Failure, order_rating.GetOrderRatingFromAnalyticsModel>>
+      getOrderRating(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       updateWhatsappNotification(Map<String, dynamic> params);
+//  Future<Either<Failure, comment.GetCommentsFromAnalyticsModel>>
+//      getCommentsFromAnalytics(Map<String, dynamic> params);
   Future<Either<Failure, UpdateProfileModel>> updateProfile(
       Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
@@ -87,13 +94,22 @@ abstract class HomeRepository {
       updateNotificationFrequency(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       changeCountryLanguageFornotification(Map<String, dynamic> params);
-
+  Future<Either<Failure, CreateFqaCommentsModel>> createOrderCommentRating(
+      Map<String, dynamic> params);
+  Future<Either<Failure, ResponseOnlyMessageModel>> deleteOrderCommentRating(
+      Map<String, dynamic> params);
+  Future<Either<Failure, ResponseOnlyMessageModel>> updateOrderCommentRating(
+      Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       unSubscribeTopicFornotification(Map<String, dynamic> params);
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
       updateLikeSocialSharedProducts(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       subscribeTopicFornotification(Map<String, dynamic> params);
+  Future<Either<Failure, GetFqaCommentsModel>> getFqaComments(
+      Map<String, dynamic> params);
+  Future<Either<Failure, GetBuyersCommentsModel>> getBuyersComments(
+      Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       getMyFirebaseSettings();
   Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
@@ -153,7 +169,7 @@ abstract class HomeRepository {
   Future<Either<Failure, ConvertItemFromCartToOldCartModel>>
       convertItemInCartToOldCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
-  Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
+  //Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
   Future<Either<Failure, OrderCommentModel>> addOrderComment(
       Map<String, dynamic> params);
   Future<Either<Failure, OrderCommentModel>> updateOrderComment(

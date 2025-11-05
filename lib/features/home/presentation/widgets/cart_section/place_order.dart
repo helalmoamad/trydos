@@ -43,7 +43,7 @@ class PlaceOrder extends StatefulWidget {
   final ValueNotifier<List<String>> paymentMethods;
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
-  final int decimalPointSetting;
+  final double decimalPointSetting;
   final String currencySymbol;
   final double exchangeRate;
   const PlaceOrder({

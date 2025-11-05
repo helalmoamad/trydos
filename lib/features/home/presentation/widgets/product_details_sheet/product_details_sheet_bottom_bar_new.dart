@@ -24,6 +24,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
@@ -77,6 +78,7 @@ class ProductDetailsSheetBottomBarNew extends StatefulWidget {
       required this.isRedeem,
       required this.redeemVariantPrice,
       required this.choiceOption,
+      this.isVerified,
       required this.isGetFullProductDetails,
       required this.sizeIsNotAvailableNotifier,
       required this.productNotAvailableNotifier,
@@ -91,6 +93,7 @@ class ProductDetailsSheetBottomBarNew extends StatefulWidget {
   final String imageUrl;
   final int countOfPieces;
   final ValueNotifier<bool> visibleRedeemNotifier;
+  final ValueNotifier<bool>? isVerified;
   final String? flashDealEndDate;
   final bool? isFlashDealEnded;
   final ValueNotifier<bool>? visibleFlashDeal;
@@ -189,8 +192,31 @@ class _ProductDetailsSheetBottomBarNewState
                       widget.productIdForCashProducts]
                   ?.product
                   ?.sharedCount ||
-          previous.addCommentStatus != current.addCommentStatus,
+          previous.createCommentRatingStatus !=
+              current.createCommentRatingStatus ||
+          previous.deleteOrderCommentRatingStatus !=
+              current.deleteOrderCommentRatingStatus ||
+          previous.updateOrderCommentRatingStatus !=
+              current.updateOrderCommentRatingStatus,
       builder: (context, state) {
+        if (state.statusCodeOfCommentProcess == "401" &&
+            (state.updateOrderCommentRatingStatus ==
+                    UpdateOrderCommentRatingStatus.failure ||
+                state.deleteOrderCommentRatingStatus ==
+                    DeleteOrderCommentRatingStatus.failure ||
+                state.createCommentRatingStatus ==
+                    CreateCommentRatingStatus.failure)) {
+          if (!(prefsRepository.isVerifiedPhone ?? false)) {
+            Future.delayed(const Duration(seconds: 1), () {
+              widget.isVerified?.value = false;
+              if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ??
+                  false)) {
+                GetIt.I<AuthBloc>().add(SendOtpEvent(
+                    phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
+              }
+            });
+          }
+        }
         qtyForProductWithoutVariant = state
             .cachedProductWithoutRelatedProductsModel[
                 widget.productIdForCashProducts]
@@ -1070,7 +1096,7 @@ class _ProductDetailsSheetBottomBarNewState
                                             ),
                                             BarWidget(
                                                 text:
-                                                    '${state.cachedProductWithoutRelatedProductsModel[widget.productIdForCashProducts]?.product?.commentsCount ?? 0}',
+                                                    '${state.getFqaCommentsPaginationModel?['all']?.total ?? 0}',
                                                 svgPath: currentTab == 0
                                                     ? AppAssets.addCommentSvg
                                                     : AppAssets.addCommentSvg,

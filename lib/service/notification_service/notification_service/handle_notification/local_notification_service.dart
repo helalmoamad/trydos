@@ -99,6 +99,7 @@ class LocalNotificationService {
               TypeOfNotificationForMarketEnum.order_status_changed]) {
         GetIt.I<OrderBloc>().add(
           GetOrdersByOrderGroupIDEvent(
+              fromNotification: true,
               status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
               orderGroupId: data?["order_group_id"].toString() ?? ""),
         );
@@ -185,8 +186,8 @@ class LocalNotificationService {
       } catch (e) {}
       String title = "${data?["showed_type"]}";
       String body = "${data?["description"]}";
-      await _localNotificationPlugin.show(
-          notificationId, title, body, _notificationDetails(pngImage, null),
+      await _localNotificationPlugin.show(notificationId, title, body,
+          _notificationDetails(pngImage, null, body),
           payload: '${message.data["body"] ?? ""}###${fromBackGround}');
 
       return;
@@ -224,7 +225,18 @@ class LocalNotificationService {
                     : type == 'VideoMessage'
                         ? 'Video'
                         : 'File',
-        _notificationDetails(null, myMessage.channel?.id),
+        _notificationDetails(
+            null,
+            myMessage.channel?.id,
+            type == 'TextMessage'
+                ? myMessage.messageContent!.content.toString()
+                : type == 'ImageMessage'
+                    ? 'Photo'
+                    : type == 'VoiceMessage'
+                        ? 'Voice'
+                        : type == 'VideoMessage'
+                            ? 'Video'
+                            : 'File'),
         payload:
             '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}#parentOrderId#${parentOrderId}');
   }
@@ -311,7 +323,7 @@ class LocalNotificationService {
         message: myMessage);
   }
 
-  _notificationDetails(Uint8List? pngImage, String? tag) {
+  _notificationDetails(Uint8List? pngImage, String? tag, String body) {
     final channel = LocalNotificationService().getAndroidChannel;
 
     AndroidNotificationDetails androidNotificationDetails =
@@ -326,7 +338,7 @@ class LocalNotificationService {
             largeIcon:
                 (pngImage == null) ? null : ByteArrayAndroidBitmap(pngImage),
             styleInformation: (pngImage == null)
-                ? null
+                ? BigTextStyleInformation(body)
                 : BigPictureStyleInformation(ByteArrayAndroidBitmap(pngImage)));
     const DarwinNotificationDetails iosNotificationDetails =
         DarwinNotificationDetails();

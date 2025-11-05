@@ -2461,8 +2461,8 @@ Widget choosedOrAppliedFiltersWidget({
                       ),
                       MyTextWidget(
                         filters?.prices?.minPrice != null
-                            ? '${(filters!.prices!.minPrice! * exchangeRate).toStringAsFixed(BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2).toString()} / '
-                            : '${lowerAndUpperPrices!.value.item1.toStringAsFixed(BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2)} / ',
+                            ? '${(filters!.prices!.minPrice! * exchangeRate).toStringAsFixed((BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2).round()).toString()} / '
+                            : '${lowerAndUpperPrices!.value.item1.toStringAsFixed((BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2).round())} / ',
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: context.textTheme.titleMedium?.rq.copyWith(
@@ -2472,8 +2472,8 @@ Widget choosedOrAppliedFiltersWidget({
                       ),
                       MyTextWidget(
                         filters?.prices?.maxPrice != null
-                            ? '${(filters!.prices!.maxPrice! * exchangeRate).toStringAsFixed(BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2).toString()} '
-                            : '${lowerAndUpperPrices!.value.item2.toStringAsFixed(BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2)}  ',
+                            ? '${(filters!.prices!.maxPrice! * exchangeRate).toStringAsFixed((BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2).round()).toString()} '
+                            : '${lowerAndUpperPrices!.value.item2.toStringAsFixed(((BlocProvider.of<HomeBloc>(context).state.startingSetting?.decimalPointSettings ?? 2).round()))}  ',
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: context.textTheme.titleMedium?.rq.copyWith(

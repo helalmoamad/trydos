@@ -11,6 +11,7 @@
   "full": "Tam",
   "the_product_price_when_returned": "İade Edildiğinde Ürün Fiyatı",
   "alert": "Uyarı",
+  "waiting_for_supplier_response": "Tedarikçi yanıtı bekleniyor",
   "typing": "Yazıyor...",
   "recording": "Kaydediyor...",
   "sending_file": "dosya gönderiliyor...",
@@ -627,5 +628,29 @@
   ,"today_shipping_if_buy_before": "Ve bugün kargo, eğer önce alırsan"
   ,"add_more_to_bag": "Daha fazla çantaya ekle"
   ,"delivery_worker": "Teslimat Görevlisi"
-  ,"recommend_products": "Önerilen Ürünler"
+  ,"recommend_products": "Önerilen Ürünler",
+  "edit_comment_title": "Yorumu Düzenle",
+  "edit_comment_hint": "Düzenlemeyi buraya yaz..."
+  ,"must_login_to_edit_comment": "Yorumu düzenlemek için lütfen giriş yapın"
+  ,"must_login_to_delete_comment": "Yorumu silmek için lütfen giriş yapın"
+  ,"confirm_delete_comment_title": "Yorumu Silmeyi Onayla"
+  ,"confirm_delete_comment_message": "Bu yorumu silmek istediğinizden emin misiniz?"
+  ,"confirm_delete": "Silmeyi Onayla"
+  ,"delete_comment_success": "Yorum başarıyla silindi"
+  ,"delete_comment_failed": "Yorum silinemedi"
+  ,"edit_comment_success": "Yorum başarıyla güncellendi"
+  ,"edit_comment_failed": "Yorum güncellenemedi"
+  ,"quality": "Kalite",
+  "complaint": "Şikayet"
+  ,"recommendation": "Tavsiye"
+  ,"no_commends_found": "Yorum bulunamadı"
+  ,"choose_a_country": "Bir ülke seçin"
+  ,"country_not_available": "Ülke mevcut değil"
+  ,"expected_shipping_delivery_date": "Beklenen kargo ve teslimat tarihi"
+  ,"work_days_at_your_address_in": "Adresinizdeki iş günleri"
+  ,"after_receiving_product_return_without_conditions": "Ürünü aldıktan sonra koşulsuz iade edebilirsiniz"
+  ,"or_reasons_with_complete_ease_and": "veya nedenlerle tam kolaylıkla ve"
+  ,"pack": "Paket"
+  ,"dear": "Sevgili"
+  ,"product": "Ürün"
 }

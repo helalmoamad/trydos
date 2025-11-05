@@ -12,7 +12,16 @@ import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
 
 class ShippingDeliveryDatePanel extends StatelessWidget {
-  const ShippingDeliveryDatePanel({super.key, required this.panelController});
+  final String shippingDay;
+  final double shippingCost;
+  final String countryName;
+  const ShippingDeliveryDatePanel({
+    super.key,
+    required this.panelController,
+    required this.shippingDay,
+    required this.shippingCost,
+    required this.countryName,
+  });
 
   final PanelController panelController;
 
@@ -70,29 +79,51 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                Row(
-                  children: [
-                    MyTextWidget(
-                      'Monday ',
-                      style: context.textTheme.titleLarge?.rr.copyWith(
-                          color: const Color(0xff1D1D1D), fontSize: 11),
-                    ),
-                    MyTextWidget(
-                      '2.jun | 3 ',
-                      style: context.textTheme.titleLarge?.br.copyWith(
-                          color: const Color(0xff1D1D1D), fontSize: 11),
-                    ),
-                    MyTextWidget(
-                      LocaleKeys.work_days_at_your_address_in.tr(),
-                      style: context.textTheme.titleLarge?.rr.copyWith(
-                          color: const Color(0xff1D1D1D), fontSize: 11),
-                    ),
-                    MyTextWidget(
-                      ' Lebanon',
-                      style: context.textTheme.titleLarge?.br.copyWith(
-                          color: const Color(0xff1D1D1D), fontSize: 11),
-                    ),
-                  ],
+                Builder(
+                  builder: (context) {
+                    // Parse shippingDay to int
+                    final shippingDays = int.tryParse(shippingDay) ?? 0;
+                    // Calculate the delivery date
+                    final deliveryDate =
+                        DateTime.now().add(Duration(days: shippingDays));
+
+                    // Get current locale
+                    final locale = context.locale.toString();
+
+                    // Format day name (EEEE = full weekday name)
+                    final dayName =
+                        DateFormat('EEEE', locale).format(deliveryDate);
+
+                    // Format date (d MMM = day abbreviated month)
+                    final formattedDate =
+                        DateFormat('d MMM', locale).format(deliveryDate);
+
+                    return Row(
+                      children: [
+                        MyTextWidget(
+                          '$dayName ',
+                          style: context.textTheme.titleLarge?.rr.copyWith(
+                              height: 16 / 13,
+                              fontSize: 11,
+                              color: const Color(0xff1D1D1D)),
+                        ),
+                        MyTextWidget(
+                          '$formattedDate | ',
+                          style: context.textTheme.titleLarge?.br.copyWith(
+                              height: 16 / 13,
+                              fontSize: 11,
+                              color: const Color(0xff1D1D1D)),
+                        ),
+                        MyTextWidget(
+                          '${shippingDay} ${LocaleKeys.work_days_at_your_address_in.tr()} ${countryName}',
+                          style: context.textTheme.titleLarge?.rr.copyWith(
+                              height: 16 / 13,
+                              fontSize: 11,
+                              color: const Color(0xff1D1D1D)),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 10),

@@ -42,7 +42,7 @@ class DisplayColorsCardNew extends StatefulWidget {
 }
 
 class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
-  List<productListingModel.SyncColorImage>? syncColorImageList;
+  List<productListingModel.SyncColorImageProduct>? syncColorImageList;
 
   List<String> images = [];
 
@@ -80,6 +80,8 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
             (widget.productItem.syncColorImages?.length ?? 0)) {
           currentIndexInSlider = 0;
         }
+        print(
+            "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS4/////////////${state.currentSelectedColorForEveryProduct[widget.productItem.slug.toString()]} ${widget.productItem.slug.toString()} ${currentIndexInSlider}");
         return Container(
             margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
             height: 75,

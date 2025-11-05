@@ -25,7 +25,7 @@ class ProductDetailsSheetHeader extends StatefulWidget {
   final String priceSymbol;
   final int? productId;
   final String? currentVariant;
-  final int decimalPoint;
+  final double decimalPoint;
   final ValueNotifier<int> currentActiveTab;
   final bool isRedeem;
   final double redeemPrice;

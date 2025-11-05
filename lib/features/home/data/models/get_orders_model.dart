@@ -1,3 +1,4 @@
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
 class OrderModel {
@@ -124,6 +125,8 @@ class OrderListModel {
   final String? verificationCode;
   final String? orderNote;
   final String? sellerId;
+  final String? ownerType;
+  final String? ownerId;
   final bool? canReturnOrder;
   final String? createdAt;
   final bool? orderCanReturn;
@@ -146,6 +149,8 @@ class OrderListModel {
     this.orderGroupStatus,
     this.paymentMethod,
     this.transactionRef,
+    this.ownerType,
+    this.ownerId,
     this.orderAmount,
     this.partialPaymentByWallet,
     this.discountAmount,
@@ -198,6 +203,8 @@ class OrderListModel {
     String? verificationCode,
     String? orderNote,
     String? sellerId,
+    String? ownerType,
+    String? ownerId,
     String? createdAt,
     bool? orderCanReturn,
     bool? orderHasReturnRequest,
@@ -237,6 +244,8 @@ class OrderListModel {
         orderGroupId: orderGroupId ?? this.orderGroupId,
         verificationCode: verificationCode ?? this.verificationCode,
         orderNote: orderNote ?? this.orderNote,
+        ownerType: ownerType ?? this.ownerType,
+        ownerId: ownerId ?? this.ownerId,
         sellerId: sellerId ?? this.sellerId,
         createdAt: createdAt ?? this.createdAt,
         orderCanReturn: orderCanReturn ?? this.orderCanReturn,
@@ -285,13 +294,16 @@ class OrderListModel {
         discountType: json["discount_type"],
         couponCode: json["coupon_code"],
         shippingMethodId: json["shipping_method_id"],
+        ownerType: json["owner_type"],
+        ownerId: json["owner_id"].toString(),
         orderGroupId: json["order_group_id"],
         canUpdateAddress: json["can_update_address"],
         canChangeVariant: json["can_change_variant"],
         canCanceleOrder: json["can_cancele_order"],
         verificationCode: json["verification_code"],
         orderNote: json["order_note"],
-        sellerId: json["seller_id"],
+        sellerId:
+            json["seller_id"] == null ? null : json["seller_id"].toString(),
         createdAt: json["created_at"] ?? '',
         orderCanReturn: json["order_can_return"],
         orderHasReturnRequest: json["order_has_return_request"],
@@ -320,6 +332,8 @@ class OrderListModel {
         "can_return_order": canReturnOrder,
         "partial_payment_by_wallet": partialPaymentByWallet,
         "discount_amount": discountAmount,
+        "owner_type": ownerType,
+        "owner_id": ownerId,
         "shipping_cost": shippingCost,
         "shipping_address": shippingAddress,
         "can_update_address": canUpdateAddress,
@@ -372,7 +386,7 @@ class OrderListDetailModel {
   final int? isOdooProduct;
   final int? odooId;
   final int? odooOrderId;
-  final List<OrderRatingAndComment>? comments;
+  //final List<OrderRatingAndComment>? comments;
   final String? image;
 
   OrderListDetailModel({
@@ -383,7 +397,7 @@ class OrderListDetailModel {
     this.qty,
     this.price,
     this.discount,
-    this.comments,
+    //this.comments,
     this.priceAfterDiscount,
     this.tax,
     this.deliveryStatus,
@@ -412,7 +426,7 @@ class OrderListDetailModel {
     double? qty,
     double? price,
     double? discount,
-    List<OrderRatingAndComment>? comments,
+    //List<OrderRatingAndComment>? comments,
     double? priceAfterDiscount,
     double? tax,
     String? deliveryStatus,
@@ -434,7 +448,7 @@ class OrderListDetailModel {
         id: id ?? this.id,
         orderId: orderId ?? this.orderId,
         productId: productId ?? this.productId,
-        comments: comments ?? this.comments,
+        // comments: comments ?? this.comments,
         productDetails: productDetails ?? this.productDetails,
         qty: qty ?? this.qty,
         price: price ?? this.price,
@@ -465,10 +479,10 @@ class OrderListDetailModel {
       orderId: json["order_id"],
       productId: json["product_id"],
       productSlug: json["product_slug"],
-      comments: json["comments"] == null
-          ? []
-          : List<OrderRatingAndComment>.from(
-              json["comments"]!.map((x) => OrderRatingAndComment.fromJson(x))),
+      // comments: json["comments"] == null
+      //    ? []
+      //    : List<OrderRatingAndComment>.from(
+      //        json["comments"]!.map((x) => OrderRatingAndComment.fromJson(x))),
       productDetails: json["product_details"] == null
           ? null
           : OrderProductDetailsModel.fromJson(json["product_details"]),
@@ -484,7 +498,9 @@ class OrderListDetailModel {
       deliveryStatus: json["delivery_status"],
       paymentStatus: json["payment_status"],
       shippingMethodId: json["shipping_method_id"],
-      variant: json["variant"],
+      variant: json["variant"] == null
+          ? null
+          : HelperFunctions.replaceDashAfterFirst(json["variant"]),
       collectProductAfterOrdering: json["collect_product_after_ordering"],
       variation: json["variation"] == null
           ? []
@@ -522,9 +538,9 @@ class OrderListDetailModel {
         "product_slug": productSlug,
         "shipping_method_id": shippingMethodId,
         "variant": variant,
-        "comments": comments == null
-            ? []
-            : List<dynamic>.from(comments!.map((x) => x.toJson())),
+        // "comments": comments == null
+        //    ? []
+        //    : List<dynamic>.from(comments!.map((x) => x.toJson())),
         "collect_product_after_ordering": collectProductAfterOrdering,
         "variation": variation.isNullOrEmpty
             ? []
@@ -739,11 +755,18 @@ class GetOrderVariationModel {
 
   factory GetOrderVariationModel.fromJson(Map<String, dynamic> json) =>
       GetOrderVariationModel(
-        sizeOption: json["size_options"],
-        colorOption: json["color_options"],
-        size: json["Size"],
-        color: json["color"],
-      );
+          sizeOption: json["size_options"] == null
+              ? null
+              : json["size_options"].toString().replaceAll("-", "_"),
+          colorOption: json["color_options"] == null
+              ? null
+              : json["color_options"].toString().replaceAll("-", "_"),
+          size: json["Size"] == null
+              ? null
+              : json["Size"].toString().replaceAll("-", "_"),
+          color: json["color"] == null
+              ? null
+              : json["color"].toString().replaceAll("-", "_"));
 
   Map<String, dynamic> toJson() => {
         "size_options": sizeOption,

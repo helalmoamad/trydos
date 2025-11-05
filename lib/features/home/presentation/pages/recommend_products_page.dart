@@ -459,7 +459,7 @@ class _RecommendProductsPageState extends State<RecommendProductsPage> {
                                                   previous.cartCollection !=
                                                       current.cartCollection,
                                               builder: (context, state) {
-                                                List<filter.Color>?
+                                                List<filter.ProductColor>?
                                                     productColors = [];
                                                 if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                         GetProductDetailWithoutSimilarRelatedProductsStatus

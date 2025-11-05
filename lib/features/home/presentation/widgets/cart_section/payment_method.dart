@@ -27,7 +27,7 @@ class PaymentMethod extends StatefulWidget {
   final double totalPrice;
   final bool fromPalceOrder;
   final bool fromSuccessOrder;
-  final int decimalPointSetting;
+  final double decimalPointSetting;
   final String currencySymbol;
   final double partialPaymentByWallet;
   const PaymentMethod({

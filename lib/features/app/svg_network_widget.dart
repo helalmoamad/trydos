@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_svg_image/flutter_svg_image.dart';
 
@@ -50,6 +51,10 @@ class _SvgNetworkWidgetState extends State<SvgNetworkWidget>
         width: widget.width,
       );
     }
+    if (!(currentUrl.contains("cloudinary"))) {
+      currentUrl = "${dotenv.env['Images_Url']}${currentUrl}";
+    }
+    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${currentUrl}");
 
     try {
       return SizedBox(

@@ -626,27 +626,17 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     //////////////
                                                     TextButton(
                                                       onPressed: () async {
-                                                        BlocProvider.of<
-                                                                    HomeBloc>(
-                                                                context)
-                                                            .add(
-                                                                const ClearAllAppCashEvent());
+                                                        GetIt.I<HomeBloc>().add(
+                                                            const ClearAllAppCashEvent());
                                                         clearCustomCashe();
                                                         prefsRepository
                                                             .setIsFoundDataCashed(
                                                                 false);
-                                                        BlocProvider.of<
-                                                                    AppBloc>(
-                                                                context)
-                                                            .add(ChangeBasePage(
-                                                                0));
-                                                        BlocProvider.of<
-                                                                    HomeBloc>(
-                                                                context)
-                                                            .add(
-                                                                SaveUserInfoFromAuthEvent(
-                                                                    userInfo:
-                                                                        User(
+                                                        GetIt.I<AppBloc>().add(
+                                                            ChangeBasePage(0));
+                                                        GetIt.I<HomeBloc>().add(
+                                                            SaveUserInfoFromAuthEvent(
+                                                                userInfo: User(
                                                           alternativePhone: "",
                                                           email: "",
                                                           image: "",
@@ -684,20 +674,15 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                             await HelperFunctions
                                                                 .getDeviceId();
 
-                                                        BlocProvider.of<
-                                                                    AuthBloc>(
-                                                                context)
-                                                            .add(RegisterGuestEvent(
+                                                        GetIt.I<AuthBloc>().add(
+                                                            RegisterGuestEvent(
                                                                 deviceId:
                                                                     deviceId ??
                                                                         ""));
                                                         HydratedBloc.storage
                                                             .clear();
-                                                        BlocProvider.of<
-                                                                    ChatBloc>(
-                                                                context)
-                                                            .add(
-                                                                const ClearChatEvent());
+                                                        GetIt.I<ChatBloc>().add(
+                                                            const ClearChatEvent());
 
                                                         Future.delayed(
                                                           const Duration(

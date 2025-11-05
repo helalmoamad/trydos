@@ -471,7 +471,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     final lastUserId = prefs.getString('last_user_market_id');
     final lastTime = prefs.getInt('last_user_info_time');
-    if (lastUserId != null && lastTime != null) {
+    if (lastUserId != null &&
+        lastTime != null &&
+        lastUserId != '' &&
+        lastTime != 0) {
       final now = DateTime.now().millisecondsSinceEpoch;
       final elapsed = now - lastTime;
       const halfHourMs = 1800000;
@@ -490,6 +493,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   }
 
   Future<void> _logoutUser() async {
+    final prefs = await SharedPreferences.getInstance();
     BlocProvider.of<HomeBloc>(context).add(const ClearAllAppCashEvent());
     clearCustomCashe();
     prefsRepository.setIsFoundDataCashed(false);
@@ -511,6 +515,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     prefsRepository.setMyMarketName("");
     prefsRepository.setMyChatName("");
     prefsRepository.setMyStoriesName("");
+    prefs.setString('last_user_market_id', '');
+    prefs.setInt('last_user_info_time', 0);
     prefsRepository.setVerifiedPhonePeforeExpiredToken(false);
 
     prefsRepository.setMyProfilePhoto("");

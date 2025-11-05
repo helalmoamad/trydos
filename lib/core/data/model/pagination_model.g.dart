@@ -14,6 +14,7 @@ PaginationModel<T> _$PaginationModelFromJson<T>(
       items: (json['items'] as List<dynamic>).map(fromJsonT).toList(),
       page: (json['page'] as num).toInt(),
       offset: json['offset'] as String?,
+      total: (json['total'] as num?)?.toInt(),
       paginationStatus:
           $enumDecode(_$PaginationStatusEnumMap, json['paginationStatus']),
       hasReachedMax: json['hasReachedMax'] as bool,
@@ -27,6 +28,7 @@ Map<String, dynamic> _$PaginationModelToJson<T>(
       'items': instance.items.map(toJsonT).toList(),
       'paginationStatus': _$PaginationStatusEnumMap[instance.paginationStatus]!,
       'page': instance.page,
+      'total': instance.total,
       'offset': instance.offset,
       'hasReachedMax': instance.hasReachedMax,
     };

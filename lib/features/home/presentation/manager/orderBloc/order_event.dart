@@ -12,8 +12,6 @@ import '../../../domain/use_cases/cancel_order_item_usecase.dart';
 import '../../../domain/use_cases/cancel_order_usecase.dart';
 import '../../../domain/use_cases/change_order_address_usecase.dart';
 import '../../../domain/use_cases/change_order_item_variant_usecase.dart';
-import '../../../domain/use_cases/add_order_comment_usecase.dart';
-import '../../../domain/use_cases/update_order_comment_usecase.dart';
 import '../../../domain/use_cases/store_return_request_product_usecase.dart';
 
 abstract class OrderEvent extends Equatable {
@@ -48,12 +46,13 @@ class GetOrdersByOrderGroupIDEvent extends OrderEvent {
   final String orderGroupId;
   final String status;
   final bool firstOpenPage;
-  final bool getWithRating;
+  final bool fromNotification;
+
   GetOrdersByOrderGroupIDEvent({
     required this.orderGroupId,
     this.firstOpenPage = false,
+    this.fromNotification = false,
     this.status = "false",
-    this.getWithRating = false,
   });
 
   @override
@@ -279,7 +278,7 @@ class ChangeOrderItemVariantEvent extends OrderEvent {
   List<Object?> get props => [params];
 }
 
-class AddOrderCommentEvent extends OrderEvent {
+/*class AddOrderCommentEvent extends OrderEvent {
   final AddOrderCommentParams params;
 
   const AddOrderCommentEvent({required this.params});
@@ -295,7 +294,7 @@ class UpdateOrderCommentEvent extends OrderEvent {
 
   @override
   List<Object?> get props => [params];
-}
+}*/
 
 class GetReturnReasonsEvent extends OrderEvent {
   const GetReturnReasonsEvent();

@@ -503,7 +503,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                   previous.cartCollection !=
                                                       current.cartCollection,
                                               builder: (context, state) {
-                                                List<filter.Color>?
+                                                List<filter.ProductColor>?
                                                     productColors = [];
                                                 if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                         GetProductDetailWithoutSimilarRelatedProductsStatus

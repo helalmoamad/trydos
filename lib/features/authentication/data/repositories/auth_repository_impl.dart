@@ -43,6 +43,13 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, String>> generateTokenForComment(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.generateTokenForComment(params));
+  }
+
+  @override
   Future<Either<Failure, StoreFcmTokenResponseModel>> storeFcmToken(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(

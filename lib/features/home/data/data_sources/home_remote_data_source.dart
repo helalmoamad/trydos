@@ -3,10 +3,13 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
 import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
+import 'package:trydos/core/api/methods/delete.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
+import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
@@ -61,6 +64,10 @@ import '../models/upload_images_for_return_product_model.dart';
 import '../models/return_request_product_model.dart';
 import 'package:trydos/features/home/data/models/get_order_details_return_model.dart';
 import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
+import 'package:trydos/features/home/data/models/get_order_rating_model.dart'
+    as order_rating;
+import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
+import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 
 @injectable
 class HomeRemoteDatasource {
@@ -98,6 +105,118 @@ class HomeRemoteDatasource {
       ),
     );
     return getProvincesByIso();
+  }
+
+  /*Future<comment.GetCommentsFromAnalyticsModel> getCommentsFromAnalytics(
+      Map<String, dynamic> params) {
+    GetClient<comment.GetCommentsFromAnalyticsModel> getCommentsFromAnalytics =
+        GetClient<comment.GetCommentsFromAnalyticsModel>(
+      serverName: ServerName.comment,
+      requestPrams: RequestConfig<comment.GetCommentsFromAnalyticsModel>(
+        endpoint: WebAppEndPoints.getCommentsFromAnalyticsEP,
+        queryParameters: params,
+        response: ResponseValue<comment.GetCommentsFromAnalyticsModel>(
+          fromJson: (response) =>
+              comment.GetCommentsFromAnalyticsModel.fromJson(response),
+        ),
+      ),
+    );
+    return getCommentsFromAnalytics();
+  }*/
+
+  Future<GetFqaCommentsModel> getFqaComments(Map<String, dynamic> params) {
+    GetClient<GetFqaCommentsModel> getFqaComments =
+        GetClient<GetFqaCommentsModel>(
+      serverName: ServerName.comment,
+      requestPrams: RequestConfig<GetFqaCommentsModel>(
+        endpoint: WebAppEndPoints.getFqaCommentsEP,
+        queryParameters: params,
+        response: ResponseValue<GetFqaCommentsModel>(
+          fromJson: (response) => GetFqaCommentsModel.fromJson(response),
+        ),
+      ),
+    );
+    return getFqaComments();
+  }
+
+  Future<GetBuyersCommentsModel> getBuyersComments(
+      Map<String, dynamic> params) {
+    GetClient<GetBuyersCommentsModel> getBuyersComments =
+        GetClient<GetBuyersCommentsModel>(
+      serverName: ServerName.comment,
+      requestPrams: RequestConfig<GetBuyersCommentsModel>(
+        endpoint: WebAppEndPoints.getBuyersCommentsEP,
+        queryParameters: params,
+        response: ResponseValue<GetBuyersCommentsModel>(
+          fromJson: (response) => GetBuyersCommentsModel.fromJson(response),
+        ),
+      ),
+    );
+    return getBuyersComments();
+  }
+
+  Future<order_rating.GetOrderRatingFromAnalyticsModel> getOrderRating(
+      Map<String, dynamic> params) {
+    PostClient<order_rating.GetOrderRatingFromAnalyticsModel> getOrderRating =
+        PostClient<order_rating.GetOrderRatingFromAnalyticsModel>(
+      serverName: ServerName.comment,
+      requestPrams:
+          RequestConfig<order_rating.GetOrderRatingFromAnalyticsModel>(
+        endpoint: WebAppEndPoints.getOrderRatingEP,
+        data: params,
+        response: ResponseValue<order_rating.GetOrderRatingFromAnalyticsModel>(
+            fromJson: (response) =>
+                order_rating.GetOrderRatingFromAnalyticsModel.fromJson(
+                    response)),
+      ),
+    );
+    return getOrderRating();
+  }
+
+  Future<CreateFqaCommentsModel> createOrderCommentRating(
+      Map<String, dynamic> params) {
+    PostClient<CreateFqaCommentsModel> createOrderRating =
+        PostClient<CreateFqaCommentsModel>(
+      serverName: ServerName.get_comment_token,
+      requestPrams: RequestConfig<CreateFqaCommentsModel>(
+        endpoint: WebAppEndPoints.createOrderRatingEP,
+        data: params,
+        response: ResponseValue<CreateFqaCommentsModel>(
+            fromJson: (response) => CreateFqaCommentsModel.fromJson(response)),
+      ),
+    );
+    return createOrderRating();
+  }
+
+  Future<ResponseOnlyMessageModel> updateOrderCommentRating(
+      Map<String, dynamic> params) {
+    PutClient<ResponseOnlyMessageModel> updateOrderCommentRating =
+        PutClient<ResponseOnlyMessageModel>(
+      serverName: ServerName.get_comment_token,
+      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+        endpoint: WebAppEndPoints.updateOrderRatingEP(params['id']),
+        data: params,
+        response: ResponseValue<ResponseOnlyMessageModel>(
+            fromJson: (response) =>
+                ResponseOnlyMessageModel.fromJson(response)),
+      ),
+    );
+    return updateOrderCommentRating();
+  }
+
+  Future<ResponseOnlyMessageModel> deleteOrderCommentRating(
+      Map<String, dynamic> params) {
+    DeleteClient<ResponseOnlyMessageModel> deleteOrderCommentRating =
+        DeleteClient<ResponseOnlyMessageModel>(
+      serverName: ServerName.get_comment_token,
+      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+        endpoint: WebAppEndPoints.deleteOrderRatingEP(params['id']),
+        response: ResponseValue<ResponseOnlyMessageModel>(
+            fromJson: (response) =>
+                ResponseOnlyMessageModel.fromJson(response)),
+      ),
+    );
+    return deleteOrderCommentRating();
   }
 
   Future<OrderCommentModel> addOrderComment(Map<String, dynamic> params) {
@@ -632,7 +751,7 @@ class HomeRemoteDatasource {
     return getRecommendedProducts();
   }
 
-  Future<Comment> addComment(Map<String, dynamic> params) {
+  /* Future<Comment> addComment(Map<String, dynamic> params) {
     PostClient<Comment> addComment = PostClient<Comment>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<Comment>(
@@ -644,7 +763,7 @@ class HomeRemoteDatasource {
       ),
     );
     return addComment();
-  }
+  }*/
 
   Future<bool> sendErrorToMobileErrorLog(Map<String, dynamic> params) {
     PostClient<bool> sendErrorToMobileErrorLog = PostClient<bool>(

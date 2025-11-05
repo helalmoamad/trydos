@@ -1,0 +1,31 @@
+import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+import 'package:trydos/features/home/domain/repositories/home_repository.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/use_case/use_case.dart';
+import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
+
+@injectable
+class GetBuyerCommentsUsecase
+    extends UseCase<GetBuyersCommentsModel, GetBuyersCommentsParams> {
+  final HomeRepository repository;
+  GetBuyerCommentsUsecase(this.repository);
+  @override
+  Future<Either<Failure, GetBuyersCommentsModel>> call(
+      GetBuyersCommentsParams params) {
+    return repository.getBuyersComments(params.map);
+  }
+}
+
+class GetBuyersCommentsParams {
+  final String? offset;
+  final String? productId;
+  final String? filter;
+  GetBuyersCommentsParams({this.productId, this.offset, this.filter});
+  Map<String, dynamic> get map => {
+        "offset": offset,
+        "product_id": productId,
+        "filter": filter
+      }..removeWhere(
+          (key, value) => value == '[]' || value == "" || value == null);
+}

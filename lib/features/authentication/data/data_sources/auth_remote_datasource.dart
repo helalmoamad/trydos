@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
+import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
@@ -145,7 +146,7 @@ class AuthRemoteDatasource {
         GetClient<GetUserCountryResponseModel>(
       serverName: ServerName.location,
       requestPrams: RequestConfig<GetUserCountryResponseModel>(
-        endpoint: '/json',
+        endpoint: '',
         response: ResponseValue<GetUserCountryResponseModel>(
             fromJson: (response) =>
                 GetUserCountryResponseModel.fromJson(response)),
@@ -204,6 +205,19 @@ class AuthRemoteDatasource {
       ),
     );
     return verifyOtpSignIn();
+  }
+
+  Future<String> generateTokenForComment(Map<String, dynamic> params) {
+    PostClient<String> generateTokenForComment = PostClient<String>(
+      serverName: ServerName.get_comment_token,
+      requestPrams: RequestConfig<String>(
+        endpoint: WebAppEndPoints.generateTokenForCommentEP,
+        data: params,
+        response: ResponseValue<String>(
+            fromJson: (response) => response['comments_token'].toString()),
+      ),
+    );
+    return generateTokenForComment();
   }
 
   Future<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest(
