@@ -610,13 +610,163 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                   : SizedBox(
                                       width: 20,
                                       child: GestureDetector(
-                                          onTap: () {
-                                            BlocProvider.of<HomeBloc>(context)
-                                                .add(DeleteCommentRatingEvent(
-                                              commentId: fqaComment.id,
-                                              productId: fqaComment.productId,
-                                              tapCommentIndex: index,
-                                            ));
+                                          onTap: () async {
+                                            final confirmed =
+                                                await showDialog<bool>(
+                                              context: context,
+                                              barrierColor: Colors.transparent,
+                                              builder: (ctx) => Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 16,
+                                                  ),
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: Container(
+                                                      width: double.infinity,
+                                                      margin: EdgeInsets.only(
+                                                          top: 8.h),
+                                                      padding:
+                                                          EdgeInsets.all(16.w),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(
+                                                            0xFFE2FFF1),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12.r),
+                                                        border: Border.all(
+                                                            color: const Color(
+                                                                0xFF402CDD)),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black
+                                                                // ignore: deprecated_member_use
+                                                                .withOpacity(
+                                                                    0.1),
+                                                            blurRadius: 8,
+                                                            offset:
+                                                                const Offset(
+                                                                    0, 2),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          MyTextWidget(
+                                                            LocaleKeys
+                                                                .confirm_delete_comment_title
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                              fontSize: 16.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: const Color(
+                                                                  0xFF1A1A1A),
+                                                            ),
+                                                          ),
+                                                          SizedBox(height: 8.h),
+                                                          MyTextWidget(
+                                                            LocaleKeys
+                                                                .confirm_delete_comment_message
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                              fontSize: 14.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color: const Color(
+                                                                  0xFF666666),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                              height: 12.h),
+                                                          Row(
+                                                            children: [
+                                                              Expanded(
+                                                                child:
+                                                                    TextButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.of(
+                                                                              ctx)
+                                                                          .pop(
+                                                                              false),
+                                                                  child: Text(
+                                                                    LocaleKeys
+                                                                        .cancel
+                                                                        .tr(),
+                                                                    style: TextStyle(
+                                                                        color: Colors.grey[
+                                                                            600],
+                                                                        fontSize:
+                                                                            14),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 8),
+                                                              Expanded(
+                                                                child:
+                                                                    ElevatedButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.of(
+                                                                              ctx)
+                                                                          .pop(
+                                                                              true),
+                                                                  style: ElevatedButton
+                                                                      .styleFrom(
+                                                                    backgroundColor:
+                                                                        const Color(
+                                                                            0xFF402CDD),
+                                                                    foregroundColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              12),
+                                                                    ),
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            10),
+                                                                  ),
+                                                                  child: Text(
+                                                                    LocaleKeys
+                                                                        .confirm_delete
+                                                                        .tr(),
+                                                                    style: const TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            14),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                            if (confirmed == true) {
+                                              BlocProvider.of<HomeBloc>(context)
+                                                  .add(DeleteCommentRatingEvent(
+                                                commentId: fqaComment.id,
+                                                productId: fqaComment.productId,
+                                                tapCommentIndex: index,
+                                              ));
+                                            }
                                           },
                                           child: SvgPicture.asset(
                                             AppAssets.deletecartSvg,

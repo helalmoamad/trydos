@@ -3868,7 +3868,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           image2: "",
                           tiltle: "${LocaleKeys.cancel_this_order.tr()}",
                           body: LocaleKeys.cancel_order_hours_back_money
-                              .tr(args: ['3'])),
+                              .tr(namedArgs: {'hours': '3'})),
                     )
                   : const SizedBox.shrink(),
             ],

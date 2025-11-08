@@ -1298,7 +1298,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                                 SizedBox(
                                                                                                                   width: 20.w,
                                                                                                                 ),
-                                                                                                                chatState.currentFailedMessage.contains(messages[index].id!)
+                                                                                                                chatState.currentFailedMessage.contains(messages[index].id!) || (!isSent)
                                                                                                                     ? MaterialButton(
                                                                                                                         child: Text(LocaleKeys.cancel.tr()),
                                                                                                                         onPressed: () {
@@ -1462,7 +1462,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                                 SizedBox(
                                                                                                                   width: 20.w,
                                                                                                                 ),
-                                                                                                                chatState.currentFailedMessage.contains(messages[index].id!)
+                                                                                                                chatState.currentFailedMessage.contains(messages[index].id!) || (!isSent)
                                                                                                                     ? MaterialButton(
                                                                                                                         child: Text(LocaleKeys.cancel.tr()),
                                                                                                                         onPressed: () {

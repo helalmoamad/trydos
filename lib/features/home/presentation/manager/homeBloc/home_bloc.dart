@@ -1655,7 +1655,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .compareTo((syncColorImageOrder[b.option] ?? 999)),
       );
 
-// بعد الترتيب، syncColorImages ستكون بترتيب: Green, Red, White
+// بعد الترتيب، syncColorImages ستكون بترتيب: Green, Red, White
       newCached.removeWhere((key, value) => key == event.productId!);
       newCached.addAll({
         event.productId!: r.copyWith(
@@ -2243,7 +2243,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       "language": prefsRepository.language ?? "",
       "urlBackend": event.urlBackend,
       "messageFromeBackend": event.messageFromeBackend,
-      "lastApiRequest": lastApiRequest,
+      "lastApiRequest": lastApiRequest?.toString(),
       "errorPath": event.errorPath
     };
     final errorMessage = jsonEncode(userInfo);
