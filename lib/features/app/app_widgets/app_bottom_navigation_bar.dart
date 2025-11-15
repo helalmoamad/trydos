@@ -50,7 +50,7 @@ import '../my_text_widget.dart';
 class AppBottomNavBar extends StatefulWidget {
   final ValueNotifier<bool> isShowPanelForVerified;
   const AppBottomNavBar({Key? key, required this.isShowPanelForVerified})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<AppBottomNavBar> createState() => _AppBottomNavBarState();
@@ -85,143 +85,142 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
             color: colorScheme.white,
             boxShadow: [
               BoxShadow(
-                  // ignore: deprecated_member_use
-                  color: colorScheme.black.withOpacity(0.1),
-                  blurRadius: 6)
+                // ignore: deprecated_member_use
+                color: colorScheme.black.withOpacity(0.1),
+                blurRadius: 6,
+              ),
             ],
           ),
           child: Row(
             children: [
               Expanded(
-                  child: BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                      buildWhen: (previous, current) =>
-                          previous
-                                  .getProductListingWithFiltersPaginationModels[
-                                      "*featured*withoutFilter"]
-                                  ?.paginationStatus !=
-                              current
-                                  .getProductListingWithFiltersPaginationModels[
-                                      "*featured*withoutFilter"]
-                                  ?.paginationStatus ||
-                          previous
-                                  .getProductListingWithFiltersPaginationModels[
-                                      "*flashDeal*withoutFilter"]
-                                  ?.paginationStatus !=
-                              current
-                                  .getProductListingWithFiltersPaginationModels[
-                                      "*flashDeal*withoutFilter"]
-                                  ?.paginationStatus ||
-                          previous
-                                  .getProductListingWithFiltersPaginationModels[
-                                      "*recommended*withoutFilter"]
-                                  ?.paginationStatus !=
-                              current
-                                  .getProductListingWithFiltersPaginationModels[
-                                      "*recommended*withoutFilter"]
-                                  ?.paginationStatus ||
-                          previous.getProductFiltersStatus["*flashDeal*"] !=
-                              current.getProductFiltersStatus["*flashDeal*"],
-                      builder: (context, boutiqueState) {
-                        return InkWell(
-                          onTap: () {
-                            if (boutiqueState.currentMainCategoryTaped !=
-                                    "Empty" &&
-                                boutiqueState.currentMainCategoryTaped != "") {
-                              boutiqueBloc.add(AddCurrentMainCategoryTapedEvent(
-                                  currentMainCategoryTaped: "Empty"));
-                              categoryBloc.add(
-                                ChangeCurrentIndexForMainCategoryEvent(
-                                    index: -1),
-                              );
-                              if (!(boutiqueState
-                                          .getProductListingWithFiltersPaginationModels[
-                                              "*featured*withoutFilter"]
-                                          ?.paginationStatus ==
-                                      PaginationStatus.loading ||
-                                  boutiqueState
-                                          .getProductListingWithFiltersPaginationModels[
-                                              "*recommended*withoutFilter"]
-                                          ?.paginationStatus ==
-                                      PaginationStatus.loading ||
-                                  boutiqueState
-                                          .getProductListingWithFiltersPaginationModels[
-                                              "*flashDeal*withoutFilter"]
-                                          ?.paginationStatus ==
-                                      PaginationStatus.loading)) {
-                                boutiqueBloc.add(
-                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                        categorySlugs: [],
-                                        cashedOrginalBoutique: true,
-                                        boutiqueSlug: "*featured*"));
-                                boutiqueBloc.add(
-                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                        categorySlugs: [],
-                                        cashedOrginalBoutique: true,
-                                        boutiqueSlug: "*flashDeal*"));
-                                boutiqueBloc.add(
-                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                        categorySlugs: [],
-                                        cashedOrginalBoutique: true,
-                                        boutiqueSlug: "*recommended*"));
-                              }
-
-                              appBloc.add(ChangeTab(-1));
-                              categoryBloc.add(
-                                ChangeCurrentIndexForMainCategoryEvent(
-                                    index: -1),
-                              );
-                            }
-
-                            if (Navigator.of(context).canPop()) {
-                              try {
-                                Navigator.of(context).pop();
-                              } catch (e) {}
-                            }
-
-                            categoryBloc.add(
-                              GetHomeBoutiqesEvent(
-                                getWithPrefetchToStoreInMemory: false,
-                                getWithOutPrefetchForEachBoutiques: true,
-                                context: context,
-                                categorySlug: "Empty",
-                                offset: "1",
+                child: BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                  buildWhen: (previous, current) =>
+                      previous
+                              .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
+                              ?.paginationStatus !=
+                          current
+                              .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
+                              ?.paginationStatus ||
+                      previous
+                              .getProductListingWithFiltersPaginationModels["*flashDeal*withoutFilter"]
+                              ?.paginationStatus !=
+                          current
+                              .getProductListingWithFiltersPaginationModels["*flashDeal*withoutFilter"]
+                              ?.paginationStatus ||
+                      previous
+                              .getProductListingWithFiltersPaginationModels["*recommended*withoutFilter"]
+                              ?.paginationStatus !=
+                          current
+                              .getProductListingWithFiltersPaginationModels["*recommended*withoutFilter"]
+                              ?.paginationStatus ||
+                      previous.getProductFiltersStatus["*flashDeal*"] !=
+                          current.getProductFiltersStatus["*flashDeal*"],
+                  builder: (context, boutiqueState) {
+                    return InkWell(
+                      onTap: () {
+                        if (boutiqueState.currentMainCategoryTaped != "Empty" &&
+                            boutiqueState.currentMainCategoryTaped != "") {
+                          boutiqueBloc.add(
+                            AddCurrentMainCategoryTapedEvent(
+                              currentMainCategoryTaped: "Empty",
+                            ),
+                          );
+                          categoryBloc.add(
+                            ChangeCurrentIndexForMainCategoryEvent(index: -1),
+                          );
+                          if (!(boutiqueState
+                                      .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading ||
+                              boutiqueState
+                                      .getProductListingWithFiltersPaginationModels["*recommended*withoutFilter"]
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading ||
+                              boutiqueState
+                                      .getProductListingWithFiltersPaginationModels["*flashDeal*withoutFilter"]
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading)) {
+                            boutiqueBloc.add(
+                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                categorySlugs: [],
+                                cashedOrginalBoutique: true,
+                                boutiqueSlug: "*featured*",
                               ),
                             );
+                            boutiqueBloc.add(
+                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                categorySlugs: [],
+                                cashedOrginalBoutique: true,
+                                boutiqueSlug: "*flashDeal*",
+                              ),
+                            );
+                            boutiqueBloc.add(
+                              const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                categorySlugs: [],
+                                cashedOrginalBoutique: true,
+                                boutiqueSlug: "*recommended*",
+                              ),
+                            );
+                          }
 
-                            appBloc.add(ChangeBasePage(0));
-                            boutiqueBloc
-                                .add(ResetAllSelectedAppliedFilterEvent());
-                            /////////////////////////
-                            // FirebaseAnalyticsService.logEventForSession(
-                            //   eventName: AnalyticsEventsConst.buttonClicked,
-                            //   executedEventName:
-                            //       AnalyticsButtonsEventNameConst.homeNavBarButton,
-                            // );
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              state.currentIndex == 0
-                                  ? SvgPicture.asset(
-                                      AppAssets.bottomBarLogoActiveSvg,
-                                    )
-                                  : SvgPicture.asset(
-                                      AppAssets.bottomBarLogoActiveSvg,
-                                    ),
-                              10.verticalSpace,
-                              state.currentIndex == 0
-                                  ? SvgPicture.asset(
-                                      AppAssets.logoTextActiveSvg,
-                                      height: 10.h,
-                                    )
-                                  : SvgPicture.asset(
-                                      AppAssets.logoTextInactiveSvg,
-                                      height: 10.h,
-                                    ),
-                            ],
+                          appBloc.add(ChangeTab(-1));
+                          categoryBloc.add(
+                            ChangeCurrentIndexForMainCategoryEvent(index: -1),
+                          );
+                        }
+
+                        if (Navigator.of(context).canPop()) {
+                          try {
+                            Navigator.of(context).pop();
+                          } catch (e) {}
+                        }
+
+                        categoryBloc.add(
+                          GetHomeBoutiqesEvent(
+                            getWithPrefetchToStoreInMemory: false,
+                            getWithOutPrefetchForEachBoutiques: true,
+                            context: context,
+                            categorySlug: "Empty",
+                            offset: "1",
                           ),
                         );
-                      })),
+
+                        appBloc.add(ChangeBasePage(0));
+                        boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
+                        /////////////////////////
+                        // FirebaseAnalyticsService.logEventForSession(
+                        //   eventName: AnalyticsEventsConst.buttonClicked,
+                        //   executedEventName:
+                        //       AnalyticsButtonsEventNameConst.homeNavBarButton,
+                        // );
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          state.currentIndex == 0
+                              ? SvgPicture.asset(
+                                  AppAssets.bottomBarLogoActiveSvg,
+                                )
+                              : SvgPicture.asset(
+                                  AppAssets.bottomBarLogoActiveSvg,
+                                ),
+                          10.verticalSpace,
+                          state.currentIndex == 0
+                              ? SvgPicture.asset(
+                                  AppAssets.logoTextActiveSvg,
+                                  height: 10.h,
+                                )
+                              : SvgPicture.asset(
+                                  AppAssets.logoTextInactiveSvg,
+                                  height: 10.h,
+                                ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
               Expanded(
                 child: InkWell(
                   onTap: () {
@@ -261,8 +260,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Stack(children: [
-                            Container(
+                          Stack(
+                            children: [
+                              Container(
                                 width: 50,
                                 child: state.currentIndex == 1
                                     ? SvgPicture.asset(
@@ -272,47 +272,53 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                     : SvgPicture.asset(
                                         AppAssets.cartSvg,
                                         height: 30.h,
-                                      )),
-                            (qtyItemsInCart > 0)
-                                ? Positioned(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      width: 15,
-                                      height: 15,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color: Colors.green),
-                                      child: MyTextWidget(
-                                        (qtyItemsInCart > 0)
-                                            ? "${qtyItemsInCart}"
-                                            : "",
-                                        maxLines: 1,
-                                        style: textTheme.titleSmall?.ra
-                                            .copyWith(
+                                      ),
+                              ),
+                              (qtyItemsInCart > 0)
+                                  ? Positioned(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        width: 15,
+                                        height: 15,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                          color: Colors.green,
+                                        ),
+                                        child: MyTextWidget(
+                                          (qtyItemsInCart > 0)
+                                              ? "${qtyItemsInCart}"
+                                              : "",
+                                          maxLines: 1,
+                                          style: textTheme.titleSmall?.rq
+                                              .copyWith(
                                                 fontSize: 12,
                                                 color: Colors.white,
-                                                letterSpacing: 0.28),
+                                                letterSpacing: 0.28,
+                                              ),
+                                        ),
                                       ),
-                                    ),
-                                    top: 0,
-                                    right:
-                                        (qtyItemsInCart.toString().length) > 1
-                                            ? 1
-                                            : 5,
-                                  )
-                                : const SizedBox.shrink()
-                          ]),
+                                      top: 0,
+                                      right:
+                                          (qtyItemsInCart.toString().length) > 1
+                                          ? 1
+                                          : 5,
+                                    )
+                                  : const SizedBox.shrink(),
+                            ],
+                          ),
                           10.verticalSpace,
                           MyTextWidget(
                             LocaleKeys.cart.tr(),
                             maxLines: 1,
-                            style: textTheme.titleSmall?.lr.copyWith(
-                                color: state.currentIndex != 1
-                                    ? colorScheme.grey200
-                                    : colorScheme.black,
-                                letterSpacing: 0.28),
-                          )
+                            style: textTheme.titleSmall?.lq.copyWith(
+                              color: state.currentIndex != 1
+                                  ? colorScheme.grey200
+                                  : colorScheme.black,
+                              letterSpacing: 0.28,
+                            ),
+                          ),
                         ],
                       );
                     },
@@ -354,16 +360,19 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             (prefsRepository.isLogInToChat ?? false) != true ||
                             (prefsRepository.chatToken?.length ?? 0) < 7) {
                           appBloc.add(ChangeBasePage(0));
-                          Future.delayed(const Duration(milliseconds: 300),
-                              () => widget.isShowPanelForVerified.value = true);
+                          Future.delayed(
+                            const Duration(milliseconds: 300),
+                            () => widget.isShowPanelForVerified.value = true,
+                          );
                         } else if ((prefsRepository.myMarketName?.length ?? 0) <
                             3) {
                           showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return UpdateUserNameWidget();
-                              });
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return UpdateUserNameWidget();
+                            },
+                          );
                         } else {
                           NotificationSettings settings =
                               await FirebaseMessaging.instance
@@ -372,10 +381,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               AuthorizationStatus.denied) {
                             openAppSettings();
                             showWarningMessage(
-                                context,
-                                LocaleKeys
-                                    .please_enable_send_notification_for_this_app
-                                    .tr());
+                              context,
+                              LocaleKeys
+                                  .please_enable_send_notification_for_this_app
+                                  .tr(),
+                            );
                           } else {
                             if (context.canPop()) {
                               Navigator.of(context).pop();
@@ -406,70 +416,78 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               ? Container(
                                   height: 40.h,
                                   width: 40.h,
-                                  child: TrydosLoader(size: 15))
+                                  child: TrydosLoader(size: 15),
+                                )
                               : state.currentIndex == 2
-                                  ? SvgPicture.asset(
-                                      AppAssets.activeChatSvg,
+                              ? SvgPicture.asset(
+                                  AppAssets.activeChatSvg,
+                                  height: 30.h,
+                                )
+                              : BlocBuilder<ChatBloc, ChatState>(
+                                  buildWhen: (p, c) =>
+                                      p.unReadMessagesFromAllChats !=
+                                      c.unReadMessagesFromAllChats,
+                                  builder: (context, state) {
+                                    return Container(
                                       height: 30.h,
-                                    )
-                                  : BlocBuilder<ChatBloc, ChatState>(
-                                      buildWhen: (p, c) =>
-                                          p.unReadMessagesFromAllChats !=
-                                          c.unReadMessagesFromAllChats,
-                                      builder: (context, state) {
-                                        return Container(
+                                      width: 30.h,
+                                      child: Stack(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.chatSvg,
                                             height: 30.h,
-                                            width: 30.h,
-                                            child: Stack(
-                                              children: [
-                                                SvgPicture.asset(
-                                                  AppAssets.chatSvg,
-                                                  height: 30.h,
-                                                ),
-                                                Positioned(
-                                                    top: 0,
-                                                    right: 0,
-                                                    child: Visibility(
-                                                      visible: state
-                                                              .unReadMessagesFromAllChats >
-                                                          0,
-                                                      child: Row(
-                                                        children: [
-                                                          MyTextWidget(
-                                                            state
-                                                                .unReadMessagesFromAllChats
-                                                                .toString(),
-                                                            maxLines: 1,
-                                                            style: context
-                                                                .textTheme
-                                                                .titleMedium
-                                                                ?.rr
-                                                                .copyWith(
-                                                                    color: const Color(
-                                                                        0xff007CFF)),
+                                          ),
+                                          Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            child: Visibility(
+                                              visible:
+                                                  state
+                                                      .unReadMessagesFromAllChats >
+                                                  0,
+                                              child: Row(
+                                                children: [
+                                                  MyTextWidget(
+                                                    state
+                                                        .unReadMessagesFromAllChats
+                                                        .toString(),
+                                                    maxLines: 1,
+                                                    style: context
+                                                        .textTheme
+                                                        .titleMedium
+                                                        ?.rq
+                                                        .copyWith(
+                                                          color: const Color(
+                                                            0xff007CFF,
                                                           ),
-                                                          2.horizontalSpace,
-                                                          SvgPicture.asset(
-                                                            AppAssets
-                                                                .chatNotificationSvg,
-                                                            height: 12.h,
-                                                            width: 12.h,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ))
-                                              ],
-                                            ));
-                                      }),
+                                                        ),
+                                                  ),
+                                                  2.horizontalSpace,
+                                                  SvgPicture.asset(
+                                                    AppAssets
+                                                        .chatNotificationSvg,
+                                                    height: 12.h,
+                                                    width: 12.h,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
                           10.verticalSpace,
                           MyTextWidget(
                             LocaleKeys.chat.tr(),
                             maxLines: 1,
-                            style: textTheme.titleSmall?.lr.copyWith(
-                                letterSpacing: 0.28,
-                                color: state.currentIndex != 2
-                                    ? colorScheme.grey200
-                                    : colorScheme.black),
+                            style: textTheme.titleSmall?.lq.copyWith(
+                              letterSpacing: 0.28,
+                              color: state.currentIndex != 2
+                                  ? colorScheme.grey200
+                                  : colorScheme.black,
+                            ),
                           ),
                         ],
                       ),
@@ -479,104 +497,118 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: BlocBuilder<AuthBloc, AuthState>(
-                    buildWhen: (p, c) =>
-                        p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
-                        p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
-                        c.verifyOtpFromGuestStatus !=
-                            p.verifyOtpFromGuestStatus ||
-                        p.registerGuestStatus != c.registerGuestStatus,
-                    builder: (context, authstate) {
-                      return InkWell(
-                        onLongPress: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: const MyTextWidget('Dev tools'),
-                                  actions: [
-                                    BlocBuilder<HomeBloc, HomeState>(
-                                      buildWhen: (p, c) =>
-                                          p.getAllowedCountriesModel !=
-                                              c.getAllowedCountriesModel ||
-                                          p.getStartingSettingsStatus !=
-                                              c.getStartingSettingsStatus,
-                                      builder: (context, homestate) {
-                                        return Container(
-                                          alignment: Alignment.center,
-                                          width: 300,
-                                          height: 390,
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Positioned(
-                                                left: 10,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceAround,
-                                                  children: [
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (_) =>
-                                                                    FeedBackScreen(
-                                                                      showRequests:
-                                                                          true,
-                                                                    )));
-                                                      },
-                                                      child: const MyTextWidget(
-                                                          'requests'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (_) =>
-                                                                    SharedPreferencePage()));
-                                                      },
-                                                      child: const MyTextWidget(
-                                                          'shared preferences'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (_) =>
-                                                                    const SwitchListForNotification()));
-                                                      },
-                                                      child: const MyTextWidget(
-                                                          'Firebase Setting'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (_) =>
-                                                                    FeedBackScreen(
-                                                                      showRequests:
-                                                                          false,
-                                                                    )));
-                                                      },
-                                                      child: const MyTextWidget(
-                                                          'flutter errors'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (_) =>
-                                                                    const UserInfoPage()));
-                                                      },
-                                                      child: const MyTextWidget(
-                                                          'add user info'),
-                                                    ),
-                                                    /*  TextButton(
+                  buildWhen: (p, c) =>
+                      p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
+                      p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
+                      c.verifyOtpFromGuestStatus !=
+                          p.verifyOtpFromGuestStatus ||
+                      p.registerGuestStatus != c.registerGuestStatus,
+                  builder: (context, authstate) {
+                    return InkWell(
+                      onLongPress: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: const MyTextWidget('Dev tools'),
+                              actions: [
+                                BlocBuilder<HomeBloc, HomeState>(
+                                  buildWhen: (p, c) =>
+                                      p.getAllowedCountriesModel !=
+                                          c.getAllowedCountriesModel ||
+                                      p.getStartingSettingsStatus !=
+                                          c.getStartingSettingsStatus,
+                                  builder: (context, homestate) {
+                                    return Container(
+                                      alignment: Alignment.center,
+                                      width: 300,
+                                      height: 390,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Positioned(
+                                            left: 10,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            FeedBackScreen(
+                                                              showRequests:
+                                                                  true,
+                                                            ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'requests',
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            SharedPreferencePage(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'shared preferences',
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            const SwitchListForNotification(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'Firebase Setting',
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            FeedBackScreen(
+                                                              showRequests:
+                                                                  false,
+                                                            ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'flutter errors',
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            const UserInfoPage(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'add user info',
+                                                  ),
+                                                ),
+                                                /*  TextButton(
                                                       onPressed: () {
                                                         Navigator.push(
                                                             context,
@@ -587,7 +619,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                       child: const MyTextWidget(
                                                           'files exists'),
                                                     ),*/
-                                                    /*      TextButton(
+                                                /*      TextButton(
                                                       onPressed: () {
                                                         Navigator.push(
                                                             context,
@@ -598,45 +630,49 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                       child: MyTextWidget(
                                                           'Edit Urls'),
                                                     ),*/
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        prefsRepository
-                                                            .resetAllRedeemTimer();
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: const MyTextWidget(
-                                                          'ٌReset Redeem Timer'),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    prefsRepository
+                                                        .resetAllRedeemTimer();
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'ٌReset Redeem Timer',
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 50,
+                                                  height: 50,
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      Icons.notifications,
                                                     ),
-                                                    SizedBox(
-                                                      width: 50,
-                                                      height: 50,
-                                                      child: IconButton(
-                                                        icon: const Icon(Icons
-                                                            .notifications),
-                                                        color: Colors.red,
-                                                        onPressed: () {
-                                                          HelperFunctions
-                                                              .slidingNavigation(
-                                                            context,
-                                                            const NotificationsPage(),
-                                                          );
-                                                        },
-                                                      ),
-                                                    ),
-                                                    //////////////
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        GetIt.I<HomeBloc>().add(
-                                                            const ClearAllAppCashEvent());
-                                                        clearCustomCashe();
-                                                        prefsRepository
-                                                            .setIsFoundDataCashed(
-                                                                false);
-                                                        GetIt.I<AppBloc>().add(
-                                                            ChangeBasePage(0));
-                                                        GetIt.I<HomeBloc>().add(
-                                                            SaveUserInfoFromAuthEvent(
-                                                                userInfo: User(
+                                                    color: Colors.red,
+                                                    onPressed: () {
+                                                      HelperFunctions.slidingNavigation(
+                                                        context,
+                                                        const NotificationsPage(),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                                //////////////
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    GetIt.I<HomeBloc>().add(
+                                                      const ClearAllAppCashEvent(),
+                                                    );
+                                                    clearCustomCashe();
+                                                    prefsRepository
+                                                        .setIsFoundDataCashed(
+                                                          false,
+                                                        );
+                                                    GetIt.I<AppBloc>().add(
+                                                      ChangeBasePage(0),
+                                                    );
+                                                    GetIt.I<HomeBloc>().add(
+                                                      SaveUserInfoFromAuthEvent(
+                                                        userInfo: User(
                                                           alternativePhone: "",
                                                           email: "",
                                                           image: "",
@@ -644,73 +680,77 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                           lastOtpIdToken: "",
                                                           name: "",
                                                           phone: "",
-                                                        )));
-                                                        prefsRepository
-                                                            .setVerifiedPhone(
-                                                                false);
-                                                        prefsRepository
-                                                            .setPhoneNumber("");
-                                                        prefsRepository
-                                                            .setChatToken("");
-                                                        prefsRepository
-                                                            .setMarketToken(
-                                                                null);
-                                                        prefsRepository
-                                                            .setMyMarketName(
-                                                                "");
-                                                        prefsRepository
-                                                            .setMyChatName("");
-                                                        prefsRepository
-                                                            .setMyStoriesName(
-                                                                "");
-                                                        prefsRepository
-                                                            .setVerifiedPhonePeforeExpiredToken(
-                                                                false);
-
-                                                        prefsRepository
-                                                            .setMyProfilePhoto(
-                                                                "");
-                                                        String? deviceId =
-                                                            await HelperFunctions
-                                                                .getDeviceId();
-
-                                                        GetIt.I<AuthBloc>().add(
-                                                            RegisterGuestEvent(
-                                                                deviceId:
-                                                                    deviceId ??
-                                                                        ""));
-                                                        HydratedBloc.storage
-                                                            .clear();
-                                                        GetIt.I<ChatBloc>().add(
-                                                            const ClearChatEvent());
-
-                                                        Future.delayed(
-                                                          const Duration(
-                                                              microseconds:
-                                                                  500),
-                                                          () {
-                                                            GoRouter.of(context)
-                                                                .go("/");
-                                                          },
+                                                        ),
+                                                      ),
+                                                    );
+                                                    prefsRepository
+                                                        .setVerifiedPhone(
+                                                          false,
                                                         );
+                                                    prefsRepository
+                                                        .setPhoneNumber("");
+                                                    prefsRepository
+                                                        .setChatToken("");
+                                                    prefsRepository
+                                                        .setMarketToken(null);
+                                                    prefsRepository
+                                                        .setMyMarketName("");
+                                                    prefsRepository
+                                                        .setMyChatName("");
+                                                    prefsRepository
+                                                        .setMyStoriesName("");
+                                                    prefsRepository
+                                                        .setVerifiedPhonePeforeExpiredToken(
+                                                          false,
+                                                        );
+
+                                                    prefsRepository
+                                                        .setMyProfilePhoto("");
+                                                    String? deviceId =
+                                                        await HelperFunctions.getDeviceId();
+
+                                                    GetIt.I<AuthBloc>().add(
+                                                      RegisterGuestEvent(
+                                                        deviceId:
+                                                            deviceId ?? "",
+                                                      ),
+                                                    );
+                                                    HydratedBloc.storage
+                                                        .clear();
+                                                    GetIt.I<ChatBloc>().add(
+                                                      const ClearChatEvent(),
+                                                    );
+
+                                                    Future.delayed(
+                                                      const Duration(
+                                                        microseconds: 500,
+                                                      ),
+                                                      () {
+                                                        GoRouter.of(
+                                                          context,
+                                                        ).go("/");
                                                       },
-                                                      child: const MyTextWidget(
-                                                          'log out'),
-                                                    ),
-                                                  ],
+                                                    );
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'log out',
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        );
-                                      },
-                                    )
-                                  ],
-                                );
-                              });
-                        },
-                        onTap: () {
-                          /*  if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      onTap: () {
+                        /*  if (!(prefsRepository.isVerifiedPhone ?? false)) {
                           if (Navigator.canPop(context)) {
                             Navigator.of(context).pop();
                           }
@@ -719,23 +759,23 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                 RegistrationPage(),
                           ));
                         } else {*/
-                          if (authstate.registerGuestStatus ==
-                                  RegisterGuestStatus.loading ||
-                              authstate.verifyOtpFromGuestStatus ==
-                                  VerifyOtpFromGuestStatus.loading ||
-                              authstate.verifyOtpSignInStatus ==
-                                  VerifyOtpInProfileStatus.loading ||
-                              authstate.verifyOtpSignUpStatus ==
-                                  VerifyOtpSignUpStatus.loading) {
-                            return;
-                          }
-                          if (Navigator.canPop(context)) {
-                            Navigator.of(context).pop();
-                          }
-                          appBloc.add(ChangeBasePage(3));
-                          //  }
+                        if (authstate.registerGuestStatus ==
+                                RegisterGuestStatus.loading ||
+                            authstate.verifyOtpFromGuestStatus ==
+                                VerifyOtpFromGuestStatus.loading ||
+                            authstate.verifyOtpSignInStatus ==
+                                VerifyOtpInProfileStatus.loading ||
+                            authstate.verifyOtpSignUpStatus ==
+                                VerifyOtpSignUpStatus.loading) {
+                          return;
+                        }
+                        if (Navigator.canPop(context)) {
+                          Navigator.of(context).pop();
+                        }
+                        appBloc.add(ChangeBasePage(3));
+                        //  }
 
-                          /*      // if (prefsRepository.chatToken != null) return;
+                        /*      // if (prefsRepository.chatToken != null) return;
                         //appBloc.add(ChangeBasePage(0));
                         if (Navigator.canPop(context)) {
                           Navigator.of(context).pop();
@@ -750,72 +790,72 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           executedEventName:
                               AnalyticsExecutedEventNameConst.meNavBarButton,
                         );*/
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            authstate.registerGuestStatus ==
-                                        RegisterGuestStatus.loading ||
-                                    authstate.verifyOtpFromGuestStatus ==
-                                        VerifyOtpFromGuestStatus.loading ||
-                                    authstate.verifyOtpSignInStatus ==
-                                        VerifyOtpInProfileStatus.loading ||
-                                    authstate.verifyOtpSignUpStatus ==
-                                        VerifyOtpSignUpStatus.loading
-                                ? Container(
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          authstate.registerGuestStatus ==
+                                      RegisterGuestStatus.loading ||
+                                  authstate.verifyOtpFromGuestStatus ==
+                                      VerifyOtpFromGuestStatus.loading ||
+                                  authstate.verifyOtpSignInStatus ==
+                                      VerifyOtpInProfileStatus.loading ||
+                                  authstate.verifyOtpSignUpStatus ==
+                                      VerifyOtpSignUpStatus.loading
+                              ? Container(
+                                  height: 30.h,
+                                  width: 30.h,
+                                  child: TrydosLoader(size: 15),
+                                )
+                              : prefsRepository.myProfilePhoto == null ||
+                                    prefsRepository.myProfilePhoto == ""
+                              ? Container(
+                                  height: 30.h,
+                                  width: 30.h,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(AppAssets.profileJpg),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                      color: (state.currentIndex == 3)
+                                          ? const Color(0xfff53c3c)
+                                          : const Color(0xfffff),
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  height: 30.h,
+                                  width: 30.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                      color: (state.currentIndex == 3)
+                                          ? const Color(0xfff53c3c)
+                                          : const Color(0xfffff),
+                                    ),
+                                  ),
+                                  child: MyCachedNetworkImage(
+                                    imageUrl: prefsRepository.myProfilePhoto!,
                                     height: 30.h,
                                     width: 30.h,
-                                    child: TrydosLoader(size: 15))
-                                : prefsRepository.myProfilePhoto == null ||
-                                        prefsRepository.myProfilePhoto == ""
-                                    ? Container(
-                                        height: 30.h,
-                                        width: 30.h,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                AppAssets.profileJpg),
-                                            fit: BoxFit.cover,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                          border: Border.all(
-                                            color: (state.currentIndex == 3)
-                                                ? const Color(0xfff53c3c)
-                                                : const Color(0xfffff),
-                                          ),
-                                        ))
-                                    : Container(
-                                        height: 30.h,
-                                        width: 30.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                          border: Border.all(
-                                            color: (state.currentIndex == 3)
-                                                ? const Color(0xfff53c3c)
-                                                : const Color(0xfffff),
-                                          ),
-                                        ),
-                                        child: MyCachedNetworkImage(
-                                            imageUrl:
-                                                prefsRepository.myProfilePhoto!,
-                                            height: 30.h,
-                                            width: 30.h,
-                                            imageFit: BoxFit.cover)),
-                            // Container(
-                            //     height: 30.h,
-                            //     width: 30.h,
-                            //     decoration: BoxDecoration(
-                            //         borderRadius: BorderRadius.circular(15.r),
-                            //         border: Border.all(
-                            //             color: colorScheme.error, width: 1)),
-                            //     child: Image.asset(
-                            //       AppAssets.profilePng,
-                            //       fit: BoxFit.fitHeight,
-                            //     ),
-                            //       )
-                            /*  : SizedBox(
+                                    imageFit: BoxFit.cover,
+                                  ),
+                                ),
+                          // Container(
+                          //     height: 30.h,
+                          //     width: 30.h,
+                          //     decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(15.r),
+                          //         border: Border.all(
+                          //             color: colorScheme.error, width: 1)),
+                          //     child: Image.asset(
+                          //       AppAssets.profilePng,
+                          //       fit: BoxFit.fitHeight,
+                          //     ),
+                          //       )
+                          /*  : SizedBox(
                                                     height: 30.h,
                                                     width: 30.h,
                                                     child: Stack(
@@ -857,20 +897,22 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                       ],
                                                     ),
                                                   ),*/
-                            10.verticalSpace,
-                            MyTextWidget(
-                              LocaleKeys.me.tr(),
-                              maxLines: 1,
-                              style: textTheme.titleSmall?.lr.copyWith(
-                                  letterSpacing: 0.28,
-                                  color: state.currentIndex != 3
-                                      ? colorScheme.grey200
-                                      : colorScheme.black),
+                          10.verticalSpace,
+                          MyTextWidget(
+                            LocaleKeys.me.tr(),
+                            maxLines: 1,
+                            style: textTheme.titleSmall?.lq.copyWith(
+                              letterSpacing: 0.28,
+                              color: state.currentIndex != 3
+                                  ? colorScheme.grey200
+                                  : colorScheme.black,
                             ),
-                          ],
-                        ),
-                      );
-                    }),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

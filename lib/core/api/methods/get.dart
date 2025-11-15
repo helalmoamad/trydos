@@ -13,13 +13,13 @@ class GetClient<T> extends BaseApi<T> {
     required this.requestPrams,
     required this.serverName,
     this.onReceiveProgress,
-  })  : _fromJson = requestPrams.response.fromJson,
-        _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
-        _endpoint = requestPrams.endpoint,
-        _queryParameters = requestPrams.queryParameters,
-        _receiveTimeout = requestPrams.receiveTimeout,
-        _sendTimeout = requestPrams.sendTimeout,
-        super(serverName);
+  }) : _fromJson = requestPrams.response.fromJson,
+       _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
+       _endpoint = requestPrams.endpoint,
+       _queryParameters = requestPrams.queryParameters,
+       _receiveTimeout = requestPrams.receiveTimeout,
+       _sendTimeout = requestPrams.sendTimeout,
+       super(serverName);
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
   final Stopwatch stopWatch = Stopwatch();
@@ -45,23 +45,26 @@ class GetClient<T> extends BaseApi<T> {
           queryParameters: _queryParameters,
         ),
         options: options.copyWith(
-            receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
-            sendTimeout: _sendTimeout ?? options.sendTimeout),
+          receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+          sendTimeout: _sendTimeout ?? options.sendTimeout,
+        ),
         onReceiveProgress: onReceiveProgress,
       );
 
       stopWatch.stop();
       print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}");
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}",
+      );
       GetIt.I<PrefsRepository>().saveRequestsData(
-          'This From Response   ${response.requestOptions.path}',
-          response.data is! FormData ? response.data : {'data': 'formData'},
-          response.requestOptions.headers,
-          response.statusCode,
-          response.requestOptions.method,
-          requestPrams.queryParameters,
-          null,
-          responseTime: stopWatch.elapsed.toString());
+        'This From Response   ${response.requestOptions.path}',
+        response.data is! FormData ? response.data : {'data': 'formData'},
+        response.requestOptions.headers,
+        response.statusCode,
+        response.requestOptions.method,
+        requestPrams.queryParameters,
+        null,
+        responseTime: stopWatch.elapsed.toString(),
+      );
       log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());
 
@@ -70,11 +73,12 @@ class GetClient<T> extends BaseApi<T> {
           return Future.value(_valueOnSuccess);
         }
 
-        return _fromJson!(response.data);
+        return _fromJson(response.data);
       } else {
         final exception = getException(
-            statusCode: response.statusCode!,
-            message: response.data['message']);
+          statusCode: response.statusCode!,
+          message: response.data['message'],
+        );
         throw exception;
       }
     } catch (exception) {

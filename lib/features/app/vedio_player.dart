@@ -14,9 +14,12 @@ import 'my_text_widget.dart';
 import 'video_player_full.dart';
 
 class MYVideoPlayer extends StatefulWidget {
-  const MYVideoPlayer(
-      {Key? key, this.videoUrl, this.videoFile, required this.chatId})
-      : super(key: key);
+  const MYVideoPlayer({
+    Key? key,
+    this.videoUrl,
+    this.videoFile,
+    required this.chatId,
+  }) : super(key: key);
   final String? videoUrl;
   final File? videoFile;
   final String chatId;
@@ -38,8 +41,11 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
   @override
   void initState() {
     if (widget.videoUrl != null) {
-      imageUrl = widget.videoUrl!
-              .replaceFirst(widget.videoUrl!.split('.').last, 'JPG') +
+      imageUrl =
+          widget.videoUrl!.replaceFirst(
+            widget.videoUrl!.split('.').last,
+            'JPG',
+          ) +
           '?w=300&h=300';
     }
     if (widget.videoFile != null) {
@@ -69,10 +75,12 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     final Duration duration;
     if (_controller!.value.isPlaying) {
       duration = Duration(
-          milliseconds: _controller!.value.position.inMilliseconds.round());
+        milliseconds: _controller!.value.position.inMilliseconds.round(),
+      );
     } else {
       duration = Duration(
-          milliseconds: _controller!.value.duration.inMilliseconds.round());
+        milliseconds: _controller!.value.duration.inMilliseconds.round(),
+      );
     }
 
     return [duration.inHours, duration.inMinutes, duration.inSeconds]
@@ -105,56 +113,63 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                   height: 300,
                 ),
                 ValueListenableBuilder<bool>(
-                    valueListenable: isDownloading,
-                    builder: (context, downloading, _) {
-                      return !downloading
-                          ? InkWell(
-                              onTap: () {
-                                isDownloading.value = true;
-                                FileSaving().downloadFileUsingDio(
-                                    widget.videoUrl!,
-                                    cancelToken,
-                                    widget.chatId, (progress) {
+                  valueListenable: isDownloading,
+                  builder: (context, downloading, _) {
+                    return !downloading
+                        ? InkWell(
+                            onTap: () {
+                              isDownloading.value = true;
+                              FileSaving().downloadFileUsingDio(
+                                widget.videoUrl!,
+                                cancelToken,
+                                widget.chatId,
+                                (progress) {
                                   downloadingProgress.value = progress;
-                                }, action: (File file) {
-                                  _controller =
-                                      VideoPlayerController.file(file);
+                                },
+                                action: (File file) {
+                                  _controller = VideoPlayerController.file(
+                                    file,
+                                  );
                                   initializeController();
-                                });
-                              },
-                              child: Icon(Icons.play_arrow,
-                                  size: 50, color: Colors.grey.shade300),
-                            )
-                          : ValueListenableBuilder<double>(
-                              valueListenable: downloadingProgress,
-                              builder: (context, progress, _) {
-                                debugPrint('progress: $progress');
-                                return InkWell(
-                                  onTap: () {
-                                    isDownloading.value = false;
-                                    cancelToken.cancel();
-                                  },
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      CircularProgressIndicator(
-                                        value: progress / 100,
-                                        strokeWidth: 5,
-                                        backgroundColor: Colors.grey,
-                                        color: const Color(0xff388CFF),
-                                      ),
-                                      MyTextWidget(
-                                        'X',
-                                        style: context.textTheme.bodyLarge?.ba
-                                            .copyWith(
-                                          color: Colors.grey,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              });
-                    }),
+                                },
+                              );
+                            },
+                            child: Icon(
+                              Icons.play_arrow,
+                              size: 50,
+                              color: Colors.grey.shade300,
+                            ),
+                          )
+                        : ValueListenableBuilder<double>(
+                            valueListenable: downloadingProgress,
+                            builder: (context, progress, _) {
+                              debugPrint('progress: $progress');
+                              return InkWell(
+                                onTap: () {
+                                  isDownloading.value = false;
+                                  cancelToken.cancel();
+                                },
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    CircularProgressIndicator(
+                                      value: progress / 100,
+                                      strokeWidth: 5,
+                                      backgroundColor: Colors.grey,
+                                      color: const Color(0xff388CFF),
+                                    ),
+                                    MyTextWidget(
+                                      'X',
+                                      style: context.textTheme.bodyLarge?.bq
+                                          .copyWith(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                  },
+                ),
               ],
             ),
           )
@@ -166,14 +181,16 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                   behavior: HitTestBehavior.opaque,
                   onTap: () => {
                     setState(() {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MYVideoPlayerFull(
-                          chatId: widget.chatId,
-                          videoFile: widget.videoFile,
-                          videoUrl: widget.videoUrl,
-                          key: widget.key,
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => MYVideoPlayerFull(
+                            chatId: widget.chatId,
+                            videoFile: widget.videoFile,
+                            videoUrl: widget.videoUrl,
+                            key: widget.key,
+                          ),
                         ),
-                      ));
+                      );
                     }),
                   },
                   child: SizedBox(
@@ -189,20 +206,27 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                             aspectRatio: _controller!.value.aspectRatio,
                             // Use the VideoPlayer widget to display the video.
                             child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12.0),
-                                child: VideoPlayer(_controller!)),
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: VideoPlayer(_controller!),
+                            ),
                           ),
                         ),
                         _controller!.value.isPlaying
                             ? Container()
-                            : Icon(Icons.play_arrow,
-                                size: 50, color: Colors.grey.shade300),
+                            : Icon(
+                                Icons.play_arrow,
+                                size: 50,
+                                color: Colors.grey.shade300,
+                              ),
                         Positioned(
                           left: 8,
                           bottom: 25,
-                          child: MyTextWidget(getPosition(),
-                              style: context.textTheme.titleLarge?.rr
-                                  .copyWith(color: Colors.white)),
+                          child: MyTextWidget(
+                            getPosition(),
+                            style: context.textTheme.titleLarge?.rq.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -214,6 +238,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                 height: 300,
                 child: Center(child: TrydosLoader()),
               );
-            });
+            },
+          );
   }
 }

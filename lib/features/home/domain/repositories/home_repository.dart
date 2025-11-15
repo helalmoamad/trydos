@@ -100,6 +100,8 @@ abstract class HomeRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, ResponseOnlyMessageModel>> updateOrderCommentRating(
       Map<String, dynamic> params);
+  Future<Either<Failure, ResponseOnlyMessageModel>> updateLikeComment(
+      Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       unSubscribeTopicFornotification(Map<String, dynamic> params);
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>

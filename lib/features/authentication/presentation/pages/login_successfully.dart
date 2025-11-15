@@ -19,7 +19,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class LoginSuccessfully extends StatefulWidget {
   const LoginSuccessfully({required this.phoneNumber, Key? key})
-      : super(key: key);
+    : super(key: key);
   final String phoneNumber;
 
   @override
@@ -29,18 +29,17 @@ class LoginSuccessfully extends StatefulWidget {
 class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Color(0xffE0FFEE),
-      statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.light,
-    ));
-
-    Future.delayed(
-      const Duration(seconds: 1),
-      () {
-        if (mounted) context.go(GRouter.config.applicationRoutes.kBasePage);
-      },
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Color(0xffE0FFEE),
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+      ),
     );
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) context.go(GRouter.config.applicationRoutes.kBasePage);
+    });
     super.didChangeDependencies();
   }
 
@@ -63,13 +62,14 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
         children: [
           Positioned(top: 50, left: 40, right: 40, child: logo),
           Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(),
-                Padding(
-                  padding: HWEdgeInsets.symmetric(horizontal: 40.0),
-                  child: Column(children: [
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              Padding(
+                padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(
+                  children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -86,26 +86,30 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                           children: [
                             MyTextWidget(
                               LocaleKeys.logged_in_successfully.tr(),
-                              style: context.textTheme.titleLarge?.ra.copyWith(
-                                  color: const Color(0xff5D5C5D), height: 1.42),
+                              style: context.textTheme.titleLarge?.rq.copyWith(
+                                color: const Color(0xff5D5C5D),
+                                height: 1.42,
+                              ),
                             ),
                             Row(
                               children: [
                                 Padding(
                                   padding: HWEdgeInsets.only(top: 3.0),
                                   child: SvgPicture.asset(
-                                      AppAssets.phoneCallSvg,
-                                      width: 10,
-                                      height: 10),
+                                    AppAssets.phoneCallSvg,
+                                    width: 10,
+                                    height: 10,
+                                  ),
                                 ),
                                 5.horizontalSpace,
                                 MyTextWidget(
                                   widget.phoneNumber,
                                   textAlign: TextAlign.start,
-                                  style: context.textTheme.titleMedium?.ra
+                                  style: context.textTheme.titleMedium?.rq
                                       .copyWith(
-                                          color: const Color(0xff8D8D8D),
-                                          height: 1.25),
+                                        color: const Color(0xff8D8D8D),
+                                        height: 1.25,
+                                      ),
                                 ),
                               ],
                             ),
@@ -117,12 +121,15 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                 children: [
                                   Padding(
                                     padding: HWEdgeInsets.only(left: 4.0),
-                                    child: MyTextWidget(LocaleKeys.hello.tr(),
-                                        textAlign: TextAlign.start,
-                                        style: textTheme.headlineMedium?.ba
-                                            .copyWith(
-                                                color: const Color(0xff5D5C5D),
-                                                height: 1.25)),
+                                    child: MyTextWidget(
+                                      LocaleKeys.hello.tr(),
+                                      textAlign: TextAlign.start,
+                                      style: textTheme.headlineMedium?.bq
+                                          .copyWith(
+                                            color: const Color(0xff5D5C5D),
+                                            height: 1.25,
+                                          ),
+                                    ),
                                   ),
                                   17.verticalSpace,
                                   Column(
@@ -134,42 +141,46 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                             return const SizedBox.shrink();
                                           }
                                           return MyTextWidget(
-                                              ',' +
-                                                  state.marketUser!.name
-                                                      .toString(),
-                                              textAlign: TextAlign.start,
-                                              style: textTheme
-                                                  .headlineMedium?.la
-                                                  .copyWith(
-                                                color: const Color(0xff5D5C5D),
-                                                letterSpacing: 0.3,
-                                                height: 0.67,
-                                              ));
+                                            ',' +
+                                                state.marketUser!.name
+                                                    .toString(),
+                                            textAlign: TextAlign.start,
+                                            style: textTheme.headlineMedium?.lq
+                                                .copyWith(
+                                                  color: const Color(
+                                                    0xff5D5C5D,
+                                                  ),
+                                                  letterSpacing: 0.3,
+                                                  height: 0.67,
+                                                ),
+                                          );
                                         },
                                       ),
                                       18.verticalSpace,
                                       MyTextWidget(
-                                          LocaleKeys.enjoy_with_our_services
-                                              .tr(),
-                                          textAlign: TextAlign.center,
-                                          style: textTheme.bodyMedium?.la
-                                              .copyWith(
-                                                  color:
-                                                      const Color(0xff5D5C5D),
-                                                  height: 1.25)),
+                                        LocaleKeys.enjoy_with_our_services.tr(),
+                                        textAlign: TextAlign.center,
+                                        style: textTheme.bodyMedium?.lq
+                                            .copyWith(
+                                              color: const Color(0xff5D5C5D),
+                                              height: 1.25,
+                                            ),
+                                      ),
                                     ],
                                   ),
                                 ],
                               ),
-                            )
+                            ),
                           ],
-                        )
+                        ),
                       ],
                     ),
-                  ]),
+                  ],
                 ),
-                const Spacer(),
-              ]),
+              ),
+              const Spacer(),
+            ],
+          ),
         ],
       ),
     );

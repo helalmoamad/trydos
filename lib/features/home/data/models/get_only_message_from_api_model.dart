@@ -15,17 +15,15 @@ class ReadOnlyMessageFromApiModel {
   final String? response;
   ReadOnlyMessageFromApiModel({this.message, this.response});
 
-  ReadOnlyMessageFromApiModel copyWith({
-    String? message,
-    String? response,
-  }) =>
+  ReadOnlyMessageFromApiModel copyWith({String? message, String? response}) =>
       ReadOnlyMessageFromApiModel(
-          message: message ?? this.message,
-          response: response ?? this.response);
+        message: message ?? this.message,
+        response: response ?? this.response,
+      );
 
   factory ReadOnlyMessageFromApiModel.fromJson(Map<String, dynamic> json) =>
       ReadOnlyMessageFromApiModel(
-        message: json["message"],
+        message: json["message"] == null ? json["detail"] : json["message"],
         response: json["response"],
       );
 

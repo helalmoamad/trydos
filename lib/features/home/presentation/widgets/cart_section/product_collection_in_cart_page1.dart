@@ -84,8 +84,9 @@ class _ProductCollectionInCartPage1State
             padding: const EdgeInsets.symmetric(),
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount:
-                isOldCart ? oldCartCollection?.length : cartCollection?.length,
+            itemCount: isOldCart
+                ? oldCartCollection?.length
+                : cartCollection?.length,
             itemBuilder: (context, index) {
               // double price = 0;
 
@@ -104,22 +105,23 @@ class _ProductCollectionInCartPage1State
           */
               return Container(
                 padding: EdgeInsetsDirectional.only(
-                    start: 12,
-                    end: 12,
-                    bottom: (cartCollection?.length == 0)
-                        ? (index == (oldCartCollection?.length ?? 0) - 1) &&
+                  start: 12,
+                  end: 12,
+                  bottom: (cartCollection?.length == 0)
+                      ? (index == (oldCartCollection?.length ?? 0) - 1) &&
                                 isOldCart
                             ? 260
                             : 0
-                        : (oldCartCollection?.length == 0)
-                            ? (index == (cartCollection?.length ?? 0) - 1) &&
-                                    !isOldCart
-                                ? 260
-                                : 0
-                            : (index == (oldCartCollection?.length ?? 0) - 1) &&
-                                    isOldCart
-                                ? 260
-                                : 0),
+                      : (oldCartCollection?.length == 0)
+                      ? (index == (cartCollection?.length ?? 0) - 1) &&
+                                !isOldCart
+                            ? 260
+                            : 0
+                      : (index == (oldCartCollection?.length ?? 0) - 1) &&
+                            isOldCart
+                      ? 260
+                      : 0,
+                ),
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 7, right: 5, left: 5),
                   width: 1.sw,
@@ -127,35 +129,37 @@ class _ProductCollectionInCartPage1State
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: const [
                       BoxShadow(
-                          offset: Offset(0, 5),
-                          blurRadius: 5,
-                          color: Color(0xffF2F2F2),
-                          spreadRadius: 2),
+                        offset: Offset(0, 5),
+                        blurRadius: 5,
+                        color: Color(0xffF2F2F2),
+                        spreadRadius: 2,
+                      ),
                     ],
                   ),
                   child: Container(
-                    margin: EdgeInsets.only(
-                      bottom: 5.h,
-                    ),
+                    margin: EdgeInsets.only(bottom: 5.h),
                     width: 400.w,
                     decoration: BoxDecoration(
                       border: Border.all(
-                          color: isOldCart
-                              ? const Color(0xffFF5F61)
-                              : Colors.white),
+                        color: isOldCart
+                            ? const Color(0xffFF5F61)
+                            : Colors.white,
+                      ),
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
                     ),
                     height: isOldCart
                         ? 190
-                        : (state.cartCollection?[index]
-                                        .haveHurryUpNotifyTimeLeft ??
-                                    false) ||
-                                (state.cartCollection?[index]
-                                        .haveHurryUpNotifyQty ??
-                                    false)
-                            ? 190
-                            : 155,
+                        : (state
+                                      .cartCollection?[index]
+                                      .haveHurryUpNotifyTimeLeft ??
+                                  false) ||
+                              (state
+                                      .cartCollection?[index]
+                                      .haveHurryUpNotifyQty ??
+                                  false)
+                        ? 190
+                        : 155,
                     child: Stack(
                       children: [
                         Positioned(
@@ -225,56 +229,57 @@ class _ProductCollectionInCartPage1State
                                                 .toString()));
                               }*/
                               BlocProvider.of<HomeBloc>(context).add(
-                                  GetFullProductDetailsEvent(
-                                      currentColorName: isOldCart
-                                          ? (!oldCartCollection![index]
-                                                  .variations
-                                                  .isNullOrEmpty
-                                              ? oldCartCollection[index]
+                                GetFullProductDetailsEvent(
+                                  currentColorName: isOldCart
+                                      ? (!oldCartCollection![index]
+                                                .variations
+                                                .isNullOrEmpty
+                                            ? oldCartCollection[index]
                                                       .variations![0]
                                                       .colorOption ??
                                                   ""
-                                              : "")
-                                          : (!cartCollection![index]
-                                                  .variations
-                                                  .isNullOrEmpty
-                                              ? cartCollection[index]
+                                            : "")
+                                      : (!cartCollection![index]
+                                                .variations
+                                                .isNullOrEmpty
+                                            ? cartCollection[index]
                                                       .variations![0]
                                                       .colorOption ??
                                                   ""
-                                              : ""),
-                                      productSlug: isOldCart
-                                          ? oldCartCollection![index]
-                                              .slug
-                                              .toString()
-                                          : cartCollection![index]
-                                              .slug
-                                              .toString()));
+                                            : ""),
+                                  productSlug: isOldCart
+                                      ? oldCartCollection![index].slug
+                                            .toString()
+                                      : cartCollection![index].slug.toString(),
+                                ),
+                              );
                               Future.delayed(
-                                  const Duration(milliseconds: 300),
-                                  () => Navigator.of(context)
-                                          .push(PageRouteBuilder(
-                                        pageBuilder: (context,
-                                                animation, secondaryAnimation) =>
-                                            ProductDetailsPageNew(
-                                                productSlugForOpeningChatDirectly:
-                                                    isOldCart
-                                                        ? oldCartCollection![index]
-                                                            .slug
-                                                            .toString()
-                                                        : cartCollection![index]
-                                                            .slug
-                                                            .toString(),
-                                                productIdForOpeningChatDirectly:
-                                                    isOldCart
-                                                        ? oldCartCollection![
-                                                                index]
-                                                            .productId
-                                                            .toString()
-                                                        : cartCollection![index]
-                                                            .productId
-                                                            .toString()),
-                                      )));
+                                const Duration(milliseconds: 300),
+                                () => Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder:
+                                        (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                        ) => ProductDetailsPageNew(
+                                          productSlugForOpeningChatDirectly:
+                                              isOldCart
+                                              ? oldCartCollection![index].slug
+                                                    .toString()
+                                              : cartCollection![index].slug
+                                                    .toString(),
+                                          productIdForOpeningChatDirectly:
+                                              isOldCart
+                                              ? oldCartCollection![index]
+                                                    .productId
+                                                    .toString()
+                                              : cartCollection![index].productId
+                                                    .toString(),
+                                        ),
+                                  ),
+                                ),
+                              );
                             },
                             child: Container(
                               margin: const EdgeInsets.only(top: 10),
@@ -298,8 +303,9 @@ class _ProductCollectionInCartPage1State
                             ),
                           ),
                           left: LanguageService.languageCode != "ar" ? 0 : null,
-                          right:
-                              LanguageService.languageCode != "ar" ? null : 0,
+                          right: LanguageService.languageCode != "ar"
+                              ? null
+                              : 0,
                         ),
                         Positioned(
                           child: Column(
@@ -314,27 +320,25 @@ class _ProductCollectionInCartPage1State
                                 width: 30,
                                 child: (isOldCart
                                     ? oldCartCollection![index].brand != null
-                                        ? SvgPicture.network(
-                                            oldCartCollection[index]
-                                                    .brand!
-                                                    .icon
-                                                    ?.filePath ??
-                                                "",
-                                          )
-                                        : const SizedBox.shrink()
+                                          ? SvgPicture.network(
+                                              oldCartCollection[index]
+                                                      .brand!
+                                                      .icon
+                                                      ?.filePath ??
+                                                  "",
+                                            )
+                                          : const SizedBox.shrink()
                                     : cartCollection![index].brand != null
-                                        ? SvgPicture.network(
-                                            cartCollection[index]
-                                                    .brand!
-                                                    .icon
-                                                    ?.filePath ??
-                                                "",
-                                          )
-                                        : const SizedBox.shrink()),
+                                    ? SvgPicture.network(
+                                        cartCollection[index]
+                                                .brand!
+                                                .icon
+                                                ?.filePath ??
+                                            "",
+                                      )
+                                    : const SizedBox.shrink()),
                               ),
-                              const SizedBox(
-                                height: 2,
-                              ),
+                              const SizedBox(height: 2),
                               Container(
                                 alignment: LanguageService.languageCode != "ar"
                                     ? Alignment.centerLeft
@@ -342,19 +346,19 @@ class _ProductCollectionInCartPage1State
                                 width: 200.w,
                                 height: 16,
                                 child: Text(
-                                    isOldCart
-                                        ? oldCartCollection![index].name ?? ""
-                                        : cartCollection![index].name ?? "",
-                                    style: context.textTheme.bodyMedium?.ra
-                                        .copyWith(
-                                            fontSize: 12,
-                                            color: const Color(0xff505050),
-                                            letterSpacing: 0.18,
-                                            height: 1.33)),
+                                  isOldCart
+                                      ? oldCartCollection![index].name ?? ""
+                                      : cartCollection![index].name ?? "",
+                                  style: context.textTheme.bodyMedium?.rq
+                                      .copyWith(
+                                        fontSize: 12,
+                                        color: const Color(0xff505050),
+                                        letterSpacing: 0.18,
+                                        height: 1.33,
+                                      ),
+                                ),
                               ),
-                              const SizedBox(
-                                height: 2,
-                              ),
+                              const SizedBox(height: 2),
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -368,6 +372,104 @@ class _ProductCollectionInCartPage1State
                                                   .isNullOrEmpty)
                                       ? const SizedBox.shrink()
                                       : !isOldCart &&
+                                                (cartCollection![index]
+                                                            .variations![0]
+                                                            .colorOption ==
+                                                        "" ||
+                                                    cartCollection[index]
+                                                            .variations![0]
+                                                            .colorOption ==
+                                                        null) ||
+                                            isOldCart &&
+                                                (oldCartCollection![index]
+                                                            .variations![0]
+                                                            .colorOption ==
+                                                        "" ||
+                                                    oldCartCollection[index]
+                                                            .variations![0]
+                                                            .colorOption ==
+                                                        null)
+                                      ? const SizedBox.shrink()
+                                      : Container(
+                                          margin: const EdgeInsets.only(top: 5),
+                                          alignment:
+                                              LanguageService.languageCode !=
+                                                  "ar"
+                                              ? Alignment.centerLeft
+                                              : Alignment.centerRight,
+                                          height: 17,
+                                          child: Row(
+                                            children: [
+                                              SvgPicture.asset(
+                                                AppAssets.colorPickerSvg,
+                                                height: 12,
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                "${LocaleKeys.color.tr()}: ",
+                                                style: context
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.rq
+                                                    .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      fontSize: 12,
+                                                      color: const Color(
+                                                        0xff8D8D8D,
+                                                      ),
+                                                      letterSpacing: 0.18,
+                                                      height: 1.33,
+                                                    ),
+                                              ),
+                                              Text(
+                                                isOldCart
+                                                    ? !oldCartCollection![index]
+                                                              .variations
+                                                              .isNullOrEmpty
+                                                          ? oldCartCollection[index]
+                                                                    .variations![0]
+                                                                    .color ??
+                                                                ""
+                                                          : ""
+                                                    : !cartCollection![index]
+                                                          .variations
+                                                          .isNullOrEmpty
+                                                    ? cartCollection[index]
+                                                              .variations![0]
+                                                              .color ??
+                                                          ""
+                                                    : "",
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: context
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.mq
+                                                    .copyWith(
+                                                      fontSize: 13,
+                                                      height: 1.33,
+                                                      color: const Color(
+                                                        (0xff505050),
+                                                      ),
+                                                      letterSpacing: 0.18,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                  SizedBox(
+                                    width:
+                                        isOldCart &&
+                                                oldCartCollection![index]
+                                                    .variations
+                                                    .isNullOrEmpty ||
+                                            (!isOldCart &&
+                                                cartCollection![index]
+                                                    .variations
+                                                    .isNullOrEmpty)
+                                        ? 0
+                                        : !isOldCart &&
                                                   (cartCollection![index]
                                                               .variations![0]
                                                               .colorOption ==
@@ -385,109 +487,8 @@ class _ProductCollectionInCartPage1State
                                                               .variations![0]
                                                               .colorOption ==
                                                           null)
-                                          ? const SizedBox.shrink()
-                                          : Container(
-                                              margin:
-                                                  const EdgeInsets.only(top: 5),
-                                              alignment: LanguageService
-                                                          .languageCode !=
-                                                      "ar"
-                                                  ? Alignment.centerLeft
-                                                  : Alignment.centerRight,
-                                              height: 17,
-                                              child: Row(
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    AppAssets.colorPickerSvg,
-                                                    height: 12,
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    "${LocaleKeys.color.tr()}: ",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.ra
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            fontSize: 12,
-                                                            color: const Color(
-                                                                0xff8D8D8D),
-                                                            letterSpacing: 0.18,
-                                                            height: 1.33),
-                                                  ),
-                                                  Text(
-                                                    isOldCart
-                                                        ? !oldCartCollection![
-                                                                    index]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                            ? oldCartCollection[
-                                                                        index]
-                                                                    .variations![
-                                                                        0]
-                                                                    .color ??
-                                                                ""
-                                                            : ""
-                                                        : !cartCollection![
-                                                                    index]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                            ? cartCollection[
-                                                                        index]
-                                                                    .variations![
-                                                                        0]
-                                                                    .color ??
-                                                                ""
-                                                            : "",
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
-                                                      fontSize: 13,
-                                                      height: 1.33,
-                                                      color: const Color(
-                                                          (0xff505050)),
-                                                      letterSpacing: 0.18,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                  SizedBox(
-                                    width: isOldCart &&
-                                                oldCartCollection![index]
-                                                    .variations
-                                                    .isNullOrEmpty ||
-                                            (!isOldCart &&
-                                                cartCollection![index]
-                                                    .variations
-                                                    .isNullOrEmpty)
                                         ? 0
-                                        : !isOldCart &&
-                                                    (cartCollection![index]
-                                                                .variations![0]
-                                                                .colorOption ==
-                                                            "" ||
-                                                        cartCollection[index]
-                                                                .variations![0]
-                                                                .colorOption ==
-                                                            null) ||
-                                                isOldCart &&
-                                                    (oldCartCollection![index]
-                                                                .variations![0]
-                                                                .colorOption ==
-                                                            "" ||
-                                                        oldCartCollection[index]
-                                                                .variations![0]
-                                                                .colorOption ==
-                                                            null)
-                                            ? 0
-                                            : 10,
+                                        : 10,
                                   ),
                                   !isOldCart &&
                                               cartCollection![index]
@@ -499,262 +500,261 @@ class _ProductCollectionInCartPage1State
                                                   .isNullOrEmpty
                                       ? const SizedBox.shrink()
                                       : (!isOldCart &&
-                                                  (cartCollection![index]
-                                                              .variations![0]
-                                                              .sizeOption ==
-                                                          "" ||
-                                                      cartCollection[index]
-                                                              .variations![0]
-                                                              .sizeOption ==
-                                                          null)) ||
-                                              (isOldCart &&
-                                                  (oldCartCollection![index]
-                                                              .variations![0]
-                                                              .sizeOption ==
-                                                          "" ||
-                                                      oldCartCollection[index]
-                                                              .variations![0]
-                                                              .sizeOption ==
-                                                          null))
-                                          ? const SizedBox.shrink()
-                                          : Container(
-                                              margin:
-                                                  const EdgeInsets.only(top: 5),
-                                              alignment: LanguageService
-                                                          .languageCode !=
-                                                      "ar"
-                                                  ? Alignment.centerLeft
-                                                  : Alignment.centerRight,
-                                              width: 100,
-                                              height: 15,
-                                              child: Row(
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    AppAssets.sizeIconSvg,
-                                                    height: 12,
-                                                    // ignore: deprecated_member_use
-                                                    color:
-                                                        const Color(0xff48C8A8),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    "${LocaleKeys.size.tr()}: ",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.ra
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            fontSize: 12,
-                                                            color: const Color(
-                                                                0xff8D8D8D),
-                                                            letterSpacing: 0.18,
-                                                            height: 1.2),
-                                                  ),
-                                                  Text(
-                                                    isOldCart
-                                                        ? !oldCartCollection![
-                                                                    index]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                            ? oldCartCollection[
-                                                                        index]
-                                                                    .variations![
-                                                                        0]
+                                                (cartCollection![index]
+                                                            .variations![0]
+                                                            .sizeOption ==
+                                                        "" ||
+                                                    cartCollection[index]
+                                                            .variations![0]
+                                                            .sizeOption ==
+                                                        null)) ||
+                                            (isOldCart &&
+                                                (oldCartCollection![index]
+                                                            .variations![0]
+                                                            .sizeOption ==
+                                                        "" ||
+                                                    oldCartCollection[index]
+                                                            .variations![0]
+                                                            .sizeOption ==
+                                                        null))
+                                      ? const SizedBox.shrink()
+                                      : Container(
+                                          margin: const EdgeInsets.only(top: 5),
+                                          alignment:
+                                              LanguageService.languageCode !=
+                                                  "ar"
+                                              ? Alignment.centerLeft
+                                              : Alignment.centerRight,
+                                          width: 100,
+                                          height: 15,
+                                          child: Row(
+                                            children: [
+                                              SvgPicture.asset(
+                                                AppAssets.sizeIconSvg,
+                                                height: 12,
+                                                // ignore: deprecated_member_use
+                                                color: const Color(0xff48C8A8),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                "${LocaleKeys.size.tr()}: ",
+                                                style: context
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.rq
+                                                    .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      fontSize: 12,
+                                                      color: const Color(
+                                                        0xff8D8D8D,
+                                                      ),
+                                                      letterSpacing: 0.18,
+                                                      height: 1.2,
+                                                    ),
+                                              ),
+                                              Text(
+                                                isOldCart
+                                                    ? !oldCartCollection![index]
+                                                              .variations
+                                                              .isNullOrEmpty
+                                                          ? oldCartCollection[index]
+                                                                    .variations![0]
                                                                     .size ??
                                                                 ""
-                                                            : ""
-                                                        : !cartCollection![
-                                                                    index]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                            ? cartCollection[
-                                                                        index]
-                                                                    .variations![
-                                                                        0]
-                                                                    .size ??
-                                                                ""
-                                                            : "",
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
+                                                          : ""
+                                                    : !cartCollection![index]
+                                                          .variations
+                                                          .isNullOrEmpty
+                                                    ? cartCollection[index]
+                                                              .variations![0]
+                                                              .size ??
+                                                          ""
+                                                    : "",
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: context
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.mq
+                                                    .copyWith(
                                                       fontSize: 13,
                                                       height: 1.2,
                                                       color: const Color(
-                                                          (0xff505050)),
+                                                        (0xff505050),
+                                                      ),
                                                       letterSpacing: 0.18,
                                                     ),
-                                                  ),
-                                                ],
                                               ),
-                                            ),
+                                            ],
+                                          ),
+                                        ),
                                 ],
                               ),
-                              const SizedBox(
-                                height: 2,
-                              ),
+                              const SizedBox(height: 2),
                               Container(
-                                  alignment:
-                                      LanguageService.languageCode != "ar"
-                                          ? Alignment.centerLeft
-                                          : Alignment.centerRight,
-                                  width: 200,
-                                  height: 17,
-                                  child: Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        // ignore: deprecated_member_use
-                                        color: const Color(0xff8D8D8D),
-                                        AppAssets.dressSvg,
-                                        height: 12,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        isOldCart
-                                            ? " ${LocaleKeys.composed_of.tr()}: "
-                                            : " ${LocaleKeys.composed_of.tr()}: ",
-                                        style: context.textTheme.bodyMedium?.ra
-                                            .copyWith(
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 12,
-                                                color: const Color(0xff8D8D8D),
-                                                letterSpacing: 0.18,
-                                                height: 1.33),
-                                      ),
-                                      Text(
-                                        isOldCart
-                                            ? "${oldCartCollection![index].countOfPieces ?? 1} ${LocaleKeys.piece.tr()}"
-                                            : "${cartCollection![index].countOfPieces ?? 1} ${LocaleKeys.piece.tr()}",
-                                        style: context.textTheme.bodyMedium?.mr
-                                            .copyWith(
-                                                fontWeight: FontWeight.w100,
-                                                fontSize: 12,
-                                                color: const Color(0xff505050),
-                                                letterSpacing: 0.18,
-                                                height: 1.33),
-                                      ),
-                                    ],
-                                  )),
-                              const SizedBox(
-                                height: 2,
+                                alignment: LanguageService.languageCode != "ar"
+                                    ? Alignment.centerLeft
+                                    : Alignment.centerRight,
+                                width: 200,
+                                height: 17,
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      // ignore: deprecated_member_use
+                                      color: const Color(0xff8D8D8D),
+                                      AppAssets.dressSvg,
+                                      height: 12,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      isOldCart
+                                          ? " ${LocaleKeys.composed_of.tr()}: "
+                                          : " ${LocaleKeys.composed_of.tr()}: ",
+                                      style: context.textTheme.bodyMedium?.rq
+                                          .copyWith(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 12,
+                                            color: const Color(0xff8D8D8D),
+                                            letterSpacing: 0.18,
+                                            height: 1.33,
+                                          ),
+                                    ),
+                                    Text(
+                                      isOldCart
+                                          ? "${oldCartCollection![index].countOfPieces ?? 1} ${LocaleKeys.piece.tr()}"
+                                          : "${cartCollection![index].countOfPieces ?? 1} ${LocaleKeys.piece.tr()}",
+                                      style: context.textTheme.bodyMedium?.mq
+                                          .copyWith(
+                                            fontWeight: FontWeight.w100,
+                                            fontSize: 12,
+                                            color: const Color(0xff505050),
+                                            letterSpacing: 0.18,
+                                            height: 1.33,
+                                          ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(height: 2),
                               (isOldCart &&
-                                          state.oldcartCollection
+                                          state
+                                              .oldcartCollection
                                               .isNullOrEmpty) ||
                                       (!isOldCart &&
                                           state.cartCollection.isNullOrEmpty)
                                   ? const SizedBox()
                                   : isOldCart &&
-                                          (state.oldcartCollection?[index]
-                                                      .shippingDays ??
-                                                  0) ==
-                                              0
-                                      ? const SizedBox()
-                                      : !isOldCart &&
-                                              ((state.cartCollection?[index]
-                                                              .shippingDays ??
-                                                          0) +
-                                                      (state.startingSetting
-                                                              ?.shippingDay ??
-                                                          0)) ==
-                                                  0
-                                          ? const SizedBox()
-                                          : Container(
-                                              alignment: LanguageService
-                                                          .languageCode !=
-                                                      "ar"
-                                                  ? Alignment.centerLeft
-                                                  : Alignment.centerRight,
-                                              width: 200,
-                                              height: 17,
-                                              child: Row(
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    // ignore: deprecated_member_use
-                                                    color:
-                                                        const Color(0xff8D8D8D),
-                                                    AppAssets.shappingCartNew,
-                                                    height: 12,
+                                        (state
+                                                    .oldcartCollection?[index]
+                                                    .shippingDays ??
+                                                0) ==
+                                            0
+                                  ? const SizedBox()
+                                  : !isOldCart &&
+                                        ((state
+                                                        .cartCollection?[index]
+                                                        .shippingDays ??
+                                                    0) +
+                                                (state
+                                                        .startingSetting
+                                                        ?.shippingDay ??
+                                                    0)) ==
+                                            0
+                                  ? const SizedBox()
+                                  : Container(
+                                      alignment:
+                                          LanguageService.languageCode != "ar"
+                                          ? Alignment.centerLeft
+                                          : Alignment.centerRight,
+                                      width: 200,
+                                      height: 17,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            // ignore: deprecated_member_use
+                                            color: const Color(0xff8D8D8D),
+                                            AppAssets.shappingCartNew,
+                                            height: 12,
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            isOldCart
+                                                ? "${LocaleKeys.shipping.tr()}: "
+                                                : "${LocaleKeys.shipping.tr()}: ",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.rq
+                                                .copyWith(
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xff8D8D8D,
                                                   ),
-                                                  const SizedBox(
-                                                    width: 5,
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33,
+                                                ),
+                                          ),
+                                          Text(
+                                            isOldCart
+                                                ? "${((state.oldcartCollection?[index].shippingDays ?? 0) + (state.startingSetting?.shippingDay ?? 0))} ${LocaleKeys.day.tr()} "
+                                                : "${((state.cartCollection?[index].shippingDays ?? 0) + (state.startingSetting?.shippingDay ?? 0))} ${LocaleKeys.day.tr()} ",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.mq
+                                                .copyWith(
+                                                  fontWeight: FontWeight.w100,
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xff505050,
                                                   ),
-                                                  Text(
-                                                    isOldCart
-                                                        ? "${LocaleKeys.shipping.tr()}: "
-                                                        : "${LocaleKeys.shipping.tr()}: ",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.ra
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            fontSize: 12,
-                                                            color: const Color(
-                                                                0xff8D8D8D),
-                                                            letterSpacing: 0.18,
-                                                            height: 1.33),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33,
+                                                ),
+                                          ),
+                                          Text(
+                                            isOldCart
+                                                ? "${LocaleKeys.details.tr()}"
+                                                : "${LocaleKeys.details.tr()}",
+                                            strutStyle:
+                                                LanguageService.languageCode !=
+                                                    "ar"
+                                                ? null
+                                                : const StrutStyle(
+                                                    height: 0.8,
+                                                    leading: 0.6,
                                                   ),
-                                                  Text(
-                                                    isOldCart
-                                                        ? "${((state.oldcartCollection?[index].shippingDays ?? 0) + (state.startingSetting?.shippingDay ?? 0))} ${LocaleKeys.day.tr()} "
-                                                        : "${((state.cartCollection?[index].shippingDays ?? 0) + (state.startingSetting?.shippingDay ?? 0))} ${LocaleKeys.day.tr()} ",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w100,
-                                                            fontSize: 12,
-                                                            color: const Color(
-                                                                0xff505050),
-                                                            letterSpacing: 0.18,
-                                                            height: 1.33),
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.mq
+                                                .copyWith(
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                  fontWeight: FontWeight.w100,
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xff505050,
                                                   ),
-                                                  Text(
-                                                    isOldCart
-                                                        ? "${LocaleKeys.details.tr()}"
-                                                        : "${LocaleKeys.details.tr()}",
-                                                    strutStyle: LanguageService
-                                                                .languageCode !=
-                                                            "ar"
-                                                        ? null
-                                                        : const StrutStyle(
-                                                            height: 0.8,
-                                                            leading: 0.6),
-                                                    style: context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
-                                                            decoration:
-                                                                TextDecoration
-                                                                    .underline,
-                                                            fontWeight:
-                                                                FontWeight.w100,
-                                                            fontSize: 12,
-                                                            color: const Color(
-                                                                0xff505050),
-                                                            letterSpacing: 0.18,
-                                                            height: 1.33),
-                                                  ),
-                                                ],
-                                              )),
-                              const SizedBox(
-                                height: 14,
-                              ),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                              const SizedBox(height: 14),
                               Container(
                                 margin: EdgeInsets.only(
-                                    left: LanguageService.languageCode == "ar"
-                                        ? 10.w
-                                        : 0,
-                                    right: LanguageService.languageCode == "ar"
-                                        ? 0
-                                        : 10.w),
+                                  left: LanguageService.languageCode == "ar"
+                                      ? 10.w
+                                      : 0,
+                                  right: LanguageService.languageCode == "ar"
+                                      ? 0
+                                      : 10.w,
+                                ),
                                 height: 32,
                                 child: Row(
                                   mainAxisAlignment:
@@ -767,98 +767,111 @@ class _ProductCollectionInCartPage1State
                                           ? Row(
                                               children: [
                                                 InkWell(
-                                                    onTap: () {
-                                                      GetIt.I<HomeBloc>().add(
-                                                          HideItemInOldCartEvent(
-                                                              oldCartId:
-                                                                  oldCartCollection?[
-                                                                          index]
-                                                                      .id));
-                                                    },
-                                                    child: Container(
-                                                      height: 60,
-                                                      width: 25.w,
-                                                      child: Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        width: 12,
-                                                        child: SvgPicture.asset(
-                                                          AppAssets
-                                                              .deletecartSvg,
-                                                          width: 12.w,
-                                                        ),
+                                                  onTap: () {
+                                                    GetIt.I<HomeBloc>().add(
+                                                      HideItemInOldCartEvent(
+                                                        oldCartId:
+                                                            oldCartCollection?[index]
+                                                                .id,
                                                       ),
-                                                    )),
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height: 60,
+                                                    width: 25.w,
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      width: 12,
+                                                      child: SvgPicture.asset(
+                                                        AppAssets.deletecartSvg,
+                                                        width: 12.w,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                                 Text(
-                                                    "${oldCartCollection![index].quantity ?? 0}",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w100,
-                                                            fontSize: 14.sp,
-                                                            color: const Color(
-                                                                0xff1D1D1D),
-                                                            letterSpacing: 0.18,
-                                                            height: 1.33)),
+                                                  "${oldCartCollection![index].quantity ?? 0}",
+                                                  style: context
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.mq
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w100,
+                                                        fontSize: 14.sp,
+                                                        color: const Color(
+                                                          0xff1D1D1D,
+                                                        ),
+                                                        letterSpacing: 0.18,
+                                                        height: 1.33,
+                                                      ),
+                                                ),
                                                 InkWell(
                                                   onTap: () {
-                                                    BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
-                                                        currentColorName: isOldCart
+                                                    BlocProvider.of<HomeBloc>(
+                                                      context,
+                                                    ).add(
+                                                      GetFullProductDetailsEvent(
+                                                        currentColorName:
+                                                            isOldCart
                                                             ? (!oldCartCollection![index]
-                                                                    .variations
-                                                                    .isNullOrEmpty
-                                                                ? oldCartCollection[index]
-                                                                        .variations![
-                                                                            0]
-                                                                        .colorOption ??
-                                                                    ""
-                                                                : "")
-                                                            : (!cartCollection![
-                                                                        index]
-                                                                    .variations
-                                                                    .isNullOrEmpty
-                                                                ? cartCollection[index]
-                                                                        .variations![
-                                                                            0]
-                                                                        .colorOption ??
-                                                                    ""
-                                                                : ""),
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? oldCartCollection[index]
+                                                                            .variations![0]
+                                                                            .colorOption ??
+                                                                        ""
+                                                                  : "")
+                                                            : (!cartCollection![index]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? cartCollection[index]
+                                                                            .variations![0]
+                                                                            .colorOption ??
+                                                                        ""
+                                                                  : ""),
                                                         productSlug: isOldCart
-                                                            ? oldCartCollection![
-                                                                    index]
-                                                                .slug
-                                                                .toString()
+                                                            ? oldCartCollection![index]
+                                                                  .slug
+                                                                  .toString()
                                                             : cartCollection![index]
-                                                                .slug
-                                                                .toString()));
+                                                                  .slug
+                                                                  .toString(),
+                                                      ),
+                                                    );
                                                     Future.delayed(
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                        () => Navigator.of(
-                                                                    context)
-                                                                .push(
-                                                                    PageRouteBuilder(
-                                                              pageBuilder: (context, animation, secondaryAnimation) => ProductDetailsPageNew(
-                                                                  productSlugForOpeningChatDirectly: isOldCart
-                                                                      ? oldCartCollection![
-                                                                              index]
+                                                      const Duration(
+                                                        milliseconds: 300,
+                                                      ),
+                                                      () => Navigator.of(context).push(
+                                                        PageRouteBuilder(
+                                                          pageBuilder:
+                                                              (
+                                                                context,
+                                                                animation,
+                                                                secondaryAnimation,
+                                                              ) => ProductDetailsPageNew(
+                                                                productSlugForOpeningChatDirectly:
+                                                                    isOldCart
+                                                                    ? oldCartCollection![index]
                                                                           .slug
                                                                           .toString()
-                                                                      : cartCollection![
-                                                                              index]
+                                                                    : cartCollection![index]
                                                                           .slug
                                                                           .toString(),
-                                                                  productIdForOpeningChatDirectly: isOldCart
-                                                                      ? oldCartCollection![
-                                                                              index]
+                                                                productIdForOpeningChatDirectly:
+                                                                    isOldCart
+                                                                    ? oldCartCollection![index]
                                                                           .productId
                                                                           .toString()
-                                                                      : cartCollection![
-                                                                              index]
+                                                                    : cartCollection![index]
                                                                           .productId
-                                                                          .toString()),
-                                                            )));
+                                                                          .toString(),
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    );
                                                     /* print(
                                                         "2222222222222222222222222222222222222222222222222222");
                                                     int indexess = isOldCart
@@ -954,116 +967,194 @@ class _ProductCollectionInCartPage1State
                                           : Row(
                                               children: [
                                                 InkWell(
-                                                    onTap: () {
-                                                      homeBloc.add(
-                                                          ChangeCurrentIndexForUpdatCartEvent(
-                                                              index: index));
-                                                      if (index ==
-                                                              (state.currentIndexForUpdateCart ??
-                                                                  0) &&
-                                                          (state.updateItemInCartStatus ==
-                                                              UpdateItemInCartStatus
-                                                                  .loading)) {
-                                                        return;
-                                                      }
-                                                      (cartCollection![index].quantity ?? 0) > 1
-                                                          ? GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
+                                                  onTap: () {
+                                                    homeBloc.add(
+                                                      ChangeCurrentIndexForUpdatCartEvent(
+                                                        index: index,
+                                                      ),
+                                                    );
+                                                    if (index ==
+                                                            (state.currentIndexForUpdateCart ??
+                                                                0) &&
+                                                        (state.updateItemInCartStatus ==
+                                                            UpdateItemInCartStatus
+                                                                .loading)) {
+                                                      return;
+                                                    }
+                                                    (cartCollection![index]
+                                                                    .quantity ??
+                                                                0) >
+                                                            1
+                                                        ? GetIt.I<HomeBloc>().add(
+                                                            UpdateItemInCartEvent(
                                                               fromCartPage:
                                                                   true,
                                                               newQuantity: -1,
                                                               maxAllowed: double.tryParse(
-                                                                  cartCollection[index].maxAllowedQty ??
-                                                                      "0"),
-                                                              currentSize: !cartCollection[index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
-                                                                  ? cartCollection[index].variations![0].sizeOption ??
-                                                                      ""
-                                                                  : "",
-                                                              colorOption: !cartCollection[index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
-                                                                  ? cartCollection[index].variations![0].colorOption ??
-                                                                      ""
-                                                                  : "",
-                                                              productId: cartCollection[index]
-                                                                  .productId
-                                                                  .toString(),
-                                                              productName: cartCollection[index]
-                                                                  .name
-                                                                  .toString(),
-                                                              productPrice: cartCollection[index].price.toString(),
-                                                              totalQuantity: (cartCollection[index].quantity ?? 0) - 1,
-                                                              image: cartCollection[index].image ?? "",
-                                                              cartId: cartCollection[index].id.toString(),
-                                                              boutiqueId: cartCollection[index].boutique!.id.toString()))
-                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(fromCartPage: true, image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].sizeOption ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].colorOption ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
-                                                    },
-                                                    child: (cartCollection![
-                                                                        index]
-                                                                    .quantity ??
-                                                                0) >
-                                                            1
-                                                        ? Container(
-                                                            height: 60,
-                                                            width: 25.w,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              width: 12,
-                                                              child: SvgPicture
-                                                                  .asset(
-                                                                AppAssets
-                                                                    .removeCartSvg,
-                                                                width: 12,
+                                                                cartCollection[index]
+                                                                        .maxAllowedQty ??
+                                                                    "0",
                                                               ),
+                                                              currentSize:
+                                                                  !cartCollection[index]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? cartCollection[index]
+                                                                            .variations![0]
+                                                                            .sizeOption ??
+                                                                        ""
+                                                                  : "",
+                                                              colorOption:
+                                                                  !cartCollection[index]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? cartCollection[index]
+                                                                            .variations![0]
+                                                                            .colorOption ??
+                                                                        ""
+                                                                  : "",
+                                                              productId:
+                                                                  cartCollection[index]
+                                                                      .productId
+                                                                      .toString(),
+                                                              productName:
+                                                                  cartCollection[index]
+                                                                      .name
+                                                                      .toString(),
+                                                              productPrice:
+                                                                  cartCollection[index]
+                                                                      .price
+                                                                      .toString(),
+                                                              totalQuantity:
+                                                                  (cartCollection[index]
+                                                                          .quantity ??
+                                                                      0) -
+                                                                  1,
+                                                              image:
+                                                                  cartCollection[index]
+                                                                      .image ??
+                                                                  "",
+                                                              cartId:
+                                                                  cartCollection[index]
+                                                                      .id
+                                                                      .toString(),
+                                                              boutiqueId:
+                                                                  cartCollection[index]
+                                                                      .boutique!
+                                                                      .id
+                                                                      .toString(),
                                                             ),
                                                           )
-                                                        : Container(
-                                                            height: 60,
-                                                            width: 25.w,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              width: 12,
-                                                              child: SvgPicture
-                                                                  .asset(
-                                                                AppAssets
-                                                                    .deletecartSvg,
-                                                                width: 12.w,
-                                                              ),
+                                                        : GetIt.I<HomeBloc>().add(
+                                                            RemoveItemFormCartEvent(
+                                                              fromCartPage:
+                                                                  true,
+                                                              image:
+                                                                  cartCollection[index]
+                                                                      .image ??
+                                                                  '',
+                                                              currentSize:
+                                                                  !cartCollection[index]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? cartCollection[index]
+                                                                            .variations![0]
+                                                                            .sizeOption ??
+                                                                        ""
+                                                                  : "",
+                                                              colorName:
+                                                                  !cartCollection[index]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? cartCollection[index]
+                                                                            .variations![0]
+                                                                            .colorOption ??
+                                                                        ""
+                                                                  : "",
+                                                              productId:
+                                                                  cartCollection[index]
+                                                                      .productId
+                                                                      .toString(),
+                                                              itemId:
+                                                                  cartCollection[index]
+                                                                      .id
+                                                                      .toString(),
+                                                              boutiqueId:
+                                                                  cartCollection[index]
+                                                                      .boutique!
+                                                                      .id
+                                                                      .toString(),
                                                             ),
-                                                          )),
+                                                          );
+                                                  },
+                                                  child:
+                                                      (cartCollection![index]
+                                                                  .quantity ??
+                                                              0) >
+                                                          1
+                                                      ? Container(
+                                                          height: 60,
+                                                          width: 25.w,
+                                                          child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            width: 12,
+                                                            child: SvgPicture.asset(
+                                                              AppAssets
+                                                                  .removeCartSvg,
+                                                              width: 12,
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : Container(
+                                                          height: 60,
+                                                          width: 25.w,
+                                                          child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            width: 12,
+                                                            child: SvgPicture.asset(
+                                                              AppAssets
+                                                                  .deletecartSvg,
+                                                              width: 12.w,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                ),
                                                 ((state.currentIndexForUpdateCart ??
                                                                 0) ==
                                                             index) &&
                                                         state.updateItemInCartStatus ==
                                                             UpdateItemInCartStatus
                                                                 .loading
-                                                    ? TrydosLoader(
-                                                        size: 14.sp,
-                                                      )
+                                                    ? TrydosLoader(size: 14.sp)
                                                     : Text(
                                                         "${cartCollection[index].quantity ?? 0}",
-                                                        style: context.textTheme
-                                                            .bodyMedium?.mr
+                                                        style: context
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.mq
                                                             .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w100,
-                                                                fontSize: 16.sp,
-                                                                color: const Color(
-                                                                    0xff1D1D1D),
-                                                                letterSpacing:
-                                                                    0.18,
-                                                                height: 1.33)),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w100,
+                                                              fontSize: 16.sp,
+                                                              color:
+                                                                  const Color(
+                                                                    0xff1D1D1D,
+                                                                  ),
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              height: 1.33,
+                                                            ),
+                                                      ),
                                                 InkWell(
                                                   onTap: () {
                                                     homeBloc.add(
-                                                        ChangeCurrentIndexForUpdatCartEvent(
-                                                            index: index));
+                                                      ChangeCurrentIndexForUpdatCartEvent(
+                                                        index: index,
+                                                      ),
+                                                    );
 
                                                     if (index ==
                                                             (state.currentIndexForUpdateCart ??
@@ -1073,23 +1164,32 @@ class _ProductCollectionInCartPage1State
                                                                 .loading)) {
                                                       return;
                                                     }
-                                                    GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
+                                                    GetIt.I<HomeBloc>().add(
+                                                      UpdateItemInCartEvent(
                                                         fromCartPage: true,
                                                         newQuantity: 1,
                                                         maxAllowed: double.tryParse(
-                                                            cartCollection![index].maxAllowedQty ??
-                                                                "0"),
-                                                        currentSize: !cartCollection[index]
+                                                          cartCollection![index]
+                                                                  .maxAllowedQty ??
+                                                              "0",
+                                                        ),
+                                                        currentSize:
+                                                            !cartCollection[index]
                                                                 .variations
                                                                 .isNullOrEmpty
-                                                            ? cartCollection[index].variations![0].sizeOption ??
-                                                                ""
+                                                            ? cartCollection[index]
+                                                                      .variations![0]
+                                                                      .sizeOption ??
+                                                                  ""
                                                             : "",
-                                                        colorOption: !cartCollection[index]
+                                                        colorOption:
+                                                            !cartCollection[index]
                                                                 .variations
                                                                 .isNullOrEmpty
-                                                            ? cartCollection[index].variations![0].colorOption ??
-                                                                ""
+                                                            ? cartCollection[index]
+                                                                      .variations![0]
+                                                                      .colorOption ??
+                                                                  ""
                                                             : "",
                                                         productId:
                                                             cartCollection[index]
@@ -1099,11 +1199,30 @@ class _ProductCollectionInCartPage1State
                                                             cartCollection[index]
                                                                 .name
                                                                 .toString(),
-                                                        productPrice: cartCollection[index].price.toString(),
-                                                        totalQuantity: (cartCollection[index].quantity ?? 0) + 1,
-                                                        image: cartCollection[index].image ?? "",
-                                                        cartId: cartCollection[index].id.toString(),
-                                                        boutiqueId: cartCollection[index].boutique!.id.toString()));
+                                                        productPrice:
+                                                            cartCollection[index]
+                                                                .price
+                                                                .toString(),
+                                                        totalQuantity:
+                                                            (cartCollection[index]
+                                                                    .quantity ??
+                                                                0) +
+                                                            1,
+                                                        image:
+                                                            cartCollection[index]
+                                                                .image ??
+                                                            "",
+                                                        cartId:
+                                                            cartCollection[index]
+                                                                .id
+                                                                .toString(),
+                                                        boutiqueId:
+                                                            cartCollection[index]
+                                                                .boutique!
+                                                                .id
+                                                                .toString(),
+                                                      ),
+                                                    );
                                                   },
                                                   child: Container(
                                                     height: 60,
@@ -1125,12 +1244,11 @@ class _ProductCollectionInCartPage1State
                                                       .spaceBetween,
                                             ),
                                     ),
-                                    SizedBox(
-                                      width: 15.w,
-                                    ),
+                                    SizedBox(width: 15.w),
                                     Container(
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 5.w),
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal: 5.w,
+                                      ),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -1141,123 +1259,126 @@ class _ProductCollectionInCartPage1State
                                                 Text(
                                                   isOldCart
                                                       ? HelperFunctions.formatNumber(
-                                                          number: (oldCartCollection![
-                                                                      index]
+                                                          number:
+                                                              (oldCartCollection![index]
                                                                   .priceOfVariant! *
                                                               state
                                                                   .getCurrencyForCountryModel!
                                                                   .data!
                                                                   .currency!
                                                                   .exchangeRate! *
-                                                              oldCartCollection[
-                                                                      index]
-                                                                  .quantity!))
+                                                              oldCartCollection[index]
+                                                                  .quantity!),
+                                                        )
                                                       /*  .toStringAsFixed(state
                                                                   .startingSetting
                                                                   ?.decimalPointSetting ??
                                                               2)*/
                                                       : HelperFunctions.formatNumber(
                                                           number:
-                                                              (cartCollection![
-                                                                          index]
-                                                                      .price! *
-                                                                  state
-                                                                      .getCurrencyForCountryModel!
-                                                                      .data!
-                                                                      .currency!
-                                                                      .exchangeRate! *
-                                                                  cartCollection[
-                                                                          index]
-                                                                      .quantity!))
+                                                              (cartCollection![index]
+                                                                  .price! *
+                                                              state
+                                                                  .getCurrencyForCountryModel!
+                                                                  .data!
+                                                                  .currency!
+                                                                  .exchangeRate! *
+                                                              cartCollection[index]
+                                                                  .quantity!),
+                                                        ),
                                                   /* .toStringAsFixed(state
                                                                   .startingSetting
                                                                   ?.decimalPointSetting ??
                                                               2)*/
-                                                  ,
-                                                  style: context
-                                                      .textTheme.bodyMedium?.ra
-                                                      .copyWith(
-                                                          decorationColor:
-                                                              const Color(
-                                                                  0xffC4C2C2),
-                                                          fontSize: 12.sp,
-                                                          color: isOldCart ||
-                                                                  cartCollection![
-                                                                              index]
-                                                                          .offerPrice ==
-                                                                      cartCollection[
-                                                                              index]
-                                                                          .price
-                                                              ? const Color(
-                                                                  0xff505050)
-                                                              : const Color(
-                                                                  0xffC4C2C2),
-                                                          decoration: isOldCart
-                                                              ? null
-                                                              : cartCollection![
-                                                                              index]
-                                                                          .offerPrice ==
-                                                                      cartCollection[
-                                                                              index]
-                                                                          .price
-                                                                  ? null
-                                                                  : TextDecoration
-                                                                      .lineThrough),
-                                                ),
-                                                const SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text(
-                                                    isOldCart
-                                                        ? ""
-                                                        : cartCollection![index]
+                                                  style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                    decorationColor:
+                                                        const Color(0xffC4C2C2),
+                                                    fontSize: 12.sp,
+                                                    color:
+                                                        isOldCart ||
+                                                            cartCollection![index]
                                                                     .offerPrice ==
-                                                                cartCollection[
-                                                                        index]
+                                                                cartCollection[index]
                                                                     .price
-                                                            ? ""
-                                                            : "${HelperFunctions.formatNumber(number: (cartCollection[index].offerPrice! * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))
-                                                            //.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
-                                                            } ",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.br
-                                                        .copyWith(
-                                                      decorationColor:
-                                                          const Color(
-                                                              0xff505050),
-                                                      fontSize: 14.sp,
-                                                      color: isOldCart
-                                                          ? const Color(
-                                                              0xff505050)
-                                                          : cartCollection![
-                                                                          index]
+                                                        ? const Color(
+                                                            0xff505050,
+                                                          )
+                                                        : const Color(
+                                                            0xffC4C2C2,
+                                                          ),
+                                                    decoration: isOldCart
+                                                        ? null
+                                                        : cartCollection![index]
+                                                                  .offerPrice ==
+                                                              cartCollection[index]
+                                                                  .price
+                                                        ? null
+                                                        : TextDecoration
+                                                              .lineThrough,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                Text(
+                                                  isOldCart
+                                                      ? ""
+                                                      : cartCollection![index]
+                                                                .offerPrice ==
+                                                            cartCollection[index]
+                                                                .price
+                                                      ? ""
+                                                      : "${HelperFunctions.formatNumber(number: (cartCollection[index].offerPrice! * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))
+                                                        //.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
+                                                        } ",
+                                                  style: context
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.br
+                                                      .copyWith(
+                                                        decorationColor:
+                                                            const Color(
+                                                              0xff505050,
+                                                            ),
+                                                        fontSize: 14.sp,
+                                                        color: isOldCart
+                                                            ? const Color(
+                                                                0xff505050,
+                                                              )
+                                                            : cartCollection![index]
                                                                       .isRedeem ==
                                                                   true
-                                                              ? Colors
+                                                            ? Colors
                                                                   .deepOrangeAccent
-                                                              : const Color(
-                                                                  0xff505050),
-                                                    )),
+                                                            : const Color(
+                                                                0xff505050,
+                                                              ),
+                                                      ),
+                                                ),
                                                 Text(
                                                   widget.priceSymbol ?? '\$',
                                                   style: context
-                                                      .textTheme.bodyMedium?.ra
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.rq
                                                       .copyWith(
-                                                    decorationColor:
-                                                        const Color(0xffc4c2c2),
-                                                    fontSize: 9.sp,
-                                                    color: isOldCart
-                                                        ? const Color(
-                                                            0xff505050)
-                                                        : cartCollection![index]
-                                                                    .isRedeem ==
-                                                                true
+                                                        decorationColor:
+                                                            const Color(
+                                                              0xffc4c2c2,
+                                                            ),
+                                                        fontSize: 9.sp,
+                                                        color: isOldCart
+                                                            ? const Color(
+                                                                0xff505050,
+                                                              )
+                                                            : cartCollection![index]
+                                                                      .isRedeem ==
+                                                                  true
                                                             ? Colors
-                                                                .deepOrangeAccent
+                                                                  .deepOrangeAccent
                                                             : const Color(
-                                                                0xffc4c2c2),
-                                                  ),
-                                                )
+                                                                0xffc4c2c2,
+                                                              ),
+                                                      ),
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -1269,35 +1390,39 @@ class _ProductCollectionInCartPage1State
                                                       width: 10,
                                                       height: 10,
                                                       child: SvgPicture.asset(
-                                                          AppAssets
-                                                              .countItemSvg),
+                                                        AppAssets.countItemSvg,
+                                                      ),
                                                     ),
-                                                    const SizedBox(
-                                                      width: 5,
-                                                    ),
+                                                    const SizedBox(width: 5),
                                                     Text(
-                                                        "${LocaleKeys.saved.tr()} ${(((cartCollection![index].price! - cartCollection[index].offerPrice!) / cartCollection[index].price!) * 100).toStringAsFixed(0)} %",
-                                                        style: context.textTheme
-                                                            .bodyMedium?.ra
-                                                            .copyWith(
-                                                          fontSize: 7,
-                                                          color: const Color(
-                                                              0xff388CFF),
-                                                        ))
+                                                      "${LocaleKeys.saved.tr()} ${(((cartCollection![index].price! - cartCollection[index].offerPrice!) / cartCollection[index].price!) * 100).toStringAsFixed(0)} %",
+                                                      style: context
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.rq
+                                                          .copyWith(
+                                                            fontSize: 7,
+                                                            color: const Color(
+                                                              0xff388CFF,
+                                                            ),
+                                                          ),
+                                                    ),
                                                   ],
-                                                )
+                                                ),
                                         ],
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                          left:
-                              LanguageService.languageCode != "ar" ? 130 : null,
-                          right:
-                              LanguageService.languageCode != "ar" ? null : 130,
+                          left: LanguageService.languageCode != "ar"
+                              ? 130
+                              : null,
+                          right: LanguageService.languageCode != "ar"
+                              ? null
+                              : 130,
                         ),
                         Positioned(
                           child: Container(
@@ -1305,13 +1430,17 @@ class _ProductCollectionInCartPage1State
                             width: 30,
                             height: 30,
                             decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 0.5, color: const Color(0xff8D8D8D)),
-                                borderRadius:
-                                    BorderRadiusDirectional.circular(20)),
+                              border: Border.all(
+                                width: 0.5,
+                                color: const Color(0xff8D8D8D),
+                              ),
+                              borderRadius: BorderRadiusDirectional.circular(
+                                20,
+                              ),
+                            ),
                             child: Text(
                               isOldCart ? "${index + 1}" : "${index + 1}",
-                              style: context.textTheme.bodyMedium?.ra.copyWith(
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
                                 decorationColor: const Color(0xff8D8D8D),
                                 fontSize: 14,
                                 color: const Color(0xff8D8D8D),
@@ -1320,8 +1449,9 @@ class _ProductCollectionInCartPage1State
                             ),
                           ),
                           top: 5,
-                          right:
-                              LanguageService.languageCode != "ar" ? 5 : null,
+                          right: LanguageService.languageCode != "ar"
+                              ? 5
+                              : null,
                           left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
                         isOldCart
@@ -1330,8 +1460,10 @@ class _ProductCollectionInCartPage1State
                                 child: InkWell(
                                   onTap: () {
                                     homeBloc.add(
-                                        ChangeCurrentIndexForUpdatCartEvent(
-                                            index: index));
+                                      ChangeCurrentIndexForUpdatCartEvent(
+                                        index: index,
+                                      ),
+                                    );
                                     if (index ==
                                                 (state.currentIndexForUpdateCart ??
                                                     0) &&
@@ -1343,10 +1475,11 @@ class _ProductCollectionInCartPage1State
                                     }
 
                                     homeBloc.add(
-                                        ConvertItemFromCartToOldCartEvent(
-                                            cartId: cartCollection![index]
-                                                .id
-                                                .toString()));
+                                      ConvertItemFromCartToOldCartEvent(
+                                        cartId: cartCollection![index].id
+                                            .toString(),
+                                      ),
+                                    );
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -1356,32 +1489,44 @@ class _ProductCollectionInCartPage1State
                                     alignment: Alignment.center,
                                     width: isOldCart ? 0 : 50,
                                     height: isOldCart ? 0 : 30,
-                                    child: (index ==
+                                    child:
+                                        (index ==
                                                 (state.currentIndexForUpdateCart ??
                                                     0) &&
                                             (state.convertItemFromcartToOldCartStatus ==
                                                 ConvertItemFromcartToOldCartStatus
                                                     .loading))
-                                        ? TrydosLoader(
-                                            size: 20,
-                                          )
+                                        ? TrydosLoader(size: 20)
                                         : Row(
                                             children: [
-                                              Text(" ${LocaleKeys.delay.tr()} ",
-                                                  style: context
-                                                      .textTheme.bodyMedium?.ba
-                                                      .copyWith(
-                                                    fontSize: 12,
-                                                    color: const Color.fromARGB(
-                                                        255, 42, 39, 228),
-                                                  )),
+                                              Text(
+                                                " ${LocaleKeys.delay.tr()} ",
+                                                style: context
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.bq
+                                                    .copyWith(
+                                                      fontSize: 12,
+                                                      color:
+                                                          const Color.fromARGB(
+                                                            255,
+                                                            42,
+                                                            39,
+                                                            228,
+                                                          ),
+                                                    ),
+                                              ),
                                               SvgPicture.asset(
                                                 AppAssets.orderClockSvg,
                                                 width: 15,
                                                 height: 15,
                                                 // ignore: deprecated_member_use
                                                 color: const Color.fromARGB(
-                                                    255, 42, 39, 228),
+                                                  255,
+                                                  42,
+                                                  39,
+                                                  228,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -1390,15 +1535,17 @@ class _ProductCollectionInCartPage1State
                                 bottom: (state.cartCollection.isNullOrEmpty)
                                     ? 0
                                     : (state.cartCollection?[index] == null)
-                                        ? 0
-                                        : (state.cartCollection?[index]
-                                                        .haveHurryUpNotifyTimeLeft ??
-                                                    false) ||
-                                                (state.cartCollection?[index]
-                                                        .haveHurryUpNotifyQty ??
-                                                    false)
-                                            ? 85
-                                            : 50,
+                                    ? 0
+                                    : (state
+                                                  .cartCollection?[index]
+                                                  .haveHurryUpNotifyTimeLeft ??
+                                              false) ||
+                                          (state
+                                                  .cartCollection?[index]
+                                                  .haveHurryUpNotifyQty ??
+                                              false)
+                                    ? 85
+                                    : 50,
                                 right: LanguageService.languageCode != "ar"
                                     ? 5
                                     : null,
@@ -1418,7 +1565,10 @@ class _ProductCollectionInCartPage1State
                                     color: const Color(0xffF8F8F8),
                                   ),
                                   margin: const EdgeInsets.only(
-                                      bottom: 20, left: 20, right: 20),
+                                    bottom: 20,
+                                    left: 20,
+                                    right: 20,
+                                  ),
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
@@ -1427,32 +1577,41 @@ class _ProductCollectionInCartPage1State
                                     height: 32,
                                     child: Row(
                                       children: [
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
+                                        const SizedBox(width: 10),
                                         SvgPicture.asset(AppAssets.towCartSvg),
-                                        Text(" ${LocaleKeys.out_of_bag.tr()} ",
-                                            style: context
-                                                .textTheme.bodyMedium?.ba
-                                                .copyWith(
-                                              fontSize: 12,
-                                              color: const Color(0xff8D8D8D),
-                                            )),
                                         Text(
-                                            "${LocaleKeys.time_running_out.tr()} ",
-                                            style: context
-                                                .textTheme.bodyMedium?.ra
-                                                .copyWith(
-                                              fontSize: 12,
-                                              color: const Color(0xff8D8D8D),
-                                            )),
-                                        Text(" -30:00",
-                                            style: context
-                                                .textTheme.bodyMedium?.ba
-                                                .copyWith(
-                                              fontSize: 12,
-                                              color: const Color(0xff8D8D8D),
-                                            )),
+                                          " ${LocaleKeys.out_of_bag.tr()} ",
+                                          style: context
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.bq
+                                              .copyWith(
+                                                fontSize: 12,
+                                                color: const Color(0xff8D8D8D),
+                                              ),
+                                        ),
+                                        Text(
+                                          "${LocaleKeys.time_running_out.tr()} ",
+                                          style: context
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.rq
+                                              .copyWith(
+                                                fontSize: 12,
+                                                color: const Color(0xff8D8D8D),
+                                              ),
+                                        ),
+                                        Text(
+                                          " -30:00",
+                                          style: context
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.bq
+                                              .copyWith(
+                                                fontSize: 12,
+                                                color: const Color(0xff8D8D8D),
+                                              ),
+                                        ),
                                         InkWell(
                                           onTap: () {
                                             /*print(state.productITemForCart.keys
@@ -1524,177 +1683,112 @@ class _ProductCollectionInCartPage1State
                                                                       .productId
                                                                       .toString()]!,
                                                         )));*/
-                                            BlocProvider.of<HomeBloc>(context)
-                                                .add(GetFullProductDetailsEvent(
-                                                    currentColorName: isOldCart
-                                                        ? (!oldCartCollection![index]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                            ? oldCartCollection[
-                                                                        index]
-                                                                    .variations![
-                                                                        0]
+                                            BlocProvider.of<HomeBloc>(
+                                              context,
+                                            ).add(
+                                              GetFullProductDetailsEvent(
+                                                currentColorName: isOldCart
+                                                    ? (!oldCartCollection![index]
+                                                              .variations
+                                                              .isNullOrEmpty
+                                                          ? oldCartCollection[index]
+                                                                    .variations![0]
                                                                     .colorOption ??
                                                                 ""
-                                                            : "")
-                                                        : (!cartCollection![index]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                            ? cartCollection[index]
-                                                                    .variations![
-                                                                        0]
+                                                          : "")
+                                                    : (!cartCollection![index]
+                                                              .variations
+                                                              .isNullOrEmpty
+                                                          ? cartCollection[index]
+                                                                    .variations![0]
                                                                     .colorOption ??
                                                                 ""
-                                                            : ""),
-                                                    productSlug: isOldCart
-                                                        ? oldCartCollection![index]
-                                                            .slug
-                                                            .toString()
-                                                        : cartCollection![index]
-                                                            .slug
-                                                            .toString()));
+                                                          : ""),
+                                                productSlug: isOldCart
+                                                    ? oldCartCollection![index]
+                                                          .slug
+                                                          .toString()
+                                                    : cartCollection![index]
+                                                          .slug
+                                                          .toString(),
+                                              ),
+                                            );
                                             Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 300),
-                                                () => Navigator.of(context)
-                                                        .push(PageRouteBuilder(
-                                                      pageBuilder: (context, animation,
-                                                              secondaryAnimation) =>
-                                                          ProductDetailsPageNew(
-                                                              productSlugForOpeningChatDirectly: isOldCart
-                                                                  ? oldCartCollection![
-                                                                          index]
-                                                                      .slug
-                                                                      .toString()
-                                                                  : cartCollection![
-                                                                          index]
-                                                                      .slug
-                                                                      .toString(),
-                                                              productIdForOpeningChatDirectly: isOldCart
-                                                                  ? oldCartCollection![
-                                                                          index]
-                                                                      .productId
-                                                                      .toString()
-                                                                  : cartCollection![
-                                                                          index]
-                                                                      .productId
-                                                                      .toString()),
-                                                    )));
+                                              const Duration(milliseconds: 300),
+                                              () => Navigator.of(context).push(
+                                                PageRouteBuilder(
+                                                  pageBuilder:
+                                                      (
+                                                        context,
+                                                        animation,
+                                                        secondaryAnimation,
+                                                      ) => ProductDetailsPageNew(
+                                                        productSlugForOpeningChatDirectly:
+                                                            isOldCart
+                                                            ? oldCartCollection![index]
+                                                                  .slug
+                                                                  .toString()
+                                                            : cartCollection![index]
+                                                                  .slug
+                                                                  .toString(),
+                                                        productIdForOpeningChatDirectly:
+                                                            isOldCart
+                                                            ? oldCartCollection![index]
+                                                                  .productId
+                                                                  .toString()
+                                                            : cartCollection![index]
+                                                                  .productId
+                                                                  .toString(),
+                                                      ),
+                                                ),
+                                              ),
+                                            );
                                           },
                                           child: Text(
-                                              " | ${LocaleKeys.add_again.tr()}",
-                                              style: context
-                                                  .textTheme.bodyMedium?.ra
-                                                  .copyWith(
-                                                fontSize: 12,
-                                                color: const Color(0xff8D8D8D),
-                                              )),
+                                            " | ${LocaleKeys.add_again.tr()}",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.rq
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xff8D8D8D,
+                                                  ),
+                                                ),
+                                          ),
                                         ),
                                         const Spacer(),
                                         SvgPicture.asset(
-                                            AppAssets.chatWithQuestionSvg),
-                                        const SizedBox(
-                                          width: 10,
-                                        )
+                                          AppAssets.chatWithQuestionSvg,
+                                        ),
+                                        const SizedBox(width: 10),
                                       ],
                                     ),
                                   ),
                                 )
-                              : !(state.cartCollection?[index]
-                                          .haveHurryUpNotifyTimeLeft ??
-                                      false)
-                                  ? (state.cartCollection?[index]
-                                              .haveHurryUpNotifyQty ??
-                                          false)
-                                      ? Container(
-                                          width: 315,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            color: const Color(0xffFDFDEF),
+                              : !(state
+                                        .cartCollection?[index]
+                                        .haveHurryUpNotifyTimeLeft ??
+                                    false)
+                              ? (state
+                                            .cartCollection?[index]
+                                            .haveHurryUpNotifyQty ??
+                                        false)
+                                    ? Container(
+                                        width: 315,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
                                           ),
-                                          margin: const EdgeInsets.only(
-                                              bottom: 20, left: 20, right: 20),
-                                          child: DottedBorder(
-                                              padding: EdgeInsets.zero,
-                                              borderType: BorderType.RRect,
-                                              strokeCap: StrokeCap.round,
-                                              strokeWidth: 0.5,
-                                              dashPattern: const [3, 3],
-                                              radius:
-                                                  const Radius.circular(20.0),
-                                              color: const Color(0xffD3D3D3),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  color:
-                                                      const Color(0xffFDFDEF),
-                                                ),
-                                                height: 32,
-                                                child: Row(
-                                                  children: [
-                                                    const SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    SvgPicture.asset(AppAssets
-                                                        .alarmClockSvg),
-                                                    Text(
-                                                        " ${LocaleKeys.hurry_up.tr()} ",
-                                                        style: context.textTheme
-                                                            .bodyMedium?.ba
-                                                            .copyWith(
-                                                          fontSize: 12,
-                                                          color: const Color(
-                                                              0xffA28E5B),
-                                                        )),
-                                                    Text(
-                                                        "${LocaleKeys.quantity_running_out.tr()} ",
-                                                        style: context.textTheme
-                                                            .bodyMedium?.ra
-                                                            .copyWith(
-                                                          fontSize: 12,
-                                                          color: const Color(
-                                                              0xffA28E5B),
-                                                        )),
-                                                    Text(
-                                                        " ${state.cartCollection?[index].qtyLeft}",
-                                                        style: context.textTheme
-                                                            .bodyMedium?.ba
-                                                            .copyWith(
-                                                          fontSize: 12,
-                                                          color: const Color(
-                                                              0xffA28E5B),
-                                                        )),
-                                                    Text(
-                                                        " ${LocaleKeys.piece.tr()}",
-                                                        style: context.textTheme
-                                                            .bodyMedium?.ba
-                                                            .copyWith(
-                                                          fontSize: 12,
-                                                          color: const Color(
-                                                              0xffA28E5B),
-                                                        )),
-                                                    /*    CountDownTimer(
-                                                    cartId: state
-                                                        .cartCollection?[index]
-                                                        .id
-                                                        .toString(),
-                                                  )*/
-                                                  ],
-                                                ),
-                                              )),
-                                        )
-                                      : const SizedBox.shrink()
-                                  : Container(
-                                      width: 315,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        color: const Color(0xffFDFDEF),
-                                      ),
-                                      margin: const EdgeInsets.only(
-                                          bottom: 20, left: 20, right: 20),
-                                      child: DottedBorder(
+                                          color: const Color(0xffFDFDEF),
+                                        ),
+                                        margin: const EdgeInsets.only(
+                                          bottom: 20,
+                                          left: 20,
+                                          right: 20,
+                                        ),
+                                        child: DottedBorder(
                                           padding: EdgeInsets.zero,
                                           borderType: BorderType.RRect,
                                           strokeCap: StrokeCap.round,
@@ -1711,39 +1805,62 @@ class _ProductCollectionInCartPage1State
                                             height: 32,
                                             child: Row(
                                               children: [
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
+                                                const SizedBox(width: 10),
                                                 SvgPicture.asset(
-                                                    AppAssets.alarmClockSvg),
+                                                  AppAssets.alarmClockSvg,
+                                                ),
                                                 Text(
-                                                    " ${LocaleKeys.hurry_up.tr()} ",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.ba
-                                                        .copyWith(
-                                                      fontSize: 12,
-                                                      color: const Color(
-                                                          0xffA28E5B),
-                                                    )),
+                                                  " ${LocaleKeys.hurry_up.tr()} ",
+                                                  style: context
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.bq
+                                                      .copyWith(
+                                                        fontSize: 12,
+                                                        color: const Color(
+                                                          0xffA28E5B,
+                                                        ),
+                                                      ),
+                                                ),
                                                 Text(
-                                                    "${LocaleKeys.the_time_will_end.tr()} ",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.ra
-                                                        .copyWith(
-                                                      fontSize: 12,
-                                                      color: const Color(
-                                                          0xffA28E5B),
-                                                    )),
+                                                  "${LocaleKeys.quantity_running_out.tr()} ",
+                                                  style: context
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.rq
+                                                      .copyWith(
+                                                        fontSize: 12,
+                                                        color: const Color(
+                                                          0xffA28E5B,
+                                                        ),
+                                                      ),
+                                                ),
                                                 Text(
-                                                    " ${(state.cartCollection?[index].timeLeftInMinutes ?? 0) ~/ 60}:${(state.cartCollection?[index].timeLeftInMinutes ?? 0) % 60}:00",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.ba
-                                                        .copyWith(
-                                                      fontSize: 12,
-                                                      color: const Color(
-                                                          0xffA28E5B),
-                                                    )),
-
+                                                  " ${state.cartCollection?[index].qtyLeft}",
+                                                  style: context
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.bq
+                                                      .copyWith(
+                                                        fontSize: 12,
+                                                        color: const Color(
+                                                          0xffA28E5B,
+                                                        ),
+                                                      ),
+                                                ),
+                                                Text(
+                                                  " ${LocaleKeys.piece.tr()}",
+                                                  style: context
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.bq
+                                                      .copyWith(
+                                                        fontSize: 12,
+                                                        color: const Color(
+                                                          0xffA28E5B,
+                                                        ),
+                                                      ),
+                                                ),
                                                 /*    CountDownTimer(
                                                     cartId: state
                                                         .cartCollection?[index]
@@ -1752,8 +1869,92 @@ class _ProductCollectionInCartPage1State
                                                   )*/
                                               ],
                                             ),
-                                          )),
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink()
+                              : Container(
+                                  width: 315,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: const Color(0xffFDFDEF),
+                                  ),
+                                  margin: const EdgeInsets.only(
+                                    bottom: 20,
+                                    left: 20,
+                                    right: 20,
+                                  ),
+                                  child: DottedBorder(
+                                    padding: EdgeInsets.zero,
+                                    borderType: BorderType.RRect,
+                                    strokeCap: StrokeCap.round,
+                                    strokeWidth: 0.5,
+                                    dashPattern: const [3, 3],
+                                    radius: const Radius.circular(20.0),
+                                    color: const Color(0xffD3D3D3),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: const Color(0xffFDFDEF),
+                                      ),
+                                      height: 32,
+                                      child: Row(
+                                        children: [
+                                          const SizedBox(width: 10),
+                                          SvgPicture.asset(
+                                            AppAssets.alarmClockSvg,
+                                          ),
+                                          Text(
+                                            " ${LocaleKeys.hurry_up.tr()} ",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.bq
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xffA28E5B,
+                                                  ),
+                                                ),
+                                          ),
+                                          Text(
+                                            "${LocaleKeys.the_time_will_end.tr()} ",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.rq
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xffA28E5B,
+                                                  ),
+                                                ),
+                                          ),
+                                          Text(
+                                            " ${(state.cartCollection?[index].timeLeftInMinutes ?? 0) ~/ 60}:${(state.cartCollection?[index].timeLeftInMinutes ?? 0) % 60}:00",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.bq
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xffA28E5B,
+                                                  ),
+                                                ),
+                                          ),
+
+                                          /*    CountDownTimer(
+                                                    cartId: state
+                                                        .cartCollection?[index]
+                                                        .id
+                                                        .toString(),
+                                                  )*/
+                                        ],
+                                      ),
                                     ),
+                                  ),
+                                ),
                         ),
 
                         ///////////////////////
@@ -1772,25 +1973,31 @@ class _ProductCollectionInCartPage1State
                                     ? 0
                                     : null,
                                 child: Container(
-                                    width: 100,
-                                    height: 30,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                      borderRadius: BorderRadius.circular(10),
+                                  width: 100,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 0, 0, 0),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      " ${LocaleKeys.unavailable.tr()}",
+                                      style: context.textTheme.bodyMedium?.lq
+                                          .copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12,
+                                            color: const Color.fromARGB(
+                                              255,
+                                              255,
+                                              255,
+                                              255,
+                                            ),
+                                            letterSpacing: 0.18,
+                                            height: 1.33,
+                                          ),
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        " ${LocaleKeys.unavailable.tr()}",
-                                        style: context.textTheme.bodyMedium?.la
-                                            .copyWith(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 12,
-                                                color: const Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                letterSpacing: 0.18,
-                                                height: 1.33),
-                                      ),
-                                    )),
+                                  ),
+                                ),
                               )
                             : const SizedBox.shrink(),
                         // Positioned(

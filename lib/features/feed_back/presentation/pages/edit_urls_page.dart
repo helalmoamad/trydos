@@ -41,64 +41,82 @@ class _EditUrlsPageState extends State<EditUrlsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: context.colorScheme.surface,
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Market Url:'),
-                AppTextField(
-                  controller: marketController,
-                  filledColor: context.colorScheme.grey50,
-                  bordersColor: context.colorScheme.grey50,
-                  hintTextStyle: context.textTheme.bodySmall?.lr
-                      .copyWith(color: const Color(0xffD3D3D3)),
-                  contentPadding:
-                      HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
+      backgroundColor: context.colorScheme.surface,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Market Url:'),
+              AppTextField(
+                controller: marketController,
+                filledColor: context.colorScheme.grey50,
+                bordersColor: context.colorScheme.grey50,
+                hintTextStyle: context.textTheme.bodySmall?.lq.copyWith(
+                  color: const Color(0xffD3D3D3),
                 ),
-                15.verticalSpace,
-                const Text('Chat Url:'),
-                AppTextField(
-                  controller: chatController,
-                  filledColor: context.colorScheme.grey50,
-                  bordersColor: context.colorScheme.grey50,
-                  hintTextStyle: context.textTheme.bodySmall?.lr
-                      .copyWith(color: const Color(0xffD3D3D3)),
-                  contentPadding:
-                      HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
+                contentPadding: HWEdgeInsetsDirectional.fromSTEB(
+                  20.w,
+                  10,
+                  20.w,
+                  10,
                 ),
-                15.verticalSpace,
-                const Text('Story Url:'),
-                AppTextField(
-                  controller: storyController,
-                  filledColor: context.colorScheme.grey50,
-                  bordersColor: context.colorScheme.grey50,
-                  hintTextStyle: context.textTheme.bodySmall?.lr
-                      .copyWith(color: const Color(0xffD3D3D3)),
-                  contentPadding:
-                      HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
+              ),
+              15.verticalSpace,
+              const Text('Chat Url:'),
+              AppTextField(
+                controller: chatController,
+                filledColor: context.colorScheme.grey50,
+                bordersColor: context.colorScheme.grey50,
+                hintTextStyle: context.textTheme.bodySmall?.lq.copyWith(
+                  color: const Color(0xffD3D3D3),
                 ),
-                30.verticalSpace,
-                AppElevatedButton(
-                    text: 'Save',
-                    onPressed: () async {
-                      _prefsRepository.setMarketUrl(marketController.text);
-                      _prefsRepository.setStoryUrl(storyController.text);
-                      _prefsRepository.setChatUrl(chatController.text);
-                    }),
-                30.verticalSpace,
-                AppElevatedButton(
-                    text: 'Clear tokens',
-                    onPressed: () async {
-                      _prefsRepository.clearTokenForMarket();
-                      _prefsRepository.clearTokensForChatAndStory();
-                    }),
-              ],
-            ),
+                contentPadding: HWEdgeInsetsDirectional.fromSTEB(
+                  20.w,
+                  10,
+                  20.w,
+                  10,
+                ),
+              ),
+              15.verticalSpace,
+              const Text('Story Url:'),
+              AppTextField(
+                controller: storyController,
+                filledColor: context.colorScheme.grey50,
+                bordersColor: context.colorScheme.grey50,
+                hintTextStyle: context.textTheme.bodySmall?.lq.copyWith(
+                  color: const Color(0xffD3D3D3),
+                ),
+                contentPadding: HWEdgeInsetsDirectional.fromSTEB(
+                  20.w,
+                  10,
+                  20.w,
+                  10,
+                ),
+              ),
+              30.verticalSpace,
+              AppElevatedButton(
+                text: 'Save',
+                onPressed: () async {
+                  _prefsRepository.setMarketUrl(marketController.text);
+                  _prefsRepository.setStoryUrl(storyController.text);
+                  _prefsRepository.setChatUrl(chatController.text);
+                },
+              ),
+              30.verticalSpace,
+              AppElevatedButton(
+                text: 'Clear tokens',
+                onPressed: () async {
+                  _prefsRepository.clearTokenForMarket();
+                  _prefsRepository.clearTokensForChatAndStory();
+                },
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

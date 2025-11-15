@@ -15,91 +15,95 @@ class SharedPreferencePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: context.colorScheme.surface,
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView(
-            children: [
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'market user id',
-                value: prefsRepository.myMarketId ?? "",
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'is verified phone',
-                value: prefsRepository.isVerifiedPhone.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'Fcm Tokens count',
-                value: prefsRepository.getFcmTokens.length.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'chat token',
-                value: prefsRepository.chatToken.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'market token',
-                value: prefsRepository.marketToken.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'stories token',
-                value: prefsRepository.storiesToken.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'verification id',
-                value: prefsRepository.verificationId.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'country iso',
-                value: prefsRepository.countryIso.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'chat user id',
-                value: prefsRepository.myChatId.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'chat user name',
-                value: prefsRepository.myChatName.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'phone number',
-                value: prefsRepository.myPhoneNumber.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'stories user id',
-                value: prefsRepository.myStoriesId.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'fcm token id',
-                value: prefsRepository.fcmTokenId.toString(),
-              ),
-              10.verticalSpace,
-              SharedPreferenceCard(
-                title: 'Contact',
-                value: prefsRepository.myContactDetails.toString(),
-              ),
-              10.verticalSpace,
-            ],
-          ),
-        ));
+      backgroundColor: context.colorScheme.surface,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: [
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'market user id',
+              value: prefsRepository.myMarketId ?? "",
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'is verified phone',
+              value: prefsRepository.isVerifiedPhone.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'Fcm Tokens count',
+              value: prefsRepository.getFcmTokens.length.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'chat token',
+              value: prefsRepository.chatToken.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'market token',
+              value: prefsRepository.marketToken.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'stories token',
+              value: prefsRepository.storiesToken.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'verification id',
+              value: prefsRepository.verificationId.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'country iso',
+              value: prefsRepository.countryIso.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'chat user id',
+              value: prefsRepository.myChatId.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'chat user name',
+              value: prefsRepository.myChatName.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'phone number',
+              value: prefsRepository.myPhoneNumber.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'stories user id',
+              value: prefsRepository.myStoriesId.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'fcm token id',
+              value: prefsRepository.fcmTokenId.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'Contact',
+              value: prefsRepository.myContactDetails.toString(),
+            ),
+            10.verticalSpace,
+          ],
+        ),
+      ),
+    );
   }
 }
 
 class SharedPreferenceCard extends StatelessWidget {
-  const SharedPreferenceCard(
-      {super.key, required this.title, required this.value});
+  const SharedPreferenceCard({
+    super.key,
+    required this.title,
+    required this.value,
+  });
 
   final String title;
   final String value;
@@ -109,9 +113,10 @@ class SharedPreferenceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [BoxShadow(blurRadius: 5)]),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [BoxShadow(blurRadius: 5)],
+      ),
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Column(
@@ -119,15 +124,17 @@ class SharedPreferenceCard extends StatelessWidget {
           children: [
             MyTextWidget(
               title,
-              style: context.textTheme.bodyLarge?.rr
-                  .copyWith(color: Colors.deepOrangeAccent),
+              style: context.textTheme.bodyLarge?.rq.copyWith(
+                color: Colors.deepOrangeAccent,
+              ),
             ),
             10.verticalSpace,
             MyTextWidget(
               value,
-              style: context.textTheme.bodyMedium?.rr
-                  .copyWith(color: Colors.black),
-            )
+              style: context.textTheme.bodyMedium?.rq.copyWith(
+                color: Colors.black,
+              ),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
@@ -12,7 +14,8 @@ class GetBuyerCommentsUsecase
   GetBuyerCommentsUsecase(this.repository);
   @override
   Future<Either<Failure, GetBuyersCommentsModel>> call(
-      GetBuyersCommentsParams params) {
+    GetBuyersCommentsParams params,
+  ) {
     return repository.getBuyersComments(params.map);
   }
 }
@@ -23,9 +26,9 @@ class GetBuyersCommentsParams {
   final String? filter;
   GetBuyersCommentsParams({this.productId, this.offset, this.filter});
   Map<String, dynamic> get map => {
-        "offset": offset,
-        "product_id": productId,
-        "filter": filter
-      }..removeWhere(
-          (key, value) => value == '[]' || value == "" || value == null);
+    "offset": offset,
+    "product_id": productId,
+    "user_id": GetIt.I<PrefsRepository>().myMarketId,
+    "filter": filter,
+  }..removeWhere((key, value) => value == '[]' || value == "" || value == null);
 }

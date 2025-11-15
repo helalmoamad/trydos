@@ -36,16 +36,17 @@ class ProductDetailsSheetCommentsContent extends StatefulWidget {
   final String? ownerId;
   final ValueNotifier<bool>? isVerified;
   final ScrollController? scrollController;
-  ProductDetailsSheetCommentsContent(
-      {super.key,
-      this.scrollController,
-      required this.productSlug,
-      required this.isVerified,
-      required this.productSlugForTopic,
-      required this.ownerType,
-      required this.ownerId,
-      required this.productId,
-      required this.currentVariant});
+  ProductDetailsSheetCommentsContent({
+    super.key,
+    this.scrollController,
+    required this.productSlug,
+    required this.isVerified,
+    required this.productSlugForTopic,
+    required this.ownerType,
+    required this.ownerId,
+    required this.productId,
+    required this.currentVariant,
+  });
 
   @override
   State<ProductDetailsSheetCommentsContent> createState() =>
@@ -57,7 +58,7 @@ class _ProductDetailsSheetCommentsContentState
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   final TextEditingController addCommentController = TextEditingController();
-//  final ValueNotifier<bool> addCommentButtonToggleNotifier =
+  //  final ValueNotifier<bool> addCommentButtonToggleNotifier =
   //     ValueNotifier(false);
   @override
   void initState() {
@@ -65,9 +66,9 @@ class _ProductDetailsSheetCommentsContentState
     widget.scrollController?.addListener(() {
       if (widget.scrollController!.offset >=
           (widget.scrollController!.position.maxScrollExtent * 0.6)) {
-        GetIt.I<HomeBloc>().add(GetFqaCommentsEvent(
-          productId: widget.productId,
-        ));
+        GetIt.I<HomeBloc>().add(
+          GetFqaCommentsEvent(productId: widget.productId),
+        );
       }
     });
   }
@@ -108,127 +109,145 @@ class _ProductDetailsSheetCommentsContentState
               !(prefsRepository.isVerifiedPhone ?? false)
                   ? Center(
                       child: GestureDetector(
-                          onTap: () {
-                            if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
-                                false)) {
-                              Future.delayed(const Duration(seconds: 1), () {
-                                widget.isVerified?.value = false;
-                                if ((GetIt.I<PrefsRepository>()
-                                        .isVerifiedPhonePeforeExpiredToken ??
-                                    false)) {
-                                  GetIt.I<AuthBloc>().add(SendOtpEvent(
-                                      phone: GetIt.I<PrefsRepository>()
-                                          .myPhoneNumber!,
-                                      isViaWhatsApp: 1));
-                                }
-                              });
-                            }
-                          },
-                          child: SizedBox(
-                              width: 1.sw,
-                              height: 30,
-                              child: Center(
-                                  child: MyTextWidget(
-                                      LocaleKeys.please_login_to_add_comment
-                                          .tr(),
-                                      style: context.textTheme.bodyMedium?.rr
-                                          .copyWith(
-                                              color: Colors.red,
-                                              fontSize: 14))))))
+                        onTap: () {
+                          if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
+                              false)) {
+                            Future.delayed(const Duration(seconds: 1), () {
+                              widget.isVerified?.value = false;
+                              if ((GetIt.I<PrefsRepository>()
+                                      .isVerifiedPhonePeforeExpiredToken ??
+                                  false)) {
+                                GetIt.I<AuthBloc>().add(
+                                  SendOtpEvent(
+                                    phone: GetIt.I<PrefsRepository>()
+                                        .myPhoneNumber!,
+                                    isViaWhatsApp: 1,
+                                  ),
+                                );
+                              }
+                            });
+                          }
+                        },
+                        child: SizedBox(
+                          width: 1.sw,
+                          height: 30,
+                          child: Center(
+                            child: MyTextWidget(
+                              LocaleKeys.please_login_to_add_comment.tr(),
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   : Container(
                       height: 65,
                       decoration: BoxDecoration(
-                          color: const Color(0xffF8F8F8),
-                          borderRadius: BorderRadius.circular(30)),
+                        color: const Color(0xffF8F8F8),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       alignment: Alignment.center,
                       child: cupertino.Directionality(
                         textDirection: cupertino.TextDirection.ltr,
                         child: Material(
-                            color: Colors.transparent,
-                            child: Padding(
-                              padding: HWEdgeInsets.symmetric(horizontal: 20),
-                              child: AppTextField(
-                                textInputAction: cupertino.TextInputAction.done,
-                                onFieldSubmitted: (val) {
-                                  if (addCommentController.text.isEmpty) {
-                                    return;
-                                  }
-                                  BlocProvider.of<HomeBloc>(context)
-                                      .add(CreateCommentRatingEvent(
+                          color: Colors.transparent,
+                          child: Padding(
+                            padding: HWEdgeInsets.symmetric(horizontal: 20),
+                            child: AppTextField(
+                              textInputAction: cupertino.TextInputAction.done,
+                              onFieldSubmitted: (val) {
+                                if (addCommentController.text.isEmpty) {
+                                  return;
+                                }
+                                BlocProvider.of<HomeBloc>(context).add(
+                                  CreateCommentRatingEvent(
                                     productId: widget.productId,
                                     ownerId: widget.ownerId,
                                     ownerType: widget.ownerType,
                                     variant: widget.currentVariant,
                                     text: val,
-                                  ));
+                                  ),
+                                );
 
-                                  //////////////////////////////////////////////////////////
-                                  // FirebaseAnalyticsService.logEventForSession(
-                                  //   eventName:
-                                  //       AnalyticsEventsConst.buttonClicked,
-                                  //   executedEventName:
-                                  //       AnalyticsButtonsEventNameConst
-                                  //           .confirmCommentButton,
-                                  // );
+                                //////////////////////////////////////////////////////////
+                                // FirebaseAnalyticsService.logEventForSession(
+                                //   eventName:
+                                //       AnalyticsEventsConst.buttonClicked,
+                                //   executedEventName:
+                                //       AnalyticsButtonsEventNameConst
+                                //           .confirmCommentButton,
+                                // );
 
-                                  //   addCommentButtonToggleNotifier.value = false;
+                                //   addCommentButtonToggleNotifier.value = false;
 
-                                  addCommentController.clear();
-                                  cupertino.FocusScope.of(context).unfocus();
-                                },
-                                hintText: LocaleKeys.add_comment.tr(),
-                                controller: addCommentController,
-                                suffixIcon: Padding(
-                                  padding: HWEdgeInsets.only(
-                                      right: 20.0, top: 15, bottom: 15),
-                                  child: IconButton(
-                                    icon: (state.createCommentRatingStatus ==
-                                                CreateCommentRatingStatus
-                                                    .loading) ||
-                                            (state.updateOrderCommentRatingStatus ==
-                                                UpdateOrderCommentRatingStatus
-                                                    .loading)
-                                        ? const Icon(
-                                            Icons.hourglass_bottom_rounded,
-                                            color: Colors.blue)
-                                        : const Icon(
-                                            Icons.send,
-                                            color: Colors.blue,
-                                          ),
-                                    onPressed: () {
-                                      /*    if (addCommentController.text.isEmpty) {
+                                addCommentController.clear();
+                                cupertino.FocusScope.of(context).unfocus();
+                              },
+                              hintText: LocaleKeys.add_comment.tr(),
+                              controller: addCommentController,
+                              suffixIcon: Padding(
+                                padding: HWEdgeInsets.only(
+                                  right: 20.0,
+                                  top: 15,
+                                  bottom: 15,
+                                ),
+                                child: IconButton(
+                                  icon:
+                                      (state.createCommentRatingStatus ==
+                                              CreateCommentRatingStatus
+                                                  .loading) ||
+                                          (state.updateOrderCommentRatingStatus ==
+                                              UpdateOrderCommentRatingStatus
+                                                  .loading)
+                                      ? const Icon(
+                                          Icons.hourglass_bottom_rounded,
+                                          color: Colors.blue,
+                                        )
+                                      : const Icon(
+                                          Icons.send,
+                                          color: Colors.blue,
+                                        ),
+                                  onPressed: () {
+                                    /*    if (addCommentController.text.isEmpty) {
                                         return;
                                       }*/
-                                      BlocProvider.of<HomeBloc>(context)
-                                          .add(CreateCommentRatingEvent(
+                                    BlocProvider.of<HomeBloc>(context).add(
+                                      CreateCommentRatingEvent(
                                         productId: widget.productId,
                                         variant: widget.currentVariant,
                                         ownerId: widget.ownerId,
                                         ownerType: widget.ownerType,
                                         text: addCommentController.text,
-                                      ));
+                                      ),
+                                    );
 
-                                      //////////////////////////////////////////////////////////
-                                      // FirebaseAnalyticsService
-                                      //     .logEventForSession(
-                                      //   eventName:
-                                      //       AnalyticsEventsConst.buttonClicked,
-                                      //   executedEventName:
-                                      //       AnalyticsButtonsEventNameConst
-                                      //           .confirmCommentButton,
-                                      // );
-                                      Future.delayed(const Duration(seconds: 2),
-                                          () {
+                                    //////////////////////////////////////////////////////////
+                                    // FirebaseAnalyticsService
+                                    //     .logEventForSession(
+                                    //   eventName:
+                                    //       AnalyticsEventsConst.buttonClicked,
+                                    //   executedEventName:
+                                    //       AnalyticsButtonsEventNameConst
+                                    //           .confirmCommentButton,
+                                    // );
+                                    Future.delayed(
+                                      const Duration(seconds: 2),
+                                      () {
                                         addCommentController.clear();
-                                        cupertino.FocusScope.of(context)
-                                            .unfocus();
-                                      });
+                                        cupertino.FocusScope.of(
+                                          context,
+                                        ).unfocus();
+                                      },
+                                    );
 
-                                      //     addCommentButtonToggleNotifier.value =
-                                      //          false;
-                                    },
-                                    /* child: (state.addCommentStatus ==
+                                    //     addCommentButtonToggleNotifier.value =
+                                    //          false;
+                                  },
+                                  /* child: (state.addCommentStatus ==
                                             AddCommentStatus.loading)
                                         ? cupertino.Container(
                                             width: 25,
@@ -242,10 +261,11 @@ class _ProductDetailsSheetCommentsContentState
                                             width: 10,
                                             height: 10,
                                           ),*/
-                                  ),
                                 ),
                               ),
-                            )),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
               10.verticalSpace,
@@ -253,91 +273,118 @@ class _ProductDetailsSheetCommentsContentState
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SvgPicture.asset(
-                    AppAssets.chatMarkActiveSvg,
-                    height: 20,
+                  SvgPicture.asset(AppAssets.chatMarkActiveSvg, height: 20),
+                  const SizedBox(width: 10),
+                  MyTextWidget(
+                    '${LocaleKeys.comment_about_this_product.tr()}',
+                    style: context.textTheme.bodyMedium?.mq.copyWith(
+                      color: const Color(0xff505050),
+                    ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  MyTextWidget('${LocaleKeys.comment_about_this_product.tr()}',
-                      style: context.textTheme.bodyMedium?.mq.copyWith(
-                        color: const Color(0xff505050),
-                      )),
                 ],
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               SizedBox(
-                  height: 300,
-                  child: ListView.builder(
-                    controller: widget.scrollController,
-                    itemBuilder: (context, index) {
-                      if (index ==
-                          (state.getFqaCommentsPaginationModel?['all']?.items
-                                  .length ??
-                              0)) {
-                        return SizedBox(
-                            height: 120,
-                            width: 1.sw,
-                            child: state.getFqaCommentsPaginationModel?['all']
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading
-                                ? TrydosLoader(
-                                    size: 24,
-                                  )
-                                : const SizedBox.shrink());
-                      }
-                      return Padding(
-                        padding: HWEdgeInsets.symmetric(vertical: 2),
-                        child: CommentCard(
-                          state: state,
-                          commentHasReply: state
-                              .getFqaCommentsPaginationModel?['all']
-                              ?.items[index]
-                              .hasReply,
-                          userId: state.getFqaCommentsPaginationModel?['all']
-                                  ?.items[index].customer?.id ??
-                              "",
-                          tapIndex: state.tapCommentIndex,
-                          imageUrl: state.getFqaCommentsPaginationModel?['all']
-                                  ?.items[index].customer?.image ??
-                              "",
-                          index: index,
-                          ownerId: widget.ownerId,
-                          ownerType: widget.ownerType,
-                          commentId: state.getFqaCommentsPaginationModel?['all']
-                                  ?.items[index].id ??
-                              "",
-                          currentVariant: state
-                                  .getFqaCommentsPaginationModel?['all']
-                                  ?.items[index]
-                                  .variant ??
-                              "",
-                          productId: state.getFqaCommentsPaginationModel?['all']
-                                  ?.items[index].productId ??
-                              "",
-                          names: state.getFqaCommentsPaginationModel?['all']
-                                  ?.items[index].customer?.name ??
-                              "",
-                          comment: state.getFqaCommentsPaginationModel?['all']
-                                  ?.items[index].comment ??
-                              "",
-                          date: state.getFqaCommentsPaginationModel?['all']
-                                  ?.items[index].createdAt
-                                  ?.toString() ??
-                              "",
-                        ),
+                height: 300,
+                child: ListView.builder(
+                  controller: widget.scrollController,
+                  itemBuilder: (context, index) {
+                    if (index ==
+                        (state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items
+                                .length ??
+                            0)) {
+                      return SizedBox(
+                        height: 120,
+                        width: 1.sw,
+                        child:
+                            state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.paginationStatus ==
+                                PaginationStatus.loading
+                            ? TrydosLoader(size: 24)
+                            : const SizedBox.shrink(),
                       );
-                    },
-                    itemCount: (state.getFqaCommentsPaginationModel?['all']
-                                ?.items.length ??
-                            0) +
-                        1,
-                    physics: const cupertino.ClampingScrollPhysics(),
-                    padding: EdgeInsets.zero,
-                  )),
+                    }
+                    return Padding(
+                      padding: HWEdgeInsets.symmetric(vertical: 2),
+                      child: CommentCard(
+                        state: state,
+                        commentHasReply: state
+                            .getFqaCommentsPaginationModel?['all']
+                            ?.items[index]
+                            .hasReply,
+                        userId:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .customer
+                                ?.id ??
+                            "",
+                        tapIndex: state.tapCommentIndex,
+                        imageUrl:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .customer
+                                ?.image ??
+                            "",
+                        index: index,
+                        ownerId: widget.ownerId,
+                        ownerType: widget.ownerType,
+                        commentId:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .id ??
+                            "",
+                        currentVariant:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .variant ??
+                            "",
+                        productId:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .productId ??
+                            "",
+                        names:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .customer
+                                ?.name ??
+                            "",
+                        comment:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .comment ??
+                            "",
+                        date:
+                            state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .createdAt
+                                ?.toString() ??
+                            "",
+                      ),
+                    );
+                  },
+                  itemCount:
+                      (state
+                              .getFqaCommentsPaginationModel?['all']
+                              ?.items
+                              .length ??
+                          0) +
+                      1,
+                  physics: const cupertino.ClampingScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                ),
+              ),
             ],
           ),
         );
@@ -362,30 +409,33 @@ class CommentCard extends StatelessWidget {
   final String productId;
   final HomeState state;
   final int tapIndex;
-  const CommentCard(
-      {super.key,
-      required this.imageUrl,
-      required this.commentHasReply,
-      required this.tapIndex,
-      required this.state,
-      required this.ownerType,
-      required this.ownerId,
-      required this.userId,
-      required this.index,
-      required this.productId,
-      required this.commentId,
-      required this.currentVariant,
-      required this.names,
-      required this.comment,
-      required this.date});
+  const CommentCard({
+    super.key,
+    required this.imageUrl,
+    required this.commentHasReply,
+    required this.tapIndex,
+    required this.state,
+    required this.ownerType,
+    required this.ownerId,
+    required this.userId,
+    required this.index,
+    required this.productId,
+    required this.commentId,
+    required this.currentVariant,
+    required this.names,
+    required this.comment,
+    required this.date,
+  });
 
   @override
   Widget build(BuildContext context) {
     void _showEditBottomSheet(BuildContext context, String initialText) {
-      final TextEditingController _controller =
-          TextEditingController(text: initialText);
-      final ValueNotifier<bool> isNotEmptyNotifier =
-          ValueNotifier(_controller.text.trim().isNotEmpty);
+      final TextEditingController _controller = TextEditingController(
+        text: initialText,
+      );
+      final ValueNotifier<bool> isNotEmptyNotifier = ValueNotifier(
+        _controller.text.trim().isNotEmpty,
+      );
       _controller.addListener(() {
         isNotEmptyNotifier.value = _controller.text.trim().isNotEmpty;
       });
@@ -448,7 +498,9 @@ class CommentCard extends StatelessWidget {
                       hintText: LocaleKeys.edit_comment_hint.tr(),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 14),
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
                     ),
                     maxLines: 6,
                     minLines: 3,
@@ -468,16 +520,17 @@ class CommentCard extends StatelessWidget {
                           child: IconButton(
                             icon: const Icon(Icons.send, color: Colors.white),
                             onPressed: () {
-                              BlocProvider.of<HomeBloc>(context)
-                                  .add(UpdateCommentRatingEvent(
-                                commentId: commentId,
-                                productId: productId,
-                                ownerId: ownerId,
-                                ownerType: ownerType,
-                                tapCommentIndex: index,
-                                variant: currentVariant,
-                                text: _controller.text,
-                              ));
+                              BlocProvider.of<HomeBloc>(context).add(
+                                UpdateCommentRatingEvent(
+                                  commentId: commentId,
+                                  productId: productId,
+                                  ownerId: ownerId,
+                                  ownerType: ownerType,
+                                  tapCommentIndex: index,
+                                  variant: currentVariant,
+                                  text: _controller.text,
+                                ),
+                              );
                               Navigator.pop(context);
                             },
                           ),
@@ -495,8 +548,10 @@ class CommentCard extends StatelessWidget {
 
     String extractInitialsAndAppendXXX(String text) {
       final words = text.trim().split(RegExp(r'\s+'));
-      final result =
-          words.where((w) => w.isNotEmpty).map((w) => '${w[0]}xxx').join(' ');
+      final result = words
+          .where((w) => w.isNotEmpty)
+          .map((w) => '${w[0]}xxx')
+          .join(' ');
       return result;
     }
 
@@ -531,15 +586,17 @@ class CommentCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Container(
+                    width: 20,
+                    height: 20,
+                    child: MyCachedNetworkImage(
+                      imageUrl: imageUrl.contains("cloudinary")
+                          ? imageUrl
+                          : '${dotenv.env['Images_Url']}$imageUrl',
                       width: 20,
+                      imageFit: cupertino.BoxFit.cover,
                       height: 20,
-                      child: MyCachedNetworkImage(
-                          imageUrl: imageUrl.contains("cloudinary")
-                              ? imageUrl
-                              : '${dotenv.env['Images_Url']}$imageUrl',
-                          width: 20,
-                          imageFit: cupertino.BoxFit.cover,
-                          height: 20)),
+                    ),
+                  ),
                   Container(
                     width: 20,
                     height: 20,
@@ -560,9 +617,7 @@ class CommentCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,21 +627,24 @@ class CommentCard extends StatelessWidget {
                   children: [
                     MyTextWidget(
                       extractInitialsAndAppendXXX(names),
-                      style: context.textTheme.bodySmall?.rq
-                          .copyWith(color: const Color(0xff969696)),
+                      style: context.textTheme.bodySmall?.rq.copyWith(
+                        color: const Color(0xff969696),
+                      ),
                     ),
                     MyTextWidget(
                       date,
-                      style: context.textTheme.titleSmall?.rq
-                          .copyWith(color: const Color(0xff969696)),
+                      style: context.textTheme.titleSmall?.rq.copyWith(
+                        color: const Color(0xff969696),
+                      ),
                     ),
                   ],
                 ),
                 Flexible(
                   child: MyTextWidget(
                     comment,
-                    style: context.textTheme.bodySmall?.rq
-                        .copyWith(color: const Color(0xff5D5C5D)),
+                    style: context.textTheme.bodySmall?.rq.copyWith(
+                      color: const Color(0xff5D5C5D),
+                    ),
                     maxLines: 5,
                   ),
                 ),
@@ -594,204 +652,209 @@ class CommentCard extends StatelessWidget {
                     ? const SizedBox.shrink()
                     : Flexible(
                         child: SizedBox(
-                            width: 1.sw,
-                            height: 40,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                state.deleteOrderCommentRatingStatus ==
-                                            DeleteOrderCommentRatingStatus
-                                                .loading &&
-                                        tapIndex == index
-                                    ? TrydosLoader(
-                                        size: 15,
-                                      )
-                                    : GestureDetector(
-                                        onTap: () async {
-                                          final confirmed =
-                                              await showDialog<bool>(
-                                            context: context,
-                                            barrierColor: Colors.transparent,
-                                            builder: (ctx) => Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 16,
-                                                ),
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: Container(
-                                                    width: double.infinity,
-                                                    margin: EdgeInsets.only(
-                                                        top: 8.h),
-                                                    padding:
-                                                        EdgeInsets.all(16.w),
-                                                    decoration: BoxDecoration(
+                          width: 1.sw,
+                          height: 40,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              state.deleteOrderCommentRatingStatus ==
+                                          DeleteOrderCommentRatingStatus
+                                              .loading &&
+                                      tapIndex == index
+                                  ? TrydosLoader(size: 15)
+                                  : GestureDetector(
+                                      onTap: () async {
+                                        final confirmed = await showDialog<bool>(
+                                          context: context,
+                                          barrierColor: Colors.transparent,
+                                          builder: (ctx) => Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                  ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: Container(
+                                                  width: double.infinity,
+                                                  margin: EdgeInsets.only(
+                                                    top: 8.h,
+                                                  ),
+                                                  padding: EdgeInsets.all(16.w),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(
+                                                      0xFFE2FFF1,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12.r,
+                                                        ),
+                                                    border: Border.all(
                                                       color: const Color(
-                                                          0xFFE2FFF1),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12.r),
-                                                      border: Border.all(
+                                                        0xFF402CDD,
+                                                      ),
+                                                    ),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black
+                                                            // ignore: deprecated_member_use
+                                                            .withOpacity(0.1),
+                                                        blurRadius: 8,
+                                                        offset: const Offset(
+                                                          0,
+                                                          2,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      MyTextWidget(
+                                                        LocaleKeys
+                                                            .confirm_delete_comment_title
+                                                            .tr(),
+                                                        style: TextStyle(
+                                                          fontSize: 16.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
                                                           color: const Color(
-                                                              0xFF402CDD)),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors.black
-                                                              // ignore: deprecated_member_use
-                                                              .withOpacity(0.1),
-                                                          blurRadius: 8,
-                                                          offset: const Offset(
-                                                              0, 2),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        MyTextWidget(
-                                                          LocaleKeys
-                                                              .confirm_delete_comment_title
-                                                              .tr(),
-                                                          style: TextStyle(
-                                                            fontSize: 16.sp,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: const Color(
-                                                                0xFF1A1A1A),
+                                                            0xFF1A1A1A,
                                                           ),
                                                         ),
-                                                        SizedBox(height: 8.h),
-                                                        MyTextWidget(
-                                                          LocaleKeys
-                                                              .confirm_delete_comment_message
-                                                              .tr(),
-                                                          style: TextStyle(
-                                                            fontSize: 14.sp,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            color: const Color(
-                                                                0xFF666666),
+                                                      ),
+                                                      SizedBox(height: 8.h),
+                                                      MyTextWidget(
+                                                        LocaleKeys
+                                                            .confirm_delete_comment_message
+                                                            .tr(),
+                                                        style: TextStyle(
+                                                          fontSize: 14.sp,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color: const Color(
+                                                            0xFF666666,
                                                           ),
                                                         ),
-                                                        SizedBox(height: 12.h),
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: TextButton(
-                                                                onPressed: () =>
-                                                                    Navigator.of(
-                                                                            ctx)
-                                                                        .pop(
-                                                                            false),
-                                                                child: Text(
-                                                                  LocaleKeys
-                                                                      .cancel
-                                                                      .tr(),
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                              .grey[
-                                                                          600],
-                                                                      fontSize:
-                                                                          14),
+                                                      ),
+                                                      SizedBox(height: 12.h),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.of(
+                                                                    ctx,
+                                                                  ).pop(false),
+                                                              child: Text(
+                                                                LocaleKeys
+                                                                    .cancel
+                                                                    .tr(),
+                                                                style: TextStyle(
+                                                                  color: Colors
+                                                                      .grey[600],
+                                                                  fontSize: 14,
                                                                 ),
                                                               ),
                                                             ),
-                                                            const SizedBox(
-                                                                width: 8),
-                                                            Expanded(
-                                                              child:
-                                                                  ElevatedButton(
-                                                                onPressed: () =>
-                                                                    Navigator.of(
-                                                                            ctx)
-                                                                        .pop(
-                                                                            true),
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                  backgroundColor:
-                                                                      const Color(
-                                                                          0xFF402CDD),
-                                                                  foregroundColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  shape:
-                                                                      RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12),
-                                                                  ),
-                                                                  padding: const EdgeInsets
-                                                                      .symmetric(
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 8,
+                                                          ),
+                                                          Expanded(
+                                                            child: ElevatedButton(
+                                                              onPressed: () =>
+                                                                  Navigator.of(
+                                                                    ctx,
+                                                                  ).pop(true),
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor:
+                                                                    const Color(
+                                                                      0xFF402CDD,
+                                                                    ),
+                                                                foregroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        12,
+                                                                      ),
+                                                                ),
+                                                                padding:
+                                                                    const EdgeInsets.symmetric(
                                                                       vertical:
-                                                                          10),
-                                                                ),
-                                                                child: Text(
-                                                                  LocaleKeys
-                                                                      .confirm_delete
-                                                                      .tr(),
-                                                                  style: const TextStyle(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontSize:
-                                                                          14),
+                                                                          10,
+                                                                    ),
+                                                              ),
+                                                              child: Text(
+                                                                LocaleKeys
+                                                                    .confirm_delete
+                                                                    .tr(),
+                                                                style: const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 14,
                                                                 ),
                                                               ),
                                                             ),
-                                                          ],
-                                                        )
-                                                      ],
-                                                    ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          );
-                                          if (confirmed == true) {
-                                            BlocProvider.of<HomeBloc>(context)
-                                                .add(DeleteCommentRatingEvent(
+                                          ),
+                                        );
+                                        if (confirmed == true) {
+                                          BlocProvider.of<HomeBloc>(
+                                            context,
+                                          ).add(
+                                            DeleteCommentRatingEvent(
                                               commentId: commentId,
                                               productId: productId,
                                               tapCommentIndex: index,
-                                            ));
-                                          }
-                                        },
-                                        child: SvgPicture.asset(
-                                          AppAssets.deletecartSvg,
-                                          height: 20,
-                                        )),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                (commentHasReply ?? false)
-                                    ? const SizedBox.shrink()
-                                    : state.updateOrderCommentRatingStatus ==
-                                                UpdateOrderCommentRatingStatus
-                                                    .loading &&
-                                            tapIndex == index
-                                        ? TrydosLoader(
-                                            size: 15,
-                                          )
-                                        : GestureDetector(
-                                            onTap: () {
-                                              _showEditBottomSheet(
-                                                  context, comment);
-                                            },
-                                            child: SvgPicture.asset(
-                                              AppAssets.editSvg,
-                                              // ignore: deprecated_member_use
-                                              color: Colors.green,
-                                              height: 20,
-                                            ))
-                              ],
-                            )))
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: SvgPicture.asset(
+                                        AppAssets.deletecartSvg,
+                                        height: 20,
+                                      ),
+                                    ),
+                              const SizedBox(width: 15),
+                              (commentHasReply ?? false)
+                                  ? const SizedBox.shrink()
+                                  : state.updateOrderCommentRatingStatus ==
+                                            UpdateOrderCommentRatingStatus
+                                                .loading &&
+                                        tapIndex == index
+                                  ? TrydosLoader(size: 15)
+                                  : GestureDetector(
+                                      onTap: () {
+                                        _showEditBottomSheet(context, comment);
+                                      },
+                                      child: SvgPicture.asset(
+                                        AppAssets.editSvg,
+                                        // ignore: deprecated_member_use
+                                        color: Colors.green,
+                                        height: 20,
+                                      ),
+                                    ),
+                            ],
+                          ),
+                        ),
+                      ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

@@ -24,11 +24,11 @@ import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class WelcomeSection extends StatefulWidget {
-  WelcomeSection(
-      {required this.goToCreateAccount,
-      required this.goToLoginSection,
-      Key? key})
-      : super(key: key);
+  WelcomeSection({
+    required this.goToCreateAccount,
+    required this.goToLoginSection,
+    Key? key,
+  }) : super(key: key);
   final void Function() goToCreateAccount;
   final void Function() goToLoginSection;
 
@@ -76,28 +76,24 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             child: MyTextWidget(
               LocaleKeys.welcome_page_description.tr(),
               textAlign: TextAlign.center,
-              style: context.textTheme.titleLarge?.la.copyWith(
+              style: context.textTheme.titleLarge?.lq.copyWith(
                 color: const Color(0xff5D5C5D),
                 letterSpacing: 0.14,
                 height: 1.3,
               ),
             ),
           ),
-          SizedBox(
-            height: 10.h,
-          ),
+          SizedBox(height: 10.h),
           MyTextWidget(
             LocaleKeys.why_we_know_you_label.tr(),
             textAlign: TextAlign.center,
-            style: context.textTheme.titleLarge?.la.copyWith(
+            style: context.textTheme.titleLarge?.lq.copyWith(
               color: const Color(0xffF85555),
               letterSpacing: 0.14,
               height: 1.43,
             ),
           ),
-          SizedBox(
-            height: 20.h,
-          ),
+          SizedBox(height: 20.h),
           InkWell(
             key: TestVariables.kTestMode
                 ? const Key(WidgetsKeys.haveAccountButtonKey)
@@ -106,13 +102,16 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             splashColor: Colors.transparent,
             onTap: () async {
               print(
-                  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%lattttttter");
+                "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%lattttttter",
+              );
               clickButton.value = 0;
               Future.delayed(const Duration(milliseconds: 100), () {
                 debugPrint(
-                    "/////// user_id : ${prefsRepository.myMarketId.toString()} ///////");
+                  "/////// user_id : ${prefsRepository.myMarketId.toString()} ///////",
+                );
                 debugPrint(
-                    "/////// user_name: ${prefsRepository.myMarketName.toString()} ///////");
+                  "/////// user_name: ${prefsRepository.myMarketName.toString()} ///////",
+                );
                 clickButton.value = -1;
                 widget.goToLoginSection.call();
               });
@@ -128,48 +127,47 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               );
             },
             child: ValueListenableBuilder<int>(
-                valueListenable: clickButton,
-                builder: (context, index, _) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                    child: DottedBorder(
-                      padding: EdgeInsets.zero,
-                      strokeCap: StrokeCap.round,
-                      strokeWidth: 0.5,
-                      borderType: BorderType.RRect,
-                      dashPattern: const [3, 3],
-                      radius: const Radius.circular(20.0),
-                      color: index == 0
-                          ? const Color(0xff707070)
-                          : const Color(0xfffafafa),
-                      child: Container(
-                        width: 1.sw,
-                        height: 50.h,
-                        decoration: BoxDecoration(
-                          color: index == 0
-                              ? Colors.white
-                              : const Color(0xfffafafa),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Center(
-                          child: MyTextWidget(
-                            LocaleKeys.i_have_account.tr(),
-                            style: context.textTheme.displayMedium?.ra.copyWith(
-                              color: const Color(0xff5D5C5D),
-                              letterSpacing: 0.16,
-                              height: 1.25,
-                            ),
-                            textAlign: TextAlign.center,
+              valueListenable: clickButton,
+              builder: (context, index, _) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                  child: DottedBorder(
+                    padding: EdgeInsets.zero,
+                    strokeCap: StrokeCap.round,
+                    strokeWidth: 0.5,
+                    borderType: BorderType.RRect,
+                    dashPattern: const [3, 3],
+                    radius: const Radius.circular(20.0),
+                    color: index == 0
+                        ? const Color(0xff707070)
+                        : const Color(0xfffafafa),
+                    child: Container(
+                      width: 1.sw,
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                        color: index == 0
+                            ? Colors.white
+                            : const Color(0xfffafafa),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Center(
+                        child: MyTextWidget(
+                          LocaleKeys.i_have_account.tr(),
+                          style: context.textTheme.displayMedium?.rq.copyWith(
+                            color: const Color(0xff5D5C5D),
+                            letterSpacing: 0.16,
+                            height: 1.25,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
           ),
-          SizedBox(
-            height: 10.h,
-          ),
+          SizedBox(height: 10.h),
           InkWell(
             key: TestVariables.kTestMode
                 ? const Key(WidgetsKeys.createNewAccountButtonKey)
@@ -194,48 +192,47 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               );
             },
             child: ValueListenableBuilder<int>(
-                valueListenable: clickButton,
-                builder: (context, index, _) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                    child: DottedBorder(
-                      padding: EdgeInsets.zero,
-                      strokeCap: StrokeCap.round,
-                      strokeWidth: 0.5,
-                      borderType: BorderType.RRect,
-                      dashPattern: const [3, 3],
-                      radius: const Radius.circular(20.0),
-                      color: index == 1
-                          ? const Color(0xff707070)
-                          : const Color(0xfffafafa),
-                      child: Container(
-                        width: 1.sw,
-                        height: 50.h,
-                        decoration: BoxDecoration(
-                          color: index == 1
-                              ? Colors.white
-                              : const Color(0xfffafafa),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Center(
-                          child: MyTextWidget(
-                            LocaleKeys.create_new_account.tr(),
-                            style: context.textTheme.displayMedium?.ra.copyWith(
-                              color: const Color(0xff5D5C5D),
-                              letterSpacing: 0.16,
-                              height: 1.25,
-                            ),
-                            textAlign: TextAlign.center,
+              valueListenable: clickButton,
+              builder: (context, index, _) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                  child: DottedBorder(
+                    padding: EdgeInsets.zero,
+                    strokeCap: StrokeCap.round,
+                    strokeWidth: 0.5,
+                    borderType: BorderType.RRect,
+                    dashPattern: const [3, 3],
+                    radius: const Radius.circular(20.0),
+                    color: index == 1
+                        ? const Color(0xff707070)
+                        : const Color(0xfffafafa),
+                    child: Container(
+                      width: 1.sw,
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                        color: index == 1
+                            ? Colors.white
+                            : const Color(0xfffafafa),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Center(
+                        child: MyTextWidget(
+                          LocaleKeys.create_new_account.tr(),
+                          style: context.textTheme.displayMedium?.rq.copyWith(
+                            color: const Color(0xff5D5C5D),
+                            letterSpacing: 0.16,
+                            height: 1.25,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
           ),
-          SizedBox(
-            height: 15.h,
-          ),
+          SizedBox(height: 15.h),
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
@@ -243,27 +240,26 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 ? const Key(WidgetsKeys.laterTakeLookKey)
                 : null,
             onTap: () {
-              Future.delayed(
-                const Duration(milliseconds: 100),
-                () async {
-                  /*   if (prefsRepository.isVerifiedPhone != false ||
+              Future.delayed(const Duration(milliseconds: 100), () async {
+                /*   if (prefsRepository.isVerifiedPhone != false ||
                       (prefsRepository.isTokenExpired ??
                           false ||
                               prefsRepository.marketToken == "" ||
                               prefsRepository.marketToken == null)) {*/
-                  String? deviceId = await HelperFunctions.getDeviceId();
-                  BlocProvider.of<AuthBloc>(context)
-                      .add(RegisterGuestEvent(deviceId: deviceId!));
-                  //   }
-                  if (Navigator.of(context).canPop()) {
-                    print(
-                        "############################################################3");
-                    Navigator.of(context).pop();
-                  } else {
-                    context.go(GRouter.config.applicationRoutes.kBasePage);
-                  }
-                },
-              );
+                String? deviceId = await HelperFunctions.getDeviceId();
+                BlocProvider.of<AuthBloc>(
+                  context,
+                ).add(RegisterGuestEvent(deviceId: deviceId!));
+                //   }
+                if (Navigator.of(context).canPop()) {
+                  print(
+                    "############################################################3",
+                  );
+                  Navigator.of(context).pop();
+                } else {
+                  context.go(GRouter.config.applicationRoutes.kBasePage);
+                }
+              });
               //////////////////////////
               FirebaseAnalyticsService.logEventForSession(
                 executedEventName:
@@ -283,7 +279,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               child: MyTextWidget(
                 LocaleKeys.later_take_look.tr(),
                 textAlign: TextAlign.center,
-                style: context.textTheme.titleLarge?.ra.copyWith(
+                style: context.textTheme.titleLarge?.rq.copyWith(
                   color: const Color(0xff4d84ff),
                   letterSpacing: 0.14,
                   height: 1.43,

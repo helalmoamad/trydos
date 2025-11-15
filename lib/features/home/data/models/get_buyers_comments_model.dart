@@ -90,6 +90,8 @@ class BuyersComment {
   final String? comment;
   final String? variant;
   final DateTime? createdAt;
+  final int? totalLikes;
+  final bool? isLiked;
   final bool? recommendation;
   final double? starRating;
   final String? orderDetailsId;
@@ -98,6 +100,8 @@ class BuyersComment {
     this.id,
     this.customer,
     this.productId,
+    this.totalLikes,
+    this.isLiked,
     this.comment,
     this.variant,
     this.createdAt,
@@ -115,6 +119,8 @@ class BuyersComment {
     bool? recommendation,
     DateTime? createdAt,
     double? starRating,
+    int? totalLikes,
+    bool? isLiked,
     String? orderDetailsId,
   }) =>
       BuyersComment(
@@ -125,6 +131,8 @@ class BuyersComment {
         variant: variant ?? this.variant,
         createdAt: createdAt ?? this.createdAt,
         starRating: starRating ?? this.starRating,
+        totalLikes: totalLikes ?? this.totalLikes,
+        isLiked: isLiked ?? this.isLiked,
         recommendation: recommendation ?? this.recommendation,
         orderDetailsId: orderDetailsId ?? this.orderDetailsId,
       );
@@ -136,6 +144,8 @@ class BuyersComment {
             : Customer.fromJson(json["customer"]),
         productId: json["product_id"],
         comment: json["comment"],
+        totalLikes: json["total_likes"],
+        isLiked: json["is_liked"],
         recommendation: json["recommendation"],
         variant: json["variant"],
         createdAt: json["created_at"] == null
@@ -155,6 +165,8 @@ class BuyersComment {
         "star_rating": starRating,
         "recommendation": recommendation,
         "order_details_id": orderDetailsId,
+        "total_likes": totalLikes,
+        "is_liked": isLiked,
       };
 }
 

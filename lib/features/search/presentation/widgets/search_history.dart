@@ -17,8 +17,6 @@ import 'package:trydos/features/search/presentation/widgets/search_history_chip.
 
 import '../../../../common/constant/design/assets_provider.dart';
 
-
-
 class SearchHistory extends StatefulWidget {
   final List<String> items;
   final ValueNotifier<int> buildSearchResult;
@@ -212,6 +210,7 @@ class _SearchHistoryState extends State<SearchHistory> {
         builder: (context, child) {
           return Transform(
             transform: Matrix4.identity()
+              // ignore: deprecated_member_use
               ..translate(0.0, 0.0, (1.0 - animation.value)),
             child: Opacity(
               opacity: animation.value,

@@ -23,7 +23,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CreateAccountSection extends StatefulWidget {
   CreateAccountSection({Key? key, required this.moveToNextStep})
-      : super(key: key);
+    : super(key: key);
   final void Function() moveToNextStep;
 
   @override
@@ -67,7 +67,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             children: [
               TextSpan(
                 text: LocaleKeys.to.tr(),
-                style: context.textTheme.titleLarge?.la.copyWith(
+                style: context.textTheme.titleLarge?.lq.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.43,
@@ -75,14 +75,15 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
               ),
               TextSpan(
                 text: LocaleKeys.create_new_account.tr(),
-                style: context.textTheme.titleLarge?.lr.copyWith(
+                style: context.textTheme.titleLarge?.lq.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.43,
                 ),
               ),
               TextSpan(
-                text: " " +
+                text:
+                    " " +
                     LocaleKeys.tap.tr() +
                     " "
                         "“" +
@@ -90,7 +91,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
                     "”" +
                     " " +
                     LocaleKeys.to_accept_trydos.tr(),
-                style: context.textTheme.titleLarge?.la.copyWith(
+                style: context.textTheme.titleLarge?.lq.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.43,
@@ -98,7 +99,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
               ),
               TextSpan(
                 text: "\n" + LocaleKeys.trydos.tr(),
-                style: context.textTheme.titleLarge?.la.copyWith(
+                style: context.textTheme.titleLarge?.lq.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.2,
@@ -106,28 +107,23 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
               ),
             ],
           ),
-          textHeightBehavior:
-              const TextHeightBehavior(applyHeightToFirstAscent: false),
+          textHeightBehavior: const TextHeightBehavior(
+            applyHeightToFirstAscent: false,
+          ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(
-          height: 20.h,
-        ),
+        SizedBox(height: 20.h),
         SvgPicture.asset(AppAssets.termsSvg),
-        SizedBox(
-          height: 10.h,
-        ),
+        SizedBox(height: 10.h),
         MyTextWidget(
           LocaleKeys.trems_of_services.tr(),
-          style: context.textTheme.titleLarge?.ra.copyWith(
+          style: context.textTheme.titleLarge?.rq.copyWith(
             color: const Color(0xff388CFF),
             height: 1.42,
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(
-          height: 60.h,
-        ),
+        SizedBox(height: 60.h),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: InkWell(
@@ -138,13 +134,10 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             splashColor: Colors.transparent,
             onTap: () {
               clickButton.value = 0;
-              Future.delayed(
-                const Duration(milliseconds: 100),
-                () {
-                  clickButton.value = -1;
-                  widget.moveToNextStep.call();
-                },
-              );
+              Future.delayed(const Duration(milliseconds: 100), () {
+                clickButton.value = -1;
+                widget.moveToNextStep.call();
+              });
               /////////////////////////////////////
 
               FirebaseAnalyticsService.logEventForSession(
@@ -157,69 +150,68 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
               );
             },
             child: ValueListenableBuilder<int>(
-                valueListenable: clickButton,
-                builder: (context, index, _) {
-                  return DottedBorder(
-                    padding: EdgeInsets.zero,
-                    borderType: BorderType.RRect,
-                    strokeCap: StrokeCap.round,
-                    strokeWidth: 0.5,
-                    dashPattern: const [3, 3],
-                    radius: const Radius.circular(20.0),
-                    color: index == 0
-                        ? const Color(0xff388cff)
-                        : const Color(0xfffafafa),
-                    child: Container(
-                      width: 1.sw,
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                        color:
-                            index == 0 ? Colors.white : const Color(0xfffafafa),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Center(
-                        child: MyTextWidget(
-                          LocaleKeys.agree_continue.tr(),
-                          style: context.textTheme.displayMedium?.ra.copyWith(
-                            color: const Color(0xff3c3c3c),
-                            letterSpacing: 0.16,
-                            height: 1.25,
-                          ),
+              valueListenable: clickButton,
+              builder: (context, index, _) {
+                return DottedBorder(
+                  padding: EdgeInsets.zero,
+                  borderType: BorderType.RRect,
+                  strokeCap: StrokeCap.round,
+                  strokeWidth: 0.5,
+                  dashPattern: const [3, 3],
+                  radius: const Radius.circular(20.0),
+                  color: index == 0
+                      ? const Color(0xff388cff)
+                      : const Color(0xfffafafa),
+                  child: Container(
+                    width: 1.sw,
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                      color: index == 0
+                          ? Colors.white
+                          : const Color(0xfffafafa),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: Center(
+                      child: MyTextWidget(
+                        LocaleKeys.agree_continue.tr(),
+                        style: context.textTheme.displayMedium?.rq.copyWith(
+                          color: const Color(0xff3c3c3c),
+                          letterSpacing: 0.16,
+                          height: 1.25,
                         ),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
           ),
         ),
-        const SizedBox(
-          height: 19,
-        ),
+        const SizedBox(height: 19),
         InkWell(
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
           onTap: () async {
             print(
-                "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-            Future.delayed(
-              const Duration(milliseconds: 100),
-              () async {
-                /*     if (GetIt.I<PrefsRepository>().isVerifiedPhone != false ||
+              "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%",
+            );
+            Future.delayed(const Duration(milliseconds: 100), () async {
+              /*     if (GetIt.I<PrefsRepository>().isVerifiedPhone != false ||
                     ((GetIt.I<PrefsRepository>().marketToken?.length ?? 0) <
                             5 ||
                         GetIt.I<PrefsRepository>().marketToken == "" ||
                         GetIt.I<PrefsRepository>().marketToken == null)) {*/
-                String? deviceId = await HelperFunctions.getDeviceId();
-                BlocProvider.of<AuthBloc>(context)
-                    .add(RegisterGuestEvent(deviceId: deviceId!));
-                //}
-                if (Navigator.of(context).canPop()) {
-                  Navigator.of(context).pop();
-                } else {
-                  context.go(GRouter.config.applicationRoutes.kBasePage);
-                }
-              },
-            );
+              String? deviceId = await HelperFunctions.getDeviceId();
+              BlocProvider.of<AuthBloc>(
+                context,
+              ).add(RegisterGuestEvent(deviceId: deviceId!));
+              //}
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                context.go(GRouter.config.applicationRoutes.kBasePage);
+              }
+            });
 
             /////////////////////////////////////
 
@@ -236,7 +228,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: MyTextWidget(
               LocaleKeys.later_take_look.tr(),
-              style: context.textTheme.titleLarge?.ra.copyWith(
+              style: context.textTheme.titleLarge?.rq.copyWith(
                 color: const Color(0xff4D84FF),
                 letterSpacing: 0.14,
                 height: 1.43,
@@ -244,9 +236,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             ),
           ),
         ),
-        const SizedBox(
-          height: 45,
-        ),
+        const SizedBox(height: 45),
       ],
     );
   }

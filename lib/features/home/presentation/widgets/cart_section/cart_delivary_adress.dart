@@ -74,8 +74,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
   @override
   void initState() {
     LastPagesTracker.push("CartDelivaryAddress Page");
-    animationController =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this);
+    animationController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
     cartImages = widget.cartItems;
     // homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -90,9 +92,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     couponKey.text = prefsRepository.getOrderCoupon();
 
     if (prefsRepository.getOrderCoupon().isNotEmpty) {
-      BlocProvider.of<OrderBloc>(context).add(
-        ApplyCouponEvent(code: prefsRepository.getOrderCoupon()),
-      );
+      BlocProvider.of<OrderBloc>(
+        context,
+      ).add(ApplyCouponEvent(code: prefsRepository.getOrderCoupon()));
     }
 
     ////////////////////
@@ -132,9 +134,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       FlutterError.dumpErrorToConsole(error);
     };
     return
-
-        // ignore: deprecated_member_use
-        WillPopScope(
+    // ignore: deprecated_member_use
+    WillPopScope(
       onWillPop: () async {
         // didCallOnWillPop = true;
         if (Navigator.canPop(context)) {
@@ -156,15 +157,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             if (state.applyCouponStatus == ApplyCouponStatus.success) {
               var data = state.applyCouponModel!.data!;
               if (data.status == 1) {
-// TestCoupon10
+                // TestCoupon10
                 /////////////////////////////////////////
                 if (prefsRepository.getOrderCoupon().isNotEmpty) {
                   prefsRepository.removeOrderCoupon();
                 }
 
-                BlocProvider.of<HomeBloc>(context).add(
-                  GetCartOverviewEvent(),
-                );
+                BlocProvider.of<HomeBloc>(context).add(GetCartOverviewEvent());
               }
             }
           },
@@ -189,17 +188,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                 indexTap.value = 0;
               }
 
-              Future.delayed(
-                const Duration(milliseconds: 200),
-                () {
-                  if (orderState.setCustomerAddressDefaultStatus ==
-                          SetCustomerAddressDefaultStatus.success &&
-                      orderState.getCustomerAddressStatus ==
-                          GetCustomerAddressesStatus.success) {
-                    indexTap.value = orderState.currentAddressChoosed ?? 0;
-                  }
-                },
-              );
+              Future.delayed(const Duration(milliseconds: 200), () {
+                if (orderState.setCustomerAddressDefaultStatus ==
+                        SetCustomerAddressDefaultStatus.success &&
+                    orderState.getCustomerAddressStatus ==
+                        GetCustomerAddressesStatus.success) {
+                  indexTap.value = orderState.currentAddressChoosed ?? 0;
+                }
+              });
 
               return BlocBuilder<HomeBloc, HomeState>(
                 buildWhen: (previous, current) =>
@@ -208,22 +204,19 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                     previous.getCartItemsStatus != current.getCartItemsStatus,
                 builder: (context, homeState) {
                   cartImages = [];
-                  homeState.cartCollection?.forEach(
-                    (element) {
-                      cartImages.add(
-                        {
-                          "image": element.image ?? "",
-                          "size": element.variations?.isNullOrEmpty ?? false
-                              ? ""
-                              : element.variations?[0].size ?? "",
-                          "color": element.variations?.isNullOrEmpty ?? false
-                              ? ""
-                              : element.variations?[0].color ?? ""
-                        },
-                      );
-                    },
-                  );
-                  List<String> availablePaymentMethod = homeState
+                  homeState.cartCollection?.forEach((element) {
+                    cartImages.add({
+                      "image": element.image ?? "",
+                      "size": element.variations?.isNullOrEmpty ?? false
+                          ? ""
+                          : element.variations?[0].size ?? "",
+                      "color": element.variations?.isNullOrEmpty ?? false
+                          ? ""
+                          : element.variations?[0].color ?? "",
+                    });
+                  });
+                  List<String> availablePaymentMethod =
+                      homeState
                           .getCartShippingItemsModel!
                           .data!
                           .availablePaymentMethod ??
@@ -231,278 +224,305 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
 
                   double totalCashed =
                       (homeState.getCartShippingItemsModel?.data?.totalCash ??
-                              0) *
-                          homeState.getCurrencyForCountryModel!.data!.currency!
-                              .exchangeRate!;
+                          0) *
+                      homeState
+                          .getCurrencyForCountryModel!
+                          .data!
+                          .currency!
+                          .exchangeRate!;
 
                   double totalPrice =
                       (homeState.getCartShippingItemsModel?.data?.total ?? 0) *
-                          homeState.getCurrencyForCountryModel!.data!.currency!
-                              .exchangeRate!;
+                      homeState
+                          .getCurrencyForCountryModel!
+                          .data!
+                          .currency!
+                          .exchangeRate!;
                   if (!(totalPrice > 0)) {
                     totalCashed = 0;
                   }
 
-                  double couponDiscount = homeState
-                          .getCartShippingItemsModel?.data?.couponDiscount ??
+                  double couponDiscount =
+                      homeState
+                          .getCartShippingItemsModel
+                          ?.data
+                          ?.couponDiscount ??
                       0;
 
                   String couponCode =
                       homeState.getCartShippingItemsModel?.data?.couponCode ??
-                          '';
+                      '';
                   return ValueListenableBuilder<bool>(
                     valueListenable: showDeleteAddress,
                     builder: (context, _showDeleteAddress, _) {
                       double walletBalance =
                           orderState.customerWalletModel == null
-                              ? 0
-                              : orderState.customerWalletModel?.data
-                                      .totalWalletBalance ??
-                                  0;
+                          ? 0
+                          : orderState
+                                    .customerWalletModel
+                                    ?.data
+                                    .totalWalletBalance ??
+                                0;
                       // *
                       //     state.getCurrencyForCountryModel!.data!.currency!
                       //         .exchangeRate!;
                       return ValueListenableBuilder<int>(
-                          valueListenable: indexTap,
-                          builder: (context, _indexTap, _) {
-                            return Stack(
-                              children: [
-                                Column(
-                                  children: [
-                                    buildPageHeader(context, orderState),
-                                    ///////////////////////
-                                    Expanded(
-                                      child: RefreshIndicator(
-                                        onRefresh: () async {
-                                          homeBloc
-                                              .add(const GetCartItemEvent());
-                                          await Future.delayed(
-                                              const Duration(seconds: 4));
-                                        },
-                                        child: SingleChildScrollView(
-                                          physics:
-                                              const AlwaysScrollableScrollPhysics(),
-                                          child: Container(
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                            ),
-                                            color: const Color.fromARGB(
-                                                255, 255, 255, 255),
-                                            child: Column(
-                                              children: [
-                                                SizedBox(
-                                                  height: 10.h,
-                                                ),
-                                                ////////////////////
-                                                ValueListenableBuilder<bool>(
-                                                  valueListenable: isExpanded,
-                                                  builder:
-                                                      (context, expanded, _) {
-                                                    return buildBagItemsWidget(
-                                                        expanded, context);
-                                                  },
-                                                ),
-                                                //////////////////////////////////
-                                                SizedBox(
-                                                  height: 12.h,
-                                                ),
-                                                //////////////////////////////////
-                                                buildAddressWidget(orderState,
-                                                    context, _indexTap),
-                                                ////////////////////
-                                                SizedBox(
-                                                  height: 12.h,
-                                                ),
-                                                ////////////////////
-                                                /*   (orderState
+                        valueListenable: indexTap,
+                        builder: (context, _indexTap, _) {
+                          return Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  buildPageHeader(context, orderState),
+                                  ///////////////////////
+                                  Expanded(
+                                    child: RefreshIndicator(
+                                      onRefresh: () async {
+                                        homeBloc.add(const GetCartItemEvent());
+                                        await Future.delayed(
+                                          const Duration(seconds: 4),
+                                        );
+                                      },
+                                      child: SingleChildScrollView(
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(),
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                          ),
+                                          color: const Color.fromARGB(
+                                            255,
+                                            255,
+                                            255,
+                                            255,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(height: 10.h),
+                                              ////////////////////
+                                              ValueListenableBuilder<bool>(
+                                                valueListenable: isExpanded,
+                                                builder: (context, expanded, _) {
+                                                  return buildBagItemsWidget(
+                                                    expanded,
+                                                    context,
+                                                  );
+                                                },
+                                              ),
+                                              //////////////////////////////////
+                                              SizedBox(height: 12.h),
+                                              //////////////////////////////////
+                                              buildAddressWidget(
+                                                orderState,
+                                                context,
+                                                _indexTap,
+                                              ),
+                                              ////////////////////
+                                              SizedBox(height: 12.h),
+                                              ////////////////////
+                                              /*   (orderState
                                                         .listOfAddressInfoClassToSave
                                                         .isNullOrEmpty)
                                                     ? SizedBox.shrink()
                                                     :*/
-                                                orderState.getCustomerWalletStatus ==
-                                                        GetCustomerWalletStatus
-                                                            .failure
-                                                    ? TryAgainWidget(
-                                                        tryAgain: () {
-                                                          BlocProvider.of<
-                                                                      OrderBloc>(
-                                                                  context)
-                                                              .add(
-                                                            GetCustomerWalletEvent(
-                                                                limit: 10,
-                                                                offset: 1),
-                                                          );
-                                                        },
-                                                      )
-                                                    : orderState.getCustomerWalletStatus ==
-                                                            GetCustomerWalletStatus
-                                                                .loading
-                                                        ? TrydosShimmerLoading(
-                                                            width: 1.sw,
-                                                            logoTextWidth: 15,
-                                                            height: 70,
-                                                            logoTextHeight: 15,
-                                                          )
-                                                        : PaymentMethod(
-                                                            fromSuccessOrder:
-                                                                false,
-                                                            amount:
-                                                                walletBalance,
-                                                            fromPalceOrder:
-                                                                false,
-                                                            availablePaymentMethod:
-                                                                availablePaymentMethod,
-                                                            currencySymbol: orderState
-                                                                        .customerWalletModel ==
-                                                                    null
-                                                                ? ""
-                                                                : orderState
-                                                                        .customerWalletModel!
-                                                                        .data
-                                                                        .currencySymbol ??
-                                                                    '',
-                                                            paymentMethods:
-                                                                paymentMethods,
-                                                            totalPrice:
-                                                                totalPrice,
-                                                            decimalPointSetting:
-                                                                homeState
-                                                                        .startingSetting
-                                                                        ?.decimalPointSettings ??
-                                                                    2,
+                                              orderState.getCustomerWalletStatus ==
+                                                      GetCustomerWalletStatus
+                                                          .failure
+                                                  ? TryAgainWidget(
+                                                      tryAgain: () {
+                                                        BlocProvider.of<OrderBloc>(
+                                                          context,
+                                                        ).add(
+                                                          GetCustomerWalletEvent(
+                                                            limit: 10,
+                                                            offset: 1,
                                                           ),
-                                                ////////////
-                                                SizedBox(
-                                                  height: 25.h,
-                                                ),
-                                                ////////////
-                                                ValueListenableBuilder<bool>(
-                                                  valueListenable:
-                                                      isExpandedCoupon,
-                                                  builder: (context,
-                                                      expandedCoupon, _) {
-                                                    return buildCouponWidget(
-                                                      expandedCoupon,
+                                                        );
+                                                      },
+                                                    )
+                                                  : orderState
+                                                            .getCustomerWalletStatus ==
+                                                        GetCustomerWalletStatus
+                                                            .loading
+                                                  ? TrydosShimmerLoading(
+                                                      width: 1.sw,
+                                                      logoTextWidth: 15,
+                                                      height: 70,
+                                                      logoTextHeight: 15,
+                                                    )
+                                                  : PaymentMethod(
+                                                      fromSuccessOrder: false,
+                                                      amount: walletBalance,
+                                                      fromPalceOrder: false,
+                                                      availablePaymentMethod:
+                                                          availablePaymentMethod,
+                                                      currencySymbol:
+                                                          orderState
+                                                                  .customerWalletModel ==
+                                                              null
+                                                          ? ""
+                                                          : orderState
+                                                                    .customerWalletModel!
+                                                                    .data
+                                                                    .currencySymbol ??
+                                                                '',
+                                                      paymentMethods:
+                                                          paymentMethods,
+                                                      totalPrice: totalPrice,
+                                                      decimalPointSetting:
+                                                          homeState
+                                                              .startingSetting
+                                                              ?.decimalPointSettings ??
+                                                          2,
+                                                    ),
+                                              ////////////
+                                              SizedBox(height: 25.h),
+                                              ////////////
+                                              ValueListenableBuilder<bool>(
+                                                valueListenable:
+                                                    isExpandedCoupon,
+                                                builder:
+                                                    (
                                                       context,
-                                                      orderState,
-                                                      couponDiscount,
-                                                      couponCode,
-                                                    );
-                                                  },
-                                                ),
-                                                ////////////////
-                                                (orderState
-                                                        .listOfAddressInfoClassToSave
-                                                        .isNullOrEmpty)
-                                                    ? const SizedBox.shrink()
-                                                    : ValueListenableBuilder<
-                                                        bool>(
-                                                        valueListenable:
-                                                            isExpanded,
-                                                        builder: (context,
-                                                            _isExpanded, _) {
-                                                          return ValueListenableBuilder<
-                                                              bool>(
-                                                            valueListenable:
-                                                                isExpandedCoupon,
-                                                            builder: (context,
+                                                      expandedCoupon,
+                                                      _,
+                                                    ) {
+                                                      return buildCouponWidget(
+                                                        expandedCoupon,
+                                                        context,
+                                                        orderState,
+                                                        couponDiscount,
+                                                        couponCode,
+                                                      );
+                                                    },
+                                              ),
+                                              ////////////////
+                                              (orderState
+                                                      .listOfAddressInfoClassToSave
+                                                      .isNullOrEmpty)
+                                                  ? const SizedBox.shrink()
+                                                  : ValueListenableBuilder<
+                                                      bool
+                                                    >(
+                                                      valueListenable:
+                                                          isExpanded,
+                                                      builder: (context, _isExpanded, _) {
+                                                        return ValueListenableBuilder<
+                                                          bool
+                                                        >(
+                                                          valueListenable:
+                                                              isExpandedCoupon,
+                                                          builder:
+                                                              (
+                                                                context,
                                                                 _isExpandedCoupon,
-                                                                child) {
-                                                              return SizedBox(
-                                                                  height: _isExpanded
+                                                                child,
+                                                              ) {
+                                                                return SizedBox(
+                                                                  height:
+                                                                      _isExpanded
                                                                       ? 120.h
-                                                                      : (_isExpandedCoupon && !_isExpanded)
-                                                                          ? 120.h
-                                                                          : 0);
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
-                                              ],
-                                            ),
+                                                                      : (_isExpandedCoupon &&
+                                                                            !_isExpanded)
+                                                                      ? 120.h
+                                                                      : 0,
+                                                                );
+                                                              },
+                                                        );
+                                                      },
+                                                    ),
+                                            ],
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    ////////////////////////////
-                                    buildShippingButton(
-                                      orderState,
-                                      homeState,
-                                      _indexTap,
-                                      walletBalance,
-                                      totalPrice,
-                                      totalCashed,
-                                      availablePaymentMethod,
-                                    ),
-                                  ],
-                                ),
-                                //////////////////////////////
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: showPanel,
-                                  builder: (context, _showPanel, _) {
-                                    return !_showPanel
-                                        ? const SizedBox.shrink()
-                                        : InkWell(
-                                            onTap: () {
-                                              panelController.close();
-                                              showPanel.value = false;
-                                            },
-                                            child: Container(
-                                              width: 1.sh,
-                                              color: const Color.fromRGBO(
-                                                  0, 0, 0, 0.65),
-                                            ),
-                                          );
-                                  },
-                                ),
-                                ///////////////
-                                Positioned(
-                                  bottom: 0,
-                                  child: Container(
-                                    height: 510,
-                                    width: 1.sw,
-                                    child: SlidingUpPanel(
-                                      controller: panelController,
-                                      borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(30),
-                                          topRight: Radius.circular(30)),
-                                      onPanelClosed: () {
-                                        showPanel.value = false;
-                                        orderBloc.add(
-                                          SetCustomerAddressDefaultEvent(
-                                            adressId: orderState
-                                                .listOfAddressInfoClassToSave![
-                                                    _indexTap]
-                                                .id,
-                                          ),
-                                        );
-                                      },
-                                      onPanelOpened: () {
-                                        showPanel.value = true;
-                                      },
-                                      minHeight: 0,
-                                      maxHeight: 510,
-                                      panelBuilder: (sc) => Container(
-                                        height: 93,
-                                        width: 1.sw,
-                                        child: buildSlidingUpPanelWidgets(
-                                          context,
-                                          orderState,
-                                          _indexTap,
-                                          sc,
                                         ),
                                       ),
                                     ),
                                   ),
+                                  ////////////////////////////
+                                  buildShippingButton(
+                                    orderState,
+                                    homeState,
+                                    _indexTap,
+                                    walletBalance,
+                                    totalPrice,
+                                    totalCashed,
+                                    availablePaymentMethod,
+                                  ),
+                                ],
+                              ),
+                              //////////////////////////////
+                              ValueListenableBuilder<bool>(
+                                valueListenable: showPanel,
+                                builder: (context, _showPanel, _) {
+                                  return !_showPanel
+                                      ? const SizedBox.shrink()
+                                      : InkWell(
+                                          onTap: () {
+                                            panelController.close();
+                                            showPanel.value = false;
+                                          },
+                                          child: Container(
+                                            width: 1.sh,
+                                            color: const Color.fromRGBO(
+                                              0,
+                                              0,
+                                              0,
+                                              0.65,
+                                            ),
+                                          ),
+                                        );
+                                },
+                              ),
+                              ///////////////
+                              Positioned(
+                                bottom: 0,
+                                child: Container(
+                                  height: 510,
+                                  width: 1.sw,
+                                  child: SlidingUpPanel(
+                                    controller: panelController,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(30),
+                                      topRight: Radius.circular(30),
+                                    ),
+                                    onPanelClosed: () {
+                                      showPanel.value = false;
+                                      orderBloc.add(
+                                        SetCustomerAddressDefaultEvent(
+                                          adressId: orderState
+                                              .listOfAddressInfoClassToSave![_indexTap]
+                                              .id,
+                                        ),
+                                      );
+                                    },
+                                    onPanelOpened: () {
+                                      showPanel.value = true;
+                                    },
+                                    minHeight: 0,
+                                    maxHeight: 510,
+                                    panelBuilder: (sc) => Container(
+                                      height: 93,
+                                      width: 1.sw,
+                                      child: buildSlidingUpPanelWidgets(
+                                        context,
+                                        orderState,
+                                        _indexTap,
+                                        sc,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                /////////////////////////////////////
-                                _showDeleteAddress
-                                    ? buildDeleteAddressWidget(
-                                        context, orderState)
-                                    : const SizedBox.shrink()
-                              ],
-                            );
-                          });
+                              ),
+                              /////////////////////////////////////
+                              _showDeleteAddress
+                                  ? buildDeleteAddressWidget(
+                                      context,
+                                      orderState,
+                                    )
+                                  : const SizedBox.shrink(),
+                            ],
+                          );
+                        },
+                      );
                     },
                   );
                 },
@@ -515,25 +535,24 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
   }
 
   Widget buildShippingButton(
-      OrderState orderState,
-      HomeState homeState,
-      int _indexTap,
-      double walletBalance,
-      double totalPrice,
-      double totalCashed,
-      List<String> availablePaymentMethods) {
+    OrderState orderState,
+    HomeState homeState,
+    int _indexTap,
+    double walletBalance,
+    double totalPrice,
+    double totalCashed,
+    List<String> availablePaymentMethods,
+  ) {
     return Container(
       height: 80,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: const Color.fromRGBO(255, 255, 255, 1),
-        ),
+        border: Border.all(color: const Color.fromRGBO(255, 255, 255, 1)),
         boxShadow: const [
           BoxShadow(
             blurRadius: 10,
             blurStyle: BlurStyle.solid,
             color: Color(0xffF1F1F1),
-          )
+          ),
         ],
         color: const Color.fromRGBO(255, 255, 255, 1),
       ),
@@ -578,7 +597,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   child: Container(
                     height: 60,
                     margin: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       // ignore: deprecated_member_use
@@ -590,60 +611,66 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                         children: [
                           Text(
                             LocaleKeys.confirm_shipping_payment.tr(),
-                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                color: const Color(0xffFEFEFE),
-                                letterSpacing: 0.18,
-                                fontSize: 18,
-                                height: 0.8),
+                            style: context.textTheme.bodyMedium?.mq.copyWith(
+                              color: const Color(0xffFEFEFE),
+                              letterSpacing: 0.18,
+                              fontSize: 18,
+                              height: 0.8,
+                            ),
                           ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
+                          SizedBox(height: 10.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 '${homeState.cartCollection?.length} ',
-                                style: context.textTheme.bodyMedium?.br
+                                style: context.textTheme.bodyMedium?.bq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                               Text(
                                 LocaleKeys.item.tr(),
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                               Text(
-                                paymentMethods.value
-                                        .contains(PaymentMethods.cod)
+                                paymentMethods.value.contains(
+                                      PaymentMethods.cod,
+                                    )
                                     ? HelperFunctions.formatNumber(
                                         number: totalCashed,
-                                        isNeedRounding: false)
+                                        isNeedRounding: false,
+                                      )
                                     : HelperFunctions.formatNumber(
                                         number: totalPrice,
-                                        isNeedRounding: false),
-                                style: context.textTheme.bodyMedium?.br
+                                        isNeedRounding: false,
+                                      ),
+                                style: context.textTheme.bodyMedium?.bq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                               Text(
                                 "${widget.currencySympole}",
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                             ],
                           ),
@@ -660,7 +687,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       return;
                     }
                     if ((orderState
-                        .listOfAddressInfoClassToSave.isNullOrEmpty)) {
+                        .listOfAddressInfoClassToSave
+                        .isNullOrEmpty)) {
                       validateBox.value = true;
                       animationController.forward();
                       Future.delayed(
@@ -712,16 +740,23 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                           cartImages: cartImages,
                           currencySympole: widget.currencySympole,
                           totalPrice: totalPrice,
-                          exchangeRate: homeState.getCurrencyForCountryModel!
-                                  .data!.currency!.exchangeRate ??
+                          exchangeRate:
+                              homeState
+                                  .getCurrencyForCountryModel!
+                                  .data!
+                                  .currency!
+                                  .exchangeRate ??
                               0,
                           totalCashed: totalCashed,
-                          currencySymbol: orderState
-                                  .customerWalletModel!.data.currencySymbol ??
+                          currencySymbol:
+                              orderState
+                                  .customerWalletModel!
+                                  .data
+                                  .currencySymbol ??
                               "",
                           decimalPointSetting:
                               homeState.startingSetting?.decimalPointSettings ??
-                                  2,
+                              2,
                         ),
                       );
                     }
@@ -733,9 +768,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        20,
-                      ),
+                      borderRadius: BorderRadius.circular(20),
                       color: check
                           ? const Color(0xff346BFF)
                           : const Color(0xffC4C2C2),
@@ -746,63 +779,67 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                         children: [
                           Text(
                             LocaleKeys.confirm_shipping_payment.tr(),
-                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                color: const Color(0xffFEFEFE),
-                                letterSpacing: 0.18,
-                                fontSize: 18,
-                                height: 0.8),
+                            style: context.textTheme.bodyMedium?.mq.copyWith(
+                              color: const Color(0xffFEFEFE),
+                              letterSpacing: 0.18,
+                              fontSize: 18,
+                              height: 0.8,
+                            ),
                           ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
+                          SizedBox(height: 10.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 '${homeState.cartCollection?.length} ',
-                                style: context.textTheme.bodyMedium?.br
+                                style: context.textTheme.bodyMedium?.bq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                               Text(
                                 LocaleKeys.item.tr(),
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                               Text(
-                                paymentMethods.value
-                                        .contains(PaymentMethods.cod)
+                                paymentMethods.value.contains(
+                                      PaymentMethods.cod,
+                                    )
                                     ? HelperFunctions.formatNumber(
                                         number: totalCashed,
-                                        isNeedRounding: false)
+                                        isNeedRounding: false,
+                                      )
                                     : HelperFunctions.formatNumber(
                                         number: totalPrice,
-                                        isNeedRounding: false),
-                                style: context.textTheme.bodyMedium?.br
+                                        isNeedRounding: false,
+                                      ),
+                                style: context.textTheme.bodyMedium?.bq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
-                              const SizedBox(
-                                width: 2,
-                              ),
+                              const SizedBox(width: 2),
                               Text(
                                 "${widget.currencySympole}",
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                             ],
                           ),
@@ -832,14 +869,16 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
           width: 1.sw,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-              color: expandedCoupon
+            color: expandedCoupon
+                ? const Color(0xffFFFFFF)
+                : const Color(0xffF8F8F8),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: !expandedCoupon
                   ? const Color(0xffFFFFFF)
-                  : const Color(0xffF8F8F8),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                  color: !expandedCoupon
-                      ? const Color(0xffFFFFFF)
-                      : const Color(0xff388CFF))),
+                  : const Color(0xff388CFF),
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -850,7 +889,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   SizedBox(width: 10.w),
                   Text(
                     "${LocaleKeys.i_have_discount_coupon.tr()} ",
-                    style: context.textTheme.bodyMedium?.rr.copyWith(
+                    style: context.textTheme.bodyMedium?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
                       fontSize: 14,
@@ -859,11 +898,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   ),
                 ],
               ),
-              !expandedCoupon
-                  ? const SizedBox.shrink()
-                  : SizedBox(
-                      height: 5.h,
-                    ),
+              !expandedCoupon ? const SizedBox.shrink() : SizedBox(height: 5.h),
               !expandedCoupon
                   ? const SizedBox.shrink()
                   : Padding(
@@ -872,166 +907,163 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                         couponDiscount > 0
                             ? "${LocaleKeys.applied_your_coupon.tr()} $couponCode"
                             : "${LocaleKeys.please_enter_coupon_information.tr()} ",
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
                           fontSize: 12,
-                          height:
-                              LanguageService.languageCode == "ar" ? 0.8 : 1.33,
+                          height: LanguageService.languageCode == "ar"
+                              ? 0.8
+                              : 1.33,
                         ),
                       ),
                     ),
               !expandedCoupon
                   ? const SizedBox.shrink()
-                  : SizedBox(
-                      height: 10.h,
-                    ),
+                  : SizedBox(height: 10.h),
               !expandedCoupon
                   ? const SizedBox.shrink()
                   : couponDiscount > 0
-                      ? Container(
-                          alignment: Alignment.center,
-                          width: 1.sw,
-                          padding: EdgeInsets.all(10.h),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border:
-                                  Border.all(color: const Color(0xff388CFF))),
-                          child: Text(
-                            "- ${couponDiscount} ${widget.currencySympole}",
-                            textAlign: TextAlign.center,
-                            style: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xff1D1D1D),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 1.33,
-                            ),
-                          ),
-                        )
-                      : Form(
-                          key: _formKey,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Container(
-                                  height: 60,
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 5),
-                                  color: colorScheme.white,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 5),
-                                  child: AppTextField(
-                                    controller: couponKey,
-                                    textInputType: TextInputType.text,
-                                    filledColor: colorScheme.grey50,
-                                    bordersColor: colorScheme.grey50,
-                                    hintText: LocaleKeys.coupon_no.tr(),
-                                    validator: (value) {
-                                      if (value.isNullOrEmpty) {
-                                        return LocaleKeys
-                                            .the_field_must_not_be_empty
-                                            .tr();
-                                      }
-                                      return null;
-                                    },
-                                    hintTextStyle: textTheme.bodySmall?.lr
-                                        .copyWith(
-                                            color: const Color(0xffD3D3D3)),
-                                    contentPadding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            20, 10, 20, 10),
-                                    isPrefixIconConstraints: false,
-                                    prefixIcon: Container(
-                                      width: 20,
-                                      height: 20,
-                                      child: Row(
-                                        children: [
-                                          const Spacer(),
-                                          Padding(
-                                            padding: const EdgeInsets.all(9),
-                                            child: SvgPicture.asset(
-                                              AppAssets.trydosWalletSvg,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                  ? Container(
+                      alignment: Alignment.center,
+                      width: 1.sw,
+                      padding: EdgeInsets.all(10.h),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: const Color(0xff388CFF)),
+                      ),
+                      child: Text(
+                        "- ${couponDiscount} ${widget.currencySympole}",
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.bodyMedium?.bq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.33,
+                        ),
+                      ),
+                    )
+                  : Form(
+                      key: _formKey,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              height: 60,
+                              margin: const EdgeInsets.symmetric(vertical: 5),
+                              color: colorScheme.white,
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: AppTextField(
+                                controller: couponKey,
+                                textInputType: TextInputType.text,
+                                filledColor: colorScheme.grey50,
+                                bordersColor: colorScheme.grey50,
+                                hintText: LocaleKeys.coupon_no.tr(),
+                                validator: (value) {
+                                  if (value.isNullOrEmpty) {
+                                    return LocaleKeys
+                                        .the_field_must_not_be_empty
+                                        .tr();
+                                  }
+                                  return null;
+                                },
+                                hintTextStyle: textTheme.bodySmall?.lq.copyWith(
+                                  color: const Color(0xffD3D3D3),
+                                ),
+                                contentPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                      20,
+                                      10,
+                                      20,
+                                      10,
                                     ),
+                                isPrefixIconConstraints: false,
+                                prefixIcon: Container(
+                                  width: 20,
+                                  height: 20,
+                                  child: Row(
+                                    children: [
+                                      const Spacer(),
+                                      Padding(
+                                        padding: const EdgeInsets.all(9),
+                                        child: SvgPicture.asset(
+                                          AppAssets.trydosWalletSvg,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              //////////////////////
-                              const SizedBox(
-                                width: 2,
-                              ),
-                              //////////////////////
-                              Expanded(
-                                child: (state.applyCouponStatus ==
-                                        ApplyCouponStatus.loading)
-                                    ? Shimmer.fromColors(
-                                        baseColor: Colors.grey[300]!,
-                                        highlightColor: Colors.grey[100]!,
-                                        child: Container(
-                                          padding: EdgeInsets.all(16.h),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              border: Border.all(
-                                                  color:
-                                                      const Color(0xff388CFF))),
-                                          child: Text(
-                                            "${LocaleKeys.apply.tr()} ",
-                                            textAlign: TextAlign.center,
-                                            style: context
-                                                .textTheme.bodyMedium?.rr
-                                                .copyWith(
-                                                    color:
-                                                        const Color(0xff1D1D1D),
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 14,
-                                                    height: 1),
-                                          ),
-                                        ),
-                                      )
-                                    : InkWell(
-                                        onTap: () {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            BlocProvider.of<OrderBloc>(context)
-                                                .add(
-                                              ApplyCouponEvent(
-                                                  code: couponKey.text),
-                                            );
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(16.h),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              border: Border.all(
-                                                  color:
-                                                      const Color(0xff388CFF))),
-                                          child: Text(
-                                            "${LocaleKeys.apply.tr()} ",
-                                            textAlign: TextAlign.center,
-                                            style: context
-                                                .textTheme.bodyMedium?.rr
-                                                .copyWith(
-                                                    color:
-                                                        const Color(0xff1D1D1D),
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 14,
-                                                    height: 1),
-                                          ),
+                            ),
+                          ),
+                          //////////////////////
+                          const SizedBox(width: 2),
+                          //////////////////////
+                          Expanded(
+                            child:
+                                (state.applyCouponStatus ==
+                                    ApplyCouponStatus.loading)
+                                ? Shimmer.fromColors(
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: Container(
+                                      padding: EdgeInsets.all(16.h),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        border: Border.all(
+                                          color: const Color(0xff388CFF),
                                         ),
                                       ),
-                              ),
-                            ],
+                                      child: Text(
+                                        "${LocaleKeys.apply.tr()} ",
+                                        textAlign: TextAlign.center,
+                                        style: context.textTheme.bodyMedium?.rq
+                                            .copyWith(
+                                              color: const Color(0xff1D1D1D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 14,
+                                              height: 1,
+                                            ),
+                                      ),
+                                    ),
+                                  )
+                                : InkWell(
+                                    onTap: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        BlocProvider.of<OrderBloc>(context).add(
+                                          ApplyCouponEvent(
+                                            code: couponKey.text,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(16.h),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        border: Border.all(
+                                          color: const Color(0xff388CFF),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "${LocaleKeys.apply.tr()} ",
+                                        textAlign: TextAlign.center,
+                                        style: context.textTheme.bodyMedium?.rq
+                                            .copyWith(
+                                              color: const Color(0xff1D1D1D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 14,
+                                              height: 1,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
                           ),
-                        ),
+                        ],
+                      ),
+                    ),
             ],
           ),
         ),
@@ -1046,488 +1078,467 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     ScrollController sc,
   ) {
     return Container(
-        width: 1.sw,
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 10,
+      width: 1.sw,
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          Container(
+            height: 25.h,
+            width: 145.w,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: SvgPicture.asset(
+                    AppAssets.deliveryAddressSvg,
+                    width: 18,
+                    height: 18,
+                    // ignore: deprecated_member_use
+                    color: const Color(0xff1D1D1D),
+                  ),
+                ),
+                const SizedBox(width: 3),
+                Text(
+                  "${LocaleKeys.your_address_list.tr()} ",
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.33,
+                  ),
+                ),
+              ],
             ),
-            Container(
-              height: 25.h,
-              width: 145.w,
+          ),
+          const SizedBox(height: 20),
+          Container(
+            height: 425.h,
+            width: 1.sw,
+            margin: EdgeInsets.symmetric(horizontal: 24.w),
+            child: ListView.separated(
+              padding: const EdgeInsets.all(0),
+              itemBuilder: (context, index) => InkWell(
+                onTap: () {
+                  indexTap.value = index;
+                },
+                child: addressInfoWithContactInfoCart(
+                  cartChoosed: false,
+                  shippingDays: widget.maxShippingDay,
+                  isDelete: false,
+                  customerAddressesInfo:
+                      state.listOfAddressInfoClassToSave![index],
+                  context: context,
+                  index: index,
+                  indexTap: _indexTap,
+                  onTapDelete: () {
+                    if (index == _indexTap) {
+                      indexTap.value = 0;
+                    }
+                    indexToDelete = index;
+                    showDeleteAddress.value = true;
+                  },
+                  onTapEdit: () {
+                    panelController.close();
+                    HelperFunctions.slidingNavigation(
+                      context,
+                      AddShippingAdress(
+                        addressInfoClassToEdid:
+                            state.listOfAddressInfoClassToSave![index],
+                        fromEdid: true,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              itemCount: state.listOfAddressInfoClassToSave!.length,
+              controller: sc,
+            ),
+          ),
+          const Spacer(),
+          InkWell(
+            onTap: () {
+              panelController.close();
+              HelperFunctions.slidingNavigation(
+                context,
+                const AddShippingAdress(),
+              );
+            },
+            child: Container(
+              height: 40,
+              width: 1.sw,
+              margin: EdgeInsets.symmetric(horizontal: 24.w),
+              decoration: BoxDecoration(
+                color: const Color(0xffE8FFED),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: const Color(0xffC4C2C2)),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Center(
-                    child: SvgPicture.asset(
-                      AppAssets.deliveryAddressSvg,
-                      width: 18,
-                      height: 18,
-                      // ignore: deprecated_member_use
-                      color: const Color(0xff1D1D1D),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SvgPicture.asset(AppAssets.addShippingAddressSvg),
+                        Positioned(
+                          top: 2,
+                          child: SvgPicture.asset(
+                            AppAssets.addShippingAddressWhiteSvg,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(
-                    width: 3,
-                  ),
+                  const SizedBox(width: 3),
                   Text(
-                    "${LocaleKeys.your_address_list.tr()} ",
-                    style: context.textTheme.bodyMedium?.rr.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        letterSpacing: 0.18,
-                        fontSize: 14,
-                        height: 1.33),
+                    "${LocaleKeys.add_new_shipping_address.tr()} ",
+                    style: context.textTheme.bodyMedium?.mq.copyWith(
+                      color: const Color(0xff1D1D1D),
+                      letterSpacing: 0.18,
+                      fontSize: 12,
+                      height: 1.33,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            Container(
-              height: 425.h,
-              width: 1.sw,
-              margin: EdgeInsets.symmetric(horizontal: 24.w),
-              child: ListView.separated(
-                padding: const EdgeInsets.all(0),
-                itemBuilder: (context, index) => InkWell(
-                  onTap: () {
-                    indexTap.value = index;
-                  },
-                  child: addressInfoWithContactInfoCart(
-                    cartChoosed: false,
-                    shippingDays: widget.maxShippingDay,
-                    isDelete: false,
-                    customerAddressesInfo:
-                        state.listOfAddressInfoClassToSave![index],
-                    context: context,
-                    index: index,
-                    indexTap: _indexTap,
-                    onTapDelete: () {
-                      if (index == _indexTap) {
-                        indexTap.value = 0;
-                      }
-                      indexToDelete = index;
-                      showDeleteAddress.value = true;
-                    },
-                    onTapEdit: () {
-                      panelController.close();
-                      HelperFunctions.slidingNavigation(
-                        context,
-                        AddShippingAdress(
-                          addressInfoClassToEdid:
-                              state.listOfAddressInfoClassToSave![index],
-                          fromEdid: true,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: 10,
-                ),
-                itemCount: state.listOfAddressInfoClassToSave!.length,
-                controller: sc,
-              ),
-            ),
-            const Spacer(),
-            InkWell(
-              onTap: () {
-                panelController.close();
-                HelperFunctions.slidingNavigation(
-                    context, const AddShippingAdress());
-              },
-              child: Container(
-                height: 40,
-                width: 1.sw,
-                margin: EdgeInsets.symmetric(horizontal: 24.w),
-                decoration: BoxDecoration(
-                    color: const Color(0xffE8FFED),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: const Color(0xffC4C2C2))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.addShippingAddressSvg,
-                          ),
-                          Positioned(
-                            top: 2,
-                            child: SvgPicture.asset(
-                              AppAssets.addShippingAddressWhiteSvg,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 3,
-                    ),
-                    Text(
-                      "${LocaleKeys.add_new_shipping_address.tr()} ",
-                      style: context.textTheme.bodyMedium?.mr.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          letterSpacing: 0.18,
-                          fontSize: 12,
-                          height: 1.33),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            )
-          ],
-        ));
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
   }
 
   Widget buildAddressWidget(
-      OrderState state, BuildContext context, int _indexTap) {
+    OrderState state,
+    BuildContext context,
+    int _indexTap,
+  ) {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.getCountryBoundaryByIsoStatus !=
           current.getCountryBoundaryByIsoStatus,
       builder: (context, boundaryState) {
         return ValueListenableBuilder<bool>(
-            valueListenable: validateBox,
-            builder: (context, isValidateBox, _) {
-              return AnimatedBuilder(
-                  animation: animationController,
-                  builder: (context, child) => Transform.translate(
-                      offset: Offset(
-                          !(state.listOfAddressInfoClassToSave?.length == 0)
-                              ? 0
-                              : sin(3 * 2 * pi * animationController.value) * 5,
-                          0),
-                      child: Container(
-                          // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
-                          width: 1.sw,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                              color:
-                                  (state.listOfAddressInfoClassToSave?.length ==
-                                              0) &&
-                                          isValidateBox
-                                      ? Colors.red
-                                      : const Color(0xffC4C2C2),
+          valueListenable: validateBox,
+          builder: (context, isValidateBox, _) {
+            return AnimatedBuilder(
+              animation: animationController,
+              builder: (context, child) => Transform.translate(
+                offset: Offset(
+                  !(state.listOfAddressInfoClassToSave?.length == 0)
+                      ? 0
+                      : sin(3 * 2 * pi * animationController.value) * 5,
+                  0,
+                ),
+                child: Container(
+                  // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
+                  width: 1.sw,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color:
+                          (state.listOfAddressInfoClassToSave?.length == 0) &&
+                              isValidateBox
+                          ? Colors.red
+                          : const Color(0xffC4C2C2),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(
+                            top: 10,
+                            left: 10,
+                            right: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.deliveryAddressSvg,
+                                height: 16,
+                              ),
+                              SizedBox(width: 7.w),
+                              Text(
+                                "${LocaleKeys.shipping_delivery_address.tr()} ",
+                                style: context.textTheme.bodyMedium?.rq
+                                    .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
+                              ),
+                              SizedBox(width: 5.w),
+                              SvgPicture.asset(AppAssets.freeShippingSvg),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 5.h),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 35.w),
+                          child: Text(
+                            !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
+                                ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
+                                : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
+                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                              color: const Color(0xff8D8D8D),
+                              letterSpacing: 0.18,
+                              fontSize: 12,
+                              height: 0.8,
                             ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                    margin: const EdgeInsets.only(
-                                        top: 10, left: 10, right: 10),
-                                    child: Row(children: [
-                                      SvgPicture.asset(
-                                        AppAssets.deliveryAddressSvg,
-                                        height: 16,
-                                      ),
-                                      SizedBox(
-                                        width: 7.w,
-                                      ),
-                                      Text(
-                                        "${LocaleKeys.shipping_delivery_address.tr()} ",
-                                        style: context.textTheme.bodyMedium?.ra
-                                            .copyWith(
-                                                color: const Color(0xff1D1D1D),
-                                                letterSpacing: 0.18,
-                                                fontSize: 14,
-                                                height: 0.8),
-                                      ),
-                                      SizedBox(
-                                        width: 5.w,
-                                      ),
-                                      SvgPicture.asset(
-                                        AppAssets.freeShippingSvg,
-                                      )
-                                    ])),
-                                SizedBox(
-                                  height: 5.h,
+                        ),
+                        SizedBox(height: 12.h),
+                        !state.listOfAddressInfoClassToSave.isNullOrEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
                                 ),
-                                Container(
-                                  margin:
-                                      EdgeInsets.symmetric(horizontal: 35.w),
-                                  child: Text(
-                                    !(state.listOfAddressInfoClassToSave
-                                            .isNullOrEmpty)
-                                        ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
-                                        : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
-                                    style: context.textTheme.bodyMedium?.ra
-                                        .copyWith(
-                                            color: const Color(0xff8D8D8D),
-                                            letterSpacing: 0.18,
-                                            fontSize: 12,
-                                            height: 0.8),
+                                child: addressInfoWithContactInfoCart(
+                                  cartChoosed: true,
+                                  shippingDays: widget.maxShippingDay,
+                                  isDelete: false,
+                                  customerAddressesInfo:
+                                      (state
+                                                  .listOfAddressInfoClassToSave
+                                                  ?.length ??
+                                              0) <
+                                          _indexTap + 1
+                                      ? state.listOfAddressInfoClassToSave![0]
+                                      : state
+                                            .listOfAddressInfoClassToSave![_indexTap],
+                                  context: context,
+                                  index: -1,
+                                  indexTap: _indexTap,
+                                  onTapDelete: () {},
+                                  onTapEdit: () {
+                                    ;
+                                  },
+                                ),
+                              )
+                            : Container(
+                                height: 85.h,
+                                width: 1.sw,
+                                padding: const EdgeInsets.symmetric(),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffF8F8F8),
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color:
+                                        !state
+                                            .listOfAddressInfoClassToSave
+                                            .isNullOrEmpty
+                                        ? const Color(0xff388CFF)
+                                        : const Color(0xffF8F8F8),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 12.h,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 8.h),
+                                    SvgPicture.asset(
+                                      AppAssets.chatWithQuestionSvg,
+                                    ),
+                                    SizedBox(height: 18.h),
+                                    Text(
+                                      "${LocaleKeys.your_address_list_is_empty.tr()} ",
+                                      style: context.textTheme.bodyMedium?.rq
+                                          .copyWith(
+                                            color: const Color(0xffC4C2C2),
+                                            letterSpacing: 0.18,
+                                            fontSize: 12,
+                                            height: 0.8,
+                                          ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
+                                      style: context.textTheme.bodyMedium?.rq
+                                          .copyWith(
+                                            color: const Color(0xffC4C2C2),
+                                            letterSpacing: 0.18,
+                                            fontSize: 12,
+                                            height: 0.8,
+                                          ),
+                                    ),
+                                  ],
                                 ),
-                                !state.listOfAddressInfoClassToSave
-                                        .isNullOrEmpty
-                                    ? Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: addressInfoWithContactInfoCart(
-                                          cartChoosed: true,
-                                          shippingDays: widget.maxShippingDay,
-                                          isDelete: false,
-                                          customerAddressesInfo: (state
-                                                          .listOfAddressInfoClassToSave
-                                                          ?.length ??
-                                                      0) <
-                                                  _indexTap + 1
-                                              ? state.listOfAddressInfoClassToSave![
-                                                  0]
-                                              : state.listOfAddressInfoClassToSave![
-                                                  _indexTap],
-                                          context: context,
-                                          index: -1,
-                                          indexTap: _indexTap,
-                                          onTapDelete: () {},
-                                          onTapEdit: () {
-                                            ;
-                                          },
+                              ),
+                        SizedBox(
+                          height:
+                              !(state
+                                  .listOfAddressInfoClassToSave
+                                  .isNullOrEmpty)
+                              ? 10
+                              : 20.h,
+                        ),
+                        !state.listOfAddressInfoClassToSave.isNullOrEmpty
+                            ? InkWell(
+                                onTap: () {
+                                  if (boundaryState
+                                          .getCountryBoundaryByIsoStatus !=
+                                      GetCountryBoundaryByIsoStatus.success) {
+                                    return;
+                                  }
+                                  panelController.open();
+                                },
+                                child:
+                                    (boundaryState
+                                            .getCountryBoundaryByIsoStatus ==
+                                        GetCountryBoundaryByIsoStatus.failure)
+                                    ? TryAgainWidget(
+                                        tryAgain: () => homeBloc.add(
+                                          const GetCoutryBoundaryByIsoEvent(),
                                         ),
                                       )
-                                    : Container(
-                                        height: 85.h,
+                                    : (boundaryState
+                                              .getCountryBoundaryByIsoStatus ==
+                                          GetCountryBoundaryByIsoStatus.loading)
+                                    ? TrydosShimmerLoading(
                                         width: 1.sw,
-                                        padding: const EdgeInsets.symmetric(),
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        decoration: BoxDecoration(
-                                            color: const Color(0xffF8F8F8),
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            border: Border.all(
-                                                color: !state
-                                                        .listOfAddressInfoClassToSave
-                                                        .isNullOrEmpty
-                                                    ? const Color(0xff388CFF)
-                                                    : const Color(0xffF8F8F8))),
-                                        child: Column(
+                                        logoTextWidth: 15,
+                                        height: 16.w,
+                                        logoTextHeight: 15,
+                                      )
+                                    : Container(
+                                        height: 16.h,
+                                        width: 1.sw,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            SizedBox(
-                                              height: 8.h,
+                                            Center(
+                                              child: SvgPicture.asset(
+                                                AppAssets.deliveryAddressSvg,
+                                                width: 15,
+                                                height: 15,
+                                                // ignore: deprecated_member_use
+                                                color: const Color(0xff8D8D8D),
+                                              ),
                                             ),
-                                            SvgPicture.asset(
-                                              AppAssets.chatWithQuestionSvg,
-                                            ),
-                                            SizedBox(
-                                              height: 18.h,
-                                            ),
+                                            const SizedBox(width: 3),
                                             Text(
-                                              "${LocaleKeys.your_address_list_is_empty.tr()} ",
+                                              "${LocaleKeys.show_address_list.tr()} ",
                                               style: context
-                                                  .textTheme.bodyMedium?.ra
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.mq
                                                   .copyWith(
-                                                      color: const Color(
-                                                          0xffC4C2C2),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 12,
-                                                      height: 0.8),
+                                                    color: const Color(
+                                                      0xff8D8D8D,
+                                                    ),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 12,
+                                                    height: 1,
+                                                  ),
                                             ),
-                                            SizedBox(
-                                              height: 8.h,
-                                            ),
-                                            Text(
-                                              "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
-                                              style: context
-                                                  .textTheme.bodyMedium?.ra
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xffC4C2C2),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 12,
-                                                      height: 0.8),
-                                            )
                                           ],
                                         ),
                                       ),
-                                SizedBox(
-                                  height: !(state.listOfAddressInfoClassToSave
-                                          .isNullOrEmpty)
-                                      ? 10
-                                      : 20.h,
-                                ),
-                                !state.listOfAddressInfoClassToSave
-                                        .isNullOrEmpty
-                                    ? InkWell(
-                                        onTap: () {
-                                          if (boundaryState
-                                                  .getCountryBoundaryByIsoStatus !=
-                                              GetCountryBoundaryByIsoStatus
-                                                  .success) {
-                                            return;
-                                          }
-                                          panelController.open();
-                                        },
-                                        child: (boundaryState
-                                                    .getCountryBoundaryByIsoStatus ==
-                                                GetCountryBoundaryByIsoStatus
-                                                    .failure)
-                                            ? TryAgainWidget(
-                                                tryAgain: () => homeBloc.add(
-                                                    const GetCoutryBoundaryByIsoEvent()),
-                                              )
-                                            : (boundaryState
-                                                        .getCountryBoundaryByIsoStatus ==
-                                                    GetCountryBoundaryByIsoStatus
-                                                        .loading)
-                                                ? TrydosShimmerLoading(
-                                                    width: 1.sw,
-                                                    logoTextWidth: 15,
-                                                    height: 16.w,
-                                                    logoTextHeight: 15,
-                                                  )
-                                                : Container(
-                                                    height: 16.h,
-                                                    width: 1.sw,
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Center(
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            AppAssets
-                                                                .deliveryAddressSvg,
-                                                            width: 15,
-                                                            height: 15,
-                                                            // ignore: deprecated_member_use
-                                                            color: const Color(
-                                                                0xff8D8D8D),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 3,
-                                                        ),
-                                                        Text(
-                                                          "${LocaleKeys.show_address_list.tr()} ",
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.mr
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xff8D8D8D),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 12,
-                                                                  height: 1),
-                                                        ),
-                                                      ],
+                              )
+                            : InkWell(
+                                onTap: () {
+                                  if (boundaryState
+                                          .getCountryBoundaryByIsoStatus !=
+                                      GetCountryBoundaryByIsoStatus.success) {
+                                    return;
+                                  }
+                                  HelperFunctions.slidingNavigation(
+                                    context,
+                                    const AddShippingAdress(),
+                                  );
+                                },
+                                child:
+                                    (boundaryState
+                                            .getCountryBoundaryByIsoStatus ==
+                                        GetCountryBoundaryByIsoStatus.failure)
+                                    ? TryAgainWidget(
+                                        tryAgain: () => homeBloc.add(
+                                          const GetCoutryBoundaryByIsoEvent(),
+                                        ),
+                                      )
+                                    : (boundaryState
+                                              .getCountryBoundaryByIsoStatus ==
+                                          GetCountryBoundaryByIsoStatus.loading)
+                                    ? TrydosShimmerLoading(
+                                        width: 1.sw,
+                                        logoTextWidth: 15,
+                                        height: 40,
+                                        logoTextHeight: 15,
+                                      )
+                                    : Container(
+                                        height: 40,
+                                        width: 1.sw,
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xffE8FFED),
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          border: Border.all(
+                                            color: const Color(0xffC4C2C2),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Center(
+                                              child: Stack(
+                                                alignment: Alignment.center,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    AppAssets
+                                                        .addShippingAddressSvg,
+                                                  ),
+                                                  Positioned(
+                                                    top: 2,
+                                                    child: SvgPicture.asset(
+                                                      AppAssets
+                                                          .addShippingAddressWhiteSvg,
                                                     ),
                                                   ),
-                                      )
-                                    : InkWell(
-                                        onTap: () {
-                                          if (boundaryState
-                                                  .getCountryBoundaryByIsoStatus !=
-                                              GetCountryBoundaryByIsoStatus
-                                                  .success) {
-                                            return;
-                                          }
-                                          HelperFunctions.slidingNavigation(
-                                              context,
-                                              const AddShippingAdress());
-                                        },
-                                        child: (boundaryState
-                                                    .getCountryBoundaryByIsoStatus ==
-                                                GetCountryBoundaryByIsoStatus
-                                                    .failure)
-                                            ? TryAgainWidget(
-                                                tryAgain: () => homeBloc.add(
-                                                    const GetCoutryBoundaryByIsoEvent()),
-                                              )
-                                            : (boundaryState
-                                                        .getCountryBoundaryByIsoStatus ==
-                                                    GetCountryBoundaryByIsoStatus
-                                                        .loading)
-                                                ? TrydosShimmerLoading(
-                                                    width: 1.sw,
-                                                    logoTextWidth: 15,
-                                                    height: 40,
-                                                    logoTextHeight: 15,
-                                                  )
-                                                : Container(
-                                                    height: 40,
-                                                    width: 1.sw,
-                                                    margin: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 10),
-                                                    decoration: BoxDecoration(
-                                                        color: const Color(
-                                                            0xffE8FFED),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        border: Border.all(
-                                                            color: const Color(
-                                                                0xffC4C2C2))),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Center(
-                                                          child: Stack(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                AppAssets
-                                                                    .addShippingAddressSvg,
-                                                              ),
-                                                              Positioned(
-                                                                top: 2,
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  AppAssets
-                                                                      .addShippingAddressWhiteSvg,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 3,
-                                                        ),
-                                                        Text(
-                                                          "${LocaleKeys.add_shipping_address.tr()} ",
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.mr
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xff1D1D1D),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 12,
-                                                                  height: 1.33),
-                                                        ),
-                                                      ],
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              "${LocaleKeys.add_shipping_address.tr()} ",
+                                              style: context
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.mq
+                                                  .copyWith(
+                                                    color: const Color(
+                                                      0xff1D1D1D,
                                                     ),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 12,
+                                                    height: 1.33,
                                                   ),
-                                      )
-                              ],
-                            ),
-                          ))));
-            });
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -1537,124 +1548,117 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       duration: const Duration(seconds: 2),
       curve: Curves.easeInOut,
       child: Container(
-          height: expanded ? 200 : 45,
-          width: 1.sw,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: const Color(0xffC4C2C2))),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              InkWell(
-                onTap: () => isExpanded.value = !expanded,
-                child: Container(
-                  margin: const EdgeInsets.all(10),
-                  height: 20,
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        AppAssets.bagsSvg,
-                        height: 20,
+        height: expanded ? 200 : 45,
+        width: 1.sw,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: const Color(0xffC4C2C2)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () => isExpanded.value = !expanded,
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                height: 20,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(AppAssets.bagsSvg, height: 20),
+                    SizedBox(width: 7.w),
+                    Text(
+                      "${LocaleKeys.your_shopping_bag.tr()} ",
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 14,
+                        height: 1.33,
                       ),
-                      SizedBox(
-                        width: 7.w,
+                    ),
+                    Text(
+                      "${cartImages.length} ${LocaleKeys.item.tr()}",
+                      style: context.textTheme.bodyMedium?.bq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 13,
+                        height: 1.33,
                       ),
-                      Text(
-                        "${LocaleKeys.your_shopping_bag.tr()} ",
-                        style: context.textTheme.bodyMedium?.ra.copyWith(
-                            color: const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 14,
-                            height: 1.33),
+                    ),
+                    const Spacer(),
+                    Transform.rotate(
+                      angle: expanded ? pi : 0,
+                      child: SvgPicture.asset(
+                        AppAssets.expandDetaileSvg,
+                        height: 8,
+                        width: 12,
+                        // ignore: deprecated_member_use
+                        color: const Color(0xff8D8D8D),
                       ),
-                      Text(
-                        "${cartImages.length} ${LocaleKeys.item.tr()}",
-                        style: context.textTheme.bodyMedium?.br.copyWith(
-                            color: const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 13,
-                            height: 1.33),
-                      ),
-                      const Spacer(),
-                      Transform.rotate(
-                        angle: expanded ? pi : 0,
-                        child: SvgPicture.asset(
-                          AppAssets.expandDetaileSvg,
-                          height: 8,
-                          width: 12,
-                          // ignore: deprecated_member_use
-                          color: const Color(0xff8D8D8D),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              !expanded
-                  ? const SizedBox.shrink()
-                  : const SizedBox(
-                      height: 5,
+            ),
+            !expanded ? const SizedBox.shrink() : const SizedBox(height: 5),
+            !expanded
+                ? const SizedBox.shrink()
+                : Container(
+                    margin: EdgeInsets.only(
+                      left: (LanguageService.languageCode == "ar") ? 0 : 10,
+                      right: (LanguageService.languageCode == "ar") ? 10 : 0,
                     ),
-              !expanded
-                  ? const SizedBox.shrink()
-                  : Container(
-                      margin: EdgeInsets.only(
-                          left: (LanguageService.languageCode == "ar") ? 0 : 10,
-                          right:
-                              (LanguageService.languageCode == "ar") ? 10 : 0),
-                      height: 150,
-                      child: ListView.separated(
-                          separatorBuilder: (context, index) => const SizedBox(
-                                width: 5,
-                              ),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: cartImages.length,
-                          itemBuilder: (context, index) => Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: const Color(0x707070),
-                                ),
+                    height: 150,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 5),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: cartImages.length,
+                      itemBuilder: (context, index) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: const Color(0x707070),
+                        ),
+                        width: 91.w,
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 125.h,
+                              child: ProductDetailsImageWidget(
+                                withInnerShadow: false,
+                                imageFit: BoxFit.cover,
+                                blurRadius: 0,
+                                imageUrl: cartImages[index]["image"],
                                 width: 91.w,
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      height: 125.h,
-                                      child: ProductDetailsImageWidget(
-                                        withInnerShadow: false,
-                                        imageFit: BoxFit.cover,
-                                        blurRadius: 0,
-                                        imageUrl: cartImages[index]["image"],
-                                        width: 91.w,
-                                        radius: 15,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Text(
-                                      '${cartImages[index]["size"]}',
-                                      style: context.textTheme.bodyMedium?.rr
-                                          .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 10,
-                                              height: 1.33),
-                                    ),
-                                    Text(
-                                      '${cartImages[index]["color"]}',
-                                      style: context.textTheme.bodyMedium?.rr
-                                          .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 10,
-                                              height: 1.33),
-                                    ),
-                                  ],
-                                ),
-                              )),
-                    )
-            ],
-          )),
+                                radius: 15,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${cartImages[index]["size"]}',
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 10,
+                                height: 1.33,
+                              ),
+                            ),
+                            Text(
+                              '${cartImages[index]["color"]}',
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 10,
+                                height: 1.33,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1665,9 +1669,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       color: const Color.fromRGBO(0, 0, 0, 0.90),
       child: Column(
         children: [
-          SizedBox(
-            height: 1.sh / 3.5,
-          ),
+          SizedBox(height: 1.sh / 3.5),
           SvgPicture.asset(
             AppAssets.deletecartSvg,
             // ignore: deprecated_member_use
@@ -1675,20 +1677,17 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             width: 50,
             height: 50,
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Text(
             "${LocaleKeys.delete_below_address.tr()} ",
-            style: context.textTheme.bodyMedium?.mr.copyWith(
-                color: const Color(0xffFFFFFF),
-                letterSpacing: 0.18,
-                fontSize: 16,
-                height: 1.33),
+            style: context.textTheme.bodyMedium?.mq.copyWith(
+              color: const Color(0xffFFFFFF),
+              letterSpacing: 0.18,
+              fontSize: 16,
+              height: 1.33,
+            ),
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: addressInfoWithContactInfoCart(
@@ -1708,35 +1707,36 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
           InkWell(
             onTap: () {
               showDeleteAddress.value = false;
-              orderBloc.add(DeleteAdressInfoClassEvent(
+              orderBloc.add(
+                DeleteAdressInfoClassEvent(
                   adressInfoClassId:
-                      state.listOfAddressInfoClassToSave?[indexToDelete].id));
+                      state.listOfAddressInfoClassToSave?[indexToDelete].id,
+                ),
+              );
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 24.w),
               height: 50.h,
               width: 1.sw,
               decoration: BoxDecoration(
-                  color: const Color(0xffF8F8F8),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(
-                    color: const Color(0xffFF5F61),
-                  )),
+                color: const Color(0xffF8F8F8),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: const Color(0xffFF5F61)),
+              ),
               child: Center(
                 child: Text(
                   LocaleKeys.yes_delete.tr(),
-                  style: context.textTheme.bodyMedium?.br.copyWith(
-                      color: const Color(0xffFF5F61),
-                      letterSpacing: 0.18,
-                      fontSize: 16,
-                      height: 1.3),
+                  style: context.textTheme.bodyMedium?.bq.copyWith(
+                    color: const Color(0xffFF5F61),
+                    letterSpacing: 0.18,
+                    fontSize: 16,
+                    height: 1.3,
+                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           InkWell(
             onTap: () {
               showDeleteAddress.value = false;
@@ -1748,18 +1748,17 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
               child: Center(
                 child: Text(
                   LocaleKeys.cansel.tr(),
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                      color: const Color(0xffFFFFFF),
-                      letterSpacing: 0.18,
-                      fontSize: 16,
-                      height: 1.3),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xffFFFFFF),
+                    letterSpacing: 0.18,
+                    fontSize: 16,
+                    height: 1.3,
+                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(
-            height: 20,
-          )
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -1803,31 +1802,28 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   ),
                 ),
                 const Spacer(),
-                SvgPicture.asset(
-                  AppAssets.deliveryAddressSvg,
-                  height: 20,
-                ),
-                SizedBox(
-                  width: 5.w,
-                ),
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 20),
+                SizedBox(width: 5.w),
                 Text(
-                    !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                        ? "${LocaleKeys.shipping_payment.tr()} "
-                        : "${LocaleKeys.bag_shipping_delivery_address.tr()} ",
-                    style: context.textTheme.bodyMedium?.mr.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        letterSpacing: 0.2,
-                        fontSize: 14,
-                        height: 1.33)),
+                  !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
+                      ? "${LocaleKeys.shipping_payment.tr()} "
+                      : "${LocaleKeys.bag_shipping_delivery_address.tr()} ",
+                  style: context.textTheme.bodyMedium?.mq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.2,
+                    fontSize: 14,
+                    height: 1.33,
+                  ),
+                ),
                 SizedBox(
                   width: LanguageService.languageCode == "ar"
                       ? !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                          ? 180.w
-                          : 120.w
+                            ? 180.w
+                            : 120.w
                       : !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                          ? 140.w
-                          : 80.w,
-                )
+                      ? 140.w
+                      : 80.w,
+                ),
               ],
             ),
           ),
@@ -1851,295 +1847,291 @@ Widget addressInfoWithContactInfoCart({
   required void Function()? onTapDelete,
 }) {
   return Container(
-      // height: (placeOrder ?? false)
-      //     ? 120
-      //     : (!isDelete && cartChoosed)
-      //         ? 125
-      //         : 90,
-      width: 1.sw,
-      height: (isDelete || cartChoosed)
-          ? (placeOrder ?? false)
+    // height: (placeOrder ?? false)
+    //     ? 120
+    //     : (!isDelete && cartChoosed)
+    //         ? 125
+    //         : 90,
+    width: 1.sw,
+    height: (isDelete || cartChoosed)
+        ? (placeOrder ?? false)
               ? 126
               : 124
-          : 100,
-      padding: EdgeInsets.only(
-        right: LanguageService.languageCode == "ar" ? 20 : 10,
-        left: LanguageService.languageCode != "ar" ? 20 : 10,
-        bottom: 5,
-      ),
-      decoration: BoxDecoration(
-          color: (placeOrder ?? false) || (successfulOrder ?? false)
-              ? const Color(0xffFFFFFF)
-              : isDelete
-                  ? const Color.fromRGBO(0, 0, 0, 0)
-                  : const Color(0xffF8F8F8),
-          borderRadius: BorderRadius.circular(15),
-          border: (placeOrder ?? false)
-              ? Border.all(color: const Color(0xffC4C2C2))
-              : isDelete || (successfulOrder ?? false)
-                  ? Border.all(color: const Color(0xffFFFFFF))
-                  : cartChoosed
-                      ? Border.all(color: const Color(0xff388CFF))
-                      : index != indexTap
-                          ? null
-                          : Border.all(color: const Color(0xff388CFF))),
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 5,
-          ),
-          Container(
-            width: 360.w,
-            height: 16,
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  AppAssets.homeInactiveSvg,
-                  // ignore: deprecated_member_use
+        : 100,
+    padding: EdgeInsets.only(
+      right: LanguageService.languageCode == "ar" ? 20 : 10,
+      left: LanguageService.languageCode != "ar" ? 20 : 10,
+      bottom: 5,
+    ),
+    decoration: BoxDecoration(
+      color: (placeOrder ?? false) || (successfulOrder ?? false)
+          ? const Color(0xffFFFFFF)
+          : isDelete
+          ? const Color.fromRGBO(0, 0, 0, 0)
+          : const Color(0xffF8F8F8),
+      borderRadius: BorderRadius.circular(15),
+      border: (placeOrder ?? false)
+          ? Border.all(color: const Color(0xffC4C2C2))
+          : isDelete || (successfulOrder ?? false)
+          ? Border.all(color: const Color(0xffFFFFFF))
+          : cartChoosed
+          ? Border.all(color: const Color(0xff388CFF))
+          : index != indexTap
+          ? null
+          : Border.all(color: const Color(0xff388CFF)),
+    ),
+    child: Column(
+      children: [
+        const SizedBox(height: 5),
+        Container(
+          width: 360.w,
+          height: 16,
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                AppAssets.homeInactiveSvg,
+                // ignore: deprecated_member_use
+                color: isDelete
+                    ? const Color(0xffFFFFFF)
+                    : index != indexTap
+                    ? const Color(0xff8D8D8D)
+                    : const Color(0xff1D1D1D),
+                height: 12,
+                width: 12,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                customerAddressesInfo.address ?? "",
+                style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: isDelete
                       ? const Color(0xffFFFFFF)
                       : index != indexTap
-                          ? const Color(0xff8D8D8D)
-                          : const Color(0xff1D1D1D),
-                  height: 12,
-                  width: 12,
+                      ? const Color(0xff8D8D8D)
+                      : const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.3,
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  customerAddressesInfo.address ?? "",
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: isDelete
-                          ? const Color(0xffFFFFFF)
-                          : index != indexTap
-                              ? const Color(0xff8D8D8D)
-                              : const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.3),
-                ),
-                isDelete || cartChoosed
-                    ? const SizedBox.shrink()
-                    : const Spacer(),
-                isDelete || cartChoosed
-                    ? const SizedBox.shrink()
-                    : InkWell(
-                        onTap: onTapEdit,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 5),
-                          width: 20,
+              ),
+              isDelete || cartChoosed
+                  ? const SizedBox.shrink()
+                  : const Spacer(),
+              isDelete || cartChoosed
+                  ? const SizedBox.shrink()
+                  : InkWell(
+                      onTap: onTapEdit,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 5),
+                        width: 20,
+                        height: 30,
+                        child: SvgPicture.asset(
+                          AppAssets.editSvg,
                           height: 30,
-                          child: SvgPicture.asset(
-                            AppAssets.editSvg,
-                            height: 30,
-                            width: 20,
-                          ),
+                          width: 20,
                         ),
                       ),
-                isDelete || cartChoosed
-                    ? const SizedBox.shrink()
-                    : const SizedBox(
-                        width: 10,
-                      ),
-                isDelete || cartChoosed
-                    ? const SizedBox.shrink()
-                    : InkWell(
-                        onTap: onTapDelete,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 5),
-                          width: 20,
-                          height: 30,
-                          child: SvgPicture.asset(
-                            AppAssets.deletecartSvg,
-                            height: 14,
-                            width: 14,
-                          ),
+                    ),
+              isDelete || cartChoosed
+                  ? const SizedBox.shrink()
+                  : const SizedBox(width: 10),
+              isDelete || cartChoosed
+                  ? const SizedBox.shrink()
+                  : InkWell(
+                      onTap: onTapDelete,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 5),
+                        width: 20,
+                        height: 30,
+                        child: SvgPicture.asset(
+                          AppAssets.deletecartSvg,
+                          height: 14,
+                          width: 14,
                         ),
                       ),
-              ],
-            ),
+                    ),
+            ],
           ),
-          Container(
-            width: 350.w,
-            height: 16,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                Text(
-                  "${(customerAddressesInfo.regionDetails?.building.toString() == "null" || customerAddressesInfo.regionDetails?.building == "") ? "" : customerAddressesInfo.regionDetails?.building}${(customerAddressesInfo.regionDetails?.building.toString() != "null" && customerAddressesInfo.regionDetails?.building != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.street.toString() == "null" || customerAddressesInfo.regionDetails?.street == "" ? "" : customerAddressesInfo.regionDetails?.street}${(customerAddressesInfo.regionDetails?.street.toString() != "null" && customerAddressesInfo.regionDetails?.street != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.town.toString() == "null" || customerAddressesInfo.regionDetails?.town == "" ? "" : customerAddressesInfo.regionDetails?.town}${(customerAddressesInfo.regionDetails?.town.toString() != "null" && customerAddressesInfo.regionDetails?.town != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.city.toString() == "null" || customerAddressesInfo.regionDetails?.city == "" ? "" : customerAddressesInfo.regionDetails?.city}${(customerAddressesInfo.regionDetails?.city.toString() != "null" && customerAddressesInfo.regionDetails?.city != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.province.toString() == "null" || customerAddressesInfo.regionDetails?.province == "" ? "" : customerAddressesInfo.regionDetails?.province} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: isDelete
-                          ? const Color(0xffFFFFFF)
-                          : index != indexTap
-                              ? const Color(0xff8D8D8D)
-                              : const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.3),
-                )
-              ],
-            ),
-          ),
-          Container(
-            width: 350.w,
-            height: 16,
-            child: Row(
-              children: [
-                Text(
-                  "${customerAddressesInfo.addressDetail}",
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: isDelete
-                          ? const Color(0xffFFFFFF)
-                          : index != indexTap
-                              ? const Color(0xff8D8D8D)
-                              : const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.3),
-                )
-              ],
-            ),
-          ),
-          Container(
-            width: 350.w,
-            height: 16,
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  AppAssets.phoneCallSvg,
-                  // ignore: deprecated_member_use
+        ),
+        Container(
+          width: 350.w,
+          height: 16,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              Text(
+                "${(customerAddressesInfo.regionDetails?.building.toString() == "null" || customerAddressesInfo.regionDetails?.building == "") ? "" : customerAddressesInfo.regionDetails?.building}${(customerAddressesInfo.regionDetails?.building.toString() != "null" && customerAddressesInfo.regionDetails?.building != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.street.toString() == "null" || customerAddressesInfo.regionDetails?.street == "" ? "" : customerAddressesInfo.regionDetails?.street}${(customerAddressesInfo.regionDetails?.street.toString() != "null" && customerAddressesInfo.regionDetails?.street != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.town.toString() == "null" || customerAddressesInfo.regionDetails?.town == "" ? "" : customerAddressesInfo.regionDetails?.town}${(customerAddressesInfo.regionDetails?.town.toString() != "null" && customerAddressesInfo.regionDetails?.town != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.city.toString() == "null" || customerAddressesInfo.regionDetails?.city == "" ? "" : customerAddressesInfo.regionDetails?.city}${(customerAddressesInfo.regionDetails?.city.toString() != "null" && customerAddressesInfo.regionDetails?.city != "") ? " | " : ""}${customerAddressesInfo.regionDetails?.province.toString() == "null" || customerAddressesInfo.regionDetails?.province == "" ? "" : customerAddressesInfo.regionDetails?.province} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
+                style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: isDelete
                       ? const Color(0xffFFFFFF)
                       : index != indexTap
-                          ? const Color(0xff8D8D8D)
-                          : const Color(0xff1D1D1D),
-                  height: 12,
-                  width: 12,
+                      ? const Color(0xff8D8D8D)
+                      : const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.3,
                 ),
-                const SizedBox(
-                  width: 5,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: 350.w,
+          height: 16,
+          child: Row(
+            children: [
+              Text(
+                "${customerAddressesInfo.addressDetail}",
+                style: context.textTheme.bodyMedium?.mq.copyWith(
+                  color: isDelete
+                      ? const Color(0xffFFFFFF)
+                      : index != indexTap
+                      ? const Color(0xff8D8D8D)
+                      : const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.3,
                 ),
-                Text(
-                  '+${customerAddressesInfo.contactInfo?.phone ?? ""}',
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: 350.w,
+          height: 16,
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                AppAssets.phoneCallSvg,
+                // ignore: deprecated_member_use
+                color: isDelete
+                    ? const Color(0xffFFFFFF)
+                    : index != indexTap
+                    ? const Color(0xff8D8D8D)
+                    : const Color(0xff1D1D1D),
+                height: 12,
+                width: 12,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '+${customerAddressesInfo.contactInfo?.phone ?? ""}',
+                style: context.textTheme.bodyMedium?.mq.copyWith(
+                  color: isDelete
+                      ? const Color(0xffFFFFFF)
+                      : index != indexTap
+                      ? const Color(0xff8D8D8D)
+                      : const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.3,
+                ),
+              ),
+              const SizedBox(width: 40),
+              Container(
+                height: 16,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      AppAssets.personSvg,
+                      // ignore: deprecated_member_use
                       color: isDelete
                           ? const Color(0xffFFFFFF)
                           : index != indexTap
-                              ? const Color(0xff8D8D8D)
-                              : const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.3),
-                ),
-                const SizedBox(
-                  width: 40,
-                ),
-                Container(
-                  height: 16,
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        AppAssets.personSvg,
-                        // ignore: deprecated_member_use
+                          ? const Color(0xff8D8D8D)
+                          : const Color(0xff1D1D1D),
+                      height: 12,
+                      width: 12,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '${customerAddressesInfo.contactInfo?.name ?? ""}',
+                      style: context.textTheme.bodyMedium?.mq.copyWith(
                         color: isDelete
                             ? const Color(0xffFFFFFF)
                             : index != indexTap
-                                ? const Color(0xff8D8D8D)
-                                : const Color(0xff1D1D1D),
-                        height: 12,
-                        width: 12,
+                            ? const Color(0xff8D8D8D)
+                            : const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 12,
+                        height: 1.3,
                       ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        '${customerAddressesInfo.contactInfo?.name ?? ""}',
-                        style: context.textTheme.bodyMedium?.mr.copyWith(
-                            color: isDelete
-                                ? const Color(0xffFFFFFF)
-                                : index != indexTap
-                                    ? const Color(0xff8D8D8D)
-                                    : const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 12,
-                            height: 1.3),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                index != indexTap || isDelete
-                    ? const SizedBox.shrink()
-                    : SvgPicture.asset(
-                        AppAssets.shareSvg,
-                        // ignore: deprecated_member_use
-                        color: isDelete || cartChoosed
-                            ? const Color(0xffFFFFFF)
-                            : const Color(0xff388CFF),
-                        allowDrawingOutsideViewBox: true,
-                        height: 12,
-                        width: 12,
-                      ),
-              ],
-            ),
+              ),
+              const Spacer(),
+              index != indexTap || isDelete
+                  ? const SizedBox.shrink()
+                  : SvgPicture.asset(
+                      AppAssets.shareSvg,
+                      // ignore: deprecated_member_use
+                      color: isDelete || cartChoosed
+                          ? const Color(0xffFFFFFF)
+                          : const Color(0xff388CFF),
+                      allowDrawingOutsideViewBox: true,
+                      height: 12,
+                      width: 12,
+                    ),
+            ],
           ),
-          !(!isDelete && cartChoosed)
-              ? const SizedBox.shrink()
-              : const SizedBox(
-                  height: 15,
+        ),
+        !(!isDelete && cartChoosed)
+            ? const SizedBox.shrink()
+            : const SizedBox(height: 15),
+        !(placeOrder ?? false)
+            ? const SizedBox.shrink()
+            : const SizedBox(height: 5),
+        !(!isDelete && cartChoosed)
+            ? const SizedBox.shrink()
+            : Container(
+                height: 30,
+                width: 1.sw,
+                decoration: BoxDecoration(
+                  color: (placeOrder ?? false) || (successfulOrder ?? false)
+                      ? const Color(0xffF8F8F8)
+                      : const Color(0xffFFFFFF),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-          !(placeOrder ?? false)
-              ? const SizedBox.shrink()
-              : const SizedBox(
-                  height: 5,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${LocaleKeys.expected_delivery.tr()}',
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 10,
+                        height: 1.3,
+                      ),
+                    ),
+                    Text(
+                      ' ${HelperFunctions.getDateInFormatForShippingDays(int.tryParse(shippingDays ?? "0") ?? 0)}. ',
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 10,
+                        height: 1.3,
+                      ),
+                    ),
+                    Text(
+                      '${LocaleKeys.delivery_not.tr()}',
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        decoration: TextDecoration.underline,
+                        decorationColor: const Color(0xff388CFF),
+                        color: const Color(0xff388CFF),
+                        letterSpacing: 0.18,
+                        fontSize: 10,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
                 ),
-          !(!isDelete && cartChoosed)
-              ? const SizedBox.shrink()
-              : Container(
-                  height: 30,
-                  width: 1.sw,
-                  decoration: BoxDecoration(
-                      color: (placeOrder ?? false) || (successfulOrder ?? false)
-                          ? const Color(0xffF8F8F8)
-                          : const Color(0xffFFFFFF),
-                      borderRadius: BorderRadius.circular(10)),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${LocaleKeys.expected_delivery.tr()}',
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                            color: const Color(0xff8D8D8D),
-                            letterSpacing: 0.18,
-                            fontSize: 10,
-                            height: 1.3),
-                      ),
-                      Text(
-                        ' ${HelperFunctions.getDateInFormatForShippingDays(int.tryParse(shippingDays ?? "0") ?? 0)}. ',
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                            color: const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 10,
-                            height: 1.3),
-                      ),
-                      Text(
-                        '${LocaleKeys.delivery_not.tr()}',
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                            decoration: TextDecoration.underline,
-                            decorationColor: const Color(0xff388CFF),
-                            color: const Color(0xff388CFF),
-                            letterSpacing: 0.18,
-                            fontSize: 10,
-                            height: 1.3),
-                      ),
-                    ],
-                  ))
-        ],
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: (!isDelete && cartChoosed)
-            ? MainAxisAlignment.start
-            : MainAxisAlignment.spaceBetween,
-      ));
+              ),
+      ],
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: (!isDelete && cartChoosed)
+          ? MainAxisAlignment.start
+          : MainAxisAlignment.spaceBetween,
+    ),
+  );
 }

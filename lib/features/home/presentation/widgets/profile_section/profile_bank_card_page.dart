@@ -47,63 +47,62 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
       FlutterError.dumpErrorToConsole(error);
     };
     return Scaffold(
-        appBar: TrydosAppBar(
-          appBarParams: AppBarParams(
-              backgroundColor: const Color(0x000000),
-              action: [
-                const Spacer(),
-                Text(
-                  LocaleKeys.profile_bank_cards.tr(),
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.3),
-                ),
-                const Spacer(),
-              ],
-              scrolledUnderElevation: 0,
-              backIconColor: Colors.black,
-              withShadow: false),
+      appBar: TrydosAppBar(
+        appBarParams: AppBarParams(
+          backgroundColor: const Color(0x000000),
+          action: [
+            const Spacer(),
+            Text(
+              LocaleKeys.profile_bank_cards.tr(),
+              style: context.textTheme.bodyMedium?.mq.copyWith(
+                color: const Color(0xff1D1D1D),
+                letterSpacing: 0.18,
+                fontSize: 14,
+                height: 1.3,
+              ),
+            ),
+            const Spacer(),
+          ],
+          scrolledUnderElevation: 0,
+          backIconColor: Colors.black,
+          withShadow: false,
         ),
-        body: SafeArea(
-            child: SingleChildScrollView(
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  height: 50,
-                  width: 1.sw,
-                  decoration: BoxDecoration(
-                      color: const Color(0xffF8F8F8),
-                      border: Border.all(color: const Color(0xffD3D3D3))),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 10.w,
+                height: 50,
+                width: 1.sw,
+                decoration: BoxDecoration(
+                  color: const Color(0xffF8F8F8),
+                  border: Border.all(color: const Color(0xffD3D3D3)),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(width: 10.w),
+                    SvgPicture.asset(
+                      AppAssets.infoSvg,
+                      // ignore: deprecated_member_use
+                      color: const Color(0xff402CDD),
+                      width: 25.w,
+                    ),
+                    SizedBox(width: 10.w),
+                    Text(
+                      LocaleKeys.entering_your_information_correctly.tr(),
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 10.sp,
+                        height: 1.3,
                       ),
-                      SvgPicture.asset(
-                        AppAssets.infoSvg,
-                        // ignore: deprecated_member_use
-                        color: const Color(0xff402CDD),
-                        width: 25.w,
-                      ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
-                      Text(
-                        LocaleKeys.entering_your_information_correctly.tr(),
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                            color: const Color(0xff8D8D8D),
-                            letterSpacing: 0.18,
-                            fontSize: 10.sp,
-                            height: 1.3),
-                      ),
-                    ],
-                  )),
-              const SizedBox(
-                height: 20,
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 20),
               Container(
                 height: 15,
                 width: 170,
@@ -117,20 +116,17 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                       // ignore: deprecated_member_use
                       color: const Color(0xff707070),
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
+                    const SizedBox(width: 5),
                     Text(
                       LocaleKeys.your_bank_cards_info.tr(),
-                      style: context.textTheme.bodyMedium?.mr.copyWith(
-                          color: const Color(0xff404040),
-                          letterSpacing: 0.18,
-                          fontSize: 12,
-                          height: 1.2),
+                      style: context.textTheme.bodyMedium?.mq.copyWith(
+                        color: const Color(0xff404040),
+                        letterSpacing: 0.18,
+                        fontSize: 12,
+                        height: 1.2,
+                      ),
                     ),
-                    const SizedBox(
-                      width: 12,
-                    ),
+                    const SizedBox(width: 12),
                     SvgPicture.asset(
                       AppAssets.chatWithQuestionSvg,
                       // ignore: deprecated_member_use
@@ -142,6 +138,8 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
               ),
             ],
           ),
-        )));
+        ),
+      ),
+    );
   }
 }

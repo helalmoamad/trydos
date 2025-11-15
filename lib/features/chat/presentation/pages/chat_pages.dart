@@ -45,12 +45,12 @@ import '../manager/chat_state.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ChatPages extends StatefulWidget {
-  const ChatPages(
-      {Key? key,
-      this.hideCallsAndStories = false,
-      required this.description,
-      this.onSendForwardMessage})
-      : super(key: key);
+  const ChatPages({
+    Key? key,
+    this.hideCallsAndStories = false,
+    required this.description,
+    this.onSendForwardMessage,
+  }) : super(key: key);
   final bool hideCallsAndStories;
   final Function(int receiverId, String channelId)? onSendForwardMessage;
   final String description;
@@ -76,7 +76,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     //   Permission.bluetooth,Permission.camera, Permission.microphone]
     //     .request();
     //todo debug
-//    Fluttertoast.showToast(msg: contacts.toString(),toastLength: Toast.LENGTH_LONG);
+    //    Fluttertoast.showToast(msg: contacts.toString(),toastLength: Toast.LENGTH_LONG);
     chatBloc.add(const SaveContactsEvent());
   }
 
@@ -142,12 +142,13 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
       FlutterError.dumpErrorToConsole(error);
     };
     return
-        // ignore: deprecated_member_use
-        WillPopScope(
+    // ignore: deprecated_member_use
+    WillPopScope(
       onWillPop: () async {
         BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
-        BlocProvider.of<BoutiqueBloc>(context)
-            .add(ResetAllSelectedAppliedFilterEvent());
+        BlocProvider.of<BoutiqueBloc>(
+          context,
+        ).add(ResetAllSelectedAppliedFilterEvent());
         return false;
       },
       child: BlocListener<CallsBloc, CallsState>(
@@ -163,75 +164,89 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               c.makeCallStatus == MakeCallStatus.failure,
           listener: (context, state) {
             Navigator.pop(context);
-            showWarningMessage(context,
-                '${state.receiverCallName ?? LocaleKeys.user.tr()} ${LocaleKeys.in_another_call.tr()}');
+            showWarningMessage(
+              context,
+              '${state.receiverCallName ?? LocaleKeys.user.tr()} ${LocaleKeys.in_another_call.tr()}',
+            );
           },
           child: BlocListener<CallsBloc, CallsState>(
             listenWhen: (p, c) =>
                 p.makeCallStatus != c.makeCallStatus &&
                 c.makeCallStatus == MakeCallStatus.startCall,
             listener: (context, state) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
                   builder: (_) => AgoraInAppWebView(
-                        type: state.isVideoCall ? 'video' : 'voice',
-                        isReceivingCall: false,
-                        channelId: state.channelIdForCurrentCall!,
-                        auth_token: GetIt.I<PrefsRepository>().chatToken!,
-                        uId: GetIt.I<PrefsRepository>().myChatId.toString(),
-                        action: 'sent',
-                        messageId: state.messageId!,
-                      )));
+                    type: state.isVideoCall ? 'video' : 'voice',
+                    isReceivingCall: false,
+                    channelId: state.channelIdForCurrentCall!,
+                    auth_token: GetIt.I<PrefsRepository>().chatToken!,
+                    uId: GetIt.I<PrefsRepository>().myChatId.toString(),
+                    action: 'sent',
+                    messageId: state.messageId!,
+                  ),
+                ),
+              );
             },
             child: Scaffold(
               floatingActionButton: FloatingActionButton(
                 key: TestVariables.kTestMode
-                    ? const Key(
-                        WidgetsKeys.myContactsFloatingActionKey,
-                      )
+                    ? const Key(WidgetsKeys.myContactsFloatingActionKey)
                     : null,
                 onPressed: () {
-                  context
-                      .go(GRouter.config.applicationRoutes.kMyContactsPagePath);
+                  context.go(
+                    GRouter.config.applicationRoutes.kMyContactsPagePath,
+                  );
                 },
                 backgroundColor: const Color(0xff388cff),
                 child: Center(
-                    child: Icon(Icons.message_rounded,
-                        size: 25.sp, color: colorScheme.white)),
+                  child: Icon(
+                    Icons.message_rounded,
+                    size: 25.sp,
+                    color: colorScheme.white,
+                  ),
+                ),
               ),
               backgroundColor: const Color(0xffF8F8F8),
               appBar: widget.hideCallsAndStories
                   ? TrydosAppBar(
                       appBarParams: AppBarParams(
-                          hasLeading: false,
-                          surfaceTintColor: Colors.transparent,
-                          elevation: 0,
-                          child: SafeArea(
-                            child: Row(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    GoRouter.of(context).pop();
-                                  },
-                                  child: Padding(
-                                    padding: HWEdgeInsetsDirectional.fromSTEB(
-                                        20.w, 15, 0, 15),
-                                    child: SvgPicture.asset(
-                                      AppAssets.backFromCallSvg,
-                                      width: 8.w,
-                                      // ignore: deprecated_member_use
-                                      color: const Color(0xff388CFF),
-                                    ),
+                        hasLeading: false,
+                        surfaceTintColor: Colors.transparent,
+                        elevation: 0,
+                        child: SafeArea(
+                          child: Row(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  GoRouter.of(context).pop();
+                                },
+                                child: Padding(
+                                  padding: HWEdgeInsetsDirectional.fromSTEB(
+                                    20.w,
+                                    15,
+                                    0,
+                                    15,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    AppAssets.backFromCallSvg,
+                                    width: 8.w,
+                                    // ignore: deprecated_member_use
+                                    color: const Color(0xff388CFF),
                                   ),
                                 ),
-                                10.horizontalSpace,
-                                MyTextWidget(
-                                  widget.description,
-                                  style: textTheme.bodyMedium?.rr
-                                      .copyWith(color: const Color(0xff388CFF)),
+                              ),
+                              10.horizontalSpace,
+                              MyTextWidget(
+                                widget.description,
+                                style: textTheme.bodyMedium?.rq.copyWith(
+                                  color: const Color(0xff388CFF),
                                 ),
-                              ],
-                            ),
-                          )),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     )
                   : null,
               body: SafeArea(
@@ -247,21 +262,30 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                         height: 50,
                         color: colorScheme.white,
                         padding: HWEdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 5),
+                          horizontal: 10.w,
+                          vertical: 5,
+                        ),
                         child: AppTextField(
                           controller: form.controllers[0],
                           filledColor: colorScheme.grey50,
                           bordersColor: colorScheme.grey50,
-                          hintText:
-                              LocaleKeys.search_chat_contact_startNewChat.tr(),
-                          hintTextStyle: textTheme.bodySmall?.lr
-                              .copyWith(color: const Color(0xffD3D3D3)),
+                          hintText: LocaleKeys.search_chat_contact_startNewChat
+                              .tr(),
+                          hintTextStyle: textTheme.bodySmall?.lq.copyWith(
+                            color: const Color(0xffD3D3D3),
+                          ),
                           onChange: ChatPageContentState.searchInChats,
                           contentPadding: HWEdgeInsetsDirectional.fromSTEB(
-                              20.w, 10, 20.w, 10),
+                            20.w,
+                            10,
+                            20.w,
+                            10,
+                          ),
                           prefixIcon: Padding(
                             padding: HWEdgeInsetsDirectional.only(
-                                top: 10, bottom: 10),
+                              top: 10,
+                              bottom: 10,
+                            ),
                             child: SvgPicture.asset(
                               AppAssets.searchSvg,
                               height: 20,
@@ -271,71 +295,73 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                         ),
                       ),
                     ),
-//todo appNavigationBar
+                    //todo appNavigationBar
                     if (!widget.hideCallsAndStories) ...{
                       SliverToBoxAdapter(
-                          child: Container(
-                        padding: HWEdgeInsets.symmetric(horizontal: 40.w),
-                        height: 50,
-                        width: 1.sw,
-                        decoration: const BoxDecoration(
-                          color: Color(0xffffffff),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0x1a000000),
-                              blurRadius: 6,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              BlocBuilder<ChatBloc, ChatState>(
-                                buildWhen: (p, c) =>
-                                    p.unReadMessagesFromAllChats !=
-                                    c.unReadMessagesFromAllChats,
-                                builder: (context, state) {
-                                  return ChatTabItem(
+                        child: Container(
+                          padding: HWEdgeInsets.symmetric(horizontal: 40.w),
+                          height: 50,
+                          width: 1.sw,
+                          decoration: const BoxDecoration(
+                            color: Color(0xffffffff),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0x1a000000),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                BlocBuilder<ChatBloc, ChatState>(
+                                  buildWhen: (p, c) =>
+                                      p.unReadMessagesFromAllChats !=
+                                      c.unReadMessagesFromAllChats,
+                                  builder: (context, state) {
+                                    return ChatTabItem(
                                       iconUrl:
                                           AppAssets.singleChatOutlinedActiveSvg,
                                       activeIconUrl: AppAssets.singleChatSvg,
                                       index: 0,
                                       notificationCount:
-                                          state.unReadMessagesFromAllChats);
-                                },
-                              ),
-                              BlocBuilder<CallsBloc, CallsState>(
-                                buildWhen: (p, c) =>
-                                    p.missedCallCount != c.missedCallCount,
-                                builder: (context, state) {
-                                  return ChatTabItem(
+                                          state.unReadMessagesFromAllChats,
+                                    );
+                                  },
+                                ),
+                                BlocBuilder<CallsBloc, CallsState>(
+                                  buildWhen: (p, c) =>
+                                      p.missedCallCount != c.missedCallCount,
+                                  builder: (context, state) {
+                                    return ChatTabItem(
                                       iconUrl: AppAssets.callsOutlinedActiveSvg,
                                       activeIconUrl: AppAssets.callsSvg,
                                       index: 1,
-                                      notificationCount: state.missedCallCount);
-                                },
-                              ),
-                              ChatTabItem(
+                                      notificationCount: state.missedCallCount,
+                                    );
+                                  },
+                                ),
+                                ChatTabItem(
                                   iconUrl: AppAssets.storyOutlinedSvg,
                                   activeIconUrl: AppAssets.storyFilledSvg,
                                   index: 2,
-                                  notificationCount: 9),
-                            ],
+                                  notificationCount: 9,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      )),
+                      ),
                     },
                     BlocBuilder<AppBloc, AppState>(
-                        buildWhen: (p, c) =>
-                            p.tabIndexInChat != c.tabIndexInChat,
-                        builder: (context, state) {
-                          return chatPages[state.tabIndexInChat];
-                        }),
-
-                    SliverToBoxAdapter(
-                      child: 20.verticalSpace,
+                      buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat,
+                      builder: (context, state) {
+                        return chatPages[state.tabIndexInChat];
+                      },
                     ),
+
+                    SliverToBoxAdapter(child: 20.verticalSpace),
                   ],
                 ),
               ),
@@ -352,13 +378,13 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 }
 
 class ChatTabItem extends StatelessWidget {
-  const ChatTabItem(
-      {Key? key,
-      required this.iconUrl,
-      required this.index,
-      required this.activeIconUrl,
-      required this.notificationCount})
-      : super(key: key);
+  const ChatTabItem({
+    Key? key,
+    required this.iconUrl,
+    required this.index,
+    required this.activeIconUrl,
+    required this.notificationCount,
+  }) : super(key: key);
   final String iconUrl;
   final String activeIconUrl;
   final int notificationCount;
@@ -403,7 +429,7 @@ class ChatTabItem extends StatelessWidget {
                               MyTextWidget(
                                 notificationCount.toString(),
                                 maxLines: 1,
-                                style: context.textTheme.titleMedium?.rr
+                                style: context.textTheme.titleMedium?.rq
                                     .copyWith(color: const Color(0xff007CFF)),
                               ),
                             ],

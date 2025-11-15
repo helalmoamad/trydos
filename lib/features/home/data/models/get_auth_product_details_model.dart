@@ -36,15 +36,14 @@ class GetAuthProductDetailsModel {
     String? message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      GetAuthProductDetailsModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => GetAuthProductDetailsModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory GetAuthProductDetailsModel.fromJson(Map<String, dynamic> json) =>
       GetAuthProductDetailsModel(
@@ -57,51 +56,37 @@ class GetAuthProductDetailsModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final int? id;
   final List<Variation>? variation;
-  final bool? isLiked;
 
-  Data({
-    this.id,
-    this.variation,
-    this.isLiked,
-  });
+  Data({this.id, this.variation});
 
-  Data copyWith({
-    int? id,
-    List<Variation>? variation,
-    bool? isLiked,
-  }) =>
-      Data(
-        id: id ?? this.id,
-        variation: variation ?? this.variation,
-        isLiked: isLiked ?? this.isLiked,
-      );
+  Data copyWith({int? id, List<Variation>? variation}) =>
+      Data(id: id ?? this.id, variation: variation ?? this.variation);
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        id: json["id"],
-        variation: json["variation"] == null
-            ? []
-            : List<Variation>.from(
-                json["variation"]!.map((x) => Variation.fromJson(x))),
-        isLiked: json["is_liked"],
-      );
+    id: json["id"],
+    variation: json["variation"] == null
+        ? []
+        : List<Variation>.from(
+            json["variation"]!.map((x) => Variation.fromJson(x)),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "variation": variation == null
-            ? []
-            : List<dynamic>.from(variation!.map((x) => x.toJson())),
-        "is_liked": isLiked,
-      };
+    "id": id,
+    "variation": variation == null
+        ? []
+        : List<dynamic>.from(variation!.map((x) => x.toJson())),
+  };
 }

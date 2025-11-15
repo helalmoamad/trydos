@@ -16,7 +16,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class AddStoryCard extends StatelessWidget {
   const AddStoryCard({Key? key, required this.collectionStoryModel})
-      : super(key: key);
+    : super(key: key);
   final CollectionStoryModel collectionStoryModel;
 
   @override
@@ -27,80 +27,91 @@ class AddStoryCard extends StatelessWidget {
     };
 
     return SizedBox(
-        height: 100.h,
-        width: 1.sw,
-        child: GestureDetector(
-            onTap: () {},
-            child: Stack(
-              children: [
-                Container(
-                  padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
-                  color: context.colorScheme.white,
-                  child: Row(children: [
-                    collectionStoryModel.photoPath == null
-                        ? NoImageWidget(
-                            width: 60.r,
-                            height: 60.r,
-                            textStyle: context.textTheme.bodyMedium?.br
-                                .copyWith(
-                                    color: const Color(0xff6638FF),
-                                    letterSpacing: 0.18,
-                                    height: 1.33),
-                            name: collectionStoryModel.name == null
-                                ? LocaleKeys.uk.tr()
-                                : HelperFunctions.getTheFirstTwoLettersOfName(
-                                    collectionStoryModel.name!))
-                        : MyCachedNetworkImage(
-                            height: 60.r,
-                            width: 60.r,
-                            imageUrl: (collectionStoryModel.photoPath
-                                    .toString()
-                                    .contains("cloudinary")
-                                ? collectionStoryModel.photoPath
-                                : "${dotenv.env['Images_Url']}${collectionStoryModel.photoPath}"),
-                            imageFit: BoxFit.cover,
+      height: 100.h,
+      width: 1.sw,
+      child: GestureDetector(
+        onTap: () {},
+        child: Stack(
+          children: [
+            Container(
+              padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
+              color: context.colorScheme.white,
+              child: Row(
+                children: [
+                  collectionStoryModel.photoPath == null
+                      ? NoImageWidget(
+                          width: 60.r,
+                          height: 60.r,
+                          textStyle: context.textTheme.bodyMedium?.bq.copyWith(
+                            color: const Color(0xff6638FF),
+                            letterSpacing: 0.18,
+                            height: 1.33,
                           ),
-                    18.horizontalSpace,
-                    Flexible(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Flexible(
-                              child: Row(
+                          name: collectionStoryModel.name == null
+                              ? LocaleKeys.uk.tr()
+                              : HelperFunctions.getTheFirstTwoLettersOfName(
+                                  collectionStoryModel.name!,
+                                ),
+                        )
+                      : MyCachedNetworkImage(
+                          height: 60.r,
+                          width: 60.r,
+                          imageUrl:
+                              (collectionStoryModel.photoPath
+                                  .toString()
+                                  .contains("cloudinary")
+                              ? collectionStoryModel.photoPath
+                              : "${dotenv.env['Images_Url']}${collectionStoryModel.photoPath}"),
+                          imageFit: BoxFit.cover,
+                        ),
+                  18.horizontalSpace,
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Row(
                             children: [
                               MyTextWidget(
                                 LocaleKeys.my_stories.tr(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        height: 1.33,
-                                        color: const Color(0xff505050)),
+                                      height: 1.33,
+                                      color: const Color(0xff505050),
+                                    ),
                               ),
                               const Spacer(),
                             ],
-                          )),
-                          Flexible(
-                              child: Row(
+                          ),
+                        ),
+                        Flexible(
+                          child: Row(
                             children: [
                               MyTextWidget(
                                 LocaleKeys.click_to_add_story.tr(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        height: 1.33,
-                                        color: const Color(0xff505050)),
+                                      height: 1.33,
+                                      color: const Color(0xff505050),
+                                    ),
                               ),
                               const Spacer(),
                             ],
-                          )),
-                        ],
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ]),
-                )
-              ],
-            )));
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

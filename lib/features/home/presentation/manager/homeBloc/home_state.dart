@@ -116,6 +116,8 @@ enum GetOrderRatingStatus { init, loading, success, failure }
 
 enum UpdateOrderCommentRatingStatus { init, loading, success, failure }
 
+enum UpdateLikeCommentRatingStatus { init, loading, success, failure }
+
 enum DeleteOrderCommentRatingStatus { init, loading, success, failure }
 
 enum CreateCommentRatingStatus { init, loading, success, failure }
@@ -216,6 +218,7 @@ class HomeState extends Equatable {
     this.productIdToSaveRedeemTimer = const [],
     this.popularSearchTerm,
     this.updateOrderCommentRatingStatus = UpdateOrderCommentRatingStatus.init,
+    this.updateLikeCommentRatingStatus = UpdateLikeCommentRatingStatus.init,
     this.deleteOrderCommentRatingStatus = DeleteOrderCommentRatingStatus.init,
     this.getCartOverviewStatus = GetCartOverviewStatus.init,
     this.checkAvailabilityProductCartStatus =
@@ -229,6 +232,7 @@ class HomeState extends Equatable {
     this.currentSelectedColorForEveryProduct = const {},
     this.notificationTypeForProductModel,
     this.getNotificationTypeProductStatus,
+    this.likeForReplayComment,
     this.currentHeightWhenAddToBag = 0,
     // this.geColorsAndSizesForSearchModel,
     this.currentIndexForUpdateCart,
@@ -250,6 +254,7 @@ class HomeState extends Equatable {
       firebaseSettingForNotificationModel;
   final DeleteOrderCommentRatingStatus deleteOrderCommentRatingStatus;
   final UpdateOrderCommentRatingStatus updateOrderCommentRatingStatus;
+  final UpdateLikeCommentRatingStatus updateLikeCommentRatingStatus;
   final UpdateProfileStatus? updateProfileStatus;
   final GetOrderRatingStatus getOrderRatingStatus;
   final GetAllowedCountriesStatus? getAllowedCountriesStatus;
@@ -377,7 +382,7 @@ class HomeState extends Equatable {
   final Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
-
+  final bool? likeForReplayComment;
   final AuthProductDetailsStatus authProductDetailsStatus;
   final GetAuthProductDetailsModel? authProductDetailsModel;
 
@@ -390,6 +395,7 @@ class HomeState extends Equatable {
         //  getCommentForProductStatus,
         // productITemForCart,
         oldcartCollection,
+        likeForReplayComment,
         convertItemFromcartToOldCartStatus,
         getOldCartModel,
 
@@ -420,6 +426,7 @@ class HomeState extends Equatable {
 
         updateEmailappNotificationStatus,
         updateWhatsappNotificationStatus,
+        updateLikeCommentRatingStatus,
 
         getUserNotificationModel,
 
@@ -504,6 +511,7 @@ class HomeState extends Equatable {
       final GetAllowedCountriesStatus? getAllowedCountriesStatus,
       final DeleteOrderCommentRatingStatus? deleteOrderCommentRatingStatus,
       final UpdateOrderCommentRatingStatus? updateOrderCommentRatingStatus,
+      final UpdateLikeCommentRatingStatus? updateLikeCommentRatingStatus,
       final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
@@ -517,6 +525,7 @@ class HomeState extends Equatable {
       SelectedVideoStatus? selectedVideoStatus,
       final CreateCommentRatingStatus? createCommentRatingStatus,
       final int? tapCommentIndex,
+      final bool? likeForReplayComment,
       final GetOrderRatingStatus? getOrderRatingStatus,
       int? storyOffset,
       bool? getStoryWithPagintionStatusLoading,
@@ -627,6 +636,9 @@ class HomeState extends Equatable {
               this.enableAddToCardAfterChangeVariantZero,
       updateOrderCommentRatingStatus:
           updateOrderCommentRatingStatus ?? this.updateOrderCommentRatingStatus,
+      updateLikeCommentRatingStatus:
+          updateLikeCommentRatingStatus ?? this.updateLikeCommentRatingStatus,
+      likeForReplayComment: likeForReplayComment ?? this.likeForReplayComment,
       deleteOrderCommentRatingStatus:
           deleteOrderCommentRatingStatus ?? this.deleteOrderCommentRatingStatus,
       addVariationToCartId: addVariationToCartId ?? this.addVariationToCartId,

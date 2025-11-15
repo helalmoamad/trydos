@@ -29,12 +29,13 @@ class AnswerCall extends StatefulWidget {
   String callerName;
   String? callerPhoto;
 
-  AnswerCall(
-      {required this.callerPhoto,
-      required this.callerName,
-      required this.channelName,
-      required this.messageId,
-      super.key});
+  AnswerCall({
+    required this.callerPhoto,
+    required this.callerName,
+    required this.channelName,
+    required this.messageId,
+    super.key,
+  });
 
   @override
   State<AnswerCall> createState() => _AnswerCallState();
@@ -65,9 +66,7 @@ class _AnswerCallState extends State<AnswerCall> {
     } else {
       Vibration.vibrate(repeat: 0, pattern: [1000, 1000, 1000, 1000]);
       player.setReleaseMode(ReleaseMode.loop);
-      player.play(AssetSource(
-        'audio/Whatsapp_Tone.mp3',
-      ));
+      player.play(AssetSource('audio/Whatsapp_Tone.mp3'));
     }
 
     super.initState();
@@ -92,51 +91,58 @@ class _AnswerCallState extends State<AnswerCall> {
                 children: [
                   140.verticalSpace,
                   Center(
-                      child: widget.callerPhoto != null
-                          ? Container(
-                              height: 200,
-                              width: 200.w,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.0),
-                                border:
-                                    Border.all(color: const Color(0xff388cff)),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color:
-                                          // ignore: deprecated_member_use
-                                          colorScheme.white.withOpacity(0.35),
-                                      offset: const Offset(0, 10),
-                                      blurRadius: 30,
-                                      spreadRadius: 10),
-                                ],
+                    child: widget.callerPhoto != null
+                        ? Container(
+                            height: 200,
+                            width: 200.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                color: const Color(0xff388cff),
                               ),
-                              child: MyCachedNetworkImage(
-                                  imageUrl: (widget.callerPhoto
-                                              .toString()
-                                              .contains("cloudinary")
-                                          ? ""
-                                          : "${dotenv.env['Images_Url']}") +
-                                      widget.callerPhoto!,
-                                  imageFit: BoxFit.cover,
-                                  progressIndicatorBuilderWidget:
-                                      TrydosLoader(),
-                                  height: 80.h,
-                                  width: 60.w),
-                            )
-                          : NoImageWidget(
-                              width: 120.w,
-                              height: 180.h,
-                              textStyle: context.textTheme.bodyMedium?.br
-                                  .copyWith(
-                                      color: const Color(0xff6638FF),
-                                      letterSpacing: 0.18,
-                                      height: 1.33),
-                              name: widget.callerName)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      // ignore: deprecated_member_use
+                                      colorScheme.white.withOpacity(0.35),
+                                  offset: const Offset(0, 10),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: MyCachedNetworkImage(
+                              imageUrl:
+                                  (widget.callerPhoto.toString().contains(
+                                        "cloudinary",
+                                      )
+                                      ? ""
+                                      : "${dotenv.env['Images_Url']}") +
+                                  widget.callerPhoto!,
+                              imageFit: BoxFit.cover,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
+                              height: 80.h,
+                              width: 60.w,
+                            ),
+                          )
+                        : NoImageWidget(
+                            width: 120.w,
+                            height: 180.h,
+                            textStyle: context.textTheme.bodyMedium?.bq
+                                .copyWith(
+                                  color: const Color(0xff6638FF),
+                                  letterSpacing: 0.18,
+                                  height: 1.33,
+                                ),
+                            name: widget.callerName,
+                          ),
+                  ),
                   15.verticalSpace,
                   MyTextWidget(
                     widget.callerName,
-                    style: textTheme.headlineSmall?.rr
-                        .copyWith(color: const Color(0xffD3D3D3)),
+                    style: textTheme.headlineSmall?.rq.copyWith(
+                      color: const Color(0xffD3D3D3),
+                    ),
                   ),
                   80.verticalSpace,
                   CallStatusWidget(
@@ -151,43 +157,53 @@ class _AnswerCallState extends State<AnswerCall> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Container(
-                      width: 100.w,
-                      height: 100.h,
-                      child: TextButton(
-                        onPressed: () async {
-                          await Vibration.cancel();
-                          await player.stop();
-                          await [Permission.camera, Permission.microphone]
-                              .request()
-                              .then((value) {
-                            GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
-                                chatId: widget.channelName,
-                                messageId: widget.messageId));
-                          });
-                        },
-                        child: MyTextWidget(
-                          LocaleKeys.answer.tr(),
-                          style: const TextStyle(color: Colors.green),
-                        ),
-                      )),
-                  TextButton(
+                    width: 100.w,
+                    height: 100.h,
+                    child: TextButton(
                       onPressed: () async {
-                        GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                        await Vibration.cancel();
+                        await player.stop();
+                        await [
+                          Permission.camera,
+                          Permission.microphone,
+                        ].request().then((value) {
+                          GetIt.I<CallsBloc>().add(
+                            AnswerVideoCallEvent(
+                              chatId: widget.channelName,
+                              messageId: widget.messageId,
+                            ),
+                          );
+                        });
+                      },
+                      child: MyTextWidget(
+                        LocaleKeys.answer.tr(),
+                        style: const TextStyle(color: Colors.green),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      GetIt.I<CallsBloc>().add(
+                        RejectVideoCallEvent(
                           messageId: widget.messageId,
                           duration: 0,
-                        ));
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                          width: 100.w,
-                          height: 100.h,
-                          child: Center(
-                              child: MyTextWidget(
-                            LocaleKeys.reject.tr(),
-                            style: const TextStyle(color: Colors.red),
-                          ))))
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      width: 100.w,
+                      height: 100.h,
+                      child: Center(
+                        child: MyTextWidget(
+                          LocaleKeys.reject.tr(),
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
-              )
+              ),
             ],
           );
         },

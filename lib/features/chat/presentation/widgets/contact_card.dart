@@ -22,7 +22,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ContactCard extends StatelessWidget {
   const ContactCard({Key? key, required this.index, required this.contact})
-      : super(key: key);
+    : super(key: key);
   final int index;
   final Contact contact;
 
@@ -41,49 +41,57 @@ class ContactCard extends StatelessWidget {
       fullReceiverName = contact.name!;
     }
 
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Container(
-        height: index == 0 ? 0 : 0.4,
-        color: const Color(0xffC8C7CC),
-        margin: HWEdgeInsetsDirectional.only(start: 94),
-      ),
-      SizedBox(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: index == 0 ? 0 : 0.4,
+          color: const Color(0xffC8C7CC),
+          margin: HWEdgeInsetsDirectional.only(start: 94),
+        ),
+        SizedBox(
           height: 100.h,
           width: 1.sw,
           child: GestureDetector(
-              onTap: () {
-                if (contact.contactUserId == null) {
-                  return;
-                }
-                Chat? chat;
-                User? receiver;
-                List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats);
-                debugPrint(chats.toString());
-                chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
-                chat = chats.firstWhere((element) => element.channelMembers!
-                    .any((element) => element.userId == contact.contactUserId));
-                final preferences = GetIt.I<PrefsRepository>();
-                print(
-                    "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${chat.id}");
-                receiver = chat.channelMembers
-                    ?.firstWhere(
-                      (element) => element.userId != preferences.myChatId,
-                      orElse: () => ChannelMember(
-                          userId: contact.contactUserId,
-                          user: User(
-                              id: contact.contactUserId, name: contact.name)),
-                    )
-                    .user;
-                context.go(GRouter
-                        .config.applicationRoutes.kSinglePageChatPagePath +
-                    '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
-              },
-              child: Stack(
-                children: [
-                  Container(
-                    padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
-                    color: context.colorScheme.white,
-                    child: Row(children: [
+            onTap: () {
+              if (contact.contactUserId == null) {
+                return;
+              }
+              Chat? chat;
+              User? receiver;
+              List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats);
+              debugPrint(chats.toString());
+              chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
+              chat = chats.firstWhere(
+                (element) => element.channelMembers!.any(
+                  (element) => element.userId == contact.contactUserId,
+                ),
+              );
+              final preferences = GetIt.I<PrefsRepository>();
+              print(
+                "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${chat.id}",
+              );
+              receiver = chat.channelMembers
+                  ?.firstWhere(
+                    (element) => element.userId != preferences.myChatId,
+                    orElse: () => ChannelMember(
+                      userId: contact.contactUserId,
+                      user: User(id: contact.contactUserId, name: contact.name),
+                    ),
+                  )
+                  .user;
+              context.go(
+                GRouter.config.applicationRoutes.kSinglePageChatPagePath +
+                    '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}',
+              );
+            },
+            child: Stack(
+              children: [
+                Container(
+                  padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
+                  color: context.colorScheme.white,
+                  child: Row(
+                    children: [
                       // receiver?.photoPath != null
                       //     ? BlocBuilder<AppBloc, AppState>(
                       //   builder: (context, state) {
@@ -102,55 +110,65 @@ class ContactCard extends StatelessWidget {
                       //   },
                       // )
                       NoImageWidget(
-                          width: 60.w,
-                          height: 80.h,
-                          textStyle: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xff6638FF),
-                              letterSpacing: 0.18,
-                              height: 1.33),
-                          name: receiverName),
+                        width: 60.w,
+                        height: 80.h,
+                        textStyle: context.textTheme.bodyMedium?.bq.copyWith(
+                          color: const Color(0xff6638FF),
+                          letterSpacing: 0.18,
+                          height: 1.33,
+                        ),
+                        name: receiverName,
+                      ),
                       18.horizontalSpace,
                       Flexible(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Flexible(
-                                child: Row(
-                              children: [
-                                MyTextWidget(
-                                  fullReceiverName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: context.textTheme.bodyMedium?.rr
-                                      .copyWith(
+                              child: Row(
+                                children: [
+                                  MyTextWidget(
+                                    fullReceiverName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context.textTheme.bodyMedium?.rq
+                                        .copyWith(
                                           height: 1.33,
-                                          color: const Color(0xff505050)),
-                                ),
-                                const Spacer(),
-                                if (contact.contactUserId == null) ...{
-                                  InkWell(
+                                          color: const Color(0xff505050),
+                                        ),
+                                  ),
+                                  const Spacer(),
+                                  if (contact.contactUserId == null) ...{
+                                    InkWell(
                                       onTap: () => shareAppLink(),
                                       child: MyTextWidget(
                                         LocaleKeys.invite.tr(),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: context.textTheme.bodyMedium?.rr
+                                        style: context.textTheme.bodyMedium?.rq
                                             .copyWith(
-                                                height: 1.33,
-                                                color: const Color(0xff388cff)),
-                                      )),
-                                  25.horizontalSpace,
-                                }
-                              ],
-                            ))
+                                              height: 1.33,
+                                              color: const Color(0xff388cff),
+                                            ),
+                                      ),
+                                    ),
+                                    25.horizontalSpace,
+                                  },
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ]),
-                  )
-                ],
-              )))
-    ]);
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   void shareAppLink() {

@@ -58,17 +58,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     this.getHomeBoutiqesUseCase,
   ) : super(const CategoryState()) {
     on<CategoryEvent>((event, emit) {});
-    on<GetHomeBoutiqesEvent>(
-      _onGetHomeBoutiquesEvent,
-    );
+    on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent);
     on<ReplyFromGeminiEvent>(_onReplyFromGeminiEvent);
     on<ChangeCurrentIndexForMainCategoryEvent>(
       _onChangeCurrentIndexForMainCategoryEvent,
     );
 
-    on<GetMainCategoriesEvent>(
-      _onGetMainCategoriesEvent,
-    );
+    on<GetMainCategoriesEvent>(_onGetMainCategoriesEvent);
   }
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
@@ -82,15 +78,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   ) async {
     print(event.categorySlug);
     Map<String, PaginationModel<HomeBoutiques>>
-        getHomeBoutiquesPaginationObjectByMainCategory =
-        !event.getWithPagination
-            ? {}
-            : Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+    getHomeBoutiquesPaginationObjectByMainCategory = !event.getWithPagination
+        ? {}
+        : Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
 
     if (event.getWithPrefetchToStoreInMemory) {
       if ((prefsRepository
                   .getPrefechOfBoutiquesForEachMainCategoryInHomePage(
-                      event.categorySlug)
+                    event.categorySlug,
+                  )
                   ?.length ??
               0) >
           10) {
@@ -102,22 +98,25 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         getHomeBoutiquesPaginationObjectByMainCategory = {};
         GetHomeBoutiquesModel getHomeBoutiquesModel = GetHomeBoutiquesModel();
         try {
-          final responseFromSharedPrefrence = jsonDecode(prefsRepository
-                  .getPrefechOfBoutiquesForEachMainCategoryInHomePage(
-                      event.categorySlug) ??
-              "{}");
+          final responseFromSharedPrefrence = jsonDecode(
+            prefsRepository.getPrefechOfBoutiquesForEachMainCategoryInHomePage(
+                  event.categorySlug,
+                ) ??
+                "{}",
+          );
           getHomeBoutiquesModel = responseFromSharedPrefrence == {}
               ? GetHomeBoutiquesModel()
               : GetHomeBoutiquesModel.fromJson(responseFromSharedPrefrence);
         } catch (e) {}
         getHomeBoutiquesPaginationObjectByMainCategory.addAll({
           event.categorySlug: PaginationModel<HomeBoutiques>(
-              hasReachedMax:
-                  (getHomeBoutiquesModel.data?.boutiques?.length ?? 0) < 10,
-              items: getHomeBoutiquesModel.data?.boutiques ?? [],
-              offset: getHomeBoutiquesModel.data?.offset,
-              page: 1,
-              paginationStatus: PaginationStatus.loading)
+            hasReachedMax:
+                (getHomeBoutiquesModel.data?.boutiques?.length ?? 0) < 10,
+            items: getHomeBoutiquesModel.data?.boutiques ?? [],
+            offset: getHomeBoutiquesModel.data?.offset,
+            page: 1,
+            paginationStatus: PaginationStatus.loading,
+          ),
         });
       }
 
@@ -130,8 +129,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       if (event.getWithPagination &&
           (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                   .hasReachedMax ||
-              getHomeBoutiquesPaginationObjectByMainCategory[
-                          event.categorySlug]!
+              getHomeBoutiquesPaginationObjectByMainCategory[event
+                          .categorySlug]!
                       .paginationStatus ==
                   PaginationStatus.loading) &&
           !event.forRefresh) {
@@ -141,13 +140,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
               .copyWith(paginationStatus: PaginationStatus.loading);
 
-      Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
-          Map.of(state.boutiquesForEveryMainCategoryThatDidPrefetch);
+      Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch = Map.of(
+        state.boutiquesForEveryMainCategoryThatDidPrefetch,
+      );
       if (!event.getWithOutPrefetchForEachBoutiques) {
         if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
             null) {
-          boutiquesForEveryMainCategoryThatDidPrefetch
-              .addAll({event.categorySlug: false});
+          boutiquesForEveryMainCategoryThatDidPrefetch.addAll({
+            event.categorySlug: false,
+          });
         }
         if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
                 true &&
@@ -157,19 +158,25 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         }
         boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] = true;
       }
-      emit(state.copyWith(
-          boutiquesForEveryMainCategoryThatDidPrefetch:
-              Map.of(boutiquesForEveryMainCategoryThatDidPrefetch),
+      emit(
+        state.copyWith(
+          boutiquesForEveryMainCategoryThatDidPrefetch: Map.of(
+            boutiquesForEveryMainCategoryThatDidPrefetch,
+          ),
           getHomeBoutiquesPaginationObjectByMainCategory:
-              getHomeBoutiquesPaginationObjectByMainCategory));
+              getHomeBoutiquesPaginationObjectByMainCategory,
+        ),
+      );
     } else {
-      Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
-          Map.of(state.boutiquesForEveryMainCategoryThatDidPrefetch);
+      Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch = Map.of(
+        state.boutiquesForEveryMainCategoryThatDidPrefetch,
+      );
       if (!event.getWithOutPrefetchForEachBoutiques) {
         if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
             null) {
-          boutiquesForEveryMainCategoryThatDidPrefetch
-              .addAll({event.categorySlug: false});
+          boutiquesForEveryMainCategoryThatDidPrefetch.addAll({
+            event.categorySlug: false,
+          });
         }
         if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
                 true &&
@@ -179,115 +186,147 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         }
         boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] = true;
       }
-      emit(state.copyWith(
-        boutiquesForEveryMainCategoryThatDidPrefetch:
-            Map.of(boutiquesForEveryMainCategoryThatDidPrefetch),
-      ));
+      emit(
+        state.copyWith(
+          boutiquesForEveryMainCategoryThatDidPrefetch: Map.of(
+            boutiquesForEveryMainCategoryThatDidPrefetch,
+          ),
+        ),
+      );
     }
     /*if (event.withSemaphore ?? false) {
       await prefechMainCategory.acquire();
     }*/
-    final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
+    final response = await getHomeBoutiqesUseCase(
+      GetHomeBoutiqesParams(
         page: event.getWithPagination
-            ? (getHomeBoutiquesPaginationObjectByMainCategory[
-                        event.categorySlug]
-                    ?.page ??
-                1)
+            ? (getHomeBoutiquesPaginationObjectByMainCategory[event
+                          .categorySlug]
+                      ?.page ??
+                  1)
             : 1,
         offset: event.offset == '1' ? null : event.offset,
-        categorySlug:
-            event.categorySlug == "Empty" ? null : event.categorySlug));
+        categorySlug: event.categorySlug == "Empty" ? null : event.categorySlug,
+      ),
+    );
 
-    response.fold((l) {
-      if (!event.getWithPrefetchToStoreInMemory) {
-        Map<String, PaginationModel<HomeBoutiques>>
-            getHomeBoutiquesPaginationObjectByMainCategory =
-            Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+    response.fold(
+      (l) {
+        if (!event.getWithPrefetchToStoreInMemory) {
+          Map<String, PaginationModel<HomeBoutiques>>
+          getHomeBoutiquesPaginationObjectByMainCategory = Map.of(
+            state.getHomeBoutiquesPaginationObjectByMainCategory,
+          );
 
-        if (ErrorManager.shouldRetry('GetHomeBoutiqesEvent', l.statusCode)) {
-          ErrorManager.incrementRetry('GetHomeBoutiqesEvent');
-          add(GetHomeBoutiqesEvent(
-            getWithPrefetchToStoreInMemory:
-                event.getWithPrefetchToStoreInMemory,
-            getWithOutPrefetchForEachBoutiques:
-                event.getWithOutPrefetchForEachBoutiques,
-            offset: event.offset,
-            context: event.context,
-            categorySlug: event.categorySlug,
-            getWithPagination: event.getWithPagination,
-          ));
-          return; // لا تحدث الحالة
+          if (ErrorManager.shouldRetry('GetHomeBoutiqesEvent', l.statusCode)) {
+            ErrorManager.incrementRetry('GetHomeBoutiqesEvent');
+            add(
+              GetHomeBoutiqesEvent(
+                getWithPrefetchToStoreInMemory:
+                    event.getWithPrefetchToStoreInMemory,
+                getWithOutPrefetchForEachBoutiques:
+                    event.getWithOutPrefetchForEachBoutiques,
+                offset: event.offset,
+                context: event.context,
+                categorySlug: event.categorySlug,
+                getWithPagination: event.getWithPagination,
+              ),
+            );
+            return; // لا تحدث الحالة
+          }
+
+          emit(
+            state.copyWith(
+              getHomeBoutiquesPaginationObjectByMainCategory:
+                  getHomeBoutiquesPaginationObjectByMainCategory.map((
+                    key,
+                    value,
+                  ) {
+                    if (key == event.categorySlug)
+                      return MapEntry(
+                        key,
+                        value.copyWith(
+                          paginationStatus: PaginationStatus.failure,
+                        ),
+                      );
+                    return MapEntry(key, value);
+                  }),
+            ),
+          );
+        }
+      },
+      (r) {
+        if (!event.getWithPagination) {
+          prefsRepository.setPrefechOfBoutiquesForEachMainCategoryInHomePage(
+            event.categorySlug,
+            jsonEncode(r),
+          );
         }
 
-        emit(state.copyWith(
-          getHomeBoutiquesPaginationObjectByMainCategory:
-              getHomeBoutiquesPaginationObjectByMainCategory.map(
-            (key, value) {
-              if (key == event.categorySlug)
-                return MapEntry(key,
-                    value.copyWith(paginationStatus: PaginationStatus.failure));
-              return MapEntry(key, value);
-            },
-          ),
-        ));
-      }
-    }, (r) {
-      if (!event.getWithPagination) {
-        prefsRepository.setPrefechOfBoutiquesForEachMainCategoryInHomePage(
-            event.categorySlug, jsonEncode(r));
-      }
+        if (!event.getWithPrefetchToStoreInMemory) {
+          ErrorManager.resetRetry('GetHomeBoutiqesEvent');
 
-      if (!event.getWithPrefetchToStoreInMemory) {
-        ErrorManager.resetRetry('GetHomeBoutiqesEvent');
+          getHomeBoutiquesPaginationObjectByMainCategory = Map.of(
+            state.getHomeBoutiquesPaginationObjectByMainCategory,
+          );
 
-        getHomeBoutiquesPaginationObjectByMainCategory =
-            Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
-
-        List<HomeBoutiques> boutiques = List.of(
+          List<HomeBoutiques> boutiques = List.of(
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
-                .items);
+                .items,
+          );
 
-        emit(state.copyWith(
-          getHomeBoutiquesPaginationObjectByMainCategory:
-              getHomeBoutiquesPaginationObjectByMainCategory.map(
-            (key, value) {
-              if (key == event.categorySlug) {
-                return MapEntry(
-                  key,
-                  value.copyWith(
-                    hasReachedMax:
-                        (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
-                    paginationStatus: PaginationStatus.success,
-                    page: event.getWithPagination
-                        ? getHomeBoutiquesPaginationObjectByMainCategory[
-                                    event.categorySlug]!
-                                .page +
-                            1
-                        : 2,
-                    offset: r.data?.offset,
-                    items: !event.getWithPagination
-                        ? [...r.data!.boutiques ?? []]
-                        : [...boutiques, ...r.data!.boutiques ?? []],
-                  ),
-                );
-              } else {
-                return MapEntry(key, value);
-              }
-            },
-          ),
-        ));
+          emit(
+            state.copyWith(
+              getHomeBoutiquesPaginationObjectByMainCategory:
+                  getHomeBoutiquesPaginationObjectByMainCategory.map((
+                    key,
+                    value,
+                  ) {
+                    if (key == event.categorySlug) {
+                      return MapEntry(
+                        key,
+                        value.copyWith(
+                          hasReachedMax:
+                              (r.data!.boutiques?.length ?? kPageSize) <
+                                  kPageSize ||
+                              r.data?.offset == null ||
+                              r.data?.offset == "null",
+                          paginationStatus: PaginationStatus.success,
+                          page: event.getWithPagination
+                              ? getHomeBoutiquesPaginationObjectByMainCategory[event
+                                            .categorySlug]!
+                                        .page +
+                                    1
+                              : 2,
+                          offset: r.data?.offset,
+                          items: !event.getWithPagination
+                              ? [...r.data!.boutiques ?? []]
+                              : [...boutiques, ...r.data!.boutiques ?? []],
+                        ),
+                      );
+                    } else {
+                      return MapEntry(key, value);
+                    }
+                  }),
+            ),
+          );
 
-        if (!event.getWithPagination &&
-            event.getWithOutPrefetchForEachBoutiques) {
-          prefetchBoutiques(event.categorySlug, event.context, 0);
+          if (!event.getWithPagination &&
+              event.getWithOutPrefetchForEachBoutiques) {
+            prefetchBoutiques(event.categorySlug, event.context, 0);
+          }
         }
-      }
-    });
+      },
+    );
   }
 
-  prefetchBoutiques(String currentSlug, BuildContext context,
-      int boutiqueItemsCountWithScroll) {
-    int maxItemsVisible = (1.sh -
+  prefetchBoutiques(
+    String currentSlug,
+    BuildContext context,
+    int boutiqueItemsCountWithScroll,
+  ) {
+    int maxItemsVisible =
+        (1.sh -
                 (GetIt.I<StoryBloc>().state.getStoriesStatus !=
                         GetStoriesStatus.success
                     ? 220
@@ -295,9 +334,12 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 50) ~/
             235 +
         1;
-    int maxItemsVisibleWithScroll =
-        max(maxItemsVisible, boutiqueItemsCountWithScroll);
-    int boutiqueItemsCount = state
+    int maxItemsVisibleWithScroll = max(
+      maxItemsVisible,
+      boutiqueItemsCountWithScroll,
+    );
+    int boutiqueItemsCount =
+        state
             .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
             ?.items
             .length ??
@@ -306,7 +348,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     int itemsToPrefetch = min(maxItemsVisibleWithScroll, boutiqueItemsCount);
 
     debugPrint(
-        '///////// Boutique items To Prefetch : $itemsToPrefetch /////////');
+      '///////// Boutique items To Prefetch : $itemsToPrefetch /////////',
+    );
     try {
       for (int i = 0; i < itemsToPrefetch; i++) {
         String slug = state
@@ -324,11 +367,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         // );
 
         GetIt.I<BoutiqueBloc>().add(
-            GetProductWithFiltersWithoutCancelingPreviousEvents(
-                categorySlugs: categorySlugs,
-                context: context,
-                cashedOrginalBoutique: true,
-                boutiqueSlug: slug));
+          GetProductWithFiltersWithoutCancelingPreviousEvents(
+            categorySlugs: categorySlugs,
+            context: context,
+            cashedOrginalBoutique: true,
+            boutiqueSlug: slug,
+          ),
+        );
       }
     } catch (e, st) {
       print(e);
@@ -337,83 +382,116 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
 
   FutureOr<void> _onReplyFromGeminiEvent(
-      ReplyFromGeminiEvent event, Emitter<CategoryState> emit) async {
-    emit(state.copyWith(
-      theReplyFromGemini: "",
-      sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
-      fromSearchForSearchWithGemini: event.fromSearch,
-    ));
+    ReplyFromGeminiEvent event,
+    Emitter<CategoryState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        theReplyFromGemini: "",
+        sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
+        fromSearchForSearchWithGemini: event.fromSearch,
+      ),
+    );
     print(
-        "###########################################################*****${state.sendRequestToGeminiStatus}");
+      "###########################################################*****${state.sendRequestToGeminiStatus}",
+    );
 
     await Future.delayed(const Duration(milliseconds: 300));
     if (event.resetTheReply) {
-      emit(state.copyWith(
-        theReplyFromGemini: "",
-        sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
-        fromSearchForSearchWithGemini: event.fromSearch,
-      ));
+      emit(
+        state.copyWith(
+          theReplyFromGemini: "",
+          sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+          fromSearchForSearchWithGemini: event.fromSearch,
+        ),
+      );
       return;
     }
 
     final response = await searchByImageFromGeminiUseCase(
-        SearchByImagesParams(image: event.image!));
+      SearchByImagesParams(image: event.image!),
+    );
 
-    response.fold((l) {
-      showMessage(l.message, hasError: true);
-      // فقط بعد انتهاء المحاولات
-      emit(state.copyWith(
-          theReplyFromGemini: "",
-          sendRequestToGeminiStatus: SendRequestToGeminiStatus.failure));
-      print(
-          "###########################################################${state.sendRequestToGeminiStatus}");
-    }, (r) async {
-      emit(state.copyWith(
-        sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
-        theReplyFromGemini: !event.resetTheReply ? r.response : "",
-        fromSearchForSearchWithGemini: event.fromSearch,
-      ));
-    });
+    response.fold(
+      (l) {
+        showMessage(l.message, hasError: true);
+        // فقط بعد انتهاء المحاولات
+        emit(
+          state.copyWith(
+            theReplyFromGemini: "",
+            sendRequestToGeminiStatus: SendRequestToGeminiStatus.failure,
+          ),
+        );
+        print(
+          "###########################################################${state.sendRequestToGeminiStatus}",
+        );
+      },
+      (r) async {
+        emit(
+          state.copyWith(
+            sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+            theReplyFromGemini: !event.resetTheReply ? r.response : "",
+            fromSearchForSearchWithGemini: event.fromSearch,
+          ),
+        );
+      },
+    );
   }
 
   prefetchImages(
-      String url, BuildContext context, String type, int width, int height) {
+    String url,
+    BuildContext context,
+    String type,
+    int width,
+    int height,
+  ) {
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
     if (urlHasPredeched.contains(url)) {
       return;
     }
-    GetIt.I<PreCachingImageBloc>().add(CacheImageEvent(
+    GetIt.I<PreCachingImageBloc>().add(
+      CacheImageEvent(
         imageUrl: url,
         context: context,
         type: type,
         height: height,
-        width: width));
+        width: width,
+      ),
+    );
   }
 
   FutureOr<void> _onGetMainCategoriesEvent(
-      GetMainCategoriesEvent event, Emitter<CategoryState> emit) async {
+    GetMainCategoriesEvent event,
+    Emitter<CategoryState> emit,
+  ) async {
     MainCategoriesResponseModel? mainCategoriesResponseModel;
 
     try {
       final responseFromSharedPrefrence = jsonDecode(
-          prefsRepository.getPrefechOfMainCategoryInHomePage() ?? "{}");
+        prefsRepository.getPrefechOfMainCategoryInHomePage() ?? "{}",
+      );
 
       mainCategoriesResponseModel = responseFromSharedPrefrence == {}
           ? MainCategoriesResponseModel()
           : MainCategoriesResponseModel.fromJson(responseFromSharedPrefrence);
     } catch (e) {}
 
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         mainCategoriesResponseModel: mainCategoriesResponseModel,
-        getMainCategoriesStatus: GetMainCategoriesStatus.loading));
-    add(GetHomeBoutiqesEvent(
-      getWithPrefetchToStoreInMemory: false,
-      getWithOutPrefetchForEachBoutiques: true,
-      context: event.context ?? navigatorKey.currentContext!,
-      categorySlug: 'Empty',
-      offset: "1",
-    ));
+        getMainCategoriesStatus: GetMainCategoriesStatus.loading,
+      ),
+    );
+    add(
+      GetHomeBoutiqesEvent(
+        getWithPrefetchToStoreInMemory: false,
+        getWithOutPrefetchForEachBoutiques: true,
+        context: event.context ?? navigatorKey.currentContext!,
+        categorySlug: 'Empty',
+        offset: "1",
+      ),
+    );
     /* Future.delayed(
       Duration(seconds: 50),
       () {
@@ -427,65 +505,82 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 */
     final response = await getMainCategoriesUseCase(GetMainCategoryParams());
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetMainCategoriesEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetMainCategoriesEvent');
-        add(GetMainCategoriesEvent(context: event.context));
-        return; // لا تحدث الحالة
-      }
-      requestAPIAfterHome();
-      // فقط بعد انتهاء المحاولات
-      emit(state.copyWith(
-          getMainCategoriesStatus: GetMainCategoriesStatus.failure));
-    }, (r) async {
-      prefsRepository
-          .setPrefechOfMainCategoryInHomePage(jsonEncode(r.toJson()));
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetMainCategoriesEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetMainCategoriesEvent');
+          add(GetMainCategoriesEvent(context: event.context));
+          return; // لا تحدث الحالة
+        }
+        requestAPIAfterHome();
+        // فقط بعد انتهاء المحاولات
+        emit(
+          state.copyWith(
+            getMainCategoriesStatus: GetMainCategoriesStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        prefsRepository.setPrefechOfMainCategoryInHomePage(
+          jsonEncode(r.toJson()),
+        );
 
-      requestAPIAfterHome();
+        requestAPIAfterHome();
 
-      apisMustNotToRequest.add('GetMainCategoriesEvent');
-      ErrorManager.resetRetry('GetMainCategoriesEvent');
+        apisMustNotToRequest.add('GetMainCategoriesEvent');
+        ErrorManager.resetRetry('GetMainCategoriesEvent');
 
-      emit(state.copyWith(
-          mainCategoriesResponseModel: r,
-          getMainCategoriesStatus: GetMainCategoriesStatus.success));
-      List<String> categorySlugs = [];
-      for (var i = 0; i < r.data!.mainCategories!.length; i++) {
-        categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
-      }
-      if (event.getWithPrefech) {
-        Future.delayed(const Duration(seconds: 10), () {
-          for (var i = 0;
+        emit(
+          state.copyWith(
+            mainCategoriesResponseModel: r,
+            getMainCategoriesStatus: GetMainCategoriesStatus.success,
+          ),
+        );
+        List<String> categorySlugs = [];
+        for (var i = 0; i < r.data!.mainCategories!.length; i++) {
+          categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
+        }
+        if (event.getWithPrefech) {
+          Future.delayed(const Duration(seconds: 10), () {
+            for (
+              var i = 0;
               i < min(categorySlugs.length, (1.sw - 55) ~/ 40);
-              i++) {
-            if (state.boutiquesForEveryMainCategoryThatDidPrefetch[
-                    categorySlugs[i]] !=
-                true) {
-              add(GetHomeBoutiqesEvent(
-                withSemaphore: true,
-                getWithPrefetchToStoreInMemory: true,
-                context: event.context ?? navigatorKey.currentContext!,
-                categorySlug: categorySlugs[i],
-                offset: "1",
-              ));
+              i++
+            ) {
+              if (state
+                      .boutiquesForEveryMainCategoryThatDidPrefetch[categorySlugs[i]] !=
+                  true) {
+                add(
+                  GetHomeBoutiqesEvent(
+                    withSemaphore: true,
+                    getWithPrefetchToStoreInMemory: true,
+                    context: event.context ?? navigatorKey.currentContext!,
+                    categorySlug: categorySlugs[i],
+                    offset: "1",
+                  ),
+                );
+              }
             }
-          }
-        });
-      }
-    });
+          });
+        }
+      },
+    );
   }
 
   FutureOr<void> _onChangeCurrentIndexForMainCategoryEvent(
-      ChangeCurrentIndexForMainCategoryEvent event,
-      Emitter<CategoryState> emit) async {
+    ChangeCurrentIndexForMainCategoryEvent event,
+    Emitter<CategoryState> emit,
+  ) async {
     emit(state.copyWith(currentIndexForMainCategory: event.index));
   }
 
   void requestAPIAfterHome() {
     if (prefsRepository.marketToken != null &&
         prefsRepository.marketToken != "") {
-      Future.delayed(const Duration(seconds: 3),
-          () => GetIt.I<AuthBloc>().add(GetCustomerInfoEvent()));
+      Future.delayed(
+        const Duration(seconds: 3),
+        () => GetIt.I<AuthBloc>().add(GetCustomerInfoEvent()),
+      );
     }
     GetIt.I<HomeBloc>().add(const GetStartingSettingsEvent());
     GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());

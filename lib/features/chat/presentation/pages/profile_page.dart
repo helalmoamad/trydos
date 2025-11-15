@@ -35,17 +35,17 @@ import '../widgets/chat_widgets/no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage(
-      {Key? key,
-      required this.receiverName,
-      required this.receiverPhone,
-      required this.senderPhoto,
-      required this.fullReceiverName,
-      required this.dataLength,
-      required this.senderName,
-      required this.receiverPhoto,
-      required this.chatId})
-      : super(key: key);
+  const ProfilePage({
+    Key? key,
+    required this.receiverName,
+    required this.receiverPhone,
+    required this.senderPhoto,
+    required this.fullReceiverName,
+    required this.dataLength,
+    required this.senderName,
+    required this.receiverPhoto,
+    required this.chatId,
+  }) : super(key: key);
   final String receiverName;
   final String receiverPhone;
   final String chatId;
@@ -87,7 +87,8 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     chatBloc.add(
-        AddMediaCountEvent(images: imagess, videos: videoss, file: filess));
+      AddMediaCountEvent(images: imagess, videos: videoss, file: filess),
+    );
     super.initState();
   }
 
@@ -98,8 +99,15 @@ class _ProfilePageState extends State<ProfilePage> {
     };
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: error.toString(),
+      );
     };
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
@@ -121,18 +129,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             decoration: const BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: Color.fromARGB(2, 0, 0, 0)
-//                            colorScheme.black.withOpacity(0.16)
-                                  ,
+                                  color: Color.fromARGB(2, 0, 0, 0),
+                                  //                            colorScheme.black.withOpacity(0.16)
                                   offset: Offset(0, 3),
                                   blurRadius: 10,
                                 ),
                               ],
                             ),
                             child: MyCachedNetworkImage(
-                              imageUrl: (widget.receiverPhoto
-                                          .toString()
-                                          .contains("cloudinary")
+                              imageUrl:
+                                  (widget.receiverPhoto.toString().contains(
+                                        "cloudinary",
+                                      )
                                       ? ""
                                       : "${dotenv.env['Images_Url']}") +
                                   widget.receiverPhoto!,
@@ -145,23 +153,27 @@ class _ProfilePageState extends State<ProfilePage> {
                         : NoImageWidget(
                             height: 150.h,
                             width: 150.w,
-                            textStyle: context.textTheme.bodyMedium?.br
+                            textStyle: context.textTheme.bodyMedium?.bq
                                 .copyWith(
-                                    color: const Color(0xff6638FF),
-                                    letterSpacing: 0.18,
-                                    height: 1.33),
-                            name: widget.receiverName),
+                                  color: const Color(0xff6638FF),
+                                  letterSpacing: 0.18,
+                                  height: 1.33,
+                                ),
+                            name: widget.receiverName,
+                          ),
                     17.verticalSpace,
                     MyTextWidget(
                       widget.fullReceiverName,
-                      style: textTheme.headlineSmall?.rr
-                          .copyWith(color: const Color(0xff5D5C5D)),
+                      style: textTheme.headlineSmall?.rq.copyWith(
+                        color: const Color(0xff5D5C5D),
+                      ),
                     ),
                     8.verticalSpace,
                     MyTextWidget(
                       widget.receiverPhone,
-                      style: textTheme.titleLarge?.rr
-                          .copyWith(color: const Color(0xff5D5C5D)),
+                      style: textTheme.titleLarge?.rq.copyWith(
+                        color: const Color(0xff5D5C5D),
+                      ),
                     ),
                   ],
                 ),
@@ -175,47 +187,58 @@ class _ProfilePageState extends State<ProfilePage> {
                       InkWell(
                         onTap: () async {
                           try {
-                            List<Map<String, dynamic>> info =
-                                callerInfo(channelId: widget.chatId);
-                            PermissionStatus microphone =
-                                await Permission.microphone.request();
-                            var status2 =
-                                await Permission.mediaLibrary.request();
+                            List<Map<String, dynamic>> info = callerInfo(
+                              channelId: widget.chatId,
+                            );
+                            PermissionStatus microphone = await Permission
+                                .microphone
+                                .request();
+                            var status2 = await Permission.mediaLibrary
+                                .request();
                             if (microphone.isGranted && status2.isGranted) {
                               //todo we have the receiver id so the chat dose not exist
                               if (info[0].containsKey('currentReceiver')) {
                                 debugPrint(
-                                    'currentReceiver${info[0]['currentReceiver']}');
+                                  'currentReceiver${info[0]['currentReceiver']}',
+                                );
 
-                                GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                    receiverUserId:
-                                        info[0]['currentReceiver'].toString(),
+                                GetIt.I<CallsBloc>().add(
+                                  MakeCallEvent(
+                                    receiverUserId: info[0]['currentReceiver']
+                                        .toString(),
                                     receiverCallName: widget.fullReceiverName,
                                     chatId: info[1]['channelId'],
                                     isVideo: false,
-                                    payload: info[1]));
+                                    payload: info[1],
+                                  ),
+                                );
 
                                 // GetIt.I<CallsBloc>().add(VideoCallEvent(
                                 //     receiverUserId: info[0]['currentReceiver'],
                                 //     payload: info[1]));
-//todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                                //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
                               }
                               //todo else the chat already exist so we don't have the receiver id just the chat id
                               else {
                                 debugPrint('widget.chatId${widget.chatId}');
                                 debugPrint('info[0]${info[0]}');
 
-                                GetIt.I<CallsBloc>().add(MakeCallEvent(
+                                GetIt.I<CallsBloc>().add(
+                                  MakeCallEvent(
                                     isVideo: false,
                                     receiverCallName: widget.fullReceiverName,
                                     chatId: info[0]['channelId'],
-                                    payload: info[0]));
+                                    payload: info[0],
+                                  ),
+                                );
                                 //todo we have the id of the chat so we can move to the call immediately
                               }
                             } else if (microphone.isDenied ||
                                 status2.isDenied) {
                               showWarningMessage(
-                                  context, LocaleKeys.permission_denied.tr());
+                                context,
+                                LocaleKeys.permission_denied.tr(),
+                              );
                               openAppSettings();
                             }
                           } catch (e, st) {
@@ -236,45 +259,56 @@ class _ProfilePageState extends State<ProfilePage> {
                             10.verticalSpace,
                             MyTextWidget(
                               LocaleKeys.call.tr(),
-                              style: textTheme.titleMedium?.rr
-                                  .copyWith(color: const Color(0xff5D5C5D)),
+                              style: textTheme.titleMedium?.rq.copyWith(
+                                color: const Color(0xff5D5C5D),
+                              ),
                             ),
                           ],
                         ),
                       ),
                       InkWell(
                         onTap: () async {
-                          List<Map<String, dynamic>> info =
-                              callerInfo(channelId: widget.chatId);
-                          PermissionStatus microphone =
-                              await Permission.microphone.request();
+                          List<Map<String, dynamic>> info = callerInfo(
+                            channelId: widget.chatId,
+                          );
+                          PermissionStatus microphone = await Permission
+                              .microphone
+                              .request();
                           var status2 = await Permission.mediaLibrary.request();
-                          PermissionStatus camera =
-                              await Permission.camera.request();
+                          PermissionStatus camera = await Permission.camera
+                              .request();
                           if (microphone.isGranted &&
                               status2.isGranted &&
                               camera.isGranted) {
                             if (info[0].containsKey('currentReceiver')) {
-                              GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                  receiverUserId:
-                                      info[0]['currentReceiver'].toString(),
+                              GetIt.I<CallsBloc>().add(
+                                MakeCallEvent(
+                                  receiverUserId: info[0]['currentReceiver']
+                                      .toString(),
                                   receiverCallName: widget.fullReceiverName,
                                   chatId: info[1]['channelId'],
                                   isVideo: true,
-                                  payload: info[1]));
+                                  payload: info[1],
+                                ),
+                              );
                             } else {
-                              GetIt.I<CallsBloc>().add(MakeCallEvent(
+                              GetIt.I<CallsBloc>().add(
+                                MakeCallEvent(
                                   isVideo: true,
                                   receiverCallName: widget.fullReceiverName,
                                   chatId: info[0]['channelId'],
-                                  payload: info[0]));
+                                  payload: info[0],
+                                ),
+                              );
                               //todo we have the id of the chat so we can move to the call immediately
                             }
                           } else if (microphone.isDenied ||
                               status2.isDenied ||
                               camera.isDenied) {
                             showWarningMessage(
-                                context, LocaleKeys.permission_denied.tr());
+                              context,
+                              LocaleKeys.permission_denied.tr(),
+                            );
                             openAppSettings();
                           }
                         },
@@ -289,28 +323,30 @@ class _ProfilePageState extends State<ProfilePage> {
                             10.verticalSpace,
                             MyTextWidget(
                               LocaleKeys.video.tr(),
-                              style: textTheme.titleMedium?.rr
-                                  .copyWith(color: const Color(0xff5D5C5D)),
+                              style: textTheme.titleMedium?.rq.copyWith(
+                                color: const Color(0xff5D5C5D),
+                              ),
                             ),
                           ],
                         ),
                       ),
                       InkWell(
                         onTap: () {
-                          Navigator.of(context)
-                              .pushReplacement(MaterialPageRoute(
-                                  builder: (context) => SinglePageChat(
-                                        chatId: widget.chatId,
-                                        fullReceiverName:
-                                            widget.fullReceiverName,
-                                        receiverName: widget.receiverName,
-                                        senderName: widget.senderName,
-                                        dataLength: widget.dataLength,
-                                        senderPhoto: widget.senderPhoto,
-                                        receiverPhoto: widget.receiverPhoto,
-                                        fromSearch: true,
-                                        receiverPhone: widget.receiverPhone,
-                                      )));
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => SinglePageChat(
+                                chatId: widget.chatId,
+                                fullReceiverName: widget.fullReceiverName,
+                                receiverName: widget.receiverName,
+                                senderName: widget.senderName,
+                                dataLength: widget.dataLength,
+                                senderPhoto: widget.senderPhoto,
+                                receiverPhoto: widget.receiverPhoto,
+                                fromSearch: true,
+                                receiverPhone: widget.receiverPhone,
+                              ),
+                            ),
+                          );
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -325,8 +361,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             10.verticalSpace,
                             MyTextWidget(
                               LocaleKeys.search.tr(),
-                              style: textTheme.titleMedium?.rr
-                                  .copyWith(color: const Color(0xff5D5C5D)),
+                              style: textTheme.titleMedium?.rq.copyWith(
+                                color: const Color(0xff5D5C5D),
+                              ),
                             ),
                           ],
                         ),
@@ -339,8 +376,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 95.h,
                   width: 1.sw,
                   decoration: BoxDecoration(
-                      color: const Color(0xffF4F4F4),
-                      borderRadius: BorderRadius.circular(20)),
+                    color: const Color(0xffF4F4F4),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
                   margin: HWEdgeInsets.symmetric(vertical: 10),
                   child: Row(
@@ -357,8 +395,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             MyTextWidget(
                               LocaleKeys.media_files.tr(),
-                              style: textTheme.displayMedium?.rr
-                                  .copyWith(color: const Color(0xff5D5C5D)),
+                              style: textTheme.displayMedium?.rq.copyWith(
+                                color: const Color(0xff5D5C5D),
+                              ),
                             ),
                             10.verticalSpace,
                             BlocBuilder<ChatBloc, ChatState>(
@@ -383,15 +422,19 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? const Key(WidgetsKeys
-                                                    .imageCountInEachChatKey)
+                                                ? const Key(
+                                                    WidgetsKeys
+                                                        .imageCountInEachChatKey,
+                                                  )
                                                 : null,
                                             state.imageCountInEachChat
                                                 .toString(),
-                                            style: textTheme.titleMedium?.lr
+                                            style: textTheme.titleMedium?.lq
                                                 .copyWith(
-                                                    color: const Color(
-                                                        0xff5D5C5D)),
+                                                  color: const Color(
+                                                    0xff5D5C5D,
+                                                  ),
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -406,15 +449,19 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? const Key(WidgetsKeys
-                                                    .videoCountInEachChatKey)
+                                                ? const Key(
+                                                    WidgetsKeys
+                                                        .videoCountInEachChatKey,
+                                                  )
                                                 : null,
                                             state.videoCountInEachChat
                                                 .toString(),
-                                            style: textTheme.titleMedium?.lr
+                                            style: textTheme.titleMedium?.lq
                                                 .copyWith(
-                                                    color: const Color(
-                                                        0xff5D5C5D)),
+                                                  color: const Color(
+                                                    0xff5D5C5D,
+                                                  ),
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -429,26 +476,28 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? const Key(WidgetsKeys
-                                                    .fileCountInEachChatKey)
+                                                ? const Key(
+                                                    WidgetsKeys
+                                                        .fileCountInEachChatKey,
+                                                  )
                                                 : null,
                                             state.fileCountInEachChat
                                                 .toString(),
-                                            style: textTheme.titleMedium?.lr
+                                            style: textTheme.titleMedium?.lq
                                                 .copyWith(
-                                                    color: const Color(
-                                                        0xff5D5C5D)),
+                                                  color: const Color(
+                                                    0xff5D5C5D,
+                                                  ),
+                                                ),
                                           ),
                                         ],
                                       ),
-                                      const Spacer(
-                                        flex: 4,
-                                      ),
+                                      const Spacer(flex: 4),
                                     ],
                                   ),
                                 );
                               },
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -456,12 +505,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              LocaleKeys.see_all.tr(),
-                            ),
-                            SizedBox(
-                              width: 2.w,
-                            ),
+                            Text(LocaleKeys.see_all.tr()),
+                            SizedBox(width: 2.w),
                             SvgPicture.asset(
                               AppAssets.forwardArrowRight,
                               width: 10.w,
@@ -469,13 +514,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ],
                         ),
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MediaInProfile(
-                            files: images ?? [],
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MediaInProfile(files: images ?? []),
                           ),
-                        )),
-                      )
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -512,7 +557,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: FileImage(
-                                      File(images![index].split(" ")[1])),
+                                    File(images![index].split(" ")[1]),
+                                  ),
                                   fit: BoxFit.fill,
                                 ),
                                 borderRadius: BorderRadius.circular(12.0),
@@ -533,8 +579,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 10.verticalSpace,
                 Container(
                   decoration: BoxDecoration(
-                      color: const Color(0xffF4F4F4),
-                      borderRadius: BorderRadius.circular(20)),
+                    color: const Color(0xffF4F4F4),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
                   margin: HWEdgeInsets.symmetric(vertical: 10),
                   child: Row(
@@ -547,41 +594,43 @@ class _ProfilePageState extends State<ProfilePage> {
                       20.horizontalSpace,
                       MyTextWidget(
                         LocaleKeys.save_to_gallery.tr(),
-                        style: textTheme.displayMedium?.rr
-                            .copyWith(color: const Color(0xff5D5C5D)),
+                        style: textTheme.displayMedium?.rq.copyWith(
+                          color: const Color(0xff5D5C5D),
+                        ),
                       ),
                       const Spacer(),
                       MyTextWidget(
                         LocaleKeys.never.tr(),
-                        style: textTheme.displayMedium?.lr
-                            .copyWith(color: const Color(0xff5D5C5D)),
+                        style: textTheme.displayMedium?.lq.copyWith(
+                          color: const Color(0xff5D5C5D),
+                        ),
                       ),
                       36.horizontalSpace,
                       Transform(
                         alignment: Alignment.center,
                         transform: (Matrix4.identity()
+                          // ignore: deprecated_member_use
                           ..scale(
-                              LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
-                              1.0,
-                              1.0)),
+                            LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
+                            1.0,
+                            1.0,
+                          )),
                         child: SvgPicture.asset(
                           AppAssets.forwardArrowRight,
                           width: 3.w,
                           height: 12.h,
                         ),
-                      )
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),
               child: InkWell(
                 key: TestVariables.kTestMode
-                    ? const Key(
-                        WidgetsKeys.backFromProfileKey,
-                      )
+                    ? const Key(WidgetsKeys.backFromProfileKey)
                     : null,
                 onTap: () {
                   Navigator.pop(context);

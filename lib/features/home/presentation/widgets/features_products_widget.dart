@@ -48,15 +48,13 @@ class FeatureProductsWidget extends StatelessWidget {
     List<filter.Products> products = [];
 
     return BlocBuilder<BoutiqueBloc, BoutiqueState>(
-        buildWhen: (previous, current) =>
-            previous
-                    .getProductListingWithFiltersPaginationModels[
-                        "*featured*withoutFilter"]
-                    ?.paginationStatus !=
-                current
-                    .getProductListingWithFiltersPaginationModels[
-                        "*featured*withoutFilter"]
-                    ?.paginationStatus ||
+      buildWhen: (previous, current) =>
+          previous
+              .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
+              ?.paginationStatus !=
+          current
+              .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
+              ?.paginationStatus /* ||
             previous
                     .getProductListingWithFiltersPaginationModels[
                         "*recommended*withoutFilter"]
@@ -64,10 +62,10 @@ class FeatureProductsWidget extends StatelessWidget {
                 current
                     .getProductListingWithFiltersPaginationModels[
                         "*recommended*withoutFilter"]
-                    ?.paginationStatus,
-        builder: (context, state) {
-          try {
-            List<filter.Products> recommendProduct =
+                    ?.paginationStatus*/,
+      builder: (context, state) {
+        try {
+          /*   List<filter.Products> recommendProduct =
                 state.getProductListingWithFiltersPaginationModels[
                             "*recommended*withoutFilter"] ==
                         null
@@ -75,119 +73,120 @@ class FeatureProductsWidget extends StatelessWidget {
                     : state
                         .getProductListingWithFiltersPaginationModels[
                             "*recommended*withoutFilter"]!
-                        .items;
-            products = state.getProductListingWithFiltersPaginationModels[
-                        "*featured*withoutFilter"] ==
-                    null
-                ? []
-                : state
-                    .getProductListingWithFiltersPaginationModels[
-                        "*featured*withoutFilter"]!
+                        .items;*/
+          products =
+              state.getProductListingWithFiltersPaginationModels["*featured*withoutFilter"] ==
+                  null
+              ? []
+              : state
+                    .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]!
                     .items;
-            for (var i = 0;
+          /* for (var i = 0;
                 i < (recommendProduct.length > 6 ? 6 : recommendProduct.length);
                 i++) {
               products.removeWhere(
                   (element) => element.slug == recommendProduct[i].slug);
-            }
-          } catch (e) {
-            debugPrint('❌ Error getting featured products: $e');
-            products = [];
-          }
+            }*/
+        } catch (e) {
+          debugPrint('❌ Error getting featured products: $e');
+          products = [];
+        }
 
-          return products.isNullOrEmpty
-              ? const SizedBox.shrink()
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      width: 250,
-                      height: 20,
-                      child: Row(
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.productFeaturesSvg,
-                            height: 18,
+        return products.isNullOrEmpty
+            ? const SizedBox.shrink()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    width: 250,
+                    height: 20,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.productFeaturesSvg,
+                          height: 18,
+                        ),
+                        MyTextWidget(
+                          " ${LocaleKeys.feature_product.tr()}",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
                           ),
-                          MyTextWidget(
-                            " ${LocaleKeys.feature_product.tr()}",
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 14),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          state
-                                      .getProductListingWithFiltersPaginationModels[
-                                          "*featured*withoutFilter"]
-                                      ?.paginationStatus ==
-                                  PaginationStatus.loading
-                              ? TrydosLoader(
-                                  size: 16,
-                                )
-                              : const SizedBox.shrink()
-                        ],
+                        ),
+                        const SizedBox(width: 10),
+                        state
+                                    .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
+                                    ?.paginationStatus ==
+                                PaginationStatus.loading
+                            ? TrydosLoader(size: 16)
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 5),
+                    width: 1.sw,
+                    height: 300,
+                    child: ListView.separated(
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false,
+                      addSemanticIndexes: false,
+                      cacheExtent: 0,
+                      itemBuilder: (context, index) {
+                        // التحقق من صحة الفهرس
+                        if (index >= products.length) {
+                          return const SizedBox.shrink();
+                        }
+
+                        if (index == 5 && products.length > 5) {
+                          return _buildMoreButton(context, products, index);
+                        }
+                        return _buildProductItem(context, products, index);
+                      },
+                      physics: const BouncingScrollPhysics(
+                        parent: ClampingScrollPhysics(),
                       ),
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: 10,
+                      ),
+                      scrollDirection: Axis.horizontal,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 15),
+                      itemCount: products.length > 6 ? 6 : products.length,
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 5),
-                      width: 1.sw,
-                      height: 300,
-                      child: ListView.separated(
-                          addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false,
-                          addSemanticIndexes: false,
-                          cacheExtent: 0,
-                          itemBuilder: (context, index) {
-                            // التحقق من صحة الفهرس
-                            if (index >= products.length) {
-                              return const SizedBox.shrink();
-                            }
-
-                            if (index == 5 && products.length > 5) {
-                              return _buildMoreButton(context, products, index);
-                            }
-                            return _buildProductItem(context, products, index);
-                          },
-                          physics: const BouncingScrollPhysics(
-                            parent: ClampingScrollPhysics(),
-                          ),
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: 10),
-                          scrollDirection: Axis.horizontal,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(width: 15),
-                          itemCount: products.length > 6 ? 6 : products.length),
-                    )
-                  ],
-                );
-        });
+                  ),
+                ],
+              );
+      },
+    );
   }
 
   Widget _buildMoreButton(
-      BuildContext context, List<filter.Products> products, int index
-      //, Tuple2<int, int> slidingMode
-      ) {
+    BuildContext context,
+    List<filter.Products> products,
+    int index,
+    //, Tuple2<int, int> slidingMode
+  ) {
     return InkWell(
       onTap: () {
         try {
-          GetIt.I<BoutiqueBloc>().add(GetProductsWithFiltersEvent(
+          GetIt.I<BoutiqueBloc>().add(
+            GetProductsWithFiltersEvent(
               context: context,
               limit: 10,
               cashedOrginalBoutique: true,
               boutiqueSlug: "*featured*",
-              offset: 1));
+              offset: 1,
+            ),
+          );
           Future.delayed(
-              const Duration(milliseconds: 300),
-              () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => const FeaturedProductsPage(),
-                    ),
-                  ));
+            const Duration(milliseconds: 300),
+            () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (ctx) => const FeaturedProductsPage()),
+            ),
+          );
         } catch (e) {
           debugPrint('❌ Error navigating to flash deal products: $e');
         }
@@ -217,8 +216,9 @@ class FeatureProductsWidget extends StatelessWidget {
           ),
           Container(
             decoration: const BoxDecoration(
-                color: Color.fromRGBO(0, 0, 0, 0.4),
-                borderRadius: BorderRadius.all(Radius.circular(12))),
+              color: Color.fromRGBO(0, 0, 0, 0.4),
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
             width: 200,
             height: 300,
           ),
@@ -228,8 +228,9 @@ class FeatureProductsWidget extends StatelessWidget {
             child: Container(
               alignment: Alignment.center,
               decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(30))),
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
               width: 60,
               height: 60,
               child: MyTextWidget(
@@ -238,32 +239,40 @@ class FeatureProductsWidget extends StatelessWidget {
                 style: const TextStyle(color: Colors.black, fontSize: 18),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildProductItem(BuildContext context, List<filter.Products> products,
-      int index /*, Tuple2<int, int> slidingMode*/) {
+  Widget _buildProductItem(
+    BuildContext context,
+    List<filter.Products> products,
+    int index /*, Tuple2<int, int> slidingMode*/,
+  ) {
     return InkWell(
       onTap: () {
         try {
           GetIt.I<HomeBloc>().add(
-              const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                  isStatusInitaial: true));
-          GetIt.I<HomeBloc>().add(AddCurrentSelectedColorEvent(
+            const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+              isStatusInitaial: true,
+            ),
+          );
+          GetIt.I<HomeBloc>().add(
+            AddCurrentSelectedColorEvent(
               currentSelectedColor: 0,
-              productSlug: products[index].slug.toString()));
+              productSlug: products[index].slug.toString(),
+            ),
+          );
           Future.delayed(
-              const Duration(milliseconds: 300),
-              () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => ProductDetailsPageNew(
-                        productItem: products[index],
-                      ),
-                    ),
-                  ));
+            const Duration(milliseconds: 300),
+            () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctx) =>
+                    ProductDetailsPageNew(productItem: products[index]),
+              ),
+            ),
+          );
         } catch (e) {
           debugPrint('❌ Error navigating to product details: $e');
         }
@@ -285,9 +294,9 @@ class FeatureProductsWidget extends StatelessWidget {
         //     try {
         //      setThisEnabledNotifier.value = Tuple2(index, slideMode);
         //    } catch (e) {
-//debugPrint('❌ Error setting enabled state: $e');
+        //debugPrint('❌ Error setting enabled state: $e');
         //    }
-//},
+        //},
       ),
     );
   }

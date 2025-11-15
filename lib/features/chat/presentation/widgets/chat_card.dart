@@ -35,15 +35,15 @@ import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
 
 class ChatCard extends StatefulWidget {
-  const ChatCard(
-      {Key? key,
-      this.index = 0,
-      this.activityDescription,
-      required this.chat,
-      required this.thereActivity,
-      this.onSendForwardMessage,
-      required this.messageId})
-      : super(key: key);
+  const ChatCard({
+    Key? key,
+    this.index = 0,
+    this.activityDescription,
+    required this.chat,
+    required this.thereActivity,
+    this.onSendForwardMessage,
+    required this.messageId,
+  }) : super(key: key);
   final int index;
   final Chat chat;
   final String messageId;
@@ -85,21 +85,25 @@ class _ChatCardState extends ThemeState<ChatCard> {
     print('dwwdw ${widget.chat.messages}');
     if (!(widget.chat.messages.isNullOrEmpty)) {
       chatTime = widget.chat.messages!
-          .firstWhere((element) =>
-              element.authMessageStatus!.isDeleted == 0 ||
-              element.authMessageStatus!.deleteForAll!)
+          .firstWhere(
+            (element) =>
+                element.authMessageStatus!.isDeleted == 0 ||
+                element.authMessageStatus!.deleteForAll!,
+          )
           .createdAt!;
     }
 
     User? receiver = !widget.chat.channelMembers.isNullOrEmpty
         ? widget.chat.channelMembers!
-            .firstWhere(
-                (element) => element.userId != _prefsRepository.myChatId)
-            .user
+              .firstWhere(
+                (element) => element.userId != _prefsRepository.myChatId,
+              )
+              .user
         : null;
 
     String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
-            widget.chat.channelName ?? LocaleKeys.no_channal_name.tr()),
+          widget.chat.channelName ?? LocaleKeys.no_channal_name.tr(),
+        ),
         fullReceiverName =
             widget.chat.channelName ?? LocaleKeys.no_channal_name.tr();
     // if (receiver == null) {
@@ -120,7 +124,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
     //       'Unknown User';
     // }
     String senderName = HelperFunctions.getTheFirstTwoLettersOfName(
-        _prefsRepository.myChatName ?? LocaleKeys.no_channal_name.tr());
+      _prefsRepository.myChatName ?? LocaleKeys.no_channal_name.tr(),
+    );
     print('meesges ${widget.chat.messages?.length}');
     print('meesges ${widget.chat.channelMembers?.length}');
     print('meesges ${widget.chat.channelName}');
@@ -157,23 +162,32 @@ class _ChatCardState extends ThemeState<ChatCard> {
     bool isDeleteForAll = false;
     bool deleteFromMyId = false;
     if (!widget.chat.messages.isNullOrEmpty) {
-      messageType = (widget.chat.messages!
-              .firstWhere((element) =>
-                  element.authMessageStatus!.isDeleted == 0 ||
-                  element.authMessageStatus!.deleteForAll!)
-              .messageType
-              ?.name)
-          .toString();
-      deleteFromMyId = (widget.chat.messages!
-              .firstWhere((element) =>
-                  element.authMessageStatus!.isDeleted == 0 ||
-                  element.authMessageStatus!.deleteForAll!)
+      messageType =
+          (widget.chat.messages!
+                  .firstWhere(
+                    (element) =>
+                        element.authMessageStatus!.isDeleted == 0 ||
+                        element.authMessageStatus!.deleteForAll!,
+                  )
+                  .messageType
+                  ?.name)
+              .toString();
+      deleteFromMyId =
+          (widget.chat.messages!
+              .firstWhere(
+                (element) =>
+                    element.authMessageStatus!.isDeleted == 0 ||
+                    element.authMessageStatus!.deleteForAll!,
+              )
               .deletedByUserId ==
           _prefsRepository.myChatId!);
-      isDeleteForAll = (widget.chat.messages!
-              .firstWhere((element) =>
-                  element.authMessageStatus!.isDeleted == 0 ||
-                  element.authMessageStatus!.deleteForAll!)
+      isDeleteForAll =
+          (widget.chat.messages!
+              .firstWhere(
+                (element) =>
+                    element.authMessageStatus!.isDeleted == 0 ||
+                    element.authMessageStatus!.deleteForAll!,
+              )
               .authMessageStatus!
               .deleteForAll ??
           false);
@@ -192,7 +206,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
           width: 1.sw,
           child: InkWell(
             onTap: () {
-//                if(state.)
+              //                if(state.)
               //todo (future update) call just when The totalUnreadMessage one or more
               // if (widget.onSendForwardMessage != null) {
               //   Navigator.of(context)
@@ -200,18 +214,26 @@ class _ChatCardState extends ThemeState<ChatCard> {
               //     ..pop();
               // }
               print(
-                  "object///////////////////////////////////////#${_prefsRepository.myChatPhoto}}");
-              chatBloc.add(ChangeGlobalUsedVariablesInBloc(
-                  currentOpenedChatId: widget.chat.id));
+                "object///////////////////////////////////////#${_prefsRepository.myChatPhoto}}",
+              );
+              chatBloc.add(
+                ChangeGlobalUsedVariablesInBloc(
+                  currentOpenedChatId: widget.chat.id,
+                ),
+              );
               widget.onSendForwardMessage?.call(
-                  widget.chat.channelMembers!
-                      .firstWhere((element) =>
-                          element.userId != GetIt.I<PrefsRepository>().myChatId)
-                      .userId!,
-                  widget.chat.id.toString());
-              context.go(GRouter
-                      .config.applicationRoutes.kSinglePageChatPagePath +
-                  '?chatId=${widget.chat.id!.toString()}&data_length=${widget.chat.messages!.length}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${_prefsRepository.myChatPhoto}');
+                widget.chat.channelMembers!
+                    .firstWhere(
+                      (element) =>
+                          element.userId != GetIt.I<PrefsRepository>().myChatId,
+                    )
+                    .userId!,
+                widget.chat.id.toString(),
+              );
+              context.go(
+                GRouter.config.applicationRoutes.kSinglePageChatPagePath +
+                    '?chatId=${widget.chat.id!.toString()}&data_length=${widget.chat.messages!.length}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${_prefsRepository.myChatPhoto}',
+              );
             },
             child: Slidable(
               endActionPane: ActionPane(
@@ -223,9 +245,12 @@ class _ChatCardState extends ThemeState<ChatCard> {
                         ? LocaleKeys.archive.tr()
                         : LocaleKeys.un_archive.tr(),
                     onTap: () {
-                      chatBloc.add(ChangeChatPropertyEvent(
+                      chatBloc.add(
+                        ChangeChatPropertyEvent(
                           channelId: widget.chat.id!,
-                          archive: 1 - (me?.archived ?? 0)));
+                          archive: 1 - (me?.archived ?? 0),
+                        ),
+                      );
                     },
                     backgroundColor: const Color(0xffF0F0F0),
                     foregroundColor: colorScheme.grey200,
@@ -234,13 +259,16 @@ class _ChatCardState extends ThemeState<ChatCard> {
                   SlidableActionWidget(
                     key: TestVariables.kTestMode
                         ? Key(
-                            '${WidgetsKeys.deleteChatConversationIconKey}${widget.index}')
+                            '${WidgetsKeys.deleteChatConversationIconKey}${widget.index}',
+                          )
                         : null,
                     text: LocaleKeys.delete.tr(),
                     onTap: () {
                       if (double.tryParse(widget.chat.id!) == null) {
-                        showWarningMessage(context,
-                            'You Can\'t remove this Chat at This Time');
+                        showWarningMessage(
+                          context,
+                          'You Can\'t remove this Chat at This Time',
+                        );
                         return;
                       }
                       chatBloc.add(DeleteChatEvent(channelId: widget.chat.id!));
@@ -254,14 +282,18 @@ class _ChatCardState extends ThemeState<ChatCard> {
                         ? LocaleKeys.mute.tr()
                         : LocaleKeys.un_mute.tr(),
                     onTap: () {
-                      chatBloc.add(ChangeChatPropertyEvent(
+                      chatBloc.add(
+                        ChangeChatPropertyEvent(
                           channelId: widget.chat.id!,
-                          mute: 1 - (me?.mute ?? 0)));
+                          mute: 1 - (me?.mute ?? 0),
+                        ),
+                      );
                     },
                     backgroundColor: const Color(0xffF6F5FD),
                     foregroundColor: const Color(0xffC4C2C2),
-                    iconUrl:
-                        me?.mute == 1 ? AppAssets.unMuteSvg : AppAssets.muteSvg,
+                    iconUrl: me?.mute == 1
+                        ? AppAssets.unMuteSvg
+                        : AppAssets.muteSvg,
                   ),
                 ],
               ),
@@ -275,7 +307,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     text: LocaleKeys.read.tr(),
                     onTap: () {
                       chatBloc.add(
-                          ReadAllMessagesEvent(widget.chat.id!.toString()));
+                        ReadAllMessagesEvent(widget.chat.id!.toString()),
+                      );
                     },
                     backgroundColor: const Color(0xffFCF6EF),
                     foregroundColor: colorScheme.grey200,
@@ -288,12 +321,18 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     onTap: () {
                       if (chatBloc.state.pinnedChats.length == 3 &&
                           me?.pin == 0) {
-                        showWarningMessage(context,
-                            LocaleKeys.you_can_have_at_most_3_pinned.tr());
+                        showWarningMessage(
+                          context,
+                          LocaleKeys.you_can_have_at_most_3_pinned.tr(),
+                        );
                         return;
                       }
-                      chatBloc.add(ChangeChatPropertyEvent(
-                          channelId: widget.chat.id!, pin: 1 - (me?.pin ?? 0)));
+                      chatBloc.add(
+                        ChangeChatPropertyEvent(
+                          channelId: widget.chat.id!,
+                          pin: 1 - (me?.pin ?? 0),
+                        ),
+                      );
                     },
                     backgroundColor: const Color(0xffEFF8FF),
                     foregroundColor: colorScheme.grey200,
@@ -316,42 +355,48 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       boxShadow: widget.thereActivity
                                           ? [
                                               BoxShadow(
-                                                  color: const Color(0xff007CFF)
-                                                      // ignore: deprecated_member_use
-                                                      .withOpacity(0.16),
-                                                  offset: const Offset(0, 3),
-                                                  blurRadius: 6)
+                                                color: const Color(0xff007CFF)
+                                                    // ignore: deprecated_member_use
+                                                    .withOpacity(0.16),
+                                                offset: const Offset(0, 3),
+                                                blurRadius: 6,
+                                              ),
                                             ]
                                           : null,
                                       border: widget.thereActivity
                                           ? Border.all(
-                                              color: const Color(0xff007CFF))
+                                              color: const Color(0xff007CFF),
+                                            )
                                           : null,
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),
                                     child: MyCachedNetworkImage(
-                                        imageUrl: (receiver?.photoPath ?? "")
-                                                .toString()
-                                                .contains("cloudinary")
-                                            ? receiver?.photoPath
-                                            : ("${dotenv.env['Images_Url']}" +
+                                      imageUrl:
+                                          (receiver?.photoPath ?? "")
+                                              .toString()
+                                              .contains("cloudinary")
+                                          ? receiver?.photoPath
+                                          : ("${dotenv.env['Images_Url']}" +
                                                 receiver?.photoPath),
-                                        imageFit: BoxFit.cover,
-                                        height: 80.h,
-                                        width: 60.w),
+                                      imageFit: BoxFit.cover,
+                                      height: 80.h,
+                                      width: 60.w,
+                                    ),
                                   );
                                 },
                               )
                             : NoImageWidget(
                                 width: 60.w,
                                 height: 80.h,
-                                textStyle: context.textTheme.bodyMedium?.br
+                                textStyle: context.textTheme.bodyMedium?.bq
                                     .copyWith(
-                                        color: const Color(0xff6638FF),
-                                        letterSpacing: 0.18,
-                                        height: 1.33),
+                                      color: const Color(0xff6638FF),
+                                      letterSpacing: 0.18,
+                                      height: 1.33,
+                                    ),
                                 thereActivity: widget.thereActivity,
-                                name: receiverName),
+                                name: receiverName,
+                              ),
                         18.horizontalSpace,
                         Flexible(
                           child: Column(
@@ -364,9 +409,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       fullReceiverName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: textTheme.bodyMedium?.rr.copyWith(
-                                          height: 1.33,
-                                          color: const Color(0xff505050)),
+                                      style: textTheme.bodyMedium?.rq.copyWith(
+                                        height: 1.33,
+                                        color: const Color(0xff505050),
+                                      ),
                                     ),
                                     const Spacer(),
                                     if (chatTime == null)
@@ -377,21 +423,23 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         builder: (context, state) {
                                           return MyTextWidget(
                                             !chatTime!.isUtc
-                                                ? HelperFunctions
-                                                    .getDateInFormat(chatTime!)
-                                                : HelperFunctions
-                                                    .getZonedDateInFormat(
-                                                        chatTime!),
+                                                ? HelperFunctions.getDateInFormat(
+                                                    chatTime!,
+                                                  )
+                                                : HelperFunctions.getZonedDateInFormat(
+                                                    chatTime!,
+                                                  ),
                                             maxLines: 1,
-                                            style: textTheme.titleSmall?.lr
+                                            style: textTheme.titleSmall?.lq
                                                 .copyWith(
-                                                    fontSize: 12,
-                                                    height: 1.1,
-                                                    color: colorScheme.grey200),
+                                                  fontSize: 12,
+                                                  height: 1.1,
+                                                  color: colorScheme.grey200,
+                                                ),
                                           );
                                         },
                                       ),
-                                    30.horizontalSpace
+                                    30.horizontalSpace,
                                   ],
                                 ),
                               ),
@@ -401,34 +449,34 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (widget.thereActivity) ...{
-//                                        Transform.translate(
-//                                          offset: const Offset(0, 3),
-//                                          child: Transform(
-//                                            alignment: Alignment.center,
-//                                            transform: (Matrix4.identity()
-//                                              ..scale(
-//                                                  LanguageService.languageCode ==
-//                                                          'ar'
-//                                                      ? -1.0
-//                                                      : 1.0,
-//                                                  1.0,
-//                                                  1.0)),
-//                                            child:
+                                      //                                        Transform.translate(
+                                      //                                          offset: const Offset(0, 3),
+                                      //                                          child: Transform(
+                                      //                                            alignment: Alignment.center,
+                                      //                                            transform: (Matrix4.identity()
+                                      //                                              ..scale(
+                                      //                                                  LanguageService.languageCode ==
+                                      //                                                          'ar'
+                                      //                                                      ? -1.0
+                                      //                                                      : 1.0,
+                                      //                                                  1.0,
+                                      //                                                  1.0)),
+                                      //                                            child:
                                       SvgPicture.asset(
                                         AppAssets.messageReadArrowSvg,
                                         height: 12.h,
                                         width: 12.w,
-                                      )
-//                                            ,
-//                                          ),
-//                                        )
-                                      ,
+                                      ),
+                                      //                                            ,
+                                      //                                          ),
+                                      //                                        )
                                       7.horizontalSpace,
                                     },
                                     Flexible(
                                       child: SizedBox(
                                         height: widget.thereActivity ? 33 : 51,
-                                        child: (widget.chat.messages?.isEmpty ??
+                                        child:
+                                            (widget.chat.messages?.isEmpty ??
                                                 true &&
                                                     widget.chat.messages !=
                                                         null)
@@ -449,10 +497,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                               .messageType
                                                               ?.name !=
                                                           'VideoCall')
-                                                    BlocBuilder<ChatBloc,
-                                                        ChatState>(
-                                                      builder:
-                                                          (context, state) {
+                                                    BlocBuilder<
+                                                      ChatBloc,
+                                                      ChatState
+                                                    >(
+                                                      builder: (context, state) {
                                                         if (widget
                                                                 .chat
                                                                 .messages!
@@ -460,176 +509,234 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                 .senderUserId ==
                                                             _prefsRepository
                                                                 .myChatId) {
-                                                          Message lastMessage = [
-                                                            ...state.chats,
-                                                            ...state.pinnedChats
-                                                          ]
-                                                              .firstWhere(
-                                                                  (element) =>
-                                                                      element.id ==
-                                                                      widget
-                                                                          .chat
-                                                                          .id,
-                                                                  orElse: () => Chat(
-                                                                      messages: []))
-                                                              .messages!
-                                                              .firstWhere(
-                                                                  (element) =>
-                                                                      element.authMessageStatus!.isDeleted ==
-                                                                          0 ||
-                                                                      element
-                                                                          .authMessageStatus!
-                                                                          .deleteForAll!,
-                                                                  orElse: () =>
-                                                                      Message(id: '-1'));
+                                                          Message lastMessage =
+                                                              [
+                                                                    ...state
+                                                                        .chats,
+                                                                    ...state
+                                                                        .pinnedChats,
+                                                                  ]
+                                                                  .firstWhere(
+                                                                    (element) =>
+                                                                        element
+                                                                            .id ==
+                                                                        widget
+                                                                            .chat
+                                                                            .id,
+                                                                    orElse: () =>
+                                                                        Chat(
+                                                                          messages:
+                                                                              [],
+                                                                        ),
+                                                                  )
+                                                                  .messages!
+                                                                  .firstWhere(
+                                                                    (element) =>
+                                                                        element.authMessageStatus!.isDeleted ==
+                                                                            0 ||
+                                                                        element
+                                                                            .authMessageStatus!
+                                                                            .deleteForAll!,
+                                                                    orElse: () =>
+                                                                        Message(
+                                                                          id: '-1',
+                                                                        ),
+                                                                  );
                                                           if (lastMessage.id ==
                                                               '-1') {
-                                                            return const SizedBox
-                                                                .shrink();
+                                                            return const SizedBox.shrink();
                                                           }
                                                           MessageStatus? status;
                                                           if (int.tryParse(
-                                                                  lastMessage.id
-                                                                      .toString()) !=
+                                                                lastMessage.id
+                                                                    .toString(),
+                                                              ) !=
                                                               null) {
                                                             status = lastMessage
                                                                 .messageStatus!
-                                                                .firstWhere((element) =>
-                                                                    element
-                                                                        .userId !=
-                                                                    _prefsRepository
-                                                                        .myChatId);
+                                                                .firstWhere(
+                                                                  (element) =>
+                                                                      element
+                                                                          .userId !=
+                                                                      _prefsRepository
+                                                                          .myChatId,
+                                                                );
                                                           }
                                                           return lastMessage
                                                                   .authMessageStatus!
                                                                   .deleteForAll!
-                                                              ? const SizedBox
-                                                                  .shrink()
-                                                              : SvgPicture
-                                                                  .asset(
+                                                              ? const SizedBox.shrink()
+                                                              : SvgPicture.asset(
                                                                   (state.currentMessage.contains(
-                                                                          lastMessage
-                                                                              .id))
+                                                                        lastMessage
+                                                                            .id,
+                                                                      ))
                                                                       ? AppAssets
-                                                                          .sandClockSvg
-                                                                      : (state.currentFailedMessage.contains(lastMessage
-                                                                              .id))
-                                                                          ? AppAssets
-                                                                              .messageFailedSvg
-                                                                          : status?.isWatched ?? false
-                                                                              ? AppAssets.messageReadArrowSvg
-                                                                              : status?.isReceived == 1
-                                                                                  ? AppAssets.messageDeliveredArrowSvg
-                                                                                  : AppAssets.messageSentArrowSvg,
+                                                                            .sandClockSvg
+                                                                      : (state
+                                                                            .currentFailedMessage
+                                                                            .contains(
+                                                                              lastMessage.id,
+                                                                            ))
+                                                                      ? AppAssets
+                                                                            .messageFailedSvg
+                                                                      : status?.isWatched ??
+                                                                            false
+                                                                      ? AppAssets
+                                                                            .messageReadArrowSvg
+                                                                      : status?.isReceived ==
+                                                                            1
+                                                                      ? AppAssets
+                                                                            .messageDeliveredArrowSvg
+                                                                      : AppAssets
+                                                                            .messageSentArrowSvg,
                                                                   width: 10.sp,
                                                                   height: 10.sp,
                                                                 );
                                                         } else
-                                                          return const SizedBox
-                                                              .shrink();
+                                                          return const SizedBox.shrink();
                                                       },
                                                     ),
                                                   const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 5)),
+                                                    padding: EdgeInsets.only(
+                                                      left: 5,
+                                                    ),
+                                                  ),
                                                   if ((widget.chat.messages
-                                                              ?.firstWhere((element) =>
-                                                                  element
-                                                                          .authMessageStatus!
-                                                                          .isDeleted ==
-                                                                      0 ||
-                                                                  element
-                                                                      .authMessageStatus!
-                                                                      .deleteForAll!)
+                                                              ?.firstWhere(
+                                                                (element) =>
+                                                                    element
+                                                                            .authMessageStatus!
+                                                                            .isDeleted ==
+                                                                        0 ||
+                                                                    element
+                                                                        .authMessageStatus!
+                                                                        .deleteForAll!,
+                                                              )
                                                               .mediaMessageContent
                                                               ?.isNotEmpty ??
                                                           false) ||
                                                       (widget.chat.messages
-                                                              ?.firstWhere((element) =>
-                                                                  element.authMessageStatus!
-                                                                          .isDeleted ==
-                                                                      0 ||
-                                                                  element
-                                                                      .authMessageStatus!
-                                                                      .deleteForAll!)
+                                                              ?.firstWhere(
+                                                                (element) =>
+                                                                    element
+                                                                            .authMessageStatus!
+                                                                            .isDeleted ==
+                                                                        0 ||
+                                                                    element
+                                                                        .authMessageStatus!
+                                                                        .deleteForAll!,
+                                                              )
                                                               .file !=
                                                           null) ||
                                                       messageType.contains(
-                                                          'Call')) ...{
+                                                        'Call',
+                                                      )) ...{
                                                     isDeleteForAll
-                                                        ? const SizedBox
-                                                            .shrink()
+                                                        ? const SizedBox.shrink()
                                                         : SvgPicture.asset(
                                                             messageType ==
                                                                     'ImageMessage'
                                                                 ? AppAssets
-                                                                    .lastMessageImageSvg
+                                                                      .lastMessageImageSvg
                                                                 : messageType ==
-                                                                        'VideoMessage'
-                                                                    ? AppAssets
-                                                                        .lastMessageVideoSvg
-                                                                    : messageType ==
-                                                                            'FileMessage'
-                                                                        ? AppAssets
-                                                                            .documentSvg
-                                                                        : messageType ==
-                                                                                'VoiceCall'
-                                                                            ? AppAssets.missedCallInChatSvg
-                                                                            : messageType == 'VideoCall'
-                                                                                ? AppAssets.missedVideoCallInChatSvg
-                                                                                : AppAssets.lastMessageAudioSvg,
+                                                                      'VideoMessage'
+                                                                ? AppAssets
+                                                                      .lastMessageVideoSvg
+                                                                : messageType ==
+                                                                      'FileMessage'
+                                                                ? AppAssets
+                                                                      .documentSvg
+                                                                : messageType ==
+                                                                      'VoiceCall'
+                                                                ? AppAssets
+                                                                      .missedCallInChatSvg
+                                                                : messageType ==
+                                                                      'VideoCall'
+                                                                ? AppAssets
+                                                                      .missedVideoCallInChatSvg
+                                                                : AppAssets
+                                                                      .lastMessageAudioSvg,
                                                             width: 20.w,
                                                             height: 20.h,
                                                             // ignore: deprecated_member_use
-                                                            color: messageType
+                                                            color:
+                                                                messageType
                                                                     .contains(
-                                                                        'Call')
-                                                                ? colorScheme
-                                                                    .grey200
-                                                                    // ignore: deprecated_member_use
-                                                                    .withOpacity(
-                                                                        0.6)
+                                                                      'Call',
+                                                                    )
+                                                                ? colorScheme.grey200
+                                                                  // ignore: deprecated_member_use
+                                                                  .withOpacity(
+                                                                    0.6,
+                                                                  )
                                                                 : null,
                                                           ),
                                                     !isDeleteForAll
                                                         ? 10.horizontalSpace
-                                                        : const SizedBox
-                                                            .shrink(),
+                                                        : const SizedBox.shrink(),
                                                   },
                                                   Flexible(
                                                     flex: 2,
-                                                    child: deleteFromMyId &&
+                                                    child:
+                                                        deleteFromMyId &&
                                                             !isDeleteForAll
-                                                        ? const SizedBox
-                                                            .shrink()
+                                                        ? const SizedBox.shrink()
                                                         : MyTextWidget(
                                                             isDeleteForAll
                                                                 ? deleteFromMyId
-                                                                    ? LocaleKeys
-                                                                        .you_have_deleted_this_message
-                                                                        .tr()
-                                                                    : LocaleKeys
-                                                                        .this_message_has_been_deleted
-                                                                        .tr()
+                                                                      ? LocaleKeys
+                                                                            .you_have_deleted_this_message
+                                                                            .tr()
+                                                                      : LocaleKeys
+                                                                            .this_message_has_been_deleted
+                                                                            .tr()
                                                                 : messageType !=
-                                                                        'TextMessage'
-                                                                    ? messageType !=
-                                                                            'ShareProduct'
-                                                                        ? (messageType ==
+                                                                      'TextMessage'
+                                                                ? messageType !=
+                                                                          'ShareProduct'
+                                                                      ? (messageType ==
                                                                                 'ImageMessage'
                                                                             ? LocaleKeys.photo.tr()
-                                                                            : messageType == 'VideoMessage'
-                                                                                ? LocaleKeys.vvideo.tr()
-                                                                                : messageType == 'FileMessage'
-                                                                                    ? LocaleKeys.file.tr()
-                                                                                    : messageType == 'VoiceCall'
-                                                                                        ? LocaleKeys.voice_call.tr()
-                                                                                        : messageType == 'VideoCall'
-                                                                                            ? LocaleKeys.video_call.tr()
-                                                                                            : LocaleKeys.voice.tr())
-                                                                        : widget.chat.messages?.firstWhere((element) => element.authMessageStatus?.isDeleted == 0).shareProductContent?.productName ?? ""
-                                                                    : widget.chat.messages!.firstWhere((element) => element.authMessageStatus!.isDeleted == 0).messageContent!.content.toString(),
-                                                            maxLines: widget
+                                                                            : messageType ==
+                                                                                  'VideoMessage'
+                                                                            ? LocaleKeys.vvideo.tr()
+                                                                            : messageType ==
+                                                                                  'FileMessage'
+                                                                            ? LocaleKeys.file.tr()
+                                                                            : messageType ==
+                                                                                  'VoiceCall'
+                                                                            ? LocaleKeys.voice_call.tr()
+                                                                            : messageType ==
+                                                                                  'VideoCall'
+                                                                            ? LocaleKeys.video_call.tr()
+                                                                            : LocaleKeys.voice.tr())
+                                                                      : widget.chat.messages
+                                                                                ?.firstWhere(
+                                                                                  (
+                                                                                    element,
+                                                                                  ) =>
+                                                                                      element.authMessageStatus?.isDeleted ==
+                                                                                      0,
+                                                                                )
+                                                                                .shareProductContent
+                                                                                ?.productName ??
+                                                                            ""
+                                                                : widget
+                                                                      .chat
+                                                                      .messages!
+                                                                      .firstWhere(
+                                                                        (
+                                                                          element,
+                                                                        ) =>
+                                                                            element.authMessageStatus!.isDeleted ==
+                                                                            0,
+                                                                      )
+                                                                      .messageContent!
+                                                                      .content
+                                                                      .toString(),
+                                                            maxLines:
+                                                                widget
                                                                     .thereActivity
                                                                 ? 1
                                                                 : 3,
@@ -639,16 +746,17 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                 TextOverflow
                                                                     .ellipsis,
                                                             style: textTheme
-                                                                .titleSmall?.lr
+                                                                .titleSmall
+                                                                ?.lq
                                                                 .copyWith(
-                                                                    fontSize:
-                                                                        12,
-                                                                    height: 1.1,
-                                                                    color: colorScheme
-                                                                        .grey200),
+                                                                  fontSize: 12,
+                                                                  height: 1.1,
+                                                                  color: colorScheme
+                                                                      .grey200,
+                                                                ),
                                                           ),
                                                   ),
-                                                  const Spacer()
+                                                  const Spacer(),
                                                 ],
                                               ),
                                       ),
@@ -656,11 +764,13 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                     28.horizontalSpace,
                                     Row(
                                       children: [
-                                        if (((widget.chat
+                                        if (((widget
+                                                        .chat
                                                         .totalUnreadMessageCount ??
                                                     0)) >
                                                 0 &&
-                                            widget.chat
+                                            widget
+                                                    .chat
                                                     .totalUnreadMessageCount !=
                                                 null) ...{
                                           SvgPicture.asset(
@@ -670,35 +780,40 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                           ),
                                           10.horizontalSpace,
                                           MyTextWidget(
-                                            (widget.chat
+                                            (widget
+                                                    .chat
                                                     .totalUnreadMessageCount!)
                                                 .toString(),
                                             maxLines: 1,
-                                            style: textTheme.titleMedium?.rr
+                                            style: textTheme.titleMedium?.rq
                                                 .copyWith(
-                                                    color: const Color(
-                                                        0xff007CFF)),
+                                                  color: const Color(
+                                                    0xff007CFF,
+                                                  ),
+                                                ),
                                           ),
                                         },
                                         25.horizontalSpace,
                                         Transform(
                                           alignment: Alignment.center,
                                           transform: (Matrix4.identity()
+                                            // ignore: deprecated_member_use
                                             ..scale(
-                                                LanguageService.languageCode ==
-                                                        'ar'
-                                                    ? -1.0
-                                                    : 1.0,
-                                                1.0,
-                                                1.0)),
+                                              LanguageService.languageCode ==
+                                                      'ar'
+                                                  ? -1.0
+                                                  : 1.0,
+                                              1.0,
+                                              1.0,
+                                            )),
                                           child: SvgPicture.asset(
                                             AppAssets.forwardArrowRight,
                                             width: 3.w,
                                             height: 12.h,
                                           ),
-                                        )
+                                        ),
                                       ],
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -707,57 +822,57 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                   children: [
                                     MyTextWidget(
                                       widget.activityDescription!.substring(
-                                          0,
-                                          widget.activityDescription!.length -
-                                              3),
+                                        0,
+                                        widget.activityDescription!.length - 3,
+                                      ),
                                       maxLines: 1,
-                                      style: textTheme.titleMedium?.rr.copyWith(
-                                          color: const Color(0xff007CFF)),
+                                      style: textTheme.titleMedium?.rq.copyWith(
+                                        color: const Color(0xff007CFF),
+                                      ),
                                     ),
                                     8.horizontalSpace,
-//                                      Transform.translate(
-//                                        offset: const Offset(0, 1),
-//                                        child:
-//                                        ,
-//                                      )
+                                    //                                      Transform.translate(
+                                    //                                        offset: const Offset(0, 1),
+                                    //                                        child:
+                                    //                                        ,
+                                    //                                      )
                                     ValueListenableBuilder<int>(
-                                        valueListenable: typingIndicator,
-                                        builder: (context, activeIndex, _) {
-                                          return SizedBox(
-                                            width: 50.w,
-                                            height: 5.h,
-                                            child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: List.generate(
-                                                    6,
-                                                    (index) => Container(
-                                                          width: 5,
-                                                          height: 5,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            color: activeIndex ==
-                                                                    index
-                                                                ? const Color(
-                                                                    0xff007cff)
-                                                                : colorScheme
-                                                                    .white,
-                                                            border: Border.all(
-                                                                color: const Color(
-                                                                    0xff007cff)),
-                                                          ),
-                                                        ))),
-                                          );
-                                        })
+                                      valueListenable: typingIndicator,
+                                      builder: (context, activeIndex, _) {
+                                        return SizedBox(
+                                          width: 50.w,
+                                          height: 5.h,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: List.generate(
+                                              6,
+                                              (index) => Container(
+                                                width: 5,
+                                                height: 5,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: activeIndex == index
+                                                      ? const Color(0xff007cff)
+                                                      : colorScheme.white,
+                                                  border: Border.all(
+                                                    color: const Color(
+                                                      0xff007cff,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ],
-                                )
+                                ),
                               },
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -784,7 +899,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                         },
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -796,14 +911,14 @@ class _ChatCardState extends ThemeState<ChatCard> {
 }
 
 class SlidableActionWidget extends StatelessWidget {
-  const SlidableActionWidget(
-      {Key? key,
-      required this.backgroundColor,
-      required this.foregroundColor,
-      required this.iconUrl,
-      required this.onTap,
-      required this.text})
-      : super(key: key);
+  const SlidableActionWidget({
+    Key? key,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.iconUrl,
+    required this.onTap,
+    required this.text,
+  }) : super(key: key);
   final Color backgroundColor;
   final Color foregroundColor;
   final String iconUrl;
@@ -830,17 +945,14 @@ class SlidableActionWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SvgPicture.asset(
-                iconUrl,
-                width: 25.h,
-                height: 25.h,
-              ),
+              SvgPicture.asset(iconUrl, width: 25.h, height: 25.h),
               8.verticalSpace,
               MyTextWidget(
                 text,
-                style: context.textTheme.titleMedium?.rr
-                    .copyWith(color: foregroundColor),
-              )
+                style: context.textTheme.titleMedium?.rq.copyWith(
+                  color: foregroundColor,
+                ),
+              ),
             ],
           ),
         ),

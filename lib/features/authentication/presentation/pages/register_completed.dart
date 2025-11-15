@@ -37,11 +37,13 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
 
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Color(0xffBCFFDF),
-      statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Color(0xffBCFFDF),
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     super.didChangeDependencies();
   }
 
@@ -58,119 +60,121 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
         children: [
           Positioned(top: 50, left: 40, right: 40, child: logo),
           Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(),
-                SizedBox(
-                  height: 1.sh / 8,
-                ),
-                Padding(
-                  padding: HWEdgeInsets.only(left: 30.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: HWEdgeInsets.only(left: 4.0),
-                        child: MyTextWidget(LocaleKeys.hello.tr(),
-                            textAlign: TextAlign.start,
-                            style: textTheme.headlineMedium?.ba.copyWith(
-                                color: const Color(0xff5D5C5D), height: 1.25)),
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              SizedBox(height: 1.sh / 8),
+              Padding(
+                padding: HWEdgeInsets.only(left: 30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: HWEdgeInsets.only(left: 4.0),
+                      child: MyTextWidget(
+                        LocaleKeys.hello.tr(),
+                        textAlign: TextAlign.start,
+                        style: textTheme.headlineMedium?.bq.copyWith(
+                          color: const Color(0xff5D5C5D),
+                          height: 1.25,
+                        ),
                       ),
-                      const SizedBox(
-                        height: 17,
-                      ),
-                      Column(
-                        children: [
-                          MyTextWidget(',' + widget.userName,
-                              textAlign: TextAlign.start,
-                              style: textTheme.headlineMedium?.la.copyWith(
-                                color: const Color(0xff5D5C5D),
-                                letterSpacing: 0.3,
-                                height: 0.67,
-                              )),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          MyTextWidget(LocaleKeys.enjoy_with_our_services.tr(),
-                              textAlign: TextAlign.center,
-                              style: textTheme.bodyMedium?.la.copyWith(
-                                  color: const Color(0xff5D5C5D),
-                                  height: 1.25)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                MyTextWidget(LocaleKeys.we_recommend.tr(),
-                    textAlign: TextAlign.center,
-                    style: textTheme.titleLarge?.la.copyWith(
-                      color: const Color(0xff5D5C5D),
-                      letterSpacing: 0.14,
-                      height: 1.43,
-                    )),
-                const SizedBox(
-                  height: 10,
-                ),
-                InkWell(
-                  onTap: () {
-                    context.go(GRouter.config.applicationRoutes.kBasePage);
-                    Future.delayed(const Duration(milliseconds: 300),
-                        () => appBloc.add(ChangeBasePage(3)));
-                  },
-                  child: Container(
-                    width: 1.sw,
-                    height: 60,
-                    margin: HWEdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffF4FFF4),
-                      borderRadius: BorderRadius.circular(20.0),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    const SizedBox(height: 17),
+                    Column(
                       children: [
                         MyTextWidget(
-                          LocaleKeys.complete_my_profile.tr(),
-                          style: textTheme.displayMedium?.ra.copyWith(
+                          ',' + widget.userName,
+                          textAlign: TextAlign.start,
+                          style: textTheme.headlineMedium?.lq.copyWith(
                             color: const Color(0xff5D5C5D),
-                            letterSpacing: 0.16,
+                            letterSpacing: 0.3,
+                            height: 0.67,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        MyTextWidget(
+                          LocaleKeys.enjoy_with_our_services.tr(),
+                          textAlign: TextAlign.center,
+                          style: textTheme.bodyMedium?.lq.copyWith(
+                            color: const Color(0xff5D5C5D),
                             height: 1.25,
                           ),
                         ),
                       ],
                     ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              MyTextWidget(
+                LocaleKeys.we_recommend.tr(),
+                textAlign: TextAlign.center,
+                style: textTheme.titleLarge?.lq.copyWith(
+                  color: const Color(0xff5D5C5D),
+                  letterSpacing: 0.14,
+                  height: 1.43,
+                ),
+              ),
+              const SizedBox(height: 10),
+              InkWell(
+                onTap: () {
+                  context.go(GRouter.config.applicationRoutes.kBasePage);
+                  Future.delayed(
+                    const Duration(milliseconds: 300),
+                    () => appBloc.add(ChangeBasePage(3)),
+                  );
+                },
+                child: Container(
+                  width: 1.sw,
+                  height: 60,
+                  margin: HWEdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffF4FFF4),
+                    borderRadius: BorderRadius.circular(20.0),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  key: TestVariables.kTestMode
-                      ? const Key(WidgetsKeys.skipForNowKey)
-                      : null,
-                  focusColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  onTap: () {
-                    context.go(GRouter.config.applicationRoutes.kBasePage);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: MyTextWidget(
-                      LocaleKeys.skip_for_now.tr(),
-                      style: textTheme.titleLarge?.ra.copyWith(
-                        color: const Color(0xff4d84ff),
-                        letterSpacing: 0.14,
-                        height: 1.43,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      MyTextWidget(
+                        LocaleKeys.complete_my_profile.tr(),
+                        style: textTheme.displayMedium?.rq.copyWith(
+                          color: const Color(0xff5D5C5D),
+                          letterSpacing: 0.16,
+                          height: 1.25,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  height: 44,
+              ),
+              const SizedBox(height: 20),
+              InkWell(
+                key: TestVariables.kTestMode
+                    ? const Key(WidgetsKeys.skipForNowKey)
+                    : null,
+                focusColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: () {
+                  context.go(GRouter.config.applicationRoutes.kBasePage);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: MyTextWidget(
+                    LocaleKeys.skip_for_now.tr(),
+                    style: textTheme.titleLarge?.rq.copyWith(
+                      color: const Color(0xff4d84ff),
+                      letterSpacing: 0.14,
+                      height: 1.43,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ]),
+              ),
+              const SizedBox(height: 44),
+            ],
+          ),
         ],
       ),
     );

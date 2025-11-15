@@ -78,15 +78,15 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<StartingSettingsResponseModel> getStartingSettings =
         GetClient<StartingSettingsResponseModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<StartingSettingsResponseModel>(
-        endpoint: MarketEndPoints.getStartingSettingsEP,
-        response: ResponseValue<StartingSettingsResponseModel>(
-          fromJson: (response) =>
-              StartingSettingsResponseModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<StartingSettingsResponseModel>(
+            endpoint: MarketEndPoints.getStartingSettingsEP,
+            response: ResponseValue<StartingSettingsResponseModel>(
+              fromJson: (response) =>
+                  StartingSettingsResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return getStartingSettings();
   }
 
@@ -96,14 +96,14 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<GetProvincesByIsoModel> getProvincesByIso =
         GetClient<GetProvincesByIsoModel>(
-      serverName: ServerName.elastic,
-      requestPrams: RequestConfig<GetProvincesByIsoModel>(
-        endpoint: ElasticEndPoints.getProvincesByIsoEP,
-        response: ResponseValue<GetProvincesByIsoModel>(
-          fromJson: (response) => GetProvincesByIsoModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.elastic,
+          requestPrams: RequestConfig<GetProvincesByIsoModel>(
+            endpoint: ElasticEndPoints.getProvincesByIsoEP,
+            response: ResponseValue<GetProvincesByIsoModel>(
+              fromJson: (response) => GetProvincesByIsoModel.fromJson(response),
+            ),
+          ),
+        );
     return getProvincesByIso();
   }
 
@@ -127,216 +127,283 @@ class HomeRemoteDatasource {
   Future<GetFqaCommentsModel> getFqaComments(Map<String, dynamic> params) {
     GetClient<GetFqaCommentsModel> getFqaComments =
         GetClient<GetFqaCommentsModel>(
-      serverName: ServerName.comment,
-      requestPrams: RequestConfig<GetFqaCommentsModel>(
-        endpoint: WebAppEndPoints.getFqaCommentsEP,
-        queryParameters: params,
-        response: ResponseValue<GetFqaCommentsModel>(
-          fromJson: (response) => GetFqaCommentsModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.comment,
+          requestPrams: RequestConfig<GetFqaCommentsModel>(
+            endpoint: WebAppEndPoints.getFqaCommentsEP,
+            queryParameters: params,
+            response: ResponseValue<GetFqaCommentsModel>(
+              fromJson: (response) => GetFqaCommentsModel.fromJson(response),
+            ),
+          ),
+        );
     return getFqaComments();
   }
 
   Future<GetBuyersCommentsModel> getBuyersComments(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<GetBuyersCommentsModel> getBuyersComments =
         GetClient<GetBuyersCommentsModel>(
-      serverName: ServerName.comment,
-      requestPrams: RequestConfig<GetBuyersCommentsModel>(
-        endpoint: WebAppEndPoints.getBuyersCommentsEP,
-        queryParameters: params,
-        response: ResponseValue<GetBuyersCommentsModel>(
-          fromJson: (response) => GetBuyersCommentsModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.comment,
+          requestPrams: RequestConfig<GetBuyersCommentsModel>(
+            endpoint: WebAppEndPoints.getBuyersCommentsEP,
+            queryParameters: params,
+            response: ResponseValue<GetBuyersCommentsModel>(
+              fromJson: (response) => GetBuyersCommentsModel.fromJson(response),
+            ),
+          ),
+        );
     return getBuyersComments();
   }
 
   Future<order_rating.GetOrderRatingFromAnalyticsModel> getOrderRating(
-      Map<String, dynamic> params) {
-    PostClient<order_rating.GetOrderRatingFromAnalyticsModel> getOrderRating =
-        PostClient<order_rating.GetOrderRatingFromAnalyticsModel>(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<order_rating.GetOrderRatingFromAnalyticsModel>
+    getOrderRating = PostClient<order_rating.GetOrderRatingFromAnalyticsModel>(
       serverName: ServerName.comment,
       requestPrams:
           RequestConfig<order_rating.GetOrderRatingFromAnalyticsModel>(
-        endpoint: WebAppEndPoints.getOrderRatingEP,
-        data: params,
-        response: ResponseValue<order_rating.GetOrderRatingFromAnalyticsModel>(
-            fromJson: (response) =>
-                order_rating.GetOrderRatingFromAnalyticsModel.fromJson(
-                    response)),
-      ),
+            endpoint: WebAppEndPoints.getOrderRatingEP,
+            data: params,
+            response:
+                ResponseValue<order_rating.GetOrderRatingFromAnalyticsModel>(
+                  fromJson: (response) =>
+                      order_rating.GetOrderRatingFromAnalyticsModel.fromJson(
+                        response,
+                      ),
+                ),
+          ),
     );
     return getOrderRating();
   }
 
   Future<CreateFqaCommentsModel> createOrderCommentRating(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<CreateFqaCommentsModel> createOrderRating =
         PostClient<CreateFqaCommentsModel>(
-      serverName: ServerName.get_comment_token,
-      requestPrams: RequestConfig<CreateFqaCommentsModel>(
-        endpoint: WebAppEndPoints.createOrderRatingEP,
-        data: params,
-        response: ResponseValue<CreateFqaCommentsModel>(
-            fromJson: (response) => CreateFqaCommentsModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.get_comment_token,
+          requestPrams: RequestConfig<CreateFqaCommentsModel>(
+            endpoint: WebAppEndPoints.createOrderRatingEP,
+            data: params,
+            response: ResponseValue<CreateFqaCommentsModel>(
+              fromJson: (response) => CreateFqaCommentsModel.fromJson(response),
+            ),
+          ),
+        );
     return createOrderRating();
   }
 
   Future<ResponseOnlyMessageModel> updateOrderCommentRating(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PutClient<ResponseOnlyMessageModel> updateOrderCommentRating =
         PutClient<ResponseOnlyMessageModel>(
-      serverName: ServerName.get_comment_token,
-      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
-        endpoint: WebAppEndPoints.updateOrderRatingEP(params['id']),
-        data: params,
-        response: ResponseValue<ResponseOnlyMessageModel>(
-            fromJson: (response) =>
-                ResponseOnlyMessageModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.get_comment_token,
+          requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+            endpoint: WebAppEndPoints.updateOrderRatingEP(params['id']),
+            data: params,
+            response: ResponseValue<ResponseOnlyMessageModel>(
+              fromJson: (response) =>
+                  ResponseOnlyMessageModel.fromJson(response),
+            ),
+          ),
+        );
     return updateOrderCommentRating();
   }
 
   Future<ResponseOnlyMessageModel> deleteOrderCommentRating(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     DeleteClient<ResponseOnlyMessageModel> deleteOrderCommentRating =
         DeleteClient<ResponseOnlyMessageModel>(
-      serverName: ServerName.get_comment_token,
-      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
-        endpoint: WebAppEndPoints.deleteOrderRatingEP(params['id']),
-        response: ResponseValue<ResponseOnlyMessageModel>(
-            fromJson: (response) =>
-                ResponseOnlyMessageModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.get_comment_token,
+          requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+            endpoint: WebAppEndPoints.deleteOrderRatingEP(params['id']),
+            response: ResponseValue<ResponseOnlyMessageModel>(
+              fromJson: (response) =>
+                  ResponseOnlyMessageModel.fromJson(response),
+            ),
+          ),
+        );
     return deleteOrderCommentRating();
   }
 
   Future<OrderCommentModel> addOrderComment(Map<String, dynamic> params) {
     PostClient<OrderCommentModel> addOrderComment =
         PostClient<OrderCommentModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<OrderCommentModel>(
-        endpoint: MarketEndPoints.addOrderCommentEP,
-        data: params,
-        response: ResponseValue<OrderCommentModel>(
-            fromJson: (response) => OrderCommentModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<OrderCommentModel>(
+            endpoint: MarketEndPoints.addOrderCommentEP,
+            data: params,
+            response: ResponseValue<OrderCommentModel>(
+              fromJson: (response) => OrderCommentModel.fromJson(response),
+            ),
+          ),
+        );
     return addOrderComment();
   }
 
   Future<OrderCommentModel> updateOrderComment(Map<String, dynamic> params) {
     PostClient<OrderCommentModel> updateOrderComment =
         PostClient<OrderCommentModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<OrderCommentModel>(
-        endpoint: MarketEndPoints.updateOrderCommentEP,
-        data: params,
-        response: ResponseValue<OrderCommentModel>(
-            fromJson: (response) => OrderCommentModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<OrderCommentModel>(
+            endpoint: MarketEndPoints.updateOrderCommentEP,
+            data: params,
+            response: ResponseValue<OrderCommentModel>(
+              fromJson: (response) => OrderCommentModel.fromJson(response),
+            ),
+          ),
+        );
     return updateOrderComment();
+  }
+
+  Future<ResponseOnlyMessageModel> updateLikeComment(
+    Map<String, dynamic> params,
+  ) {
+    bool toLike = params["to_like"];
+    Map<String, dynamic> param = params;
+    param.removeWhere((key, value) => key == "to_like");
+    if (toLike) {
+      PostClient<ResponseOnlyMessageModel> updateLikeComment =
+          PostClient<ResponseOnlyMessageModel>(
+            serverName: ServerName.get_comment_token,
+            requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+              endpoint: toLike
+                  ? WebAppEndPoints.addLikeCommentEP
+                  : WebAppEndPoints.removeLikeCommentEP,
+              data: param,
+              response: ResponseValue<ResponseOnlyMessageModel>(
+                fromJson: (response) =>
+                    ResponseOnlyMessageModel.fromJson(response),
+              ),
+            ),
+          );
+      return updateLikeComment();
+    } else {
+      DeleteClient<ResponseOnlyMessageModel> updateLikeComment =
+          DeleteClient<ResponseOnlyMessageModel>(
+            serverName: ServerName.get_comment_token,
+            requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+              endpoint: toLike
+                  ? WebAppEndPoints.addLikeCommentEP
+                  : WebAppEndPoints.removeLikeCommentEP,
+              data: param,
+              response: ResponseValue<ResponseOnlyMessageModel>(
+                fromJson: (response) =>
+                    ResponseOnlyMessageModel.fromJson(response),
+              ),
+            ),
+          );
+      return updateLikeComment();
+    }
   }
 
   Future<CountryBoundaryByIsoModel> getCountryBoundaryByIso(String iso) {
     GetClient<CountryBoundaryByIsoModel> getCountryBoundaryByIso =
         GetClient<CountryBoundaryByIsoModel>(
-      serverName: ServerName.elastic,
-      requestPrams: RequestConfig<CountryBoundaryByIsoModel>(
-        endpoint: ElasticEndPoints.countryBoundaryByIsoEP(iso),
-        response: ResponseValue<CountryBoundaryByIsoModel>(
-          fromJson: (response) => CountryBoundaryByIsoModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.elastic,
+          requestPrams: RequestConfig<CountryBoundaryByIsoModel>(
+            endpoint: ElasticEndPoints.countryBoundaryByIsoEP(iso),
+            response: ResponseValue<CountryBoundaryByIsoModel>(
+              fromJson: (response) =>
+                  CountryBoundaryByIsoModel.fromJson(response),
+            ),
+          ),
+        );
     return getCountryBoundaryByIso();
   }
 
   Future<GetProductDetailWithoutRelatedProductsModel>
-      getProductDetailWithoutRelatedProducts(String productSlug) {
+  getProductDetailWithoutRelatedProducts(String productSlug) {
     GetClient<GetProductDetailWithoutRelatedProductsModel>
-        getProductDetailWithoutRelatedProducts =
+    getProductDetailWithoutRelatedProducts =
         GetClient<GetProductDetailWithoutRelatedProductsModel>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
-        endpoint: WebAppEndPoints.productDetailsEP(productSlug),
-        response: ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
-            fromJson: (response) {
-          return GetProductDetailWithoutRelatedProductsModel.fromJson(response);
-        }),
-      ),
-    );
+          serverName: ServerName.webApp,
+
+          requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
+            endpoint: WebAppEndPoints.productDetailsEP(productSlug),
+            queryParameters: {"user_id": GetIt.I<PrefsRepository>().myMarketId},
+            response:
+                ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
+                  fromJson: (response) {
+                    return GetProductDetailWithoutRelatedProductsModel.fromJson(
+                      response,
+                    );
+                  },
+                ),
+          ),
+        );
     return getProductDetailWithoutRelatedProducts();
   }
 
   Future<ReadOnlyMessageFromApiModel> updateLikeSocialSharedProducts(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<ReadOnlyMessageFromApiModel> updateLikeSocialSharedProducts =
         GetClient<ReadOnlyMessageFromApiModel>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-        queryParameters: params,
-        endpoint: WebAppEndPoints.editSocialProductEP,
-        response:
-            ResponseValue<ReadOnlyMessageFromApiModel>(fromJson: (response) {
-          return ReadOnlyMessageFromApiModel.fromJson(response);
-        }),
-      ),
-    );
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            queryParameters: params,
+            endpoint: WebAppEndPoints.editSocialProductEP,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) {
+                return ReadOnlyMessageFromApiModel.fromJson(response);
+              },
+            ),
+          ),
+        );
     return updateLikeSocialSharedProducts();
   }
 
   Future<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch() {
     GetClient<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch =
         GetClient<GeColorsAndSizesForSearchModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GeColorsAndSizesForSearchModel>(
-        endpoint: MarketEndPoints.getColorsAndSizesForSearchEP,
-        response:
-            ResponseValue<GeColorsAndSizesForSearchModel>(fromJson: (response) {
-          return GeColorsAndSizesForSearchModel.fromJson(response);
-        }),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GeColorsAndSizesForSearchModel>(
+            endpoint: MarketEndPoints.getColorsAndSizesForSearchEP,
+            response: ResponseValue<GeColorsAndSizesForSearchModel>(
+              fromJson: (response) {
+                return GeColorsAndSizesForSearchModel.fromJson(response);
+              },
+            ),
+          ),
+        );
     return getColorsAndSizesForSearch();
   }
 
   Future<GetFullProductDetailsModel> getFullProductDetails(String productSlug) {
     GetClient<GetFullProductDetailsModel> getFullProductDetails =
         GetClient<GetFullProductDetailsModel>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<GetFullProductDetailsModel>(
-        endpoint: WebAppEndPoints.productDetailsEP(productSlug),
-        response:
-            ResponseValue<GetFullProductDetailsModel>(fromJson: (response) {
-          return GetFullProductDetailsModel.fromJson(response);
-        }),
-      ),
-    );
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<GetFullProductDetailsModel>(
+            endpoint: WebAppEndPoints.productDetailsEP(productSlug),
+            queryParameters: {"user_id": GetIt.I<PrefsRepository>().myMarketId},
+            response: ResponseValue<GetFullProductDetailsModel>(
+              fromJson: (response) {
+                return GetFullProductDetailsModel.fromJson(response);
+              },
+            ),
+          ),
+        );
     return getFullProductDetails();
   }
 
   Future<NotificationTypeForProductModel> getNotificationTypeForProduct() {
     GetClient<NotificationTypeForProductModel> getNotificationTypeForProduct =
         GetClient<NotificationTypeForProductModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<NotificationTypeForProductModel>(
-        endpoint: MarketEndPoints.getNotificationTypeForProductEP,
-        response: ResponseValue<NotificationTypeForProductModel>(
-            fromJson: (response) {
-          return NotificationTypeForProductModel.fromJson(response);
-        }),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<NotificationTypeForProductModel>(
+            endpoint: MarketEndPoints.getNotificationTypeForProductEP,
+            response: ResponseValue<NotificationTypeForProductModel>(
+              fromJson: (response) {
+                return NotificationTypeForProductModel.fromJson(response);
+              },
+            ),
+          ),
+        );
     return getNotificationTypeForProduct();
   }
 
@@ -357,70 +424,77 @@ class HomeRemoteDatasource {
   }*/
 
   Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters =
         PostClient<GetProductListingWithoutFiltersModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetProductListingWithoutFiltersModel>(
-        endpoint: MarketEndPoints.getProductListingWithoutFiltersEP,
-        data: params,
-        response: ResponseValue<GetProductListingWithoutFiltersModel>(
-            fromJson: (response) =>
-                GetProductListingWithoutFiltersModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetProductListingWithoutFiltersModel>(
+            endpoint: MarketEndPoints.getProductListingWithoutFiltersEP,
+            data: params,
+            response: ResponseValue<GetProductListingWithoutFiltersModel>(
+              fromJson: (response) =>
+                  GetProductListingWithoutFiltersModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getProductsWithoutFilters();
   }
 
   Future<ResponseOnlyMessageModel> deleteCustomerAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ResponseOnlyMessageModel> deleteCustomerAddress =
         PostClient<ResponseOnlyMessageModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
-        endpoint: MarketEndPoints.deleteCustomerAddressEP,
-        data: params,
-        response: ResponseValue<ResponseOnlyMessageModel>(
-            fromJson: (response) =>
-                ResponseOnlyMessageModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+            endpoint: MarketEndPoints.deleteCustomerAddressEP,
+            data: params,
+            response: ResponseValue<ResponseOnlyMessageModel>(
+              fromJson: (response) =>
+                  ResponseOnlyMessageModel.fromJson(response),
+            ),
+          ),
+        );
 
     return deleteCustomerAddress();
   }
 
   Future<ResponseOnlyMessageModel> addCustomerAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ResponseOnlyMessageModel> addCustomerAddress =
         PostClient<ResponseOnlyMessageModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
-        endpoint: MarketEndPoints.addCustomerAddressEP,
-        data: params,
-        response: ResponseValue<ResponseOnlyMessageModel>(
-            fromJson: (response) =>
-                ResponseOnlyMessageModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+            endpoint: MarketEndPoints.addCustomerAddressEP,
+            data: params,
+            response: ResponseValue<ResponseOnlyMessageModel>(
+              fromJson: (response) =>
+                  ResponseOnlyMessageModel.fromJson(response),
+            ),
+          ),
+        );
 
     return addCustomerAddress();
   }
 
   Future<FirebaseSettingForNotificationModel>
-      changeCountryLanguageFornotification(Map<String, dynamic> params) {
+  changeCountryLanguageFornotification(Map<String, dynamic> params) {
     PostClient<FirebaseSettingForNotificationModel>
-        changeCountryLanguageFornotification =
+    changeCountryLanguageFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.changeCountryLanguageEP,
-        data: params,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) =>
-                FirebaseSettingForNotificationModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.changeCountryLanguageEP,
+            data: params,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) =>
+                  FirebaseSettingForNotificationModel.fromJson(response),
+            ),
+          ),
+        );
 
     return changeCountryLanguageFornotification();
   }
@@ -428,136 +502,151 @@ class HomeRemoteDatasource {
   Future<FirebaseSettingForNotificationModel> getMyFirebaseSettings() {
     GetClient<FirebaseSettingForNotificationModel> getMyFirebaseSettings =
         GetClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.getMyFirebaseSettingsEP,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) {
-          return FirebaseSettingForNotificationModel.fromJson(response);
-        }),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.getMyFirebaseSettingsEP,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) {
+                return FirebaseSettingForNotificationModel.fromJson(response);
+              },
+            ),
+          ),
+        );
     return getMyFirebaseSettings();
   }
 
   Future<FirebaseSettingForNotificationModel> updateWhatsappNotification(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<FirebaseSettingForNotificationModel> updateWhatsappNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.updateWhatsappEP,
-        data: params,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) =>
-                FirebaseSettingForNotificationModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.updateWhatsappEP,
+            data: params,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) =>
+                  FirebaseSettingForNotificationModel.fromJson(response),
+            ),
+          ),
+        );
 
     return updateWhatsappNotification();
   }
 
   Future<FirebaseSettingForNotificationModel> updateFirebaseNotification(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<FirebaseSettingForNotificationModel> updateFirebaseNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.updateFirebaseEP,
-        data: params,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) =>
-                FirebaseSettingForNotificationModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.updateFirebaseEP,
+            data: params,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) =>
+                  FirebaseSettingForNotificationModel.fromJson(response),
+            ),
+          ),
+        );
 
     return updateFirebaseNotification();
   }
 
   Future<FirebaseSettingForNotificationModel> updateEmailNotification(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<FirebaseSettingForNotificationModel> updateEmailNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.updateEmailEP,
-        data: params,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) =>
-                FirebaseSettingForNotificationModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.updateEmailEP,
+            data: params,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) =>
+                  FirebaseSettingForNotificationModel.fromJson(response),
+            ),
+          ),
+        );
 
     return updateEmailNotification();
   }
 
   Future<FirebaseSettingForNotificationModel> updateNotificationFrequency(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<FirebaseSettingForNotificationModel>
-        updateNotificationFrequency =
+    updateNotificationFrequency =
         PostClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.updateNotificationFrequencyEP,
-        data: params,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) =>
-                FirebaseSettingForNotificationModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.updateNotificationFrequencyEP,
+            data: params,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) =>
+                  FirebaseSettingForNotificationModel.fromJson(response),
+            ),
+          ),
+        );
 
     return updateNotificationFrequency();
   }
 
   Future<FirebaseSettingForNotificationModel> unSubscribeTopicFornotification(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<FirebaseSettingForNotificationModel>
-        unSubscribeTopicFornotification =
+    unSubscribeTopicFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.unsubscribeTopicEP,
-        data: params,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) =>
-                FirebaseSettingForNotificationModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.unsubscribeTopicEP,
+            data: params,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) =>
+                  FirebaseSettingForNotificationModel.fromJson(response),
+            ),
+          ),
+        );
 
     return unSubscribeTopicFornotification();
   }
 
   Future<FirebaseSettingForNotificationModel> subscribeTopicFornotification(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<FirebaseSettingForNotificationModel>
-        subscribeTopicFornotification =
+    subscribeTopicFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-        endpoint: MarketEndPoints.subscribeTopicEP,
-        data: params,
-        response: ResponseValue<FirebaseSettingForNotificationModel>(
-            fromJson: (response) =>
-                FirebaseSettingForNotificationModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+            endpoint: MarketEndPoints.subscribeTopicEP,
+            data: params,
+            response: ResponseValue<FirebaseSettingForNotificationModel>(
+              fromJson: (response) =>
+                  FirebaseSettingForNotificationModel.fromJson(response),
+            ),
+          ),
+        );
 
     return subscribeTopicFornotification();
   }
 
   Future<ResponseOnlyMessageModel> updateCustomerAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ResponseOnlyMessageModel> updateCustomerAddress =
         PostClient<ResponseOnlyMessageModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
-        endpoint: MarketEndPoints.updateCustomerAddressEP,
-        data: params,
-        response: ResponseValue<ResponseOnlyMessageModel>(
-            fromJson: (response) =>
-                ResponseOnlyMessageModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+            endpoint: MarketEndPoints.updateCustomerAddressEP,
+            data: params,
+            response: ResponseValue<ResponseOnlyMessageModel>(
+              fromJson: (response) =>
+                  ResponseOnlyMessageModel.fromJson(response),
+            ),
+          ),
+        );
 
     return updateCustomerAddress();
   }
@@ -589,164 +678,178 @@ class HomeRemoteDatasource {
   }
 */
   Future<MainCategoriesResponseModel> getMainCategories(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     ///// for test /////
     TestVariables.getMainCategoriesFlag = true;
     TestVariables.getMainCategoriesRequestCountFlag++;
     ////////////////////
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
-      serverName: ServerName.webApp,
-      //ServerName.elastic,
-      requestPrams: RequestConfig<MainCategoriesResponseModel>(
-        endpoint: WebAppEndPoints.mainCategoriesEP,
-        //ElasticEndPoints.getMainCategoriesEP,
-        // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
-        response: ResponseValue<MainCategoriesResponseModel>(
-            fromJson: (response) =>
-                MainCategoriesResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.webApp,
+          //ServerName.elastic,
+          requestPrams: RequestConfig<MainCategoriesResponseModel>(
+            endpoint: WebAppEndPoints.mainCategoriesEP,
+            //ElasticEndPoints.getMainCategoriesEP,
+            // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
+            response: ResponseValue<MainCategoriesResponseModel>(
+              fromJson: (response) =>
+                  MainCategoriesResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return getMainCategories();
   }
 
   Future<GetCurrencyForCountryModel> getCurrencyForCountry() {
     GetClient<GetCurrencyForCountryModel> getCurrencyForCountry =
         GetClient<GetCurrencyForCountryModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetCurrencyForCountryModel>(
-        endpoint: MarketEndPoints.getCurrencyEP,
-        queryParameters: {
-          "country": (GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-              ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-              : GetIt.I<PrefsRepository>().countryIso),
-          "lang": (LanguageService.languageCode == 'ar'
-              ? LanguageService.isKurdish
-                  ? "ku"
-                  : 'ar'
-              : LanguageService.languageCode)
-        },
-        response: ResponseValue<GetCurrencyForCountryModel>(
-            fromJson: (response) =>
-                GetCurrencyForCountryModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetCurrencyForCountryModel>(
+            endpoint: MarketEndPoints.getCurrencyEP,
+            queryParameters: {
+              "country": (GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+                  ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+                  : GetIt.I<PrefsRepository>().countryIso),
+              "lang": (LanguageService.languageCode == 'ar'
+                  ? LanguageService.isKurdish
+                        ? "ku"
+                        : 'ar'
+                  : LanguageService.languageCode),
+            },
+            response: ResponseValue<GetCurrencyForCountryModel>(
+              fromJson: (response) =>
+                  GetCurrencyForCountryModel.fromJson(response),
+            ),
+          ),
+        );
     return getCurrencyForCountry();
   }
 
   Future<UpdateProfileModel> updateProfile(Map<String, dynamic> params) {
     PostClient<UpdateProfileModel> updateProfile =
         PostClient<UpdateProfileModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<UpdateProfileModel>(
-        endpoint: MarketEndPoints.updateProfileEP,
-        data: params,
-        response: ResponseValue<UpdateProfileModel>(
-            fromJson: (response) => UpdateProfileModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<UpdateProfileModel>(
+            endpoint: MarketEndPoints.updateProfileEP,
+            data: params,
+            response: ResponseValue<UpdateProfileModel>(
+              fromJson: (response) => UpdateProfileModel.fromJson(response),
+            ),
+          ),
+        );
     return updateProfile();
   }
 
   Future<UploadUserPhotoModel> uploadUserPhoto(Map<String, dynamic> params) {
     PostClient<UploadUserPhotoModel> uploadUserPhoto =
         PostClient<UploadUserPhotoModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<UploadUserPhotoModel>(
-        endpoint: MarketEndPoints.uploadUserPhotoModelEP,
-        data: params['data'],
-        response: ResponseValue<UploadUserPhotoModel>(
-            fromJson: (response) => UploadUserPhotoModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<UploadUserPhotoModel>(
+            endpoint: MarketEndPoints.uploadUserPhotoModelEP,
+            data: params['data'],
+            response: ResponseValue<UploadUserPhotoModel>(
+              fromJson: (response) => UploadUserPhotoModel.fromJson(response),
+            ),
+          ),
+        );
     return uploadUserPhoto();
   }
 
   Future<GetListOfCustomerAddressesInfoModel> getCustomerAddresses() {
     GetClient<GetListOfCustomerAddressesInfoModel> getCustomerAddresses =
         GetClient<GetListOfCustomerAddressesInfoModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetListOfCustomerAddressesInfoModel>(
-        endpoint: MarketEndPoints.getCustomerAddressesEP,
-        response: ResponseValue<GetListOfCustomerAddressesInfoModel>(
-            fromJson: (response) =>
-                GetListOfCustomerAddressesInfoModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetListOfCustomerAddressesInfoModel>(
+            endpoint: MarketEndPoints.getCustomerAddressesEP,
+            response: ResponseValue<GetListOfCustomerAddressesInfoModel>(
+              fromJson: (response) =>
+                  GetListOfCustomerAddressesInfoModel.fromJson(response),
+            ),
+          ),
+        );
     return getCustomerAddresses();
   }
 
   Future<GetProductFiltersModel> getProductFilters(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<GetProductFiltersModel> getProductFilters =
         GetClient<GetProductFiltersModel>(
-      /*  serverName: ServerName.market,
+          /*  serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
         endpoint: MarketEndPoints.getProductFiltersEP,*/
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<GetProductFiltersModel>(
-        endpoint: WebAppEndPoints.searchProductEP,
-        queryParameters: params,
-        response: ResponseValue<GetProductFiltersModel>(
-            fromJson: (response) => GetProductFiltersModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<GetProductFiltersModel>(
+            endpoint: WebAppEndPoints.searchProductEP,
+            queryParameters: params,
+            response: ResponseValue<GetProductFiltersModel>(
+              fromJson: (response) => GetProductFiltersModel.fromJson(response),
+            ),
+          ),
+        );
     return getProductFilters();
   }
 
   Future<GetProductListingWithFiltersModel> getProductsWithFilters(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<GetProductListingWithFiltersModel> getProductsWithFilters =
         GetClient<GetProductListingWithFiltersModel>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-        endpoint: WebAppEndPoints.searchProductEP,
-        /*serverName: ServerName.market,
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+            endpoint: WebAppEndPoints.searchProductEP,
+            /*serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
-        queryParameters: params,
-        response: ResponseValue<GetProductListingWithFiltersModel>(
-            fromJson: (response) =>
-                GetProductListingWithFiltersModel.fromJson(response)),
-      ),
-    );
+            queryParameters: params,
+            response: ResponseValue<GetProductListingWithFiltersModel>(
+              fromJson: (response) =>
+                  GetProductListingWithFiltersModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getProductsWithFilters();
   }
 
   Future<GetProductListingWithFiltersModel> getFeaturedProducts(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<GetProductListingWithFiltersModel> getFeaturedProducts =
         GetClient<GetProductListingWithFiltersModel>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-        endpoint: WebAppEndPoints.productFeaturedEP,
-        /*serverName: ServerName.market,
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+            endpoint: WebAppEndPoints.productFeaturedEP,
+            /*serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
-        queryParameters: params,
-        response: ResponseValue<GetProductListingWithFiltersModel>(
-            fromJson: (response) =>
-                GetProductListingWithFiltersModel.fromJson(response)),
-      ),
-    );
+            queryParameters: params,
+            response: ResponseValue<GetProductListingWithFiltersModel>(
+              fromJson: (response) =>
+                  GetProductListingWithFiltersModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getFeaturedProducts();
   }
 
   Future<GetProductListingWithFiltersModel> getRecommendedProducts(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<GetProductListingWithFiltersModel> getRecommendedProducts =
         GetClient<GetProductListingWithFiltersModel>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-        endpoint: WebAppEndPoints.productRecommendedEP,
-        queryParameters: params,
-        response: ResponseValue<GetProductListingWithFiltersModel>(
-            fromJson: (response) =>
-                GetProductListingWithFiltersModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+            endpoint: WebAppEndPoints.productRecommendedEP,
+            queryParameters: params,
+            response: ResponseValue<GetProductListingWithFiltersModel>(
+              fromJson: (response) =>
+                  GetProductListingWithFiltersModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getRecommendedProducts();
   }
@@ -780,13 +883,15 @@ class HomeRemoteDatasource {
   Future<GetStoryForProductModel> getStories(String productId) {
     GetClient<GetStoryForProductModel> getStories =
         GetClient<GetStoryForProductModel>(
-      serverName: ServerName.stories,
-      requestPrams: RequestConfig<GetStoryForProductModel>(
-        endpoint: StoriesEndPoints.getStoriesForProsuctEP(productId),
-        response: ResponseValue<GetStoryForProductModel>(
-            fromJson: (response) => GetStoryForProductModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.stories,
+          requestPrams: RequestConfig<GetStoryForProductModel>(
+            endpoint: StoriesEndPoints.getStoriesForProsuctEP(productId),
+            response: ResponseValue<GetStoryForProductModel>(
+              fromJson: (response) =>
+                  GetStoryForProductModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getStories();
   }
@@ -797,7 +902,8 @@ class HomeRemoteDatasource {
       requestPrams: RequestConfig<GetOldCartModel>(
         endpoint: MarketEndPoints.getOldCartItemsEP,
         response: ResponseValue<GetOldCartModel>(
-            fromJson: (response) => GetOldCartModel.fromJson(response)),
+          fromJson: (response) => GetOldCartModel.fromJson(response),
+        ),
       ),
     );
 
@@ -807,27 +913,30 @@ class HomeRemoteDatasource {
   Future<PopularSearchTermsModel> getPopularSearchTerms() {
     GetClient<PopularSearchTermsModel> getPopularSearchTerms =
         GetClient<PopularSearchTermsModel>(
-      serverName: ServerName.elastic,
-      requestPrams: RequestConfig<PopularSearchTermsModel>(
-        endpoint: ElasticEndPoints.getPopularSearchTermsEP,
-        response: ResponseValue<PopularSearchTermsModel>(
-            fromJson: (response) => PopularSearchTermsModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.elastic,
+          requestPrams: RequestConfig<PopularSearchTermsModel>(
+            endpoint: ElasticEndPoints.getPopularSearchTermsEP,
+            response: ResponseValue<PopularSearchTermsModel>(
+              fromJson: (response) =>
+                  PopularSearchTermsModel.fromJson(response),
+            ),
+          ),
+        );
     return getPopularSearchTerms();
   }
 
   Future<GetCartShippingItemsModel> getCartShippingItems() {
     GetClient<GetCartShippingItemsModel> getCartShippingItems =
         GetClient<GetCartShippingItemsModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetCartShippingItemsModel>(
-        endpoint: MarketEndPoints.getCartItemEP,
-        response: ResponseValue<GetCartShippingItemsModel>(
-            fromJson: (response) =>
-                GetCartShippingItemsModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetCartShippingItemsModel>(
+            endpoint: MarketEndPoints.getCartItemEP,
+            response: ResponseValue<GetCartShippingItemsModel>(
+              fromJson: (response) =>
+                  GetCartShippingItemsModel.fromJson(response),
+            ),
+          ),
+        );
     return getCartShippingItems();
   }
 
@@ -838,17 +947,18 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
-      serverName: ServerName.webApp,
-      //ServerName.elastic,
-      requestPrams: RequestConfig<GetHomeBoutiquesModel>(
-        endpoint: WebAppEndPoints.homeBoutiquesEP,
-        //ElasticEndPoints.getHomeBoutiquesEP,
-        // MarketEndPoints.getHomeBoutiqesEP,
-        queryParameters: params,
-        response: ResponseValue<GetHomeBoutiquesModel>(
-            fromJson: (response) => GetHomeBoutiquesModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.webApp,
+          //ServerName.elastic,
+          requestPrams: RequestConfig<GetHomeBoutiquesModel>(
+            endpoint: WebAppEndPoints.homeBoutiquesEP,
+            //ElasticEndPoints.getHomeBoutiquesEP,
+            // MarketEndPoints.getHomeBoutiqesEP,
+            queryParameters: params,
+            response: ResponseValue<GetHomeBoutiquesModel>(
+              fromJson: (response) => GetHomeBoutiquesModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getHomeBoutiques();
   }
@@ -856,28 +966,30 @@ class HomeRemoteDatasource {
   Future<ListOfProductsFoundedInCartModel> getProductsListInCart() {
     GetClient<ListOfProductsFoundedInCartModel> getProductsListInCart =
         GetClient<ListOfProductsFoundedInCartModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ListOfProductsFoundedInCartModel>(
-        endpoint: MarketEndPoints.getProductListInCartEP,
-        response: ResponseValue<ListOfProductsFoundedInCartModel>(
-            fromJson: (response) =>
-                ListOfProductsFoundedInCartModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ListOfProductsFoundedInCartModel>(
+            endpoint: MarketEndPoints.getProductListInCartEP,
+            response: ResponseValue<ListOfProductsFoundedInCartModel>(
+              fromJson: (response) =>
+                  ListOfProductsFoundedInCartModel.fromJson(response),
+            ),
+          ),
+        );
     return getProductsListInCart();
   }
 
   Future<AddItemToCartModel> addItemToCart(Map<String, dynamic> params) {
     PostClient<AddItemToCartModel> addItemToCart =
         PostClient<AddItemToCartModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<AddItemToCartModel>(
-        endpoint: MarketEndPoints.addItemCartItemEP,
-        data: params,
-        response: ResponseValue<AddItemToCartModel>(
-            fromJson: (response) => AddItemToCartModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<AddItemToCartModel>(
+            endpoint: MarketEndPoints.addItemCartItemEP,
+            data: params,
+            response: ResponseValue<AddItemToCartModel>(
+              fromJson: (response) => AddItemToCartModel.fromJson(response),
+            ),
+          ),
+        );
     return addItemToCart();
   }
 
@@ -894,18 +1006,20 @@ class HomeRemoteDatasource {
   }
 
   Future<ConvertItemFromCartToOldCartModel> convertItemInCartToOldCart(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ConvertItemFromCartToOldCartModel> convertItemInCartToOldCart =
         PostClient<ConvertItemFromCartToOldCartModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ConvertItemFromCartToOldCartModel>(
-        endpoint: MarketEndPoints.convertItemInCartToOldCartEP,
-        data: params,
-        response: ResponseValue<ConvertItemFromCartToOldCartModel>(
-            fromJson: (response) =>
-                ConvertItemFromCartToOldCartModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ConvertItemFromCartToOldCartModel>(
+            endpoint: MarketEndPoints.convertItemInCartToOldCartEP,
+            data: params,
+            response: ResponseValue<ConvertItemFromCartToOldCartModel>(
+              fromJson: (response) =>
+                  ConvertItemFromCartToOldCartModel.fromJson(response),
+            ),
+          ),
+        );
     return convertItemInCartToOldCart();
   }
 
@@ -934,81 +1048,89 @@ class HomeRemoteDatasource {
   }
 
   Future<GetCountViewOfProductModel> getAndAddCountViewOfProduct(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<GetCountViewOfProductModel> getAndAddCountViewOfProduct =
         PostClient<GetCountViewOfProductModel>(
-      serverName: ServerName.elastic,
-      requestPrams: RequestConfig<GetCountViewOfProductModel>(
-        endpoint: ElasticEndPoints.getAndAddCountViewOfProductEP,
-        data: params,
-        response: ResponseValue<GetCountViewOfProductModel>(
-            fromJson: (response) =>
-                GetCountViewOfProductModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.elastic,
+          requestPrams: RequestConfig<GetCountViewOfProductModel>(
+            endpoint: ElasticEndPoints.getAndAddCountViewOfProductEP,
+            data: params,
+            response: ResponseValue<GetCountViewOfProductModel>(
+              fromJson: (response) =>
+                  GetCountViewOfProductModel.fromJson(response),
+            ),
+          ),
+        );
     return getAndAddCountViewOfProduct();
   }
 
   Future<GetAddressByCoordinatesModel> getAddressByCoordinates(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<GetAddressByCoordinatesModel> getAddressByCoordinates =
         PostClient<GetAddressByCoordinatesModel>(
-      serverName: ServerName.elastic,
-      requestPrams: RequestConfig<GetAddressByCoordinatesModel>(
-        endpoint: ElasticEndPoints.getAddressByCoordinatesEP,
-        data: params,
-        response: ResponseValue<GetAddressByCoordinatesModel>(
-            fromJson: (response) =>
-                GetAddressByCoordinatesModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.elastic,
+          requestPrams: RequestConfig<GetAddressByCoordinatesModel>(
+            endpoint: ElasticEndPoints.getAddressByCoordinatesEP,
+            data: params,
+            response: ResponseValue<GetAddressByCoordinatesModel>(
+              fromJson: (response) =>
+                  GetAddressByCoordinatesModel.fromJson(response),
+            ),
+          ),
+        );
     return getAddressByCoordinates();
   }
 
   Future<GetAddressByTextModel> getAddressByText(Map<String, dynamic> params) {
     PostClient<GetAddressByTextModel> getAddressByText =
         PostClient<GetAddressByTextModel>(
-      serverName: ServerName.elastic,
-      requestPrams: RequestConfig<GetAddressByTextModel>(
-        endpoint: ElasticEndPoints.getAddressByTextEP,
-        data: params,
-        response: ResponseValue<GetAddressByTextModel>(
-            fromJson: (response) => GetAddressByTextModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.elastic,
+          requestPrams: RequestConfig<GetAddressByTextModel>(
+            endpoint: ElasticEndPoints.getAddressByTextEP,
+            data: params,
+            response: ResponseValue<GetAddressByTextModel>(
+              fromJson: (response) => GetAddressByTextModel.fromJson(response),
+            ),
+          ),
+        );
     return getAddressByText();
   }
 
   Future<UpdateItemInCartModel> updateItemInCart(Map<String, dynamic> params) {
     PostClient<UpdateItemInCartModel> updateItemInCart =
         PostClient<UpdateItemInCartModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<UpdateItemInCartModel>(
-        endpoint: MarketEndPoints.updateItemCartItemEP,
-        data: params,
-        response: ResponseValue<UpdateItemInCartModel>(
-            fromJson: (response) => UpdateItemInCartModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<UpdateItemInCartModel>(
+            endpoint: MarketEndPoints.updateItemCartItemEP,
+            data: params,
+            response: ResponseValue<UpdateItemInCartModel>(
+              fromJson: (response) => UpdateItemInCartModel.fromJson(response),
+            ),
+          ),
+        );
     return updateItemInCart();
   }
 
   Future<ReadOnlyMessageFromApiModel>
-      requestForNotificationWhenProductBecameAvailable(
-          Map<String, dynamic> params) {
+  requestForNotificationWhenProductBecameAvailable(
+    Map<String, dynamic> params,
+  ) {
     PostClient<ReadOnlyMessageFromApiModel>
-        requestForNotificationWhenProductBecameAvailable =
+    requestForNotificationWhenProductBecameAvailable =
         PostClient<ReadOnlyMessageFromApiModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-        endpoint:
-            MarketEndPoints.requestForNotificationWhenProductBecameAvailableEP,
-        data: params,
-        response: ResponseValue<ReadOnlyMessageFromApiModel>(
-            fromJson: (response) =>
-                ReadOnlyMessageFromApiModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: MarketEndPoints
+                .requestForNotificationWhenProductBecameAvailableEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
     return requestForNotificationWhenProductBecameAvailable();
   }
 
@@ -1033,22 +1155,23 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
         GetClient<GetAllowedCountriesModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetAllowedCountriesModel>(
-        endpoint: MarketEndPoints.getAllowesdCountriesEP,
-        response: ResponseValue<GetAllowedCountriesModel>(
-            fromJson: (response) =>
-                GetAllowedCountriesModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetAllowedCountriesModel>(
+            endpoint: MarketEndPoints.getAllowesdCountriesEP,
+            response: ResponseValue<GetAllowedCountriesModel>(
+              fromJson: (response) =>
+                  GetAllowedCountriesModel.fromJson(response),
+            ),
+          ),
+        );
     return verifyOtpSignIn();
   }
 
   Future<bool> addLikeOFProduct(Map<String, dynamic> params) {
     PostClient<bool> addLikeOFProduct = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.get_comment_token,
       requestPrams: RequestConfig<bool>(
-        endpoint: MarketEndPoints.addLikeOFProductEP,
+        endpoint: WebAppEndPoints.addLikeOFProductEP,
         data: params,
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
@@ -1060,18 +1183,19 @@ class HomeRemoteDatasource {
     PostClient<bool> storeFcmTokenOfMarket = PostClient<bool>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<bool>(
-          endpoint: MarketEndPoints.storeFcmOfMarketEP,
-          data: params,
-          response: ResponseValue<bool>(returnValueOnSuccess: true)),
+        endpoint: MarketEndPoints.storeFcmOfMarketEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
     );
     return storeFcmTokenOfMarket();
   }
 
   Future<bool> deleteLikeOFProduct(Map<String, dynamic> params) {
-    PostClient<bool> deleteLikeOFProduct = PostClient<bool>(
-      serverName: ServerName.market,
+    DeleteClient<bool> deleteLikeOFProduct = DeleteClient<bool>(
+      serverName: ServerName.get_comment_token,
       requestPrams: RequestConfig<bool>(
-        endpoint: MarketEndPoints.deleteLikeOFProductEP,
+        endpoint: WebAppEndPoints.removeLikeOFProductEP,
         data: params,
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
@@ -1085,23 +1209,26 @@ class HomeRemoteDatasource {
   }) {
     GetClient<CustomerWalletModel> getCustomerWallet =
         GetClient<CustomerWalletModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<CustomerWalletModel>(
-        endpoint: MarketEndPoints.getCustomerWalletEP,
-        queryParameters: {
-          "limit": limit.toString(),
-          "offset": offset.toString(),
-        },
-        response: ResponseValue<CustomerWalletModel>(
-            fromJson: (response) => CustomerWalletModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<CustomerWalletModel>(
+            endpoint: MarketEndPoints.getCustomerWalletEP,
+            queryParameters: {
+              "limit": limit.toString(),
+              "offset": offset.toString(),
+            },
+            response: ResponseValue<CustomerWalletModel>(
+              fromJson: (response) => CustomerWalletModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getCustomerWallet();
   }
 
-  Future<OrdersGroupModel> placeOrder(
-      {required Map<String, dynamic> params, required String paymentMethod}) {
+  Future<OrdersGroupModel> placeOrder({
+    required Map<String, dynamic> params,
+    required String paymentMethod,
+  }) {
     PostClient<OrdersGroupModel> placeOrder = PostClient<OrdersGroupModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<OrdersGroupModel>(
@@ -1121,16 +1248,15 @@ class HomeRemoteDatasource {
   }) {
     GetClient<OrdersGroupModel> getOrdersByOrderGroupID =
         GetClient<OrdersGroupModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<OrdersGroupModel>(
-        endpoint: MarketEndPoints.getOrdersByOrderGroupEP,
-        queryParameters: {
-          "order_group_id": orderGroupID,
-        },
-        response: ResponseValue<OrdersGroupModel>(
-            fromJson: (response) => OrdersGroupModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<OrdersGroupModel>(
+            endpoint: MarketEndPoints.getOrdersByOrderGroupEP,
+            queryParameters: {"order_group_id": orderGroupID},
+            response: ResponseValue<OrdersGroupModel>(
+              fromJson: (response) => OrdersGroupModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getOrdersByOrderGroupID();
   }
@@ -1140,16 +1266,15 @@ class HomeRemoteDatasource {
   }) {
     GetClient<OrdersGroupModel> getOrdersByCartGroupID =
         GetClient<OrdersGroupModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<OrdersGroupModel>(
-        endpoint: MarketEndPoints.getOrdersByCartGroupEP,
-        queryParameters: {
-          "cart_group_id": cartGroupID,
-        },
-        response: ResponseValue<OrdersGroupModel>(
-            fromJson: (response) => OrdersGroupModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<OrdersGroupModel>(
+            endpoint: MarketEndPoints.getOrdersByCartGroupEP,
+            queryParameters: {"cart_group_id": cartGroupID},
+            response: ResponseValue<OrdersGroupModel>(
+              fromJson: (response) => OrdersGroupModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getOrdersByCartGroupID();
   }
@@ -1157,30 +1282,28 @@ class HomeRemoteDatasource {
   Future<CheckAvailabilityProductCartModel> checkAvailabilityProductCart() {
     GetClient<CheckAvailabilityProductCartModel> checkAvailabilityProductCart =
         GetClient<CheckAvailabilityProductCartModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<CheckAvailabilityProductCartModel>(
-        endpoint: MarketEndPoints.checkAvailabilityProductCartEP,
-        response: ResponseValue<CheckAvailabilityProductCartModel>(
-            fromJson: (response) =>
-                CheckAvailabilityProductCartModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<CheckAvailabilityProductCartModel>(
+            endpoint: MarketEndPoints.checkAvailabilityProductCartEP,
+            response: ResponseValue<CheckAvailabilityProductCartModel>(
+              fromJson: (response) =>
+                  CheckAvailabilityProductCartModel.fromJson(response),
+            ),
+          ),
+        );
 
     return checkAvailabilityProductCart();
   }
 
-  Future<ApplyCouponModel> applyCoupon({
-    required String code,
-  }) {
+  Future<ApplyCouponModel> applyCoupon({required String code}) {
     GetClient<ApplyCouponModel> applyCoupon = GetClient<ApplyCouponModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<ApplyCouponModel>(
         endpoint: MarketEndPoints.applyCouponEP,
-        queryParameters: {
-          "code": code,
-        },
+        queryParameters: {"code": code},
         response: ResponseValue<ApplyCouponModel>(
-            fromJson: (response) => ApplyCouponModel.fromJson(response)),
+          fromJson: (response) => ApplyCouponModel.fromJson(response),
+        ),
       ),
     );
 
@@ -1190,48 +1313,45 @@ class HomeRemoteDatasource {
   Future<GetCartShippingItemsModel> getCartOverview() {
     GetClient<GetCartShippingItemsModel> getCartOverview =
         GetClient<GetCartShippingItemsModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetCartShippingItemsModel>(
-        endpoint: MarketEndPoints.getCartOverviewEP,
-        response: ResponseValue<GetCartShippingItemsModel>(
-            fromJson: (response) =>
-                GetCartShippingItemsModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetCartShippingItemsModel>(
+            endpoint: MarketEndPoints.getCartOverviewEP,
+            response: ResponseValue<GetCartShippingItemsModel>(
+              fromJson: (response) =>
+                  GetCartShippingItemsModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getCartOverview();
   }
 
-  Future<GetUserNotificationsModel> getUserNotifications({
-    required int page,
-  }) {
+  Future<GetUserNotificationsModel> getUserNotifications({required int page}) {
     GetClient<GetUserNotificationsModel> getUserNotifications =
         GetClient<GetUserNotificationsModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetUserNotificationsModel>(
-        endpoint: MarketEndPoints.getUserNotificationsEP,
-        queryParameters: {
-          "page": page.toString(),
-        },
-        response: ResponseValue<GetUserNotificationsModel>(
-            fromJson: (response) =>
-                GetUserNotificationsModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetUserNotificationsModel>(
+            endpoint: MarketEndPoints.getUserNotificationsEP,
+            queryParameters: {"page": page.toString()},
+            response: ResponseValue<GetUserNotificationsModel>(
+              fromJson: (response) =>
+                  GetUserNotificationsModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getUserNotifications();
   }
 
-  Future<OrderModel> getOrders({
-    required Map<String, dynamic> params,
-  }) {
+  Future<OrderModel> getOrders({required Map<String, dynamic> params}) {
     GetClient<OrderModel> getOrders = GetClient<OrderModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<OrderModel>(
         endpoint: MarketEndPoints.getOrderListEP,
         queryParameters: params,
         response: ResponseValue<OrderModel>(
-            fromJson: (response) => OrderModel.fromJson(response)),
+          fromJson: (response) => OrderModel.fromJson(response),
+        ),
       ),
     );
 
@@ -1241,14 +1361,15 @@ class HomeRemoteDatasource {
   Future<CancelOrderItemModel> cancelOrderItem(Map<String, dynamic> params) {
     PostClient<CancelOrderItemModel> cancelOrderItem =
         PostClient<CancelOrderItemModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<CancelOrderItemModel>(
-        endpoint: MarketEndPoints.cancelOrderItemEP,
-        data: params,
-        response: ResponseValue<CancelOrderItemModel>(
-            fromJson: (response) => CancelOrderItemModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<CancelOrderItemModel>(
+            endpoint: MarketEndPoints.cancelOrderItemEP,
+            data: params,
+            response: ResponseValue<CancelOrderItemModel>(
+              fromJson: (response) => CancelOrderItemModel.fromJson(response),
+            ),
+          ),
+        );
 
     return cancelOrderItem();
   }
@@ -1260,7 +1381,8 @@ class HomeRemoteDatasource {
         endpoint: MarketEndPoints.cancelOrderEP,
         data: params,
         response: ResponseValue<CancelOrderModel>(
-            fromJson: (response) => CancelOrderModel.fromJson(response)),
+          fromJson: (response) => CancelOrderModel.fromJson(response),
+        ),
       ),
     );
 
@@ -1268,17 +1390,20 @@ class HomeRemoteDatasource {
   }
 
   Future<ChangeOrderAddressModel> changeOrderAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ChangeOrderAddressModel> changeOrderAddress =
         PostClient<ChangeOrderAddressModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ChangeOrderAddressModel>(
-        endpoint: MarketEndPoints.changeOrderAddressEP,
-        data: params,
-        response: ResponseValue<ChangeOrderAddressModel>(
-            fromJson: (response) => ChangeOrderAddressModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ChangeOrderAddressModel>(
+            endpoint: MarketEndPoints.changeOrderAddressEP,
+            data: params,
+            response: ResponseValue<ChangeOrderAddressModel>(
+              fromJson: (response) =>
+                  ChangeOrderAddressModel.fromJson(response),
+            ),
+          ),
+        );
 
     return changeOrderAddress();
   }
@@ -1286,227 +1411,252 @@ class HomeRemoteDatasource {
   Future<ColorSizeForProductModel> getProductColorSizeSyncAttribute(String id) {
     GetClient<ColorSizeForProductModel> getProductColorSizeSyncAttribute =
         GetClient<ColorSizeForProductModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ColorSizeForProductModel>(
-        endpoint: MarketEndPoints.getProductColorSizeSyncAttributeEP(id),
-        response: ResponseValue<ColorSizeForProductModel>(
-            fromJson: (response) =>
-                ColorSizeForProductModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ColorSizeForProductModel>(
+            endpoint: MarketEndPoints.getProductColorSizeSyncAttributeEP(id),
+            response: ResponseValue<ColorSizeForProductModel>(
+              fromJson: (response) =>
+                  ColorSizeForProductModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getProductColorSizeSyncAttribute();
   }
 
   Future<ReadOnlyMessageFromApiModel> changeOrderItemVariant(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ReadOnlyMessageFromApiModel> changeOrderItemVariant =
         PostClient<ReadOnlyMessageFromApiModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-        endpoint: MarketEndPoints.changeOrderItemVariantEP,
-        data: params,
-        response: ResponseValue<ReadOnlyMessageFromApiModel>(
-            fromJson: (response) =>
-                ReadOnlyMessageFromApiModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: MarketEndPoints.changeOrderItemVariantEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
     return changeOrderItemVariant();
   }
 
   Future<ReturnReasonsModel> getReturnReasons() {
     GetClient<ReturnReasonsModel> getReturnReasons =
         GetClient<ReturnReasonsModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ReturnReasonsModel>(
-        endpoint: MarketEndPoints.getReturnReasonsEP,
-        response: ResponseValue<ReturnReasonsModel>(
-            fromJson: (response) => ReturnReasonsModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ReturnReasonsModel>(
+            endpoint: MarketEndPoints.getReturnReasonsEP,
+            response: ResponseValue<ReturnReasonsModel>(
+              fromJson: (response) => ReturnReasonsModel.fromJson(response),
+            ),
+          ),
+        );
 
     return getReturnReasons();
   }
 
   Future<UploadImagesForReturnProductModel> uploadImagesForReturnProduct(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<UploadImagesForReturnProductModel> uploadImagesForReturnProduct =
         PostClient<UploadImagesForReturnProductModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<UploadImagesForReturnProductModel>(
-        endpoint: MarketEndPoints.uploadImagesForReturnProductEP,
-        data: params['data'],
-        response: ResponseValue<UploadImagesForReturnProductModel>(
-            fromJson: (response) =>
-                UploadImagesForReturnProductModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<UploadImagesForReturnProductModel>(
+            endpoint: MarketEndPoints.uploadImagesForReturnProductEP,
+            data: params['data'],
+            response: ResponseValue<UploadImagesForReturnProductModel>(
+              fromJson: (response) =>
+                  UploadImagesForReturnProductModel.fromJson(response),
+            ),
+          ),
+        );
 
     return uploadImagesForReturnProduct();
   }
 
   Future<StoreReturnRequestProductModel> storeReturnRequestProduct(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<StoreReturnRequestProductModel> storeReturnRequestProduct =
         PostClient<StoreReturnRequestProductModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<StoreReturnRequestProductModel>(
-        endpoint: MarketEndPoints.storeReturnRequestProductEP,
-        data: params,
-        response: ResponseValue<StoreReturnRequestProductModel>(
-            fromJson: (response) =>
-                StoreReturnRequestProductModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<StoreReturnRequestProductModel>(
+            endpoint: MarketEndPoints.storeReturnRequestProductEP,
+            data: params,
+            response: ResponseValue<StoreReturnRequestProductModel>(
+              fromJson: (response) =>
+                  StoreReturnRequestProductModel.fromJson(response),
+            ),
+          ),
+        );
 
     return storeReturnRequestProduct();
   }
 
   Future<UpdateReturnRequestModel> updateReturnRequestProduct(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<UpdateReturnRequestModel> updateReturnRequestProduct =
         PostClient<UpdateReturnRequestModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<UpdateReturnRequestModel>(
-        endpoint: MarketEndPoints.updateReturnRequestProductEP,
-        data: params,
-        response: ResponseValue<UpdateReturnRequestModel>(
-            fromJson: (response) =>
-                UpdateReturnRequestModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<UpdateReturnRequestModel>(
+            endpoint: MarketEndPoints.updateReturnRequestProductEP,
+            data: params,
+            response: ResponseValue<UpdateReturnRequestModel>(
+              fromJson: (response) =>
+                  UpdateReturnRequestModel.fromJson(response),
+            ),
+          ),
+        );
 
     return updateReturnRequestProduct();
   }
 
   Future<ConfirmCancelReturnRequestModel> cancelReturnRequest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ConfirmCancelReturnRequestModel> cancelReturnRequest =
         PostClient<ConfirmCancelReturnRequestModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
-        endpoint: MarketEndPoints.cancelReturnRequestEP,
-        data: params,
-        response: ResponseValue<ConfirmCancelReturnRequestModel>(
-            fromJson: (response) =>
-                ConfirmCancelReturnRequestModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
+            endpoint: MarketEndPoints.cancelReturnRequestEP,
+            data: params,
+            response: ResponseValue<ConfirmCancelReturnRequestModel>(
+              fromJson: (response) =>
+                  ConfirmCancelReturnRequestModel.fromJson(response),
+            ),
+          ),
+        );
 
     return cancelReturnRequest();
   }
 
   Future<CreateReturnReqestModel> storeReturnRequest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<CreateReturnReqestModel> storeReturnRequest =
         GetClient<CreateReturnReqestModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<CreateReturnReqestModel>(
-        endpoint: MarketEndPoints.storeReturnRequestEP,
-        queryParameters: params,
-        response: ResponseValue<CreateReturnReqestModel>(
-            fromJson: (response) => CreateReturnReqestModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<CreateReturnReqestModel>(
+            endpoint: MarketEndPoints.storeReturnRequestEP,
+            queryParameters: params,
+            response: ResponseValue<CreateReturnReqestModel>(
+              fromJson: (response) =>
+                  CreateReturnReqestModel.fromJson(response),
+            ),
+          ),
+        );
     return storeReturnRequest();
   }
 
   Future<ConfirmCancelReturnRequestModel> cancelReturnRequestProduct(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<ConfirmCancelReturnRequestModel> cancelReturnRequestProduct =
         GetClient<ConfirmCancelReturnRequestModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
-        endpoint: MarketEndPoints.cancelReturnRequestProductEP,
-        queryParameters: params,
-        response: ResponseValue<ConfirmCancelReturnRequestModel>(
-            fromJson: (response) =>
-                ConfirmCancelReturnRequestModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
+            endpoint: MarketEndPoints.cancelReturnRequestProductEP,
+            queryParameters: params,
+            response: ResponseValue<ConfirmCancelReturnRequestModel>(
+              fromJson: (response) =>
+                  ConfirmCancelReturnRequestModel.fromJson(response),
+            ),
+          ),
+        );
 
     return cancelReturnRequestProduct();
   }
 
   Future<ConfirmCancelReturnRequestModel> confirmReturnRequest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ConfirmCancelReturnRequestModel> confirmReturnRequest =
         PostClient<ConfirmCancelReturnRequestModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
-        endpoint: MarketEndPoints.confirmReturnRequestEP,
-        data: params,
-        response: ResponseValue<ConfirmCancelReturnRequestModel>(
-            fromJson: (response) =>
-                ConfirmCancelReturnRequestModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ConfirmCancelReturnRequestModel>(
+            endpoint: MarketEndPoints.confirmReturnRequestEP,
+            data: params,
+            response: ResponseValue<ConfirmCancelReturnRequestModel>(
+              fromJson: (response) =>
+                  ConfirmCancelReturnRequestModel.fromJson(response),
+            ),
+          ),
+        );
 
     return confirmReturnRequest();
   }
 
   Future<ReadOnlyMessageFromApiModel> searchByImageFromGemini(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ReadOnlyMessageFromApiModel> searchByImageFromGemini =
         PostClient<ReadOnlyMessageFromApiModel>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-        endpoint: WebAppEndPoints.imageSearchEP,
-        data: params["data"],
-        response: ResponseValue<ReadOnlyMessageFromApiModel>(
-            fromJson: (response) =>
-                ReadOnlyMessageFromApiModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: WebAppEndPoints.imageSearchEP,
+            data: params["data"],
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
 
     return searchByImageFromGemini();
   }
 
   Future<ReadOnlyMessageFromApiModel> orderReturnRequestsView(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<ReadOnlyMessageFromApiModel> orderReturnRequestsView =
         GetClient<ReadOnlyMessageFromApiModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-        endpoint: MarketEndPoints.orderReturnRequestsViewEP,
-        queryParameters: params,
-        response: ResponseValue<ReadOnlyMessageFromApiModel>(
-            fromJson: (response) =>
-                ReadOnlyMessageFromApiModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: MarketEndPoints.orderReturnRequestsViewEP,
+            queryParameters: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
 
     return orderReturnRequestsView();
   }
 
   Future<GetOrderReturntDetailsModel> getOrderReturnDetails(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<GetOrderReturntDetailsModel> getOrderReturnDetailsClient =
         GetClient<GetOrderReturntDetailsModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetOrderReturntDetailsModel>(
-        endpoint: MarketEndPoints.orderReturnDetailsEP,
-        queryParameters: params,
-        response: ResponseValue<GetOrderReturntDetailsModel>(
-          fromJson: (response) =>
-              GetOrderReturntDetailsModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetOrderReturntDetailsModel>(
+            endpoint: MarketEndPoints.orderReturnDetailsEP,
+            queryParameters: params,
+            response: ResponseValue<GetOrderReturntDetailsModel>(
+              fromJson: (response) =>
+                  GetOrderReturntDetailsModel.fromJson(response),
+            ),
+          ),
+        );
     return getOrderReturnDetailsClient();
   }
 
   Future<GetAuthProductDetailsModel> getAuthProductDetails(String productSlug) {
     GetClient<GetAuthProductDetailsModel> client =
         GetClient<GetAuthProductDetailsModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetAuthProductDetailsModel>(
-        endpoint: MarketEndPoints.getAuthProductDetailsEP(productSlug),
-        response: ResponseValue<GetAuthProductDetailsModel>(
-          fromJson: (response) => GetAuthProductDetailsModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetAuthProductDetailsModel>(
+            endpoint: MarketEndPoints.getAuthProductDetailsEP(productSlug),
+            response: ResponseValue<GetAuthProductDetailsModel>(
+              fromJson: (response) =>
+                  GetAuthProductDetailsModel.fromJson(response),
+            ),
+          ),
+        );
     return client();
   }
 }

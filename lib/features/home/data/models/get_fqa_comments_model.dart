@@ -94,6 +94,10 @@ class FqaComment {
   final String? sellerReply;
   final String? sellerName;
   final DateTime? replyCreatedAt;
+  final int? totalLikes;
+  final bool? isLiked;
+  final int? replyTotalLikes;
+  final bool? replyIsLiked;
 
   FqaComment({
     this.id,
@@ -106,6 +110,10 @@ class FqaComment {
     this.sellerReply,
     this.sellerName,
     this.replyCreatedAt,
+    this.totalLikes,
+    this.isLiked,
+    this.replyTotalLikes,
+    this.replyIsLiked,
   });
 
   FqaComment copyWith({
@@ -118,6 +126,10 @@ class FqaComment {
     bool? hasReply,
     String? sellerReply,
     String? sellerName,
+    int? totalLikes,
+    bool? isLiked,
+    int? replyTotalLikes,
+    bool? replyIsLiked,
     DateTime? replyCreatedAt,
   }) =>
       FqaComment(
@@ -126,6 +138,10 @@ class FqaComment {
         productId: productId ?? this.productId,
         comment: comment ?? this.comment,
         variant: variant ?? this.variant,
+        totalLikes: totalLikes ?? this.totalLikes,
+        isLiked: isLiked ?? this.isLiked,
+        replyTotalLikes: replyTotalLikes ?? this.replyTotalLikes,
+        replyIsLiked: replyIsLiked ?? this.replyIsLiked,
         createdAt: createdAt ?? this.createdAt,
         hasReply: hasReply ?? this.hasReply,
         sellerReply: sellerReply ?? this.sellerReply,
@@ -141,6 +157,10 @@ class FqaComment {
         productId: json["product_id"],
         comment: json["comment"],
         variant: json["variant"],
+        totalLikes: json["total_likes"],
+        isLiked: json["is_liked"],
+        replyTotalLikes: json["reply_total_likes"],
+        replyIsLiked: json["reply_is_liked"],
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -162,6 +182,10 @@ class FqaComment {
         "has_reply": hasReply,
         "seller_reply": sellerReply,
         "seller_name": sellerName,
+        "total_likes": totalLikes,
+        "is_liked": isLiked,
+        "reply_total_likes": replyTotalLikes,
+        "reply_is_liked": replyIsLiked,
         "reply_created_at": replyCreatedAt?.toIso8601String(),
       };
 }

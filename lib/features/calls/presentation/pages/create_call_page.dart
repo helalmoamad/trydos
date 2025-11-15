@@ -22,13 +22,13 @@ import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../widgets/no_image_widget.dart';
 
 class CreateCallPage extends StatefulWidget {
-  const CreateCallPage(
-      {Key? key,
-      required this.chatId,
-      required this.receiverName,
-      required this.fullReceiverName,
-      this.receiverPhoto})
-      : super(key: key);
+  const CreateCallPage({
+    Key? key,
+    required this.chatId,
+    required this.receiverName,
+    required this.fullReceiverName,
+    this.receiverPhoto,
+  }) : super(key: key);
   final String chatId;
   final String fullReceiverName;
   final String receiverName;
@@ -66,12 +66,9 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
         child: BlocConsumer<CallsBloc, CallsState>(
           listener: (context, state) {
             if (state.makeCallStatus == MakeCallStatus.cancel) {
-              Future.delayed(
-                const Duration(seconds: 1),
-                () {
-                  Navigator.of(context).pop();
-                },
-              );
+              Future.delayed(const Duration(seconds: 1), () {
+                Navigator.of(context).pop();
+              });
             }
           },
           builder: (context, state) {
@@ -91,50 +88,60 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                       height: 200,
                                       width: 200.w,
                                       decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
+                                        borderRadius: BorderRadius.circular(
+                                          12.0,
+                                        ),
                                         border: Border.all(
-                                            color: const Color(0xff388cff)),
+                                          color: const Color(0xff388cff),
+                                        ),
                                         boxShadow: [
                                           BoxShadow(
-                                              color: colorScheme.white
-                                                  // ignore: deprecated_member_use
-                                                  .withOpacity(0.35),
-                                              offset: const Offset(0, 10),
-                                              blurRadius: 30,
-                                              spreadRadius: 10),
+                                            color: colorScheme.white
+                                                // ignore: deprecated_member_use
+                                                .withOpacity(0.35),
+                                            offset: const Offset(0, 10),
+                                            blurRadius: 30,
+                                            spreadRadius: 10,
+                                          ),
                                         ],
                                       ),
                                       child: MyCachedNetworkImage(
-                                          imageUrl: widget.receiverPhoto!,
-                                          imageFit: BoxFit.cover,
-                                          progressIndicatorBuilderWidget:
-                                              TrydosLoader(),
-                                          height: 80.h,
-                                          width: 60.w),
+                                        imageUrl: widget.receiverPhoto!,
+                                        imageFit: BoxFit.cover,
+                                        progressIndicatorBuilderWidget:
+                                            TrydosLoader(),
+                                        height: 80.h,
+                                        width: 60.w,
+                                      ),
                                     )
                                   : NoImageWidget(
                                       width: 60.w,
                                       height: 80.h,
                                       textStyle: context
-                                          .textTheme.bodyMedium?.br
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.bq
                                           .copyWith(
-                                              color: const Color(0xff6638FF),
-                                              letterSpacing: 0.18,
-                                              height: 1.33),
-                                      name: widget.receiverName),
+                                            color: const Color(0xff6638FF),
+                                            letterSpacing: 0.18,
+                                            height: 1.33,
+                                          ),
+                                      name: widget.receiverName,
+                                    ),
                               15.verticalSpace,
                               MyTextWidget(
                                 widget.fullReceiverName,
-                                style: textTheme.headlineSmall?.rr
-                                    .copyWith(color: const Color(0xffD3D3D3)),
+                                style: textTheme.headlineSmall?.rq.copyWith(
+                                  color: const Color(0xffD3D3D3),
+                                ),
                               ),
                               80.verticalSpace,
                               state.makeCallStatus == MakeCallStatus.cancel
                                   ? CallStatusWidget(
                                       text: LocaleKeys.did_no_answer.tr(),
                                       iconUrl: 'assets/svg/end_call.svg',
-                                      textColor: const Color(0xFFFF0000))
+                                      textColor: const Color(0xFFFF0000),
+                                    )
                                   : CallStatusWidget(
                                       text: LocaleKeys.calling.tr(),
                                       iconUrl: AppAssets.callingSvg,
@@ -170,8 +177,9 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                 10.verticalSpace,
                                 MyTextWidget(
                                   LocaleKeys.end_call.tr(),
-                                  style: textTheme.titleLarge?.lr
-                                      .copyWith(color: const Color(0xffFF5F61)),
+                                  style: textTheme.titleLarge?.lq.copyWith(
+                                    color: const Color(0xffFF5F61),
+                                  ),
                                 ),
                               ],
                             ),
@@ -184,7 +192,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                         ],
                       ),
                     ),
-                    50.verticalSpace
+                    50.verticalSpace,
                   ],
                 ),
                 Padding(
@@ -196,10 +204,12 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                     child: Transform(
                       alignment: Alignment.center,
                       transform: (Matrix4.identity()
+                        // ignore: deprecated_member_use
                         ..scale(
-                            LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
-                            1.0,
-                            1.0)),
+                          LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
+                          1.0,
+                          1.0,
+                        )),
                       child: SvgPicture.asset(
                         AppAssets.backFromCallSvg,
                         height: 20,

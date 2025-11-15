@@ -93,7 +93,7 @@ class HomeBoutiques {
   final String? name;
   final BunnerBoutique? icon;
   final String? slug;
-  final int? position;
+  final String? position;
   final String? description;
   final List<BunnerBoutique>? banners;
   final List<MainCategoriesForProductId>? mainCategoriesForProductIds;
@@ -116,7 +116,7 @@ class HomeBoutiques {
     String? name,
     BunnerBoutique? icon,
     String? slug,
-    int? position,
+    String? position,
     String? description,
     List<BunnerBoutique>? banners,
     List<MainCategoriesForProductId>? mainCategoriesForProductIds,
@@ -142,7 +142,7 @@ class HomeBoutiques {
         icon:
             json["icon"] == null ? null : BunnerBoutique.fromJson(json["icon"]),
         slug: json["slug"],
-        position: json["position"],
+        position: json["position"].toString(),
         description: json["description"],
         banners: json["banners"] == null
             ? []

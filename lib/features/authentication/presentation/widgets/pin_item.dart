@@ -27,19 +27,19 @@ class PinItem extends StatefulWidget {
   final void Function() onChange;
   final void Function(String text)? pasteOtpCode;
 
-  PinItem(
-      {this.checkOtp,
-      required this.contentColor,
-      required this.isExpired,
-      this.wrongCode = false,
-      this.pasteOtpCode,
-      required this.onChange,
-      required this.borderColor,
-      required this.index,
-      required this.controller,
-      required this.autoFocus,
-      Key? key})
-      : super(key: key);
+  PinItem({
+    this.checkOtp,
+    required this.contentColor,
+    required this.isExpired,
+    this.wrongCode = false,
+    this.pasteOtpCode,
+    required this.onChange,
+    required this.borderColor,
+    required this.index,
+    required this.controller,
+    required this.autoFocus,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<PinItem> createState() => _PinItemState();
@@ -48,19 +48,27 @@ class PinItem extends StatefulWidget {
 class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
   bool withBorder = true;
   TextEditingValue zwspEditingValue = const TextEditingValue(
-      text: '\u200b', selection: TextSelection(baseOffset: 1, extentOffset: 1));
+    text: '\u200b',
+    selection: TextSelection(baseOffset: 1, extentOffset: 1),
+  );
   late final AnimationController animationController;
   late final AnimationController fadingController;
 
   @override
   void initState() {
     animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-    fadingController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    fadingController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
     animationController.addStatusListener(_updateStatus);
     Future.delayed(
-        const Duration(seconds: 1), () => focusNodes[0].requestFocus());
+      const Duration(seconds: 1),
+      () => focusNodes[0].requestFocus(),
+    );
     widget.controller.value = zwspEditingValue;
     currentToType = 0;
     super.initState();
@@ -125,121 +133,124 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
       },
       builder: (context, state) {
         return AnimatedBuilder(
-            animation: animationController,
-            builder: (context, child) {
-              final sineValue = sin(3 * 2 * pi * animationController.value);
-              return Transform.translate(
-                  offset: Offset(sineValue * 5, 0),
-                  child: AnimatedBuilder(
-                      animation: fadingController,
-                      builder: (context, child) {
-                        return SizedBox(
-                            height: 70.h,
-                            width: 50.w,
-                            child: DottedBorder(
-                              padding: EdgeInsets.zero,
-                              borderType: BorderType.RRect,
-                              strokeCap: StrokeCap.round,
-                              strokeWidth: 1 - fadingController.value,
-                              dashPattern: const [3, 3],
-                              radius: const Radius.circular(15.0),
-                              color: withBorder
-                                  ? widget.borderColor
-                                  : const Color(0xffF5F5F5),
-                              child: ClipRRect(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(15)),
-                                child: TextFormField(
-                                  controller: widget.controller,
-                                  enabled: (state.verifyOtpSignInStatus !=
-                                          VerifyOtpSignInStatus.loading &&
-                                      state.verifyOtpInProfileStatus !=
-                                          VerifyOtpInProfileStatus.loading &&
-                                      state.verifyOtpSignUpStatus !=
-                                          VerifyOtpSignUpStatus.loading &&
-                                      state.verifyOtpFromGuestStatus !=
-                                          VerifyOtpFromGuestStatus.loading),
-                                  focusNode: focusNodes[widget.index],
-                                  onTap: () {
-                                    if (widget.index != currentToType) {
-                                      focusNodes[currentToType].requestFocus();
-                                    }
-                                  },
-                                  onChanged: (String? text) {
-                                    debugPrint(widget.index.toString());
-                                    debugPrint(text);
-                                    debugPrint(widget.index.toString());
-                                    debugPrint(text?.length.toString());
-                                    widget.onChange.call();
-                                    if (widget.index == 0 &&
-                                        (text?.length ?? 0) == 6) {
-                                      widget.pasteOtpCode!.call(text!);
-                                    }
-                                    if ((text?.length ?? 0) > 1) {
-                                      print('sssssssssssssssss');
-                                      widget.controller.text = text![0];
-                                      text = text[0];
-                                    }
-                                    setState(() {
-                                      if ((text?.length ?? 0) == 1) {
-                                        widget.onChange.call();
-                                        focusNodes[min(5, widget.index + 1)]
-                                            .requestFocus();
-                                        currentToType =
-                                            min(5, widget.index + 1);
-                                        withBorder = widget.index == 5;
-                                        if (widget.index == 5) {
-                                          print('dddddd');
-                                          checkingOtp = true;
-                                          widget.checkOtp!.call();
-                                        }
-                                      } else if (text?.isEmpty ?? true) {
-                                        widget.onChange.call();
-                                        checkingOtp = false;
-                                        widget.controller.value =
-                                            zwspEditingValue;
-                                        focusNodes[max(0, widget.index - 1)]
-                                            .requestFocus();
-                                        currentToType =
-                                            max(0, widget.index - 1);
-                                        withBorder = true;
-                                      }
-                                    });
-                                  },
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  textDirection: TextDirection.ltr,
-                                  autocorrect: false,
-                                  cursorColor: const Color(0xff5D5C5D),
-                                  cursorHeight: 0,
-                                  enableInteractiveSelection: widget.index == 0,
-                                  cursorWidth: 0,
-                                  textAlignVertical: TextAlignVertical.center,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                  style: context.textTheme.headlineSmall?.ra
-                                      .copyWith(
-                                    color: const Color(0xff707070),
-                                    height: 0.6,
-                                    decoration: TextDecoration.none,
-                                  ),
-                                  maxLines: 2,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding:
-                                        HWEdgeInsets.only(top: 30, bottom: 15),
-                                    focusedBorder: InputBorder.none,
-                                    filled: true,
-                                    fillColor: !withBorder
-                                        ? const Color(0xffF5F5F5)
-                                        : const Color(0xffFAFAFA),
-                                  ),
-                                ),
-                              ),
-                            ));
-                      }));
-            });
+          animation: animationController,
+          builder: (context, child) {
+            final sineValue = sin(3 * 2 * pi * animationController.value);
+            return Transform.translate(
+              offset: Offset(sineValue * 5, 0),
+              child: AnimatedBuilder(
+                animation: fadingController,
+                builder: (context, child) {
+                  return SizedBox(
+                    height: 70.h,
+                    width: 50.w,
+                    child: DottedBorder(
+                      padding: EdgeInsets.zero,
+                      borderType: BorderType.RRect,
+                      strokeCap: StrokeCap.round,
+                      strokeWidth: 1 - fadingController.value,
+                      dashPattern: const [3, 3],
+                      radius: const Radius.circular(15.0),
+                      color: withBorder
+                          ? widget.borderColor
+                          : const Color(0xffF5F5F5),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(15),
+                        ),
+                        child: TextFormField(
+                          controller: widget.controller,
+                          enabled:
+                              (state.verifyOtpSignInStatus !=
+                                  VerifyOtpSignInStatus.loading &&
+                              state.verifyOtpInProfileStatus !=
+                                  VerifyOtpInProfileStatus.loading &&
+                              state.verifyOtpSignUpStatus !=
+                                  VerifyOtpSignUpStatus.loading &&
+                              state.verifyOtpFromGuestStatus !=
+                                  VerifyOtpFromGuestStatus.loading),
+                          focusNode: focusNodes[widget.index],
+                          onTap: () {
+                            if (widget.index != currentToType) {
+                              focusNodes[currentToType].requestFocus();
+                            }
+                          },
+                          onChanged: (String? text) {
+                            debugPrint(widget.index.toString());
+                            debugPrint(text);
+                            debugPrint(widget.index.toString());
+                            debugPrint(text?.length.toString());
+                            widget.onChange.call();
+                            if (widget.index == 0 && (text?.length ?? 0) == 6) {
+                              widget.pasteOtpCode!.call(text!);
+                            }
+                            if ((text?.length ?? 0) > 1) {
+                              print('sssssssssssssssss');
+                              widget.controller.text = text![0];
+                              text = text[0];
+                            }
+                            setState(() {
+                              if ((text?.length ?? 0) == 1) {
+                                widget.onChange.call();
+                                focusNodes[min(5, widget.index + 1)]
+                                    .requestFocus();
+                                currentToType = min(5, widget.index + 1);
+                                withBorder = widget.index == 5;
+                                if (widget.index == 5) {
+                                  print('dddddd');
+                                  checkingOtp = true;
+                                  widget.checkOtp!.call();
+                                }
+                              } else if (text?.isEmpty ?? true) {
+                                widget.onChange.call();
+                                checkingOtp = false;
+                                widget.controller.value = zwspEditingValue;
+                                focusNodes[max(0, widget.index - 1)]
+                                    .requestFocus();
+                                currentToType = max(0, widget.index - 1);
+                                withBorder = true;
+                              }
+                            });
+                          },
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          textDirection: TextDirection.ltr,
+                          autocorrect: false,
+                          cursorColor: const Color(0xff5D5C5D),
+                          cursorHeight: 0,
+                          enableInteractiveSelection: widget.index == 0,
+                          cursorWidth: 0,
+                          textAlignVertical: TextAlignVertical.center,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          style: context.textTheme.headlineSmall?.rq.copyWith(
+                            color: const Color(0xff707070),
+                            height: 0.6,
+                            decoration: TextDecoration.none,
+                          ),
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: HWEdgeInsets.only(
+                              top: 30,
+                              bottom: 15,
+                            ),
+                            focusedBorder: InputBorder.none,
+                            filled: true,
+                            fillColor: !withBorder
+                                ? const Color(0xffF5F5F5)
+                                : const Color(0xffFAFAFA),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
       },
     );
   }

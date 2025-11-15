@@ -44,15 +44,19 @@ import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 
 @pragma('vm:entry-point')
-showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
-    {required bool isVideo}) async {
+showCallKitIncoming(
+  Map<String, dynamic> data,
+  String currentUuid, {
+  required bool isVideo,
+}) async {
   print("${data["message"]})");
   print("))))))))))))))${data["message"]['channel']}");
   CallKitParams callKitParams = CallKitParams(
     id: currentUuid,
     nameCaller: data["message"]['channel']["channel_name"] ?? 'Un Known',
     appName: 'Trydos',
-    avatar: data["message"]['channel']["photo_path"] ??
+    avatar:
+        data["message"]['channel']["photo_path"] ??
         'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
     handle: data['payload']['mobilePhone'],
     type: isVideo ? 1 : 0,
@@ -68,21 +72,22 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     extra: <String, dynamic>{
       'channel_id': data["message"]["channel_id"].toString(),
       'message_id': data["message"]["id"].toString(),
-      'type': isVideo ? 'video' : 'voice'
+      'type': isVideo ? 'video' : 'voice',
     },
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
     android: const AndroidParams(
-        isCustomNotification: true,
-        isImportant: true,
-        isShowFullLockedScreen: true,
-        isShowLogo: false,
-        ringtonePath: 'system_ringtone_default',
-        backgroundColor: '#0955fa',
-        backgroundUrl:
-            'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
-        actionColor: '#4CAF50',
-        incomingCallNotificationChannelName: "Incoming Call",
-        missedCallNotificationChannelName: "Missed Call"),
+      isCustomNotification: true,
+      isImportant: true,
+      isShowFullLockedScreen: true,
+      isShowLogo: false,
+      ringtonePath: 'system_ringtone_default',
+      backgroundColor: '#0955fa',
+      backgroundUrl:
+          'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
+      actionColor: '#4CAF50',
+      incomingCallNotificationChannelName: "Incoming Call",
+      missedCallNotificationChannelName: "Missed Call",
+    ),
     ios: const IOSParams(
       iconName: 'CallKitLogo',
       handleType: 'generic',
@@ -124,30 +129,45 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
   try {
     if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
-        message)) {
-      LocalNotificationService()
-          .showNotificationWithPayload(message: message, fromBackGround: 1);
+      message,
+    )) {
+      LocalNotificationService().showNotificationWithPayload(
+        message: message,
+        fromBackGround: 1,
+      );
       return;
     }
-    Map<String, dynamic> remoteMessage =
-        convert.jsonDecode(message.data['data']);
+    Map<String, dynamic> remoteMessage = convert.jsonDecode(
+      message.data['data'],
+    );
     if (remoteMessage['type'] == 'VideoCallEvent' ||
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data = remoteMessage["message"];
       if (DateTime.now()
-              .difference(HelperFunctions.getZonedDate(
-                  DateTime.parse(data['created_at'])))
+              .difference(
+                HelperFunctions.getZonedDate(
+                  DateTime.parse(data['created_at']),
+                ),
+              )
               .inMinutes >=
           1) {
         return;
       }
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: '${message.data['type']} background  ${data['message_id']}');
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: '${message.data['type']} background  ${data['message_id']}',
+      );
 
-      GetIt.I<CallsBloc>()
-          .add(UpdateCurrentActiveCallIdEvent(id: data["id"].toString()));
+      GetIt.I<CallsBloc>().add(
+        UpdateCurrentActiveCallIdEvent(id: data["id"].toString()),
+      );
 
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
         switch (event!.event) {
@@ -181,8 +201,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         }
         declineCallBecauseOfNotificationButton = false;
       });
-      showCallKitIncoming(remoteMessage, currentUuid,
-          isVideo: remoteMessage['type'] == 'VideoCallEvent');
+      showCallKitIncoming(
+        remoteMessage,
+        currentUuid,
+        isVideo: remoteMessage['type'] == 'VideoCallEvent',
+      );
     } else if (remoteMessage['type'] == 'RefuseCallEvent') {
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data = remoteMessage;
@@ -196,8 +219,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         return;
       }
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: 'RefuseCall for message backGround ${data['message_id']}');
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: 'RefuseCall for message backGround ${data['message_id']}',
+      );
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
     } else if (remoteMessage['type'] == 'AnswerCallEvent') {
@@ -211,39 +241,50 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
     } else if (remoteMessage['type'] == 'ChannelReceivedEvent') {
-      GetIt.I<PrefsRepository>()
-          .setMessageReceivedStatusFromBackground(message.data['data']);
+      GetIt.I<PrefsRepository>().setMessageReceivedStatusFromBackground(
+        message.data['data'],
+      );
     } else if (remoteMessage['type'] == 'ChannelWatchedEvent') {
-      GetIt.I<PrefsRepository>()
-          .setMessageWatchStatusFromBackground(message.data['data']);
+      GetIt.I<PrefsRepository>().setMessageWatchStatusFromBackground(
+        message.data['data'],
+      );
     } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
-      GetIt.I<PrefsRepository>()
-          .setRemovedMessageFromBackground(message.data['data']);
+      GetIt.I<PrefsRepository>().setRemovedMessageFromBackground(
+        message.data['data'],
+      );
     } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
       Map<String, dynamic> data = remoteMessage;
-      GetIt.I<PrefsRepository>()
-          .setMessageFromBackground(convert.jsonEncode(data['channel']));
+      GetIt.I<PrefsRepository>().setMessageFromBackground(
+        convert.jsonEncode(data['channel']),
+      );
     } else if (remoteMessage['type'] == 'ChannelDeletedEvent') {
       Map<String, dynamic> data = remoteMessage;
-      GetIt.I<PrefsRepository>()
-          .setRemovedChatFromBackground(data['channel_id'].toString());
+      GetIt.I<PrefsRepository>().setRemovedChatFromBackground(
+        data['channel_id'].toString(),
+      );
     } else {
       if (remoteMessage['message'] == null) return;
       Message myMessage = Message.fromJson(remoteMessage['message']);
       if (myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
         GetIt.I<ChatBloc>().add(
-            NotifyThatIReceivedMessageEvent(channelId: myMessage.channelId!));
+          NotifyThatIReceivedMessageEvent(channelId: myMessage.channelId!),
+        );
       }
       GetIt.I<PrefsRepository>().setMessageFromBackground(
-          convert.jsonEncode(remoteMessage['message']));
+        convert.jsonEncode(remoteMessage['message']),
+      );
       if (myMessage.channel!.channelMembers!
-                  .firstWhere((element) =>
-                      element.userId == GetIt.I<PrefsRepository>().myChatId)
+                  .firstWhere(
+                    (element) =>
+                        element.userId == GetIt.I<PrefsRepository>().myChatId,
+                  )
                   .mute !=
               1 &&
           myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
-        LocalNotificationService()
-            .showNotificationWithPayload(message: message, fromBackGround: 1);
+        LocalNotificationService().showNotificationWithPayload(
+          message: message,
+          fromBackGround: 1,
+        );
       }
     }
   } catch (e, st) {
@@ -287,7 +328,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 38;
+int applicationVersion = 41;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
@@ -344,8 +385,9 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-  FirebaseAnalytics.instance
-      .setSessionTimeoutDuration(const Duration(seconds: 20));
+  FirebaseAnalytics.instance.setSessionTimeoutDuration(
+    const Duration(seconds: 20),
+  );
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
   // GetIt.I<PrefsRepository>().removeRedeemDateForAnyProductFinished();
@@ -353,17 +395,18 @@ void main() async {
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
   NotificationProcess().fcmToken(null, null, null, null);
-  gemini.Gemini.init(
-    apiKey: dotenv.env['Gemini']!,
-  );
+  gemini.Gemini.init(apiKey: dotenv.env['Gemini']!);
   gemini.Gemini.enableDebugging = true;
   print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
   debugPrint(
-      'login _prefsRepository.chatToken${GetIt.I<PrefsRepository>().chatToken}');
+    'login _prefsRepository.chatToken${GetIt.I<PrefsRepository>().chatToken}',
+  );
   debugPrint(
-      'login _prefsRepository.marketToken${GetIt.I<PrefsRepository>().marketToken}');
+    'login _prefsRepository.marketToken${GetIt.I<PrefsRepository>().marketToken}',
+  );
   debugPrint(
-      'login _prefsRepository.storiesToken${GetIt.I<PrefsRepository>().storiesToken}');
+    'login _prefsRepository.storiesToken${GetIt.I<PrefsRepository>().storiesToken}',
+  );
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
@@ -375,14 +418,15 @@ void main() async {
         return bread;
       };
     },
-    appRunner: () => runApp(DevicePreview(
-        enabled: false // !kReleaseMode,
-        ,
+    appRunner: () => runApp(
+      DevicePreview(
+        enabled: false, // !kReleaseMode,
         builder: (context) => DefaultAssetBundle(
-            bundle: SentryAssetBundle(),
-            child: TrydosApplication(
-              navKey: navigatorKey,
-            )))),
+          bundle: SentryAssetBundle(),
+          child: TrydosApplication(navKey: navigatorKey),
+        ),
+      ),
+    ),
   );
 }
 

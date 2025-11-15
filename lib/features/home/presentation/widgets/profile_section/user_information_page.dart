@@ -61,23 +61,26 @@ class _UserInformationPageState extends State<UserInformationPage> {
     homeBloc.state.userInfo?.alternativePhone ?? "";
     if ((homeBloc.state.userInfo?.phone?.length ?? 0) > 4) {
       if (homeBloc.state.userInfo!.phone!.startsWith("+")) {
-        phoneController.text =
-            homeBloc.state.userInfo!.phone!.split("+").toList()[1];
+        phoneController.text = homeBloc.state.userInfo!.phone!
+            .split("+")
+            .toList()[1];
       } else {
         phoneController.text = homeBloc.state.userInfo?.phone ?? "";
       }
     }
     String _getCountryCodeFromNumber(String num) {
       Country newCountry = countries.firstWhere(
-          (element) => '+${num.toLowerCase()}'
-              .startsWith(element.dialCode.toLowerCase()),
-          orElse: () => const Country(
-              name: '',
-              flag: '',
-              code: '',
-              dialCode: '',
-              minLength: 0,
-              maxLength: 0));
+        (element) =>
+            '+${num.toLowerCase()}'.startsWith(element.dialCode.toLowerCase()),
+        orElse: () => const Country(
+          name: '',
+          flag: '',
+          code: '',
+          dialCode: '',
+          minLength: 0,
+          maxLength: 0,
+        ),
+      );
       if (newCountry.code != "") {
         return newCountry.dialCode.split("+").toList()[1];
       }
@@ -85,13 +88,19 @@ class _UserInformationPageState extends State<UserInformationPage> {
     }
 
     String formattedPhone = _formatNumber(
-        phoneController.text, _getCountryCodeFromNumber(phoneController.text));
+      phoneController.text,
+      _getCountryCodeFromNumber(phoneController.text),
+    );
     phoneController.text = formattedPhone;
 
     if ((homeBloc.state.userInfo?.alternativePhone?.length ?? 0) > 4) {
       if (homeBloc.state.userInfo!.alternativePhone!.startsWith("+")) {
-        alternativePhoneController.text =
-            homeBloc.state.userInfo!.alternativePhone!.split("+").toList()[1];
+        alternativePhoneController.text = homeBloc
+            .state
+            .userInfo!
+            .alternativePhone!
+            .split("+")
+            .toList()[1];
       } else {
         alternativePhoneController.text =
             homeBloc.state.userInfo?.alternativePhone ?? "";
@@ -99,14 +108,15 @@ class _UserInformationPageState extends State<UserInformationPage> {
     }
 
     String formattedAlternativePhone = _formatNumber(
-        alternativePhoneController.text,
-        _getCountryCodeFromNumber(alternativePhoneController.text));
+      alternativePhoneController.text,
+      _getCountryCodeFromNumber(alternativePhoneController.text),
+    );
     alternativePhoneController.text = formattedAlternativePhone;
 
     emailController.text =
         (homeBloc.state.userInfo?.email?.contains("@guest.com") ?? false)
-            ? ""
-            : homeBloc.state.userInfo?.email ?? "";
+        ? ""
+        : homeBloc.state.userInfo?.email ?? "";
     changeGender.value =
         (homeBloc.state.userInfo?.gender?.name.toString()) ?? "null";
 
@@ -126,8 +136,9 @@ class _UserInformationPageState extends State<UserInformationPage> {
     // إزالة الفراغات
 
     String inputWithoutCode = input.split("${countryCode}").toList()[1];
-    String digitsOnly =
-        inputWithoutCode.replaceAll(' ', '').replaceAll(RegExp(r'[^0-9]'), '');
+    String digitsOnly = inputWithoutCode
+        .replaceAll(' ', '')
+        .replaceAll(RegExp(r'[^0-9]'), '');
 
     // إضافة فراغات بين كل 3 أرقام
     StringBuffer formatted = StringBuffer();
@@ -148,95 +159,105 @@ class _UserInformationPageState extends State<UserInformationPage> {
       FlutterError.dumpErrorToConsole(error);
     };
     return Scaffold(
-        appBar: TrydosAppBar(
-          appBarParams: AppBarParams(
-              backgroundColor: const Color(0x000000),
-              action: [
-                const Spacer(),
-                Text(
-                  LocaleKeys.profile.tr(),
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.3),
-                ),
-                const Spacer()
-              ],
-              scrolledUnderElevation: 0,
-              backIconColor: Colors.black,
-              withShadow: false),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  _addPhotoWidget(),
-                  SizedBox(
-                    height: 30,
-                    width: 1.sw,
-                  ),
-                  InkWell(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ProfilePersonalInfoPage(
-                            changeGender: changeGender,
-                            visibleSave: visibleSave,
-                            emailController: emailController,
-                            visiblePrefix: visiblePrefix,
-                            visiblePrefixOptional: visiblePrefixOptional,
-                            phoneController: phoneController,
-                            alternativePhoneController:
-                                alternativePhoneController,
-                            fullNameController: fullNameController))),
-                    child: _actionWidget(AppAssets.personalInfoSvg,
-                        LocaleKeys.personal_info.tr()),
-                  ),
-                  SizedBox(
-                    height: 5,
-                    width: 1.sw,
-                  ),
-                  InkWell(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const ProfileSizeInfoPage())),
-                      child: _actionWidget(
-                          AppAssets.sizeLineSvg, LocaleKeys.size.tr())),
-                  SizedBox(
-                    height: 5,
-                    width: 1.sw,
-                  ),
-                  InkWell(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              const ProfileAddressInfoPage())),
-                      child: _actionWidget(
-                          AppAssets.addressSvg, LocaleKeys.address.tr())),
-                  SizedBox(
-                    height: 5,
-                    width: 1.sw,
-                  ),
-                  InkWell(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const ProfileBankCartPage())),
-                    child: _actionWidget(
-                        AppAssets.bankCardSvg, LocaleKeys.bank_cards.tr()),
-                  ),
-                  SizedBox(
-                    height: 12.h,
-                    width: 1.sw,
-                  ),
-                ],
+      appBar: TrydosAppBar(
+        appBarParams: AppBarParams(
+          backgroundColor: const Color(0x000000),
+          action: [
+            const Spacer(),
+            Text(
+              LocaleKeys.profile.tr(),
+              style: context.textTheme.bodyMedium?.mq.copyWith(
+                color: const Color(0xff1D1D1D),
+                letterSpacing: 0.18,
+                fontSize: 14,
+                height: 1.3,
               ),
             ),
+            const Spacer(),
+          ],
+          scrolledUnderElevation: 0,
+          backIconColor: Colors.black,
+          withShadow: false,
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                _addPhotoWidget(),
+                SizedBox(height: 30, width: 1.sw),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePersonalInfoPage(
+                        changeGender: changeGender,
+                        visibleSave: visibleSave,
+                        emailController: emailController,
+                        visiblePrefix: visiblePrefix,
+                        visiblePrefixOptional: visiblePrefixOptional,
+                        phoneController: phoneController,
+                        alternativePhoneController: alternativePhoneController,
+                        fullNameController: fullNameController,
+                      ),
+                    ),
+                  ),
+                  child: _actionWidget(
+                    AppAssets.personalInfoSvg,
+                    LocaleKeys.personal_info.tr(),
+                  ),
+                ),
+                SizedBox(height: 5, width: 1.sw),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileSizeInfoPage(),
+                    ),
+                  ),
+                  child: _actionWidget(
+                    AppAssets.sizeLineSvg,
+                    LocaleKeys.size.tr(),
+                  ),
+                ),
+                SizedBox(height: 5, width: 1.sw),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileAddressInfoPage(),
+                    ),
+                  ),
+                  child: _actionWidget(
+                    AppAssets.addressSvg,
+                    LocaleKeys.address.tr(),
+                  ),
+                ),
+                SizedBox(height: 5, width: 1.sw),
+                InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileBankCartPage(),
+                    ),
+                  ),
+                  child: _actionWidget(
+                    AppAssets.bankCardSvg,
+                    LocaleKeys.bank_cards.tr(),
+                  ),
+                ),
+                SizedBox(height: 12.h, width: 1.sw),
+              ],
+            ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _addPhotoWidget() {
     return InkWell(
       onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const AddPhotoProfilePage())),
+        MaterialPageRoute(builder: (context) => const AddPhotoProfilePage()),
+      ),
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
             previous.updateProfileStatus != current.updateProfileStatus,
@@ -248,8 +269,9 @@ class _UserInformationPageState extends State<UserInformationPage> {
                 width: 128,
                 height: 128,
                 decoration: BoxDecoration(
-                    color: const Color(0xffF8F8F8),
-                    borderRadius: BorderRadius.circular(22.r)),
+                  color: const Color(0xffF8F8F8),
+                  borderRadius: BorderRadius.circular(22.r),
+                ),
               ),
               Positioned(
                 bottom: 0,
@@ -257,31 +279,35 @@ class _UserInformationPageState extends State<UserInformationPage> {
                   width: 128,
                   height: 40,
                   decoration: BoxDecoration(
-                      color: const Color.fromRGBO(0, 0, 0, 0.6),
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(22.r),
-                          bottomLeft: Radius.circular(22.r))),
+                    color: const Color.fromRGBO(0, 0, 0, 0.6),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(22.r),
+                      bottomLeft: Radius.circular(22.r),
+                    ),
+                  ),
                   child: Center(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        AppAssets.addPhotoSvg,
-                        // ignore: deprecated_member_use
-                        color: const Color(0xffFFFFFF),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        LocaleKeys.add.tr() + " " + LocaleKeys.photo.tr(),
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.addPhotoSvg,
+                          // ignore: deprecated_member_use
+                          color: const Color(0xffFFFFFF),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          LocaleKeys.add.tr() + " " + LocaleKeys.photo.tr(),
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xffFFFFFF),
                             letterSpacing: 0.18,
                             fontSize: 12,
-                            height: 1.3),
-                      ),
-                      const SizedBox(width: 20),
-                    ],
-                  )),
+                            height: 1.3,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               !(prefsRepository.myProfilePhoto == null ||
@@ -290,7 +316,8 @@ class _UserInformationPageState extends State<UserInformationPage> {
                       imageUrl: prefsRepository.myProfilePhoto!,
                       width: 128,
                       imageFit: BoxFit.cover,
-                      height: 128)
+                      height: 128,
+                    )
                   : Positioned(
                       top: 35,
                       left: 40,
@@ -300,7 +327,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                         // ignore: deprecated_member_use
                         color: const Color(0xffD3D3D3),
                       ),
-                    )
+                    ),
             ],
           );
         },
@@ -310,29 +337,28 @@ class _UserInformationPageState extends State<UserInformationPage> {
 
   Widget _actionWidget(String svgUrl, String actionName) {
     return Container(
-        padding: const EdgeInsets.all(12),
-        height: 53,
-        width: 1.sw,
-        decoration: BoxDecoration(
-            color: const Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15.r)),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              svgUrl,
+      padding: const EdgeInsets.all(12),
+      height: 53,
+      width: 1.sw,
+      decoration: BoxDecoration(
+        color: const Color(0xffF8F8F8),
+        borderRadius: BorderRadius.circular(15.r),
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset(svgUrl),
+          const SizedBox(width: 10),
+          Text(
+            actionName,
+            style: context.textTheme.bodyMedium?.rq.copyWith(
+              color: const Color(0xff1D1D1D),
+              letterSpacing: 0.18,
+              fontSize: 14,
+              height: 1.3,
             ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(
-              actionName,
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                  color: const Color(0xff1D1D1D),
-                  letterSpacing: 0.18,
-                  fontSize: 14,
-                  height: 1.3),
-            ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

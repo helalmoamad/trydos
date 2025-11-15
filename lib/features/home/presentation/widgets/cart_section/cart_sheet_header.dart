@@ -16,10 +16,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CartDetailsSheetHeader extends StatefulWidget {
   final double shippingCost;
-  const CartDetailsSheetHeader({
-    required this.shippingCost,
-    super.key,
-  });
+  const CartDetailsSheetHeader({required this.shippingCost, super.key});
 
   @override
   State<CartDetailsSheetHeader> createState() => _CartDetailsSheetHeaderState();
@@ -113,8 +110,9 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-          color: colorScheme.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
+        color: colorScheme.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+      ),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
@@ -125,37 +123,29 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
                 child: ListView.builder(
                   controller: _scrollController,
                   padding: HWEdgeInsets.only(bottom: 12),
-                  itemBuilder: (
-                    BuildContext context,
-                    int index,
-                  ) {
+                  itemBuilder: (BuildContext context, int index) {
                     return Row(
                       children: [
-                        SvgPicture.asset(
-                          svg[index],
-                          height: 15,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        SvgPicture.asset(svg[index], height: 15),
+                        const SizedBox(width: 5),
                         index == 0
                             ? MyTextWidget(
                                 '2 June',
-                                style: textTheme.titleMedium?.ba.copyWith(
-                                    color: const Color(0xff505050),
-                                    height: 0,
-                                    fontSize: 11),
+                                style: textTheme.titleMedium?.bq.copyWith(
+                                  color: const Color(0xff505050),
+                                  height: 0,
+                                  fontSize: 11,
+                                ),
                               )
                             : MyTextWidget(
                                 texts[index],
                                 style: textTheme.titleMedium?.rq.copyWith(
-                                    color: const Color(0xff505050),
-                                    height: 0,
-                                    fontSize: 11),
+                                  color: const Color(0xff505050),
+                                  height: 0,
+                                  fontSize: 11,
+                                ),
                               ),
-                        const SizedBox(
-                          width: 10,
-                        )
+                        const SizedBox(width: 10),
                       ],
                     );
                   },
@@ -163,7 +153,7 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
                   itemCount: texts.length,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

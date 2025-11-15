@@ -51,8 +51,10 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     weightController.text = (homeBloc.state.userInfo?.weight ?? "").toString();
     tallController.text = (homeBloc.state.userInfo?.tall ?? "").toString();
-    animationController =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this);
+    animationController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
     super.initState();
   }
 
@@ -70,300 +72,296 @@ class _ProfileSizeInfoPageState extends State<ProfileSizeInfoPage>
       FlutterError.dumpErrorToConsole(error);
     };
     return ValueListenableBuilder<bool>(
-        valueListenable: visibleSave,
-        builder: (context, _visibleSave, _) {
-          return Scaffold(
-              appBar: TrydosAppBar(
-                appBarParams: AppBarParams(
-                    backgroundColor: const Color(0x000000),
-                    action: [
-                      const Spacer(),
-                      !_visibleSave
-                          ? const SizedBox.shrink()
-                          : SizedBox(
-                              width: 55.w,
-                            ),
-                      Text(
-                        LocaleKeys.profile_size_info.tr(),
-                        style: context.textTheme.bodyMedium?.mr.copyWith(
-                            color: const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 14,
-                            height: 1.3),
-                      ),
-                      const Spacer(),
-                      !_visibleSave
-                          ? const SizedBox.shrink()
-                          : BlocBuilder<HomeBloc, HomeState>(
-                              buildWhen: (previous, current) =>
-                                  previous.updateProfileStatus !=
-                                  current.updateProfileStatus,
-                              builder: (context, state) {
-                                if (state.updateProfileStatus ==
-                                    UpdateProfileStatus.success) {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 300),
-                                      () => visibleSave.value = false);
-                                  homeBloc.add(UpdateProfileEvent(
-                                      changeStatusToInit: true));
-                                }
-                                return InkWell(
-                                  onTap: () {
-                                    homeBloc.add(UpdateProfileEvent(
-                                        tall: tallController.text,
-                                        weight: weightController.text));
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    width: 40,
-                                    height: 20,
-                                    child: state.updateProfileStatus ==
-                                            UpdateProfileStatus.loading
-                                        ? TrydosLoader(
-                                            size: 18,
-                                          )
-                                        : Text(
-                                            LocaleKeys.save.tr(),
-                                            style: context
-                                                .textTheme.bodyMedium?.mr
-                                                .copyWith(
-                                                    color:
-                                                        const Color(0xff402CDD),
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 14,
-                                                    height: 1.3),
-                                          ),
-                                  ),
-                                );
-                              }),
-                      !_visibleSave
-                          ? const SizedBox.shrink()
-                          : SizedBox(
-                              width: 15.w,
-                            )
-                    ],
-                    scrolledUnderElevation: 0,
-                    backIconColor: Colors.black,
-                    withShadow: false),
-              ),
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          height: 50,
-                          width: 1.sw,
-                          decoration: BoxDecoration(
-                              color: const Color(0xffF8F8F8),
-                              border:
-                                  Border.all(color: const Color(0xffD3D3D3))),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 10.w,
-                              ),
-                              SvgPicture.asset(
-                                AppAssets.infoSvg,
-                                // ignore: deprecated_member_use
-                                color: const Color(0xff402CDD),
-                                width: 25.w,
-                              ),
-                              SizedBox(
-                                width: 10.w,
-                              ),
-                              Text(
-                                LocaleKeys.entering_your_information_correctly
-                                    .tr(),
-                                style: context.textTheme.bodyMedium?.rr
-                                    .copyWith(
-                                        color: const Color(0xff8D8D8D),
-                                        letterSpacing: 0.18,
-                                        fontSize: 10.sp,
-                                        height: 1.3),
-                              ),
-                            ],
-                          )),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        height: 15,
-                        width: 160,
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.sizeLineSvg,
-                              height: 15,
-                              // ignore: deprecated_member_use
-                              color: const Color(0xff707070),
-                            ),
-                            Text(
-                              LocaleKeys.your_size_info.tr(),
-                              style: context.textTheme.bodyMedium?.mr.copyWith(
-                                  color: const Color(0xff404040),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.2),
-                            ),
-                            SvgPicture.asset(
-                              AppAssets.chatWithQuestionSvg,
-                              // ignore: deprecated_member_use
-                              color: const Color(0xffD3D3D3),
-                              height: 15,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: _sizeAndWeightInfoWidget(
-                            controller: tallController,
-                            context: context,
-                            isComplate: false,
-                            height: 50,
-                            title: LocaleKeys.how_tall_are_you.tr(),
-                            hint: "000 ${LocaleKeys.cm.tr()}"),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: _sizeAndWeightInfoWidget(
-                          height: 50,
-                          context: context,
-                          isComplate: false,
-                          controller: weightController,
-                          hint: "000 ${LocaleKeys.kg.tr()}",
-                          title: LocaleKeys.what_is_your_weight.tr(),
-                        ),
-                      ),
-                    ],
+      valueListenable: visibleSave,
+      builder: (context, _visibleSave, _) {
+        return Scaffold(
+          appBar: TrydosAppBar(
+            appBarParams: AppBarParams(
+              backgroundColor: const Color(0x000000),
+              action: [
+                const Spacer(),
+                !_visibleSave ? const SizedBox.shrink() : SizedBox(width: 55.w),
+                Text(
+                  LocaleKeys.profile_size_info.tr(),
+                  style: context.textTheme.bodyMedium?.mq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.3,
                   ),
                 ),
-              ));
-        });
-  }
-
-  Widget _sizeAndWeightInfoWidget(
-      {required String title,
-      required String hint,
-      required TextEditingController controller,
-      required bool isComplate,
-      required int height,
-      required BuildContext context}) {
-    return ValueListenableBuilder<bool>(
-        valueListenable: validateBox,
-        builder: (context, isValidateBox, _) {
-          if (isValidateBox && controller.text.isNullOrEmpty) {
-            animationController.forward();
-            Future.delayed(
-              const Duration(seconds: 2),
-              () => animationController.reset(),
-            );
-          }
-          return AnimatedBuilder(
-            animation: animationController,
-            builder: (context, child) => Transform.translate(
-              offset: Offset(
-                  !controller.text.isNullOrEmpty
-                      ? 0
-                      : sin(3 * 2 * pi * animationController.value) * 5,
-                  0),
-              child: Container(
-                height: height.toDouble(),
-                width: 1.sw,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.r),
-                    border: Border.all(
-                        color: (isValidateBox && controller.text.isNullOrEmpty)
-                            ? Colors.red
-                            : const Color(0xffD3D3D3))),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding:
-                            const EdgeInsets.only(top: 5, left: 8, right: 8),
-                        height: 18,
-                        child: Row(
-                          children: [
-                            Text(
-                              title,
-                              style: context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: const Color(0xff505050),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: LanguageService.languageCode == "ar"
-                                      ? 0.5
-                                      : 0.8),
+                const Spacer(),
+                !_visibleSave
+                    ? const SizedBox.shrink()
+                    : BlocBuilder<HomeBloc, HomeState>(
+                        buildWhen: (previous, current) =>
+                            previous.updateProfileStatus !=
+                            current.updateProfileStatus,
+                        builder: (context, state) {
+                          if (state.updateProfileStatus ==
+                              UpdateProfileStatus.success) {
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () => visibleSave.value = false,
+                            );
+                            homeBloc.add(
+                              UpdateProfileEvent(changeStatusToInit: true),
+                            );
+                          }
+                          return InkWell(
+                            onTap: () {
+                              homeBloc.add(
+                                UpdateProfileEvent(
+                                  tall: tallController.text,
+                                  weight: weightController.text,
+                                ),
+                              );
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 40,
+                              height: 20,
+                              child:
+                                  state.updateProfileStatus ==
+                                      UpdateProfileStatus.loading
+                                  ? TrydosLoader(size: 18)
+                                  : Text(
+                                      LocaleKeys.save.tr(),
+                                      style: context.textTheme.bodyMedium?.mq
+                                          .copyWith(
+                                            color: const Color(0xff402CDD),
+                                            letterSpacing: 0.18,
+                                            fontSize: 14,
+                                            height: 1.3,
+                                          ),
+                                    ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                      Expanded(
-                          child: Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: AppTextField(
-                                controller: controller,
-                                textInputType: TextInputType.phone,
-                                bordersColor: Colors.white,
-                                isErrorBorder: false,
-                                maxLength: 3,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9\s]'))
-                                ],
-                                textInputAction: TextInputAction.done,
-                                onChange: (val) {
-                                  visibleSave.value = true;
-                                },
-                                validator: (value) {
-                                  if (value.isNullOrEmpty) {
-                                    return LocaleKeys
-                                        .the_field_must_not_be_empty
-                                        .tr();
-                                  }
-                                  return null;
-                                },
-                                onFieldSubmitted: (val) {
-                                  FocusScope.of(context).unfocus();
-                                },
-                                textAlignVertical: TextAlignVertical.center,
-                                hintText: '${hint}',
-                                contentPadding: HWEdgeInsetsDirectional.only(
-                                    start:
-                                        (LanguageService.languageCode != "ar")
-                                            ? 8
-                                            : 8,
-                                    end: 1,
-                                    bottom: 1,
-                                    top: 1),
-                                maxLines: 1,
-                                minLines: 1,
-                                textStyle: context.textTheme.bodyMedium?.mr
-                                    .copyWith(
-                                        color: const Color(0xff1D1D1D),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 1.1),
-                                hintTextStyle: context.textTheme.bodyMedium?.rr
-                                    .copyWith(
-                                        color: const Color(0xffD3D3D3),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 1),
-                              ))),
-                    ]),
+                !_visibleSave ? const SizedBox.shrink() : SizedBox(width: 15.w),
+              ],
+              scrolledUnderElevation: 0,
+              backIconColor: Colors.black,
+              withShadow: false,
+            ),
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 50,
+                    width: 1.sw,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF8F8F8),
+                      border: Border.all(color: const Color(0xffD3D3D3)),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 10.w),
+                        SvgPicture.asset(
+                          AppAssets.infoSvg,
+                          // ignore: deprecated_member_use
+                          color: const Color(0xff402CDD),
+                          width: 25.w,
+                        ),
+                        SizedBox(width: 10.w),
+                        Text(
+                          LocaleKeys.entering_your_information_correctly.tr(),
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: const Color(0xff8D8D8D),
+                            letterSpacing: 0.18,
+                            fontSize: 10.sp,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    height: 15,
+                    width: 160,
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.sizeLineSvg,
+                          height: 15,
+                          // ignore: deprecated_member_use
+                          color: const Color(0xff707070),
+                        ),
+                        Text(
+                          LocaleKeys.your_size_info.tr(),
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                            color: const Color(0xff404040),
+                            letterSpacing: 0.18,
+                            fontSize: 12,
+                            height: 1.2,
+                          ),
+                        ),
+                        SvgPicture.asset(
+                          AppAssets.chatWithQuestionSvg,
+                          // ignore: deprecated_member_use
+                          color: const Color(0xffD3D3D3),
+                          height: 15,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: _sizeAndWeightInfoWidget(
+                      controller: tallController,
+                      context: context,
+                      isComplate: false,
+                      height: 50,
+                      title: LocaleKeys.how_tall_are_you.tr(),
+                      hint: "000 ${LocaleKeys.cm.tr()}",
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: _sizeAndWeightInfoWidget(
+                      height: 50,
+                      context: context,
+                      isComplate: false,
+                      controller: weightController,
+                      hint: "000 ${LocaleKeys.kg.tr()}",
+                      title: LocaleKeys.what_is_your_weight.tr(),
+                    ),
+                  ),
+                ],
               ),
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _sizeAndWeightInfoWidget({
+    required String title,
+    required String hint,
+    required TextEditingController controller,
+    required bool isComplate,
+    required int height,
+    required BuildContext context,
+  }) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: validateBox,
+      builder: (context, isValidateBox, _) {
+        if (isValidateBox && controller.text.isNullOrEmpty) {
+          animationController.forward();
+          Future.delayed(
+            const Duration(seconds: 2),
+            () => animationController.reset(),
           );
-        });
+        }
+        return AnimatedBuilder(
+          animation: animationController,
+          builder: (context, child) => Transform.translate(
+            offset: Offset(
+              !controller.text.isNullOrEmpty
+                  ? 0
+                  : sin(3 * 2 * pi * animationController.value) * 5,
+              0,
+            ),
+            child: Container(
+              height: height.toDouble(),
+              width: 1.sw,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.r),
+                border: Border.all(
+                  color: (isValidateBox && controller.text.isNullOrEmpty)
+                      ? Colors.red
+                      : const Color(0xffD3D3D3),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(top: 5, left: 8, right: 8),
+                    height: 18,
+                    child: Row(
+                      children: [
+                        Text(
+                          title,
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: const Color(0xff505050),
+                            letterSpacing: 0.18,
+                            fontSize: 12,
+                            height: LanguageService.languageCode == "ar"
+                                ? 0.5
+                                : 0.8,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: AppTextField(
+                        controller: controller,
+                        textInputType: TextInputType.phone,
+                        bordersColor: Colors.white,
+                        isErrorBorder: false,
+                        maxLength: 3,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9\s]')),
+                        ],
+                        textInputAction: TextInputAction.done,
+                        onChange: (val) {
+                          visibleSave.value = true;
+                        },
+                        validator: (value) {
+                          if (value.isNullOrEmpty) {
+                            return LocaleKeys.the_field_must_not_be_empty.tr();
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (val) {
+                          FocusScope.of(context).unfocus();
+                        },
+                        textAlignVertical: TextAlignVertical.center,
+                        hintText: '${hint}',
+                        contentPadding: HWEdgeInsetsDirectional.only(
+                          start: (LanguageService.languageCode != "ar") ? 8 : 8,
+                          end: 1,
+                          bottom: 1,
+                          top: 1,
+                        ),
+                        maxLines: 1,
+                        minLines: 1,
+                        textStyle: context.textTheme.bodyMedium?.mq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.1,
+                        ),
+                        hintTextStyle: context.textTheme.bodyMedium?.rq
+                            .copyWith(
+                              color: const Color(0xffD3D3D3),
+                              letterSpacing: 0.18,
+                              fontSize: 14,
+                              height: 1,
+                            ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

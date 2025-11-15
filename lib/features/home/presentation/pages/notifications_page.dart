@@ -102,27 +102,31 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       if (index < itemsCount) {
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 5),
+                            vertical: 15,
+                            horizontal: 5,
+                          ),
                           onTap: () {
-                            HandlingMarketNotifications
-                                .dealWithNotificationFromMarket(
-                                    jsonDecode(items[index]
-                                            .descriptionToHandleNotification ??
-                                        ""),
-                                    false);
+                            HandlingMarketNotifications.dealWithNotificationFromMarket(
+                              jsonDecode(
+                                items[index].descriptionToHandleNotification ??
+                                    "",
+                              ),
+                              false,
+                            );
                           },
                           leading: MyCachedNetworkImage(
-                            imageUrl: items[index].description?.type ==
+                            imageUrl:
+                                items[index].description?.type ==
                                     "boutique created"
                                 ? (items[index].description?.banner?.length ??
-                                            0) ==
-                                        0
-                                    ? ""
-                                    : items[index]
-                                            .description
-                                            ?.banner![0]
-                                            .filePath ??
-                                        ''
+                                              0) ==
+                                          0
+                                      ? ""
+                                      : items[index]
+                                                .description
+                                                ?.banner![0]
+                                                .filePath ??
+                                            ''
                                 : items[index].description?.image ?? '',
                             height: 60,
                             width: 60,
@@ -134,7 +138,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               items[index].description?.type ?? '',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.bodyMedium?.br.copyWith(
+                              style: context.textTheme.bodyMedium?.bq.copyWith(
                                 color: Colors.black,
                                 letterSpacing: 0.18,
                                 fontSize: 14,
@@ -144,7 +148,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           ),
                           subtitle: Text(
                             items[index].description?.description ?? '',
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
+                            style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: Colors.grey,
                               letterSpacing: 0.18,
                               fontSize: 13,
@@ -159,8 +163,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             child: Center(
                               child:
                                   state.getUserNotificationModel!.hasReachedMax
-                                      ? const Text('No More Items')
-                                      : const CircularProgressIndicator(),
+                                  ? const Text('No More Items')
+                                  : const CircularProgressIndicator(),
                             ),
                           );
                         } else {

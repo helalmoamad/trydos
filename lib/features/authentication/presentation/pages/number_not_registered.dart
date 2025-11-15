@@ -31,7 +31,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class NumberNotRegistered extends StatefulWidget {
   const NumberNotRegistered({required this.phoneNumber, Key? key})
-      : super(key: key);
+    : super(key: key);
   final String phoneNumber;
 
   @override
@@ -42,11 +42,13 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
   bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Color(0xffFFF9F0),
-      statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Color(0xffFFF9F0),
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     if (!_eventLogged) {
       FirebaseAnalyticsService.logEventForSession(
         executedEventName: "later_take_look_button",
@@ -80,124 +82,149 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
       FlutterError.dumpErrorToConsole(error);
     };
     return ValueListenableBuilder<int>(
-        valueListenable: pageContent,
-        builder: (context, index, _) {
-          return Scaffold(
-            backgroundColor:
-                index == 0 ? const Color(0xffFFF9F0) : const Color(0xffF4FFF4),
-            body:
-                // ignore: deprecated_member_use
-                WillPopScope(
-              onWillPop: () async {
-                if (pageController.page == 1) {
-                  BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
-                  prefsRepository.setMyMarketName("");
-                  context.go(GRouter
-                          .config.applicationRoutes.kRegistrationCompletedPage +
-                      '?userName=');
-                  return false;
-                }
-                return true;
-              },
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Positioned(top: 50, left: 40, right: 40, child: logo),
-                  PageView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: pageController,
-                    children: [
-                      Column(
+      valueListenable: pageContent,
+      builder: (context, index, _) {
+        return Scaffold(
+          backgroundColor: index == 0
+              ? const Color(0xffFFF9F0)
+              : const Color(0xffF4FFF4),
+          body:
+              // ignore: deprecated_member_use
+              WillPopScope(
+                onWillPop: () async {
+                  if (pageController.page == 1) {
+                    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
+                    prefsRepository.setMyMarketName("");
+                    context.go(
+                      GRouter
+                              .config
+                              .applicationRoutes
+                              .kRegistrationCompletedPage +
+                          '?userName=',
+                    );
+                    return false;
+                  }
+                  return true;
+                },
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Positioned(top: 50, left: 40, right: 40, child: logo),
+                    PageView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: pageController,
+                      children: [
+                        Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Spacer(),
                             Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 40.0),
-                              child: Column(children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SvgPicture.asset(
-                                      AppAssets.registerInfoSvg,
-                                      width: 15,
-                                      height: 15,
-                                      // ignore: deprecated_member_use
-                                      color: const Color(0xffFCAC2D),
-                                    ),
-                                    10.horizontalSpace,
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        MyTextWidget(
-                                          LocaleKeys
-                                              .sorry_this_number_is_not_registered_with_us
-                                              .tr(),
-                                          style: context
-                                              .textTheme.titleLarge?.ra
-                                              .copyWith(
-                                                  color:
-                                                      const Color(0xff5D5C5D),
-                                                  height: 1.42),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  HWEdgeInsets.only(top: 3.0),
-                                              child: SvgPicture.asset(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppAssets.registerInfoSvg,
+                                        width: 15,
+                                        height: 15,
+                                        // ignore: deprecated_member_use
+                                        color: const Color(0xffFCAC2D),
+                                      ),
+                                      10.horizontalSpace,
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          MyTextWidget(
+                                            LocaleKeys
+                                                .sorry_this_number_is_not_registered_with_us
+                                                .tr(),
+                                            style: context
+                                                .textTheme
+                                                .titleLarge
+                                                ?.rq
+                                                .copyWith(
+                                                  color: const Color(
+                                                    0xff5D5C5D,
+                                                  ),
+                                                  height: 1.42,
+                                                ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Padding(
+                                                padding: HWEdgeInsets.only(
+                                                  top: 3.0,
+                                                ),
+                                                child: SvgPicture.asset(
                                                   AppAssets.phoneCallSvg,
                                                   width: 10,
-                                                  height: 10),
-                                            ),
-                                            5.horizontalSpace,
-                                            MyTextWidget(
-                                              widget.phoneNumber,
-                                              textAlign: TextAlign.start,
-                                              style: context
-                                                  .textTheme.titleMedium?.ra
-                                                  .copyWith(
+                                                  height: 10,
+                                                ),
+                                              ),
+                                              5.horizontalSpace,
+                                              MyTextWidget(
+                                                widget.phoneNumber,
+                                                textAlign: TextAlign.start,
+                                                style: context
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.rq
+                                                    .copyWith(
                                                       color: const Color(
-                                                          0xff8D8D8D),
-                                                      height: 1.25),
-                                            ),
-                                          ],
-                                        ),
-                                        10.verticalSpace,
-                                        Row(
-                                          children: [
-                                            15.horizontalSpace,
-                                            MyTextWidget(
-                                              LocaleKeys
-                                                  .register_create_new_account
-                                                  .tr(),
-                                              style: context
-                                                  .textTheme.titleMedium?.ra
-                                                  .copyWith(
+                                                        0xff8D8D8D,
+                                                      ),
+                                                      height: 1.25,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                          10.verticalSpace,
+                                          Row(
+                                            children: [
+                                              15.horizontalSpace,
+                                              MyTextWidget(
+                                                LocaleKeys
+                                                    .register_create_new_account
+                                                    .tr(),
+                                                style: context
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.rq
+                                                    .copyWith(
                                                       color: const Color(
-                                                          0xffC4C2C2),
-                                                      height: 1.25),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ]),
+                                                        0xffC4C2C2,
+                                                      ),
+                                                      height: 1.25,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                             const Spacer(),
                             InkWell(
                               key: TestVariables.kTestMode
                                   ? const Key(
-                                      WidgetsKeys.createNewAccountContinueKey)
+                                      WidgetsKeys.createNewAccountContinueKey,
+                                    )
                                   : null,
                               onTap: () {
                                 pageContent.value = 1;
-                                pageController.animateToPage(1,
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
+                                pageController.animateToPage(
+                                  1,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut,
+                                );
                                 ///////////////////
 
                                 FirebaseAnalyticsService.logEventForSession(
@@ -225,12 +252,12 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                     MyTextWidget(
                                       LocaleKeys.create_new_account_continue
                                           .tr(),
-                                      style:
-                                          textTheme.displayMedium?.ra.copyWith(
-                                        color: const Color(0xff5D5C5D),
-                                        letterSpacing: 0.16,
-                                        height: 1.25,
-                                      ),
+                                      style: textTheme.displayMedium?.rq
+                                          .copyWith(
+                                            color: const Color(0xff5D5C5D),
+                                            letterSpacing: 0.16,
+                                            height: 1.25,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -261,14 +288,18 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                     String? deviceId =
                                         await HelperFunctions.getDeviceId();
                                     BlocProvider.of<AuthBloc>(context).add(
-                                        RegisterGuestEvent(
-                                            deviceId: deviceId!));
+                                      RegisterGuestEvent(deviceId: deviceId!),
+                                    );
                                     //}
                                     if (Navigator.of(context).canPop()) {
                                       Navigator.of(context).pop();
                                     } else {
-                                      context.go(GRouter
-                                          .config.applicationRoutes.kBasePage);
+                                      context.go(
+                                        GRouter
+                                            .config
+                                            .applicationRoutes
+                                            .kBasePage,
+                                      );
                                     }
                                   },
                                 );
@@ -289,13 +320,14 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 );
                               },
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0,
+                                ),
                                 child: MyTextWidget(
                                   LocaleKeys.cancel.tr() +
                                       "&" +
                                       LocaleKeys.later_take_look.tr(),
-                                  style: textTheme.titleLarge?.ra.copyWith(
+                                  style: textTheme.titleLarge?.rq.copyWith(
                                     color: const Color(0xff4d84ff),
                                     letterSpacing: 0.14,
                                     height: 1.43,
@@ -304,19 +336,17 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 44,
-                            ),
-                          ]),
-                      const AddingName(
-                        fromLogin: true,
-                      )
-                    ],
-                  ),
-                ],
+                            const SizedBox(height: 44),
+                          ],
+                        ),
+                        const AddingName(fromLogin: true),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+        );
+      },
+    );
   }
 }

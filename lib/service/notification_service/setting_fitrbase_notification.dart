@@ -183,6 +183,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
                         padding: const EdgeInsets.all(8.0),
                         child: SwitchListTile(
                           inactiveTrackColor: Colors.black,
+                          // ignore: deprecated_member_use
                           activeColor: Colors.green,
                           title: Text(switchLabels[index]),
                           value: switchValues[index],

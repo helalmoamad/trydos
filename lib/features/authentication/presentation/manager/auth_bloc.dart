@@ -74,33 +74,47 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.verifyOtpSignUpUseCase,
   ) : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
-    on<CreateUserEvent>(_onCreateUserEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<UpdateStoriesUserEvent>(_onUpdateStoriesUserEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<UpdateChatUserNameEvent>(_onUpdateChatUserNameEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<LoginToChatEvent>(_onLoginToChatEvent,
-        transformer: throttleDroppable(const Duration(seconds: 10)));
-    on<LoginToStoriesEvent>(_onLoginToStoriesEvent,
-        transformer: throttleDroppable(const Duration(seconds: 10)));
-    on<StoreFcmTokenEvent>(
-      _onStoreFcmTokenEvent,
+    on<CreateUserEvent>(
+      _onCreateUserEvent,
+      transformer: throttleDroppable(throttleDuration),
     );
-    on<SendOtpEvent>(_onSendOtpEvent,
-        transformer: throttleDroppable(const Duration(seconds: 10)));
+    on<UpdateStoriesUserEvent>(
+      _onUpdateStoriesUserEvent,
+      transformer: throttleDroppable(throttleDuration),
+    );
+    on<UpdateChatUserNameEvent>(
+      _onUpdateChatUserNameEvent,
+      transformer: throttleDroppable(throttleDuration),
+    );
+    on<LoginToChatEvent>(
+      _onLoginToChatEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
+    on<LoginToStoriesEvent>(
+      _onLoginToStoriesEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
+    on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent);
+    on<SendOtpEvent>(
+      _onSendOtpEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
     on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
-    on<VerifyOtpFromGuestEvent>(
-      _onVerifyGuestPhoneEvent,
+    on<VerifyOtpFromGuestEvent>(_onVerifyGuestPhoneEvent);
+    on<RegisterGuestEvent>(
+      _onRegisterGuestEvent,
+      transformer: throttleDroppable(const Duration(seconds: 5)),
     );
-    on<RegisterGuestEvent>(_onRegisterGuestEvent,
-        transformer: throttleDroppable(const Duration(seconds: 5)));
-    on<UpdateNameEvent>(_onUpdateNameEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
-        transformer: restartable());
+    on<UpdateNameEvent>(
+      _onUpdateNameEvent,
+      transformer: throttleDroppable(throttleDuration),
+    );
+    on<GetCustomerInfoEvent>(
+      _onGetCustomerInfoEvent,
+      transformer: restartable(),
+    );
     on<GetUserCountryEvent>(
       _onGetUserCountryEvent,
       //transformer: throttleDroppable(throttleDuration)
@@ -127,21 +141,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
   FutureOr<void> _onCreateUserEvent(
-      CreateUserEvent event, Emitter<AuthState> emit) async {
+    CreateUserEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(createUserStatus: CreateUserStatus.loading));
 
     final response = await createUserUseCase(
       CreateUserParams(
-          mobilePhone: event.mobilePhone,
-          password: event.password,
-          name: event.name),
+        mobilePhone: event.mobilePhone,
+        password: event.password,
+        name: event.name,
+      ),
     );
     response.fold(
       (l) => emit(state.copyWith(createUserStatus: CreateUserStatus.failure)),
       (r) {
-        emit(
-          state.copyWith(createUserStatus: CreateUserStatus.success),
-        );
+        emit(state.copyWith(createUserStatus: CreateUserStatus.success));
       },
     );
   }
@@ -163,20 +178,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('LoginToChatEvent', l.statusCode)) {
-          add(LoginToChatEvent(
+          add(
+            LoginToChatEvent(
               mobilePhone: event.mobilePhone,
               otpIdToken: event.otpIdToken,
               name: event.name,
               fcmToken: event.fcmToken,
-              originalUserId: event.originalUserId));
+              originalUserId: event.originalUserId,
+            ),
+          );
           ErrorManager.incrementRetry('LoginToChatEvent');
         }
         emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
-        showMessage("fail to log in to chat",
-            foreGroundColor: Colors.white,
-            hasError: true,
-            backGroundColor: Colors.black,
-            showInRelease: true);
+        showMessage(
+          "fail to log in to chat",
+          foreGroundColor: Colors.white,
+          hasError: true,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+        );
         _prefsRepository.setLogInToChat(false);
       },
       (r) {
@@ -188,11 +208,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final name = r.data!.name;
         final photo = r.data!.photoPath;
         final checkToken = token?.isNotEmpty ?? false;
-        GetIt.I<ChatBloc>().add(UpdateProfileInChatEvent(
+        GetIt.I<ChatBloc>().add(
+          UpdateProfileInChatEvent(
             userId: _prefsRepository.myMarketId.toString(),
             name: _prefsRepository.myMarketName ?? "",
             photo: _prefsRepository.myProfilePhoto ?? "",
-            phone: r.data?.mobilePhone ?? ""));
+            phone: r.data?.mobilePhone ?? "",
+          ),
+        );
         if (checkToken) {
           _prefsRepository.setChatToken(token!);
           _prefsRepository.setMyChatId(id!);
@@ -209,7 +232,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onStoreFcmTokenEvent(
-      StoreFcmTokenEvent event, Emitter<AuthState> emit) async {
+    StoreFcmTokenEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     if (event.serverName == ServerName.chat &&
         (_prefsRepository.chatToken?.length ?? 0) < 7) {
       return;
@@ -220,155 +245,207 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
     final response = await storeFcmUseCase(
       StoreFcmParams(
-          userId: event.userId,
-          fcmToken: event.fcmToken,
-          serverName: event.serverName),
+        userId: event.userId,
+        fcmToken: event.fcmToken,
+        serverName: event.serverName,
+      ),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('StoreFcmTokenEvent', l.statusCode)) {
-        add(StoreFcmTokenEvent(
-            userId: event.userId,
-            fcmToken: event.fcmToken,
-            serverName: event.serverName));
-        ErrorManager.incrementRetry('StoreFcmTokenEvent');
-      }
-      emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('StoreFcmTokenEvent');
-      final id = r.data!.id;
-      _prefsRepository.setFcmTokenId(id!);
-      emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('StoreFcmTokenEvent', l.statusCode)) {
+          add(
+            StoreFcmTokenEvent(
+              userId: event.userId,
+              fcmToken: event.fcmToken,
+              serverName: event.serverName,
+            ),
+          );
+          ErrorManager.incrementRetry('StoreFcmTokenEvent');
+        }
+        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
+      },
+      (r) {
+        ErrorManager.resetRetry('StoreFcmTokenEvent');
+        final id = r.data!.id;
+        _prefsRepository.setFcmTokenId(id!);
+        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
+      },
+    );
   }
 
   FutureOr<void> _onSendOtpEvent(
-      SendOtpEvent event, Emitter<AuthState> emit) async {
+    SendOtpEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     _prefsRepository.clearVerificationId();
     emit(state.copyWith(sendOtpStatus: SendOtpStatus.loading));
     final response = await sendOtpUseCase(
       SendOtpParams(isViaWhatsApp: event.isViaWhatsApp, phone: event.phone),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('SendOtpEvent', l.statusCode)) {
-        add(SendOtpEvent(
-            isViaWhatsApp: event.isViaWhatsApp, phone: event.phone));
-        ErrorManager.incrementRetry('SendOtpEvent');
-      }
-      emit(state.copyWith(
-          sendOtpStatus: SendOtpStatus.failure,
-          sendOtpError: 'please wait some seconds and try again'));
-    }, (r) {
-      ErrorManager.resetRetry('SendOtpEvent');
-      _prefsRepository.setVerificationId(r.data!.verificationId!);
-      emit(state.copyWith(sendOtpStatus: SendOtpStatus.success));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('SendOtpEvent', l.statusCode)) {
+          add(
+            SendOtpEvent(
+              isViaWhatsApp: event.isViaWhatsApp,
+              phone: event.phone,
+            ),
+          );
+          ErrorManager.incrementRetry('SendOtpEvent');
+        }
+        emit(
+          state.copyWith(
+            sendOtpStatus: SendOtpStatus.failure,
+            sendOtpError: 'please wait some seconds and try again',
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('SendOtpEvent');
+        _prefsRepository.setVerificationId(r.data!.verificationId!);
+        emit(state.copyWith(sendOtpStatus: SendOtpStatus.success));
+      },
+    );
   }
 
   FutureOr<void> _onVerifyGuestPhoneEvent(
-      VerifyOtpFromGuestEvent event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(
-        verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.loading));
+    VerifyOtpFromGuestEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.loading,
+      ),
+    );
     final response = await verifyOtpFromGuestUseCase(
       VerifyOtpFromGuestParams(
-          otp: event.otp, verificationId: event.verificationId),
+        otp: event.otp,
+        verificationId: event.verificationId,
+      ),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('VerifyOtpFromGuestEvent', l.statusCode)) {
-        add(VerifyOtpFromGuestEvent(
-            otp: event.otp, verificationId: event.verificationId));
-        ErrorManager.incrementRetry('VerifyOtpFromGuestEvent');
-      }
-      emit(state.copyWith(
-          verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('VerifyOtpFromGuestEvent');
-      try {
-        if ((r.data!.user?.name?.replaceAll(' ', '') ?? '') != '') {
-          _prefsRepository.setMyMarketName(r.data!.user!.name!);
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('VerifyOtpFromGuestEvent', l.statusCode)) {
+          add(
+            VerifyOtpFromGuestEvent(
+              otp: event.otp,
+              verificationId: event.verificationId,
+            ),
+          );
+          ErrorManager.incrementRetry('VerifyOtpFromGuestEvent');
         }
+        emit(
+          state.copyWith(
+            verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('VerifyOtpFromGuestEvent');
+        try {
+          if ((r.data!.user?.name?.replaceAll(' ', '') ?? '') != '') {
+            _prefsRepository.setMyMarketName(r.data!.user!.name!);
+          }
 
-        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-        _prefsRepository.setMarketToken(r.data?.token.toString());
+          _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+          _prefsRepository.setMarketToken(r.data?.token.toString());
 
-        Future.delayed(
-          const Duration(seconds: 30),
-          () {
+          Future.delayed(const Duration(seconds: 30), () {
             print("#########33333333332");
             _prefsRepository.setTokenExpired(false);
-          },
-        );
-        GetIt.I<HomeBloc>()
-            .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
-        _prefsRepository.setVerifiedPhone(r.data?.user?.isPhoneVerified == 1);
-        _prefsRepository.setPhoneNumber((r.data?.user?.phone).toString());
-        _prefsRepository
-            .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
-        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
-        GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
-        //GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+          });
+          GetIt.I<HomeBloc>().add(
+            SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
+          );
+          _prefsRepository.setVerifiedPhone(r.data?.user?.isPhoneVerified == 1);
+          _prefsRepository.setPhoneNumber((r.data?.user?.phone).toString());
+          _prefsRepository.setMyProfilePhoto(
+            (r.data?.user?.image ?? "").toString(),
+          );
+          GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+          GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+          GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
+          //GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
 
-        add(LoginToStoriesEvent(
-          name: r.data!.user?.name,
-          originalUserId: r.data!.user?.id.toString(),
-          otpIdToken: r.data?.idToken,
-          phone: r.data?.user?.phone,
-        ));
-        add(GenerateTokenForCommentEvent(
-            mobilePhone: r.data?.user?.phone,
-            otpIdToken: r.data?.idToken,
-            userId: r.data!.user?.id.toString()));
-      } catch (error) {
-        showMessage(
-          error.toString(),
-          hasError: true,
+          add(
+            LoginToStoriesEvent(
+              name: r.data!.user?.name,
+              originalUserId: r.data!.user?.id.toString(),
+              otpIdToken: r.data?.idToken,
+              phone: r.data?.user?.phone,
+            ),
+          );
+          add(
+            GenerateTokenForCommentEvent(
+              mobilePhone: r.data?.user?.phone,
+              otpIdToken: r.data?.idToken,
+              userId: r.data!.user?.id.toString(),
+            ),
+          );
+        } catch (error) {
+          showMessage(error.toString(), hasError: true);
+        }
+        debugPrint(
+          'login _prefsRepository.chatToken${_prefsRepository.chatToken}',
         );
-      }
-      debugPrint(
-          'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
-      debugPrint(
-          'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
-      debugPrint(
-          'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
+        debugPrint(
+          'login _prefsRepository.marketToken${_prefsRepository.marketToken}',
+        );
+        debugPrint(
+          'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}',
+        );
 
-      emit(state.copyWith(
-          verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.success));
-      await NotificationProcess().fcmToken(
+        emit(
+          state.copyWith(
+            verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.success,
+          ),
+        );
+        await NotificationProcess().fcmToken(
           r.data?.user?.phone,
           r.data!.user?.name,
           r.data!.user?.id.toString(),
-          r.data!.user?.lastOtpIdToken);
-    });
+          r.data!.user?.lastOtpIdToken,
+        );
+      },
+    );
   }
 
-//todo _onLoginToStoriesEvent
+  //todo _onLoginToStoriesEvent
   FutureOr<void> _onLoginToStoriesEvent(
-      LoginToStoriesEvent event, Emitter<AuthState> emit) async {
+    LoginToStoriesEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.loading));
 
     final response = await loginToStoriesUseCase(
       LoginToStoriesParams(
-          phone: event.phone,
-          name: event.name,
-          otpIdToken: event.otpIdToken,
-          originalUserId: event.originalUserId),
+        phone: event.phone,
+        name: event.name,
+        otpIdToken: event.otpIdToken,
+        originalUserId: event.originalUserId,
+      ),
     );
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('LoginToStoriesEvent', l.statusCode)) {
-          add(LoginToStoriesEvent(
+          add(
+            LoginToStoriesEvent(
               phone: event.phone,
               name: event.name,
               otpIdToken: event.otpIdToken,
-              originalUserId: event.originalUserId));
+              originalUserId: event.originalUserId,
+            ),
+          );
           ErrorManager.incrementRetry('LoginToStoriesEvent');
         }
         emit(
-            state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure));
+          state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure),
+        );
       },
       (r) {
         emit(
-            state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.success));
+          state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.success),
+        );
         ErrorManager.resetRetry('LoginToStoriesEvent');
 
         final id = r.data!.id;
@@ -388,85 +465,225 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onVerifyOtpInProfileEvent(
-      VerifyOtpInProfileEvent event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(
-        verifyOtpInProfileStatus: VerifyOtpInProfileStatus.loading));
+    VerifyOtpInProfileEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        verifyOtpInProfileStatus: VerifyOtpInProfileStatus.loading,
+      ),
+    );
 
     final response = await verifyOtpInProfileUseCase(
       VerifyOtpInProfileParams(
-          verificationId: event.verificationId, otp: event.otp),
+        verificationId: event.verificationId,
+        otp: event.otp,
+      ),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('VerifyOtpInProfileEvent', l.statusCode)) {
-        add(VerifyOtpInProfileEvent(
-            verificationId: event.verificationId, otp: event.otp));
-        ErrorManager.incrementRetry('VerifyOtpInProfileEvent');
-      }
-      emit(state.copyWith(
-          verifyOtpInProfileStatus: VerifyOtpInProfileStatus.failure,
-          signInErrorMessage: l.message));
-    }, (r) async {
-      ErrorManager.resetRetry('VerifyOtpInProfileEvent');
-      _prefsRepository.setIdToken((r.data!.idToken).toString());
-      emit(state.copyWith(
-        verifyOtpInProfileStatus: VerifyOtpInProfileStatus.success,
-      ));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('VerifyOtpInProfileEvent', l.statusCode)) {
+          add(
+            VerifyOtpInProfileEvent(
+              verificationId: event.verificationId,
+              otp: event.otp,
+            ),
+          );
+          ErrorManager.incrementRetry('VerifyOtpInProfileEvent');
+        }
+        emit(
+          state.copyWith(
+            verifyOtpInProfileStatus: VerifyOtpInProfileStatus.failure,
+            signInErrorMessage: l.message,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('VerifyOtpInProfileEvent');
+        _prefsRepository.setIdToken((r.data!.idToken).toString());
+        emit(
+          state.copyWith(
+            verifyOtpInProfileStatus: VerifyOtpInProfileStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onVerifyOtpSignInEvent(
-      VerifyOtpSignInEvent event, Emitter<AuthState> emit) async {
+    VerifyOtpSignInEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(verifyOtpSignInStatus: VerifyOtpSignInStatus.loading));
 
     final response = await verifyOtpSignInUseCase(
       VerifyOtpSignInParams(
-          verificationId: event.verificationId, otp: event.otp),
+        verificationId: event.verificationId,
+        otp: event.otp,
+      ),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('VerifyOtpSignInEvent', l.statusCode)) {
-        add(VerifyOtpSignInEvent(
-            verificationId: event.verificationId,
-            otp: event.otp,
-            phone: event.phone));
-        ErrorManager.incrementRetry('VerifyOtpSignInEvent');
-      }
-      emit(state.copyWith(
-          verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
-          signInErrorMessage: l.message));
-    }, (r) {
-      ErrorManager.resetRetry('VerifyOtpSignInEvent');
-      try {
-        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('VerifyOtpSignInEvent', l.statusCode)) {
+          add(
+            VerifyOtpSignInEvent(
+              verificationId: event.verificationId,
+              otp: event.otp,
+              phone: event.phone,
+            ),
+          );
+          ErrorManager.incrementRetry('VerifyOtpSignInEvent');
+        }
+        emit(
+          state.copyWith(
+            verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
+            signInErrorMessage: l.message,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('VerifyOtpSignInEvent');
+        try {
+          _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+          if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
+            _prefsRepository.setMyMarketName(r.data!.user!.name!);
+          }
+
+          _prefsRepository.setMarketToken(r.data!.token!);
+          _prefsRepository.setTokenExpired(false);
+          _prefsRepository.setIdToken((r.data!.idToken).toString());
+          GetIt.I<HomeBloc>().add(
+            SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
+          );
+          GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+          GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+          GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
+          // GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+          _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+          print(
+            "*****************************-----------------------------${r.data!.token!}",
+          );
+          _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
+          _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+          _prefsRepository.setMyProfilePhoto(
+            (r.data?.user?.image ?? "").toString(),
+          );
+          NotificationProcess().fcmToken(
+            r.data!.user!.phone,
+            r.data!.user!.name,
+            r.data!.user!.id!.toString(),
+            r.data!.idToken,
+          );
+          ////////////////////////
+          FirebaseAnalytics.instance.setUserId(id: r.data!.user!.id.toString());
+
+          FirebaseAnalytics.instance.setUserId(id: "12345");
+
+          FirebaseAnalytics.instance.setUserProperty(
+            name: 'gender',
+            value: r.data!.user!.gender.toString(),
+          );
+
+          FirebaseAnalytics.instance.setUserProperty(
+            name: 'user_type',
+            value: 'registered',
+          );
+          ///////////////////////
+          add(
+            LoginToStoriesEvent(
+              originalUserId: r.data!.user!.id!.toString(),
+              otpIdToken: r.data!.idToken!,
+              name: r.data!.user!.name,
+              phone: r.data!.user!.phone,
+            ),
+          );
+          add(
+            GenerateTokenForCommentEvent(
+              mobilePhone: r.data?.user?.phone,
+              otpIdToken: r.data?.idToken,
+              userId: r.data!.user?.id.toString(),
+            ),
+          );
+        } catch (error) {
+          showMessage(error.toString(), hasError: true);
+        }
+        debugPrint(
+          'login _prefsRepository.chatToken${_prefsRepository.chatToken}',
+        );
+        debugPrint(
+          'login _prefsRepository.marketToken${_prefsRepository.marketToken}',
+        );
+        debugPrint(
+          'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}',
+        );
+        if (!r.data!.alreadyExist!) {
+          emit(
+            state.copyWith(
+              verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
+              marketUser: r.data!.user,
+              signInErrorMessage: 'auth-001',
+            ),
+          );
+
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
+            marketUser: r.data!.user,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onVerifyOtpSignUpEvent(
+    VerifyOtpSignUpEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(state.copyWith(verifyOtpSignUpStatus: VerifyOtpSignUpStatus.loading));
+    final response = await verifyOtpSignUpUseCase(
+      VerifyOtpSignUpParams(
+        verificationId: event.verificationId,
+        otp: event.otp,
+        name: event.name,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('VerifyOtpSignUpEvent', l.statusCode)) {
+          add(
+            VerifyOtpSignUpEvent(
+              verificationId: event.verificationId,
+              otp: event.otp,
+              name: event.name,
+            ),
+          );
+          ErrorManager.incrementRetry('VerifyOtpSignUpEvent');
+        }
+        emit(
+          state.copyWith(
+            signUpErrorMessage: 'faild',
+            verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('VerifyOtpSignUpEvent');
         if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
           _prefsRepository.setMyMarketName(r.data!.user!.name!);
         }
-
+        GetIt.I<HomeBloc>().add(
+          SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
+        );
+        _prefsRepository.setOtpCode(event.otp);
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setTokenExpired(false);
-        _prefsRepository.setIdToken((r.data!.idToken).toString());
-        GetIt.I<HomeBloc>()
-            .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
-        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
-        GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
-        // GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
-        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-        print(
-            "*****************************-----------------------------${r.data!.token!}");
-        _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-        _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-        _prefsRepository
-            .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
-        NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
-            r.data!.user!.id!.toString(), r.data!.idToken);
-        ////////////////////////
-        FirebaseAnalytics.instance.setUserId(
-          id: r.data!.user!.id.toString(),
-        );
 
-        FirebaseAnalytics.instance.setUserId(
-          id: "12345",
-        );
+        //////////////////////////////////////
+        FirebaseAnalytics.instance.setUserId(id: r.data!.user!.id.toString());
+        FirebaseAnalytics.instance.setUserId(id: "12345");
 
         FirebaseAnalytics.instance.setUserProperty(
           name: 'gender',
@@ -475,259 +692,210 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         FirebaseAnalytics.instance.setUserProperty(
           name: 'user_type',
-          value: 'registered',
+          value: 'new',
         );
-        ///////////////////////
-        add(LoginToStoriesEvent(
-          originalUserId: r.data!.user!.id!.toString(),
-          otpIdToken: r.data!.idToken!,
-          name: r.data!.user!.name,
-          phone: r.data!.user!.phone,
-        ));
-        add(GenerateTokenForCommentEvent(
+        /////////////////////////////////////
+        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
+        //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+        ;
+        _prefsRepository.setIdToken((r.data!.idToken).toString());
+        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+        //    print(
+        //    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${r.data!.user?.isPhoneVerified}");
+
+        _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
+        _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+        _prefsRepository.setMyProfilePhoto(
+          (r.data?.user?.image ?? "").toString(),
+        );
+        NotificationProcess().fcmToken(
+          r.data!.user!.phone,
+          r.data!.user!.name,
+          r.data!.user!.id!.toString(),
+          r.data!.idToken,
+        );
+        add(
+          LoginToStoriesEvent(
+            originalUserId: r.data!.user!.id!.toString(),
+            otpIdToken: r.data!.idToken!,
+            name: r.data!.user!.name,
+            phone: r.data!.user!.phone,
+          ),
+        );
+        add(
+          GenerateTokenForCommentEvent(
             mobilePhone: r.data?.user?.phone,
             otpIdToken: r.data?.idToken,
-            userId: r.data!.user?.id.toString()));
-      } catch (error) {
-        showMessage(
-          error.toString(),
-          hasError: true,
+            userId: r.data!.user?.id.toString(),
+          ),
         );
-      }
-      debugPrint(
-          'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
-      debugPrint(
-          'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
-      debugPrint(
-          'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
-      if (!r.data!.alreadyExist!) {
-        emit(state.copyWith(
-            verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
+
+        if (r.data!.alreadyExist!) {
+          emit(
+            state.copyWith(
+              verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
+              marketUser: r.data!.user,
+              signUpErrorMessage: 'auth-001',
+            ),
+          );
+
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
             marketUser: r.data!.user,
-            signInErrorMessage: 'auth-001'));
-
-        return;
-      }
-
-      emit(state.copyWith(
-          verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
-          marketUser: r.data!.user));
-    });
-  }
-
-  FutureOr<void> _onVerifyOtpSignUpEvent(
-      VerifyOtpSignUpEvent event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(verifyOtpSignUpStatus: VerifyOtpSignUpStatus.loading));
-    final response = await verifyOtpSignUpUseCase(
-      VerifyOtpSignUpParams(
-          verificationId: event.verificationId,
-          otp: event.otp,
-          name: event.name),
+          ),
+        );
+      },
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('VerifyOtpSignUpEvent', l.statusCode)) {
-        add(VerifyOtpSignUpEvent(
-            verificationId: event.verificationId,
-            otp: event.otp,
-            name: event.name));
-        ErrorManager.incrementRetry('VerifyOtpSignUpEvent');
-      }
-      emit(state.copyWith(
-        signUpErrorMessage: 'faild',
-        verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-      ));
-    }, (r) {
-      ErrorManager.resetRetry('VerifyOtpSignUpEvent');
-      if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
-        _prefsRepository.setMyMarketName(r.data!.user!.name!);
-      }
-      GetIt.I<HomeBloc>()
-          .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
-      _prefsRepository.setOtpCode(event.otp);
-      _prefsRepository.setMarketToken(r.data!.token!);
-      _prefsRepository.setTokenExpired(false);
-
-      //////////////////////////////////////
-      FirebaseAnalytics.instance.setUserId(
-        id: r.data!.user!.id.toString(),
-      );
-      FirebaseAnalytics.instance.setUserId(
-        id: "12345",
-      );
-
-      FirebaseAnalytics.instance.setUserProperty(
-        name: 'gender',
-        value: r.data!.user!.gender.toString(),
-      );
-
-      FirebaseAnalytics.instance.setUserProperty(
-        name: 'user_type',
-        value: 'new',
-      );
-      /////////////////////////////////////
-      GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-      GetIt.I<HomeBloc>().add(const GetCartItemEvent());
-      GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
-      //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
-      ;
-      _prefsRepository.setIdToken((r.data!.idToken).toString());
-      _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-      //    print(
-      //    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${r.data!.user?.isPhoneVerified}");
-
-      _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-      _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-      _prefsRepository
-          .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
-      NotificationProcess().fcmToken(r.data!.user!.phone, r.data!.user!.name,
-          r.data!.user!.id!.toString(), r.data!.idToken);
-      add(LoginToStoriesEvent(
-        originalUserId: r.data!.user!.id!.toString(),
-        otpIdToken: r.data!.idToken!,
-        name: r.data!.user!.name,
-        phone: r.data!.user!.phone,
-      ));
-      add(GenerateTokenForCommentEvent(
-          mobilePhone: r.data?.user?.phone,
-          otpIdToken: r.data?.idToken,
-          userId: r.data!.user?.id.toString()));
-
-      if (r.data!.alreadyExist!) {
-        emit(state.copyWith(
-            verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-            marketUser: r.data!.user,
-            signUpErrorMessage: 'auth-001'));
-
-        return;
-      }
-
-      emit(state.copyWith(
-          verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
-          marketUser: r.data!.user));
-    });
   }
 
   FutureOr<void> _onRegisterGuestEvent(
-      RegisterGuestEvent event, Emitter<AuthState> emit) async {
+    RegisterGuestEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     _prefsRepository.clearTokenForMarket();
     _prefsRepository.clearTokensForChatAndStory();
 
     emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
     final response = await registerGuestUseCase(
       RegisterGuestParams(
-          deviceId: event.deviceId, oldGuestUserId: event.oldGuestUserId),
+        deviceId: event.deviceId,
+        oldGuestUserId: event.oldGuestUserId,
+      ),
     );
     bool? previousStatusOfIsVerifiedPhone =
         _prefsRepository.isVerifiedPhone ?? false;
     _prefsRepository.setVerifiedPhone(false);
-    response.fold((l) {
-      _prefsRepository.setVerifiedPhone(previousStatusOfIsVerifiedPhone);
-      if (ErrorManager.shouldRetry('RegisterGuestEvent', l.statusCode)) {
-        add(RegisterGuestEvent(
-            deviceId: event.deviceId, oldGuestUserId: event.oldGuestUserId));
-        ErrorManager.incrementRetry('RegisterGuestEvent');
-      }
-      emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
-    }, (r) {
-      emit(state.copyWith(
-          registerGuestStatus: RegisterGuestStatus.success,
-          marketUser: r.data!.user));
-      Future.delayed(
-        const Duration(minutes: 2),
-        () {
+    response.fold(
+      (l) {
+        _prefsRepository.setVerifiedPhone(previousStatusOfIsVerifiedPhone);
+        if (ErrorManager.shouldRetry('RegisterGuestEvent', l.statusCode)) {
+          add(
+            RegisterGuestEvent(
+              deviceId: event.deviceId,
+              oldGuestUserId: event.oldGuestUserId,
+            ),
+          );
+          ErrorManager.incrementRetry('RegisterGuestEvent');
+        }
+        emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            registerGuestStatus: RegisterGuestStatus.success,
+            marketUser: r.data!.user,
+          ),
+        );
+        Future.delayed(const Duration(minutes: 2), () {
           _prefsRepository.setTokenExpired(false);
-        },
-      );
-      ErrorManager.resetRetry('RegisterGuestEvent');
-      _prefsRepository.setMarketToken(r.data!.token!);
-      _prefsRepository
-          .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
-      _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
+        });
+        ErrorManager.resetRetry('RegisterGuestEvent');
+        _prefsRepository.setMarketToken(r.data!.token!);
+        _prefsRepository.setMyProfilePhoto(
+          (r.data?.user?.image ?? "").toString(),
+        );
+        _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
 
-      //////////////////////////////////////
-      FirebaseAnalytics.instance.setUserId(
-        id: r.data!.user!.id.toString(),
-      );
+        //////////////////////////////////////
+        FirebaseAnalytics.instance.setUserId(id: r.data!.user!.id.toString());
 
-      FirebaseAnalytics.instance.setUserId(
-        id: "12345",
-      );
+        FirebaseAnalytics.instance.setUserId(id: "12345");
 
-      FirebaseAnalytics.instance.setUserProperty(
-        name: 'gender',
-        value: r.data!.user!.gender.toString(),
-      );
+        FirebaseAnalytics.instance.setUserProperty(
+          name: 'gender',
+          value: r.data!.user!.gender.toString(),
+        );
 
-      FirebaseAnalytics.instance.setUserProperty(
-        name: 'user_type',
-        value: 'guest',
-      );
-      /////////////////////////////////////
+        FirebaseAnalytics.instance.setUserProperty(
+          name: 'user_type',
+          value: 'guest',
+        );
+        /////////////////////////////////////
 
-      GetIt.I<HomeBloc>()
-          .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
-      _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-      GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-      GetIt.I<HomeBloc>().add(const GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(
+          SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
+        );
+        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+        GetIt.I<HomeBloc>().add(const GetCartItemEvent());
 
-      GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
-      //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
-      NotificationProcess().fcmToken(null, null, null, null);
-    });
+        GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
+        //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+        NotificationProcess().fcmToken(null, null, null, null);
+      },
+    );
   }
 
   FutureOr<void> _onUpdateNameEvent(
-      UpdateNameEvent event, Emitter<AuthState> emit) async {
+    UpdateNameEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(updateNameStatus: UpdateNameStatus.loading));
     final response = await updateNameUseCase(
       UpdateNameParams(name: event.name),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateNameEvent', l.statusCode)) {
-        add(UpdateNameEvent(name: event.name));
-        ErrorManager.incrementRetry('UpdateNameEvent');
-      }
-      emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure));
-    }, (r) {
-      //  GetIt.I<HomeBloc>().add(UpdateProfileEvent(name: event.name));
-      add(UpdateChatUserNameEvent(name: event.name ?? ""));
-      add(UpdateStoriesUserEvent(name: event.name ?? ""));
-      ErrorManager.resetRetry('UpdateNameEvent');
-      emit(state.copyWith(
-        updateNameStatus: UpdateNameStatus.success,
-      ));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('UpdateNameEvent', l.statusCode)) {
+          add(UpdateNameEvent(name: event.name));
+          ErrorManager.incrementRetry('UpdateNameEvent');
+        }
+        emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure));
+      },
+      (r) {
+        //  GetIt.I<HomeBloc>().add(UpdateProfileEvent(name: event.name));
+        add(UpdateChatUserNameEvent(name: event.name ?? ""));
+        add(UpdateStoriesUserEvent(name: event.name ?? ""));
+        ErrorManager.resetRetry('UpdateNameEvent');
+        emit(state.copyWith(updateNameStatus: UpdateNameStatus.success));
+      },
+    );
   }
 
   FutureOr<void> _onGetCustomerInfoEvent(
-      GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
+    GetCustomerInfoEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetCustomerInfoEvent', l.statusCode)) {
-        add(GetCustomerInfoEvent());
-        ErrorManager.incrementRetry('GetCustomerInfoEvent');
-      }
-      emit(
-          state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.failure));
-    }, (userInfo) {
-      ErrorManager.resetRetry('GetCustomerInfoEvent');
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetCustomerInfoEvent', l.statusCode)) {
+          add(GetCustomerInfoEvent());
+          ErrorManager.incrementRetry('GetCustomerInfoEvent');
+        }
+        emit(
+          state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.failure),
+        );
+      },
+      (userInfo) {
+        ErrorManager.resetRetry('GetCustomerInfoEvent');
 
-      _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
-      if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
-        _prefsRepository.setMyMarketName(userInfo.name!);
-        _prefsRepository.setMyChatName(userInfo.name!);
+        _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
+        if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
+          _prefsRepository.setMyMarketName(userInfo.name!);
+          _prefsRepository.setMyChatName(userInfo.name!);
 
-        _prefsRepository.setMyStoriesName(userInfo.name!);
-      }
-      _prefsRepository.setMyMarketId(userInfo.id.toString());
+          _prefsRepository.setMyStoriesName(userInfo.name!);
+        }
+        _prefsRepository.setMyMarketId(userInfo.id.toString());
 
-      _prefsRepository.setPhoneNumber((userInfo.phone).toString());
-      GetIt.I<HomeBloc>().add(SaveUserInfoFromAuthEvent(userInfo: userInfo));
-      emit(state.copyWith(
-          getCustomerInfoStatus: GetCustomerInfoStatus.success,
-          marketUser: userInfo));
-    });
+        _prefsRepository.setPhoneNumber((userInfo.phone).toString());
+        GetIt.I<HomeBloc>().add(SaveUserInfoFromAuthEvent(userInfo: userInfo));
+        emit(
+          state.copyWith(
+            getCustomerInfoStatus: GetCustomerInfoStatus.success,
+            marketUser: userInfo,
+          ),
+        );
+      },
+    );
   }
 
   final Smartlook smartLook = Smartlook.instance;
@@ -736,139 +904,194 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await smartLook.preferences.setProjectKey(dotenv.env['SMART_LOOK_KEY']!);
     await smartLook.preferences.setFrameRate(2);
     await smartLook.user.setIdentifier(deviceId);
-    await smartLook.user
-        .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
-    await smartLook.user
-        .setIdentifier(GetIt.I<PrefsRepository>().myMarketId ?? 'No_Id');
+    await smartLook.user.setName(
+      GetIt.I<PrefsRepository>().myChatName ?? 'No_Name',
+    );
+    await smartLook.user.setIdentifier(
+      GetIt.I<PrefsRepository>().myMarketId ?? 'No_Id',
+    );
     await smartLook.start();
   }
 
   FutureOr<void> _onGetUserCountryEvent(
-      GetUserCountryEvent event, Emitter<AuthState> emit) async {
+    GetUserCountryEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     final response = await getUserCountryUseCase(NoParams());
-    initializeSmartLook();
+    // initializeSmartLook();
     Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-    response.fold((l) {
-      emit(state.copyWith(
-          getCustomerCountryStatus: GetCustomerCountryStatus.failure));
-      if (ErrorManager.shouldRetry('GetUserCountryEvent', l.statusCode)) {
-        add(GetUserCountryEvent());
-        ErrorManager.incrementRetry('GetUserCountryEvent');
-      }
-    }, (r) {
-      ErrorManager.resetRetry('GetUserCountryEvent');
-      _prefsRepository.setCountryIso(r.countryCode);
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            getCustomerCountryStatus: GetCustomerCountryStatus.failure,
+          ),
+        );
+        if (ErrorManager.shouldRetry('GetUserCountryEvent', l.statusCode)) {
+          add(GetUserCountryEvent());
+          ErrorManager.incrementRetry('GetUserCountryEvent');
+        }
+      },
+      (r) {
+        ErrorManager.resetRetry('GetUserCountryEvent');
+        _prefsRepository.setCountryIso(r.countryCode);
 
-      emit(state.copyWith(
-          getUserCountryResponseModel: r,
-          countryName: r.country,
-          getCustomerCountryStatus: GetCustomerCountryStatus.success));
-    });
+        emit(
+          state.copyWith(
+            getUserCountryResponseModel: r,
+            countryName: r.country,
+            getCustomerCountryStatus: GetCustomerCountryStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateStoriesUserEvent(
-      UpdateStoriesUserEvent event, Emitter<AuthState> emit) async {
+    UpdateStoriesUserEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     if (_prefsRepository.storiesToken == null ||
         _prefsRepository.storiesToken == "") {
       return;
     }
     bool requestForMarketName = false;
-    emit(state.copyWith(
-        updateStoriesUserStatus: UpdateStoriesUserStatus.loading));
+    emit(
+      state.copyWith(updateStoriesUserStatus: UpdateStoriesUserStatus.loading),
+    );
     final response = await updateStoriesUserUseCase(
       UpdateStoriesUserParams(
-          name: event.name, phone: event.phone, photo: event.photo),
+        name: event.name,
+        phone: event.phone,
+        photo: event.photo,
+      ),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
-        add(UpdateStoriesUserEvent(name: event.name));
-        ErrorManager.incrementRetry('UpdateStoriesUserEvent');
-      }
-      emit(state.copyWith(
-          updateStoriesUserStatus: UpdateStoriesUserStatus.failure));
-    }, (r) {
-      requestForMarketName = true;
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
+          add(UpdateStoriesUserEvent(name: event.name));
+          ErrorManager.incrementRetry('UpdateStoriesUserEvent');
+        }
+        emit(
+          state.copyWith(
+            updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        requestForMarketName = true;
+      },
+    );
     if (!requestForMarketName) return;
     final marketResponse = await updateNameUseCase(
       UpdateNameParams(name: event.name),
     );
-    marketResponse.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
-        add(UpdateStoriesUserEvent(name: event.name));
-        ErrorManager.incrementRetry('UpdateStoriesUserEvent');
-      }
-      emit(state.copyWith(
-        updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
-      ));
-    }, (r) {
-      requestForMarketName = true;
-    });
+    marketResponse.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
+          add(UpdateStoriesUserEvent(name: event.name));
+          ErrorManager.incrementRetry('UpdateStoriesUserEvent');
+        }
+        emit(
+          state.copyWith(
+            updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        requestForMarketName = true;
+      },
+    );
     if (!requestForMarketName) return;
     final chatResponse = await updateChatUserNameUseCase(
       UpdateChatUserNameParams(name: event.name ?? ""),
     );
-    chatResponse.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
-        add(UpdateStoriesUserEvent(name: event.name));
-        ErrorManager.incrementRetry('UpdateStoriesUserEvent');
-      }
-      emit(state.copyWith(
-        updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
-      ));
-    }, (r) {
-      GetIt.I<StoryBloc>().add(const GetStoryEvent(withPaginition: false));
-      ErrorManager.resetRetry('UpdateStoriesUserEvent');
-      _prefsRepository.setMyStoriesName(event.name ?? "");
-      _prefsRepository.setMyMarketName(event.name ?? "");
+    chatResponse.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('UpdateStoriesUserEvent', l.statusCode)) {
+          add(UpdateStoriesUserEvent(name: event.name));
+          ErrorManager.incrementRetry('UpdateStoriesUserEvent');
+        }
+        emit(
+          state.copyWith(
+            updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        GetIt.I<StoryBloc>().add(const GetStoryEvent(withPaginition: false));
+        ErrorManager.resetRetry('UpdateStoriesUserEvent');
+        _prefsRepository.setMyStoriesName(event.name ?? "");
+        _prefsRepository.setMyMarketName(event.name ?? "");
 
-      GetIt.I<StoryBloc>().add(
-          UpdateNameForUserInCollectionIfExistEvent(name: event.name ?? ""));
+        GetIt.I<StoryBloc>().add(
+          UpdateNameForUserInCollectionIfExistEvent(name: event.name ?? ""),
+        );
 
-      emit(state.copyWith(
-        updateStoriesUserStatus: UpdateStoriesUserStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            updateStoriesUserStatus: UpdateStoriesUserStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateChatUserNameEvent(
-      UpdateChatUserNameEvent event, Emitter<AuthState> emit) async {
+    UpdateChatUserNameEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     bool requestForMarketName = false;
     if (_prefsRepository.chatToken == null ||
         _prefsRepository.chatToken == "") {
       return;
     }
-    emit(state.copyWith(
-        updateChatUserNameStatus: UpdateChatUserNameStatus.loading));
+    emit(
+      state.copyWith(
+        updateChatUserNameStatus: UpdateChatUserNameStatus.loading,
+      ),
+    );
     final response = await updateChatUserNameUseCase(
       UpdateChatUserNameParams(name: event.name),
     );
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
-        add(UpdateStoriesUserEvent(name: event.name));
-        ErrorManager.incrementRetry('UpdateChatUserNameEvent');
-      }
-      emit(state.copyWith(
-          updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
-    }, (r) {
-      requestForMarketName = true;
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
+          add(UpdateStoriesUserEvent(name: event.name));
+          ErrorManager.incrementRetry('UpdateChatUserNameEvent');
+        }
+        emit(
+          state.copyWith(
+            updateChatUserNameStatus: UpdateChatUserNameStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        requestForMarketName = true;
+      },
+    );
     if (!requestForMarketName) return;
     final marketResponse = await updateNameUseCase(
       UpdateNameParams(name: event.name),
     );
-    marketResponse.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
-        add(UpdateStoriesUserEvent(name: event.name));
-        ErrorManager.incrementRetry('UpdateChatUserNameEvent');
-      }
-      emit(state.copyWith(
-          updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
-    }, (r) {
-      _prefsRepository.setMyChatName(event.name);
-      _prefsRepository.setMyMarketName(event.name);
-      requestForMarketName = true;
-    });
+    marketResponse.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
+          add(UpdateStoriesUserEvent(name: event.name));
+          ErrorManager.incrementRetry('UpdateChatUserNameEvent');
+        }
+        emit(
+          state.copyWith(
+            updateChatUserNameStatus: UpdateChatUserNameStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        _prefsRepository.setMyChatName(event.name);
+        _prefsRepository.setMyMarketName(event.name);
+        requestForMarketName = true;
+      },
+    );
     if (!requestForMarketName) return;
     if (_prefsRepository.storiesToken == null ||
         _prefsRepository.storiesToken == "") {
@@ -877,52 +1100,81 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final storiesResponse = await updateStoriesUserUseCase(
       UpdateStoriesUserParams(name: event.name),
     );
-    storiesResponse.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
-        add(UpdateStoriesUserEvent(name: event.name));
-        ErrorManager.incrementRetry('UpdateChatUserNameEvent');
-      }
-      emit(state.copyWith(
-          updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('UpdateChatUserNameEvent');
-      _prefsRepository.setMyStoriesName(event.name);
+    storiesResponse.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
+          add(UpdateStoriesUserEvent(name: event.name));
+          ErrorManager.incrementRetry('UpdateChatUserNameEvent');
+        }
+        emit(
+          state.copyWith(
+            updateChatUserNameStatus: UpdateChatUserNameStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('UpdateChatUserNameEvent');
+        _prefsRepository.setMyStoriesName(event.name);
 
-      emit(state.copyWith(
-        updateChatUserNameStatus: UpdateChatUserNameStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            updateChatUserNameStatus: UpdateChatUserNameStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGenerateTokenForCommentEvent(
-      GenerateTokenForCommentEvent event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(
-        generateTokenForCommentStatus: GenerateTokenForCommentStatus.loading));
+    GenerateTokenForCommentEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        generateTokenForCommentStatus: GenerateTokenForCommentStatus.loading,
+      ),
+    );
     _prefsRepository.setTokenForComment("");
     final response = await generateTokenForCommentUseCase(
-        GeneratingTokenForCommentParams(
-            userId: event.userId,
-            mobilePhone: event.mobilePhone,
-            otpIdToken: event.otpIdToken));
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'GenerateTokenForCommentEvent', l.statusCode)) {
-        add(GenerateTokenForCommentEvent(
-            userId: event.userId,
-            mobilePhone: event.mobilePhone,
-            otpIdToken: event.otpIdToken));
-        ErrorManager.incrementRetry('GenerateTokenForCommentEvent');
-        return;
-      }
-      emit(state.copyWith(
-          generateTokenForCommentStatus:
-              GenerateTokenForCommentStatus.failure));
-    }, (r) {
-      _prefsRepository.setTokenForComment(r);
-      ErrorManager.resetRetry('GenerateTokenForCommentEvent');
-      emit(state.copyWith(
-          generateTokenForCommentStatus:
-              GenerateTokenForCommentStatus.success));
-    });
+      GeneratingTokenForCommentParams(
+        userId: event.userId,
+        mobilePhone: event.mobilePhone,
+        otpIdToken: event.otpIdToken,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GenerateTokenForCommentEvent',
+          l.statusCode,
+        )) {
+          add(
+            GenerateTokenForCommentEvent(
+              userId: event.userId,
+              mobilePhone: event.mobilePhone,
+              otpIdToken: event.otpIdToken,
+            ),
+          );
+          ErrorManager.incrementRetry('GenerateTokenForCommentEvent');
+          return;
+        }
+        emit(
+          state.copyWith(
+            generateTokenForCommentStatus:
+                GenerateTokenForCommentStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        _prefsRepository.setTokenForComment(r);
+        ErrorManager.resetRetry('GenerateTokenForCommentEvent');
+        emit(
+          state.copyWith(
+            generateTokenForCommentStatus:
+                GenerateTokenForCommentStatus.success,
+          ),
+        );
+      },
+    );
   }
 }

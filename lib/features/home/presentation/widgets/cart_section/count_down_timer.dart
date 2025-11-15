@@ -29,11 +29,12 @@ class _CountDownTimerState extends State<CountDownTimer> {
 
     if (countdownTimerController == null) {
       countdownTimerController = CountdownTimerController(
-          endTime: endTime ?? 0,
-          onEnd: () {
-            homeBloc.add(const GetOldCartItemEvent());
-            homeBloc.add(const GetCartItemEvent());
-          });
+        endTime: endTime ?? 0,
+        onEnd: () {
+          homeBloc.add(const GetOldCartItemEvent());
+          homeBloc.add(const GetCartItemEvent());
+        },
+      );
     }
 
     super.initState();
@@ -46,23 +47,26 @@ class _CountDownTimerState extends State<CountDownTimer> {
       FlutterError.dumpErrorToConsole(error);
     };
     return Directionality(
-        textDirection: TextDirection.ltr,
-        child: CountdownTimer(
-          widgetBuilder: (_, remainingTime) {
-            String seconds = (remainingTime?.sec ?? 0) < 10
-                ? '0${remainingTime?.sec == null ? 0 : remainingTime?.sec}'
-                : '${remainingTime?.sec == null ? 0 : remainingTime?.sec}';
-            String minets = (remainingTime?.min ?? 0) < 10
-                ? '0${remainingTime?.min == null ? 0 : remainingTime?.min}'
-                : '${remainingTime?.min == null ? 0 : remainingTime?.min}';
-            return Text('$minets : $seconds ',
-                style: context.textTheme.bodyMedium?.ba.copyWith(
-                  fontSize: 12,
-                  color: const Color(0xffA28E5B),
-                ));
-          },
-          controller: countdownTimerController,
-          endWidget: const SizedBox.shrink(),
-        ));
+      textDirection: TextDirection.ltr,
+      child: CountdownTimer(
+        widgetBuilder: (_, remainingTime) {
+          String seconds = (remainingTime?.sec ?? 0) < 10
+              ? '0${remainingTime?.sec == null ? 0 : remainingTime?.sec}'
+              : '${remainingTime?.sec == null ? 0 : remainingTime?.sec}';
+          String minets = (remainingTime?.min ?? 0) < 10
+              ? '0${remainingTime?.min == null ? 0 : remainingTime?.min}'
+              : '${remainingTime?.min == null ? 0 : remainingTime?.min}';
+          return Text(
+            '$minets : $seconds ',
+            style: context.textTheme.bodyMedium?.bq.copyWith(
+              fontSize: 12,
+              color: const Color(0xffA28E5B),
+            ),
+          );
+        },
+        controller: countdownTimerController,
+        endWidget: const SizedBox.shrink(),
+      ),
+    );
   }
 }

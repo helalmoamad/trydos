@@ -8,7 +8,7 @@ import '../error/failures.dart';
 
 typedef RequestCall<T> = Future<T> Function();
 
-abstract class HandlingExceptionRequest {
+mixin HandlingExceptionRequest {
   void prettyPrinterError(final String message) {
     Logger(printer: PrettyPrinter(methodCount: 0)).e(message);
   }

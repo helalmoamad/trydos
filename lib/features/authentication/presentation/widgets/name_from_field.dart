@@ -196,7 +196,7 @@ class _NameFormFieldState extends State<NameFormField> {
                   cursorHeight: 0,
                   // ignore: deprecated_member_use
                   toolbarOptions: widget.toolbarOptions,
-                  style: context.textTheme.displayMedium?.ra.copyWith(
+                  style: context.textTheme.displayMedium?.rq.copyWith(
                     color: const Color(0xff5D5C5D),
                     letterSpacing: 0.16,
                     height: 3,
@@ -204,12 +204,11 @@ class _NameFormFieldState extends State<NameFormField> {
                   ),
                   decoration: InputDecoration(
                     errorMaxLines: 1,
-                    errorStyle: const TextStyle(
-                      fontSize: 11,
-                      height: 1,
-                    ),
+                    errorStyle: const TextStyle(fontSize: 11, height: 1),
                     errorBorder: OutlineInputBorder(
-                        gapPadding: 2, borderRadius: BorderRadius.circular(20)),
+                      gapPadding: 2,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: HWEdgeInsets.only(left: 30, right: 30),
@@ -226,16 +225,18 @@ class _NameFormFieldState extends State<NameFormField> {
           ),
         ),
         ValueListenableBuilder<bool>(
-            valueListenable: showHint,
-            builder: (context, show, _) {
-              return show
-                  ? MyTextWidget(
-                      LocaleKeys.enter_your_name.tr(),
-                      style: context.textTheme.displayMedium?.ra
-                          .copyWith(color: const Color(0xffC4C2C2)),
-                    )
-                  : const SizedBox.shrink();
-            })
+          valueListenable: showHint,
+          builder: (context, show, _) {
+            return show
+                ? MyTextWidget(
+                    LocaleKeys.enter_your_name.tr(),
+                    style: context.textTheme.displayMedium?.rq.copyWith(
+                      color: const Color(0xffC4C2C2),
+                    ),
+                  )
+                : const SizedBox.shrink();
+          },
+        ),
       ],
     );
   }

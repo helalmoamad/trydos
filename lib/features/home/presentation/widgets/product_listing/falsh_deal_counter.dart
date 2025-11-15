@@ -15,12 +15,12 @@ class FlashDealCountdownTimerWidget extends StatefulWidget {
   final ValueNotifier<bool>? visibleFlashDeal;
   final ValueNotifier<bool>? refreshFlashDeal;
 
-  const FlashDealCountdownTimerWidget(
-      {Key? key,
-      required this.endDateString,
-      required this.visibleFlashDeal,
-      this.refreshFlashDeal})
-      : super(key: key);
+  const FlashDealCountdownTimerWidget({
+    Key? key,
+    required this.endDateString,
+    required this.visibleFlashDeal,
+    this.refreshFlashDeal,
+  }) : super(key: key);
 
   @override
   _FlashDealCountdownTimerWidgetState createState() =>
@@ -105,24 +105,25 @@ class _FlashDealCountdownTimerWidgetState
       FlutterError.dumpErrorToConsole(error);
     };
     return Directionality(
-        textDirection: LanguageService.languageCode == "ar"
-            ? ui.TextDirection.rtl
-            : ui.TextDirection.ltr,
-        child: Container(
-          alignment: LanguageService.languageCode == "ar"
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-          height: 20,
-          child: Text(
-            _duration > Duration.zero ? _formatDuration(_duration) : "",
-            style: context.textTheme.bodyMedium?.mr.copyWith(
-              color: const Color(0xffFF6200),
-              letterSpacing: 0.18,
-              fontSize: 9.sp,
-              height: 1.3,
-            ),
-            textAlign: TextAlign.center,
+      textDirection: LanguageService.languageCode == "ar"
+          ? ui.TextDirection.rtl
+          : ui.TextDirection.ltr,
+      child: Container(
+        alignment: LanguageService.languageCode == "ar"
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        height: 20,
+        child: Text(
+          _duration > Duration.zero ? _formatDuration(_duration) : "",
+          style: context.textTheme.bodyMedium?.mq.copyWith(
+            color: const Color(0xffFF6200),
+            letterSpacing: 0.18,
+            fontSize: 9.sp,
+            height: 1.3,
           ),
-        ));
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }

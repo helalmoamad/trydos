@@ -13,14 +13,14 @@ class SecondsCountdown extends StatefulWidget {
   final String productId;
   final bool denyStopTimer;
 
-  const SecondsCountdown(
-      {Key? key,
-      required this.endTime,
-      required this.visibleRedeem,
-      required this.productId,
-      this.denyStopTimer = false,
-      this.finishRedeem})
-      : super(key: key);
+  const SecondsCountdown({
+    Key? key,
+    required this.endTime,
+    required this.visibleRedeem,
+    required this.productId,
+    this.denyStopTimer = false,
+    this.finishRedeem,
+  }) : super(key: key);
 
   @override
   State<SecondsCountdown> createState() => _SecondsCountdownState();
@@ -52,7 +52,9 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
     int secondsToSave = (diff.inSeconds) > 0 ? diff.inSeconds : 0;
     final prefs = GetIt.I<PrefsRepository>();
     prefs.setRedeemSecondRemainingForProduct(
-        widget.productId.toString(), secondsToSave);
+      widget.productId.toString(),
+      secondsToSave,
+    );
     super.dispose();
   }
 
@@ -73,8 +75,9 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
 
   Future<void> _initTimer() async {
     final prefs = GetIt.I<PrefsRepository>();
-    int? savedSeconds =
-        prefs.getRedeemSecondRemainingForProduct(widget.productId);
+    int? savedSeconds = prefs.getRedeemSecondRemainingForProduct(
+      widget.productId,
+    );
     if (savedSeconds != null && savedSeconds > 0) {
       _endTime = DateTime.now().add(Duration(seconds: savedSeconds));
     } else {
@@ -104,8 +107,10 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
           }
         });
       }
-      GetIt.I<PrefsRepository>()
-          .setRedeemSecondRemainingForProduct(widget.productId.toString(), 0);
+      GetIt.I<PrefsRepository>().setRedeemSecondRemainingForProduct(
+        widget.productId.toString(),
+        0,
+      );
     }
   }
 
@@ -115,11 +120,13 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return Text('$secondsLeft',
-        style: context.textTheme.bodyMedium?.br.copyWith(
-          fontSize: 9,
-          height: 1.5,
-          color: const Color(0xffFF6200),
-        ));
+    return Text(
+      '$secondsLeft',
+      style: context.textTheme.bodyMedium?.bq.copyWith(
+        fontSize: 9,
+        height: 1.5,
+        color: const Color(0xffFF6200),
+      ),
+    );
   }
 }

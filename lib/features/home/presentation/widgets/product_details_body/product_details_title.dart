@@ -23,15 +23,16 @@ class ProductDetailsTitle extends StatelessWidget {
   final double orginalWidth;
 
   final double orginalHeight;
-  ProductDetailsTitle(
-      {super.key,
-      this.brand,
-      required this.productName,
-      required this.thumbnail,
-      required this.productId,
-      required this.orginalHeight,
-      required this.orginalWidth,
-      required this.colorName});
+  ProductDetailsTitle({
+    super.key,
+    this.brand,
+    required this.productName,
+    required this.thumbnail,
+    required this.productId,
+    required this.orginalHeight,
+    required this.orginalWidth,
+    required this.colorName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +47,9 @@ class ProductDetailsTitle extends StatelessWidget {
           p.cachedProductWithoutRelatedProductsModel[productId] !=
               c.cachedProductWithoutRelatedProductsModel[productId] ||
           p.currentSelectedColorForEveryProduct !=
-              c.currentSelectedColorForEveryProduct ||
+              c.currentSelectedColorForEveryProduct /* ||
           p.getAndAddCountViewOfProductStatus[productId] !=
-              c.getAndAddCountViewOfProductStatus[productId],
+              c.getAndAddCountViewOfProductStatus[productId]*/,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,43 +60,36 @@ class ProductDetailsTitle extends StatelessWidget {
                 children: [
                   brand != null
                       ? brand!.icon != null
-                          ? brand!.icon!.filePath != null
-                              ? SvgNetworkWidget(
-                                  svgUrl: brand!.icon!.filePath!,
-                                  height: 18,
-                                )
-                              : const SizedBox.shrink()
-                          : const SizedBox.shrink()
+                            ? brand!.icon!.filePath != null
+                                  ? SvgNetworkWidget(
+                                      svgUrl: brand!.icon!.filePath!,
+                                      height: 18,
+                                    )
+                                  : const SizedBox.shrink()
+                            : const SizedBox.shrink()
                       : const SizedBox.shrink(),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   SvgPicture.asset(AppAssets.productVerifySvg),
                 ],
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SizedBox(
                 width: 1.sw - 20,
-                height: 20.h,
-                child: Row(
-                  children: [
-                    Flexible(
-                        flex: 4,
-                        child: MyTextWidget(
-                          productName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodyMedium?.mq.copyWith(
-                              color: const Color(0xff5D5C5D),
-                              height: 1.26,
-                              fontSize: 13.sp),
-                        )),
-                    /*  Padding(
+
+                child: MyTextWidget(
+                  "${productName} ${colorName == "" ? '' : '| ${colorName}'}",
+                  maxLines: 2,
+
+                  style: context.textTheme.bodyMedium?.mq.copyWith(
+                    color: const Color(0xff5D5C5D),
+                    height: 1.26,
+                    fontSize: 13.sp,
+                  ),
+
+                  /*  Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5.0),
                       child: MyCachedNetworkImage(
                         ordinalHeight: orginalHeight,
@@ -109,7 +103,7 @@ class ProductDetailsTitle extends StatelessWidget {
                         logoTextWidth: 12,
                       ),
                     ),*/
-                    /*   Container(
+                  /*   Container(
                       width: 1,
                       height: 14,
                       decoration: BoxDecoration(
@@ -117,23 +111,26 @@ class ProductDetailsTitle extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),*/
-                    colorName == ""
+                  /* colorName == ""
                         ? const SizedBox.shrink()
                         : Flexible(
                             child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: MyTextWidget(
-                                  " | ${colorName}",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: context.textTheme.bodyMedium?.rq
-                                      .copyWith(
-                                          color: const Color(0xff404E68),
-                                          height: 1.26,
-                                          fontSize: 13.sp),
-                                )))
-                  ],
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                              ),
+                              child: MyTextWidget(
+                                " | ${colorName}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.textTheme.bodyMedium?.rq
+                                    .copyWith(
+                                      color: const Color(0xff404E68),
+                                      height: 1.26,
+                                      fontSize: 13.sp,
+                                    ),
+                              ),
+                            ),
+                          ),*/
                 ),
               ),
             ),

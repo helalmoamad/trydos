@@ -18,9 +18,7 @@ class FilesExistPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.colorScheme.surface,
       body: files.length == 0
-          ? const Center(
-              child: MyTextWidget('No Files'),
-            )
+          ? const Center(child: MyTextWidget('No Files'))
           : ListView.builder(
               itemBuilder: (context, index) {
                 Map file = jsonDecode(files[index]);
@@ -28,19 +26,21 @@ class FilesExistPage extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(blurRadius: 5)
-                      ]),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [BoxShadow(blurRadius: 5)],
+                  ),
                   child: Directionality(
                     textDirection: TextDirection.ltr,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        MyTextWidget(file.values.toString(),
-                            style: context.textTheme.bodyMedium?.rr
-                                .copyWith(color: Colors.black)),
+                        MyTextWidget(
+                          file.values.toString(),
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: Colors.black,
+                          ),
+                        ),
                       ],
                     ),
                   ),

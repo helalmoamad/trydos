@@ -192,7 +192,7 @@ class PhoneFormField extends StatelessWidget {
                 // ignore: deprecated_member_use
                 toolbarOptions: toolbarOptions,
                 inputFormatters: [PhoneNumberFormatter()],
-                style: context.textTheme.headlineSmall?.ra.copyWith(
+                style: context.textTheme.headlineSmall?.rq.copyWith(
                   color: const Color(0xff5D5C5D),
                   height: 0.6,
                   decoration: TextDecoration.none,
@@ -205,29 +205,34 @@ class PhoneFormField extends StatelessWidget {
                   suffixIcon: suffixIcon,
                   counterText: '',
                   hintText: hintText?.tr(),
-                  hintStyle: context.textTheme.displayMedium?.ra
-                      .copyWith(color: const Color(0xffC4C2C2)),
+                  hintStyle: context.textTheme.displayMedium?.rq.copyWith(
+                    color: const Color(0xffC4C2C2),
+                  ),
                 ),
               ),
             ),
           ),
           ValueListenableBuilder<bool>(
-              valueListenable: showCursor,
-              builder: (context, show, _) {
-                return show
-                    ? ValueListenableBuilder<bool>(
-                        valueListenable: rebuildCursor,
-                        builder: (context, rebuild, _) {
-                          return Container(
-                            margin: HWEdgeInsets.only(
-                                left: 95 + offset, bottom: 20),
-                            width: 10.w,
-                            height: 1,
-                            color: const Color(0xff5D5C5D),
-                          );
-                        })
-                    : const SizedBox.shrink();
-              })
+            valueListenable: showCursor,
+            builder: (context, show, _) {
+              return show
+                  ? ValueListenableBuilder<bool>(
+                      valueListenable: rebuildCursor,
+                      builder: (context, rebuild, _) {
+                        return Container(
+                          margin: HWEdgeInsets.only(
+                            left: 95 + offset,
+                            bottom: 20,
+                          ),
+                          width: 10.w,
+                          height: 1,
+                          color: const Color(0xff5D5C5D),
+                        );
+                      },
+                    )
+                  : const SizedBox.shrink();
+            },
+          ),
         ],
       ),
     );
@@ -239,11 +244,14 @@ class PhoneNumberFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     String result = getFormattedText(oldValue.text, newValue.text);
     return newValue.copyWith(
-        text: result,
-        selection: TextSelection.collapsed(offset: result.length));
+      text: result,
+      selection: TextSelection.collapsed(offset: result.length),
+    );
   }
 
   String getFormattedText(String oldText, String newText) {
@@ -259,18 +267,23 @@ class PhoneNumberFormatter extends TextInputFormatter {
       return oldText;
     }
     Country country = countries.firstWhere(
-        (element) => '+${newText.toLowerCase()}'
-            .startsWith(element.dialCode.toLowerCase()),
-        orElse: () => countries.firstWhere(
-            (element) => '+${oldText.toLowerCase()}'
-                .startsWith(element.dialCode.toLowerCase()),
-            orElse: () => const Country(
-                name: '',
-                flag: '',
-                code: '',
-                dialCode: '',
-                minLength: 100,
-                maxLength: 100)));
+      (element) => '+${newText.toLowerCase()}'.startsWith(
+        element.dialCode.toLowerCase(),
+      ),
+      orElse: () => countries.firstWhere(
+        (element) => '+${oldText.toLowerCase()}'.startsWith(
+          element.dialCode.toLowerCase(),
+        ),
+        orElse: () => const Country(
+          name: '',
+          flag: '',
+          code: '',
+          dialCode: '',
+          minLength: 100,
+          maxLength: 100,
+        ),
+      ),
+    );
     String needEdit = newText;
     if (newText.length > (country.dialCode.length + country.maxLength + 1) &&
         country.name != '') {

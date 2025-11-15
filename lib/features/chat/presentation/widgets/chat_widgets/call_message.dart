@@ -15,15 +15,15 @@ import '../../../../app/my_text_widget.dart';
 import '../../../../calls/presentation/widgets/no_image_widget.dart';
 
 class CallMessage extends StatelessWidget {
-  const CallMessage(
-      {Key? key,
-      this.userMessagePhoto,
-      required this.message,
-      required this.userMessageName,
-      required this.isVideo,
-      required this.time,
-      required this.isSent})
-      : super(key: key);
+  const CallMessage({
+    Key? key,
+    this.userMessagePhoto,
+    required this.message,
+    required this.userMessageName,
+    required this.isVideo,
+    required this.time,
+    required this.isSent,
+  }) : super(key: key);
   final String message;
   final bool isVideo;
   final bool isSent;
@@ -45,8 +45,9 @@ class CallMessage extends StatelessWidget {
           left: isSent ? 0 : 25.w,
         ),
         child: Row(
-          mainAxisAlignment:
-              isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: isSent
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           children: [
             Stack(
               alignment: isSent ? Alignment.centerRight : Alignment.centerLeft,
@@ -54,19 +55,22 @@ class CallMessage extends StatelessWidget {
                 Container(
                   constraints: const BoxConstraints(minHeight: 50),
                   decoration: BoxDecoration(
-                      color: const Color(0xffFFDEDE),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                            // ignore: deprecated_member_use
-                            color: context.colorScheme.black.withOpacity(0.05),
-                            offset: const Offset(0, 3),
-                            blurRadius: 6)
-                      ]),
+                    color: const Color(0xffFFDEDE),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        // ignore: deprecated_member_use
+                        color: context.colorScheme.black.withOpacity(0.05),
+                        offset: const Offset(0, 3),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
                   child: Padding(
                     padding: HWEdgeInsets.only(
-                        left: isSent ? 20.w : 40.w,
-                        right: isSent ? 40.w : 20.w),
+                      left: isSent ? 20.w : 40.w,
+                      right: isSent ? 40.w : 20.w,
+                    ),
                     child: Center(
                       child: Directionality(
                         textDirection: TextDirection.ltr,
@@ -82,8 +86,10 @@ class CallMessage extends StatelessWidget {
                             10.horizontalSpace,
                             MyTextWidget(
                               '$message  ${!time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time)}',
-                              style: context.textTheme.titleMedium?.rr.copyWith(
-                                  color: const Color(0xff404040), height: 1.66),
+                              style: context.textTheme.titleMedium?.rq.copyWith(
+                                color: const Color(0xff404040),
+                                height: 1.66,
+                              ),
                               textDirection: TextDirection.ltr,
                             ),
                           ],
@@ -107,12 +113,13 @@ class CallMessage extends StatelessWidget {
                       ),
                       userMessagePhoto != null
                           ? MyCachedNetworkImage(
-                              imageUrl: (userMessagePhoto
-                                      .toString()
-                                      .contains("cloudinary")
+                              imageUrl:
+                                  (userMessagePhoto.toString().contains(
+                                    "cloudinary",
+                                  )
                                   ? userMessagePhoto!
                                   : ("${dotenv.env['Images_Url']}") +
-                                      userMessagePhoto!),
+                                        userMessagePhoto!),
                               progressIndicatorBuilderWidget: TrydosLoader(),
                               imageFit: BoxFit.cover,
                               radius: 8,
@@ -122,13 +129,15 @@ class CallMessage extends StatelessWidget {
                           : NoImageWidget(
                               width: 30.w,
                               height: 30,
-                              textStyle: context.textTheme.titleMedium?.br
+                              textStyle: context.textTheme.titleMedium?.bq
                                   .copyWith(
-                                      color: const Color(0xff6638FF),
-                                      letterSpacing: 0.18,
-                                      height: 1.33),
+                                    color: const Color(0xff6638FF),
+                                    letterSpacing: 0.18,
+                                    height: 1.33,
+                                  ),
                               radius: 8,
-                              name: userMessageName)
+                              name: userMessageName,
+                            ),
                     ],
                   ),
                 ),

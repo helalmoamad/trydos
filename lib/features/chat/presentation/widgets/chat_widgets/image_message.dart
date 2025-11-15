@@ -34,26 +34,26 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 // ignore: must_be_immutable
 class ImageMessage extends StatefulWidget {
-  ImageMessage(
-      {Key? key,
-      this.isForwarded = false,
-      this.isLocalMessage = true,
-      required this.isSent,
-      required this.isRead,
-      required this.senderId,
-      this.userMessagePhoto,
-      this.imageFile,
-      this.isSlopRight = true,
-      this.imageUrl,
-      required this.userMessageName,
-      required this.messageId,
-      required this.isReceived,
-      required this.isFirstMessage,
-      this.receivedAt,
-      this.createAt,
-      this.watchedAt,
-      required this.channelId})
-      : super(key: key);
+  ImageMessage({
+    Key? key,
+    this.isForwarded = false,
+    this.isLocalMessage = true,
+    required this.isSent,
+    required this.isRead,
+    required this.senderId,
+    this.userMessagePhoto,
+    this.imageFile,
+    this.isSlopRight = true,
+    this.imageUrl,
+    required this.userMessageName,
+    required this.messageId,
+    required this.isReceived,
+    required this.isFirstMessage,
+    this.receivedAt,
+    this.createAt,
+    this.watchedAt,
+    required this.channelId,
+  }) : super(key: key);
   final bool isSent;
   final bool isFirstMessage;
   final bool isForwarded;
@@ -100,7 +100,8 @@ class _ImageMessageState extends State<ImageMessage>
   @override
   void initState() {
     debugPrint(
-        "🎯 ImageMessage initState - imageFile: ${widget.imageFile?.path ?? 'null'}, imageUrl: '${widget.imageUrl ?? 'null'}'");
+      "🎯 ImageMessage initState - imageFile: ${widget.imageFile?.path ?? 'null'}, imageUrl: '${widget.imageUrl ?? 'null'}'",
+    );
 
     // ✅ تحديد حالة الصورة الأولية بدقة
     if (widget.imageFile != null && widget.imageFile!.existsSync()) {
@@ -115,7 +116,8 @@ class _ImageMessageState extends State<ImageMessage>
       _isImageLoaded = false;
     } else {
       debugPrint(
-          "🔗 Image URL available, ready to download: '${widget.imageUrl}'");
+        "🔗 Image URL available, ready to download: '${widget.imageUrl}'",
+      );
       _loadingImage.value = 0; // جاهز للتحميل
     }
 
@@ -155,7 +157,8 @@ class _ImageMessageState extends State<ImageMessage>
     }
 
     debugPrint(
-        "🔄 _initializeImage called - isDownloading: $_isDownloading, isLoaded: $_isImageLoaded, imageUrl: '${widget.imageUrl ?? 'null'}'");
+      "🔄 _initializeImage called - isDownloading: $_isDownloading, isLoaded: $_isImageLoaded, imageUrl: '${widget.imageUrl ?? 'null'}'",
+    );
 
     // ✅ فحص URL فارغ أو null أولاً
     if (widget.imageUrl.isNullOrEmpty || widget.imageUrl!.trim().isEmpty) {
@@ -205,35 +208,38 @@ class _ImageMessageState extends State<ImageMessage>
       }
     });
 
-    FileSaving().downloadFileToLocalStorage(widget.imageUrl!, widget.channelId,
-        action: (File? file) {
-      debugPrint("✅ Download completed - file: ${file?.path}");
+    FileSaving().downloadFileToLocalStorage(
+      widget.imageUrl!,
+      widget.channelId,
+      action: (File? file) {
+        debugPrint("✅ Download completed - file: ${file?.path}");
 
-      // ✅ إعادة تعيين حالة التحميل دائماً أولاً
-      _isDownloading = false;
+        // ✅ إعادة تعيين حالة التحميل دائماً أولاً
+        _isDownloading = false;
 
-      if (file != null && file.existsSync()) {
-        debugPrint("✅ File exists and is valid");
-        widget.imageFile = file;
-        _cachedImageFile = file; // ✅ حفظ نسخة احتياطية
-        _isImageLoaded = true;
-        if (mounted) {
-          _loadingImage.value = 2; // تم التحميل بنجاح
+        if (file != null && file.existsSync()) {
+          debugPrint("✅ File exists and is valid");
+          widget.imageFile = file;
+          _cachedImageFile = file; // ✅ حفظ نسخة احتياطية
+          _isImageLoaded = true;
+          if (mounted) {
+            _loadingImage.value = 2; // تم التحميل بنجاح
+          }
+          if (mounted) setState(() {});
+        } else {
+          debugPrint("❌ Download failed - file is null or doesn't exist");
+          // ✅ التأكد من إعادة تعيين جميع الحالات عند الفشل
+          _isImageLoaded = false;
+          _cachedImageFile = null; // مسح أي كاش معطل
+          if (mounted) {
+            _loadingImage.value = -1; // فشل التحميل
+          }
+          if (mounted) {
+            setState(() {}); // ✅ إجبار إعادة بناء UI لإظهار زر إعادة المحاولة
+          }
         }
-        if (mounted) setState(() {});
-      } else {
-        debugPrint("❌ Download failed - file is null or doesn't exist");
-        // ✅ التأكد من إعادة تعيين جميع الحالات عند الفشل
-        _isImageLoaded = false;
-        _cachedImageFile = null; // مسح أي كاش معطل
-        if (mounted) {
-          _loadingImage.value = -1; // فشل التحميل
-        }
-        if (mounted) {
-          setState(() {}); // ✅ إجبار إعادة بناء UI لإظهار زر إعادة المحاولة
-        }
-      }
-    });
+      },
+    );
   }
 
   @override
@@ -302,8 +308,9 @@ class _ImageMessageState extends State<ImageMessage>
         builder: (context, state) {
           return Padding(
             padding: HWEdgeInsets.only(
-                right: widget.isSent ? 25.w : 0,
-                left: widget.isSent ? 0 : 25.w),
+              right: widget.isSent ? 25.w : 0,
+              left: widget.isSent ? 0 : 25.w,
+            ),
             child: SwipeTo(
               onLeftSwipe: () {
                 if (widget.senderId == widget._prefsRepository.myChatId) {
@@ -311,13 +318,18 @@ class _ImageMessageState extends State<ImageMessage>
                       state.currentMessage.contains(widget.messageId))) {
                     return;
                   }
-                  BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                      true, 'image', widget.isSent,
+                  BlocProvider.of<AppBloc>(context).add(
+                    RefreshChatInputField(
+                      true,
+                      'image',
+                      widget.isSent,
                       senderParentMessageId: widget.senderId,
                       imageUrl: widget.imageUrl ?? widget.imageFile!.path,
                       messageId: widget.messageId,
                       time: widget.createAt,
-                      message: 'Photo'));
+                      message: 'Photo',
+                    ),
+                  );
                 } else {}
               },
               iconSize: 0,
@@ -325,20 +337,26 @@ class _ImageMessageState extends State<ImageMessage>
               offsetDx: 0.15,
               onRightSwipe: () {
                 if (widget.senderId == widget._prefsRepository.myChatId) {
-                  BlocProvider.of<ChatBloc>(context)
-                      .add(ChangeSlop(messageId: widget.messageId));
+                  BlocProvider.of<ChatBloc>(
+                    context,
+                  ).add(ChangeSlop(messageId: widget.messageId));
                 } else {
                   if ((state.sendMessageStatus == SendMessageStatus.loading &&
                       state.currentMessage.contains(widget.messageId))) {
                     return;
                   }
-                  BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                      true, 'image', widget.isSent,
+                  BlocProvider.of<AppBloc>(context).add(
+                    RefreshChatInputField(
+                      true,
+                      'image',
+                      widget.isSent,
                       senderParentMessageId: widget.senderId,
                       imageUrl: widget.imageUrl ?? widget.imageFile!.path,
                       messageId: widget.messageId,
                       time: widget.createAt,
-                      message: 'Photo'));
+                      message: 'Photo',
+                    ),
+                  );
                 }
               },
               child: Row(
@@ -347,13 +365,14 @@ class _ImageMessageState extends State<ImageMessage>
                     : MainAxisAlignment.start,
                 children: [
                   Transform.translate(
-                    offset: !(state.isSlpoing &&
+                    offset:
+                        !(state.isSlpoing &&
                             state.slopMessageId!.contains(widget.messageId) &&
                             (widget.isReceived || widget.isRead))
                         ? const Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
-                            ? Offset(50.w, 0)
-                            : Offset(-50.w, 0),
+                        ? Offset(50.w, 0)
+                        : Offset(-50.w, 0),
                     child: Stack(
                       alignment: widget.isSent
                           ? Alignment.centerRight
@@ -384,8 +403,9 @@ class _ImageMessageState extends State<ImageMessage>
                                                   ? const Color(0xffFFF9B4)
                                                   : const Color(0xffB4FFD9),
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                         ),
                                         Container(
@@ -393,20 +413,22 @@ class _ImageMessageState extends State<ImageMessage>
                                           height: 40,
                                           decoration: BoxDecoration(
                                             color: const Color(0xffEBFFF8),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: (widget.userMessagePhoto
+                                            imageUrl:
+                                                (widget.userMessagePhoto
                                                     .toString()
                                                     .contains("cloudinary")
                                                 ? widget.userMessagePhoto!
                                                 : ("${dotenv.env['Images_Url']}") +
-                                                    widget.userMessagePhoto!),
+                                                      widget.userMessagePhoto!),
                                             imageFit: BoxFit.contain,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
@@ -418,14 +440,19 @@ class _ImageMessageState extends State<ImageMessage>
                                             width: 30.w,
                                             height: 30,
                                             textStyle: context
-                                                .textTheme.titleMedium?.br
+                                                .textTheme
+                                                .titleMedium
+                                                ?.bq
                                                 .copyWith(
-                                                    color:
-                                                        const Color(0xff6638FF),
-                                                    letterSpacing: 0.18,
-                                                    height: 1.33),
+                                                  color: const Color(
+                                                    0xff6638FF,
+                                                  ),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33,
+                                                ),
                                             radius: 8,
-                                            name: widget.userMessageName),
+                                            name: widget.userMessageName,
+                                          ),
                                   ],
                                 ),
                               )
@@ -433,7 +460,8 @@ class _ImageMessageState extends State<ImageMessage>
                         state.isSlpoing &&
                                 state.slopMessageId!.contains(widget.messageId)
                             ? Transform.translate(
-                                offset: widget.senderId ==
+                                offset:
+                                    widget.senderId ==
                                         widget._prefsRepository.myChatId
                                     ? Offset(-220.w, 0)
                                     : Offset(110.w, 0),
@@ -468,8 +496,10 @@ class _ImageMessageState extends State<ImageMessage>
     super.dispose();
   }
 
-  Future<ChatImageDetail> loadWidthAndHeightForImage(
-      {required File ImageFile, Function? onError}) async {
+  Future<ChatImageDetail> loadWidthAndHeightForImage({
+    required File ImageFile,
+    Function? onError,
+  }) async {
     Completer<ChatImageDetail> completer = Completer<ChatImageDetail>();
 
     completer = Completer<ChatImageDetail>();
@@ -478,23 +508,22 @@ class _ImageMessageState extends State<ImageMessage>
     try {
       image.image
           .resolve(const ImageConfiguration())
-          .addListener(ImageStreamListener(
-            (
-              ImageInfo imageInfo,
-              bool _,
-            ) {
-              final dimensions = ChatImageDetail(
-                width: imageInfo.image.width,
-                height: imageInfo.image.height,
-              );
-              if (completer.isCompleted == false) {
-                completer.complete(dimensions);
-              }
-            },
-            onError: (exception, stackTrace) {
-              if (onError != null) onError();
-            },
-          ));
+          .addListener(
+            ImageStreamListener(
+              (ImageInfo imageInfo, bool _) {
+                final dimensions = ChatImageDetail(
+                  width: imageInfo.image.width,
+                  height: imageInfo.image.height,
+                );
+                if (completer.isCompleted == false) {
+                  completer.complete(dimensions);
+                }
+              },
+              onError: (exception, stackTrace) {
+                if (onError != null) onError();
+              },
+            ),
+          );
     } catch (e) {
       // GetIt.I<StoryBloc>().add(LoadFailureEvent());
     }
@@ -525,8 +554,9 @@ class _ImageMessageState extends State<ImageMessage>
       alignment: Alignment.bottomCenter,
       children: [
         FullScreenWidget(
-          backgroundColor:
-              widget.isSent ? const Color(0xffFFF9B4) : const Color(0xffB4FFD9),
+          backgroundColor: widget.isSent
+              ? const Color(0xffFFF9B4)
+              : const Color(0xffB4FFD9),
           disposeLevel: DisposeLevel.High, // ✅ حماية أقوى من الاختفاء
           child: Hero(
             tag: "hero_${widget.messageId}",
@@ -569,8 +599,9 @@ class _ImageMessageState extends State<ImageMessage>
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           width: 3.0,
-          color:
-              widget.isSent ? const Color(0xffFFF9B4) : const Color(0xffB4FFD9),
+          color: widget.isSent
+              ? const Color(0xffFFF9B4)
+              : const Color(0xffB4FFD9),
         ),
       ),
       child: Center(
@@ -583,8 +614,11 @@ class _ImageMessageState extends State<ImageMessage>
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.broken_image_outlined,
-                      size: 50, color: Colors.red.shade400),
+                  Icon(
+                    Icons.broken_image_outlined,
+                    size: 50,
+                    color: Colors.red.shade400,
+                  ),
                   const SizedBox(height: 10),
                   MyTextWidget(
                     LocaleKeys.invalid_image_url.tr(),
@@ -622,8 +656,11 @@ class _ImageMessageState extends State<ImageMessage>
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline,
-                      size: 50, color: Colors.red.shade400),
+                  Icon(
+                    Icons.error_outline,
+                    size: 50,
+                    color: Colors.red.shade400,
+                  ),
                   const SizedBox(height: 10),
                   MyTextWidget(
                     LocaleKeys.image_load_failed.tr(),
@@ -688,7 +725,7 @@ class _ImageMessageState extends State<ImageMessage>
                 !widget.createAt!.isUtc
                     ? HelperFunctions.getDateInFormat(widget.createAt!)
                     : HelperFunctions.getZonedDateInFormat(widget.createAt!),
-                style: context.textTheme.titleSmall?.rr.copyWith(
+                style: context.textTheme.titleSmall?.rq.copyWith(
                   color: context.colorScheme.white,
                 ),
               ),
@@ -698,8 +735,8 @@ class _ImageMessageState extends State<ImageMessage>
                   widget.isRead
                       ? AppAssets.messageReadArrowSvg
                       : widget.isReceived
-                          ? AppAssets.messageDeliveredArrowSvg
-                          : AppAssets.messageSentArrowSvg,
+                      ? AppAssets.messageDeliveredArrowSvg
+                      : AppAssets.messageSentArrowSvg,
                   width: 10.sp,
                   height: 10.sp,
                 ),
@@ -711,7 +748,7 @@ class _ImageMessageState extends State<ImageMessage>
                   width: 10.sp,
                   height: 10.sp,
                 ),
-              }
+              },
             ],
           ),
         ),

@@ -83,53 +83,70 @@ class HomePageCard2 extends cupertino.StatelessWidget {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           onTap: () {
-            boutiqueBloc.add(ChangeAppliedFiltersEvent(
-              boutiqueSlug: boutique.slug!,
-              resetAppliedFilters: true,
-            ));
-            boutiqueBloc.add(ChangeSelectedFiltersEvent(
-              requestToUpdateFilters: false,
-              boutiqueSlug: boutique.slug!,
-            ));
+            boutiqueBloc.add(
+              ChangeAppliedFiltersEvent(
+                boutiqueSlug: boutique.slug!,
+                resetAppliedFilters: true,
+              ),
+            );
+            boutiqueBloc.add(
+              ChangeSelectedFiltersEvent(
+                requestToUpdateFilters: false,
+                boutiqueSlug: boutique.slug!,
+              ),
+            );
 
-            boutiqueBloc.add(GetProductsWithFiltersEvent(
+            boutiqueBloc.add(
+              GetProductsWithFiltersEvent(
                 getWithoutFilter: true,
                 cashedOrginalBoutique: true,
                 boutiqueSlug: boutique.slug!,
                 fromSearch: false,
                 context: context,
-                offset: 1));
-            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
-                isChangedVariationWhenQtyZero: false));
-            homeBloc.add(const IsChangedVariationWhenQtyZeroEvent(
-                isChangedVariationWhenQtyZero: false));
+                offset: 1,
+              ),
+            );
+            homeBloc.add(
+              const IsChangedVariationWhenQtyZeroEvent(
+                isChangedVariationWhenQtyZero: false,
+              ),
+            );
+            homeBloc.add(
+              const IsChangedVariationWhenQtyZeroEvent(
+                isChangedVariationWhenQtyZero: false,
+              ),
+            );
 
-            boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
-                sizeAndColorFilterinTextToSearch: const {}));
+            boutiqueBloc.add(
+              AddSizeAndColorFilterinTextToSearchEvent(
+                sizeAndColorFilterinTextToSearch: const {},
+              ),
+            );
             appBloc.add(HideBottomNavigationBar(false));
             appBloc.add(ShowOrHideBars(true));
             appBloc.add(ChangeIndexForSearch(1));
 
             Future.delayed(
-                const Duration(milliseconds: 300),
-                () => Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => ProductListingPage(
-                          isShowPanelForVerified: isShowPanelForVerified,
-                          banner: boutique.banners,
-                          withSlidingImages: withSlidingImages,
-                          boutiqueSlug: boutique.slug!,
-                          boutiqueName: boutique.name,
-                          boutiqueFirstBanner: boutique.banners![0].filePath!,
-                          boutiqueIcon: boutique.icon?.filePath ?? "",
-                        ),
-                        transitionsBuilder: (_, __, ___, child) =>
-                            child, // بدون أي حركة
-                        transitionDuration: Duration.zero, // انتقال فوري
-                        reverseTransitionDuration: Duration.zero, // عودة فورية
-                      ),
-                    ));
+              const Duration(milliseconds: 300),
+              () => Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => ProductListingPage(
+                    isShowPanelForVerified: isShowPanelForVerified,
+                    banner: boutique.banners,
+                    withSlidingImages: withSlidingImages,
+                    boutiqueSlug: boutique.slug!,
+                    boutiqueName: boutique.name,
+                    boutiqueFirstBanner: boutique.banners![0].filePath!,
+                    boutiqueIcon: boutique.icon?.filePath ?? "",
+                  ),
+                  transitionsBuilder: (_, __, ___, child) =>
+                      child, // بدون أي حركة
+                  transitionDuration: Duration.zero, // انتقال فوري
+                  reverseTransitionDuration: Duration.zero, // عودة فورية
+                ),
+              ),
+            );
             ////////////////////////////////////
             /* FirebaseAnalyticsService.logEventForSession(
               eventName: AnalyticsEventsConst.buttonClicked,
@@ -213,32 +230,30 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                 ),
               ),*/
               Positioned.fill(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(start: 25.w, top: 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        boutique.icon?.filePath != null
-                            ? SvgNetworkWidget(
-                                svgUrl: boutique.icon!.filePath!,
-                                height: 20,
-                                width: 40,
-                              )
-                            : const cupertino.SizedBox.shrink(),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        MyTextWidget(
-                          boutique.name!,
-                          style: context.textTheme.titleMedium?.rr.copyWith(
-                            fontSize: 12,
-                            color: const Color(0xff505050),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsDirectional.only(start: 25.w, top: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          boutique.icon?.filePath != null
+                              ? SvgNetworkWidget(
+                                  svgUrl: boutique.icon!.filePath!,
+                                  height: 20,
+                                  width: 40,
+                                )
+                              : const cupertino.SizedBox.shrink(),
+                          const SizedBox(height: 5),
+                          MyTextWidget(
+                            boutique.name!,
+                            style: context.textTheme.titleMedium?.rq.copyWith(
+                              fontSize: 12,
+                              color: const Color(0xff505050),
+                            ),
                           ),
-                        ),
-                        /*Html(
+                          /*Html(
                           shrinkWrap: true,
                           data: widget.boutique.description ?? '',
                           style: {
@@ -249,43 +264,45 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                             ),
                           },
                         ),*/
-                        if (!withSlidingImages)
-                          const SizedBox(
-                            height: 10,
-                          ),
-                      ],
+                          if (!withSlidingImages) const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
+                    Padding(
+                      padding: EdgeInsets.only(
                         left: withSlidingImages ? 0 : 10,
-                        right: withSlidingImages ? 0 : 10),
-                    child: withSlidingImages
-                        ? cupertino.Container(
-                            color: Colors.white,
-                            child: CarouselSlider.builder(
+                        right: withSlidingImages ? 0 : 10,
+                      ),
+                      child: withSlidingImages
+                          ? cupertino.Container(
+                              color: Colors.white,
+                              child: CarouselSlider.builder(
                                 itemCount: boutique.banners!.length,
                                 itemBuilder: (context, index, _) {
                                   // 🔧 إضافة lazy loading للصور
 
                                   print(
-                                      "🖼️ Banner $index URL: ${boutique.banners?[index].filePath ?? 'null'}");
+                                    "🖼️ Banner $index URL: ${boutique.banners?[index].filePath ?? 'null'}",
+                                  );
                                   return Padding(
                                     padding: EdgeInsetsDirectional.only(
-                                        start: index == 0 ? 0 : 10,
-                                        top: 10,
-                                        bottom: 10),
+                                      start: index == 0 ? 0 : 10,
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
                                     child: Stack(
                                       children: [
                                         Container(
                                           height: 155,
                                           width: 1.sw,
                                           decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
+                                            borderRadius: BorderRadius.circular(
+                                              15.0,
+                                            ),
                                             border: Border.all(
-                                                width: 0.5,
-                                                color: const Color(0xfffafafa)),
+                                              width: 0.5,
+                                              color: const Color(0xfffafafa),
+                                            ),
                                             boxShadow: const [
                                               BoxShadow(
                                                 color: Colors.white,
@@ -296,7 +313,8 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                           ),
                                           child: MyCachedNetworkImage(
                                             imageUrl: boutique
-                                                .banners![index].filePath!,
+                                                .banners![index]
+                                                .filePath!,
                                             imageFit: BoxFit.contain,
                                             width: 1.sw,
                                             innerShadowYOffset: 3,
@@ -308,16 +326,18 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                           height: 155,
                                           width: 1.sw,
                                           decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
+                                            borderRadius: BorderRadius.circular(
+                                              15.0,
+                                            ),
                                             boxShadow: [
                                               BoxShadow(
-                                                  color: Colors.white
-                                                      // ignore: deprecated_member_use
-                                                      .withOpacity(0.7),
-                                                  offset: const Offset(0, 3),
-                                                  blurRadius: 6,
-                                                  inset: true),
+                                                color: Colors.white
+                                                    // ignore: deprecated_member_use
+                                                    .withOpacity(0.7),
+                                                offset: const Offset(0, 3),
+                                                blurRadius: 6,
+                                                inset: true,
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -327,8 +347,9 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                 },
                                 options: CarouselOptions(
                                   autoPlayInterval: const Duration(seconds: 30),
-                                  autoPlayAnimationDuration:
-                                      const Duration(milliseconds: 300),
+                                  autoPlayAnimationDuration: const Duration(
+                                    milliseconds: 300,
+                                  ),
                                   /*  onPageChanged: (int index, _) {
                                     Future.delayed(Duration(milliseconds: 100),
                                         () {
@@ -341,29 +362,32 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                   enableInfiniteScroll: false,
                                   viewportFraction: 1.0,
                                   pauseAutoPlayInFiniteScroll: true,
-                                )))
-                        : Stack(
-                            children: [
-                              Container(
-                                height: 135,
-                                width: 1.sw,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(
-                                      width: 0.5,
-                                      color: const Color(0xfffafafa)),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.white,
-                                      offset: Offset(0, 3),
-                                      blurRadius: 10,
-                                    ),
-                                  ],
                                 ),
-                                child: ClipRRect(
+                              ),
+                            )
+                          : Stack(
+                              children: [
+                                Container(
+                                  height: 135,
+                                  width: 1.sw,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                      width: 0.5,
+                                      color: const Color(0xfffafafa),
+                                    ),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.white,
+                                        offset: Offset(0, 3),
+                                        blurRadius: 10,
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: ((boutique.banners?.length ?? 0) ==
-                                            0)
+                                    child:
+                                        ((boutique.banners?.length ?? 0) == 0)
                                         ? const cupertino.SizedBox.shrink()
                                         : MyCachedNetworkImage(
                                             imageSource: 'home_page_card2',
@@ -374,28 +398,31 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                             withInnerShadow: true,
                                             innerShadowYOffset: 3,
                                             height: 135,
-                                          )),
-                              ),
-                              Container(
-                                height: 135,
-                                width: 1.sw,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  boxShadow: [
-                                    BoxShadow(
+                                          ),
+                                  ),
+                                ),
+                                Container(
+                                  height: 135,
+                                  width: 1.sw,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    boxShadow: [
+                                      BoxShadow(
                                         // ignore: deprecated_member_use
                                         color: Colors.white.withOpacity(0.7),
                                         offset: const Offset(0, 3),
                                         blurRadius: 6,
-                                        inset: true),
-                                  ],
+                                        inset: true,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                  )
-                ],
-              )),
+                              ],
+                            ),
+                    ),
+                  ],
+                ),
+              ),
               PositionedDirectional(
                 child: cupertino.SizedBox(
                   height: 12,
@@ -405,74 +432,90 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                     scrollDirection: cupertino.Axis.horizontal,
                     itemBuilder: (context, index) {
                       return InkWell(
-                          onTap: () {
-                            boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                        onTap: () {
+                          boutiqueBloc.add(
+                            ChangeAppliedFiltersEvent(
                               boutiqueSlug: boutique.slug!,
                               resetAppliedFilters: true,
-                            ));
-                            boutiqueBloc.add(ChangeSelectedFiltersEvent(
+                            ),
+                          );
+                          boutiqueBloc.add(
+                            ChangeSelectedFiltersEvent(
                               boutiqueSlug: boutique.slug!,
-                            ));
+                            ),
+                          );
 
-                            boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                getWithoutFilter: true,
-                                cashedOrginalBoutique: true,
-                                boutiqueSlug: boutique.slug!,
-                                fromSearch: false,
-                                context: context,
-                                offset: 1));
-                            homeBloc.add(
-                                const IsChangedVariationWhenQtyZeroEvent(
-                                    isChangedVariationWhenQtyZero: false));
-                            homeBloc.add(
-                                const IsChangedVariationWhenQtyZeroEvent(
-                                    isChangedVariationWhenQtyZero: false));
+                          boutiqueBloc.add(
+                            GetProductsWithFiltersEvent(
+                              getWithoutFilter: true,
+                              cashedOrginalBoutique: true,
+                              boutiqueSlug: boutique.slug!,
+                              fromSearch: false,
+                              context: context,
+                              offset: 1,
+                            ),
+                          );
+                          homeBloc.add(
+                            const IsChangedVariationWhenQtyZeroEvent(
+                              isChangedVariationWhenQtyZero: false,
+                            ),
+                          );
+                          homeBloc.add(
+                            const IsChangedVariationWhenQtyZeroEvent(
+                              isChangedVariationWhenQtyZero: false,
+                            ),
+                          );
 
-                            boutiqueBloc.add(
-                                AddSizeAndColorFilterinTextToSearchEvent(
-                                    sizeAndColorFilterinTextToSearch: const {}));
-                            appBloc.add(HideBottomNavigationBar(false));
-                            appBloc.add(ShowOrHideBars(true));
-                            appBloc.add(ChangeIndexForSearch(1));
+                          boutiqueBloc.add(
+                            AddSizeAndColorFilterinTextToSearchEvent(
+                              sizeAndColorFilterinTextToSearch: const {},
+                            ),
+                          );
+                          appBloc.add(HideBottomNavigationBar(false));
+                          appBloc.add(ShowOrHideBars(true));
+                          appBloc.add(ChangeIndexForSearch(1));
 
-                            Future.delayed(
-                                const Duration(milliseconds: 300),
-                                () => Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (_, __, ___) =>
-                                            ProductListingPage(
-                                          isShowPanelForVerified:
-                                              isShowPanelForVerified,
-                                          banner: boutique.banners,
-                                          withSlidingImages: withSlidingImages,
-                                          boutiqueSlug: boutique.slug!,
-                                          boutiqueName: boutique.name,
-                                          boutiqueFirstBanner:
-                                              boutique.banners![0].filePath!,
-                                          boutiqueIcon:
-                                              boutique.icon!.filePath!,
-                                        ),
-                                        transitionsBuilder:
-                                            (_, __, ___, child) =>
-                                                child, // بدون أي حركة
-                                        transitionDuration:
-                                            Duration.zero, // انتقال فوري
-                                        reverseTransitionDuration:
-                                            Duration.zero, // عودة فورية
-                                      ),
-                                    ));
-                          },
-                          child: SvgNetworkWidget(
-                            svgUrl: boutique.mainCategoriesForProductIds![index]
-                                        .flatPhotoPath !=
-                                    null
-                                ? boutique.mainCategoriesForProductIds![index]
-                                    .flatPhotoPath!.filePath!
-                                : "",
-                            width: 12,
-                            height: 12,
-                          ));
+                          Future.delayed(
+                            const Duration(milliseconds: 300),
+                            () => Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (_, __, ___) => ProductListingPage(
+                                  isShowPanelForVerified:
+                                      isShowPanelForVerified,
+                                  banner: boutique.banners,
+                                  withSlidingImages: withSlidingImages,
+                                  boutiqueSlug: boutique.slug!,
+                                  boutiqueName: boutique.name,
+                                  boutiqueFirstBanner:
+                                      boutique.banners![0].filePath!,
+                                  boutiqueIcon: boutique.icon!.filePath!,
+                                ),
+                                transitionsBuilder: (_, __, ___, child) =>
+                                    child, // بدون أي حركة
+                                transitionDuration:
+                                    Duration.zero, // انتقال فوري
+                                reverseTransitionDuration:
+                                    Duration.zero, // عودة فورية
+                              ),
+                            ),
+                          );
+                        },
+                        child: SvgNetworkWidget(
+                          svgUrl:
+                              boutique
+                                      .mainCategoriesForProductIds![index]
+                                      .flatPhotoPath !=
+                                  null
+                              ? boutique
+                                    .mainCategoriesForProductIds![index]
+                                    .flatPhotoPath!
+                                    .filePath!
+                              : "",
+                          width: 12,
+                          height: 12,
+                        ),
+                      );
                     },
                     itemCount: boutique.mainCategoriesForProductIds!.length > 5
                         ? 5
@@ -507,266 +550,266 @@ class HomePageCard2 extends cupertino.StatelessWidget {
         Directionality(
           textDirection: ui.TextDirection.ltr,
           child: ValueListenableBuilder<int>(
-              valueListenable: resizeItems,
-              builder: (context, focused, _) {
-                return GestureDetector(
-                  onPanDown: (details) {
-                    HapticFeedback.lightImpact();
-                    resizeItems.value = (details.globalPosition.dx -
-                            40 -
-                            (8 -
-                                    (boutique.childCategoriesForProductIds!
-                                                .length >
-                                            8
-                                        ? 8
-                                        : boutique.childCategoriesForProductIds!
-                                            .length)) /
-                                //childCategoriesForProductIds!.length) /
-                                2 *
-                                (40.w - 5.w)) ~/
-                        35.w;
-                  },
-                  onPanCancel: () {
-                    resizeItems.value = -1;
-                  },
-                  onPanEnd: (details) {
-                    resizeItems.value = -1;
-                  },
-                  onPanUpdate: (details) {
-                    int prev = resizeItems.value;
-                    resizeItems.value = (details.globalPosition.dx -
-                            40 -
-                            (8 -
-                                    (boutique.childCategoriesForProductIds!
-                                                .length >
-                                            8
-                                        ? 8
-                                        : boutique.childCategoriesForProductIds!
-                                            .length)) /
-                                2 *
-                                (40.w - 5.w)) ~/
-                        35.w;
-                    if (prev != resizeItems.value) {
-                      HapticFeedback.lightImpact();
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: cupertino.MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 10.w,
-                      ),
-                      Transform.translate(
-                        offset: const Offset(10, 0),
-                        child: SizedBox(
-                          width: 340.w,
-                          height: focused != -1 ? 100.w : 60.w,
-                          child: Stack(
-                              alignment: Alignment.bottomCenter,
-                              children: List.generate(
-                                  (boutique.childCategoriesForProductIds!
-                                              .length) >
+            valueListenable: resizeItems,
+            builder: (context, focused, _) {
+              return GestureDetector(
+                onPanDown: (details) {
+                  HapticFeedback.lightImpact();
+                  resizeItems.value =
+                      (details.globalPosition.dx -
+                          40 -
+                          (8 -
+                                  (boutique
+                                              .childCategoriesForProductIds!
+                                              .length >
                                           8
                                       ? 8
-                                      : (boutique.childCategoriesForProductIds!
-                                          .length),
-                                  (index) => AnimatedPositioned(
-                                        left: (8 -
-                                                    (boutique.childCategoriesForProductIds!
-                                                                .length >
-                                                            8
-                                                        ? 8
-                                                        : boutique
-                                                            .childCategoriesForProductIds!
-                                                            .length)) /
-                                                2 *
-                                                (40.w - 5.w) +
-                                            (index * (40.w - 5.w) +
-                                                (focused != -1
-                                                    ? index == (focused + 1)
-                                                        ? 20.w
-                                                        : index == focused
-                                                            ? 5.w
-                                                            : index > focused
-                                                                ? 20.w
-                                                                : 0
-                                                    : 0)),
-                                        curve: Curves.fastEaseInToSlowEaseOut,
-                                        bottom: focused == index ? 35.w : 10.w,
-                                        duration: Duration(
-                                            milliseconds:
-                                                focused == index ? 150 : 10),
-                                        child: InkWell(
-                                          onTap: () {
-                                            boutiqueBloc
-                                                .add(ChangeAppliedFiltersEvent(
-                                              boutiqueSlug: boutique.slug!,
-                                              resetAppliedFilters: true,
-                                            ));
-                                            boutiqueBloc
-                                                .add(ChangeSelectedFiltersEvent(
-                                              boutiqueSlug: boutique.slug!,
-                                            ));
+                                      : boutique
+                                            .childCategoriesForProductIds!
+                                            .length)) /
+                              //childCategoriesForProductIds!.length) /
+                              2 *
+                              (40.w - 5.w)) ~/
+                      35.w;
+                },
+                onPanCancel: () {
+                  resizeItems.value = -1;
+                },
+                onPanEnd: (details) {
+                  resizeItems.value = -1;
+                },
+                onPanUpdate: (details) {
+                  int prev = resizeItems.value;
+                  resizeItems.value =
+                      (details.globalPosition.dx -
+                          40 -
+                          (8 -
+                                  (boutique
+                                              .childCategoriesForProductIds!
+                                              .length >
+                                          8
+                                      ? 8
+                                      : boutique
+                                            .childCategoriesForProductIds!
+                                            .length)) /
+                              2 *
+                              (40.w - 5.w)) ~/
+                      35.w;
+                  if (prev != resizeItems.value) {
+                    HapticFeedback.lightImpact();
+                  }
+                },
+                child: Column(
+                  mainAxisAlignment: cupertino.MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 10.w),
+                    Transform.translate(
+                      offset: const Offset(10, 0),
+                      child: SizedBox(
+                        width: 340.w,
+                        height: focused != -1 ? 100.w : 60.w,
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: List.generate(
+                            (boutique.childCategoriesForProductIds!.length) > 8
+                                ? 8
+                                : (boutique
+                                      .childCategoriesForProductIds!
+                                      .length),
+                            (index) => AnimatedPositioned(
+                              left:
+                                  (8 -
+                                          (boutique
+                                                      .childCategoriesForProductIds!
+                                                      .length >
+                                                  8
+                                              ? 8
+                                              : boutique
+                                                    .childCategoriesForProductIds!
+                                                    .length)) /
+                                      2 *
+                                      (40.w - 5.w) +
+                                  (index * (40.w - 5.w) +
+                                      (focused != -1
+                                          ? index == (focused + 1)
+                                                ? 20.w
+                                                : index == focused
+                                                ? 5.w
+                                                : index > focused
+                                                ? 20.w
+                                                : 0
+                                          : 0)),
+                              curve: Curves.fastEaseInToSlowEaseOut,
+                              bottom: focused == index ? 35.w : 10.w,
+                              duration: Duration(
+                                milliseconds: focused == index ? 150 : 10,
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  boutiqueBloc.add(
+                                    ChangeAppliedFiltersEvent(
+                                      boutiqueSlug: boutique.slug!,
+                                      resetAppliedFilters: true,
+                                    ),
+                                  );
+                                  boutiqueBloc.add(
+                                    ChangeSelectedFiltersEvent(
+                                      boutiqueSlug: boutique.slug!,
+                                    ),
+                                  );
 
-                                            boutiqueBloc
-                                                .add(ChangeAppliedFiltersEvent(
-                                              boutiqueSlug: boutique.slug!,
-                                              category: index == 7
-                                                  ? null
-                                                  : boutique
-                                                      .childCategoriesForProductIds![
-                                                          index]
-                                                      .categorySlug,
-                                              resetAppliedFilters: true,
-                                            ));
-                                            FirebaseAnalyticsService
-                                                .logEventForSession(
-                                              eventName: AnalyticsEventsConst
-                                                  .applyFilter,
-                                              extraParams: {
-                                                'filter_type': "category",
-                                                'filter_value': index == 7
-                                                    ? "more"
-                                                    : boutique
-                                                            .childCategoriesForProductIds![
-                                                                index]
-                                                            .categoryName ??
-                                                        "",
-                                                'screen_name': GlobalScreenConst
-                                                    .PRODUCT_LISTING_SCREEN,
-                                              },
-                                              executedEventName:
-                                                  AnalyticsButtonsEventNameConst
-                                                      .applyFilterButton,
-                                            );
-                                            boutiqueBloc
-                                                .add(ChangeSelectedFiltersEvent(
-                                              boutiqueSlug: boutique.slug!,
-                                              category: index == 7
-                                                  ? null
-                                                  : boutique
-                                                      .childCategoriesForProductIds![
-                                                          index]
-                                                      .categorySlug,
-                                            ));
-
-                                            boutiqueBloc.add(
-                                                GetProductsWithFiltersEvent(
-                                                    getWithoutFilter: true,
-                                                    cashedOrginalBoutique: true,
-                                                    boutiqueSlug:
-                                                        boutique.slug!,
-                                                    fromSearch: false,
-                                                    category: index == 7
-                                                        ? null
-                                                        : boutique
-                                                            .childCategoriesForProductIds![
-                                                                index]
-                                                            .categorySlug,
-                                                    context: context,
-                                                    offset: 1));
-
-                                            homeBloc.add(
-                                                const IsChangedVariationWhenQtyZeroEvent(
-                                                    isChangedVariationWhenQtyZero:
-                                                        false));
-                                            homeBloc.add(
-                                                const IsChangedVariationWhenQtyZeroEvent(
-                                                    isChangedVariationWhenQtyZero:
-                                                        false));
-
-                                            boutiqueBloc.add(
-                                                AddSizeAndColorFilterinTextToSearchEvent(
-                                                    sizeAndColorFilterinTextToSearch: const {}));
-                                            appBloc.add(
-                                                HideBottomNavigationBar(false));
-                                            appBloc.add(ShowOrHideBars(true));
-                                            appBloc
-                                                .add(ChangeIndexForSearch(1));
-
-                                            Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 300),
-                                                () => Navigator.push(
-                                                      context,
-                                                      PageRouteBuilder(
-                                                        pageBuilder: (_, __,
-                                                                ___) =>
-                                                            ProductListingPage(
-                                                          isShowPanelForVerified:
-                                                              isShowPanelForVerified,
-                                                          banner:
-                                                              boutique.banners,
-                                                          withSlidingImages:
-                                                              withSlidingImages,
-                                                          boutiqueSlug:
-                                                              boutique.slug!,
-                                                          category: index == 7
-                                                              ? null
-                                                              : boutique
-                                                                  .childCategoriesForProductIds![
-                                                                      index]
-                                                                  .categorySlug,
-                                                          boutiqueName:
-                                                              boutique.name,
-                                                          boutiqueFirstBanner:
-                                                              boutique
-                                                                  .banners![0]
-                                                                  .filePath!,
-                                                          boutiqueIcon: boutique
-                                                                  .icon
-                                                                  ?.filePath ??
-                                                              "",
-                                                        ),
-
-                                                        transitionsBuilder: (_,
-                                                                __,
-                                                                ___,
-                                                                child) =>
-                                                            child, // بدون أي حركة
-                                                        transitionDuration: Duration
-                                                            .zero, // انتقال فوري
-                                                        reverseTransitionDuration:
-                                                            Duration
-                                                                .zero, // عودة فورية
-                                                      ),
-                                                    ));
-                                          },
-                                          child: ProductItemCircle(
-                                            index: index,
-                                            isFocused: focused == index,
-                                            imageUrl: boutique
-                                                    .childCategoriesForProductIds![
-                                                        //  .childCategoriesForProductIds![
-                                                        index]
-                                                    .mostViewedProductThumbnail!
-                                                    .filePath ??
-                                                "",
-                                            name: boutique
-                                                    .childCategoriesForProductIds![
-                                                        //.childCategoriesForProductIds![
-                                                        index]
+                                  boutiqueBloc.add(
+                                    ChangeAppliedFiltersEvent(
+                                      boutiqueSlug: boutique.slug!,
+                                      category: index == 7
+                                          ? null
+                                          : boutique
+                                                .childCategoriesForProductIds![index]
+                                                .categorySlug,
+                                      resetAppliedFilters: true,
+                                    ),
+                                  );
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName: AnalyticsEventsConst.applyFilter,
+                                    extraParams: {
+                                      'filter_type': "category",
+                                      'filter_value': index == 7
+                                          ? "more"
+                                          : boutique
+                                                    .childCategoriesForProductIds![index]
                                                     .categoryName ??
                                                 "",
-                                            countProducts: (boutique
-                                                        .childCategoriesForProductIds![
-                                                            //.childCategoriesForProductIds![
-                                                            index]
-                                                        .countProducts ??
-                                                    "")
-                                                .toString(),
-                                          ),
-                                        ),
-                                      ))),
+                                      'screen_name': GlobalScreenConst
+                                          .PRODUCT_LISTING_SCREEN,
+                                    },
+                                    executedEventName:
+                                        AnalyticsButtonsEventNameConst
+                                            .applyFilterButton,
+                                  );
+                                  boutiqueBloc.add(
+                                    ChangeSelectedFiltersEvent(
+                                      boutiqueSlug: boutique.slug!,
+                                      category: index == 7
+                                          ? null
+                                          : boutique
+                                                .childCategoriesForProductIds![index]
+                                                .categorySlug,
+                                    ),
+                                  );
+
+                                  boutiqueBloc.add(
+                                    GetProductsWithFiltersEvent(
+                                      getWithoutFilter: true,
+                                      cashedOrginalBoutique: true,
+                                      boutiqueSlug: boutique.slug!,
+                                      fromSearch: false,
+                                      category: index == 7
+                                          ? null
+                                          : boutique
+                                                .childCategoriesForProductIds![index]
+                                                .categorySlug,
+                                      context: context,
+                                      offset: 1,
+                                    ),
+                                  );
+
+                                  homeBloc.add(
+                                    const IsChangedVariationWhenQtyZeroEvent(
+                                      isChangedVariationWhenQtyZero: false,
+                                    ),
+                                  );
+                                  homeBloc.add(
+                                    const IsChangedVariationWhenQtyZeroEvent(
+                                      isChangedVariationWhenQtyZero: false,
+                                    ),
+                                  );
+
+                                  boutiqueBloc.add(
+                                    AddSizeAndColorFilterinTextToSearchEvent(
+                                      sizeAndColorFilterinTextToSearch:
+                                          const {},
+                                    ),
+                                  );
+                                  appBloc.add(HideBottomNavigationBar(false));
+                                  appBloc.add(ShowOrHideBars(true));
+                                  appBloc.add(ChangeIndexForSearch(1));
+
+                                  Future.delayed(
+                                    const Duration(milliseconds: 300),
+                                    () => Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                        pageBuilder: (_, __, ___) =>
+                                            ProductListingPage(
+                                              isShowPanelForVerified:
+                                                  isShowPanelForVerified,
+                                              banner: boutique.banners,
+                                              withSlidingImages:
+                                                  withSlidingImages,
+                                              boutiqueSlug: boutique.slug!,
+                                              category: index == 7
+                                                  ? null
+                                                  : boutique
+                                                        .childCategoriesForProductIds![index]
+                                                        .categorySlug,
+                                              boutiqueName: boutique.name,
+                                              boutiqueFirstBanner: boutique
+                                                  .banners![0]
+                                                  .filePath!,
+                                              boutiqueIcon:
+                                                  boutique.icon?.filePath ?? "",
+                                            ),
+
+                                        transitionsBuilder:
+                                            (_, __, ___, child) =>
+                                                child, // بدون أي حركة
+                                        transitionDuration:
+                                            Duration.zero, // انتقال فوري
+                                        reverseTransitionDuration:
+                                            Duration.zero, // عودة فورية
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: ProductItemCircle(
+                                  index: index,
+                                  isFocused: focused == index,
+                                  imageUrl:
+                                      boutique
+                                          .childCategoriesForProductIds![
+                                          //  .childCategoriesForProductIds![
+                                          index]
+                                          .mostViewedProductThumbnail!
+                                          .filePath ??
+                                      "",
+                                  name:
+                                      boutique
+                                          .childCategoriesForProductIds![
+                                          //.childCategoriesForProductIds![
+                                          index]
+                                          .categoryName ??
+                                      "",
+                                  countProducts:
+                                      (boutique
+                                                  .childCategoriesForProductIds![
+                                                  //.childCategoriesForProductIds![
+                                                  index]
+                                                  .countProducts ??
+                                              "")
+                                          .toString(),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        height: 10.w,
-                      )
-                    ],
-                  ),
-                );
-              }),
+                    ),
+                    SizedBox(height: 10.w),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -774,13 +817,14 @@ class HomePageCard2 extends cupertino.StatelessWidget {
 }
 
 class ProductItemCircle extends StatelessWidget {
-  const ProductItemCircle(
-      {required this.index,
-      required this.isFocused,
-      super.key,
-      required this.countProducts,
-      required this.imageUrl,
-      required this.name});
+  const ProductItemCircle({
+    required this.index,
+    required this.isFocused,
+    super.key,
+    required this.countProducts,
+    required this.imageUrl,
+    required this.name,
+  });
 
   final String imageUrl;
   final int index;
@@ -806,27 +850,31 @@ class ProductItemCircle extends StatelessWidget {
             curve: Curves.easeInOut,
             child: Transform.translate(
               offset: Offset(0, isFocused ? 35.w : 0),
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-                MyTextWidget(
-                  name,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.titleMedium?.rr.copyWith(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  MyTextWidget(
+                    name,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleMedium?.rq.copyWith(
                       color: const Color(0xff8E8E8E),
                       letterSpacing: 0,
-                      height: 1.43),
-                ),
-                MyTextWidget(
-                  countProducts,
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.titleMedium?.rr.copyWith(
+                      height: 1.43,
+                    ),
+                  ),
+                  MyTextWidget(
+                    countProducts,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleMedium?.rq.copyWith(
                       color: const Color(0xff8E8E8E),
                       fontSize: 8.sp,
                       letterSpacing: 0,
-                      height: 1.375),
-                )
-              ]),
+                      height: 1.375,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           AnimatedScale(
@@ -851,15 +899,17 @@ class ProductItemCircle extends StatelessWidget {
                     ],
                   ),
                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(180),
-                      child: MyCachedNetworkImage(
-                          imageSource: 'home_page_card2',
-                          //   progressIndicatorBuilderWidget:
-                          //       cupertino.SizedBox.shrink(),
-                          imageUrl: imageUrl,
-                          width: 40.w,
-                          imageFit: cupertino.BoxFit.contain,
-                          height: 40.w)),
+                    borderRadius: BorderRadius.circular(180),
+                    child: MyCachedNetworkImage(
+                      imageSource: 'home_page_card2',
+                      //   progressIndicatorBuilderWidget:
+                      //       cupertino.SizedBox.shrink(),
+                      imageUrl: imageUrl,
+                      width: 40.w,
+                      imageFit: cupertino.BoxFit.contain,
+                      height: 40.w,
+                    ),
+                  ),
                 ),
                 Container(
                   height: 40.w,
@@ -868,11 +918,12 @@ class ProductItemCircle extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                          // ignore: deprecated_member_use
-                          color: Colors.white.withOpacity(0.7),
-                          offset: const Offset(0, 4),
-                          blurRadius: 6,
-                          inset: true),
+                        // ignore: deprecated_member_use
+                        color: Colors.white.withOpacity(0.7),
+                        offset: const Offset(0, 4),
+                        blurRadius: 6,
+                        inset: true,
+                      ),
                     ],
                   ),
                 ),
@@ -903,13 +954,14 @@ class ProductItemCircle extends StatelessWidget {
                 index == 7
                     ? MyTextWidget(
                         '${LocaleKeys.more.tr()}',
-                        style: context.textTheme.titleSmall?.rq
-                            .copyWith(color: Colors.white),
+                        style: context.textTheme.titleSmall?.rq.copyWith(
+                          color: Colors.white,
+                        ),
                       )
                     : const SizedBox.shrink(),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

@@ -30,26 +30,26 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 // ignore: must_be_immutable
 class DocumentMessage extends StatefulWidget {
-  DocumentMessage(
-      {Key? key,
-      this.isForwarded = false,
-      this.isLocalMessage = true,
-      required this.isSent,
-      required this.isRead,
-      required this.senderId,
-      required this.fileName,
-      this.userMessagePhoto,
-      this.documentFile,
-      this.documentFileUrl,
-      required this.userMessageName,
-      required this.messageId,
-      required this.isReceived,
-      required this.isFirstMessage,
-      this.receivedAt,
-      this.createAt,
-      this.watchedAt,
-      required this.channelId})
-      : super(key: key);
+  DocumentMessage({
+    Key? key,
+    this.isForwarded = false,
+    this.isLocalMessage = true,
+    required this.isSent,
+    required this.isRead,
+    required this.senderId,
+    required this.fileName,
+    this.userMessagePhoto,
+    this.documentFile,
+    this.documentFileUrl,
+    required this.userMessageName,
+    required this.messageId,
+    required this.isReceived,
+    required this.isFirstMessage,
+    this.receivedAt,
+    this.createAt,
+    this.watchedAt,
+    required this.channelId,
+  }) : super(key: key);
   final bool isSent;
   final bool isFirstMessage;
   final DateTime? receivedAt;
@@ -132,8 +132,9 @@ class _DocumentMessageState extends State<DocumentMessage> {
         builder: (context, state) {
           return Padding(
             padding: HWEdgeInsets.only(
-                right: widget.isSent ? 25.w : 0,
-                left: widget.isSent ? 0 : 25.w),
+              right: widget.isSent ? 25.w : 0,
+              left: widget.isSent ? 0 : 25.w,
+            ),
             child: SwipeTo(
               onLeftSwipe: () {
                 if (widget.senderId == widget._prefsRepository.myChatId) {
@@ -141,12 +142,17 @@ class _DocumentMessageState extends State<DocumentMessage> {
                       state.currentMessage.contains(widget.messageId))) {
                     return;
                   }
-                  BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                      true, 'file', widget.isSent,
+                  BlocProvider.of<AppBloc>(context).add(
+                    RefreshChatInputField(
+                      true,
+                      'file',
+                      widget.isSent,
                       senderParentMessageId: widget.senderId,
                       messageId: widget.messageId,
                       time: widget.createAt,
-                      message: widget.fileName));
+                      message: widget.fileName,
+                    ),
+                  );
                 } else {}
               },
               iconSize: 0,
@@ -154,19 +160,25 @@ class _DocumentMessageState extends State<DocumentMessage> {
               offsetDx: 0.15,
               onRightSwipe: () {
                 if (widget.senderId == widget._prefsRepository.myChatId) {
-                  BlocProvider.of<ChatBloc>(context)
-                      .add(ChangeSlop(messageId: widget.messageId));
+                  BlocProvider.of<ChatBloc>(
+                    context,
+                  ).add(ChangeSlop(messageId: widget.messageId));
                 } else {
                   if ((state.sendMessageStatus == SendMessageStatus.loading &&
                       state.currentMessage.contains(widget.messageId))) {
                     return;
                   }
-                  BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                      true, 'file', widget.isSent,
+                  BlocProvider.of<AppBloc>(context).add(
+                    RefreshChatInputField(
+                      true,
+                      'file',
+                      widget.isSent,
                       senderParentMessageId: widget.senderId,
                       messageId: widget.messageId,
                       time: widget.createAt,
-                      message: widget.fileName));
+                      message: widget.fileName,
+                    ),
+                  );
                 }
               },
               child: Row(
@@ -175,13 +187,14 @@ class _DocumentMessageState extends State<DocumentMessage> {
                     : MainAxisAlignment.start,
                 children: [
                   Transform.translate(
-                    offset: !(state.isSlpoing &&
+                    offset:
+                        !(state.isSlpoing &&
                             state.slopMessageId!.contains(widget.messageId) &&
                             (widget.isReceived || widget.isRead))
                         ? const Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
-                            ? Offset(140.w, 0)
-                            : Offset(-140.w, 0),
+                        ? Offset(140.w, 0)
+                        : Offset(-140.w, 0),
                     child: Stack(
                       alignment: widget.isSent
                           ? Alignment.centerRight
@@ -191,10 +204,11 @@ class _DocumentMessageState extends State<DocumentMessage> {
                           onTap: () {
                             if (widget.documentFile != null) {
                               // ignore: body_might_complete_normally_catch_error
-                              OpenFile.open(widget.documentFile!.path)
-                                  .then((value) => {print("access")})
-                                  // ignore: body_might_complete_normally_catch_error
-                                  .catchError((onError) {
+                              OpenFile.open(
+                                widget.documentFile!.path,
+                              ).then((value) => {print("access")})
+                              // ignore: body_might_complete_normally_catch_error
+                              .catchError((onError) {
                                 showDialog(
                                   context: context,
                                   builder: (context) => const AlertDialog(
@@ -214,9 +228,10 @@ class _DocumentMessageState extends State<DocumentMessage> {
                             ),
                             child: Padding(
                               padding: HWEdgeInsets.only(
-                                  left: widget.isSent ? 20.w : 40.w,
-                                  top: 10,
-                                  right: widget.isSent ? 40.w : 20.w),
+                                left: widget.isSent ? 20.w : 40.w,
+                                top: 10,
+                                right: widget.isSent ? 40.w : 20.w,
+                              ),
                               child: IntrinsicWidth(
                                 child: Column(
                                   crossAxisAlignment: widget.isSent
@@ -232,83 +247,97 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                         ),
                                         10.horizontalSpace,
                                         Container(
-                                          constraints:
-                                              BoxConstraints(maxWidth: 310.w),
+                                          constraints: BoxConstraints(
+                                            maxWidth: 310.w,
+                                          ),
                                           child: SizedBox(
                                             width: 200.w,
                                             child: MyTextWidget(
                                               widget.fileName,
                                               maxLines: 3,
                                               style: context
-                                                  .textTheme.titleLarge?.rr
+                                                  .textTheme
+                                                  .titleLarge
+                                                  ?.rq
                                                   .copyWith(
-                                                      color: const Color(
-                                                          0xffC4C2C2),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      height: 1.43),
+                                                    color: const Color(
+                                                      0xffC4C2C2,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    height: 1.43,
+                                                  ),
                                             ),
                                           ),
                                         ),
                                         if (widget.documentFile == null) ...{
                                           10.horizontalSpace,
                                           ValueListenableBuilder<int>(
-                                              valueListenable: _loadingFile,
-                                              builder: (context, status, _) {
-                                                if (status == 0) {
-                                                  return InkWell(
-                                                    onTap: () async {
-                                                      _loadingFile.value = 1;
-                                                    },
-                                                    child: Icon(
-                                                        Icons.save_alt_outlined,
-                                                        color: const Color(
-                                                            0xff388CFF),
-                                                        size: 35.sp),
-                                                  );
-                                                } else if (status == 1) {
-                                                  FileSaving()
-                                                      .downloadFileToLocalStorage(
-                                                          widget
-                                                              .documentFileUrl!,
-                                                          widget.channelId,
-                                                          action: (File? file) {
-                                                    _loadingFile.value = 2;
-                                                    widget.documentFile = file;
-                                                    setState(() {});
-                                                  });
-                                                  return CircularProgressIndicator(
-                                                    backgroundColor:
-                                                        Colors.grey.shade100,
-                                                    color:
-                                                        const Color(0xff388CFF),
-                                                  );
-                                                } else {
-                                                  return const SizedBox
-                                                      .shrink();
-                                                }
-                                              }),
-                                        }
+                                            valueListenable: _loadingFile,
+                                            builder: (context, status, _) {
+                                              if (status == 0) {
+                                                return InkWell(
+                                                  onTap: () async {
+                                                    _loadingFile.value = 1;
+                                                  },
+                                                  child: Icon(
+                                                    Icons.save_alt_outlined,
+                                                    color: const Color(
+                                                      0xff388CFF,
+                                                    ),
+                                                    size: 35.sp,
+                                                  ),
+                                                );
+                                              } else if (status == 1) {
+                                                FileSaving()
+                                                    .downloadFileToLocalStorage(
+                                                      widget.documentFileUrl!,
+                                                      widget.channelId,
+                                                      action: (File? file) {
+                                                        _loadingFile.value = 2;
+                                                        widget.documentFile =
+                                                            file;
+                                                        setState(() {});
+                                                      },
+                                                    );
+                                                return CircularProgressIndicator(
+                                                  backgroundColor:
+                                                      Colors.grey.shade100,
+                                                  color: const Color(
+                                                    0xff388CFF,
+                                                  ),
+                                                );
+                                              } else {
+                                                return const SizedBox.shrink();
+                                              }
+                                            },
+                                          ),
+                                        },
                                       ],
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 5),
+                                        vertical: 5,
+                                      ),
                                       child: Row(
                                         children: [
                                           MyTextWidget(
                                             !widget.createAt!.isUtc
-                                                ? HelperFunctions
-                                                    .getDateInFormat(
-                                                        widget.createAt!)
-                                                : HelperFunctions
-                                                    .getZonedDateInFormat(
-                                                        widget.createAt!),
+                                                ? HelperFunctions.getDateInFormat(
+                                                    widget.createAt!,
+                                                  )
+                                                : HelperFunctions.getZonedDateInFormat(
+                                                    widget.createAt!,
+                                                  ),
                                             style: context
-                                                .textTheme.titleSmall?.rr
+                                                .textTheme
+                                                .titleSmall
+                                                ?.rq
                                                 .copyWith(
-                                                    color: const Color(
-                                                        0xffC4C2C2)),
+                                                  color: const Color(
+                                                    0xffC4C2C2,
+                                                  ),
+                                                ),
                                           ),
                                           if (widget.isSent) ...{
                                             10.horizontalSpace,
@@ -319,22 +348,27 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                                         MainAxisSize.min,
                                                     children: [
                                                       InkWell(
-                                                          onTap: () {
-                                                            chatBloc.add(ResendMessageEvent(
-                                                                messageType:
-                                                                    "file",
-                                                                channelId: widget
-                                                                    .channelId,
-                                                                messageId: widget
-                                                                    .messageId));
-                                                          },
-                                                          child: Icon(
-                                                            Icons.refresh,
-                                                            size: 27.w,
-                                                          )),
+                                                        onTap: () {
+                                                          chatBloc.add(
+                                                            ResendMessageEvent(
+                                                              messageType:
+                                                                  "file",
+                                                              channelId: widget
+                                                                  .channelId,
+                                                              messageId: widget
+                                                                  .messageId,
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: Icon(
+                                                          Icons.refresh,
+                                                          size: 27.w,
+                                                        ),
+                                                      ),
                                                       Container(
                                                         margin: EdgeInsets.only(
-                                                            left: 5.w),
+                                                          left: 5.w,
+                                                        ),
                                                         child: SvgPicture.asset(
                                                           AppAssets
                                                               .messageFailedSvg,
@@ -347,26 +381,31 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                                 : SvgPicture.asset(
                                                     widget.isRead
                                                         ? AppAssets
-                                                            .messageReadArrowSvg
+                                                              .messageReadArrowSvg
                                                         : widget.isReceived
-                                                            ? AppAssets
-                                                                .messageDeliveredArrowSvg
-                                                            : (state.currentMessage
-                                                                    .contains(widget
-                                                                        .messageId))
-                                                                ? timer
-                                                                    ? (state.currentMessage.contains(widget
-                                                                            .messageId))
-                                                                        ? AppAssets
-                                                                            .sandClockSvg
-                                                                        : AppAssets
-                                                                            .messageSentArrowSvg
-                                                                    : ""
-                                                                : AppAssets
-                                                                    .messageSentArrowSvg,
+                                                        ? AppAssets
+                                                              .messageDeliveredArrowSvg
+                                                        : (state.currentMessage
+                                                              .contains(
+                                                                widget
+                                                                    .messageId,
+                                                              ))
+                                                        ? timer
+                                                              ? (state.currentMessage
+                                                                        .contains(
+                                                                          widget
+                                                                              .messageId,
+                                                                        ))
+                                                                    ? AppAssets
+                                                                          .sandClockSvg
+                                                                    : AppAssets
+                                                                          .messageSentArrowSvg
+                                                              : ""
+                                                        : AppAssets
+                                                              .messageSentArrowSvg,
                                                     width: 10.sp,
                                                     height: 10.sp,
-                                                  )
+                                                  ),
                                           },
                                           if (widget.isForwarded) ...{
                                             10.horizontalSpace,
@@ -374,8 +413,8 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                               AppAssets.forwardedSvg,
                                               width: 10.sp,
                                               height: 10.sp,
-                                            )
-                                          }
+                                            ),
+                                          },
                                         ],
                                       ),
                                     ),
@@ -407,8 +446,9 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                                   ? const Color(0xffFFF9B4)
                                                   : const Color(0xffB4FFD9),
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                         ),
                                         Container(
@@ -416,20 +456,22 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                           height: 40,
                                           decoration: BoxDecoration(
                                             color: const Color(0xffEBFFF8),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: (widget.userMessagePhoto
+                                            imageUrl:
+                                                (widget.userMessagePhoto
                                                     .toString()
                                                     .contains("cloudinary")
                                                 ? widget.userMessagePhoto!
                                                 : ("${dotenv.env['Images_Url']}") +
-                                                    widget.userMessagePhoto!),
+                                                      widget.userMessagePhoto!),
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
                                             imageFit: BoxFit.cover,
@@ -441,14 +483,19 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                             width: 30.w,
                                             height: 30,
                                             textStyle: context
-                                                .textTheme.titleMedium?.br
+                                                .textTheme
+                                                .titleMedium
+                                                ?.bq
                                                 .copyWith(
-                                                    color:
-                                                        const Color(0xff6638FF),
-                                                    letterSpacing: 0.18,
-                                                    height: 1.33),
+                                                  color: const Color(
+                                                    0xff6638FF,
+                                                  ),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33,
+                                                ),
                                             radius: 8,
-                                            name: widget.userMessageName)
+                                            name: widget.userMessageName,
+                                          ),
                                   ],
                                 ),
                               )
@@ -456,7 +503,8 @@ class _DocumentMessageState extends State<DocumentMessage> {
                         state.isSlpoing &&
                                 state.slopMessageId!.contains(widget.messageId)
                             ? Transform.translate(
-                                offset: widget.senderId ==
+                                offset:
+                                    widget.senderId ==
                                         widget._prefsRepository.myChatId
                                     ? Offset(-350.w, 0)
                                     : Offset(350.w, 0),

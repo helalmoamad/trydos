@@ -122,60 +122,78 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
     ];
 
     List<String> texts = [
-      "${LocaleKeys.all_inclusive_without_additions.tr()}",
-      '${LocaleKeys.free_shipping.tr()}',
-      '${LocaleKeys.free_return.tr()}',
+      LocaleKeys.all_inclusive_without_additions.tr(),
+      LocaleKeys.free_shipping.tr(),
+      LocaleKeys.free_return.tr(),
       '${LocaleKeys.ship_to_you_accepted.tr()} 2 June',
     ];
-    if (widget.shippingCost == 0) {
-      texts.remove('${LocaleKeys.free_shipping.tr()}');
-      svg.remove(AppAssets.freeShippingSvg);
-    }
 
     return ValueListenableBuilder<int>(
-        valueListenable: widget.currentActiveTab,
-        builder: (context, currentTab, _) {
-          return Container(
-            decoration: BoxDecoration(
-                color: colorScheme.white,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(30))),
-            child: BlocBuilder<HomeBloc, HomeState>(
-                buildWhen: (previous, current) =>
-                    previous.updateItemInCartStatus !=
-                        current.updateItemInCartStatus ||
-                    previous.addItemInCartStatus !=
-                        current.addItemInCartStatus ||
-                    previous.deleteItemInCartStatus !=
-                        current.deleteItemInCartStatus ||
-                    previous.getCartItemsStatus != current.getCartItemsStatus,
-                builder: (context, state) {
-                  double offPriceInCart = state.cartCollection?.firstWhere(
-                          (element) {
-                        if (element.variations?.isNullOrEmpty ?? true) {
-                          return (element.productId == widget.productId);
-                        }
-                        return (element.productId == widget.productId &&
-                            ('${element.variations![0].colorOption ?? ""}${(((element.variations![0].colorOption ?? "") != "") && ((element.variations![0].sizeOption ?? "") != "")) ? "-" : ""}${element.variations![0].sizeOption ?? ""}') ==
-                                widget.currentVariant);
-                      }, orElse: () => Cart(id: 0, offerPrice: 0)).offerPrice ??
-                      0;
-                  return Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Container(
-                        width: 1.sw,
-                        height: 40.h,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            MyTextWidget(
+      valueListenable: widget.currentActiveTab,
+      builder: (context, currentTab, _) {
+        return Container(
+          decoration: BoxDecoration(
+            color: colorScheme.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          child: BlocBuilder<HomeBloc, HomeState>(
+            buildWhen: (previous, current) =>
+                previous.updateItemInCartStatus !=
+                    current.updateItemInCartStatus ||
+                previous.addItemInCartStatus != current.addItemInCartStatus ||
+                previous.deleteItemInCartStatus !=
+                    current.deleteItemInCartStatus ||
+                previous.getCartItemsStatus != current.getCartItemsStatus,
+            builder: (context, state) {
+              if (widget.shippingCost == 0) {
+                texts.remove('${LocaleKeys.free_shipping.tr()}');
+                svg.remove(AppAssets.freeShippingSvg);
+              }
+
+              double offPriceInCart =
+                  state.cartCollection?.firstWhere((element) {
+                    if (element.variations?.isNullOrEmpty ?? true) {
+                      return (element.productId == widget.productId);
+                    }
+                    return (element.productId == widget.productId &&
+                        ('${element.variations![0].colorOption ?? ""}${(((element.variations![0].colorOption ?? "") != "") && ((element.variations![0].sizeOption ?? "") != "")) ? "-" : ""}${element.variations![0].sizeOption ?? ""}') ==
+                            widget.currentVariant);
+                  }, orElse: () => Cart(id: 0, offerPrice: 0)).offerPrice ??
+                  0;
+
+              return Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Container(
+                  width: 1.sw,
+                  height: 40.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(width: 20.w),
+                      (currentTab == 3
+                                  ? ((offPriceInCart > 0 &&
+                                            (!(widget.isRedeem)))
+                                        ? (offPriceInCart *
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!)
+                                              .toString()
+                                        : widget.offerPrice)
+                                  : widget.initOfferPrice) ==
+                              (currentTab == 3
+                                  ? widget.price
+                                  : widget.initPrice)
+                          ? const SizedBox.shrink()
+                          : MyTextWidget(
                               HelperFunctions.formatNumber(
-                                  number: double.parse(currentTab == 3
+                                number: double.parse(
+                                  currentTab == 3
                                       ? widget.price
-                                      : widget.initPrice)),
+                                      : widget.initPrice,
+                                ),
+                              ),
                               //  .toStringAsFixed(widget.decimalPoint),
                               style: textTheme.headlineMedium?.rq.copyWith(
                                 color: const Color(0xffC4C2C2),
@@ -184,133 +202,121 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                 height: 0,
                               ),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            MyTextWidget(
-                              HelperFunctions.formatNumber(
-                                  number: double.parse(currentTab == 3
-                                      ? (offPriceInCart > 0
-                                          ? (offPriceInCart *
-                                                  state
-                                                      .getCurrencyForCountryModel!
-                                                      .data!
-                                                      .currency!
-                                                      .exchangeRate!)
-                                              .toString()
-                                          : widget.offerPrice)
-                                      : widget.initOfferPrice)),
-                              //      .toStringAsFixed(widget.decimalPoint),
-                              style: textTheme.headlineMedium?.bq.copyWith(
-                                fontSize: 16.sp,
-                                decoration: widget.isRedeem
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                color: const Color(0xff505050),
+                      const SizedBox(width: 5),
+                      MyTextWidget(
+                        HelperFunctions.formatNumber(
+                          number: double.parse(
+                            currentTab == 3
+                                ? ((offPriceInCart > 0 && (!(widget.isRedeem)))
+                                      ? (offPriceInCart *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!)
+                                            .toString()
+                                      : widget.offerPrice)
+                                : widget.initOfferPrice,
+                          ),
+                        ),
+                        //      .toStringAsFixed(widget.decimalPoint),
+                        style: textTheme.headlineMedium?.bq.copyWith(
+                          fontSize: 16.sp,
+                          decoration: widget.isRedeem
+                              ? TextDecoration.lineThrough
+                              : null,
+                          color: const Color(0xff505050),
+                          height: 0,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      widget.isRedeem
+                          ? const SizedBox.shrink()
+                          : MyTextWidget(
+                              widget.priceSymbol,
+                              style: textTheme.titleMedium?.rq.copyWith(
+                                fontSize: 9.sp,
+                                color: const Color(0xffC4C2C2),
                                 height: 0,
                               ),
                             ),
-                            const SizedBox(
-                              width: 4,
-                            ),
-                            widget.isRedeem
-                                ? const SizedBox.shrink()
-                                : MyTextWidget(
-                                    widget.priceSymbol,
+                      const SizedBox(width: 5),
+                      widget.isRedeem
+                          ? MyTextWidget(
+                              HelperFunctions.formatNumber(
+                                number: currentTab == 3
+                                    ? widget.redeemVariantPrice
+                                    : widget.redeemPrice,
+                              ),
+                              //      .toStringAsFixed(widget.decimalPoint),
+                              style: textTheme.headlineMedium?.bq.copyWith(
+                                fontSize: 16.sp,
+                                color: Colors.deepOrangeAccent,
+                                height: 0,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      widget.isRedeem
+                          ? MyTextWidget(
+                              widget.priceSymbol,
+                              style: textTheme.titleMedium?.rq.copyWith(
+                                fontSize: 9.sp,
+                                color: Colors.deepOrangeAccent,
+                                height: 0,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      Column(
+                        children: [
+                          const SizedBox(height: 5),
+                          SvgPicture.asset(
+                            AppAssets.chatWithQuestionSvg,
+                            height: 11,
+                            // ignore: deprecated_member_use
+                            color: const Color(0xff5D5C5D),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: SizedBox(
+                          height: 30,
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Row(
+                                children: [
+                                  index == 0
+                                      ? const SizedBox.shrink()
+                                      : SvgPicture.asset(
+                                          svg[index - 1],
+                                          height: 15,
+                                        ),
+                                  const SizedBox(width: 5),
+                                  MyTextWidget(
+                                    texts[index],
                                     style: textTheme.titleMedium?.rq.copyWith(
-                                      fontSize: 9.sp,
-                                      color: const Color(0xffC4C2C2),
+                                      color: const Color(0xff8D8D8D),
                                       height: 0,
                                     ),
                                   ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            widget.isRedeem
-                                ? MyTextWidget(
-                                    HelperFunctions.formatNumber(
-                                        number: currentTab == 3
-                                            ? widget.redeemVariantPrice
-                                            : widget.redeemPrice),
-                                    //      .toStringAsFixed(widget.decimalPoint),
-                                    style:
-                                        textTheme.headlineMedium?.bq.copyWith(
-                                      fontSize: 16.sp,
-                                      color: Colors.deepOrangeAccent,
-                                      height: 0,
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                            widget.isRedeem
-                                ? MyTextWidget(
-                                    widget.priceSymbol,
-                                    style: textTheme.titleMedium?.rq.copyWith(
-                                      fontSize: 9.sp,
-                                      color: Colors.deepOrangeAccent,
-                                      height: 0,
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                            Column(
-                              children: [
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                SvgPicture.asset(
-                                  AppAssets.chatWithQuestionSvg,
-                                  height: 11,
-                                  // ignore: deprecated_member_use
-                                  color: const Color(0xff5D5C5D),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Flexible(
-                              child: SizedBox(
-                                height: 30,
-                                child: ListView.builder(
-                                  controller: _scrollController,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Row(
-                                      children: [
-                                        index == 0
-                                            ? const SizedBox.shrink()
-                                            : SvgPicture.asset(
-                                                svg[index - 1],
-                                                height: 15,
-                                              ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        MyTextWidget(
-                                          texts[index],
-                                          style: textTheme.titleMedium?.rq
-                                              .copyWith(
-                                            color: const Color(0xff8D8D8D),
-                                            height: 0,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        )
-                                      ],
-                                    );
-                                  },
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: texts.length,
-                                ),
-                              ),
-                            )
-                          ],
+                                  const SizedBox(width: 5),
+                                ],
+                              );
+                            },
+                            scrollDirection: Axis.horizontal,
+                            itemCount: texts.length,
+                          ),
                         ),
-                      ));
-                }),
-          );
-        });
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }

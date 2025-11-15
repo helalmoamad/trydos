@@ -30,25 +30,25 @@ import 'text_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class VideoMessage extends StatefulWidget {
-  VideoMessage(
-      {Key? key,
-      this.isForwarded = false,
-      this.isLocalMessage = true,
-      required this.isSent,
-      this.watchedAt,
-      required this.isRead,
-      required this.senderId,
-      this.userMessagePhoto,
-      this.videoFile,
-      this.videoUrl,
-      required this.userMessageName,
-      required this.messageId,
-      required this.isReceived,
-      required this.isFirstMessage,
-      this.receivedAt,
-      this.createAt,
-      required this.channelId})
-      : super(key: key);
+  VideoMessage({
+    Key? key,
+    this.isForwarded = false,
+    this.isLocalMessage = true,
+    required this.isSent,
+    this.watchedAt,
+    required this.isRead,
+    required this.senderId,
+    this.userMessagePhoto,
+    this.videoFile,
+    this.videoUrl,
+    required this.userMessageName,
+    required this.messageId,
+    required this.isReceived,
+    required this.isFirstMessage,
+    this.receivedAt,
+    this.createAt,
+    required this.channelId,
+  }) : super(key: key);
 
   final bool isSent;
   final bool isFirstMessage;
@@ -119,21 +119,22 @@ class _VideoMessageState extends State<VideoMessage>
 
       FileSaving()
           .downloadFileToLocalStorage(
-        widget.videoUrl ?? widget.videoFile!.path,
-        widget.channelId,
-      )
+            widget.videoUrl ?? widget.videoFile!.path,
+            widget.channelId,
+          )
           .then((_) {
-        _isDownloading = false;
-        _isVideoDownloaded = true;
-        if (mounted) {
-          setState(() {});
-        }
-      }).catchError((error) {
-        _isDownloading = false;
-        if (mounted) {
-          setState(() {});
-        }
-      });
+            _isDownloading = false;
+            _isVideoDownloaded = true;
+            if (mounted) {
+              setState(() {});
+            }
+          })
+          .catchError((error) {
+            _isDownloading = false;
+            if (mounted) {
+              setState(() {});
+            }
+          });
     }
   }
 
@@ -182,8 +183,9 @@ class _VideoMessageState extends State<VideoMessage>
         builder: (context, state) {
           return Padding(
             padding: HWEdgeInsets.only(
-                right: widget.isSent ? 25.w : 0,
-                left: widget.isSent ? 0 : 25.w),
+              right: widget.isSent ? 25.w : 0,
+              left: widget.isSent ? 0 : 25.w,
+            ),
             child: SwipeTo(
               onLeftSwipe: () {
                 if (widget.senderId == widget._prefsRepository.myChatId) {
@@ -191,13 +193,18 @@ class _VideoMessageState extends State<VideoMessage>
                       state.currentMessage.contains(widget.messageId))) {
                     return;
                   }
-                  BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                      true, 'video', widget.isSent,
+                  BlocProvider.of<AppBloc>(context).add(
+                    RefreshChatInputField(
+                      true,
+                      'video',
+                      widget.isSent,
                       senderParentMessageId: widget.senderId,
                       imageUrl: widget.videoUrl ?? widget.videoFile!.path,
                       messageId: widget.messageId,
                       time: widget.createAt,
-                      message: 'Video'));
+                      message: 'Video',
+                    ),
+                  );
                 } else {}
               },
               iconSize: 0,
@@ -205,20 +212,26 @@ class _VideoMessageState extends State<VideoMessage>
               offsetDx: 0.15,
               onRightSwipe: () {
                 if (widget.senderId == widget._prefsRepository.myChatId) {
-                  BlocProvider.of<ChatBloc>(context)
-                      .add(ChangeSlop(messageId: widget.messageId));
+                  BlocProvider.of<ChatBloc>(
+                    context,
+                  ).add(ChangeSlop(messageId: widget.messageId));
                 } else {
                   if ((state.sendMessageStatus == SendMessageStatus.loading &&
                       state.currentMessage.contains(widget.messageId))) {
                     return;
                   }
-                  BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                      true, 'video', widget.isSent,
+                  BlocProvider.of<AppBloc>(context).add(
+                    RefreshChatInputField(
+                      true,
+                      'video',
+                      widget.isSent,
                       senderParentMessageId: widget.senderId,
                       imageUrl: widget.videoUrl ?? widget.videoFile!.path,
                       messageId: widget.messageId,
                       time: widget.createAt,
-                      message: 'Video'));
+                      message: 'Video',
+                    ),
+                  );
                 }
               },
               child: Row(
@@ -227,13 +240,14 @@ class _VideoMessageState extends State<VideoMessage>
                     : MainAxisAlignment.start,
                 children: [
                   Transform.translate(
-                    offset: !(state.isSlpoing &&
+                    offset:
+                        !(state.isSlpoing &&
                             state.slopMessageId!.contains(widget.messageId) &&
                             (widget.isReceived || widget.isRead))
                         ? const Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
-                            ? Offset(100.w, 0)
-                            : Offset(-50.w, 0),
+                        ? Offset(100.w, 0)
+                        : Offset(-50.w, 0),
                     child: Stack(
                       alignment: widget.isSent
                           ? Alignment.centerRight
@@ -243,21 +257,23 @@ class _VideoMessageState extends State<VideoMessage>
                           alignment: Alignment.bottomCenter,
                           children: [
                             Container(
-                                width: 300.w,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  border: Border.all(
-                                    width: 3.0,
-                                    color: widget.isSent
-                                        ? const Color(0xffFFF9B4)
-                                        : const Color(0xffB4FFD9),
-                                  ),
+                              width: 300.w,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(
+                                  width: 3.0,
+                                  color: widget.isSent
+                                      ? const Color(0xffFFF9B4)
+                                      : const Color(0xffB4FFD9),
                                 ),
-                                child: MYVideoPlayer(
-                                    chatId: widget.channelId,
-                                    videoUrl: widget.videoUrl,
-                                    videoFile: widget.videoFile)),
+                              ),
+                              child: MYVideoPlayer(
+                                chatId: widget.channelId,
+                                videoUrl: widget.videoUrl,
+                                videoFile: widget.videoFile,
+                              ),
+                            ),
                             Transform.translate(
                               offset: const Offset(0, -3),
                               child: Container(
@@ -269,7 +285,7 @@ class _VideoMessageState extends State<VideoMessage>
                                     end: Alignment(0.0, 1.0),
                                     colors: [
                                       Color(0x00000000),
-                                      Color(0xb2000000)
+                                      Color(0xb2000000),
                                     ],
                                     stops: [0.0, 1.0],
                                   ),
@@ -277,47 +293,54 @@ class _VideoMessageState extends State<VideoMessage>
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 20),
+                                    vertical: 5,
+                                    horizontal: 20,
+                                  ),
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       MyTextWidget(
                                         !widget.createAt!.isUtc
                                             ? HelperFunctions.getDateInFormat(
-                                                widget.createAt!)
-                                            : HelperFunctions
-                                                .getZonedDateInFormat(
-                                                    widget.createAt!),
-                                        style: context.textTheme.titleSmall?.rr
+                                                widget.createAt!,
+                                              )
+                                            : HelperFunctions.getZonedDateInFormat(
+                                                widget.createAt!,
+                                              ),
+                                        style: context.textTheme.titleSmall?.rq
                                             .copyWith(
-                                                color:
-                                                    context.colorScheme.white),
+                                              color: context.colorScheme.white,
+                                            ),
                                       ),
                                       if (widget.isSent) ...{
                                         10.horizontalSpace,
-                                        (state.currentFailedMessage
-                                                .contains(widget.messageId))
+                                        (state.currentFailedMessage.contains(
+                                              widget.messageId,
+                                            ))
                                             ? Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   InkWell(
-                                                      onTap: () {
-                                                        chatBloc.add(
-                                                            ResendMessageEvent(
-                                                                messageType:
-                                                                    "video",
-                                                                channelId: widget
-                                                                    .channelId,
-                                                                messageId: widget
-                                                                    .messageId));
-                                                      },
-                                                      child: Icon(
-                                                        Icons.refresh,
-                                                        size: 27.w,
-                                                      )),
+                                                    onTap: () {
+                                                      chatBloc.add(
+                                                        ResendMessageEvent(
+                                                          messageType: "video",
+                                                          channelId:
+                                                              widget.channelId,
+                                                          messageId:
+                                                              widget.messageId,
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Icon(
+                                                      Icons.refresh,
+                                                      size: 27.w,
+                                                    ),
+                                                  ),
                                                   Container(
                                                     margin: EdgeInsets.only(
-                                                        left: 5.w),
+                                                      left: 5.w,
+                                                    ),
                                                     child: SvgPicture.asset(
                                                       AppAssets
                                                           .messageFailedSvg,
@@ -330,27 +353,30 @@ class _VideoMessageState extends State<VideoMessage>
                                             : SvgPicture.asset(
                                                 widget.isRead
                                                     ? AppAssets
-                                                        .messageReadArrowSvg
+                                                          .messageReadArrowSvg
                                                     : widget.isReceived
-                                                        ? AppAssets
-                                                            .messageDeliveredArrowSvg
-                                                        : (state.currentMessage
-                                                                .contains(widget
-                                                                    .messageId))
-                                                            ? timer
-                                                                ? (state.currentMessage
-                                                                        .contains(widget
-                                                                            .messageId))
-                                                                    ? AppAssets
-                                                                        .sandClockSvg
-                                                                    : AppAssets
-                                                                        .messageSentArrowSvg
-                                                                : ""
-                                                            : AppAssets
-                                                                .messageSentArrowSvg,
+                                                    ? AppAssets
+                                                          .messageDeliveredArrowSvg
+                                                    : (state.currentMessage
+                                                          .contains(
+                                                            widget.messageId,
+                                                          ))
+                                                    ? timer
+                                                          ? (state.currentMessage
+                                                                    .contains(
+                                                                      widget
+                                                                          .messageId,
+                                                                    ))
+                                                                ? AppAssets
+                                                                      .sandClockSvg
+                                                                : AppAssets
+                                                                      .messageSentArrowSvg
+                                                          : ""
+                                                    : AppAssets
+                                                          .messageSentArrowSvg,
                                                 width: 10.sp,
                                                 height: 10.sp,
-                                              )
+                                              ),
                                       },
                                       if (widget.isForwarded) ...{
                                         10.horizontalSpace,
@@ -358,8 +384,8 @@ class _VideoMessageState extends State<VideoMessage>
                                           AppAssets.forwardedSvg,
                                           width: 10.sp,
                                           height: 10.sp,
-                                        )
-                                      }
+                                        ),
+                                      },
                                     ],
                                   ),
                                 ),
@@ -389,8 +415,9 @@ class _VideoMessageState extends State<VideoMessage>
                                                   ? const Color(0xffFFF9B4)
                                                   : const Color(0xffB4FFD9),
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                         ),
                                         Container(
@@ -398,20 +425,22 @@ class _VideoMessageState extends State<VideoMessage>
                                           height: 40,
                                           decoration: BoxDecoration(
                                             color: const Color(0xffEBFFF8),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: (widget.userMessagePhoto
+                                            imageUrl:
+                                                (widget.userMessagePhoto
                                                     .toString()
                                                     .contains("cloudinary")
                                                 ? widget.userMessagePhoto!
                                                 : ("${dotenv.env['Images_Url']}") +
-                                                    widget.userMessagePhoto!),
+                                                      widget.userMessagePhoto!),
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
@@ -423,14 +452,19 @@ class _VideoMessageState extends State<VideoMessage>
                                             width: 30.w,
                                             height: 30,
                                             textStyle: context
-                                                .textTheme.titleMedium?.br
+                                                .textTheme
+                                                .titleMedium
+                                                ?.bq
                                                 .copyWith(
-                                                    color:
-                                                        const Color(0xff6638FF),
-                                                    letterSpacing: 0.18,
-                                                    height: 1.33),
+                                                  color: const Color(
+                                                    0xff6638FF,
+                                                  ),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33,
+                                                ),
                                             radius: 8,
-                                            name: widget.userMessageName)
+                                            name: widget.userMessageName,
+                                          ),
                                   ],
                                 ),
                               )
@@ -438,7 +472,8 @@ class _VideoMessageState extends State<VideoMessage>
                         state.isSlpoing &&
                                 state.slopMessageId!.contains(widget.messageId)
                             ? Transform.translate(
-                                offset: widget.senderId ==
+                                offset:
+                                    widget.senderId ==
                                         widget._prefsRepository.myChatId
                                     ? Offset(-310.w, 0)
                                     : Offset(110.w, 0),

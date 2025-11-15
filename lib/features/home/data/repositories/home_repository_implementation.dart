@@ -139,6 +139,13 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, ResponseOnlyMessageModel>> updateLikeComment(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateLikeComment(params));
+  }
+
+  @override
   Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
       String iso) {
     return handlingExceptionRequest(

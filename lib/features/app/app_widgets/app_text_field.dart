@@ -156,17 +156,18 @@ class AppTextField extends StatelessWidget {
         if (textInputType == TextInputType.phone ||
             textInputType == TextInputType.number)
           FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-        ...?inputFormatters
+        ...?inputFormatters,
       ],
-      style: textStyle ??
-          context.textTheme.displayMedium?.rr.copyWith(
+      style:
+          textStyle ??
+          context.textTheme.displayMedium?.rq.copyWith(
             color: const Color(0xff404040),
             decoration: TextDecoration.none,
             decorationColor: context.colorScheme.borderTextField,
           ),
       decoration: InputDecoration(
         errorMaxLines: 1,
-        errorStyle: context.textTheme.bodyMedium?.mr.copyWith(
+        errorStyle: context.textTheme.bodyMedium?.mq.copyWith(
           color: const Color.fromARGB(255, 201, 22, 22),
           letterSpacing: 0.18,
           fontSize: 11,
@@ -175,66 +176,90 @@ class AppTextField extends StatelessWidget {
         prefix: prefix,
         prefixIconConstraints: isPrefixIconConstraints
             ? const BoxConstraints(
-                maxWidth: 2, maxHeight: 2, minHeight: 2, minWidth: 2)
+                maxWidth: 2,
+                maxHeight: 2,
+                minHeight: 2,
+                minWidth: 2,
+              )
             : null,
         border: OutlineInputBorder(
           borderSide: BorderSide(
-              color: bordersColor ?? context.colorScheme.borderTextField,
-              width: 0.4),
-          borderRadius:
-              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+            color: bordersColor ?? context.colorScheme.borderTextField,
+            width: 0.4,
+          ),
+          borderRadius: BorderRadius.circular(
+            roundingCornersValue ?? kbrBorderTextField,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-              color: bordersColor ?? context.colorScheme.borderTextField,
-              width: 0.4),
-          borderRadius:
-              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+            color: bordersColor ?? context.colorScheme.borderTextField,
+            width: 0.4,
+          ),
+          borderRadius: BorderRadius.circular(
+            roundingCornersValue ?? kbrBorderTextField,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-              color: bordersColor ?? context.colorScheme.borderTextField,
-              width: 0.4),
-          borderRadius:
-              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+            color: bordersColor ?? context.colorScheme.borderTextField,
+            width: 0.4,
+          ),
+          borderRadius: BorderRadius.circular(
+            roundingCornersValue ?? kbrBorderTextField,
+          ),
         ),
         disabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-              color: bordersColor ?? context.colorScheme.borderTextField,
-              width: 0.4),
-          borderRadius:
-              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+            color: bordersColor ?? context.colorScheme.borderTextField,
+            width: 0.4,
+          ),
+          borderRadius: BorderRadius.circular(
+            roundingCornersValue ?? kbrBorderTextField,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
-              color: !isErrorBorder ? bordersColor! : context.colorScheme.error,
-              width: 0.4),
-          borderRadius:
-              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+            color: !isErrorBorder ? bordersColor! : context.colorScheme.error,
+            width: 0.4,
+          ),
+          borderRadius: BorderRadius.circular(
+            roundingCornersValue ?? kbrBorderTextField,
+          ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: BorderSide(
-              color: !isErrorBorder ? bordersColor! : context.colorScheme.error,
-              width: 0.4),
-          borderRadius:
-              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+            color: !isErrorBorder ? bordersColor! : context.colorScheme.error,
+            width: 0.4,
+          ),
+          borderRadius: BorderRadius.circular(
+            roundingCornersValue ?? kbrBorderTextField,
+          ),
         ),
         filled: true,
         fillColor: filledColor ?? context.colorScheme.white,
-        contentPadding: contentPadding ??
+        contentPadding:
+            contentPadding ??
             HWEdgeInsetsDirectional.only(
-                start: 20, end: 10, bottom: 12, top: 12),
+              start: 20,
+              end: 10,
+              bottom: 12,
+              top: 12,
+            ),
         prefixIcon: prefixIcon,
         icon: icon,
         suffixIcon: suffixIcon,
         suffix: suffix,
         hintText: hintText?.tr(),
-        hintStyle: hintTextStyle ??
-            context.textTheme.displayMedium?.rt
-                .copyWith(color: context.colorScheme.grey200),
+        hintStyle:
+            hintTextStyle ??
+            context.textTheme.displayMedium?.rq.copyWith(
+              color: context.colorScheme.grey200,
+            ),
         labelText: labelText?.tr(),
-        labelStyle: context.textTheme.titleLarge
-            ?.copyWith(color: context.colorScheme.hint),
+        labelStyle: context.textTheme.titleLarge?.copyWith(
+          color: context.colorScheme.hint,
+        ),
       ),
     );
   }

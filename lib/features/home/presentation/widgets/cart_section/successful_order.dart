@@ -96,8 +96,8 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
       FlutterError.dumpErrorToConsole(error);
     };
     return
-        // ignore: deprecated_member_use
-        WillPopScope(
+    // ignore: deprecated_member_use
+    WillPopScope(
       onWillPop: () async {
         appBloc.add(ChangeBasePage(0));
         // didCallOnWillPop = true;
@@ -119,17 +119,11 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                       //////////////////////
                       buildBagWidget(context),
                       //////////////////////////////
-                      SizedBox(
-                        height: 10.h,
-                      ),
+                      SizedBox(height: 10.h),
                       //////////////////////////////
-                      buildAddressSuccessWidget(
-                        context,
-                      ),
+                      buildAddressSuccessWidget(context),
                       //////////////////////////////
-                      SizedBox(
-                        height: 10.h,
-                      ),
+                      SizedBox(height: 10.h),
                       //////////////////////////////
                       PaymentMethod(
                         paymentMethods: widget.paymentMethods,
@@ -141,7 +135,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                         partialPaymentByWallet: widget.partialPaymentByWallet,
                         decimalPointSetting: widget.decimalPointSetting,
                         currencySymbol: widget.currencySymbol,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -171,49 +165,50 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 },
                 child: Container(
                   height: 70.h,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: const Color(0xff1D1D1D)),
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color(0xff1D1D1D),
+                  ),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           LocaleKeys.done.tr(),
-                          style: context.textTheme.bodyMedium?.mr.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 18,
-                              height: 0.8),
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                            color: const Color(0xffFEFEFE),
+                            letterSpacing: 0.18,
+                            fontSize: 18,
+                            height: 0.8,
+                          ),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
+                        SizedBox(height: 10.h),
                         Text(
                           LocaleKeys.back_to_home_page.tr(),
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: const Color(0xffFEFEFE),
+                            letterSpacing: 0.18,
+                            fontSize: 14,
+                            height: 0.8,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget buildAddressSuccessWidget(
-    BuildContext context,
-  ) {
+  Widget buildAddressSuccessWidget(BuildContext context) {
     return Container(
       height: 160,
       width: 1.sw,
@@ -224,47 +219,36 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
             margin: const EdgeInsets.only(left: 10, right: 10),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  AppAssets.deliveryAddressSvg,
-                  height: 15,
-                ),
-                SizedBox(
-                  width: 7.w,
-                ),
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 15),
+                SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.shipping_delivery_address.tr()} ",
-                  style: context.textTheme.bodyMedium?.ra.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 0.8),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 0.8,
+                  ),
                 ),
-                SizedBox(
-                  width: 5.w,
-                ),
-                SvgPicture.asset(
-                  AppAssets.freeShippingSvg,
-                ),
+                SizedBox(width: 5.w),
+                SvgPicture.asset(AppAssets.freeShippingSvg),
               ],
             ),
           ),
-          const SizedBox(
-            height: 5,
-          ),
+          const SizedBox(height: 5),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 35.w),
             child: Text(
               "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} ",
-              style: context.textTheme.bodyMedium?.ra.copyWith(
-                  color: const Color(0xff8D8D8D),
-                  letterSpacing: 0.18,
-                  fontSize: 12,
-                  height: 0.8),
+              style: context.textTheme.bodyMedium?.rq.copyWith(
+                color: const Color(0xff8D8D8D),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 0.8,
+              ),
             ),
           ),
-          const SizedBox(
-            height: 5,
-          ),
+          const SizedBox(height: 5),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: addressInfoWithContactInfoCart(
@@ -298,45 +282,39 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
             height: 22,
             child: Row(
               children: [
-                SvgPicture.asset(
-                  AppAssets.bagsSvg,
-                  height: 20,
-                ),
-                SizedBox(
-                  width: 7.w,
-                ),
+                SvgPicture.asset(AppAssets.bagsSvg, height: 20),
+                SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.your_shopping_bag.tr()} ",
-                  style: context.textTheme.bodyMedium?.ra.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.33,
+                  ),
                 ),
                 Text(
                   "${widget.cartImages.length} item",
-                  style: context.textTheme.bodyMedium?.br.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 13,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.bq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 13,
+                    height: 1.33,
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(
-            height: 2,
-          ),
+          const SizedBox(height: 2),
           Container(
             margin: EdgeInsets.only(
-                top: 5.h,
-                left: (LanguageService.languageCode == "ar") ? 0 : 10,
-                right: (LanguageService.languageCode == "ar") ? 10 : 0),
+              top: 5.h,
+              left: (LanguageService.languageCode == "ar") ? 0 : 10,
+              right: (LanguageService.languageCode == "ar") ? 10 : 0,
+            ),
             height: 135,
             child: ListView.separated(
-              separatorBuilder: (context, index) => const SizedBox(
-                width: 5,
-              ),
+              separatorBuilder: (context, index) => const SizedBox(width: 5),
               scrollDirection: Axis.horizontal,
               itemCount: widget.cartImages.length,
               itemBuilder: (context, index) => Container(
@@ -358,30 +336,30 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                         radius: 15,
                       ),
                     ),
-                    const SizedBox(
-                      height: 2,
-                    ),
+                    const SizedBox(height: 2),
                     Text(
                       '${widget.cartImages[index]["size"]}',
-                      style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          letterSpacing: 0.18,
-                          fontSize: 10,
-                          height: 1.33),
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 10,
+                        height: 1.33,
+                      ),
                     ),
                     Text(
                       '${widget.cartImages[index]["color"]}',
-                      style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          letterSpacing: 0.18,
-                          fontSize: 10,
-                          height: 1.33),
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 10,
+                        height: 1.33,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -399,94 +377,78 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
           Stack(
             alignment: Alignment.center,
             children: [
-              SvgPicture.asset(
-                AppAssets.success1Svg,
-              ),
-              SvgPicture.asset(
-                AppAssets.success2Svg,
-              )
+              SvgPicture.asset(AppAssets.success1Svg),
+              SvgPicture.asset(AppAssets.success2Svg),
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Text(
             "${LocaleKeys.the_purchase_was_completed_successfully.tr()} ",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: const Color(0xff1D1D1D),
-                letterSpacing: 0.18,
-                fontSize: 14,
-                height: 1.33),
+            style: context.textTheme.bodyMedium?.rq.copyWith(
+              color: const Color(0xff1D1D1D),
+              letterSpacing: 0.18,
+              fontSize: 14,
+              height: 1.33,
+            ),
           ),
-          const SizedBox(
-            height: 8,
-          ),
+          const SizedBox(height: 8),
           Text(
             "${LocaleKeys.your_order_number.tr()} ",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: const Color(0xff1D1D1D),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
+            style: context.textTheme.bodyMedium?.rq.copyWith(
+              color: const Color(0xff1D1D1D),
+              letterSpacing: 0.18,
+              fontSize: 12,
+              height: 1.33,
+            ),
           ),
           Text(
             widget.orderGroupId,
-            style: context.textTheme.bodyMedium?.br.copyWith(
-                color: const Color(0xff404040),
-                letterSpacing: 0.18,
-                fontSize: 20,
-                height: 1.33),
+            style: context.textTheme.bodyMedium?.bq.copyWith(
+              color: const Color(0xff404040),
+              letterSpacing: 0.18,
+              fontSize: 20,
+              height: 1.33,
+            ),
           ),
-          const SizedBox(
-            height: 8,
-          ),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                AppAssets.orderInvoiceSvg,
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
+              SvgPicture.asset(AppAssets.orderInvoiceSvg),
+              SizedBox(width: 10.w),
               Text(
                 "${LocaleKeys.order_invoice.tr()} ",
-                style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.33),
-              )
+                style: context.textTheme.bodyMedium?.rq.copyWith(
+                  color: const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.33,
+                ),
+              ),
             ],
           ),
-          const SizedBox(
-            height: 8,
-          ),
-          SvgPicture.asset(
-            AppAssets.infoSvg,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
+          const SizedBox(height: 8),
+          SvgPicture.asset(AppAssets.infoSvg),
+          const SizedBox(height: 8),
           Text(
             "${LocaleKeys.you_can_track_the_status_of_your_order_through.tr()} ",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: const Color(0xff388CFF),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
+            style: context.textTheme.bodyMedium?.rq.copyWith(
+              color: const Color(0xff388CFF),
+              letterSpacing: 0.18,
+              fontSize: 12,
+              height: 1.33,
+            ),
           ),
-          const SizedBox(
-            height: 8,
-          ),
+          const SizedBox(height: 8),
           Text(
             "${LocaleKeys.my_account_my_orders.tr()} ",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: const Color(0xff388CFF),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
-          )
+            style: context.textTheme.bodyMedium?.rq.copyWith(
+              color: const Color(0xff388CFF),
+              letterSpacing: 0.18,
+              fontSize: 12,
+              height: 1.33,
+            ),
+          ),
         ],
       ),
     );

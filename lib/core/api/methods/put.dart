@@ -14,14 +14,14 @@ class PutClient<T> extends BaseApi<T> {
     required this.serverName,
     this.onSendProgress,
     this.onReceiveProgress,
-  })  : _fromJson = requestPrams.response.fromJson,
-        _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
-        _data = requestPrams.data,
-        _queryParameters = requestPrams.queryParameters,
-        _endpoint = requestPrams.endpoint,
-        _receiveTimeout = requestPrams.receiveTimeout,
-        _sendTimeout = requestPrams.sendTimeout,
-        super(serverName);
+  }) : _fromJson = requestPrams.response.fromJson,
+       _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
+       _data = requestPrams.data,
+       _queryParameters = requestPrams.queryParameters,
+       _endpoint = requestPrams.endpoint,
+       _receiveTimeout = requestPrams.receiveTimeout,
+       _sendTimeout = requestPrams.sendTimeout,
+       super(serverName);
 
   final RequestConfig<T> requestPrams;
   final Stopwatch stopWatch = Stopwatch();
@@ -50,8 +50,9 @@ class PutClient<T> extends BaseApi<T> {
           queryParameters: _queryParameters,
         ),
         options: options.copyWith(
-            receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
-            sendTimeout: _sendTimeout ?? options.sendTimeout),
+          receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+          sendTimeout: _sendTimeout ?? options.sendTimeout,
+        ),
         data: _data,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
@@ -59,14 +60,15 @@ class PutClient<T> extends BaseApi<T> {
 
       stopWatch.stop();
       GetIt.I<PrefsRepository>().saveRequestsData(
-          'This From Response   ${response.requestOptions.path}',
-          response.data is! FormData ? response.data : {'data': 'formData'},
-          response.requestOptions.headers,
-          response.statusCode,
-          response.requestOptions.method,
-          response.requestOptions.queryParameters,
-          response.data is! FormData ? response.data : {'data': 'formData'},
-          responseTime: stopWatch.elapsed.toString());
+        'This From Response   ${response.requestOptions.path}',
+        response.data is! FormData ? response.data : {'data': 'formData'},
+        response.requestOptions.headers,
+        response.statusCode,
+        response.requestOptions.method,
+        response.requestOptions.queryParameters,
+        response.data is! FormData ? response.data : {'data': 'formData'},
+        responseTime: stopWatch.elapsed.toString(),
+      );
       log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());
       if (response.statusCode == StatusCode.operationSucceeded.code) {
@@ -74,11 +76,12 @@ class PutClient<T> extends BaseApi<T> {
           return Future.value(_valueOnSuccess);
         }
 
-        return _fromJson!(response.data);
+        return _fromJson(response.data);
       } else {
         throw getException(
-            statusCode: response.statusCode!,
-            message: response.data['message']);
+          statusCode: response.statusCode!,
+          message: response.data['message'],
+        );
       }
     } catch (exception) {
       rethrow;

@@ -70,16 +70,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    orderBloc.add(
-      GetCustomerWalletEvent(limit: 10, offset: 1),
-    );
+    orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
     authBloc.add(GetCustomerInfoEvent());
-    orderBloc.add(
-      GetOrdersEvent(
-        status: "",
-        getWithPagination: false,
-      ),
-    );
+    orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     // TODO: implement initState
     super.initState();
@@ -92,78 +85,64 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       FlutterError.dumpErrorToConsole(error);
     };
     return Scaffold(
-        body: SafeArea(
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 25.h,
-                    width: 1.sw,
-                  ),
-                  _personInfoWidget(),
-                  SizedBox(
-                    height: 20.h,
-                    width: 1.sw,
-                  ),
-                  Container(
-                    width: 1.sw,
-                    height: 94,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _ordersWidget(),
-                        _trydosWalletWidget(),
-                      ],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    SizedBox(height: 25.h, width: 1.sw),
+                    _personInfoWidget(),
+                    SizedBox(height: 20.h, width: 1.sw),
+                    Container(
+                      width: 1.sw,
+                      height: 94,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [_ordersWidget(), _trydosWalletWidget()],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 12.h,
-                    width: 1.sw,
-                  ),
-                  _actionWidget(AppAssets.settingSvg, LocaleKeys.settings.tr()),
-                  SizedBox(
-                    height: 12.h,
-                    width: 1.sw,
-                  ),
-                  _actionWidget(
-                      AppAssets.termSvg, LocaleKeys.terms_conditions.tr()),
-                  SizedBox(
-                    height: 12.h,
-                    width: 1.sw,
-                  ),
-                  _actionWidget(AppAssets.legalInfoSvg,
-                      LocaleKeys.legal_information.tr()),
-                  SizedBox(
-                    height: 12.h,
-                    width: 1.sw,
-                  ),
-                  _actionWidget(AppAssets.aboutUsSvg, LocaleKeys.about_us.tr()),
-                  SizedBox(
-                    height: 12.h,
-                    width: 1.sw,
-                  ),
-                  _actionWidget(
-                      AppAssets.shareAppSvg, LocaleKeys.share_app.tr()),
-                  SizedBox(
-                    height: 12.h,
-                    width: 1.sw,
-                  ),
-                  Container(
+                    SizedBox(height: 12.h, width: 1.sw),
+                    _actionWidget(
+                      AppAssets.settingSvg,
+                      LocaleKeys.settings.tr(),
+                    ),
+                    SizedBox(height: 12.h, width: 1.sw),
+                    _actionWidget(
+                      AppAssets.termSvg,
+                      LocaleKeys.terms_conditions.tr(),
+                    ),
+                    SizedBox(height: 12.h, width: 1.sw),
+                    _actionWidget(
+                      AppAssets.legalInfoSvg,
+                      LocaleKeys.legal_information.tr(),
+                    ),
+                    SizedBox(height: 12.h, width: 1.sw),
+                    _actionWidget(
+                      AppAssets.aboutUsSvg,
+                      LocaleKeys.about_us.tr(),
+                    ),
+                    SizedBox(height: 12.h, width: 1.sw),
+                    _actionWidget(
+                      AppAssets.shareAppSvg,
+                      LocaleKeys.share_app.tr(),
+                    ),
+                    SizedBox(height: 12.h, width: 1.sw),
+                    Container(
                       height: 53,
                       width: 1.sw,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [_countryWidget(), _languageWidget()],
-                      ))
-                ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          ValueListenableBuilder<bool>(
+            ValueListenableBuilder<bool>(
               valueListenable: isVerified,
               builder: (context, _isverified, _) {
                 return _isverified
@@ -173,19 +152,21 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         height: 1.sh,
                         color: const Color.fromRGBO(0, 0, 0, 0.5),
                       );
-              }),
-          Positioned(
+              },
+            ),
+            Positioned(
               bottom: 0,
               child: ValueListenableBuilder<bool>(
-                  valueListenable: isVerified,
-                  builder: (context, _isverified, _) {
-                    return _isverified
-                        ? const SizedBox.shrink()
-                        : _veryfiedOtp();
-                  }))
-        ],
+                valueListenable: isVerified,
+                builder: (context, _isverified, _) {
+                  return _isverified ? const SizedBox.shrink() : _veryfiedOtp();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   double _calculateTextWidth(String text, TextStyle style) {
@@ -207,40 +188,44 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         color: Colors.white,
         height: 265,
         width: 1.sw,
-        child: Stack(children: [
-          PageView(
+        child: Stack(
+          children: [
+            PageView(
               physics: const NeverScrollableScrollPhysics(),
               controller: pageController,
-              children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                      false)
+              children:
+                  (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
                   ? [
                       VerifyOtp(
-                          fromProfile: false,
-                          navigateToProfile: () {},
-                          fromExpired: true,
-                          isVisWhatsApp: 1,
-                          navigateToAddName: () {},
-                          navigateTocartOrProfile: () {
-                            isVerified.value = true;
-                          },
-                          fromLogin: false,
-                          onLoginFailed: () {
-                            //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                          },
-                          goBack: () {
-                            // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                          },
-                          methodIcon: AppAssets.whatsappSvg,
-                          phoneNumber: prefsRepository.myPhoneNumber!),
+                        fromProfile: false,
+                        navigateToProfile: () {},
+                        fromExpired: true,
+                        isVisWhatsApp: 1,
+                        navigateToAddName: () {},
+                        navigateTocartOrProfile: () {
+                          isVerified.value = true;
+                        },
+                        fromLogin: false,
+                        onLoginFailed: () {
+                          //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                        goBack: () {
+                          // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                        methodIcon: AppAssets.whatsappSvg,
+                        phoneNumber: prefsRepository.myPhoneNumber!,
+                      ),
                     ]
                   : [
                       InsertPhoneTab(
                         focusNode: focusNode,
                         moveToNextStep: (String phoneNumber) {
                           this.phoneNumber = phoneNumber.replaceAll(' ', '');
-                          pageController.animateToPage(1,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
+                          pageController.animateToPage(
+                            1,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
                           setState(() {});
                         },
                       ),
@@ -250,9 +235,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         onChooseWhatsapp: () {
                           isVisWhatsApp = 1;
                           print("###################33333# isVisWhatsApp}");
-                          pageController.animateToPage(2,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
+                          pageController.animateToPage(
+                            2,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
 
                           if (prefsRepository.isTimerForOtpRunning ?? false) {
                             showWarningMessage(
@@ -265,62 +252,72 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                               SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
                         },
                         goBackToPhone: () {
-                          pageController.animateToPage(0,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
+                          pageController.animateToPage(
+                            0,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
                         },
                         onChooseSms: () {
                           isVisWhatsApp = 0;
-                          pageController.animateToPage(3,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
+                          pageController.animateToPage(
+                            3,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
                           /* authBloc.add(
                               SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
                         },
                       ),
                       VerifyOtp(
-                          fromProfile: false,
-                          navigateToProfile: () {},
-                          fromExpired: true,
-                          isVisWhatsApp: isVisWhatsApp,
-                          navigateToAddName: () {},
-                          navigateTocartOrProfile: () {
-                            isVerified.value = true;
-                            orderBloc.add(
-                              GetCustomerWalletEvent(limit: 10, offset: 1),
-                            );
-                            orderBloc.add(
-                              GetOrdersEvent(
-                                status: "",
-                                getWithPagination: false,
-                              ),
-                            );
-                          },
-                          fromLogin: false,
-                          onLoginFailed: () {
-                            pageController.animateToPage(3,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut);
-                          },
-                          goBack: () {
-                            pageController.animateToPage(1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut);
-                          },
-                          methodIcon: isVisWhatsApp == 1
-                              ? AppAssets.whatsappSvg
-                              : AppAssets.smsSvg,
-                          phoneNumber: phoneNumber),
-                    ]),
-          Positioned(
-            top: 0,
-            left: LanguageService.languageCode != "ar" ? null : 0,
-            right: LanguageService.languageCode != "ar" ? 0 : null,
-            child: Container(
-              margin: const EdgeInsets.all(10),
-              height: 20,
-              width: 40,
-              child: InkWell(
+                        fromProfile: false,
+                        navigateToProfile: () {},
+                        fromExpired: true,
+                        isVisWhatsApp: isVisWhatsApp,
+                        navigateToAddName: () {},
+                        navigateTocartOrProfile: () {
+                          isVerified.value = true;
+                          orderBloc.add(
+                            GetCustomerWalletEvent(limit: 10, offset: 1),
+                          );
+                          orderBloc.add(
+                            GetOrdersEvent(
+                              status: "",
+                              getWithPagination: false,
+                            ),
+                          );
+                        },
+                        fromLogin: false,
+                        onLoginFailed: () {
+                          pageController.animateToPage(
+                            3,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        goBack: () {
+                          pageController.animateToPage(
+                            1,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        methodIcon: isVisWhatsApp == 1
+                            ? AppAssets.whatsappSvg
+                            : AppAssets.smsSvg,
+                        phoneNumber: phoneNumber,
+                      ),
+                    ],
+            ),
+            Positioned(
+              top: 0,
+              left: LanguageService.languageCode != "ar" ? null : 0,
+              right: LanguageService.languageCode != "ar" ? 0 : null,
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                height: 20,
+                width: 40,
+                child: InkWell(
                   onTap: () => isVerified.value = true,
                   child: SvgPicture.asset(
                     AppAssets.closeSvg,
@@ -328,10 +325,12 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     width: 30,
                     // ignore: deprecated_member_use
                     color: const Color(0xffFF5F61),
-                  )),
+                  ),
+                ),
+              ),
             ),
-          )
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -347,9 +346,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           current.getStartingSettingsStatus,
       builder: (context, state) {
         language = state.startingSetting?.languages ?? [];
-        languageIndex = language.indexWhere((element) =>
-            element.code ==
-            (LanguageService.isKurdish ? "ku" : LanguageService.languageCode));
+        languageIndex = language.indexWhere(
+          (element) =>
+              element.code ==
+              (LanguageService.isKurdish ? "ku" : LanguageService.languageCode),
+        );
         return (state.getStartingSettingsStatus !=
                     GetStartingSettingsStatus.success &&
                 languageIndex == -1)
@@ -357,46 +358,49 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                 width: 195.w,
                 height: 53,
                 child: Shimmer.fromColors(
-                    baseColor: Colors.grey[200]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                        width: 195,
-                        height: 53,
-                        margin: HWEdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffFAFAFA),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ))))
-            : InkWell(
-                onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const ProfileLanguagePage())),
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: const Color(0xffF8F8F8),
-                        borderRadius: BorderRadius.circular(15.r)),
-                    width: 195.w,
+                  baseColor: Colors.grey[200]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 195,
                     height: 53,
-                    child: Row(
-                      children: [
-                        const SizedBox(
-                          width: 10,
+                    margin: HWEdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffFAFAFA),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              )
+            : InkWell(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileLanguagePage(),
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xffF8F8F8),
+                    borderRadius: BorderRadius.circular(15.r),
+                  ),
+                  width: 195.w,
+                  height: 53,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 10),
+                      SvgPicture.asset(AppAssets.languageSvg),
+                      const SizedBox(width: 10),
+                      Text(
+                        "${language[languageIndex].name}",
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.3,
                         ),
-                        SvgPicture.asset(
-                          AppAssets.languageSvg,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "${language[languageIndex].name}",
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xff1D1D1D),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 1.3),
-                        ),
-                      ],
-                    )),
+                      ),
+                    ],
+                  ),
+                ),
               );
       },
     );
@@ -405,9 +409,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   Widget _countryWidget() {
     String choosedCountryIso =
         (GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-                ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-                : GetIt.I<PrefsRepository>().countryIso) ??
-            "";
+            ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+            : GetIt.I<PrefsRepository>().countryIso) ??
+        "";
     List<Country>? allowCountries;
     Country? country;
     return BlocBuilder<HomeBloc, HomeState>(
@@ -418,64 +422,70 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         allowCountries =
             homeBloc.state.getAllowedCountriesModel?.data?.countries ?? [];
         country = allowCountries?.firstWhere(
-            (element) => '${choosedCountryIso.toLowerCase()}'
-                .startsWith(element.iso!.toLowerCase()),
-            orElse: () => Country(id: -1));
+          (element) => '${choosedCountryIso.toLowerCase()}'.startsWith(
+            element.iso!.toLowerCase(),
+          ),
+          orElse: () => Country(id: -1),
+        );
         return (allowCountries.isNullOrEmpty || country?.id == -1)
             ? Container(
                 width: 195.w,
                 height: 53,
                 child: Shimmer.fromColors(
-                    baseColor: Colors.grey[200]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                        width: 195,
-                        height: 53,
-                        margin: HWEdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffFAFAFA),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ))))
-            : InkWell(
-                onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const ProfileCountryPage())),
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: const Color(0xffF8F8F8),
-                        borderRadius: BorderRadius.circular(15.r)),
-                    width: 195.w,
+                  baseColor: Colors.grey[200]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 195,
                     height: 53,
-                    child: Row(
-                      children: [
-                        const SizedBox(
-                          width: 10,
+                    margin: HWEdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffFAFAFA),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              )
+            : InkWell(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileCountryPage(),
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xffF8F8F8),
+                    borderRadius: BorderRadius.circular(15.r),
+                  ),
+                  width: 195.w,
+                  height: 53,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 10),
+                      Container(
+                        width: 25,
+                        height: 25,
+                        child: country!.iso!.toUpperCase() == "SY"
+                            ? SvgPicture.asset(AppAssets.syriaFlagSvg)
+                            : CountryFlag.fromCountryCode(
+                                country!.iso!.toUpperCase(),
+                                height: 25,
+                                width: 25,
+                                borderRadius: 4.r,
+                              ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        country?.name ?? "",
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 1.3,
                         ),
-                        Container(
-                            width: 25,
-                            height: 25,
-                            child: country!.iso!.toUpperCase() == "SY"
-                                ? SvgPicture.asset(
-                                    AppAssets.syriaFlagSvg,
-                                  )
-                                : CountryFlag.fromCountryCode(
-                                    country!.iso!.toUpperCase(),
-                                    height: 25,
-                                    width: 25,
-                                    borderRadius: 4.r,
-                                  )),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          country?.name ?? "",
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xff1D1D1D),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 1.3),
-                        ),
-                      ],
-                    )),
+                      ),
+                    ],
+                  ),
+                ),
               );
       },
     );
@@ -483,30 +493,29 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   Widget _actionWidget(String svgUrl, String actionName) {
     return Container(
-        padding: const EdgeInsets.all(12),
-        height: 53,
-        width: 1.sw,
-        decoration: BoxDecoration(
-            color: const Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15.r)),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              svgUrl,
+      padding: const EdgeInsets.all(12),
+      height: 53,
+      width: 1.sw,
+      decoration: BoxDecoration(
+        color: const Color(0xffF8F8F8),
+        borderRadius: BorderRadius.circular(15.r),
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset(svgUrl),
+          const SizedBox(width: 10),
+          Text(
+            actionName,
+            style: context.textTheme.bodyMedium?.rq.copyWith(
+              color: const Color(0xff1D1D1D),
+              letterSpacing: 0.18,
+              fontSize: 14,
+              height: 1.3,
             ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(
-              actionName,
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                  color: const Color(0xff1D1D1D),
-                  letterSpacing: 0.18,
-                  fontSize: 14,
-                  height: 1.3),
-            ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _ordersWidget() {
@@ -515,16 +524,17 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         if (!(prefsRepository.isVerifiedPhone ?? false)) {
           isVerified.value = false;
           if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
-            authBloc.add(SendOtpEvent(
-                phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
+            authBloc.add(
+              SendOtpEvent(
+                phone: prefsRepository.myPhoneNumber!,
+                isViaWhatsApp: 1,
+              ),
+            );
           }
           return;
         }
 
-        HelperFunctions.slidingNavigation(
-          context,
-          OrdersPage(),
-        );
+        HelperFunctions.slidingNavigation(context, OrdersPage());
       },
       child: BlocBuilder<OrderBloc, OrderState>(
         buildWhen: (previous, current) =>
@@ -535,23 +545,22 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             padding: const EdgeInsets.all(10),
             width: 195.w,
             decoration: BoxDecoration(
-                color: const Color(0xffF8F8F8),
-                borderRadius: BorderRadius.circular(15.r)),
+              color: const Color(0xffF8F8F8),
+              borderRadius: BorderRadius.circular(15.r),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                SvgPicture.asset(
-                  AppAssets.bagsSvg,
-                  width: 25,
-                ),
+                SvgPicture.asset(AppAssets.bagsSvg, width: 25),
                 Text(
                   LocaleKeys.order_invoice.tr(),
-                  style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.3),
+                  style: context.textTheme.bodyMedium?.mq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.3,
+                  ),
                 ),
                 state.getOrdersModel?[""]?.paginationStatus ==
                         PaginationStatus.loading
@@ -559,17 +568,16 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         alignment: Alignment.center,
                         width: 40,
                         height: 20,
-                        child: TrydosLoader(
-                          size: 20,
-                        ),
+                        child: TrydosLoader(size: 20),
                       )
                     : Text(
                         '${state.orderTotalSize} ${LocaleKeys.action.tr()}',
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                            color: const Color(0xff8D8D8D),
-                            letterSpacing: 0.18,
-                            fontSize: 12,
-                            height: 1.3),
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff8D8D8D),
+                          letterSpacing: 0.18,
+                          fontSize: 12,
+                          height: 1.3,
+                        ),
                       ),
               ],
             ),
@@ -594,8 +602,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           padding: const EdgeInsets.all(10),
           width: 195.w,
           decoration: BoxDecoration(
-              color: const Color(0xffF8F8F8),
-              borderRadius: BorderRadius.circular(15.r)),
+            color: const Color(0xffF8F8F8),
+            borderRadius: BorderRadius.circular(15.r),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -610,28 +619,28 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                 LanguageService.languageCode == "ar"
                     ? LocaleKeys.wallet.tr() + " " + LocaleKeys.trydos.tr()
                     : LocaleKeys.trydos.tr() + " " + LocaleKeys.wallet.tr(),
-                style: context.textTheme.bodyMedium?.mr.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 14,
-                    height: 1.3),
+                style: context.textTheme.bodyMedium?.mq.copyWith(
+                  color: const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 14,
+                  height: 1.3,
+                ),
               ),
               state.getCustomerWalletStatus == GetCustomerWalletStatus.loading
                   ? Container(
                       alignment: Alignment.center,
                       width: 40,
                       height: 20,
-                      child: TrydosLoader(
-                        size: 20,
-                      ),
+                      child: TrydosLoader(size: 20),
                     )
                   : Text(
                       '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed((GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2).round())} ${symbole}',
-                      style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: const Color(0xff8D8D8D),
-                          letterSpacing: 0.18,
-                          fontSize: 12,
-                          height: 1.3),
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 12,
+                        height: 1.3,
+                      ),
                     ),
             ],
           ),
@@ -650,13 +659,17 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           previous.getCustomerInfoStatus != current.getCustomerInfoStatus,
       builder: (context, state) {
         return InkWell(
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const UserInformationPage())),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const UserInformationPage(),
+            ),
+          ),
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-                color: const Color(0xffF8F8F8),
-                borderRadius: BorderRadius.circular(15.r)),
+              color: const Color(0xffF8F8F8),
+              borderRadius: BorderRadius.circular(15.r),
+            ),
             width: 1.sw,
             height: 138,
             child: BlocBuilder<HomeBloc, HomeState>(
@@ -668,26 +681,21 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SvgPicture.asset(
-                          AppAssets.parcodeSvg,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        SvgPicture.asset(AppAssets.parcodeSvg),
+                        const SizedBox(height: 10),
                         Container(
                           height: 20,
                           child: Text(
                             prefsRepository.myMarketName ?? '',
-                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                color: const Color(0xff1D1D1D),
-                                letterSpacing: 0.18,
-                                fontSize: 14,
-                                height: 1.3),
+                            style: context.textTheme.bodyMedium?.mq.copyWith(
+                              color: const Color(0xff1D1D1D),
+                              letterSpacing: 0.18,
+                              fontSize: 14,
+                              height: 1.3,
+                            ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                        const SizedBox(height: 5),
                         Directionality(
                           textDirection: TextDirection.ltr,
                           child: Container(
@@ -696,32 +704,32 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                               (prefsRepository.myPhoneNumber?.length ?? 0) < 4
                                   ? ""
                                   : (prefsRepository.myPhoneNumber ?? "")
-                                          .startsWith("+")
-                                      ? "${prefsRepository.myPhoneNumber ?? ''}"
-                                      : "+" +
-                                          "${prefsRepository.myPhoneNumber ?? ''}",
-                              style: context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: const Color(0xff8D8D8D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3),
+                                        .startsWith("+")
+                                  ? "${prefsRepository.myPhoneNumber ?? ''}"
+                                  : "+" +
+                                        "${prefsRepository.myPhoneNumber ?? ''}",
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff8D8D8D),
+                                letterSpacing: 0.18,
+                                fontSize: 12,
+                                height: 1.3,
+                              ),
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                        const SizedBox(height: 5),
                         Container(
                           height: 16,
                           width: 130,
                           child: Text(
                             '${LocaleKeys.add.tr()} ' +
                                 "${LocaleKeys.size.tr()}",
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
-                                color: const Color(0xff8D8D8D),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1.3),
+                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                              color: const Color(0xff8D8D8D),
+                              letterSpacing: 0.18,
+                              fontSize: 12,
+                              height: 1.3,
+                            ),
                           ),
                         ),
                       ],
@@ -734,31 +742,31 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         height: 70,
                         width: 70,
                         decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15.r)),
-                            border: Border.all(
-                                color: !(prefsRepository.myProfilePhoto ==
-                                            null ||
-                                        prefsRepository.myProfilePhoto == "")
-                                    ? Colors.white
-                                    : const Color(0xff1D1D1D))),
-                        child: !(prefsRepository.myProfilePhoto == null ||
+                          borderRadius: BorderRadius.all(Radius.circular(15.r)),
+                          border: Border.all(
+                            color:
+                                !(prefsRepository.myProfilePhoto == null ||
+                                    prefsRepository.myProfilePhoto == "")
+                                ? Colors.white
+                                : const Color(0xff1D1D1D),
+                          ),
+                        ),
+                        child:
+                            !(prefsRepository.myProfilePhoto == null ||
                                 prefsRepository.myProfilePhoto == "")
                             ? ClipRRect(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.r)),
-                                child: MyCachedNetworkImage(
-                                    imageUrl:
-                                        prefsRepository.myProfilePhoto ?? "",
-                                    width: 70,
-                                    imageFit: BoxFit.cover,
-                                    height: 70),
-                              )
-                            : Center(
-                                child: SvgPicture.asset(
-                                  AppAssets.trySvg,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.r),
                                 ),
-                              ),
+                                child: MyCachedNetworkImage(
+                                  imageUrl:
+                                      prefsRepository.myProfilePhoto ?? "",
+                                  width: 70,
+                                  imageFit: BoxFit.cover,
+                                  height: 70,
+                                ),
+                              )
+                            : Center(child: SvgPicture.asset(AppAssets.trySvg)),
                       ),
                     ),
                     Positioned(
@@ -767,98 +775,116 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           ? null
                           : max(
                               _calculateTextWidth(
-                                  prefsRepository.myMarketName ?? '',
-                                  context.textTheme.bodyMedium!.mr.copyWith(
-                                      color: const Color(0xff1D1D1D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 14,
-                                      height: 1.3)),
+                                prefsRepository.myMarketName ?? '',
+                                context.textTheme.bodyMedium!.mq.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 1.3,
+                                ),
+                              ),
                               _calculateTextWidth(
-                                  prefsRepository.myPhoneNumber ?? '',
-                                  context.textTheme.bodyMedium!.rr.copyWith(
-                                      color: const Color(0xff8D8D8D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 12,
-                                      height: 1.3))),
+                                prefsRepository.myPhoneNumber ?? '',
+                                context.textTheme.bodyMedium!.rq.copyWith(
+                                  color: const Color(0xff8D8D8D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ),
                       right: LanguageService.languageCode != "ar"
                           ? null
                           : max(
                               _calculateTextWidth(
-                                  prefsRepository.myMarketName ?? '',
-                                  context.textTheme.bodyMedium!.mr.copyWith(
-                                      color: const Color(0xff1D1D1D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 14,
-                                      height: 1.3)),
-                              _calculateTextWidth(
-                                  prefsRepository.myPhoneNumber ?? '',
-                                  context.textTheme.bodyMedium!.rr.copyWith(
-                                      color: const Color(0xff8D8D8D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 12,
-                                      height: 1.3))),
-                      child: ValueListenableBuilder<bool>(
-                          valueListenable: isVerified,
-                          builder: (context, _isverified, _) {
-                            return InkWell(
-                              onTap: () {
-                                if (!(prefsRepository.isVerifiedPhone ??
-                                    false)) {
-                                  isVerified.value = false;
-                                  if ((prefsRepository
-                                          .isVerifiedPhonePeforeExpiredToken ??
-                                      false)) {
-                                    authBloc.add(SendOtpEvent(
-                                        phone: prefsRepository.myPhoneNumber!,
-                                        isViaWhatsApp: 1));
-                                  }
-                                }
-                              },
-                              child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                height: 35,
-                                width: 72,
-                                child: Column(
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppAssets.succuessProfileSvg,
-                                          // ignore: deprecated_member_use
-                                          color: const Color(0xff707070),
-                                          height: 16,
-                                          width: 16,
-                                        ),
-                                        SvgPicture.asset(AppAssets.success2Svg,
-                                            // ignore: deprecated_member_use
-                                            color: const Color(0xff707070),
-                                            height: 5,
-                                            width: 5),
-                                      ],
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      (prefsRepository.isVerifiedPhone ?? false)
-                                          ? '${LocaleKeys.verified.tr()}'
-                                          : '${LocaleKeys.verified_now.tr()}',
-                                      style: context.textTheme.bodyMedium?.rr
-                                          .copyWith(
-                                              color: (prefsRepository
-                                                          .isVerifiedPhone ??
-                                                      false)
-                                                  ? Colors.green
-                                                  : const Color(0xffFF5F61),
-                                              letterSpacing: 0.18,
-                                              fontSize: 10,
-                                              height: 1.3),
-                                    ),
-                                  ],
+                                prefsRepository.myMarketName ?? '',
+                                context.textTheme.bodyMedium!.mq.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 1.3,
                                 ),
                               ),
-                            );
-                          }),
+                              _calculateTextWidth(
+                                prefsRepository.myPhoneNumber ?? '',
+                                context.textTheme.bodyMedium!.rq.copyWith(
+                                  color: const Color(0xff8D8D8D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ),
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: isVerified,
+                        builder: (context, _isverified, _) {
+                          return InkWell(
+                            onTap: () {
+                              if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                                isVerified.value = false;
+                                if ((prefsRepository
+                                        .isVerifiedPhonePeforeExpiredToken ??
+                                    false)) {
+                                  authBloc.add(
+                                    SendOtpEvent(
+                                      phone: prefsRepository.myPhoneNumber!,
+                                      isViaWhatsApp: 1,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                              ),
+                              height: 35,
+                              width: 72,
+                              child: Column(
+                                children: [
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppAssets.succuessProfileSvg,
+                                        // ignore: deprecated_member_use
+                                        color: const Color(0xff707070),
+                                        height: 16,
+                                        width: 16,
+                                      ),
+                                      SvgPicture.asset(
+                                        AppAssets.success2Svg,
+                                        // ignore: deprecated_member_use
+                                        color: const Color(0xff707070),
+                                        height: 5,
+                                        width: 5,
+                                      ),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    (prefsRepository.isVerifiedPhone ?? false)
+                                        ? '${LocaleKeys.verified.tr()}'
+                                        : '${LocaleKeys.verified_now.tr()}',
+                                    style: context.textTheme.bodyMedium?.rq
+                                        .copyWith(
+                                          color:
+                                              (prefsRepository
+                                                      .isVerifiedPhone ??
+                                                  false)
+                                              ? Colors.green
+                                              : const Color(0xffFF5F61),
+                                          letterSpacing: 0.18,
+                                          fontSize: 10,
+                                          height: 1.3,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 );

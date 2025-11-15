@@ -12,9 +12,12 @@ import 'package:video_player/video_player.dart';
 import 'my_text_widget.dart';
 
 class MYVideoPlayerFull extends StatefulWidget {
-  const MYVideoPlayerFull(
-      {Key? key, this.videoUrl, this.videoFile, required this.chatId})
-      : super(key: key);
+  const MYVideoPlayerFull({
+    Key? key,
+    this.videoUrl,
+    this.videoFile,
+    required this.chatId,
+  }) : super(key: key);
   final String? videoUrl;
   final File? videoFile;
   final String chatId;
@@ -36,8 +39,11 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
   @override
   void initState() {
     if (widget.videoUrl != null) {
-      imageUrl = widget.videoUrl!
-              .replaceFirst(widget.videoUrl!.split('.').last, 'JPG') +
+      imageUrl =
+          widget.videoUrl!.replaceFirst(
+            widget.videoUrl!.split('.').last,
+            'JPG',
+          ) +
           '?w=300&h=300';
     }
     if (widget.videoFile != null) {
@@ -68,10 +74,12 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
     final Duration duration;
     if (_controller!.value.isPlaying) {
       duration = Duration(
-          milliseconds: _controller!.value.position.inMilliseconds.round());
+        milliseconds: _controller!.value.position.inMilliseconds.round(),
+      );
     } else {
       duration = Duration(
-          milliseconds: _controller!.value.duration.inMilliseconds.round());
+        milliseconds: _controller!.value.duration.inMilliseconds.round(),
+      );
     }
 
     return [duration.inHours, duration.inMinutes, duration.inSeconds]
@@ -93,72 +101,81 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
           height: 1.sh,
           width: 1.sw,
           child: FutureBuilder(
-              future: initializeVideo,
-              builder: (context, snapShot) {
-                if (snapShot.connectionState == ConnectionState.done) {
-                  return GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => {
-                      setState(() {
+            future: initializeVideo,
+            builder: (context, snapShot) {
+              if (snapShot.connectionState == ConnectionState.done) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => {
+                    setState(() {
+                      _controller!.value.isPlaying
+                          ? _controller!.pause()
+                          : _controller!.play();
+                    }),
+                  },
+                  child: Container(
+                    height: 1.sh,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: _controller!.value.aspectRatio,
+                          // Use the VideoPlayer widget to display the video.
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: VideoPlayer(_controller!),
+                          ),
+                        ),
                         _controller!.value.isPlaying
-                            ? _controller!.pause()
-                            : _controller!.play();
-                      }),
-                    },
-                    child: Container(
-                      height: 1.sh,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          AspectRatio(
-                            aspectRatio: _controller!.value.aspectRatio,
-                            // Use the VideoPlayer widget to display the video.
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12.0),
-                                child: VideoPlayer(_controller!)),
+                            ? Container()
+                            : Icon(
+                                Icons.play_arrow,
+                                size: 50,
+                                color: Colors.grey.shade300,
+                              ),
+                        buildSpeed(),
+                        Positioned(
+                          left: 8,
+                          bottom: 30,
+                          child: MyTextWidget(
+                            getPosition(),
+                            style: context.textTheme.titleLarge?.rq.copyWith(
+                              color: Colors.white,
+                            ),
                           ),
-                          _controller!.value.isPlaying
-                              ? Container()
-                              : Icon(Icons.play_arrow,
-                                  size: 50, color: Colors.grey.shade300),
-                          buildSpeed(),
-                          Positioned(
-                            left: 8,
-                            bottom: 30,
-                            child: MyTextWidget(getPosition(),
-                                style: context.textTheme.titleLarge?.rr
-                                    .copyWith(color: Colors.white)),
-                          ),
-                          Positioned(
-                            bottom: 15,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              margin: const EdgeInsets.all(2),
-                              height: 16,
-                              child: VideoProgressIndicator(
-                                _controller!,
-                                allowScrubbing: true,
-                                colors: VideoProgressColors(
-                                    bufferedColor: Colors.white,
-                                    playedColor: const Color(0xff388CFF),
-                                    backgroundColor:
-                                        // ignore: deprecated_member_use
-                                        Colors.white.withOpacity(0.3)),
+                        ),
+                        Positioned(
+                          bottom: 15,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            margin: const EdgeInsets.all(2),
+                            height: 16,
+                            child: VideoProgressIndicator(
+                              _controller!,
+                              allowScrubbing: true,
+                              colors: VideoProgressColors(
+                                bufferedColor: Colors.white,
+                                playedColor: const Color(0xff388CFF),
+                                backgroundColor:
+                                    // ignore: deprecated_member_use
+                                    Colors.white.withOpacity(0.3),
                               ),
                             ),
-                          )
-                        ],
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                }
-                return SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: Center(child: TrydosLoader()),
+                  ),
                 );
-              }),
+              }
+              return SizedBox(
+                width: 300,
+                height: 300,
+                child: Center(child: TrydosLoader()),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -174,15 +191,15 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
         tooltip: 'Playback speed',
         onSelected: _controller!.setPlaybackSpeed,
         itemBuilder: (context) => allSpeeds
-            .map<PopupMenuEntry<double>>((speed) => PopupMenuItem(
-                  value: speed,
-                  child: MyTextWidget(
-                    '${speed}x',
-                    style: const TextStyle(
-                      color: Color(0xff388CFF),
-                    ),
-                  ),
-                ))
+            .map<PopupMenuEntry<double>>(
+              (speed) => PopupMenuItem(
+                value: speed,
+                child: MyTextWidget(
+                  '${speed}x',
+                  style: const TextStyle(color: Color(0xff388CFF)),
+                ),
+              ),
+            )
             .toList(),
         child: Container(
           decoration: BoxDecoration(
@@ -192,9 +209,7 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: MyTextWidget(
             '${_controller!.value.playbackSpeed}x',
-            style: const TextStyle(
-              color: Color(0xff388CFF),
-            ),
+            style: const TextStyle(color: Color(0xff388CFF)),
           ),
         ),
       ),

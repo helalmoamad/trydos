@@ -10,93 +10,120 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getAndAddCountViewOfProductStatus:
           (json['getAndAddCountViewOfProductStatus'] as Map<String, dynamic>?)
                   ?.map(
-                (k, e) => MapEntry(k,
-                    $enumDecode(_$GetAndAddCountViewOfProductStatusEnumMap, e)),
+                (k, e) => MapEntry(
+                  k,
+                  $enumDecode(_$GetAndAddCountViewOfProductStatusEnumMap, e),
+                ),
               ) ??
               const {},
       addItemInCartStatus: $enumDecodeNullable(
-          _$AddItemInCartStatusEnumMap, json['addItemInCartStatus']),
+        _$AddItemInCartStatusEnumMap,
+        json['addItemInCartStatus'],
+      ),
       convertItemFromcartToOldCartStatus: $enumDecodeNullable(
-              _$ConvertItemFromcartToOldCartStatusEnumMap,
-              json['convertItemFromcartToOldCartStatus']) ??
+            _$ConvertItemFromcartToOldCartStatusEnumMap,
+            json['convertItemFromcartToOldCartStatus'],
+          ) ??
           ConvertItemFromcartToOldCartStatus.init,
       hideItemInOldCartStatus: $enumDecodeNullable(
-          _$HideItemInOldCartStatusEnumMap, json['hideItemInOldCartStatus']),
+        _$HideItemInOldCartStatusEnumMap,
+        json['hideItemInOldCartStatus'],
+      ),
       updateEmailappNotificationStatus: $enumDecodeNullable(
-          _$UpdateEmailappNotificationStatusEnumMap,
-          json['updateEmailappNotificationStatus']),
+        _$UpdateEmailappNotificationStatusEnumMap,
+        json['updateEmailappNotificationStatus'],
+      ),
       tapCommentIndex: (json['tapCommentIndex'] as num?)?.toInt() ?? -1,
       createCommentRatingStatus: $enumDecodeNullable(
-              _$CreateCommentRatingStatusEnumMap,
-              json['createCommentRatingStatus']) ??
+            _$CreateCommentRatingStatusEnumMap,
+            json['createCommentRatingStatus'],
+          ) ??
           CreateCommentRatingStatus.init,
       updateWhatsappNotificationStatus: $enumDecodeNullable(
-          _$UpdateWhatsappNotificationStatusEnumMap,
-          json['updateWhatsappNotificationStatus']),
+        _$UpdateWhatsappNotificationStatusEnumMap,
+        json['updateWhatsappNotificationStatus'],
+      ),
       changeSizesForEveryProduct: $enumDecodeNullable(
-          _$ChangeSizesForEveryProductEnumMap,
-          json['changeSizesForEveryProduct']),
+        _$ChangeSizesForEveryProductEnumMap,
+        json['changeSizesForEveryProduct'],
+      ),
       getFqaCommentsPaginationModel:
           (json['getFqaCommentsPaginationModel'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
-            k,
-            PaginationModel<FqaComment>.fromJson(e as Map<String, dynamic>,
-                (value) => FqaComment.fromJson(value as Map<String, dynamic>))),
+          k,
+          PaginationModel<FqaComment>.fromJson(
+            e as Map<String, dynamic>,
+            (value) => FqaComment.fromJson(value as Map<String, dynamic>),
+          ),
+        ),
       ),
       getBuyersCommentsPaginationModel:
           (json['getBuyersCommentsPaginationModel'] as Map<String, dynamic>?)
               ?.map(
         (k, e) => MapEntry(
-            k,
-            PaginationModel<BuyersComment>.fromJson(
-                e as Map<String, dynamic>,
-                (value) =>
-                    BuyersComment.fromJson(value as Map<String, dynamic>))),
+          k,
+          PaginationModel<BuyersComment>.fromJson(
+            e as Map<String, dynamic>,
+            (value) => BuyersComment.fromJson(value as Map<String, dynamic>),
+          ),
+        ),
       ),
       getOrderRatingComments: (json['getOrderRatingComments'] as List<dynamic>?)
               ?.map((e) => Comment.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       uploadUserPhotoCloudinaryStatus: $enumDecodeNullable(
-          _$UploadUserPhotoCloudinaryStatusEnumMap,
-          json['uploadUserPhotoCloudinaryStatus']),
+        _$UploadUserPhotoCloudinaryStatusEnumMap,
+        json['uploadUserPhotoCloudinaryStatus'],
+      ),
       searchWithOutFilterOffset:
           (json['searchWithOutFilterOffset'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
       updateProfileStatus: $enumDecodeNullable(
-          _$UpdateProfileStatusEnumMap, json['updateProfileStatus']),
+        _$UpdateProfileStatusEnumMap,
+        json['updateProfileStatus'],
+      ),
       addProductIdToSaveRedeemTimerStatus: $enumDecodeNullable(
-              _$AddProductIdToSaveRedeemTimerStatusEnumMap,
-              json['addProductIdToSaveRedeemTimerStatus']) ??
+            _$AddProductIdToSaveRedeemTimerStatusEnumMap,
+            json['addProductIdToSaveRedeemTimerStatus'],
+          ) ??
           AddProductIdToSaveRedeemTimerStatus.init,
       getAllowedCountriesStatus: $enumDecodeNullable(
-          _$GetAllowedCountriesStatusEnumMap,
-          json['getAllowedCountriesStatus']),
+        _$GetAllowedCountriesStatusEnumMap,
+        json['getAllowedCountriesStatus'],
+      ),
       getProductDetailWithoutSimilarRelatedProductsStatus: $enumDecodeNullable(
-              _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
-              json['getProductDetailWithoutSimilarRelatedProductsStatus']) ??
+            _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
+            json['getProductDetailWithoutSimilarRelatedProductsStatus'],
+          ) ??
           GetProductDetailWithoutSimilarRelatedProductsStatus.init,
       getStartingSettingsStatus: $enumDecodeNullable(
-              _$GetStartingSettingsStatusEnumMap,
-              json['getStartingSettingsStatus']) ??
+            _$GetStartingSettingsStatusEnumMap,
+            json['getStartingSettingsStatus'],
+          ) ??
           GetStartingSettingsStatus.init,
       currentSelectedColorForEveryProductStatus: $enumDecodeNullable(
-          _$CurrentSelectedColorForEveryProductStatusEnumMap,
-          json['currentSelectedColorForEveryProductStatus']),
+        _$CurrentSelectedColorForEveryProductStatusEnumMap,
+        json['currentSelectedColorForEveryProductStatus'],
+      ),
       isChangedvariationWhenQtyZero:
           json['isChangedvariationWhenQtyZero'] as bool? ?? false,
       getOrderRatingStatus: $enumDecodeNullable(
-              _$GetOrderRatingStatusEnumMap, json['getOrderRatingStatus']) ??
+            _$GetOrderRatingStatusEnumMap,
+            json['getOrderRatingStatus'],
+          ) ??
           GetOrderRatingStatus.init,
       getFullProductDetailsStatus: $enumDecodeNullable(
-              _$GetFullProductDetailsStatusEnumMap,
-              json['getFullProductDetailsStatus']) ??
+            _$GetFullProductDetailsStatusEnumMap,
+            json['getFullProductDetailsStatus'],
+          ) ??
           GetFullProductDetailsStatus.init,
       startingSetting: json['startingSetting'] == null
           ? null
           : StartingSetting.fromJson(
-              json['startingSetting'] as Map<String, dynamic>),
+              json['startingSetting'] as Map<String, dynamic>,
+            ),
       sizesForEachColor: (json['sizesForEachColor'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -121,20 +148,26 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   .toList() ??
               const [],
       deleteItemInCartStatus: $enumDecodeNullable(
-          _$DeleteItemInCartStatusEnumMap, json['deleteItemInCartStatus']),
+        _$DeleteItemInCartStatusEnumMap,
+        json['deleteItemInCartStatus'],
+      ),
       oldcartCollection: (json['oldcartCollection'] as List<dynamic>?)
           ?.map((e) => OldCart.fromJson(e as Map<String, dynamic>))
           .toList(),
       enableAddToCardAfterChangeVariantZero: $enumDecodeNullable(
-          _$EnableAddToCardAfterChangeVariantZeroEnumMap,
-          json['enableAddToCardAfterChangeVariantZero']),
+        _$EnableAddToCardAfterChangeVariantZeroEnumMap,
+        json['enableAddToCardAfterChangeVariantZero'],
+      ),
       getOldCartItemsStatus: $enumDecodeNullable(
-              _$GetOLdCartItemsStatusEnumMap, json['getOldCartItemsStatus']) ??
+            _$GetOLdCartItemsStatusEnumMap,
+            json['getOldCartItemsStatus'],
+          ) ??
           GetOLdCartItemsStatus.init,
       getOldCartModel: json['getOldCartModel'] == null
           ? null
           : GetOldCartModel.fromJson(
-              json['getOldCartModel'] as Map<String, dynamic>),
+              json['getOldCartModel'] as Map<String, dynamic>,
+            ),
       countryCoordinatesBorders:
           (json['countryCoordinatesBorders'] as List<dynamic>?)
                   ?.map((e) => geod.LatLng.fromJson(e as Map<String, dynamic>))
@@ -144,34 +177,39 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : PaginationModel<NotificationItemModel>.fromJson(
               json['getUserNotificationModel'] as Map<String, dynamic>,
-              (value) => NotificationItemModel.fromJson(
-                  value as Map<String, dynamic>)),
+              (value) =>
+                  NotificationItemModel.fromJson(value as Map<String, dynamic>),
+            ),
       checkAvailabilityProductCartModel:
           json['checkAvailabilityProductCartModel'] == null
               ? null
               : CheckAvailabilityProductCartModel.fromJson(
                   json['checkAvailabilityProductCartModel']
-                      as Map<String, dynamic>),
+                      as Map<String, dynamic>,
+                ),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       productStatus: (json['productStatus'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
-            k,
-            $enumDecode(
-                _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
-                e)),
+          k,
+          $enumDecode(
+            _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
+            e,
+          ),
+        ),
       ),
       updateItemInCartStatus: $enumDecodeNullable(
-          _$UpdateItemInCartStatusEnumMap, json['updateItemInCartStatus']),
+        _$UpdateItemInCartStatusEnumMap,
+        json['updateItemInCartStatus'],
+      ),
       getCartShippingItemsModel: json['getCartShippingItemsModel'] == null
           ? null
           : GetCartShippingItemsModel.fromJson(
-              json['getCartShippingItemsModel'] as Map<String, dynamic>),
+              json['getCartShippingItemsModel'] as Map<String, dynamic>,
+            ),
       reRequestTheseProductListingInBoutiques:
           (json['reRequestTheseProductListingInBoutiques']
                       as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(k, e as bool),
-              ) ??
+                  ?.map((k, e) => MapEntry(k, e as bool)) ??
               const {},
       reRequestProductWithFilters:
           (json['reRequestProductWithFilters'] as Map<String, dynamic>?)?.map(
@@ -179,8 +217,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               ) ??
               const {},
       getProductListingStatus: $enumDecodeNullable(
-              _$GetProductListingStatusEnumMap,
-              json['getProductListingStatus']) ??
+            _$GetProductListingStatusEnumMap,
+            json['getProductListingStatus'],
+          ) ??
           GetProductListingStatus.init,
       selectedCollection: (json['selectedCollection'] as num?)?.toInt(),
       productContentForStatusOfOpeningProductDetailsDirectly:
@@ -188,14 +227,16 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               ? null
               : Products.fromJson(
                   json['productContentForStatusOfOpeningProductDetailsDirectly']
-                      as Map<String, dynamic>),
+                      as Map<String, dynamic>,
+                ),
       cartCollection: (json['cartCollection'] as List<dynamic>?)
               ?.map((e) => Cart.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       getStoriesForProductStatus: $enumDecodeNullable(
-              _$GetStoriesForProductStatusEnumMap,
-              json['getStoriesForProductStatus']) ??
+            _$GetStoriesForProductStatusEnumMap,
+            json['getStoriesForProductStatus'],
+          ) ??
           GetStoriesForProductStatus.init,
       currentColorSizeForCart:
           (json['currentColorSizeForCart'] as Map<String, dynamic>?)?.map(
@@ -204,7 +245,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       currentQuantityForCart:
           (json['currentQuantityForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
-            k, (e as List<dynamic>).map((e) => (e as num).toInt()).toList()),
+          k,
+          (e as List<dynamic>).map((e) => (e as num).toInt()).toList(),
+        ),
       ),
       addVariationToCartId:
           (json['addVariationToCartId'] as Map<String, dynamic>?)?.map(
@@ -214,16 +257,20 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       addImagesToProductIdForCart:
           (json['addImagesToProductIdForCart'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
-                    k,
-                    (e as Map<String, dynamic>).map(
-                      (k, e) => MapEntry(
-                          int.parse(k),
-                          (e as List<dynamic>)
-                              .map((e) => (e as List<dynamic>)
-                                  .map((e) => e as String)
-                                  .toList())
-                              .toList()),
-                    )),
+                  k,
+                  (e as Map<String, dynamic>).map(
+                    (k, e) => MapEntry(
+                      int.parse(k),
+                      (e as List<dynamic>)
+                          .map(
+                            (e) => (e as List<dynamic>)
+                                .map((e) => e as String)
+                                .toList(),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
               ) ??
               const {},
       searchHistory: (json['searchHistory'] as List<dynamic>?)
@@ -232,7 +279,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getAllowedCountriesModel: json['getAllowedCountriesModel'] == null
           ? null
           : GetAllowedCountriesModel.fromJson(
-              json['getAllowedCountriesModel'] as Map<String, dynamic>),
+              json['getAllowedCountriesModel'] as Map<String, dynamic>,
+            ),
       cartIdsHurryUPTimerStarted:
           (json['cartIdsHurryUPTimerStarted'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(k, (e as num).toInt()),
@@ -244,14 +292,17 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getCurrencyForCountryModel: json['getCurrencyForCountryModel'] == null
           ? null
           : GetCurrencyForCountryModel.fromJson(
-              json['getCurrencyForCountryModel'] as Map<String, dynamic>),
+              json['getCurrencyForCountryModel'] as Map<String, dynamic>,
+            ),
       storiesCollections: (json['storiesCollections'] as List<dynamic>?)
               ?.map((e) =>
                   CollectionStoryModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       selectedVideoStatus: $enumDecodeNullable(
-              _$SelectedVideoStatusEnumMap, json['selectedVideoStatus']) ??
+            _$SelectedVideoStatusEnumMap,
+            json['selectedVideoStatus'],
+          ) ??
           SelectedVideoStatus.init,
       storyLink: json['storyLink'] as String?,
       finishGetAllStory: json['finishGetAllStory'] as bool? ?? false,
@@ -272,67 +323,86 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ?.map((e) => PopularSearchTerm.fromJson(e as Map<String, dynamic>))
           .toList(),
       updateOrderCommentRatingStatus: $enumDecodeNullable(
-              _$UpdateOrderCommentRatingStatusEnumMap,
-              json['updateOrderCommentRatingStatus']) ??
+            _$UpdateOrderCommentRatingStatusEnumMap,
+            json['updateOrderCommentRatingStatus'],
+          ) ??
           UpdateOrderCommentRatingStatus.init,
+      updateLikeCommentRatingStatus: $enumDecodeNullable(
+            _$UpdateLikeCommentRatingStatusEnumMap,
+            json['updateLikeCommentRatingStatus'],
+          ) ??
+          UpdateLikeCommentRatingStatus.init,
       deleteOrderCommentRatingStatus: $enumDecodeNullable(
-              _$DeleteOrderCommentRatingStatusEnumMap,
-              json['deleteOrderCommentRatingStatus']) ??
+            _$DeleteOrderCommentRatingStatusEnumMap,
+            json['deleteOrderCommentRatingStatus'],
+          ) ??
           DeleteOrderCommentRatingStatus.init,
       getCartOverviewStatus: $enumDecodeNullable(
-              _$GetCartOverviewStatusEnumMap, json['getCartOverviewStatus']) ??
+            _$GetCartOverviewStatusEnumMap,
+            json['getCartOverviewStatus'],
+          ) ??
           GetCartOverviewStatus.init,
       checkAvailabilityProductCartStatus: $enumDecodeNullable(
-              _$CheckAvailabilityProductCartStatusEnumMap,
-              json['checkAvailabilityProductCartStatus']) ??
+            _$CheckAvailabilityProductCartStatusEnumMap,
+            json['checkAvailabilityProductCartStatus'],
+          ) ??
           CheckAvailabilityProductCartStatus.init,
+      statusCodeOfCommentProcess:
+          json['statusCodeOfCommentProcess'] as String? ?? "",
       currentSlugToRefreshFromNotification:
           json['currentSlugToRefreshFromNotification'] as String?,
       getCartItemsStatus: $enumDecodeNullable(
-              _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
+            _$GetCartItemsStatusEnumMap,
+            json['getCartItemsStatus'],
+          ) ??
           GetCartItemsStatus.init,
       checkWithGetCartStatus: $enumDecodeNullable(
-              _$CheckWithGetCartStatusEnumMap,
-              json['checkWithGetCartStatus']) ??
+            _$CheckWithGetCartStatusEnumMap,
+            json['checkWithGetCartStatus'],
+          ) ??
           CheckWithGetCartStatus.init,
       addOrRemoveLikeOfProductStatus: $enumDecodeNullable(
-              _$AddOrRemoveLikeOfProductStatusEnumMap,
-              json['addOrRemoveLikeOfProductStatus']) ??
+            _$AddOrRemoveLikeOfProductStatusEnumMap,
+            json['addOrRemoveLikeOfProductStatus'],
+          ) ??
           AddOrRemoveLikeOfProductStatus.init,
       getProductListingPaginationWithoutFiltersModel:
           (json['getProductListingPaginationWithoutFiltersModel']
                       as Map<String, dynamic>?)
                   ?.map(
                 (k, e) => MapEntry(
-                    k,
-                    PaginationModel<Products>.fromJson(
-                        e as Map<String, dynamic>,
-                        (value) =>
-                            Products.fromJson(value as Map<String, dynamic>))),
+                  k,
+                  PaginationModel<Products>.fromJson(
+                    e as Map<String, dynamic>,
+                    (value) => Products.fromJson(value as Map<String, dynamic>),
+                  ),
+                ),
               ) ??
               const {},
       currentSelectedColorForEveryProduct:
           (json['currentSelectedColorForEveryProduct'] as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(k, (e as num).toInt()),
-              ) ??
+                  ?.map((k, e) => MapEntry(k, (e as num).toInt())) ??
               const {},
       notificationTypeForProductModel:
           json['notificationTypeForProductModel'] == null
               ? null
               : NotificationTypeForProductModel.fromJson(
                   json['notificationTypeForProductModel']
-                      as Map<String, dynamic>),
+                      as Map<String, dynamic>,
+                ),
       getNotificationTypeProductStatus: $enumDecodeNullable(
-          _$GetNotificationTypeProductStatusEnumMap,
-          json['getNotificationTypeProductStatus']),
+        _$GetNotificationTypeProductStatusEnumMap,
+        json['getNotificationTypeProductStatus'],
+      ),
+      likeForReplayComment: json['likeForReplayComment'] as bool?,
       currentHeightWhenAddToBag:
           (json['currentHeightWhenAddToBag'] as num?)?.toInt() ?? 0,
       currentIndexForUpdateCart:
           (json['currentIndexForUpdateCart'] as num?)?.toInt(),
       getCountryBoundaryByIsoStatus: $enumDecodeNullable(
-          _$GetCountryBoundaryByIsoStatusEnumMap,
-          json['getCountryBoundaryByIsoStatus']),
+        _$GetCountryBoundaryByIsoStatusEnumMap,
+        json['getCountryBoundaryByIsoStatus'],
+      ),
       userInfo: json['userInfo'] == null
           ? null
           : User.fromJson(json['userInfo'] as Map<String, dynamic>),
@@ -348,28 +418,34 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                       as Map<String, dynamic>?)
                   ?.map(
                 (k, e) => MapEntry(
-                    k,
-                    GetProductDetailWithoutRelatedProductsModel.fromJson(
-                        e as Map<String, dynamic>)),
+                  k,
+                  GetProductDetailWithoutRelatedProductsModel.fromJson(
+                    e as Map<String, dynamic>,
+                  ),
+                ),
               ) ??
               const {},
       getFirebaseSettingForNotificationStatus: $enumDecodeNullable(
-          _$GetFirebaseSettingForNotificationStatusEnumMap,
-          json['getFirebaseSettingForNotificationStatus']),
+        _$GetFirebaseSettingForNotificationStatusEnumMap,
+        json['getFirebaseSettingForNotificationStatus'],
+      ),
       firebaseSettingForNotificationModel:
           json['firebaseSettingForNotificationModel'] == null
               ? null
               : FirebaseSettingForNotificationModel.fromJson(
                   json['firebaseSettingForNotificationModel']
-                      as Map<String, dynamic>),
+                      as Map<String, dynamic>,
+                ),
       authProductDetailsStatus: $enumDecodeNullable(
-              _$AuthProductDetailsStatusEnumMap,
-              json['authProductDetailsStatus']) ??
+            _$AuthProductDetailsStatusEnumMap,
+            json['authProductDetailsStatus'],
+          ) ??
           AuthProductDetailsStatus.init,
       authProductDetailsModel: json['authProductDetailsModel'] == null
           ? null
           : GetAuthProductDetailsModel.fromJson(
-              json['authProductDetailsModel'] as Map<String, dynamic>),
+              json['authProductDetailsModel'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
@@ -384,6 +460,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.deleteOrderCommentRatingStatus]!,
       'updateOrderCommentRatingStatus': _$UpdateOrderCommentRatingStatusEnumMap[
           instance.updateOrderCommentRatingStatus]!,
+      'updateLikeCommentRatingStatus': _$UpdateLikeCommentRatingStatusEnumMap[
+          instance.updateLikeCommentRatingStatus]!,
       'updateProfileStatus':
           _$UpdateProfileStatusEnumMap[instance.updateProfileStatus],
       'getOrderRatingStatus':
@@ -391,17 +469,12 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getAllowedCountriesStatus': _$GetAllowedCountriesStatusEnumMap[
           instance.getAllowedCountriesStatus],
       'getFqaCommentsPaginationModel':
-          instance.getFqaCommentsPaginationModel?.map((k, e) => MapEntry(
-              k,
-              e.toJson(
-                (value) => value.toJson(),
-              ))),
-      'getBuyersCommentsPaginationModel':
-          instance.getBuyersCommentsPaginationModel?.map((k, e) => MapEntry(
-              k,
-              e.toJson(
-                (value) => value.toJson(),
-              ))),
+          instance.getFqaCommentsPaginationModel?.map(
+        (k, e) => MapEntry(k, e.toJson((value) => value.toJson())),
+      ),
+      'getBuyersCommentsPaginationModel': instance
+          .getBuyersCommentsPaginationModel
+          ?.map((k, e) => MapEntry(k, e.toJson((value) => value.toJson()))),
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
@@ -425,9 +498,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getOrderRatingComments':
           instance.getOrderRatingComments.map((e) => e.toJson()).toList(),
       'storyLink': instance.storyLink,
+      'statusCodeOfCommentProcess': instance.statusCodeOfCommentProcess,
       'selectedCollection': instance.selectedCollection,
-      'currentStoryInEachCollection': instance.currentStoryInEachCollection
-          .map((k, e) => MapEntry(k.toString(), e)),
+      'currentStoryInEachCollection': instance.currentStoryInEachCollection.map(
+        (k, e) => MapEntry(k.toString(), e),
+      ),
       'addProductIdToSaveRedeemTimerStatus':
           _$AddProductIdToSaveRedeemTimerStatusEnumMap[
               instance.addProductIdToSaveRedeemTimerStatus],
@@ -453,8 +528,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'notificationTypeForProductModel':
           instance.notificationTypeForProductModel?.toJson(),
       'getAndAddCountViewOfProductStatus':
-          instance.getAndAddCountViewOfProductStatus.map((k, e) =>
-              MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!)),
+          instance.getAndAddCountViewOfProductStatus.map(
+        (k, e) => MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!),
+      ),
       'popularSearchTerm':
           instance.popularSearchTerm?.map((e) => e.toJson()).toList(),
       'getUserNotificationModel': instance.getUserNotificationModel?.toJson(
@@ -487,10 +563,15 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.listOfErrorSendedToMobileErrorLog,
       'searchWithOutFilterOffset': instance.searchWithOutFilterOffset,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
-          (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
+        (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e))),
+      ),
       'addVariationToCartId': instance.addVariationToCartId,
-      'productStatus': instance.productStatus?.map((k, e) => MapEntry(
-          k, _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[e]!)),
+      'productStatus': instance.productStatus?.map(
+        (k, e) => MapEntry(
+          k,
+          _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[e]!,
+        ),
+      ),
       'cartCollection':
           instance.cartCollection?.map((e) => e.toJson()).toList(),
       'cartIdsHurryUPTimerStarted': instance.cartIdsHurryUPTimerStarted,
@@ -532,11 +613,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.finishLoadingAfterChangedVariationWhenQtyZero,
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel
-          .map((k, e) => MapEntry(
-              k,
-              e.toJson(
-                (value) => value.toJson(),
-              ))),
+          .map((k, e) => MapEntry(k, e.toJson((value) => value.toJson()))),
       'getCartShippingItemsModel': instance.getCartShippingItemsModel?.toJson(),
       'getOldCartModel': instance.getOldCartModel?.toJson(),
       'changeSizesForEveryProduct': _$ChangeSizesForEveryProductEnumMap[
@@ -548,6 +625,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'cachedProductWithoutRelatedProductsModel': instance
           .cachedProductWithoutRelatedProductsModel
           .map((k, e) => MapEntry(k, e.toJson())),
+      'likeForReplayComment': instance.likeForReplayComment,
       'authProductDetailsStatus':
           _$AuthProductDetailsStatusEnumMap[instance.authProductDetailsStatus]!,
       'authProductDetailsModel': instance.authProductDetailsModel?.toJson(),
@@ -725,6 +803,13 @@ const _$UpdateOrderCommentRatingStatusEnumMap = {
   UpdateOrderCommentRatingStatus.loading: 'loading',
   UpdateOrderCommentRatingStatus.success: 'success',
   UpdateOrderCommentRatingStatus.failure: 'failure',
+};
+
+const _$UpdateLikeCommentRatingStatusEnumMap = {
+  UpdateLikeCommentRatingStatus.init: 'init',
+  UpdateLikeCommentRatingStatus.loading: 'loading',
+  UpdateLikeCommentRatingStatus.success: 'success',
+  UpdateLikeCommentRatingStatus.failure: 'failure',
 };
 
 const _$DeleteOrderCommentRatingStatusEnumMap = {

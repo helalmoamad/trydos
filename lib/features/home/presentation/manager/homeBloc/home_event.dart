@@ -777,11 +777,13 @@ class UpdateCommentRatingEvent extends HomeEvent {
   final String? ownerType;
   final String? ownerId;
   final int? tapCommentIndex;
+  final String currentFilter;
   final bool fromBuyerComments;
   UpdateCommentRatingEvent(
       {this.productId,
       this.text,
       this.ownerType,
+      this.currentFilter = "all",
       this.fromBuyerComments = false,
       this.ownerId,
       this.rating,
@@ -796,6 +798,7 @@ class UpdateCommentRatingEvent extends HomeEvent {
         rating,
         fromBuyerComments,
         ownerType,
+        currentFilter,
         ownerId,
         orderDetailsId,
         variant,
@@ -808,16 +811,47 @@ class DeleteCommentRatingEvent extends HomeEvent {
   final String? commentId;
   final String? productId;
   final bool fromBuyerComments;
+  final String currentFilter;
   final int? tapCommentIndex;
   DeleteCommentRatingEvent({
     this.productId,
     this.tapCommentIndex,
+    this.currentFilter = "all",
     this.fromBuyerComments = false,
     this.commentId,
   });
   @override
   List<Object?> get props =>
-      [commentId, productId, tapCommentIndex, fromBuyerComments];
+      [commentId, productId, tapCommentIndex, fromBuyerComments, currentFilter];
+}
+
+class UpdateLikeCommentEvent extends HomeEvent {
+  final String? commentId;
+  final String? productId;
+  final bool fromBuyerComments;
+  final String currentFilter;
+  final bool fromReplayComments;
+  final bool toAddLike;
+  final int? tapCommentIndex;
+  UpdateLikeCommentEvent({
+    this.productId,
+    this.tapCommentIndex,
+    this.fromBuyerComments = false,
+    this.toAddLike = false,
+    this.currentFilter = "all",
+    this.fromReplayComments = false,
+    this.commentId,
+  });
+  @override
+  List<Object?> get props => [
+        commentId,
+        productId,
+        tapCommentIndex,
+        currentFilter,
+        fromBuyerComments,
+        fromReplayComments,
+        toAddLike
+      ];
 }
 
 class GetOrderRatingEvent extends HomeEvent {

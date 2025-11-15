@@ -100,14 +100,16 @@ class _CallsCardState extends ThemeState<CallsCard> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Container(
-        height: widget.index == 0 ? 0 : 0.4,
-        color: const Color(0xffC8C7CC),
-        margin: HWEdgeInsetsDirectional.only(start: 94),
-      ),
-      Slidable(
-        startActionPane: ActionPane(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: widget.index == 0 ? 0 : 0.4,
+          color: const Color(0xffC8C7CC),
+          margin: HWEdgeInsetsDirectional.only(start: 94),
+        ),
+        Slidable(
+          startActionPane: ActionPane(
             motion: const ScrollMotion(),
             extentRatio: 0.25,
             children: [
@@ -120,154 +122,188 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                        title: Text(LocaleKeys.delete_message.tr()),
-                        actions: [
-                          MaterialButton(
-                            onPressed: () {
-                              callsBloc.add(DeleteMessageEvent(
-                                  deleteFromId: _prefsRepository.myChatId!,
-                                  type: "call",
-                                  deleteFromBoth: 0,
-                                  messageId: widget.callRegId));
-                              callsBloc.add(DeleteMessageEvent(
-                                  deleteFromId: _prefsRepository.myChatId!,
-                                  type: "message",
-                                  deleteFromBoth: 0,
-                                  channelId: widget.chatId,
-                                  messageId: widget.callRegId));
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(LocaleKeys.only_me.tr()),
-                          ),
-                          SizedBox(
-                            width: 20.w,
-                          ),
-                          MaterialButton(
-                            onPressed: () {
-                              callsBloc.add(DeleteMessageEvent(
-                                  type: "call",
-                                  deleteFromBoth: 1,
-                                  messageId: widget.callRegId,
-                                  deleteFromId: _prefsRepository.myChatId!));
-                              callsBloc.add(DeleteMessageEvent(
-                                  deleteFromId: _prefsRepository.myChatId!,
-                                  type: "message",
-                                  deleteFromBoth: 1,
-                                  channelId: widget.chatId,
-                                  messageId: widget.callRegId));
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(LocaleKeys.everyone.tr()),
-                          )
-                        ]),
+                      title: Text(LocaleKeys.delete_message.tr()),
+                      actions: [
+                        MaterialButton(
+                          onPressed: () {
+                            callsBloc.add(
+                              DeleteMessageEvent(
+                                deleteFromId: _prefsRepository.myChatId!,
+                                type: "call",
+                                deleteFromBoth: 0,
+                                messageId: widget.callRegId,
+                              ),
+                            );
+                            callsBloc.add(
+                              DeleteMessageEvent(
+                                deleteFromId: _prefsRepository.myChatId!,
+                                type: "message",
+                                deleteFromBoth: 0,
+                                channelId: widget.chatId,
+                                messageId: widget.callRegId,
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(LocaleKeys.only_me.tr()),
+                        ),
+                        SizedBox(width: 20.w),
+                        MaterialButton(
+                          onPressed: () {
+                            callsBloc.add(
+                              DeleteMessageEvent(
+                                type: "call",
+                                deleteFromBoth: 1,
+                                messageId: widget.callRegId,
+                                deleteFromId: _prefsRepository.myChatId!,
+                              ),
+                            );
+                            callsBloc.add(
+                              DeleteMessageEvent(
+                                deleteFromId: _prefsRepository.myChatId!,
+                                type: "message",
+                                deleteFromBoth: 1,
+                                channelId: widget.chatId,
+                                messageId: widget.callRegId,
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(LocaleKeys.everyone.tr()),
+                        ),
+                      ],
+                    ),
                   );
                 },
-              )
-            ]),
-        child: InkWell(
-          onTap: () async {
-            if (widget.isVoice) {
-              List<Map<String, dynamic>> info =
-                  callerInfo(channelId: widget.chatId);
-              PermissionStatus microphone =
-                  await Permission.microphone.request();
-              var status2 = await Permission.mediaLibrary.request();
-              if (microphone.isGranted && status2.isGranted) {
-                //todo we have the receiver id so the chat dose not exist
-                if (info[0].containsKey('currentReceiver')) {
-                  debugPrint('currentReceiver${info[0]['currentReceiver']}');
+              ),
+            ],
+          ),
+          child: InkWell(
+            onTap: () async {
+              if (widget.isVoice) {
+                List<Map<String, dynamic>> info = callerInfo(
+                  channelId: widget.chatId,
+                );
+                PermissionStatus microphone = await Permission.microphone
+                    .request();
+                var status2 = await Permission.mediaLibrary.request();
+                if (microphone.isGranted && status2.isGranted) {
+                  //todo we have the receiver id so the chat dose not exist
+                  if (info[0].containsKey('currentReceiver')) {
+                    debugPrint('currentReceiver${info[0]['currentReceiver']}');
 
-                  GetIt.I<CallsBloc>().add(MakeCallEvent(
-                      receiverUserId: info[0]['currentReceiver'].toString(),
-                      isVideo: false,
-                      receiverCallName: widget.fullReceiverName,
-                      payload: info[1]));
+                    GetIt.I<CallsBloc>().add(
+                      MakeCallEvent(
+                        receiverUserId: info[0]['currentReceiver'].toString(),
+                        isVideo: false,
+                        receiverCallName: widget.fullReceiverName,
+                        payload: info[1],
+                      ),
+                    );
 
-                  // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                  //     receiverUserId: info[0]['currentReceiver'],
-                  //     payload: info[1]));
-                  //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                    // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                    //     receiverUserId: info[0]['currentReceiver'],
+                    //     payload: info[1]));
+                    //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                  }
+                  //todo else the chat already exist so we don't have the receiver id just the chat id
+                  else {
+                    debugPrint('widget.chatId${widget.chatId}');
+                    debugPrint('info[0]${info[0]}');
+
+                    GetIt.I<CallsBloc>().add(
+                      MakeCallEvent(
+                        isVideo: false,
+                        chatId: widget.chatId,
+                        receiverCallName: widget.fullReceiverName,
+                        payload: info[0],
+                      ),
+                    );
+                    //todo we have the id of the chat so we can move to the call immediately
+                  }
+                } else if (microphone.isDenied || status2.isDenied) {
+                  showWarningMessage(
+                    context,
+                    LocaleKeys.permission_denied.tr(),
+                  );
+                  openAppSettings();
                 }
-                //todo else the chat already exist so we don't have the receiver id just the chat id
-                else {
-                  debugPrint('widget.chatId${widget.chatId}');
-                  debugPrint('info[0]${info[0]}');
+                ;
+              } else {
+                List<Map<String, dynamic>> info = callerInfo(
+                  channelId: widget.chatId,
+                );
+                PermissionStatus microphone = await Permission.microphone
+                    .request();
+                var status2 = await Permission.mediaLibrary.request();
+                if (microphone.isGranted && status2.isGranted) {
+                  //todo we have the receiver id so the chat dose not exist
+                  if (info[0].containsKey('currentReceiver')) {
+                    debugPrint('currentReceiver${info[0]['currentReceiver']}');
 
-                  GetIt.I<CallsBloc>().add(MakeCallEvent(
-                      isVideo: false,
-                      chatId: widget.chatId,
-                      receiverCallName: widget.fullReceiverName,
-                      payload: info[0]));
-                  //todo we have the id of the chat so we can move to the call immediately
+                    GetIt.I<CallsBloc>().add(
+                      MakeCallEvent(
+                        receiverUserId: info[0]['currentReceiver'].toString(),
+                        isVideo: true,
+                        receiverCallName: widget.fullReceiverName,
+                        payload: info[1],
+                      ),
+                    );
+
+                    // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                    //     receiverUserId: info[0]['currentReceiver'],
+                    //     payload: info[1]));
+                    //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                  }
+                  //todo else the chat already exist so we don't have the receiver id just the chat id
+                  else {
+                    debugPrint('widget.chatId${widget.chatId}');
+                    debugPrint('info[0]${info[0]}');
+
+                    GetIt.I<CallsBloc>().add(
+                      MakeCallEvent(
+                        isVideo: true,
+                        chatId: widget.chatId,
+                        receiverCallName: widget.fullReceiverName,
+                        payload: info[0],
+                      ),
+                    );
+                    //todo we have the id of the chat so we can move to the call immediately
+                  }
+                } else if (microphone.isDenied || status2.isDenied) {
+                  showWarningMessage(
+                    context,
+                    LocaleKeys.permission_denied.tr(),
+                  );
+                  openAppSettings();
                 }
-              } else if (microphone.isDenied || status2.isDenied) {
-                showWarningMessage(context, LocaleKeys.permission_denied.tr());
-                openAppSettings();
               }
-              ;
-            } else {
-              List<Map<String, dynamic>> info =
-                  callerInfo(channelId: widget.chatId);
-              PermissionStatus microphone =
-                  await Permission.microphone.request();
-              var status2 = await Permission.mediaLibrary.request();
-              if (microphone.isGranted && status2.isGranted) {
-                //todo we have the receiver id so the chat dose not exist
-                if (info[0].containsKey('currentReceiver')) {
-                  debugPrint('currentReceiver${info[0]['currentReceiver']}');
-
-                  GetIt.I<CallsBloc>().add(MakeCallEvent(
-                      receiverUserId: info[0]['currentReceiver'].toString(),
-                      isVideo: true,
-                      receiverCallName: widget.fullReceiverName,
-                      payload: info[1]));
-
-                  // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                  //     receiverUserId: info[0]['currentReceiver'],
-                  //     payload: info[1]));
-                  //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                }
-                //todo else the chat already exist so we don't have the receiver id just the chat id
-                else {
-                  debugPrint('widget.chatId${widget.chatId}');
-                  debugPrint('info[0]${info[0]}');
-
-                  GetIt.I<CallsBloc>().add(MakeCallEvent(
-                      isVideo: true,
-                      chatId: widget.chatId,
-                      receiverCallName: widget.fullReceiverName,
-                      payload: info[0]));
-                  //todo we have the id of the chat so we can move to the call immediately
-                }
-              } else if (microphone.isDenied || status2.isDenied) {
-                showWarningMessage(context, LocaleKeys.permission_denied.tr());
-                openAppSettings();
-              }
-            }
-          },
-          child: Container(
+            },
+            child: Container(
               height: 75,
               width: 1.sw,
               padding: HWEdgeInsets.only(left: 15.w, right: 30.w, top: 8),
               color: widget.isMissing
                   ? const Color(0xFFFFFCFC)
                   : colorScheme.white,
-              child: Row(children: [
-                Container(
-                  height: 55,
-                  width: 55.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    border: Border.all(
+              child: Row(
+                children: [
+                  Container(
+                    height: 55,
+                    width: 55.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(
                         color: widget.isMissing
                             ? const Color(0xffff5f61)
                             : widget.isIncome
-                                ? const Color(0xff388CFF)
-                                : const Color(0xffFFC05C)),
-                  ),
-                  child: widget.photoPath != ""
-                      ?
-                      /* decoration: BoxDecoration(
+                            ? const Color(0xff388CFF)
+                            : const Color(0xffFFC05C),
+                      ),
+                    ),
+                    child: widget.photoPath != ""
+                        ?
+                          /* decoration: BoxDecoration(
                             border: Border.all(
                                 width: 1.0, color: const Color(0xff388cff)),
                             boxShadow: const [
@@ -278,34 +314,39 @@ class _CallsCardState extends ThemeState<CallsCard> {
                               ),
                             ],
                           ),*/
-                      MyCachedNetworkImage(
-                          imageUrl: (widget.photoPath
-                                      .toString()
-                                      .contains("cloudinary")
-                                  ? ""
-                                  : "${dotenv.env['Images_Url']}") +
-                              widget.photoPath,
-                          imageFit: BoxFit.cover,
-                          progressIndicatorBuilderWidget: TrydosLoader(),
-                          height: 55,
-                          width: 55.w,
-                        )
-                      : NoImageWidget(
-                          height: 40,
-                          width: 40.w,
-                          textStyle: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xff6638FF),
-                              letterSpacing: 0.18,
-                              height: 1.33),
-                          name: HelperFunctions.getTheFirstTwoLettersOfName(
-                              widget.fullReceiverName)),
-                ),
-                24.horizontalSpace,
-                Flexible(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
+                          MyCachedNetworkImage(
+                            imageUrl:
+                                (widget.photoPath.toString().contains(
+                                      "cloudinary",
+                                    )
+                                    ? ""
+                                    : "${dotenv.env['Images_Url']}") +
+                                widget.photoPath,
+                            imageFit: BoxFit.cover,
+                            progressIndicatorBuilderWidget: TrydosLoader(),
+                            height: 55,
+                            width: 55.w,
+                          )
+                        : NoImageWidget(
+                            height: 40,
+                            width: 40.w,
+                            textStyle: context.textTheme.bodyMedium?.bq
+                                .copyWith(
+                                  color: const Color(0xff6638FF),
+                                  letterSpacing: 0.18,
+                                  height: 1.33,
+                                ),
+                            name: HelperFunctions.getTheFirstTwoLettersOfName(
+                              widget.fullReceiverName,
+                            ),
+                          ),
+                  ),
+                  24.horizontalSpace,
+                  Flexible(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -315,10 +356,11 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                   widget.fullReceiverName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: textTheme.bodyMedium?.rr
-                                      .copyWith(color: const Color(0xff505050)),
+                                  style: textTheme.bodyMedium?.rq.copyWith(
+                                    color: const Color(0xff505050),
+                                  ),
                                 ),
-                                30.horizontalSpace
+                                30.horizontalSpace,
                               ],
                             ),
                             10.verticalSpace,
@@ -328,8 +370,8 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                   widget.isMissing
                                       ? AppAssets.callMissingSvg
                                       : widget.isIncome
-                                          ? AppAssets.callIncomeSvg
-                                          : AppAssets.callOutgoingSvg,
+                                      ? AppAssets.callIncomeSvg
+                                      : AppAssets.callOutgoingSvg,
                                   height: 15.sp,
                                   width: 15.sp,
                                 ),
@@ -338,92 +380,105 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                   widget.isMissing
                                       ? LocaleKeys.missed_call.tr()
                                       : widget.isIncome
-                                          ? LocaleKeys.income.tr()
-                                          : LocaleKeys.Outcome.tr(),
+                                      ? LocaleKeys.income.tr()
+                                      : LocaleKeys.Outcome.tr(),
                                   maxLines: 1,
-                                  style: textTheme.titleLarge?.lr.copyWith(
-                                      color: Color(widget.isMissing
+                                  style: textTheme.titleLarge?.lq.copyWith(
+                                    color: Color(
+                                      widget.isMissing
                                           ? 0xffFF5F61
-                                          : 0xff8E8D92)),
+                                          : 0xff8E8D92,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                          ]),
-                      const Spacer(),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                HelperFunctions.replaceArabicNumber(
+                          ],
+                        ),
+                        const Spacer(),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  HelperFunctions.replaceArabicNumber(
                                     HelperFunctions.getDatesInFormat(
-                                            widget.createAt!)
-                                        .toString()),
-                                maxLines: 1,
-                                style: textTheme.bodySmall?.rr
-                                    .copyWith(color: const Color(0xff8E8D92)),
-                              ),
-                              Text(
-                                " ، ",
-                                maxLines: 1,
-                                style: textTheme.bodySmall?.rr.copyWith(
+                                      widget.createAt!,
+                                    ).toString(),
+                                  ),
+                                  maxLines: 1,
+                                  style: textTheme.bodySmall?.rq.copyWith(
                                     color: const Color(0xff8E8D92),
-                                    fontSize: 20),
-                              ),
-                              Text(
-                                HelperFunctions.replaceArabicNumber(
-                                  !widget.createAt!.isUtc
-                                      ? HelperFunctions.gettimesInFormat(
-                                              widget.createAt!)
-                                          .toString()
-                                      : HelperFunctions.gettimesInFormat(
-                                              widget.createAt!)
-                                          .toString(),
+                                  ),
                                 ),
-                                maxLines: 2,
-                                style: textTheme.bodySmall?.rr
-                                    .copyWith(color: const Color(0xff8E8D92)),
-                              ),
-                            ],
-                          ),
-                          widget.duration > 0
-                              ? Row(
-                                  children: [
-                                    const Text(
-                                      "المدة : ",
-                                      style:
-                                          TextStyle(color: Color(0xff8E8D92)),
-                                    ),
-                                    Text(
-                                      fromSecond(widget.duration),
-                                      maxLines: 1,
-                                      style: textTheme.bodySmall?.rr.copyWith(
-                                          color: const Color(0xff8E8D92)),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
-                        ],
-                      ),
-                    ],
+                                Text(
+                                  " ، ",
+                                  maxLines: 1,
+                                  style: textTheme.bodySmall?.rq.copyWith(
+                                    color: const Color(0xff8E8D92),
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  HelperFunctions.replaceArabicNumber(
+                                    !widget.createAt!.isUtc
+                                        ? HelperFunctions.gettimesInFormat(
+                                            widget.createAt!,
+                                          ).toString()
+                                        : HelperFunctions.gettimesInFormat(
+                                            widget.createAt!,
+                                          ).toString(),
+                                  ),
+                                  maxLines: 2,
+                                  style: textTheme.bodySmall?.rq.copyWith(
+                                    color: const Color(0xff8E8D92),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            widget.duration > 0
+                                ? Row(
+                                    children: [
+                                      const Text(
+                                        "المدة : ",
+                                        style: TextStyle(
+                                          color: Color(0xff8E8D92),
+                                        ),
+                                      ),
+                                      Text(
+                                        fromSecond(widget.duration),
+                                        maxLines: 1,
+                                        style: textTheme.bodySmall?.rq.copyWith(
+                                          color: const Color(0xff8E8D92),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox.shrink(),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                )
-              ])),
+                ],
+              ),
+            ),
+          ),
         ),
-      )
-    ]);
+      ],
+    );
   }
 }
 
 class SlidableActionWidgete extends StatelessWidget {
-  const SlidableActionWidgete(
-      {Key? key,
-      required this.backgroundColor,
-      required this.foregroundColor,
-      required this.iconUrl,
-      required this.text})
-      : super(key: key);
+  const SlidableActionWidgete({
+    Key? key,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.iconUrl,
+    required this.text,
+  }) : super(key: key);
   final Color backgroundColor;
   final Color foregroundColor;
   final String iconUrl;
@@ -444,16 +499,13 @@ class SlidableActionWidgete extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(
-              iconUrl,
-              width: 25.h,
-              height: 25.h,
-            ),
+            SvgPicture.asset(iconUrl, width: 25.h, height: 25.h),
             8.verticalSpace,
             Text(
               text,
-              style: context.textTheme.titleMedium?.rr
-                  .copyWith(color: foregroundColor),
+              style: context.textTheme.titleMedium?.rq.copyWith(
+                color: foregroundColor,
+              ),
             ),
           ],
         ),

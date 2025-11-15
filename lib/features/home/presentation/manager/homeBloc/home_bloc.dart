@@ -68,6 +68,7 @@ import 'package:trydos/features/home/domain/use_cases/update_comment_order_ratin
 import 'package:trydos/features/home/domain/use_cases/update_email_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_firebase_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_like_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_like_share_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_notification_frequency_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_profile_usecase.dart';
@@ -162,7 +163,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.sendErrorToMobileErrorLogUseCase,
     this.getProductsWithoutFiltersUseCase,
     //  this.getColorsAndSizesForSearchUseCase,
-
+    this.updateLikeCommentUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.checkAvailabilityProductCartUsecase,
     this.getCartOverviewUseCase,
@@ -170,9 +171,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   ) : super(const HomeState()) {
     on<HomeEvent>((event, emit) {});
 
-    on<GetAndAddCountViewOfProductEvent>(
-      _onGetAndAddCountViewOfProductEvent,
-    );
+    on<GetAndAddCountViewOfProductEvent>(_onGetAndAddCountViewOfProductEvent);
 
     on<IsChangedVariationWhenQtyZeroEvent>(
       _onIsChangedvariationWhenQtyZeroEvent,
@@ -182,28 +181,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onUpdateLikeSocialSharedProductsEvent,
     );
 
-    on<SaveUserInfoFromAuthEvent>(
-      _onSaveUserInfoEvent,
-    );
-    on<GetOrderRatingEvent>(
-      _onGetOrderRatingEvent,
-      transformer: restartable(),
-    );
-    on<IncreaseCountShareOfProductEvent>(
-      _onIncreaseCountShareOfProductEvent,
-    );
+    on<SaveUserInfoFromAuthEvent>(_onSaveUserInfoEvent);
+    on<GetOrderRatingEvent>(_onGetOrderRatingEvent, transformer: restartable());
+    on<IncreaseCountShareOfProductEvent>(_onIncreaseCountShareOfProductEvent);
 
-    on<UpdateProfileEvent>(
-      _onUpdateProfileEvent,
-    );
+    on<UpdateProfileEvent>(_onUpdateProfileEvent);
 
-    on<CreateCommentRatingEvent>(
-      _onCreateCommentRatingEvent,
-    );
+    on<CreateCommentRatingEvent>(_onCreateCommentRatingEvent);
 
-    on<GetCoutryBoundaryByIsoEvent>(
-      _onGetCoutryBoundaryByIsoEvent,
-    );
+    on<GetCoutryBoundaryByIsoEvent>(_onGetCoutryBoundaryByIsoEvent);
     on<AddProductIdToSaveRedeemTimerEvent>(
       _onAddProductIdToSaveRedeemTimerEvent,
     );
@@ -216,19 +202,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<GetNotificationTypeProductEvent>(_onGetNotificationTypeProductEvent);
 
-    on<ClearAllAppCashEvent>(
-      _onClearAllAppCashEvent,
-    );
+    on<ClearAllAppCashEvent>(_onClearAllAppCashEvent);
+    on<UpdateLikeCommentEvent>(_onUpdateLikeCommentEvent);
     on<FetchAuthProductDetailsEvent>(_onFetchAuthProductDetailsEvent);
 
-    on<GetCurrencyForCountryEvent>(_onGetCurrencyForCountryEvent,
-        transformer: restartable());
-    on<AddCurrentColorSizeEvent>(
-      _onAddCurrentSizeColorEvent,
+    on<GetCurrencyForCountryEvent>(
+      _onGetCurrencyForCountryEvent,
+      transformer: restartable(),
     );
-    on<AddCurrentSelectedColorEvent>(
-      _onAddCurrentSelectedColorEvent,
-    );
+    on<AddCurrentColorSizeEvent>(_onAddCurrentSizeColorEvent);
+    on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent);
 
     on<ChangeCountryLanguageForNotificationEvent>(
       _onChangeCountryLanguageForNotificationEvent,
@@ -243,162 +226,118 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetFirebaseSettingForNotificationEvent,
     );
 
-    on<UpdateListOfItemForAddToCartEvent>(
-      _onUpdateListOfItemForAddToCartEvent,
-    );
+    on<UpdateListOfItemForAddToCartEvent>(_onUpdateListOfItemForAddToCartEvent);
     // on<GetProductsListInCartEvent>(_onGetProductsListInCartEventEvent,
     //     transformer: restartable());
-    on<SendErrorToMobileErrorLogEvent>(
-      _onSendErrorToMobileErrorLogEvent,
-    );
+    on<SendErrorToMobileErrorLogEvent>(_onSendErrorToMobileErrorLogEvent);
 
     on<RequestForNotificationWhenProductBecameAvailableEvent>(
       _onRequestForNotificationWhenProductBecameAvailableEvent,
     );
-    on<StoreFcmTokenOfMarketEvent>(_onStoreFcmTokenOfMarketEvent,
-        transformer: restartable());
-    on<UpdateEmailNotificationEvent>(
-      _onUpdateEmailNotificationEvent,
+    on<StoreFcmTokenOfMarketEvent>(
+      _onStoreFcmTokenOfMarketEvent,
+      transformer: restartable(),
     );
-    on<UpdateFirebaseNotificationEvent>(
-      _onUpdateFirebaseNotificationEvent,
-    );
-    on<UpdateNotificationFrequencyEvent>(
-      _onUpdateNotificationFrequencyEvent,
-    );
-    on<UpdateWhatsappNotificationEvent>(
-      _onUpdateWhatsappNotificationEvent,
-    );
-    on<AddQuantityForCartEvent>(
-      _onAddCurrentQuantityForCartEvent,
+    on<UpdateEmailNotificationEvent>(_onUpdateEmailNotificationEvent);
+    on<UpdateFirebaseNotificationEvent>(_onUpdateFirebaseNotificationEvent);
+    on<UpdateNotificationFrequencyEvent>(_onUpdateNotificationFrequencyEvent);
+    on<UpdateWhatsappNotificationEvent>(_onUpdateWhatsappNotificationEvent);
+    on<AddQuantityForCartEvent>(_onAddCurrentQuantityForCartEvent);
+
+    on<CheckWithGetCartEvent>(_onCheckWithGetCartEvent);
+
+    on<AddOrRemoveLikeForProductEvent>(
+      _onAddOrRemoveLikeForProductEvent,
+      transformer: throttleDroppable(const Duration(seconds: 3)),
     );
 
-    on<CheckWithGetCartEvent>(
-      _onCheckWithGetCartEvent,
-    );
-
-    on<AddOrRemoveLikeForProductEvent>(_onAddOrRemoveLikeForProductEvent,
-        transformer: throttleDroppable(const Duration(seconds: 3)));
-
-    on<AddSearchTextToHistoryEvent>(
-      _onAddSearchTextToHistoryEvent,
-    );
+    on<AddSearchTextToHistoryEvent>(_onAddSearchTextToHistoryEvent);
 
     on<GetCartItemEvent>(_onGetCartItemEvent, transformer: restartable());
 
-    on<GetAllowedCountriesEvent>(
-      _onGetAllowedCountriesEvent,
-    );
+    on<GetAllowedCountriesEvent>(_onGetAllowedCountriesEvent);
 
-    on<GetStartingSettingsEvent>(
-      _onGetStartingSettingsEvent,
-    );
+    on<GetStartingSettingsEvent>(_onGetStartingSettingsEvent);
 
-    on<AddItemToCartEvent>(
-      _onAddItemToCartEvent,
-    );
+    on<AddItemToCartEvent>(_onAddItemToCartEvent);
 
     on<ChangeCurrentIndexForUpdatCartEvent>(
       _onChangeCurrentIndexForUpdatCartEvent,
     );
 
-    on<AddMultiItemsToCartEvent>(
-      _onAddMultiItemsToCartEvent,
-    );
-    on<AddTimerStartedToHurryUpEvent>(
-      _onAddTimerStartedToHurryUpEvent,
-    );
+    on<AddMultiItemsToCartEvent>(_onAddMultiItemsToCartEvent);
+    on<AddTimerStartedToHurryUpEvent>(_onAddTimerStartedToHurryUpEvent);
 
-    on<UpdateItemInCartEvent>(
-      _onUpdateItemInCartEvent,
-    );
+    on<UpdateItemInCartEvent>(_onUpdateItemInCartEvent);
     /*on<GetCommentsFromAnalyticsEvent>(
       _onGetCommentsFromAnalyticsEvent,
     );*/
-    on<RemoveSearchTextfromHistoryEvent>(
-      _onRemoveSearchTextToHistoryEvent,
-    );
-    on<HideItemInOldCartEvent>(
-      _onHideItemInOldCartEvent,
-    );
+    on<RemoveSearchTextfromHistoryEvent>(_onRemoveSearchTextToHistoryEvent);
+    on<HideItemInOldCartEvent>(_onHideItemInOldCartEvent);
 
     on<GetStoryForProductEvent>(
       _onGetStoryEvent,
-      transformer: throttleDroppable(
-        const Duration(seconds: 5),
-      ),
+      transformer: throttleDroppable(const Duration(seconds: 5)),
     );
 
     // on<AddProductItemForCartEvent>(
     //   _onAddProductItemForCartEvent,
     // );
 
-    on<AddSizesForColorsEvent>(
-      _onAddSizesForColorsEvent,
-    );
-    on<AddCurrentHeightWhenAddToBagEvent>(
-      _onAddCurrentHeightWhenAddToBagEvent,
-    );
+    on<AddSizesForColorsEvent>(_onAddSizesForColorsEvent);
+    on<AddCurrentHeightWhenAddToBagEvent>(_onAddCurrentHeightWhenAddToBagEvent);
     on<GetOldCartItemEvent>(_onGetOldCartItemEvent, transformer: restartable());
 
-    on<RemoveItemFormCartEvent>(
-      _onRemoveItemToCartEvent,
-    );
+    on<RemoveItemFormCartEvent>(_onRemoveItemToCartEvent);
 
     /*on<AddCommentEvent>(
       _onAddCommentEvent,
     );*/
-    on<GetPopularSearchItemEvent>(
-      _onGetPopularSearchItemEvent,
-    );
+    on<GetPopularSearchItemEvent>(_onGetPopularSearchItemEvent);
 
     on<GetProductDatailsWithoutRelatedProductsEvent>(
-        _onGetProductDatailsWithoutRelatedProductsEvent,
-        transformer: restartable());
-
-    on<GetFullProductDetailsEvent>(
-      _onGetFullProductDetailsEvent,
+      _onGetProductDatailsWithoutRelatedProductsEvent,
+      transformer: restartable(),
     );
 
-    on<ConvertItemFromCartToOldCartEvent>(
-      _onConvertItemFromCartToOldCartEvent,
-    );
+    on<GetFullProductDetailsEvent>(_onGetFullProductDetailsEvent);
+
+    on<ConvertItemFromCartToOldCartEvent>(_onConvertItemFromCartToOldCartEvent);
     /*on<GetCommentForProductEvent>(
       _onGetCommentForProductEvent,
     );*/
     /* on<GeColorsAndSizesForSearchEvent>(
       _onGeColorsAndSizesForSearchEvent,
     );*/
-    on<LoadFailureEvent>(((event, emit) => emit(state.copyWith(
-            storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == event.collectionId) {
-            return e.copyWith(
+    on<LoadFailureEvent>(
+      ((event, emit) => emit(
+        state.copyWith(
+          storiesCollections: state.storiesCollections.map((e) {
+            if (e.id == event.collectionId) {
+              return e.copyWith(
                 selectedStoriesStatusForCollection:
-                    SelectedStoriesStatus.failure);
-          }
-          return e;
-        }).toList()))));
+                    SelectedStoriesStatus.failure,
+              );
+            }
+            return e;
+          }).toList(),
+        ),
+      )),
+    );
     on<StorySelectedEvent>(_onStorySelectedEvent);
     on<RemoveItemsFromCartAfterOrderSuccessEvent>(
       _onRemoveItemsFromCartAfterOrderSuccessEvent,
     );
-    on<CheckAvailabilityProductCartEvent>(
-      _onCheckAvailabilityProductCartEvent,
-    );
+    on<CheckAvailabilityProductCartEvent>(_onCheckAvailabilityProductCartEvent);
     on<GetCartOverviewEvent>(
       _onGetCartOverviewEvent,
       transformer: restartable(),
     );
 
-    on<GetUserNotificationEvent>(
-      _onGetUserNotificationEvent,
-    );
+    on<GetUserNotificationEvent>(_onGetUserNotificationEvent);
     on<DeleteCommentRatingEvent>(_onDeleteCommentRatingEvent);
     on<UpdateCommentRatingEvent>(_onUpdateCommentRatingEvent);
-    on<GetFqaCommentsEvent>(
-      _onGetFqaCommentsEvent,
-      transformer: restartable(),
-    );
+    on<GetFqaCommentsEvent>(_onGetFqaCommentsEvent, transformer: restartable());
     on<GetBuyersCommentsEvent>(
       _onGetBuyersCommentsEvent,
       transformer: restartable(),
@@ -414,6 +353,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final UpdateUserPhotoUseCase uploadFileCloudinaryUseCase;
   final DeleteOrderCommentRatingUseCase deleteOrderCommentRatingUseCase;
   final GetAuthProductDetailsUseCase getAuthProductDetailsUseCase;
+  final UpdateLikeCommentUseCase updateLikeCommentUseCase;
   final GetCartItemUseCase getCartItemUseCase;
   final GetFqaCommentsUsecase getFqaCommentsUsecase;
   final GetBuyerCommentsUsecase getBuyerCommentsUsecase;
@@ -432,16 +372,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   //final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final UpdateLikeSocialSharedProductsUsecase
-      updateLikeSocialSharedProductsUsecase;
+  updateLikeSocialSharedProductsUsecase;
   final UpdateProfileUseCase updateProfileUseCase;
   // final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
-      getProductDetailWithoutRelatedProductsUseCase;
+  getProductDetailWithoutRelatedProductsUseCase;
 
   final GetPopularSearchItemUseCase getPopularSearchItemUseCase;
   final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
   final RequestForNotificationWhenProductBecameAvailableUseCase
-      requestForNotificationWhenProductBecameAvailableUseCase;
+  requestForNotificationWhenProductBecameAvailableUseCase;
   final AddLikeToProductUsecase addLikeToProductUsecase;
   final DeleteLikeOfProductUsecase deleteLikeOfProductUsecase;
 
@@ -461,11 +401,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final CheckAvailabilityProductCartUsecase checkAvailabilityProductCartUsecase;
 
   final SubscribeTopicFornotificationUseCase
-      subscribeTopicFornotificationUseCase;
+  subscribeTopicFornotificationUseCase;
   final UnSubscribeTopicFornotificationUseCase
-      unSubscribeTopicFornotificationUseCase;
+  unSubscribeTopicFornotificationUseCase;
   final ChangeCountryLanguageFornotificationUseCase
-      changeCountryLanguageFornotificationUseCase;
+  changeCountryLanguageFornotificationUseCase;
   final GetMyFirebaseSettingsUseCase getMyFirebaseSettingsUseCase;
 
   final GetUserNotificationUseCase getUserNotificationUseCase;
@@ -473,177 +413,258 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final Smartlook smartLook = Smartlook.instance;
 
   FutureOr<void> _onGetStartingSettingsEvent(
-      GetStartingSettingsEvent event, Emitter<HomeState> emit) async {
+    GetStartingSettingsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     //  if (apisMustNotToRequest.contains('GetStartingSettingsEvent')) return;
-    emit(state.copyWith(
-        getStartingSettingsStatus: GetStartingSettingsStatus.loading));
+    emit(
+      state.copyWith(
+        getStartingSettingsStatus: GetStartingSettingsStatus.loading,
+      ),
+    );
     final response = await getStartingSettingsUseCase(NoParams());
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetStartingSettingsEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetStartingSettingsEvent');
-        add(const GetStartingSettingsEvent());
-      }
-      emit(state.copyWith(
-          getStartingSettingsStatus: GetStartingSettingsStatus.failure));
-    }, (r) {
-      apisMustNotToRequest.add('GetStartingSettingsEvent');
-      ErrorManager.resetRetry('GetStartingSettingsEvent');
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GetStartingSettingsEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('GetStartingSettingsEvent');
+          add(const GetStartingSettingsEvent());
+        }
+        emit(
+          state.copyWith(
+            getStartingSettingsStatus: GetStartingSettingsStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        apisMustNotToRequest.add('GetStartingSettingsEvent');
+        ErrorManager.resetRetry('GetStartingSettingsEvent');
 
-      emit(state.copyWith(
-          startingSetting: r.data!.startingSetting,
-          getStartingSettingsStatus: GetStartingSettingsStatus.success));
-    });
+        emit(
+          state.copyWith(
+            startingSetting: r.data!.startingSetting,
+            getStartingSettingsStatus: GetStartingSettingsStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateLikeSocialSharedProductsEvent(
-      UpdateLikeSocialSharedProductsEvent event,
-      Emitter<HomeState> emit) async {
+    UpdateLikeSocialSharedProductsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     //  if (apisMustNotToRequest.contains('GetStartingSettingsEvent')) return;
 
     final response = await updateLikeSocialSharedProductsUsecase(
-        UpdateLikeSocialSharedProductParams(productId: event.productId));
+      UpdateLikeSocialSharedProductParams(productId: event.productId),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'UpdateLikeSocialSharedProductsEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('UpdateLikeSocialSharedProductsEvent');
-        add(UpdateLikeSocialSharedProductsEvent(productId: event.productId));
-      }
-    }, (r) {
-      apisMustNotToRequest.add('UpdateLikeSocialSharedProductsEvent');
-      ErrorManager.resetRetry('UpdateLikeSocialSharedProductsEvent');
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UpdateLikeSocialSharedProductsEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('UpdateLikeSocialSharedProductsEvent');
+          add(UpdateLikeSocialSharedProductsEvent(productId: event.productId));
+        }
+      },
+      (r) {
+        apisMustNotToRequest.add('UpdateLikeSocialSharedProductsEvent');
+        ErrorManager.resetRetry('UpdateLikeSocialSharedProductsEvent');
+      },
+    );
   }
 
   FutureOr<void> _onGetCoutryBoundaryByIsoEvent(
-      GetCoutryBoundaryByIsoEvent event, Emitter<HomeState> emit) async {
+    GetCoutryBoundaryByIsoEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     //  if (apisMustNotToRequest.contains('GetStartingSettingsEvent')) return;
-    emit(state.copyWith(
-        getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.loading));
+    emit(
+      state.copyWith(
+        getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.loading,
+      ),
+    );
     final response = await countryBoundaryByIsoUseCase(NoParams());
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'GetCoutryBoundaryByIsoEvent', l.statusCode)) {
-        add(const GetCoutryBoundaryByIsoEvent());
-        ErrorManager.incrementRetry('GetCoutryBoundaryByIsoEvent');
-      }
-      emit(state.copyWith(
-          getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('GetCoutryBoundaryByIsoEvent');
-      List<geod.LatLng>? countryCoordinatesBorders = [];
-      r.country?.boundary?.coordinates?.forEach((element) =>
-          countryCoordinatesBorders
-              .add(geod.LatLng(element.lat ?? 0, element.lon ?? 0)));
-      emit(state.copyWith(
-          countryCoordinatesBorders: countryCoordinatesBorders,
-          getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.success));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GetCoutryBoundaryByIsoEvent',
+          l.statusCode,
+        )) {
+          add(const GetCoutryBoundaryByIsoEvent());
+          ErrorManager.incrementRetry('GetCoutryBoundaryByIsoEvent');
+        }
+        emit(
+          state.copyWith(
+            getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetCoutryBoundaryByIsoEvent');
+        List<geod.LatLng>? countryCoordinatesBorders = [];
+        r.country?.boundary?.coordinates?.forEach(
+          (element) => countryCoordinatesBorders.add(
+            geod.LatLng(element.lat ?? 0, element.lon ?? 0),
+          ),
+        );
+        emit(
+          state.copyWith(
+            countryCoordinatesBorders: countryCoordinatesBorders,
+            getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   _onStorySelectedEvent(
-      StorySelectedEvent event, Emitter<HomeState> emit) async {
+    StorySelectedEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     //todo make the story seen when he press to show it
     debugPrint(
-        'currentStoryInEachCollection ${event.selectedStoryIndexInCollection}');
+      'currentStoryInEachCollection ${event.selectedStoryIndexInCollection}',
+    );
     debugPrint('selected ${event.collectionIndex}');
     debugPrint(
-        'state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}');
+      'state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}',
+    );
 
-    Map<int, int?> currentStoryInEachCollection =
-        Map.of(state.currentStoryInEachCollection);
+    Map<int, int?> currentStoryInEachCollection = Map.of(
+      state.currentStoryInEachCollection,
+    );
     currentStoryInEachCollection[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
-            ? currentStoryInEachCollection[event.collectionIndex]
-            : event.selectedStoryIndexInCollection;
+        ? currentStoryInEachCollection[event.collectionIndex]
+        : event.selectedStoryIndexInCollection;
     //todo make  the state loading
 
-    emit(state.copyWith(
-      //selectedStoriesStatus: SelectedStoriesStatus.loading,
-      currentPage:
-          event.currentPage == -1 ? state.currentPage : event.currentPage,
-      selectedCollection: event.collectionIndex,
-      currentStoryInEachCollection: Map.of(currentStoryInEachCollection),
-    ));
+    emit(
+      state.copyWith(
+        //selectedStoriesStatus: SelectedStoriesStatus.loading,
+        currentPage: event.currentPage == -1
+            ? state.currentPage
+            : event.currentPage,
+        selectedCollection: event.collectionIndex,
+        currentStoryInEachCollection: Map.of(currentStoryInEachCollection),
+      ),
+    );
 
     var currentStoryInSelectedCollection =
         state.storiesCollections[event.collectionIndex].stories![max(
-            state.currentStoryInEachCollection[event.collectionIndex]!,
-            event.selectedStoryIndexInCollection)];
+          state.currentStoryInEachCollection[event.collectionIndex]!,
+          event.selectedStoryIndexInCollection,
+        )];
     if (currentStoryInSelectedCollection.isPhoto == 1) {
-//todo debug
+      //todo debug
       //todo bring the real width and height for selected photo
-      final response = await getWidthAndHeightUseCase(widthAndHeightParams(
+      final response = await getWidthAndHeightUseCase(
+        widthAndHeightParams(
           url: currentStoryInSelectedCollection.photoPath!,
-          collectionId: state.storiesCollections[event.collectionIndex].id!));
-      response.fold((l) {
-        if (ErrorManager.shouldRetry('StorySelectedEvent', l.statusCode)) {
-          ErrorManager.incrementRetry('StorySelectedEvent');
+          collectionId: state.storiesCollections[event.collectionIndex].id!,
+        ),
+      );
+      response.fold(
+        (l) {
+          if (ErrorManager.shouldRetry('StorySelectedEvent', l.statusCode)) {
+            ErrorManager.incrementRetry('StorySelectedEvent');
 
-          emit(state.copyWith(
-              storiesCollections: state.storiesCollections.map((e) {
-            if (e.id == state.storiesCollections[event.collectionIndex].id) {
-              return e.copyWith(
-                  selectedStoriesStatusForCollection:
-                      SelectedStoriesStatus.failure);
-            }
-            return e;
-          }).toList()));
-        } else {
-          ErrorManager.incrementRetry('StorySelectedEvent');
-          add(StorySelectedEvent(
-              collectionIndex: event.collectionIndex,
-              selectedStoryIndexInCollection:
-                  event.selectedStoryIndexInCollection,
-              currentPage: event.currentPage));
-        }
-      }, (r) {
-//todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
-        emit(state.copyWith(
-            storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == state.storiesCollections[event.collectionIndex].id) {
-            return e.copyWith(
-                selectedStoriesStatusForCollection:
-                    SelectedStoriesStatus.success,
-                imageDetail: r);
-          }
-          return e;
-        }).toList()));
-      });
-    } else {
-      //todo it's a video all what i will do is make it seen
-      emit(state.copyWith(
-        storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == state.storiesCollections[event.collectionIndex].id) {
-            return e.copyWith(
-              selectedStoriesStatusForCollection: SelectedStoriesStatus.success,
+            emit(
+              state.copyWith(
+                storiesCollections: state.storiesCollections.map((e) {
+                  if (e.id ==
+                      state.storiesCollections[event.collectionIndex].id) {
+                    return e.copyWith(
+                      selectedStoriesStatusForCollection:
+                          SelectedStoriesStatus.failure,
+                    );
+                  }
+                  return e;
+                }).toList(),
+              ),
+            );
+          } else {
+            ErrorManager.incrementRetry('StorySelectedEvent');
+            add(
+              StorySelectedEvent(
+                collectionIndex: event.collectionIndex,
+                selectedStoryIndexInCollection:
+                    event.selectedStoryIndexInCollection,
+                currentPage: event.currentPage,
+              ),
             );
           }
-          return e;
-        }).toList(),
-        currentStoryInEachCollection: currentStoryInEachCollection,
-        selectedCollection: event.collectionIndex,
-      ));
+        },
+        (r) {
+          //todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
+          emit(
+            state.copyWith(
+              storiesCollections: state.storiesCollections.map((e) {
+                if (e.id ==
+                    state.storiesCollections[event.collectionIndex].id) {
+                  return e.copyWith(
+                    selectedStoriesStatusForCollection:
+                        SelectedStoriesStatus.success,
+                    imageDetail: r,
+                  );
+                }
+                return e;
+              }).toList(),
+            ),
+          );
+        },
+      );
+    } else {
+      //todo it's a video all what i will do is make it seen
+      emit(
+        state.copyWith(
+          storiesCollections: state.storiesCollections.map((e) {
+            if (e.id == state.storiesCollections[event.collectionIndex].id) {
+              return e.copyWith(
+                selectedStoriesStatusForCollection:
+                    SelectedStoriesStatus.success,
+              );
+            }
+            return e;
+          }).toList(),
+          currentStoryInEachCollection: currentStoryInEachCollection,
+          selectedCollection: event.collectionIndex,
+        ),
+      );
     }
   }
 
   FutureOr<void> _onIncreaseCountShareOfProductEvent(
-      IncreaseCountShareOfProductEvent event, Emitter<HomeState> emit) async {
+    IncreaseCountShareOfProductEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     Map<String, GetProductDetailWithoutRelatedProductsModel>
-        cachedProductWithoutRelatedProductsModel =
-        Map.of(state.cachedProductWithoutRelatedProductsModel);
+    cachedProductWithoutRelatedProductsModel = Map.of(
+      state.cachedProductWithoutRelatedProductsModel,
+    );
     GetProductDetailWithoutRelatedProductsModel? product =
         cachedProductWithoutRelatedProductsModel[event.productId];
     product = product?.copyWith(
-        data: product.product
-            ?.copyWith(sharedCount: (product.product?.sharedCount ?? 0) + 1));
+      data: product.product?.copyWith(
+        sharedCount: (product.product?.sharedCount ?? 0) + 1,
+      ),
+    );
     cachedProductWithoutRelatedProductsModel[event.productId] =
         product ?? GetProductDetailWithoutRelatedProductsModel();
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         cachedProductWithoutRelatedProductsModel:
-            cachedProductWithoutRelatedProductsModel));
+            cachedProductWithoutRelatedProductsModel,
+      ),
+    );
     FirebaseAnalyticsService.logEventForSession(
       eventName: AnalyticsEventsConst.shareContent,
       executedEventName: AnalyticsButtonsEventNameConst.SHARE_CONTENT_BUTTON,
@@ -663,236 +684,362 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         'price': event.product.price.toString(),
       },
     );
-    showMessage(LocaleKeys.product_shared_successfully.tr(),
-        foreGroundColor: Colors.white,
-        backGroundColor: Colors.black,
-        showInRelease: true,
-        timeShowing: Toast.LENGTH_SHORT);
+    showMessage(
+      LocaleKeys.product_shared_successfully.tr(),
+      foreGroundColor: Colors.white,
+      backGroundColor: Colors.black,
+      showInRelease: true,
+      timeShowing: Toast.LENGTH_SHORT,
+    );
 
-    add(UpdateLikeSocialSharedProductsEvent(
-      productId: event.productId,
-    ));
+    add(UpdateLikeSocialSharedProductsEvent(productId: event.productId));
   }
 
   FutureOr<void> _onAddProductIdToSaveRedeemTimerEvent(
-      AddProductIdToSaveRedeemTimerEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    AddProductIdToSaveRedeemTimerEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         addProductIdToSaveRedeemTimerStatus:
-            AddProductIdToSaveRedeemTimerStatus.init));
+            AddProductIdToSaveRedeemTimerStatus.init,
+      ),
+    );
     await Future.delayed(const Duration(milliseconds: 300));
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         addProductIdToSaveRedeemTimerStatus: event.on
             ? AddProductIdToSaveRedeemTimerStatus.on
             : AddProductIdToSaveRedeemTimerStatus.off,
-        productIdToSaveRedeemTimer: event.productIdToSaveRedeemTimer));
+        productIdToSaveRedeemTimer: event.productIdToSaveRedeemTimer,
+      ),
+    );
   }
 
   FutureOr<void> _onIsChangedvariationWhenQtyZeroEvent(
-      IsChangedVariationWhenQtyZeroEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    IsChangedVariationWhenQtyZeroEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         finishLoadingAfterChangedVariationWhenQtyZero:
             event.finishLoadingAfterChangedVariationWhenQtyZero,
-        isChangedVariationWhenQtyZero: event.isChangedVariationWhenQtyZero));
+        isChangedVariationWhenQtyZero: event.isChangedVariationWhenQtyZero,
+      ),
+    );
   }
 
   FutureOr<void> _onRemoveItemsFromCartAfterOrderSuccessEvent(
-      RemoveItemsFromCartAfterOrderSuccessEvent event,
-      Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-      cartCollection: [],
-      currentQuantityForCart: {},
-      addImagesToProductIdForCart: {},
-      addVariationToCartId: {},
-      listitemForAddToCart: [],
-    ));
+    RemoveItemsFromCartAfterOrderSuccessEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        cartCollection: [],
+        currentQuantityForCart: {},
+        addImagesToProductIdForCart: {},
+        addVariationToCartId: {},
+        listitemForAddToCart: [],
+      ),
+    );
   }
 
   FutureOr<void> _onAddCurrentHeightWhenAddToBagEvent(
-      AddCurrentHeightWhenAddToBagEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-        currentHeightWhenAddToBag: event.currentHeightWhenAddToBag));
+    AddCurrentHeightWhenAddToBagEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        currentHeightWhenAddToBag: event.currentHeightWhenAddToBag,
+      ),
+    );
   }
 
   FutureOr<void> _onUpdateWhatsappNotificationEvent(
-      UpdateWhatsappNotificationEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    UpdateWhatsappNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         updateWhatsappNotificationStatus:
-            UpdateWhatsappNotificationStatus.loading));
+            UpdateWhatsappNotificationStatus.loading,
+      ),
+    );
     final response = await updateWhatsappNotificationUseCase(
-        UpdateWhatsappNotificationParams(whatsapp: event.whatsapp));
+      UpdateWhatsappNotificationParams(whatsapp: event.whatsapp),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'UpdateWhatsappNotificationEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UpdateWhatsappNotificationEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
               const Duration(seconds: 5),
               () => add(
-                  UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp)));
-        } else {
-          add(UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp));
+                UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp),
+              ),
+            );
+          } else {
+            add(UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp));
+          }
+          ErrorManager.incrementRetry('UpdateWhatsappNotificationEvent');
         }
-        ErrorManager.incrementRetry('UpdateWhatsappNotificationEvent');
-      }
-      emit(state.copyWith(
-          updateWhatsappNotificationStatus:
-              UpdateWhatsappNotificationStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('UpdateWhatsappNotificationEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        updateWhatsappNotificationStatus:
-            UpdateWhatsappNotificationStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            updateWhatsappNotificationStatus:
+                UpdateWhatsappNotificationStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('UpdateWhatsappNotificationEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            updateWhatsappNotificationStatus:
+                UpdateWhatsappNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateEmailNotificationEvent(
-      UpdateEmailNotificationEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    UpdateEmailNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         updateEmailappNotificationStatus:
-            UpdateEmailappNotificationStatus.loading));
+            UpdateEmailappNotificationStatus.loading,
+      ),
+    );
     final response = await updateEmailNotificationUseCase(
-        UpdateEmailNotificationParams(email: event.email));
+      UpdateEmailNotificationParams(email: event.email),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'UpdateEmailNotificationEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(const Duration(seconds: 5),
-              () => add(UpdateEmailNotificationEvent(email: event.email)));
-        } else {
-          add(UpdateEmailNotificationEvent(email: event.email));
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UpdateEmailNotificationEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
+              const Duration(seconds: 5),
+              () => add(UpdateEmailNotificationEvent(email: event.email)),
+            );
+          } else {
+            add(UpdateEmailNotificationEvent(email: event.email));
+          }
+          ErrorManager.incrementRetry('UpdateEmailNotificationEvent');
         }
-        ErrorManager.incrementRetry('UpdateEmailNotificationEvent');
-      }
-      emit(state.copyWith(
-          updateEmailappNotificationStatus:
-              UpdateEmailappNotificationStatus.failure));
-      showMessage(l.message,
+        emit(
+          state.copyWith(
+            updateEmailappNotificationStatus:
+                UpdateEmailappNotificationStatus.failure,
+          ),
+        );
+        showMessage(
+          l.message,
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           hasError: true,
-          showInRelease: true);
-    }, (r) async {
-      ErrorManager.resetRetry('UpdateEmailNotificationEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        updateEmailappNotificationStatus:
-            UpdateEmailappNotificationStatus.success,
-      ));
-    });
+          showInRelease: true,
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('UpdateEmailNotificationEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            updateEmailappNotificationStatus:
+                UpdateEmailappNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateFirebaseNotificationEvent(
-      UpdateFirebaseNotificationEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    UpdateFirebaseNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.loading));
+            GetFirebaseSettingForNotificationStatus.loading,
+      ),
+    );
     final response = await updateFirebaseNotificationUseCase(
-        UpdateFirebaseNotificationParams(firebase: event.firebase));
+      UpdateFirebaseNotificationParams(firebase: event.firebase),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'UpdateFirebaseNotificationEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UpdateFirebaseNotificationEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
               const Duration(seconds: 5),
               () => add(
-                  UpdateFirebaseNotificationEvent(firebase: event.firebase)));
-        } else {
-          add(UpdateFirebaseNotificationEvent(firebase: event.firebase));
+                UpdateFirebaseNotificationEvent(firebase: event.firebase),
+              ),
+            );
+          } else {
+            add(UpdateFirebaseNotificationEvent(firebase: event.firebase));
+          }
+          ErrorManager.incrementRetry('UpdateFirebaseNotificationEvent');
         }
-        ErrorManager.incrementRetry('UpdateFirebaseNotificationEvent');
-      }
-      emit(state.copyWith(
-          getFirebaseSettingForNotificationStatus:
-              GetFirebaseSettingForNotificationStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('UpdateFirebaseNotificationEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('UpdateFirebaseNotificationEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateNotificationFrequencyEvent(
-      UpdateNotificationFrequencyEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    UpdateNotificationFrequencyEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.loading));
+            GetFirebaseSettingForNotificationStatus.loading,
+      ),
+    );
     final response = await updateNotificationFrequencyUseCase(
-        UpdateNotificationFrequencyParams(
-            notificationFrequency: event.notificationFrequency));
+      UpdateNotificationFrequencyParams(
+        notificationFrequency: event.notificationFrequency,
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'UpdateNotificationFrequencyEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UpdateNotificationFrequencyEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
               const Duration(seconds: 5),
-              () => add(UpdateNotificationFrequencyEvent(
-                  notificationFrequency: event.notificationFrequency)));
-        } else {
-          add(UpdateNotificationFrequencyEvent(
-              notificationFrequency: event.notificationFrequency));
+              () => add(
+                UpdateNotificationFrequencyEvent(
+                  notificationFrequency: event.notificationFrequency,
+                ),
+              ),
+            );
+          } else {
+            add(
+              UpdateNotificationFrequencyEvent(
+                notificationFrequency: event.notificationFrequency,
+              ),
+            );
+          }
+          ErrorManager.incrementRetry('UpdateNotificationFrequencyEvent');
         }
-        ErrorManager.incrementRetry('UpdateNotificationFrequencyEvent');
-      }
-      emit(state.copyWith(
-          getFirebaseSettingForNotificationStatus:
-              GetFirebaseSettingForNotificationStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('UpdateNotificationFrequencyEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('UpdateNotificationFrequencyEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onSubscribeTopicForNotificationEvent(
-      SubscribeTopicForNotificationEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    SubscribeTopicForNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.loading));
+            GetFirebaseSettingForNotificationStatus.loading,
+      ),
+    );
     final response = await subscribeTopicFornotificationUseCase(
-        SubscribeTopicForNotificationParams(
-            topic: event.topic, variant: event.variant?.replaceAll("_", "-")));
+      SubscribeTopicForNotificationParams(
+        topic: event.topic,
+        variant: event.variant?.replaceAll("_", "-"),
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'SubscribeTopicForNotificationEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'SubscribeTopicForNotificationEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
               const Duration(seconds: 5),
-              () => add(SubscribeTopicForNotificationEvent(
+              () => add(
+                SubscribeTopicForNotificationEvent(
                   topic: event.topic,
-                  variant: event.variant?.replaceAll("_", "-"))));
-        } else {
-          add(SubscribeTopicForNotificationEvent(
-              topic: event.topic,
-              variant: event.variant?.replaceAll("_", "-")));
+                  variant: event.variant?.replaceAll("_", "-"),
+                ),
+              ),
+            );
+          } else {
+            add(
+              SubscribeTopicForNotificationEvent(
+                topic: event.topic,
+                variant: event.variant?.replaceAll("_", "-"),
+              ),
+            );
+          }
+          ErrorManager.incrementRetry('SubscribeTopicForNotificationEvent');
         }
-        ErrorManager.incrementRetry('SubscribeTopicForNotificationEvent');
-      }
-      emit(state.copyWith(
-          getFirebaseSettingForNotificationStatus:
-              GetFirebaseSettingForNotificationStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('SubscribeTopicForNotificationEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('SubscribeTopicForNotificationEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
-/*  FutureOr<void> _onGeColorsAndSizesForSearchEvent(
+  /*  FutureOr<void> _onGeColorsAndSizesForSearchEvent(
       GeColorsAndSizesForSearchEvent event, Emitter<HomeState> emit) async {
     final response = await getColorsAndSizesForSearchUseCase(NoParams());
 
@@ -909,113 +1056,180 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }*/
 
   FutureOr<void> _onGetFirebaseSettingForNotificationEvent(
-      GetFirebaseSettingForNotificationEvent event,
-      Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    GetFirebaseSettingForNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.loading));
+            GetFirebaseSettingForNotificationStatus.loading,
+      ),
+    );
     final response = await getMyFirebaseSettingsUseCase(NoParams());
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'GetFirebaseSettingForNotificationEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(const Duration(seconds: 5),
-              () => add(const GetFirebaseSettingForNotificationEvent()));
-        } else {
-          add(const GetFirebaseSettingForNotificationEvent());
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GetFirebaseSettingForNotificationEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
+              const Duration(seconds: 5),
+              () => add(const GetFirebaseSettingForNotificationEvent()),
+            );
+          } else {
+            add(const GetFirebaseSettingForNotificationEvent());
+          }
+          ErrorManager.incrementRetry('GetFirebaseSettingForNotificationEvent');
         }
-        ErrorManager.incrementRetry('GetFirebaseSettingForNotificationEvent');
-      }
-      emit(state.copyWith(
-          getFirebaseSettingForNotificationStatus:
-              GetFirebaseSettingForNotificationStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('GetFirebaseSettingForNotificationEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('GetFirebaseSettingForNotificationEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUnSubscribeTopicForNotificationEvent(
-      UnSubscribeTopicForNotificationEvent event,
-      Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    UnSubscribeTopicForNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.loading));
+            GetFirebaseSettingForNotificationStatus.loading,
+      ),
+    );
     final response = await unSubscribeTopicFornotificationUseCase(
-        UnSubscribeTopicForNotificationParams(
-            topic: event.topic, variant: event.variant?.replaceAll("_", "-")));
+      UnSubscribeTopicForNotificationParams(
+        topic: event.topic,
+        variant: event.variant?.replaceAll("_", "-"),
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'UnSubscribeTopicForNotificationEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UnSubscribeTopicForNotificationEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
               const Duration(seconds: 5),
-              () => add(UnSubscribeTopicForNotificationEvent(
+              () => add(
+                UnSubscribeTopicForNotificationEvent(
                   topic: event.topic,
-                  variant: event.variant?.replaceAll("_", "-"))));
-        } else {
-          add(UnSubscribeTopicForNotificationEvent(
-              topic: event.topic,
-              variant: event.variant?.replaceAll("_", "-")));
+                  variant: event.variant?.replaceAll("_", "-"),
+                ),
+              ),
+            );
+          } else {
+            add(
+              UnSubscribeTopicForNotificationEvent(
+                topic: event.topic,
+                variant: event.variant?.replaceAll("_", "-"),
+              ),
+            );
+          }
+          ErrorManager.incrementRetry('UnSubscribeTopicForNotificationEvent');
         }
-        ErrorManager.incrementRetry('UnSubscribeTopicForNotificationEvent');
-      }
-      emit(state.copyWith(
-          getFirebaseSettingForNotificationStatus:
-              GetFirebaseSettingForNotificationStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('UnSubscribeTopicForNotificationEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('UnSubscribeTopicForNotificationEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onChangeCountryLanguageForNotificationEvent(
-      ChangeCountryLanguageForNotificationEvent event,
-      Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    ChangeCountryLanguageForNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.loading));
+            GetFirebaseSettingForNotificationStatus.loading,
+      ),
+    );
     final response = await changeCountryLanguageFornotificationUseCase(
-        ChangeCountryLanguageFornotificationParams(
-            country: event.country, languageCode: event.languageCode));
+      ChangeCountryLanguageFornotificationParams(
+        country: event.country,
+        languageCode: event.languageCode,
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'ChangeCountryLanguageForNotificationEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'ChangeCountryLanguageForNotificationEvent',
+          l.statusCode,
+        )) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(
               const Duration(seconds: 5),
-              () => add(ChangeCountryLanguageForNotificationEvent(
-                  country: event.country, languageCode: event.languageCode)));
-        } else {
-          add(ChangeCountryLanguageForNotificationEvent(
-              country: event.country, languageCode: event.languageCode));
+              () => add(
+                ChangeCountryLanguageForNotificationEvent(
+                  country: event.country,
+                  languageCode: event.languageCode,
+                ),
+              ),
+            );
+          } else {
+            add(
+              ChangeCountryLanguageForNotificationEvent(
+                country: event.country,
+                languageCode: event.languageCode,
+              ),
+            );
+          }
+          ErrorManager.incrementRetry(
+            'ChangeCountryLanguageForNotificationEvent',
+          );
         }
-        ErrorManager.incrementRetry(
-            'ChangeCountryLanguageForNotificationEvent');
-      }
 
-      emit(state.copyWith(
-          getFirebaseSettingForNotificationStatus:
-              GetFirebaseSettingForNotificationStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('ChangeCountryLanguageForNotificationEvent');
-      emit(state.copyWith(
-        firebaseSettingForNotificationModel: r,
-        getFirebaseSettingForNotificationStatus:
-            GetFirebaseSettingForNotificationStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('ChangeCountryLanguageForNotificationEvent');
+        emit(
+          state.copyWith(
+            firebaseSettingForNotificationModel: r,
+            getFirebaseSettingForNotificationStatus:
+                GetFirebaseSettingForNotificationStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   initializeSmartLook() async {
@@ -1023,37 +1237,52 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     await smartLook.preferences.setProjectKey(dotenv.env['SMART_LOOK_KEY']!);
     await smartLook.preferences.setFrameRate(2);
     await smartLook.user.setIdentifier(deviceId);
-    await smartLook.user
-        .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
-    await smartLook.user
-        .setIdentifier(GetIt.I<PrefsRepository>().myMarketId ?? 'No_Id');
+    await smartLook.user.setName(
+      GetIt.I<PrefsRepository>().myChatName ?? 'No_Name',
+    );
+    await smartLook.user.setIdentifier(
+      GetIt.I<PrefsRepository>().myMarketId ?? 'No_Id',
+    );
     await smartLook.start();
   }
 
   _onAddCurrentSelectedColorEvent(
-      AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
+    AddCurrentSelectedColorEvent event,
+    Emitter<HomeState> emit,
+  ) {
     print(
-        "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentSelectedColor}  ${event.productSlug}");
-    emit(state.copyWith(
+      "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentSelectedColor}  ${event.productSlug}",
+    );
+    emit(
+      state.copyWith(
         currentSelectedColorForEveryProductStatus:
-            CurrentSelectedColorForEveryProductStatus.loading));
-    Map<String, int> currentSelectedColorForEveryProduct =
-        Map.of(state.currentSelectedColorForEveryProduct);
+            CurrentSelectedColorForEveryProductStatus.loading,
+      ),
+    );
+    Map<String, int> currentSelectedColorForEveryProduct = Map.of(
+      state.currentSelectedColorForEveryProduct,
+    );
     if (currentSelectedColorForEveryProduct[event.productSlug] == null) {
-      currentSelectedColorForEveryProduct
-          .addAll({event.productSlug: event.currentSelectedColor});
+      currentSelectedColorForEveryProduct.addAll({
+        event.productSlug: event.currentSelectedColor,
+      });
     } else {
       currentSelectedColorForEveryProduct[event.productSlug] =
           event.currentSelectedColor;
     }
     print(
-        "888888888888888888888///////////////////////////////////****${currentSelectedColorForEveryProduct}");
+      "888888888888888888888///////////////////////////////////****${currentSelectedColorForEveryProduct}",
+    );
 
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         currentSelectedColorForEveryProductStatus:
             CurrentSelectedColorForEveryProductStatus.success,
-        currentSelectedColorForEveryProduct:
-            Map.of(currentSelectedColorForEveryProduct)));
+        currentSelectedColorForEveryProduct: Map.of(
+          currentSelectedColorForEveryProduct,
+        ),
+      ),
+    );
   }
 
   _onClearAllAppCashEvent(ClearAllAppCashEvent event, Emitter<HomeState> emit) {
@@ -1064,62 +1293,78 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     GetIt.I<BoutiqueBloc>().add(ClearAllBoutiquesEvent());
 
     prefsRepository.removeMainCategoryWhenOpenApp();
-    emit(state.copyWith(
-      currentSelectedColorForEveryProduct: {},
-      reRequestTheseProductListingInBoutiques: {},
-      reRequestProductWithFilters: {},
-      productStatus: {},
-      cartIdsHurryUPTimerStarted: {},
-      listOfErrorSendedToMobileErrorLog: [],
-      listitemForAddToCart: [],
-      getAndAddCountViewOfProductStatus: {},
-      getProductDetailWithoutSimilarRelatedProductsStatus:
-          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-      getStartingSettingsStatus: GetStartingSettingsStatus.init,
-      //  getListOfProductsFoundedInCartStatus:
-      //    GetListOfProductsFoundedInCartStatus.init,
-      convertItemFromcartToOldCartStatus:
-          ConvertItemFromcartToOldCartStatus.init,
-      cachedProductWithoutRelatedProductsModel: {},
-//productITemForCart: {},
-      cartCollection: [],
-      oldCartCollection: [],
-    ));
+    emit(
+      state.copyWith(
+        currentSelectedColorForEveryProduct: {},
+        reRequestTheseProductListingInBoutiques: {},
+        reRequestProductWithFilters: {},
+        productStatus: {},
+        cartIdsHurryUPTimerStarted: {},
+        listOfErrorSendedToMobileErrorLog: [],
+        listitemForAddToCart: [],
+        getAndAddCountViewOfProductStatus: {},
+        getProductDetailWithoutSimilarRelatedProductsStatus:
+            GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+        getStartingSettingsStatus: GetStartingSettingsStatus.init,
+        //  getListOfProductsFoundedInCartStatus:
+        //    GetListOfProductsFoundedInCartStatus.init,
+        convertItemFromcartToOldCartStatus:
+            ConvertItemFromcartToOldCartStatus.init,
+        cachedProductWithoutRelatedProductsModel: {},
+        //productITemForCart: {},
+        cartCollection: [],
+        oldCartCollection: [],
+      ),
+    );
   }
 
   Future<void> _onGetStoryEvent(
-      GetStoryForProductEvent event, Emitter<HomeState> emit) async {
+    GetStoryForProductEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     /*if ((state.finishGetAllStory && event.withPaginition) ||
         (state.getStoryWithPagintionStatusLoading && event.withPaginition)) {
       return;
     }*/
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         getStoryWithPagintionStatusLoading: true,
         storiesCollections: [],
         // finishGetAllStory:
         //   event.withPaginition ? state.finishGetAllStory : false,
         currentPage: /* event.withPaginition ? state.currentPage + 1 :*/ 1,
-        getStoriesForProductStatus: GetStoriesForProductStatus.loading));
+        getStoriesForProductStatus: GetStoriesForProductStatus.loading,
+      ),
+    );
     final response = await getStoryUseCase(
-        /*page: state.currentPage.toString()*/ event.productId);
+      /*page: state.currentPage.toString()*/ event.productId,
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetStoryEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetStoryEvent');
-        add(GetStoryForProductEvent(
-            productId:
-                event.productId /*withPaginition: event.withPaginition*/));
-        return;
-      }
-      emit(state.copyWith(
-          getStoriesForProductStatus: GetStoriesForProductStatus.failure,
-          getStoryWithPagintionStatusLoading: false));
-    }, (r) {
-      ErrorManager.resetRetry('GetStoryEvent');
-      Map<int, int> currentStoryInEachCollection = {};
-      int i = 0;
-      List<CollectionStoryModel>? collections = r.data!.collections;
-      /*  if (!(event.withPaginition)) {
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetStoryEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetStoryEvent');
+          add(
+            GetStoryForProductEvent(
+              productId:
+                  event.productId /*withPaginition: event.withPaginition*/,
+            ),
+          );
+          return;
+        }
+        emit(
+          state.copyWith(
+            getStoriesForProductStatus: GetStoriesForProductStatus.failure,
+            getStoryWithPagintionStatusLoading: false,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetStoryEvent');
+        Map<int, int> currentStoryInEachCollection = {};
+        int i = 0;
+        List<CollectionStoryModel>? collections = r.data!.collections;
+        /*  if (!(event.withPaginition)) {
         if ((collections?.length ?? 0) > 1) {
           int myStoriesIndex = collections!.indexWhere((element) =>
               GetIt.I<PrefsRepository>().myStoriesId ==
@@ -1133,26 +1378,30 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }
       }*/
-      r.data?.collections?.forEach((element) {
-        currentStoryInEachCollection[i++] = 0;
-      });
-      /*    if (event.withPaginition) {
+        r.data?.collections?.forEach((element) {
+          currentStoryInEachCollection[i++] = 0;
+        });
+        /*    if (event.withPaginition) {
         int i = (state.storiesCollections).length;
         r.data?.collections?.forEach((element) {
           currentStoryInEachCollection[i++] = 0;
         });
       }*/
 
-      emit(state.copyWith(
-          getStoryWithPagintionStatusLoading: false,
-          finishGetAllStory: (r.data?.collections?.length ?? 0) < 10,
-          getStoriesForProductStatus: GetStoriesForProductStatus.success,
-          storiesCollections: /* event.withPaginition
+        emit(
+          state.copyWith(
+            getStoryWithPagintionStatusLoading: false,
+            finishGetAllStory: (r.data?.collections?.length ?? 0) < 10,
+            getStoriesForProductStatus: GetStoriesForProductStatus.success,
+            storiesCollections: /* event.withPaginition
               ? [...(state.storiesCollections), ...(collections ?? [])]
               : */
-              collections,
-          currentStoryInEachCollection: currentStoryInEachCollection));
-    });
+                collections,
+            currentStoryInEachCollection: currentStoryInEachCollection,
+          ),
+        );
+      },
+    );
   }
   /* FutureOr<void> _onGetProductsWithFiltersUsingPaginationEvent(
       GetProductsWithFiltersUsingPaginationEvent event,
@@ -1414,71 +1663,94 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }*/
 
   filters_model.GetProductFiltersModel removeAlreadyChoosedFilters(
-      filters_model.GetProductFiltersModel r, filters_model.Filter filters) {
+    filters_model.GetProductFiltersModel r,
+    filters_model.Filter filters,
+  ) {
     List<String> colors = List.of(r.filters?.colors ?? []);
     List<Category> categories = List.of(r.filters?.categories ?? []);
-    List<filters_model.Boutique> boutiques =
-        List.of(r.filters?.boutiques ?? []);
+    List<filters_model.Boutique> boutiques = List.of(
+      r.filters?.boutiques ?? [],
+    );
     List<filters_model.Brand> brands = List.of(r.filters?.brands ?? []);
-    List<filters_model.Attribute> attributes =
-        List.of(r.filters?.attributes ?? []);
+    List<filters_model.Attribute> attributes = List.of(
+      r.filters?.attributes ?? [],
+    );
     if (!filters.colors.isNullOrEmpty) {
       colors.removeWhere((element) => filters.colors!.contains(element));
     }
     if (!filters.categories.isNullOrEmpty) {
-      categories.removeWhere((element) =>
-          filters.categories!
-              .indexWhere((category) => category.slug == element.slug) !=
-          -1);
+      categories.removeWhere(
+        (element) =>
+            filters.categories!.indexWhere(
+              (category) => category.slug == element.slug,
+            ) !=
+            -1,
+      );
     }
     if (!filters.brands.isNullOrEmpty) {
-      brands.removeWhere((element) =>
-          filters.brands!.indexWhere((brand) => brand.slug == element.slug) !=
-          -1);
+      brands.removeWhere(
+        (element) =>
+            filters.brands!.indexWhere((brand) => brand.slug == element.slug) !=
+            -1,
+      );
     }
     if (!filters.boutiques.isNullOrEmpty) {
-      boutiques.removeWhere((element) =>
-          filters.boutiques!
-              .indexWhere((boutique) => boutique.slug == element.slug) !=
-          -1);
+      boutiques.removeWhere(
+        (element) =>
+            filters.boutiques!.indexWhere(
+              (boutique) => boutique.slug == element.slug,
+            ) !=
+            -1,
+      );
     }
 
     if (!filters.attributes.isNullOrEmpty && attributes.isNotEmpty) {
       if (!filters.attributes![0].options.isNullOrEmpty) {
-        attributes[0].options!.removeWhere((element) =>
-            filters.attributes![0].options
-                ?.indexWhere((option) => option == element) !=
-            -1);
+        attributes[0].options!.removeWhere(
+          (element) =>
+              filters.attributes![0].options?.indexWhere(
+                (option) => option == element,
+              ) !=
+              -1,
+        );
       }
     }
     return r.copyWithSendValue(
-        filters: (r.filters!.prices == null &&
-                brands.isEmpty &&
-                boutiques.isEmpty &&
-                categories.isEmpty &&
-                attributes.isEmpty &&
-                filters.searchText == null &&
-                colors.isEmpty)
-            ? null
-            : filters_model.Filter(
-                prices: r.filters!.prices,
-                searchText: filters.searchText,
-                brands: brands,
-                categories: categories,
-                colors: colors,
-                attributes: attributes));
+      filters:
+          (r.filters!.prices == null &&
+              brands.isEmpty &&
+              boutiques.isEmpty &&
+              categories.isEmpty &&
+              attributes.isEmpty &&
+              filters.searchText == null &&
+              colors.isEmpty)
+          ? null
+          : filters_model.Filter(
+              prices: r.filters!.prices,
+              searchText: filters.searchText,
+              brands: brands,
+              categories: categories,
+              colors: colors,
+              attributes: attributes,
+            ),
+    );
   }
 
   FutureOr<void> _onAddSizesForColorsEvent(
-      AddSizesForColorsEvent event, Emitter<HomeState> emit) async {
+    AddSizesForColorsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     List<String> sizes = [];
     List<int> sizesQuantities = [];
     List<String> colors = [];
     List<int> colorsQuantities = [];
     String size;
     String color;
-    emit(state.copyWith(
-        changeSizesForEveryProduct: ChangeSizesForEveryProduct.loading));
+    emit(
+      state.copyWith(
+        changeSizesForEveryProduct: ChangeSizesForEveryProduct.loading,
+      ),
+    );
 
     //emit(state.copyWith(sizes: sizes));
     if (!event.variation.isNullOrEmpty) {
@@ -1492,8 +1764,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         if (element.type!.split("-")[0] == event.currentColorName ||
             event.currentColorName == '') {
           try {
-            size =
-                element.type!.split("-")[event.currentColorName == '' ? 0 : 1];
+            size = element.type!.split(
+              "-",
+            )[event.currentColorName == '' ? 0 : 1];
             sizes.add(size);
             sizesQuantities.add((element.qty ?? 0).round());
             // if (element.variantNotifyForUser) {}
@@ -1502,72 +1775,81 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       });
     } else {}
 
-    emit(state.copyWith(
-      sizesForEachColor: sizes,
-      colorsForEachProduct: colors,
-      colorsQuantitiesForProduct: colorsQuantities,
-      changeSizesForEveryProduct: ChangeSizesForEveryProduct.success,
-      sizesQuantitiesForEachColor: sizesQuantities,
-    ));
+    emit(
+      state.copyWith(
+        sizesForEachColor: sizes,
+        colorsForEachProduct: colors,
+        colorsQuantitiesForProduct: colorsQuantities,
+        changeSizesForEveryProduct: ChangeSizesForEveryProduct.success,
+        sizesQuantitiesForEachColor: sizesQuantities,
+      ),
+    );
   }
 
   FutureOr<void> _onChangeStatusOFGetProductsDetailsToSuccessEvent(
-      ChangeStatusOFGetProductsDetailsToSuccessEvent event,
-      Emitter<HomeState> emit) async {
+    ChangeStatusOFGetProductsDetailsToSuccessEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     if (event.isStatusInitaial ?? false) {
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.init));
-    } else {
-      await Future.delayed(
-        const Duration(milliseconds: 300),
-        () {
-          Map<String, int> currentSelectedColorForEveryProduct =
-              Map.of(state.currentSelectedColorForEveryProduct);
-          if (event.index != -1 &&
-              event.index != null &&
-              event.productSlug != null) {
-            if (currentSelectedColorForEveryProduct[event.productSlug] ==
-                null) {
-              currentSelectedColorForEveryProduct
-                  .addAll({event.productSlug!: event.index!});
-            } else {
-              currentSelectedColorForEveryProduct[event.productSlug!] =
-                  event.index!;
-            }
-          }
-          print(
-              "888888888888888888888///////////////////////////////////${currentSelectedColorForEveryProduct}");
-          emit(state.copyWith(
-              currentSelectedColorForEveryProduct:
-                  Map.of(currentSelectedColorForEveryProduct),
-              enableAddToCardAfterChangeVariantZero:
-                  EnableAddToCardAfterChangeVariantZero.success,
-              getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
-              getProductDetailWithoutSimilarRelatedProductsStatus:
-                  GetProductDetailWithoutSimilarRelatedProductsStatus.success));
-        },
+              GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+        ),
       );
-      await Future.delayed(
-        const Duration(milliseconds: 300),
-        () {
-          emit(state.copyWith(
+    } else {
+      await Future.delayed(const Duration(milliseconds: 300), () {
+        Map<String, int> currentSelectedColorForEveryProduct = Map.of(
+          state.currentSelectedColorForEveryProduct,
+        );
+        if (event.index != -1 &&
+            event.index != null &&
+            event.productSlug != null) {
+          if (currentSelectedColorForEveryProduct[event.productSlug] == null) {
+            currentSelectedColorForEveryProduct.addAll({
+              event.productSlug!: event.index!,
+            });
+          } else {
+            currentSelectedColorForEveryProduct[event.productSlug!] =
+                event.index!;
+          }
+        }
+        print(
+          "888888888888888888888///////////////////////////////////${currentSelectedColorForEveryProduct}",
+        );
+        emit(
+          state.copyWith(
+            currentSelectedColorForEveryProduct: Map.of(
+              currentSelectedColorForEveryProduct,
+            ),
             enableAddToCardAfterChangeVariantZero:
                 EnableAddToCardAfterChangeVariantZero.success,
-          ));
-        },
-      );
+            getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
+            getProductDetailWithoutSimilarRelatedProductsStatus:
+                GetProductDetailWithoutSimilarRelatedProductsStatus.success,
+          ),
+        );
+      });
+      await Future.delayed(const Duration(milliseconds: 300), () {
+        emit(
+          state.copyWith(
+            enableAddToCardAfterChangeVariantZero:
+                EnableAddToCardAfterChangeVariantZero.success,
+          ),
+        );
+      });
     }
   }
 
   FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
-      GetProductDatailsWithoutRelatedProductsEvent event,
-      Emitter<HomeState> emit) async {
+    GetProductDatailsWithoutRelatedProductsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     add(FetchAuthProductDetailsEvent(event.productSlug ?? ""));
     //  if (state.cachedProductWithoutRelatedProductsModel
     //      .containsKey(event.productId)) return;
     Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
-        productStatus = Map.from(state.productStatus ?? {});
+    productStatus = Map.from(state.productStatus ?? {});
     /*if (productStatus[event.productId] != null) {
       if (productStatus[event.productId] ==
           GetProductDetailWithoutSimilarRelatedProductsStatus.loading) {
@@ -1576,141 +1858,182 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }*/
     PaginationModel<FqaComment> getFqaCommentsPaginationModel =
         const PaginationModel<FqaComment>(
-            paginationStatus: PaginationStatus.loading,
-            items: [],
-            page: 0,
-            hasReachedMax: false,
-            offset: "");
+          paginationStatus: PaginationStatus.loading,
+          items: [],
+          page: 0,
+          hasReachedMax: false,
+          offset: "",
+        );
     PaginationModel<BuyersComment> getBuyersCommentsPaginationModel =
         const PaginationModel<BuyersComment>(
-            paginationStatus: PaginationStatus.loading,
-            items: [],
-            page: 0,
-            hasReachedMax: false,
-            offset: "");
-    emit(state.copyWith(
+          paginationStatus: PaginationStatus.loading,
+          items: [],
+          page: 0,
+          hasReachedMax: false,
+          offset: "",
+        );
+    emit(
+      state.copyWith(
         getProductDetailWithoutSimilarRelatedProductsStatus:
             GetProductDetailWithoutSimilarRelatedProductsStatus.loading,
         getBuyersCommentsPaginationModel: {
-          "all": getBuyersCommentsPaginationModel
+          "all": getBuyersCommentsPaginationModel,
         },
         getFqaCommentsPaginationModel: {"all": getFqaCommentsPaginationModel},
-        currentSlugToRefreshFromNotification: event.productSlug));
+        currentSlugToRefreshFromNotification: event.productSlug,
+      ),
+    );
 
-    final response =
-        await getProductDetailWithoutRelatedProductsUseCase(event.productSlug!);
+    final response = await getProductDetailWithoutRelatedProductsUseCase(
+      event.productSlug!,
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'GetProductDatailsWithoutRelatedProductsEvent', l.statusCode)) {
-        add(GetProductDatailsWithoutRelatedProductsEvent(
-            currentColorOption: event.currentColorOption,
-            productId: event.productId,
-            productSlug: event.productSlug));
-        ErrorManager.incrementRetry(
-            'GetProductDatailsWithoutRelatedProductsEvent');
-      }
-      emit(state.copyWith(
-          getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
-    }, (r) {
-      if (r.product?.isRedeem == true) {
-        GetIt.I<PrefsRepository>()
-            .setRedeemDateForProduct(r.product!.id.toString(), "52");
-      }
-      if ((event.fromListingPage ?? false) == false) {
-        add(GetAndAddCountViewOfProductEvent(
-            productId: r.product!.id.toString()));
-        // add(GetCommentForProductEvent(productId: r.product!.id.toString()));
-        add(GetStoryForProductEvent(productId: r.product!.id.toString()));
-        /*    GetIt.I<ChatBloc>().add(
-              GetSharedProductCountEvent(productId: r.product!.id.toString()));*/
-      }
-
-      productStatus = Map.from(state.productStatus ?? {});
-      productStatus.removeWhere((key, value) => key == event.productId!);
-      productStatus.addAll({
-        event.productId!:
-            GetProductDetailWithoutSimilarRelatedProductsStatus.success
-      });
-      apisMustNotToRequest.add('GetProductDatailsWithoutRelatedProductsEvent');
-
-      ErrorManager.resetRetry('GetProductDatailsWithoutRelatedProductsEvent');
-
-      Map<String, GetProductDetailWithoutRelatedProductsModel> newCached =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
-      // إنشاء خريطة لترتيب الألوان
-      List<SyncColorImageProduct> syncColorImage =
-          r.product?.syncColorImages ?? [];
-      final syncColorImageOrder = {
-        for (var i = 0; i < syncColorImage.length; i++)
-          syncColorImage[i].colorOption: i
-      };
-
-      List<ProductColor> productColor = r.product?.colors ?? [];
-
-// ترتيب syncColorImages حسب ترتيب colors
-      productColor.sort(
-        (a, b) => (syncColorImageOrder[a.option] ?? 999)
-            .compareTo((syncColorImageOrder[b.option] ?? 999)),
-      );
-
-// بعد الترتيب، syncColorImages ستكون بترتيب: Green, Red, White
-      newCached.removeWhere((key, value) => key == event.productId!);
-      newCached.addAll({
-        event.productId!: r.copyWith(
-            data: r.product?.copyWith(
-          colors: productColor,
-          slug: event.productSlug ?? r.product?.slug,
-        ))
-      });
-      int index = -1;
-
-      if (event.currentColorOption != null) {
-        index = productColor.indexWhere(
-          (element) => element.option == event.currentColorOption,
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GetProductDatailsWithoutRelatedProductsEvent',
+          l.statusCode,
+        )) {
+          add(
+            GetProductDatailsWithoutRelatedProductsEvent(
+              currentColorOption: event.currentColorOption,
+              productId: event.productId,
+              productSlug: event.productSlug,
+            ),
+          );
+          ErrorManager.incrementRetry(
+            'GetProductDatailsWithoutRelatedProductsEvent',
+          );
+        }
+        emit(
+          state.copyWith(
+            getProductDetailWithoutSimilarRelatedProductsStatus:
+                GetProductDetailWithoutSimilarRelatedProductsStatus.failure,
+          ),
         );
-      }
+      },
+      (r) {
+        if (r.product?.isRedeem == true) {
+          GetIt.I<PrefsRepository>().setRedeemDateForProduct(
+            r.product!.id.toString(),
+            "52",
+          );
+        }
+        if ((event.fromListingPage ?? false) == false) {
+          /*  add(
+            GetAndAddCountViewOfProductEvent(
+              productId: r.product!.id.toString(),
+            ),
+          );*/
+          // add(GetCommentForProductEvent(productId: r.product!.id.toString()));
+          add(GetStoryForProductEvent(productId: r.product!.id.toString()));
+          /*    GetIt.I<ChatBloc>().add(
+              GetSharedProductCountEvent(productId: r.product!.id.toString()));*/
+        }
 
-      /* PaginationModel<Comment>? getCommentsFromAnalyticsPaginationModel =
+        productStatus = Map.from(state.productStatus ?? {});
+        productStatus.removeWhere((key, value) => key == event.productId!);
+        productStatus.addAll({
+          event.productId!:
+              GetProductDetailWithoutSimilarRelatedProductsStatus.success,
+        });
+        apisMustNotToRequest.add(
+          'GetProductDatailsWithoutRelatedProductsEvent',
+        );
+
+        ErrorManager.resetRetry('GetProductDatailsWithoutRelatedProductsEvent');
+
+        Map<String, GetProductDetailWithoutRelatedProductsModel> newCached =
+            Map.of(state.cachedProductWithoutRelatedProductsModel);
+        // إنشاء خريطة لترتيب الألوان
+        List<SyncColorImageProduct> syncColorImage =
+            r.product?.syncColorImages ?? [];
+        final syncColorImageOrder = {
+          for (var i = 0; i < syncColorImage.length; i++)
+            syncColorImage[i].colorOption: i,
+        };
+
+        List<ProductColor> productColor = r.product?.colors ?? [];
+
+        // ترتيب syncColorImages حسب ترتيب colors
+        productColor.sort(
+          (a, b) => (syncColorImageOrder[a.option] ?? 999).compareTo(
+            (syncColorImageOrder[b.option] ?? 999),
+          ),
+        );
+
+        // بعد الترتيب، syncColorImages ستكون بترتيب: Green, Red, White
+        newCached.removeWhere((key, value) => key == event.productId!);
+        newCached.addAll({
+          event.productId!: r.copyWith(
+            data: r.product?.copyWith(
+              colors: productColor,
+              slug: event.productSlug ?? r.product?.slug,
+            ),
+          ),
+        });
+        int index = -1;
+
+        if (event.currentColorOption != null) {
+          index = productColor.indexWhere(
+            (element) => element.option == event.currentColorOption,
+          );
+        }
+
+        /* PaginationModel<Comment>? getCommentsFromAnalyticsPaginationModel =
           PaginationModel<Comment>(
               paginationStatus: PaginationStatus.success,
               items: r.product?.comments ?? [],
               page: 0,
               hasReachedMax: (r.product?.comments?.length ?? 0) < 10,
               offset: r.product?.commentOffset?.toString());*/
-      PaginationModel<FqaComment>? getFqaCommentsPaginationModel =
-          PaginationModel<FqaComment>(
+        PaginationModel<FqaComment>? getFqaCommentsPaginationModel =
+            PaginationModel<FqaComment>(
               paginationStatus: PaginationStatus.success,
               items: r.product?.fqaQuestions?.comments ?? [],
               page: 0,
               total: r.product?.fqaQuestions?.total,
               hasReachedMax:
-                  (r.product?.fqaQuestions?.comments?.length ?? 0) < 10,
-              offset: r.product?.fqaQuestions?.offset?.toString());
-      PaginationModel<BuyersComment>? getBuyersCommentsPaginationModel =
-          PaginationModel<BuyersComment>(
+                  (r.product?.fqaQuestions?.comments?.length ?? 0) < 10 ||
+                  r.product?.fqaQuestions?.offset == null ||
+                  r.product?.fqaQuestions?.offset == "null",
+              offset: r.product?.fqaQuestions?.offset?.toString(),
+            );
+        PaginationModel<BuyersComment>? getBuyersCommentsPaginationModel =
+            PaginationModel<BuyersComment>(
               paginationStatus: PaginationStatus.success,
               items: r.product?.buyersComment?.comments ?? [],
               page: 0,
               total: r.product?.buyersComment?.total,
               hasReachedMax:
-                  (r.product?.buyersComment?.comments?.length ?? 0) < 10,
-              offset: r.product?.buyersComment?.offset?.toString());
+                  (r.product?.buyersComment?.comments?.length ?? 0) < 10 ||
+                  r.product?.buyersComment?.offset == null ||
+                  r.product?.buyersComment?.offset == "null",
+              offset: r.product?.buyersComment?.offset?.toString(),
+            );
 
-      emit(state.copyWith(
-          cachedProductWithoutRelatedProductsModel: Map.of(newCached),
-          // getCommentsFromAnalyticsPaginationModel:
-          //     getCommentsFromAnalyticsPaginationModel,
-          getBuyersCommentsPaginationModel: {
-            "all": getBuyersCommentsPaginationModel
-          },
-          getFqaCommentsPaginationModel: {"all": getFqaCommentsPaginationModel},
-          productStatus: Map.of(productStatus)));
-      add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
-          index: index,
-          productSlug: event.productSlug ?? r.product?.slug ?? ""));
-    });
+        emit(
+          state.copyWith(
+            cachedProductWithoutRelatedProductsModel: Map.of(newCached),
+            // getCommentsFromAnalyticsPaginationModel:
+            //     getCommentsFromAnalyticsPaginationModel,
+            getBuyersCommentsPaginationModel: {
+              "all": getBuyersCommentsPaginationModel,
+            },
+            getFqaCommentsPaginationModel: {
+              "all": getFqaCommentsPaginationModel,
+            },
+            productStatus: Map.of(productStatus),
+          ),
+        );
+        add(
+          ChangeStatusOFGetProductsDetailsToSuccessEvent(
+            index: index,
+            productSlug: event.productSlug ?? r.product?.slug ?? "",
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -1720,29 +2043,32 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   @override
   Map<String, dynamic>? toJson(HomeState state) {
-    return state.copyWith(
-      currentSelectedColorForEveryProduct: {},
-      reRequestTheseProductListingInBoutiques: {},
-      reRequestProductWithFilters: {},
-      productStatus: {},
-      cartIdsHurryUPTimerStarted: {},
-      listOfErrorSendedToMobileErrorLog: [],
-      listitemForAddToCart: [],
-      getAndAddCountViewOfProductStatus: {},
-      addItemInCartStatus: AddItemInCartStatus.init,
-      uploadUserPhotoCloudinaryStatus: UploadUserPhotoCloudinaryStatus.init,
-      updateItemInCartStatus: UpdateItemInCartStatus.init,
-      deleteItemInCartStatus: DeleteItemInCartStatus.init,
-      getCartItemsStatus: GetCartItemsStatus.init,
-      getOldCartItemsStatus: GetOLdCartItemsStatus.init,
-      getProductDetailWithoutSimilarRelatedProductsStatus:
-          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-      getStartingSettingsStatus: GetStartingSettingsStatus.init,
-      checkAvailabilityProductCartStatus:
-          CheckAvailabilityProductCartStatus.init,
-      checkWithGetCartStatus: CheckWithGetCartStatus.init,
-      getUserNotificationModel: const PaginationModel.init(),
-    ).toJson();
+    return state
+        .copyWith(
+          currentSelectedColorForEveryProduct: {},
+          reRequestTheseProductListingInBoutiques: {},
+          reRequestProductWithFilters: {},
+          productStatus: {},
+          cartIdsHurryUPTimerStarted: {},
+          listOfErrorSendedToMobileErrorLog: [],
+          listitemForAddToCart: [],
+          getAndAddCountViewOfProductStatus: {},
+          addItemInCartStatus: AddItemInCartStatus.init,
+          uploadUserPhotoCloudinaryStatus: UploadUserPhotoCloudinaryStatus.init,
+          updateItemInCartStatus: UpdateItemInCartStatus.init,
+          deleteItemInCartStatus: DeleteItemInCartStatus.init,
+          getCartItemsStatus: GetCartItemsStatus.init,
+          updateLikeCommentRatingStatus: UpdateLikeCommentRatingStatus.init,
+          getOldCartItemsStatus: GetOLdCartItemsStatus.init,
+          getProductDetailWithoutSimilarRelatedProductsStatus:
+              GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+          getStartingSettingsStatus: GetStartingSettingsStatus.init,
+          checkAvailabilityProductCartStatus:
+              CheckAvailabilityProductCartStatus.init,
+          checkWithGetCartStatus: CheckWithGetCartStatus.init,
+          getUserNotificationModel: const PaginationModel.init(),
+        )
+        .toJson();
   }
 
   /* FutureOr<void> _onGetCommentForProductEvent(
@@ -1796,7 +2122,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 */
   FutureOr<void> _onGetCartItemEvent(
-      GetCartItemEvent event, Emitter<HomeState> emit) async {
+    GetCartItemEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     if (state.getCartOverviewStatus == GetCartOverviewStatus.loading) {
       Future.delayed(const Duration(seconds: 5), () {
         add(const GetCartItemEvent());
@@ -1805,112 +2133,122 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.loading));
     final response = await getCartItemUseCase(NoParams());
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetCartItemEvent', l.statusCode)) {
-        add(const GetCartItemEvent());
-        ErrorManager.incrementRetry('GetCartItemEvent');
-      }
-      emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
-    }, (r) {
-      if (state.getCartOverviewStatus == GetCartOverviewStatus.loading ||
-          state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
-          state.addItemInCartStatus == AddItemInCartStatus.loading ||
-          state.deleteItemInCartStatus == DeleteItemInCartStatus.loading) {
-        Future.delayed(const Duration(seconds: 5), () {
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetCartItemEvent', l.statusCode)) {
           add(const GetCartItemEvent());
-        });
+          ErrorManager.incrementRetry('GetCartItemEvent');
+        }
+        emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
+      },
+      (r) {
+        if (state.getCartOverviewStatus == GetCartOverviewStatus.loading ||
+            state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
+            state.addItemInCartStatus == AddItemInCartStatus.loading ||
+            state.deleteItemInCartStatus == DeleteItemInCartStatus.loading) {
+          Future.delayed(const Duration(seconds: 5), () {
+            add(const GetCartItemEvent());
+          });
 
-        return;
-      }
-      List<Cart> carts;
-      List<Cart> cartCollection = [];
-      Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart =
-          {};
-      Map<String, Map<String, String>> addVariationToCartId = {};
-      r.data?.cart?.forEach((element) => addVariationToCartId.addAll({
+          return;
+        }
+        List<Cart> carts;
+        List<Cart> cartCollection = [];
+        Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart =
+            {};
+        Map<String, Map<String, String>> addVariationToCartId = {};
+        r.data?.cart?.forEach(
+          (element) => addVariationToCartId.addAll({
             element.id.toString(): {
               "size": element.variations.isNullOrEmpty
                   ? ""
                   : "${element.variations?[0].sizeOption ?? ""}",
               "color": element.variations.isNullOrEmpty
                   ? ""
-                  : "${element.variations?[0].colorOption ?? ""}"
+                  : "${element.variations?[0].colorOption ?? ""}",
+            },
+          }),
+        );
+        emit(state.copyWith(currentQuantityForCart: {}));
+        List<String> cartIdIsFound = [];
+        r.data?.cart?.forEach((element) {
+          cartIdIsFound.add(element.id.toString());
+          add(
+            AddQuantityForCartEvent(
+              quantity: element.quantity ?? 0,
+              productId: element.productId.toString(),
+              currentSize: element.variations.isNullOrEmpty
+                  ? ""
+                  : element.variations?[0].sizeOption ?? "",
+              cartId: element.id ?? 0,
+              colorName: element.variations.isNullOrEmpty
+                  ? ""
+                  : element.variations?[0].colorOption ?? "",
+            ),
+          );
+
+          if (addImagesToProductIdForCart[element.productId.toString()] ==
+              null) {
+            addImagesToProductIdForCart[element.productId.toString()] = {};
+          }
+          if (!addImagesToProductIdForCart[element.productId
+                  .toString()]![element.id]
+              .isNullOrEmpty) {
+            for (int i = 0; i < element.quantity!; i++) {
+              addImagesToProductIdForCart[element
+                    ..productId.toString()]![element.id]!
+                  .add([
+                    element.image ?? "",
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations?[0].color ?? "null",
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations?[0].size ?? "null",
+                  ]);
             }
-          }));
-      emit(state.copyWith(currentQuantityForCart: {}));
-      List<String> cartIdIsFound = [];
-      r.data?.cart?.forEach((element) {
-        cartIdIsFound.add(element.id.toString());
-        add(AddQuantityForCartEvent(
-            quantity: element.quantity ?? 0,
-            productId: element.productId.toString(),
-            currentSize: element.variations.isNullOrEmpty
-                ? ""
-                : element.variations?[0].sizeOption ?? "",
-            cartId: element.id ?? 0,
-            colorName: element.variations.isNullOrEmpty
-                ? ""
-                : element.variations?[0].colorOption ?? ""));
+            ;
+          } else {
+            addImagesToProductIdForCart[element.productId.toString()]!.addAll({
+              element.id!: [],
+            });
 
-        if (addImagesToProductIdForCart[element.productId.toString()] == null) {
-          addImagesToProductIdForCart[element.productId.toString()] = {};
-        }
-        if (!addImagesToProductIdForCart[element.productId.toString()]![
-                element.id]
-            .isNullOrEmpty) {
-          for (int i = 0; i < element.quantity!; i++) {
-            addImagesToProductIdForCart[element..productId.toString()]![
-                    element.id]!
-                .add([
-              element.image ?? "",
-              element.variations.isNullOrEmpty
-                  ? "null"
-                  : element.variations.isNullOrEmpty
-                      ? "null"
-                      : element.variations?[0].color ?? "null",
-              element.variations.isNullOrEmpty
-                  ? "null"
-                  : element.variations?[0].size ?? "null"
-            ]);
+            addImagesToProductIdForCart[element.productId
+                    .toString()]![element.id!] =
+                [];
+
+            for (int i = 0; i < element.quantity!; i++) {
+              addImagesToProductIdForCart[element.productId
+                      .toString()]![element.id]!
+                  .add([
+                    element.image ?? "",
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations?[0].color ?? "null",
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations?[0].size ?? "null",
+                  ]);
+            }
+            ;
           }
-          ;
-        } else {
-          addImagesToProductIdForCart[element.productId.toString()]!
-              .addAll({element.id!: []});
+        });
 
-          addImagesToProductIdForCart[element.productId.toString()]![
-              element.id!] = [];
+        carts = r.data!.cart!;
+        carts.forEach((element) {
+          cartCollection.add(element);
+        });
 
-          for (int i = 0; i < element.quantity!; i++) {
-            addImagesToProductIdForCart[element.productId.toString()]![
-                    element.id]!
-                .add([
-              element.image ?? "",
-              element.variations.isNullOrEmpty
-                  ? "null"
-                  : element.variations.isNullOrEmpty
-                      ? "null"
-                      : element.variations?[0].color ?? "null",
-              element.variations.isNullOrEmpty
-                  ? "null"
-                  : element.variations?[0].size ?? "null"
-            ]);
-          }
-          ;
-        }
-      });
+        ErrorManager.resetRetry('GetCartItemEvent');
 
-      carts = r.data!.cart!;
-      carts.forEach((element) {
-        cartCollection.add(element);
-      });
+        //   Map<String, int> cartIdsHurryUPTimerStarted =
+        //    Map.of(state.cartIdsHurryUPTimerStarted);
 
-      ErrorManager.resetRetry('GetCartItemEvent');
-
-      //   Map<String, int> cartIdsHurryUPTimerStarted =
-      //    Map.of(state.cartIdsHurryUPTimerStarted);
-
-      /* for (var i = 0; i < cartCollection.length; i++) {
+        /* for (var i = 0; i < cartCollection.length; i++) {
         if ((cartCollection[i].haveHurryUpNotifyTimeLeft ?? false) &&
             (cartIdsHurryUPTimerStarted[cartCollection[i].id.toString()] ==
                 null)) {
@@ -1926,7 +2264,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   .round()));
         }
       }*/
-      /* if (cartIdsHurryUPTimerStarted.isNotEmpty) {
+        /* if (cartIdsHurryUPTimerStarted.isNotEmpty) {
         for (var i = 0; i < cartIdsHurryUPTimerStarted.length; i++) {
           if (!cartCollection.contains(cartIdsHurryUPTimerStarted[i])) {
             add(AddTimerStartedToHurryUpEvent(
@@ -1936,39 +2274,43 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }
       }*/
-      emit(state.copyWith(
-          getCartOverviewStatus: GetCartOverviewStatus.success,
-          addImagesToProductIdForCart: addImagesToProductIdForCart,
-          addVariationToCartId: addVariationToCartId,
-          getCartShippingItemsModel: r,
-          cartCollection: List.of(cartCollection),
-          getCartItemsStatus: GetCartItemsStatus.success));
+        emit(
+          state.copyWith(
+            getCartOverviewStatus: GetCartOverviewStatus.success,
+            addImagesToProductIdForCart: addImagesToProductIdForCart,
+            addVariationToCartId: addVariationToCartId,
+            getCartShippingItemsModel: r,
+            cartCollection: List.of(cartCollection),
+            getCartItemsStatus: GetCartItemsStatus.success,
+          ),
+        );
 
-////////////////////   ///////////////////
-      List<Map<String, String>> analyticsCartList = [];
-      cartCollection.forEach((element) {
-        Map<String, String> item = {
-          'item_id': element.productId.toString(),
-          'item_name': element.name.toString(),
-          'price': element.price.toString(),
-          'quantity': element.quantity.toString(),
-          'brand': element.brand!.name.toString(),
-          'category': '',
-          'item_variant': element.variant.toString(),
-        };
+        ////////////////////   ///////////////////
+        List<Map<String, String>> analyticsCartList = [];
+        cartCollection.forEach((element) {
+          Map<String, String> item = {
+            'item_id': element.productId.toString(),
+            'item_name': element.name.toString(),
+            'price': element.price.toString(),
+            'quantity': element.quantity.toString(),
+            'brand': element.brand!.name.toString(),
+            'category': '',
+            'item_variant': element.variant.toString(),
+          };
 
-        analyticsCartList.add(item);
-      });
+          analyticsCartList.add(item);
+        });
 
-      /////////////////////////////////
-      Future.delayed(
-        const Duration(milliseconds: 300),
-        () {
+        /////////////////////////////////
+        Future.delayed(const Duration(milliseconds: 300), () {
           FirebaseAnalyticsService.logEventForSession(
             eventName: AnalyticsEventsConst.viewCart,
             extraParams: {
               'currency': state
-                  .getCurrencyForCountryModel!.data!.currency!.symbol
+                  .getCurrencyForCountryModel!
+                  .data!
+                  .currency!
+                  .symbol
                   .toString(),
               'value': state.getCartShippingItemsModel!.data!.total.toString(),
               'items': analyticsCartList.toString(),
@@ -1976,13 +2318,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             },
             executedEventName: AnalyticsButtonsEventNameConst.CART_ICON,
           );
-        },
-      );
+        });
 
-      //////////////////////////////////
-      // add(AddItemToCartEvent());
-      add(const GetOldCartItemEvent());
-    });
+        //////////////////////////////////
+        // add(AddItemToCartEvent());
+        add(const GetOldCartItemEvent());
+      },
+    );
   }
 
   bool isInPlaceOrder = false;
@@ -1992,7 +2334,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     emit(
-        state.copyWith(checkWithGetCartStatus: CheckWithGetCartStatus.loading));
+      state.copyWith(checkWithGetCartStatus: CheckWithGetCartStatus.loading),
+    );
     final response = await getCartItemUseCase(NoParams());
     response.fold(
       (l) {
@@ -2001,8 +2344,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ErrorManager.incrementRetry('CheckWithGetCartEvent');
           return;
         }
-        emit(state.copyWith(
-            checkWithGetCartStatus: CheckWithGetCartStatus.failure));
+        emit(
+          state.copyWith(
+            checkWithGetCartStatus: CheckWithGetCartStatus.failure,
+          ),
+        );
       },
       (r) {
         List<Cart> carts;
@@ -2014,7 +2360,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         List<String> cartIdIsFound = [];
         r.data?.cart?.forEach((element) {
           cartIdIsFound.add(element.id.toString());
-          add(AddQuantityForCartEvent(
+          add(
+            AddQuantityForCartEvent(
               quantity: element.quantity ?? 0,
               productId: element.productId.toString(),
               currentSize: element.variations.isNullOrEmpty
@@ -2023,51 +2370,55 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               cartId: element.id ?? 0,
               colorName: element.variations.isNullOrEmpty
                   ? ""
-                  : element.variations?[0].colorOption ?? ""));
+                  : element.variations?[0].colorOption ?? "",
+            ),
+          );
           if (addImagesToProductIdForCart[element.productId.toString()] ==
               null) {
             addImagesToProductIdForCart[element.productId.toString()] = {};
           }
-          if (!addImagesToProductIdForCart[element.productId.toString()]![
-                  element.id]
+          if (!addImagesToProductIdForCart[element.productId
+                  .toString()]![element.id]
               .isNullOrEmpty) {
             for (int i = 0; i < element.quantity!; i++) {
-              addImagesToProductIdForCart[element..productId.toString()]![
-                      element.id]!
+              addImagesToProductIdForCart[element
+                    ..productId.toString()]![element.id]!
                   .add([
-                element.image ?? "",
-                element.variations.isNullOrEmpty
-                    ? "null"
-                    : element.variations.isNullOrEmpty
+                    element.image ?? "",
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations.isNullOrEmpty
                         ? "null"
                         : element.variations?[0].color ?? "null",
-                element.variations.isNullOrEmpty
-                    ? "null"
-                    : element.variations?[0].size ?? "null"
-              ]);
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations?[0].size ?? "null",
+                  ]);
             }
             ;
           } else {
-            addImagesToProductIdForCart[element.productId.toString()]!
-                .addAll({element.id!: []});
+            addImagesToProductIdForCart[element.productId.toString()]!.addAll({
+              element.id!: [],
+            });
 
-            addImagesToProductIdForCart[element.productId.toString()]![
-                element.id!] = [];
+            addImagesToProductIdForCart[element.productId
+                    .toString()]![element.id!] =
+                [];
 
             for (int i = 0; i < element.quantity!; i++) {
-              addImagesToProductIdForCart[element.productId.toString()]![
-                      element.id]!
+              addImagesToProductIdForCart[element.productId
+                      .toString()]![element.id]!
                   .add([
-                element.image ?? "",
-                element.variations.isNullOrEmpty
-                    ? "null"
-                    : element.variations.isNullOrEmpty
+                    element.image ?? "",
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations.isNullOrEmpty
                         ? "null"
                         : element.variations?[0].color ?? "null",
-                element.variations.isNullOrEmpty
-                    ? "null"
-                    : element.variations?[0].size ?? "null"
-              ]);
+                    element.variations.isNullOrEmpty
+                        ? "null"
+                        : element.variations?[0].size ?? "null",
+                  ]);
             }
             ;
           }
@@ -2082,12 +2433,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         emit(
           state.copyWith(
-              addImagesToProductIdForCart: addImagesToProductIdForCart,
-              getCartShippingItemsModel: r,
-              cartCollection: List.of(cartCollection),
-              checkWithGetCartStatus: event.isForPlaceOrder
-                  ? CheckWithGetCartStatus.successForPlaceOrder
-                  : CheckWithGetCartStatus.successForCart),
+            addImagesToProductIdForCart: addImagesToProductIdForCart,
+            getCartShippingItemsModel: r,
+            cartCollection: List.of(cartCollection),
+            checkWithGetCartStatus: event.isForPlaceOrder
+                ? CheckWithGetCartStatus.successForPlaceOrder
+                : CheckWithGetCartStatus.successForCart,
+          ),
         );
       },
     );
@@ -2096,39 +2448,48 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onGetOldCartItemEvent(
-      GetOldCartItemEvent event, Emitter<HomeState> emit) async {
+    GetOldCartItemEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(state.copyWith(getOldCartItemsStatus: GetOLdCartItemsStatus.loading));
     final response = await getOldCartItemUseCase(NoParams());
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetoldCartItemEvent', l.statusCode)) {
-        add(const GetOldCartItemEvent());
-        ErrorManager.incrementRetry('GetoldCartItemEvent');
-        return;
-      }
-      emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
-    }, (r) {
-      List<oldCart.OldCart> oldCartCollection = [];
-      List<oldCart.OldCart>? oldCarts;
-      if (state.hideItemInOldCartStatus == HideItemInOldCartStatus.loading) {
-        add(const GetOldCartItemEvent());
-        emit(state.copyWith(
-            hideItemInOldCartStatus: HideItemInOldCartStatus.success));
-        return;
-      }
-      oldCarts = r.data?.original?.data?.oldCart;
-      oldCarts?.forEach((element) {
-        oldCartCollection.add(element);
-      });
-      state.cartCollection?.forEach((element) {
-        oldCartCollection.removeWhere((element) =>
-            element.variant == element.variant &&
-            element.productId == element.productId);
-      });
-      //Map<String, Products> productITemForCart =
-      //    Map.of(state.productITemForCart);
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetoldCartItemEvent', l.statusCode)) {
+          add(const GetOldCartItemEvent());
+          ErrorManager.incrementRetry('GetoldCartItemEvent');
+          return;
+        }
+        emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
+      },
+      (r) {
+        List<oldCart.OldCart> oldCartCollection = [];
+        List<oldCart.OldCart>? oldCarts;
+        if (state.hideItemInOldCartStatus == HideItemInOldCartStatus.loading) {
+          add(const GetOldCartItemEvent());
+          emit(
+            state.copyWith(
+              hideItemInOldCartStatus: HideItemInOldCartStatus.success,
+            ),
+          );
+          return;
+        }
+        oldCarts = r.data?.original?.data?.oldCart;
+        oldCarts?.forEach((element) {
+          oldCartCollection.add(element);
+        });
+        state.cartCollection?.forEach((element) {
+          oldCartCollection.removeWhere(
+            (element) =>
+                element.variant == element.variant &&
+                element.productId == element.productId,
+          );
+        });
+        //Map<String, Products> productITemForCart =
+        //    Map.of(state.productITemForCart);
 
-      // List<String> productIdsInCart = [];
-      /* state.cartCollection?.forEach(
+        // List<String> productIdsInCart = [];
+        /* state.cartCollection?.forEach(
         (element) {
           productIdsInCart.add(element.productId.toString());
         },
@@ -2142,13 +2503,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         (key, value) => !productIdsInCart.contains(key),
       );*/
 
-      ErrorManager.resetRetry('GetoldCartItemEvent');
-      emit(state.copyWith(
-          //  productITemForCart: productITemForCart,
-          getOldCartModel: r,
-          oldCartCollection: List.of(oldCartCollection),
-          getOldCartItemsStatus: GetOLdCartItemsStatus.success));
-    });
+        ErrorManager.resetRetry('GetoldCartItemEvent');
+        emit(
+          state.copyWith(
+            //  productITemForCart: productITemForCart,
+            getOldCartModel: r,
+            oldCartCollection: List.of(oldCartCollection),
+            getOldCartItemsStatus: GetOLdCartItemsStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   /*FutureOr<void> _onGetProductsListInCartEventEvent(
@@ -2182,16 +2547,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }*/
 
   FutureOr<void> _onSaveUserInfoEvent(
-      SaveUserInfoFromAuthEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-        userInfo: event.userInfo, statusCodeOfCommentProcess: "200"));
+    SaveUserInfoFromAuthEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        userInfo: event.userInfo,
+        statusCodeOfCommentProcess: "200",
+      ),
+    );
   }
 
   FutureOr<void> _onSendErrorToMobileErrorLogEvent(
-      SendErrorToMobileErrorLogEvent event, Emitter<HomeState> emit) async {
-    List<String> listOfErrorSendedToMobileErrorLog =
-        List.of(state.listOfErrorSendedToMobileErrorLog);
-    String key = event.errorExption +
+    SendErrorToMobileErrorLogEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    List<String> listOfErrorSendedToMobileErrorLog = List.of(
+      state.listOfErrorSendedToMobileErrorLog,
+    );
+    String key =
+        event.errorExption +
         event.errorPath +
         event.messageFromeBackend +
         event.urlBackend;
@@ -2202,14 +2577,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       return;
     }
     listOfErrorSendedToMobileErrorLog.add(key);
-    emit(state.copyWith(
-        listOfErrorSendedToMobileErrorLog: listOfErrorSendedToMobileErrorLog));
+    emit(
+      state.copyWith(
+        listOfErrorSendedToMobileErrorLog: listOfErrorSendedToMobileErrorLog,
+      ),
+    );
     final requests = prefsRepository.getRequestsData();
     Map<String, dynamic>? lastApiRequest;
     if (requests.isNotEmpty) {
       // استبعد أي طلبات flutter_error
-      requests.removeWhere((element) => (element.containsKey('flutter_error') ||
-          element["url"].contains("mobile_error_log")));
+      requests.removeWhere(
+        (element) =>
+            (element.containsKey('flutter_error') ||
+            element["url"].contains("mobile_error_log")),
+      );
       if (requests.isNotEmpty) {
         lastApiRequest = requests.last;
       }
@@ -2244,17 +2625,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       "urlBackend": event.urlBackend,
       "messageFromeBackend": event.messageFromeBackend,
       "lastApiRequest": lastApiRequest?.toString(),
-      "errorPath": event.errorPath
+      "errorPath": event.errorPath,
     };
     final errorMessage = jsonEncode(userInfo);
 
     final response = await sendErrorToMobileErrorLogUseCase(
-        SendErrorToMobileErrorLogParams(errorDescription: errorMessage));
+      SendErrorToMobileErrorLogParams(errorDescription: errorMessage),
+    );
     response.fold((l) {}, (r) {});
   }
 
   FutureOr<void> _onAddCurrentSizeColorEvent(
-      AddCurrentColorSizeEvent event, Emitter<HomeState> emit) async {
+    AddCurrentColorSizeEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     Map<String, String> sizeColor;
 
     sizeColor = {
@@ -2269,10 +2653,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     String currentSize = event.choiceOption!;
-    Map<String, List<int>> currentQuantity =
-        Map.of(state.currentQuantityForCart ?? {});
+    Map<String, List<int>> currentQuantity = Map.of(
+      state.currentQuantityForCart ?? {},
+    );
 
-    String key = "${event.products.productId.toString()}" +
+    String key =
+        "${event.products.productId.toString()}" +
         "${event.colorOption}" +
         "${currentSize}";
 
@@ -2284,17 +2670,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (quantity > (double.tryParse(event.maxAllowed ?? "0") ?? 0) &&
           (double.tryParse(event.maxAllowed ?? "0") ?? 0) != 0) {
         showMessage(
-            "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            hasError: true,
-            showInRelease: true);
+          "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          hasError: true,
+          showInRelease: true,
+        );
         return;
       }
       if (currentQuantity[key]![0] > 0) {
         currentQuantity[key]![0] = quantity;
         emit(state.copyWith(currentQuantityForCart: currentQuantity));
-        add(UpdateItemInCartEvent(
+        add(
+          UpdateItemInCartEvent(
             fromCartPage: event.fromCartPage,
             newQuantity: event.quantity!.round(),
             fishAddAllTheItems: event.finishAddAllTheItems,
@@ -2305,7 +2693,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             productId: event.products.productId.toString(),
             totalQuantity: quantity,
             cartId: currentQuantity[key]![1].toString(),
-            boutiqueId: event.boutiqueId.toString()));
+            boutiqueId: event.boutiqueId.toString(),
+          ),
+        );
         return;
       }
     } else {
@@ -2315,41 +2705,47 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               (double.tryParse(event.maxAllowed ?? "0") ?? 0) &&
           (double.tryParse(event.maxAllowed ?? "0") ?? 0) != 0) {
         showMessage(
-            "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            hasError: true,
-            showInRelease: true);
+          "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          hasError: true,
+          showInRelease: true,
+        );
         return;
       }
     }
 
     CartBrand brand = CartBrand(
       icon: CartIcon(
-          originalHeight: "50",
-          filePath: event.products.brand != null
-              ? event.products.brand!.icon != null
+        originalHeight: "50",
+        filePath: event.products.brand != null
+            ? event.products.brand!.icon != null
                   ? event.products.brand!.icon!.filePath
                   : ""
-              : "",
-          originalWidth: "50"),
+            : "",
+        originalWidth: "50",
+      ),
     );
     VariationCart variation = VariationCart(
-        color: event.colorName,
-        colorOption: event.colorOption,
-        size: event.sizeName,
-        sizeOption: event.choiceOption);
+      color: event.colorName,
+      colorOption: event.colorOption,
+      size: event.sizeName,
+      sizeOption: event.choiceOption,
+    );
     String currentUuid = const Uuid().v4();
     BoutiquesCart boutiquesCart = BoutiquesCart(
-        icon: IconCart(filePath: event.boutiqueIcon), id: event.boutiqueId);
+      icon: IconCart(filePath: event.boutiqueIcon),
+      id: event.boutiqueId,
+    );
     Cart cart = Cart(
       uuid: currentUuid,
       countOfPieces: event.countOfPieces,
       image: event.image,
       boutique: boutiquesCart,
       isRedeem: event.isRedeem,
-      offerPrice:
-          event.isRedeem ? event.redeemVariantPrice : event.products.offerPrice,
+      offerPrice: event.isRedeem
+          ? event.redeemVariantPrice
+          : event.products.offerPrice,
       name: event.products.name,
       price: event.products.price,
       quantity: event.quantity,
@@ -2358,8 +2754,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       productId: event.products.productId,
     );
     List<Cart>? cartCollection = List.of(state.cartCollection ?? []);
-    List<oldCart.OldCart>? oldCartCollection =
-        List.of(state.oldcartCollection ?? []);
+    List<oldCart.OldCart>? oldCartCollection = List.of(
+      state.oldcartCollection ?? [],
+    );
     /* if (cartCollection == {}) {
       emit(state
           .copyWith(cartCollection: {"${event.boutiqueId.toString()}": []}));
@@ -2372,11 +2769,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           element.image == event.image &&
           (element.variations!.isNotEmpty
               ? ((element.variations?[0].colorOption ?? '') ==
-                  (variation.colorOption ?? ''))
+                    (variation.colorOption ?? ''))
               : true) &&
           (element.variations!.isNotEmpty
               ? ((element.variations?[0].sizeOption ?? '') ==
-                  (variation.sizeOption ?? ''))
+                    (variation.sizeOption ?? ''))
               : true),
       orElse: () => oldCart.OldCart(id: -1),
     );
@@ -2385,17 +2782,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           element.image == event.image &&
           (element.variations!.isNotEmpty
               ? ((element.variations?[0].colorOption ?? "") ==
-                  (variation.colorOption ?? ""))
+                    (variation.colorOption ?? ""))
               : true) &&
           (element.variations!.isNotEmpty
               ? ((element.variations?[0].sizeOption ?? "") ==
-                  (variation.sizeOption ?? ''))
+                    (variation.sizeOption ?? ''))
               : true),
     );
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         oldCartCollection: oldCartCollection,
         cartCollection: cartCollection,
-        addItemInCartStatus: AddItemInCartStatus.loading));
+        addItemInCartStatus: AddItemInCartStatus.loading,
+      ),
+    );
 
     final response = await addItemToCartUseCase(
       AddITemToCartParams(
@@ -2410,13 +2810,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('AddCartItemEvent', l.statusCode)) {
-        if (prefsRepository.isTokenExpired ?? false) {
-          Future.delayed(
-            const Duration(seconds: 5),
-            () {
-              add(AddItemToCartEvent(
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('AddCartItemEvent', l.statusCode)) {
+          if (prefsRepository.isTokenExpired ?? false) {
+            Future.delayed(const Duration(seconds: 5), () {
+              add(
+                AddItemToCartEvent(
                   fromCartPage: event.fromCartPage,
                   isRedeem: event.isRedeem,
                   redeemVariantPrice: event.redeemVariantPrice,
@@ -2431,38 +2831,69 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   choiceOption: event.choiceOption,
                   maxAllowed: event.maxAllowed,
                   color: event.color,
-                  quantity: event.quantity));
+                  quantity: event.quantity,
+                ),
+              );
               ErrorManager.incrementRetry('AddCartItemEvent');
               return;
-            },
+            });
+          } else {
+            add(
+              AddItemToCartEvent(
+                fromCartPage: event.fromCartPage,
+                isRedeem: event.isRedeem,
+                redeemVariantPrice: event.redeemVariantPrice,
+                colorName: event.colorName,
+                sizeName: event.sizeName,
+                boutiqueIcon: event.boutiqueIcon,
+                boutiqueId: event.boutiqueId,
+                finishAddAllTheItems: event.finishAddAllTheItems,
+                countOfPieces: event.countOfPieces,
+                colorOption: event.colorOption,
+                productSlugForTopic: event.productSlugForTopic,
+                image: event.image,
+                products: event.products,
+                choiceOption: event.choiceOption,
+                maxAllowed: event.maxAllowed,
+                color: event.color,
+                quantity: event.quantity,
+              ),
+            );
+          }
+
+          ErrorManager.incrementRetry('AddCartItemEvent');
+          add(
+            UpdateListOfItemForAddToCartEvent(
+              imageForAddToCart: ImageForAddToCart(),
+              operation: "remove",
+              productId: event.products.productId.toString(),
+              resetTheList: true,
+            ),
           );
-        } else {
-          add(AddItemToCartEvent(
-              fromCartPage: event.fromCartPage,
-              isRedeem: event.isRedeem,
-              redeemVariantPrice: event.redeemVariantPrice,
-              colorName: event.colorName,
-              sizeName: event.sizeName,
-              boutiqueIcon: event.boutiqueIcon,
-              boutiqueId: event.boutiqueId,
-              finishAddAllTheItems: event.finishAddAllTheItems,
-              countOfPieces: event.countOfPieces,
-              colorOption: event.colorOption,
-              productSlugForTopic: event.productSlugForTopic,
-              image: event.image,
-              products: event.products,
-              choiceOption: event.choiceOption,
-              maxAllowed: event.maxAllowed,
-              color: event.color,
-              quantity: event.quantity));
+
+          state.cartCollection!.remove(cart);
+
+          if (PreOldCart.id != -1) {
+            state.oldcartCollection!.add(PreOldCart);
+          }
+
+          emit(
+            state.copyWith(
+              cartCollection: state.cartCollection,
+              oldCartCollection: state.oldcartCollection,
+            ),
+          );
+          return;
         }
 
-        ErrorManager.incrementRetry('AddCartItemEvent');
-        add(UpdateListOfItemForAddToCartEvent(
+        add(
+          UpdateListOfItemForAddToCartEvent(
             imageForAddToCart: ImageForAddToCart(),
             operation: "remove",
             productId: event.products.productId.toString(),
-            resetTheList: true));
+            resetTheList: true,
+          ),
+        );
 
         state.cartCollection!.remove(cart);
 
@@ -2470,162 +2901,181 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           state.oldcartCollection!.add(PreOldCart);
         }
 
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             cartCollection: state.cartCollection,
-            oldCartCollection: state.oldcartCollection));
-        return;
-      }
+            addItemInCartStatus: AddItemInCartStatus.failure,
+            oldCartCollection: state.oldcartCollection,
+          ),
+        );
 
-      add(UpdateListOfItemForAddToCartEvent(
-          imageForAddToCart: ImageForAddToCart(),
-          operation: "remove",
-          productId: event.products.productId.toString(),
-          resetTheList: true));
+        showMessage(
+          l.message,
+          hasError: true,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+        );
+      },
+      (r) {
+        add(GetCartOverviewEvent());
+        Variation? variation;
+        Map<String, GetProductDetailWithoutRelatedProductsModel>?
+        cachedProductWithoutRelatedProductsModel = Map.of(
+          state.cachedProductWithoutRelatedProductsModel,
+        );
+        Product? product =
+            cachedProductWithoutRelatedProductsModel[event.products.productId
+                    .toString()]
+                ?.product;
 
-      state.cartCollection!.remove(cart);
+        GetAuthProductDetailsModel getAuthProductDetailsModel =
+            state.authProductDetailsModel ?? GetAuthProductDetailsModel();
+        List<Variation> listVariation =
+            getAuthProductDetailsModel.data?.variation ?? [];
 
-      if (PreOldCart.id != -1) {
-        state.oldcartCollection!.add(PreOldCart);
-      }
+        int index = listVariation.indexWhere(
+          (element) =>
+              element.type ==
+              "${event.colorOption}${(event.colorOption != "" && event.choiceOption != "") ? "-" : ""}${event.choiceOption}",
+        );
+        ErrorManager.resetRetry('AddCartItemEvent');
+        add(
+          UpdateListOfItemForAddToCartEvent(
+            imageForAddToCart: ImageForAddToCart(),
+            operation: "remove",
+            productId: event.products.productId.toString(),
+            resetTheList: true,
+          ),
+        );
 
-      emit(state.copyWith(
-          cartCollection: state.cartCollection,
-          addItemInCartStatus: AddItemInCartStatus.failure,
-          oldCartCollection: state.oldcartCollection));
+        if (r.data == null || r.data == "" || (r.data?.status ?? 0) != 1) {
+          if (index != -1) {
+            variation = listVariation[index];
+            listVariation.removeAt(index);
 
-      showMessage(
-        l.message,
-        hasError: true,
-        foreGroundColor: Colors.white,
-        backGroundColor: Colors.black,
-      );
-    }, (r) {
-      add(GetCartOverviewEvent());
-      Variation? variation;
-      Map<String, GetProductDetailWithoutRelatedProductsModel>?
-          cachedProductWithoutRelatedProductsModel =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
-      Product? product = cachedProductWithoutRelatedProductsModel[
-              event.products.productId.toString()]
-          ?.product;
+            variation = variation.copyWith(qty: 0);
+            listVariation.insert(index, variation);
 
-      GetAuthProductDetailsModel getAuthProductDetailsModel =
-          state.authProductDetailsModel ?? GetAuthProductDetailsModel();
-      List<Variation> listVariation =
-          getAuthProductDetailsModel.data?.variation ?? [];
-
-      int index = listVariation.indexWhere((element) =>
-          element.type ==
-          "${event.colorOption}${(event.colorOption != "" && event.choiceOption != "") ? "-" : ""}${event.choiceOption}");
-      ErrorManager.resetRetry('AddCartItemEvent');
-      add(UpdateListOfItemForAddToCartEvent(
-          imageForAddToCart: ImageForAddToCart(),
-          operation: "remove",
-          productId: event.products.productId.toString(),
-          resetTheList: true));
-
-      if (r.data == null || r.data == "" || (r.data?.status ?? 0) != 1) {
-        if (index != -1) {
-          variation = listVariation[index];
-          listVariation.removeAt(index);
-
-          variation = variation.copyWith(qty: 0);
-          listVariation.insert(index, variation);
-
-          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-              data: getAuthProductDetailsModel.data!
-                  .copyWith(variation: listVariation));
-        }
-        showDialog(
-          context: navigatorKey.currentState!.context,
-          builder: (context) => AlertDialog(
+            getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+              data: getAuthProductDetailsModel.data!.copyWith(
+                variation: listVariation,
+              ),
+            );
+          }
+          showDialog(
+            context: navigatorKey.currentState!.context,
+            builder: (context) => AlertDialog(
               title: MyTextWidget(
                 "${r.message}",
-                style: context.textTheme.labelMedium
-                    ?.copyWith(color: Colors.red, height: 1.25),
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: Colors.red,
+                  height: 1.25,
+                ),
               ),
               actions: <Widget>[
                 SingleChildScrollView(
-                    child: Column(
-                  children: [
-                    MyTextWidget(
-                      "${LocaleKeys.do_you_want_to_notify_You_when_your_choose_available.tr()}",
-                      style: context.textTheme.bodyMedium
-                          ?.copyWith(color: Colors.black, height: 1.25),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
+                  child: Column(
+                    children: [
+                      MyTextWidget(
+                        "${LocaleKeys.do_you_want_to_notify_You_when_your_choose_available.tr()}",
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: Colors.black,
+                          height: 1.25,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AppElevatedButton(
-                              child: Text(
-                                "${LocaleKeys.not_now.tr()}",
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              }),
+                            child: Text(
+                              "${LocaleKeys.not_now.tr()}",
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
                           AppElevatedButton(
-                              child: Text(
-                                "${LocaleKeys.notify_me.tr()}",
-                                style: const TextStyle(color: Colors.green),
-                              ),
-                              onPressed: () {
-                                add(RequestForNotificationWhenProductBecameAvailableEvent(
-                                    event.products.productId.toString(),
-                                    state.startingSetting?.notificationTypes
-                                            ?.firstWhere(
-                                                (type) =>
-                                                    type.name ==
-                                                    'product availability',
-                                                orElse: () =>
-                                                    NotificationType(id: -1))
-                                            .id ??
-                                        -1,
-                                    event.choiceOption ?? "",
-                                    event.colorOption,
-                                    true));
-                                Navigator.of(context).pop();
-                              }),
-                        ]),
-                  ],
-                ))
-              ]),
-        );
+                            child: Text(
+                              "${LocaleKeys.notify_me.tr()}",
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                            onPressed: () {
+                              add(
+                                RequestForNotificationWhenProductBecameAvailableEvent(
+                                  event.products.productId.toString(),
+                                  state.startingSetting?.notificationTypes
+                                          ?.firstWhere(
+                                            (type) =>
+                                                type.name ==
+                                                'product availability',
+                                            orElse: () =>
+                                                NotificationType(id: -1),
+                                          )
+                                          .id ??
+                                      -1,
+                                  event.choiceOption ?? "",
+                                  event.colorOption,
+                                  true,
+                                ),
+                              );
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
 
-        cartCollection.remove(cart);
-        if (!event.fromCartPage) {
-          add(AddSizesForColorsEvent(
-              currentColorName: state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.products.productId.toString()]!
-                          .product
-                          ?.colors
-                          ?.isNullOrEmpty ??
-                      true
-                  ? ""
-                  : state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.products.productId.toString()]!
-                          .product!
-                          .colors?[state.currentSelectedColorForEveryProduct[
-                                  event.products.slug] ??
-                              0]
-                          .option ??
-                      "",
-              variation: listVariation));
-        }
+          cartCollection.remove(cart);
+          if (!event.fromCartPage) {
+            add(
+              AddSizesForColorsEvent(
+                currentColorName:
+                    state
+                            .cachedProductWithoutRelatedProductsModel[event
+                                .products
+                                .productId
+                                .toString()]!
+                            .product
+                            ?.colors
+                            ?.isNullOrEmpty ??
+                        true
+                    ? ""
+                    : state
+                              .cachedProductWithoutRelatedProductsModel[event
+                                  .products
+                                  .productId
+                                  .toString()]!
+                              .product!
+                              .colors?[state
+                                      .currentSelectedColorForEveryProduct[event
+                                      .products
+                                      .slug] ??
+                                  0]
+                              .option ??
+                          "",
+                variation: listVariation,
+              ),
+            );
+          }
 
-        emit(state.copyWith(
-            addItemInCartStatus: AddItemInCartStatus.success,
-            cartCollection: cartCollection,
-            cachedProductWithoutRelatedProductsModel:
-                cachedProductWithoutRelatedProductsModel,
-            authProductDetailsModel: getAuthProductDetailsModel));
+          emit(
+            state.copyWith(
+              addItemInCartStatus: AddItemInCartStatus.success,
+              cartCollection: cartCollection,
+              cachedProductWithoutRelatedProductsModel:
+                  cachedProductWithoutRelatedProductsModel,
+              authProductDetailsModel: getAuthProductDetailsModel,
+            ),
+          );
 
-        /* if (event.fishAddAllTheItems) {
+          /* if (event.fishAddAllTheItems) {
           showMessage(r.message!,
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
@@ -2635,120 +3085,148 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           add(GetCartItemEvent());
         }*/
 
-        return;
-      } else {
-        if (index != -1) {
-          variation = listVariation[index];
-          listVariation.removeAt(index);
-          variation = variation.copyWith(
-              qty: ((variation.qty)! - (event.quantity ?? 0)));
-          listVariation.insert(index, variation);
-
-          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-              data: getAuthProductDetailsModel.data!
-                  .copyWith(variation: listVariation));
-        }
-
-        product = product?.copyWith(
-            availableQuantity:
-                ((product.availableQuantity)! - (event.quantity ?? 0)).round());
-
-        cachedProductWithoutRelatedProductsModel[event.products.productId
-            .toString()] = cachedProductWithoutRelatedProductsModel[
-                event.products.productId.toString()]!
-            .copyWith(data: product!);
-        Map<String, Map<String, String>> addVariationToCartId =
-            Map.of(state.addVariationToCartId ?? {});
-        addVariationToCartId.addAll({
-          r.data!.idCart.toString(): {
-            "size": "${event.choiceOption ?? ""}",
-            "color": "${event.colorOption}"
-          }
-        });
-        Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart =
-            Map.from(state.addImagesToProductIdForCart);
-        if (addImagesToProductIdForCart[event.products.productId.toString()] ==
-            null) {
-          addImagesToProductIdForCart[event.products.productId.toString()] = {};
-        }
-        if (!addImagesToProductIdForCart[event.products.productId.toString()]![
-                r.data!.idCart!]
-            .isNullOrEmpty) {
-          for (int i = 0; i < event.quantity!; i++) {
-            addImagesToProductIdForCart[event.products.productId.toString()]![
-                    r.data!.idCart!]!
-                .add([
-              event.image,
-              event.colorName == "" ? "null" : event.colorName,
-              event.sizeName == "" ? "null" : event.sizeName
-            ]);
-          }
-          ;
+          return;
         } else {
-          addImagesToProductIdForCart[event.products.productId.toString()]![
-              r.data!.idCart!] = [];
-          for (int i = 0; i < event.quantity!; i++) {
-            addImagesToProductIdForCart[event.products.productId.toString()]![
-                    r.data!.idCart!]!
-                .add([
-              event.image,
-              event.colorName == "" ? "null" : event.colorName,
-              event.sizeName == "" ? "null" : event.sizeName
-            ]);
+          if (index != -1) {
+            variation = listVariation[index];
+            listVariation.removeAt(index);
+            variation = variation.copyWith(
+              qty: ((variation.qty)! - (event.quantity ?? 0)),
+            );
+            listVariation.insert(index, variation);
+
+            getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+              data: getAuthProductDetailsModel.data!.copyWith(
+                variation: listVariation,
+              ),
+            );
           }
-          ;
-        }
-        add(AddQuantityForCartEvent(
-            currentSize: currentSize,
-            colorName: event.colorOption,
-            cartId: r.data!.idCart!,
-            quantity: event.quantity!,
-            productId: event.products.productId.toString()));
-        cartCollection.removeWhere(
-          (element) => element.uuid == currentUuid,
-        );
 
-        cart = cart.copyWith(id: r.data!.idCart!);
-        cartCollection.insert(0, cart);
-        if (!event.fromCartPage) {
-          add(AddSizesForColorsEvent(
-              currentColorName: state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.products.productId.toString()]!
-                          .product
-                          ?.colors
-                          ?.isNullOrEmpty ??
-                      true
-                  ? ""
-                  : state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.products.productId.toString()]!
-                          .product!
-                          .colors?[state.currentSelectedColorForEveryProduct[
-                                  event.products.slug] ??
-                              0]
-                          .option ??
-                      "",
-              variation: listVariation));
-        }
+          product = product?.copyWith(
+            availableQuantity:
+                ((product.availableQuantity)! - (event.quantity ?? 0)).round(),
+          );
 
-        emit(state.copyWith(
-            addItemInCartStatus: AddItemInCartStatus.success,
-            authProductDetailsModel: getAuthProductDetailsModel,
-            addVariationToCartId: addVariationToCartId,
-            cachedProductWithoutRelatedProductsModel:
-                cachedProductWithoutRelatedProductsModel,
-            cartCollection: cartCollection,
-            addImagesToProductIdForCart: addImagesToProductIdForCart));
-      }
-      if (event.finishAddAllTheItems) {
-        showMessage(r.message!,
+          cachedProductWithoutRelatedProductsModel[event.products.productId
+                  .toString()] =
+              cachedProductWithoutRelatedProductsModel[event.products.productId
+                      .toString()]!
+                  .copyWith(data: product!);
+          Map<String, Map<String, String>> addVariationToCartId = Map.of(
+            state.addVariationToCartId ?? {},
+          );
+          addVariationToCartId.addAll({
+            r.data!.idCart.toString(): {
+              "size": "${event.choiceOption ?? ""}",
+              "color": "${event.colorOption}",
+            },
+          });
+          Map<String, Map<int, List<List<String>>>>
+          addImagesToProductIdForCart = Map.from(
+            state.addImagesToProductIdForCart,
+          );
+          if (addImagesToProductIdForCart[event.products.productId
+                  .toString()] ==
+              null) {
+            addImagesToProductIdForCart[event.products.productId.toString()] =
+                {};
+          }
+          if (!addImagesToProductIdForCart[event.products.productId
+                  .toString()]![r.data!.idCart!]
+              .isNullOrEmpty) {
+            for (int i = 0; i < event.quantity!; i++) {
+              addImagesToProductIdForCart[event.products.productId
+                      .toString()]![r.data!.idCart!]!
+                  .add([
+                    event.image,
+                    event.colorName == "" ? "null" : event.colorName,
+                    event.sizeName == "" ? "null" : event.sizeName,
+                  ]);
+            }
+            ;
+          } else {
+            addImagesToProductIdForCart[event.products.productId
+                    .toString()]![r.data!.idCart!] =
+                [];
+            for (int i = 0; i < event.quantity!; i++) {
+              addImagesToProductIdForCart[event.products.productId
+                      .toString()]![r.data!.idCart!]!
+                  .add([
+                    event.image,
+                    event.colorName == "" ? "null" : event.colorName,
+                    event.sizeName == "" ? "null" : event.sizeName,
+                  ]);
+            }
+            ;
+          }
+          add(
+            AddQuantityForCartEvent(
+              currentSize: currentSize,
+              colorName: event.colorOption,
+              cartId: r.data!.idCart!,
+              quantity: event.quantity!,
+              productId: event.products.productId.toString(),
+            ),
+          );
+          cartCollection.removeWhere((element) => element.uuid == currentUuid);
+
+          cart = cart.copyWith(id: r.data!.idCart!);
+          cartCollection.insert(0, cart);
+          if (!event.fromCartPage) {
+            add(
+              AddSizesForColorsEvent(
+                currentColorName:
+                    state
+                            .cachedProductWithoutRelatedProductsModel[event
+                                .products
+                                .productId
+                                .toString()]!
+                            .product
+                            ?.colors
+                            ?.isNullOrEmpty ??
+                        true
+                    ? ""
+                    : state
+                              .cachedProductWithoutRelatedProductsModel[event
+                                  .products
+                                  .productId
+                                  .toString()]!
+                              .product!
+                              .colors?[state
+                                      .currentSelectedColorForEveryProduct[event
+                                      .products
+                                      .slug] ??
+                                  0]
+                              .option ??
+                          "",
+                variation: listVariation,
+              ),
+            );
+          }
+
+          emit(
+            state.copyWith(
+              addItemInCartStatus: AddItemInCartStatus.success,
+              authProductDetailsModel: getAuthProductDetailsModel,
+              addVariationToCartId: addVariationToCartId,
+              cachedProductWithoutRelatedProductsModel:
+                  cachedProductWithoutRelatedProductsModel,
+              cartCollection: cartCollection,
+              addImagesToProductIdForCart: addImagesToProductIdForCart,
+            ),
+          );
+        }
+        if (event.finishAddAllTheItems) {
+          showMessage(
+            r.message!,
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             showInRelease: true,
-            timeShowing: Toast.LENGTH_SHORT);
-      }
-    });
+            timeShowing: Toast.LENGTH_SHORT,
+          );
+        }
+      },
+    );
   }
 
   /* FutureOr<void> _onAddProductItemForCartEvent(
@@ -2764,11 +3242,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }*/
 
   FutureOr<void> _onRemoveItemToCartEvent(
-      RemoveItemFormCartEvent event, Emitter<HomeState> emit) async {
+    RemoveItemFormCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(state.copyWith(deleteItemInCartStatus: DeleteItemInCartStatus.init));
 
-    Cart cart = state.cartCollection!
-        .firstWhere((element) => element.id.toString() == event.itemId);
+    Cart cart = state.cartCollection!.firstWhere(
+      (element) => element.id.toString() == event.itemId,
+    );
     List<Cart>? cartCollection = List.of(state.cartCollection!);
     cartCollection.remove(cart);
 
@@ -2776,199 +3257,260 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         Map.of(state.addImagesToProductIdForCart);
     List<List<String>> preListImage = [];
     if (addImagesToProductIdForCart[event.productId] != null) {
-      if (!addImagesToProductIdForCart[event.productId]![
-              int.parse(event.itemId)]
+      if (!addImagesToProductIdForCart[event.productId]![int.parse(
+            event.itemId,
+          )]
           .isNullOrEmpty) {
         addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
-            .forEach(
-          (element) {
-            if (element[0] == event.image) {
-              preListImage.add(element);
-            }
-          },
-        );
+            .forEach((element) {
+              if (element[0] == event.image) {
+                preListImage.add(element);
+              }
+            });
         addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
-            .removeWhere(
-          (element) => element[0] == event.image,
-        );
+            .removeWhere((element) => element[0] == event.image);
       }
     }
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         cartCollection: cartCollection,
         addImagesToProductIdForCart: addImagesToProductIdForCart,
-        deleteItemInCartStatus: DeleteItemInCartStatus.loading));
-    final response =
-        await removeItemToCartUseCase(RemoveITemToCartParams(id: event.itemId));
+        deleteItemInCartStatus: DeleteItemInCartStatus.loading,
+      ),
+    );
+    final response = await removeItemToCartUseCase(
+      RemoveITemToCartParams(id: event.itemId),
+    );
 
-    response.fold((l) {
-      Map<String, Map<int, List<List<String>>>> preAddImagesToProductIdForCart =
-          Map.of(state.addImagesToProductIdForCart);
-      preAddImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]
-          ?.addAll(preListImage);
-
-      List<Cart>? cartCollection = List.of(state.cartCollection!);
-
-      cartCollection.add(cart);
-
-      emit(state.copyWith(
-          addImagesToProductIdForCart: preAddImagesToProductIdForCart,
-          cartCollection: cartCollection,
-          deleteItemInCartStatus: DeleteItemInCartStatus.failure));
-      if (ErrorManager.shouldRetry('RemoveCartItemEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('RemoveCartItemEvent');
-
-        add(RemoveItemFormCartEvent(
-            image: event.image,
-            currentSize: event.currentSize,
-            fromCartPage: event.fromCartPage,
-            colorName: event.colorName,
-            itemId: event.itemId,
-            boutiqueId: event.boutiqueId,
-            productId: event.productId));
-        return;
-      }
-      showMessage(
-        "${LocaleKeys.your_request_faild.tr()}",
-        foreGroundColor: Colors.white,
-        hasError: true,
-        backGroundColor: Colors.black,
-      );
-    }, (r) {
-      add(GetCartOverviewEvent());
-      Variation? variation;
-      GetAuthProductDetailsModel getAuthProductDetailsModel =
-          state.authProductDetailsModel ?? GetAuthProductDetailsModel();
-      Map<String, GetProductDetailWithoutRelatedProductsModel>?
-          cachedProductWithoutRelatedProductsModel =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
-      Product? product =
-          cachedProductWithoutRelatedProductsModel[event.productId.toString()]
-              ?.product;
-      List<Variation> listVariation =
-          getAuthProductDetailsModel.data?.variation ?? [];
-
-      int index = listVariation.indexWhere((element) =>
-          element.type ==
-          "${event.colorName}${(event.colorName != "" && event.currentSize != "") ? "-" : ""}${event.currentSize}");
-      if (index != -1) {
-        variation = listVariation[index];
-        listVariation.removeAt(index);
-        variation = variation.copyWith(qty: ((variation.qty)! + 1));
-        listVariation.insert(index, variation);
-
-        getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-            data: getAuthProductDetailsModel.data!
-                .copyWith(variation: listVariation));
-      }
-      product =
-          product?.copyWith(availableQuantity: product.availableQuantity! + 1);
-      cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
-          cachedProductWithoutRelatedProductsModel[event.productId.toString()]!
-              .copyWith(data: product!);
-      Map<String, Map<String, String>> addVariationToCartId =
-          Map.of(state.addVariationToCartId ?? {});
-      addVariationToCartId
-          .removeWhere((key, value) => key == event.itemId.toString());
-      Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart =
-          Map.from(state.addImagesToProductIdForCart);
-      if (!addImagesToProductIdForCart[event.productId]![
-              int.parse(event.itemId)]
-          .isNullOrEmpty) {
-        addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
-            .removeWhere(
-          (element) => element[0] == event.image,
+    response.fold(
+      (l) {
+        Map<String, Map<int, List<List<String>>>>
+        preAddImagesToProductIdForCart = Map.of(
+          state.addImagesToProductIdForCart,
         );
-      }
+        preAddImagesToProductIdForCart[event.productId]![int.parse(
+              event.itemId,
+            )]
+            ?.addAll(preListImage);
 
-      emit(state.copyWith(
-          cachedProductWithoutRelatedProductsModel:
-              cachedProductWithoutRelatedProductsModel,
-          authProductDetailsModel: getAuthProductDetailsModel,
-          addVariationToCartId: addVariationToCartId,
-          addImagesToProductIdForCart: addImagesToProductIdForCart,
-          deleteItemInCartStatus: DeleteItemInCartStatus.success));
+        List<Cart>? cartCollection = List.of(state.cartCollection!);
 
-      add(AddQuantityForCartEvent(
-          currentSize: event.currentSize,
-          colorName: event.colorName,
-          cartId: int.tryParse(event.itemId)!,
-          quantity: 0,
-          productId: event.productId));
-      add(AddSizesForColorsEvent(
-          currentColorName: event.colorName, variation: listVariation));
-      ErrorManager.resetRetry('RemoveCartItemEvent');
+        cartCollection.add(cart);
 
-      showMessage(
-        "${LocaleKeys.item_was_hidden_successfuly.tr()}",
-        foreGroundColor: Colors.white,
-        backGroundColor: Colors.black,
-      );
-    });
+        emit(
+          state.copyWith(
+            addImagesToProductIdForCart: preAddImagesToProductIdForCart,
+            cartCollection: cartCollection,
+            deleteItemInCartStatus: DeleteItemInCartStatus.failure,
+          ),
+        );
+        if (ErrorManager.shouldRetry('RemoveCartItemEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('RemoveCartItemEvent');
+
+          add(
+            RemoveItemFormCartEvent(
+              image: event.image,
+              currentSize: event.currentSize,
+              fromCartPage: event.fromCartPage,
+              colorName: event.colorName,
+              itemId: event.itemId,
+              boutiqueId: event.boutiqueId,
+              productId: event.productId,
+            ),
+          );
+          return;
+        }
+        showMessage(
+          "${LocaleKeys.your_request_faild.tr()}",
+          foreGroundColor: Colors.white,
+          hasError: true,
+          backGroundColor: Colors.black,
+        );
+      },
+      (r) {
+        add(GetCartOverviewEvent());
+        Variation? variation;
+        GetAuthProductDetailsModel getAuthProductDetailsModel =
+            state.authProductDetailsModel ?? GetAuthProductDetailsModel();
+        Map<String, GetProductDetailWithoutRelatedProductsModel>?
+        cachedProductWithoutRelatedProductsModel = Map.of(
+          state.cachedProductWithoutRelatedProductsModel,
+        );
+        Product? product =
+            cachedProductWithoutRelatedProductsModel[event.productId.toString()]
+                ?.product;
+        List<Variation> listVariation =
+            getAuthProductDetailsModel.data?.variation ?? [];
+
+        int index = listVariation.indexWhere(
+          (element) =>
+              element.type ==
+              "${event.colorName}${(event.colorName != "" && event.currentSize != "") ? "-" : ""}${event.currentSize}",
+        );
+        if (index != -1) {
+          variation = listVariation[index];
+          listVariation.removeAt(index);
+          variation = variation.copyWith(qty: ((variation.qty)! + 1));
+          listVariation.insert(index, variation);
+
+          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+            data: getAuthProductDetailsModel.data!.copyWith(
+              variation: listVariation,
+            ),
+          );
+        }
+        product = product?.copyWith(
+          availableQuantity: product.availableQuantity! + 1,
+        );
+        cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
+            cachedProductWithoutRelatedProductsModel[event.productId
+                    .toString()]!
+                .copyWith(data: product!);
+        Map<String, Map<String, String>> addVariationToCartId = Map.of(
+          state.addVariationToCartId ?? {},
+        );
+        addVariationToCartId.removeWhere(
+          (key, value) => key == event.itemId.toString(),
+        );
+        Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart =
+            Map.from(state.addImagesToProductIdForCart);
+        if (!addImagesToProductIdForCart[event.productId]![int.parse(
+              event.itemId,
+            )]
+            .isNullOrEmpty) {
+          addImagesToProductIdForCart[event.productId]![int.parse(
+                event.itemId,
+              )]!
+              .removeWhere((element) => element[0] == event.image);
+        }
+
+        emit(
+          state.copyWith(
+            cachedProductWithoutRelatedProductsModel:
+                cachedProductWithoutRelatedProductsModel,
+            authProductDetailsModel: getAuthProductDetailsModel,
+            addVariationToCartId: addVariationToCartId,
+            addImagesToProductIdForCart: addImagesToProductIdForCart,
+            deleteItemInCartStatus: DeleteItemInCartStatus.success,
+          ),
+        );
+
+        add(
+          AddQuantityForCartEvent(
+            currentSize: event.currentSize,
+            colorName: event.colorName,
+            cartId: int.tryParse(event.itemId)!,
+            quantity: 0,
+            productId: event.productId,
+          ),
+        );
+        add(
+          AddSizesForColorsEvent(
+            currentColorName: event.colorName,
+            variation: listVariation,
+          ),
+        );
+        ErrorManager.resetRetry('RemoveCartItemEvent');
+
+        showMessage(
+          "${LocaleKeys.item_was_hidden_successfuly.tr()}",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+        );
+      },
+    );
   }
 
   FutureOr<void> _onHideItemInOldCartEvent(
-      HideItemInOldCartEvent event, Emitter<HomeState> emit) async {
+    HideItemInOldCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     List<oldCart.OldCart>? preOldCartCollection = state.oldcartCollection;
     List<oldCart.OldCart>? oldCartCollection = preOldCartCollection;
     oldCart.OldCart? cart;
     if (!(event.hideAll ?? false)) {
       cart = state.oldcartCollection!.firstWhere(
-          (element) => element.id.toString() == event.oldCartId.toString());
+        (element) => element.id.toString() == event.oldCartId.toString(),
+      );
 
       oldCartCollection!.remove(cart);
     }
 
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         oldCartCollection: (event.hideAll ?? false) ? [] : oldCartCollection,
-        hideItemInOldCartStatus: HideItemInOldCartStatus.loading));
-    final response = await hideItemsInOldCartUseCase(HideItemsInOldCartParams(
-        hideAll: event.hideAll ?? false, oLdCartId: event.oldCartId));
+        hideItemInOldCartStatus: HideItemInOldCartStatus.loading,
+      ),
+    );
+    final response = await hideItemsInOldCartUseCase(
+      HideItemsInOldCartParams(
+        hideAll: event.hideAll ?? false,
+        oLdCartId: event.oldCartId,
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('HideItemInOldCartEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('HideItemInOldCartEvent');
-        add(HideItemInOldCartEvent(
-            hideAll: event.hideAll, oldCartId: event.oldCartId));
-        return;
-      }
-      List<oldCart.OldCart>? oldCartCollection =
-          List.of(state.oldcartCollection!);
-      if (!(event.hideAll ?? false)) {
-        oldCartCollection.add(cart!);
-      }
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('HideItemInOldCartEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('HideItemInOldCartEvent');
+          add(
+            HideItemInOldCartEvent(
+              hideAll: event.hideAll,
+              oldCartId: event.oldCartId,
+            ),
+          );
+          return;
+        }
+        List<oldCart.OldCart>? oldCartCollection = List.of(
+          state.oldcartCollection!,
+        );
+        if (!(event.hideAll ?? false)) {
+          oldCartCollection.add(cart!);
+        }
 
-      emit(state.copyWith(
-          oldCartCollection: (event.hideAll ?? false)
-              ? preOldCartCollection
-              : oldCartCollection,
-          hideItemInOldCartStatus: HideItemInOldCartStatus.failure));
-      if (ErrorManager.shouldRetry('HideItemInOldCartEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('HideItemInOldCartEvent');
-        add(HideItemInOldCartEvent(
-            hideAll: event.hideAll, oldCartId: event.oldCartId));
-        return;
-      }
-      showMessage(
-        "${LocaleKeys.your_request_faild.tr()}",
-        foreGroundColor: Colors.white,
-        backGroundColor: Colors.black,
-        hasError: true,
-      );
-    }, (r) {
-      ErrorManager.resetRetry('HideItemInOldCartEvent');
-      add(const GetOldCartItemEvent());
-      emit(state.copyWith(
-        hideItemInOldCartStatus: HideItemInOldCartStatus.success,
-      ));
-      showMessage(
-        "${LocaleKeys.item_was_hidden_successfuly.tr()}",
-        foreGroundColor: Colors.white,
-        backGroundColor: Colors.black,
-      );
-    });
+        emit(
+          state.copyWith(
+            oldCartCollection: (event.hideAll ?? false)
+                ? preOldCartCollection
+                : oldCartCollection,
+            hideItemInOldCartStatus: HideItemInOldCartStatus.failure,
+          ),
+        );
+        if (ErrorManager.shouldRetry('HideItemInOldCartEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('HideItemInOldCartEvent');
+          add(
+            HideItemInOldCartEvent(
+              hideAll: event.hideAll,
+              oldCartId: event.oldCartId,
+            ),
+          );
+          return;
+        }
+        showMessage(
+          "${LocaleKeys.your_request_faild.tr()}",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          hasError: true,
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('HideItemInOldCartEvent');
+        add(const GetOldCartItemEvent());
+        emit(
+          state.copyWith(
+            hideItemInOldCartStatus: HideItemInOldCartStatus.success,
+          ),
+        );
+        showMessage(
+          "${LocaleKeys.item_was_hidden_successfuly.tr()}",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+        );
+      },
+    );
   }
 
-/*  FutureOr<void> _onConvertItemFromOldcartToCartEvent(
+  /*  FutureOr<void> _onConvertItemFromOldcartToCartEvent(
       ConvertItemFromOldcartToCartEvent event, Emitter<HomeState> emit) async {
     emit(state.copyWith(
         convertItemFromOldcartToCartStatus:
@@ -3106,31 +3648,38 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }*/
 
   FutureOr<void> _onUpdateItemInCartEvent(
-      UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
+    UpdateItemInCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     if (event.totalQuantity == 0) {
-      add(RemoveItemFormCartEvent(
+      add(
+        RemoveItemFormCartEvent(
           image: event.image,
           currentSize: event.currentSize,
           fromCartPage: event.fromCartPage,
           colorName: event.colorOption,
           itemId: event.cartId,
           boutiqueId: event.boutiqueId,
-          productId: event.productId));
+          productId: event.productId,
+        ),
+      );
       return;
     }
     if (event.totalQuantity > (event.maxAllowed ?? 0) &&
         event.maxAllowed != 0) {
       showMessage(
-          "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${(event.maxAllowed ?? 0.0).round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()}",
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          showInRelease: true,
-          hasError: true);
+        "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${(event.maxAllowed ?? 0.0).round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()}",
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+        showInRelease: true,
+        hasError: true,
+      );
       return;
     }
 
-    Cart cart = state.cartCollection!
-        .firstWhere((element) => element.id.toString() == event.cartId);
+    Cart cart = state.cartCollection!.firstWhere(
+      (element) => element.id.toString() == event.cartId,
+    );
     Cart PreCart = cart;
     cart = cart.copyWith(quantity: event.totalQuantity);
 
@@ -3141,138 +3690,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         return e;
       }
     }).toList();
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         cartCollection: cartCollection,
-        updateItemInCartStatus: UpdateItemInCartStatus.loading));
-    final response = await updateItemInCartUseCase(UpdateITemInCartParams(
-        id: event.cartId, quantity: event.totalQuantity));
+        updateItemInCartStatus: UpdateItemInCartStatus.loading,
+      ),
+    );
+    final response = await updateItemInCartUseCase(
+      UpdateITemInCartParams(id: event.cartId, quantity: event.totalQuantity),
+    );
 
-    response.fold((l) {
-      List<Cart>? cartCollection = state.cartCollection!.map((e) {
-        if (e.id.toString() == event.cartId) {
-          return PreCart;
-        } else {
-          return e;
-        }
-      }).toList();
-      emit(state.copyWith(cartCollection: cartCollection));
-      if (ErrorManager.shouldRetry('UpdateCartItemEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('UpdateCartItemEvent');
-        add(UpdateItemInCartEvent(
-          image: event.image,
-          currentSize: event.currentSize,
-          boutiqueId: event.boutiqueId,
-          productName: event.productName,
-          productPrice: event.productPrice,
-          cartId: event.cartId,
-          totalQuantity: event.totalQuantity,
-          maxAllowed: event.maxAllowed,
-          productId: event.productId,
-          colorOption: event.colorOption,
-          newQuantity: event.newQuantity,
-          fishAddAllTheItems: event.fishAddAllTheItems,
-          fromCartPage: event.fromCartPage,
-        ));
-        return;
-      }
-      showMessage(
-        l.message,
-        foreGroundColor: Colors.white,
-        hasError: true,
-        backGroundColor: Colors.black,
-      );
-      emit(state.copyWith(
-          updateItemInCartStatus: UpdateItemInCartStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('UpdateCartItemEvent');
-      add(GetCartOverviewEvent());
-      Variation? variation;
-      Map<String, GetProductDetailWithoutRelatedProductsModel>?
-          cachedProductWithoutRelatedProductsModel =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
-      Product? product =
-          cachedProductWithoutRelatedProductsModel[event.productId.toString()]
-              ?.product;
-      List<Variation> listVariation =
-          state.authProductDetailsModel?.data == null
-              ? []
-              : (state.authProductDetailsModel?.data!.variation) ?? [];
-      GetAuthProductDetailsModel getAuthProductDetailsModel =
-          state.authProductDetailsModel ?? GetAuthProductDetailsModel();
-      int index = listVariation.indexWhere((element) =>
-          element.type ==
-          "${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}");
-      if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
-        if (index != -1 && event.totalQuantity == 1) {
-          variation = listVariation[index];
-          listVariation.removeAt(index);
-          variation = variation.copyWith(qty: 0);
-          listVariation.insert(index, variation);
-
-          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-              data: getAuthProductDetailsModel.data!
-                  .copyWith(variation: listVariation));
-        }
-
-        showDialog(
-          context: navigatorKey.currentState!.context,
-          builder: (context) => AlertDialog(
-              title: MyTextWidget(
-                "${r.message}",
-                style: context.textTheme.labelMedium
-                    ?.copyWith(color: Colors.red, height: 1.25),
-              ),
-              actions: <Widget>[
-                SingleChildScrollView(
-                    child: Column(
-                  children: [
-                    MyTextWidget(
-                      "${LocaleKeys.do_you_want_to_notify_You_when_your_choose_available.tr()}",
-                      style: context.textTheme.bodyMedium
-                          ?.copyWith(color: Colors.black, height: 1.25),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppElevatedButton(
-                              child: Text(
-                                "${LocaleKeys.not_now.tr()}",
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              }),
-                          AppElevatedButton(
-                              child: Text(
-                                "${LocaleKeys.notify_me.tr()}",
-                                style: const TextStyle(color: Colors.green),
-                              ),
-                              onPressed: () {
-                                add(RequestForNotificationWhenProductBecameAvailableEvent(
-                                    event.productId,
-                                    state.startingSetting?.notificationTypes
-                                            ?.firstWhere(
-                                                (type) =>
-                                                    type.name ==
-                                                    'product availability',
-                                                orElse: () =>
-                                                    NotificationType(id: -1))
-                                            .id ??
-                                        -1,
-                                    event.currentSize,
-                                    event.colorOption,
-                                    true));
-                                Navigator.of(context).pop();
-                              }),
-                        ]),
-                  ],
-                ))
-              ]),
-        );
-
+    response.fold(
+      (l) {
         List<Cart>? cartCollection = state.cartCollection!.map((e) {
           if (e.id.toString() == event.cartId) {
             return PreCart;
@@ -3280,145 +3709,331 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             return e;
           }
         }).toList();
-        if (!event.fromCartPage) {
-          add(AddSizesForColorsEvent(
-              currentColorName: state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.productId.toString()]!
-                          .product
-                          ?.colors
-                          ?.isNullOrEmpty ??
-                      true
-                  ? ""
-                  : state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.productId.toString()]!
-                          .product!
-                          .colors?[state.currentSelectedColorForEveryProduct[
-                                  state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          event.productId.toString()]!
+        emit(state.copyWith(cartCollection: cartCollection));
+        if (ErrorManager.shouldRetry('UpdateCartItemEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('UpdateCartItemEvent');
+          add(
+            UpdateItemInCartEvent(
+              image: event.image,
+              currentSize: event.currentSize,
+              boutiqueId: event.boutiqueId,
+              productName: event.productName,
+              productPrice: event.productPrice,
+              cartId: event.cartId,
+              totalQuantity: event.totalQuantity,
+              maxAllowed: event.maxAllowed,
+              productId: event.productId,
+              colorOption: event.colorOption,
+              newQuantity: event.newQuantity,
+              fishAddAllTheItems: event.fishAddAllTheItems,
+              fromCartPage: event.fromCartPage,
+            ),
+          );
+          return;
+        }
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          hasError: true,
+          backGroundColor: Colors.black,
+        );
+        emit(
+          state.copyWith(
+            updateItemInCartStatus: UpdateItemInCartStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('UpdateCartItemEvent');
+        add(GetCartOverviewEvent());
+        Variation? variation;
+        Map<String, GetProductDetailWithoutRelatedProductsModel>?
+        cachedProductWithoutRelatedProductsModel = Map.of(
+          state.cachedProductWithoutRelatedProductsModel,
+        );
+        Product? product =
+            cachedProductWithoutRelatedProductsModel[event.productId.toString()]
+                ?.product;
+        List<Variation> listVariation =
+            state.authProductDetailsModel?.data == null
+            ? []
+            : (state.authProductDetailsModel?.data!.variation) ?? [];
+        GetAuthProductDetailsModel getAuthProductDetailsModel =
+            state.authProductDetailsModel ?? GetAuthProductDetailsModel();
+        int index = listVariation.indexWhere(
+          (element) =>
+              element.type ==
+              "${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
+        );
+        if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
+          if (index != -1 && event.totalQuantity == 1) {
+            variation = listVariation[index];
+            listVariation.removeAt(index);
+            variation = variation.copyWith(qty: 0);
+            listVariation.insert(index, variation);
+
+            getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+              data: getAuthProductDetailsModel.data!.copyWith(
+                variation: listVariation,
+              ),
+            );
+          }
+
+          showDialog(
+            context: navigatorKey.currentState!.context,
+            builder: (context) => AlertDialog(
+              title: MyTextWidget(
+                "${r.message}",
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: Colors.red,
+                  height: 1.25,
+                ),
+              ),
+              actions: <Widget>[
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      MyTextWidget(
+                        "${LocaleKeys.do_you_want_to_notify_You_when_your_choose_available.tr()}",
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: Colors.black,
+                          height: 1.25,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppElevatedButton(
+                            child: Text(
+                              "${LocaleKeys.not_now.tr()}",
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          AppElevatedButton(
+                            child: Text(
+                              "${LocaleKeys.notify_me.tr()}",
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                            onPressed: () {
+                              add(
+                                RequestForNotificationWhenProductBecameAvailableEvent(
+                                  event.productId,
+                                  state.startingSetting?.notificationTypes
+                                          ?.firstWhere(
+                                            (type) =>
+                                                type.name ==
+                                                'product availability',
+                                            orElse: () =>
+                                                NotificationType(id: -1),
+                                          )
+                                          .id ??
+                                      -1,
+                                  event.currentSize,
+                                  event.colorOption,
+                                  true,
+                                ),
+                              );
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          List<Cart>? cartCollection = state.cartCollection!.map((e) {
+            if (e.id.toString() == event.cartId) {
+              return PreCart;
+            } else {
+              return e;
+            }
+          }).toList();
+          if (!event.fromCartPage) {
+            add(
+              AddSizesForColorsEvent(
+                currentColorName:
+                    state
+                            .cachedProductWithoutRelatedProductsModel[event
+                                .productId
+                                .toString()]!
+                            .product
+                            ?.colors
+                            ?.isNullOrEmpty ??
+                        true
+                    ? ""
+                    : state
+                              .cachedProductWithoutRelatedProductsModel[event
+                                  .productId
+                                  .toString()]!
+                              .product!
+                              .colors?[state
+                                      .currentSelectedColorForEveryProduct[state
+                                      .cachedProductWithoutRelatedProductsModel[event
+                                          .productId
+                                          .toString()]!
                                       .product!
                                       .slug] ??
-                              0]
-                          .option ??
-                      "",
-              variation: listVariation));
+                                  0]
+                              .option ??
+                          "",
+                variation: listVariation,
+              ),
+            );
+          }
+          emit(
+            state.copyWith(
+              authProductDetailsModel: getAuthProductDetailsModel,
+              cachedProductWithoutRelatedProductsModel:
+                  cachedProductWithoutRelatedProductsModel,
+              updateItemInCartStatus: UpdateItemInCartStatus.success,
+              cartCollection: cartCollection,
+            ),
+          );
+          return;
         }
-        emit(state.copyWith(
-            authProductDetailsModel: getAuthProductDetailsModel,
-            cachedProductWithoutRelatedProductsModel:
-                cachedProductWithoutRelatedProductsModel,
-            updateItemInCartStatus: UpdateItemInCartStatus.success,
-            cartCollection: cartCollection));
-        return;
-      }
-      if (r.data!.status == 1) {
-        if (index != -1) {
-          variation = listVariation[index];
-          listVariation.removeAt(index);
-          variation =
-              variation.copyWith(qty: ((variation.qty)! - (event.newQuantity)));
-          listVariation.insert(index, variation);
+        if (r.data!.status == 1) {
+          if (index != -1) {
+            variation = listVariation[index];
+            listVariation.removeAt(index);
+            variation = variation.copyWith(
+              qty: ((variation.qty)! - (event.newQuantity)),
+            );
+            listVariation.insert(index, variation);
 
-          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-              data: getAuthProductDetailsModel.data!
-                  .copyWith(variation: listVariation));
-        }
-        product = product?.copyWith(
+            getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+              data: getAuthProductDetailsModel.data!.copyWith(
+                variation: listVariation,
+              ),
+            );
+          }
+          product = product?.copyWith(
             availableQuantity:
-                ((product.availableQuantity)! - (event.newQuantity)).round());
-        cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
-            cachedProductWithoutRelatedProductsModel[
-                    event.productId.toString()]!
-                .copyWith(data: product!);
+                ((product.availableQuantity)! - (event.newQuantity)).round(),
+          );
+          cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
+              cachedProductWithoutRelatedProductsModel[event.productId
+                      .toString()]!
+                  .copyWith(data: product!);
 
-        Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart =
-            Map.from(state.addImagesToProductIdForCart);
+          Map<String, Map<int, List<List<String>>>>
+          addImagesToProductIdForCart = Map.from(
+            state.addImagesToProductIdForCart,
+          );
 
-        if (!addImagesToProductIdForCart[event.productId]![
-                int.parse(event.cartId)]
-            .isNullOrEmpty) {
-          List<String> elementRemove = addImagesToProductIdForCart[
-                  event.productId]![int.parse(event.cartId)]!
-              .firstWhere((element) => element[0] == event.image,
-                  orElse: () => [event.image, "null", "null"]);
+          if (!addImagesToProductIdForCart[event.productId]![int.parse(
+                event.cartId,
+              )]
+              .isNullOrEmpty) {
+            List<String> elementRemove =
+                addImagesToProductIdForCart[event.productId]![int.parse(
+                      event.cartId,
+                    )]!
+                    .firstWhere(
+                      (element) => element[0] == event.image,
+                      orElse: () => [event.image, "null", "null"],
+                    );
 
-          addImagesToProductIdForCart[event.productId]![
-                  int.parse(event.cartId)]!
-              .removeWhere((element) => element[0] == event.image);
-          for (int i = 0; i < event.totalQuantity; i++) {
-            addImagesToProductIdForCart[event.productId]![
-                    int.parse(event.cartId)]!
-                .add([event.image, elementRemove[1], elementRemove[2]]);
+            addImagesToProductIdForCart[event.productId]![int.parse(
+                  event.cartId,
+                )]!
+                .removeWhere((element) => element[0] == event.image);
+            for (int i = 0; i < event.totalQuantity; i++) {
+              addImagesToProductIdForCart[event.productId]![int.parse(
+                    event.cartId,
+                  )]!
+                  .add([event.image, elementRemove[1], elementRemove[2]]);
+            }
+            ;
+          } else {
+            addImagesToProductIdForCart[event.productId]![int.parse(
+                  event.cartId,
+                )] =
+                [];
+            for (int i = 0; i < event.totalQuantity; i++) {
+              addImagesToProductIdForCart[event.productId]![int.parse(
+                    event.cartId,
+                  )]!
+                  .add([event.image, "null", "null"]);
+            }
+            ;
           }
-          ;
-        } else {
-          addImagesToProductIdForCart[event.productId]![
-              int.parse(event.cartId)] = [];
-          for (int i = 0; i < event.totalQuantity; i++) {
-            addImagesToProductIdForCart[event.productId]![
-                    int.parse(event.cartId)]!
-                .add([event.image, "null", "null"]);
-          }
-          ;
-        }
 
-        add(AddQuantityForCartEvent(
-            currentSize: event.currentSize,
-            colorName: event.colorOption,
-            cartId: int.tryParse(event.cartId)!,
-            quantity: event.totalQuantity,
-            productId: event.productId));
+          add(
+            AddQuantityForCartEvent(
+              currentSize: event.currentSize,
+              colorName: event.colorOption,
+              cartId: int.tryParse(event.cartId)!,
+              quantity: event.totalQuantity,
+              productId: event.productId,
+            ),
+          );
 
-        if (event.fishAddAllTheItems) {
-          showMessage(r.message!,
+          if (event.fishAddAllTheItems) {
+            showMessage(
+              r.message!,
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
               showInRelease: true,
-              timeShowing: Toast.LENGTH_SHORT);
-          ErrorManager.resetRetry('AddCartItemEvent');
-        }
-        if (!event.fromCartPage) {
-          add(AddSizesForColorsEvent(
-              currentColorName: state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.productId.toString()]!
-                          .product
-                          ?.colors
-                          ?.isNullOrEmpty ??
-                      true
-                  ? ""
-                  : state
-                          .cachedProductWithoutRelatedProductsModel[
-                              event.productId.toString()]!
-                          .product!
-                          .colors?[state.currentSelectedColorForEveryProduct[
-                                  state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          event.productId.toString()]!
+              timeShowing: Toast.LENGTH_SHORT,
+            );
+            ErrorManager.resetRetry('AddCartItemEvent');
+          }
+          if (!event.fromCartPage) {
+            add(
+              AddSizesForColorsEvent(
+                currentColorName:
+                    state
+                            .cachedProductWithoutRelatedProductsModel[event
+                                .productId
+                                .toString()]!
+                            .product
+                            ?.colors
+                            ?.isNullOrEmpty ??
+                        true
+                    ? ""
+                    : state
+                              .cachedProductWithoutRelatedProductsModel[event
+                                  .productId
+                                  .toString()]!
+                              .product!
+                              .colors?[state
+                                      .currentSelectedColorForEveryProduct[state
+                                      .cachedProductWithoutRelatedProductsModel[event
+                                          .productId
+                                          .toString()]!
                                       .product!
                                       .slug] ??
-                              0]
-                          .option ??
-                      "",
-              variation: listVariation));
+                                  0]
+                              .option ??
+                          "",
+                variation: listVariation,
+              ),
+            );
+          }
+
+          emit(
+            state.copyWith(
+              addImagesToProductIdForCart: addImagesToProductIdForCart,
+              authProductDetailsModel: getAuthProductDetailsModel,
+              cachedProductWithoutRelatedProductsModel:
+                  cachedProductWithoutRelatedProductsModel,
+              updateItemInCartStatus: UpdateItemInCartStatus.success,
+            ),
+          );
         }
 
-        emit(state.copyWith(
-            addImagesToProductIdForCart: addImagesToProductIdForCart,
-            authProductDetailsModel: getAuthProductDetailsModel,
-            cachedProductWithoutRelatedProductsModel:
-                cachedProductWithoutRelatedProductsModel,
-            updateItemInCartStatus: UpdateItemInCartStatus.success));
-      }
-
-      ErrorManager.resetRetry('UpdateCartItemEvent');
-      ////////////////////////
-      if (event.totalQuantity == 0 || event.newQuantity == -1) {
-        Future.delayed(
-          const Duration(milliseconds: 300),
-          () {
+        ErrorManager.resetRetry('UpdateCartItemEvent');
+        ////////////////////////
+        if (event.totalQuantity == 0 || event.newQuantity == -1) {
+          Future.delayed(const Duration(milliseconds: 300), () {
             FirebaseAnalyticsService.logEventForSession(
               executedEventName:
                   AnalyticsButtonsEventNameConst.REMOVE_PRODUCT_FROM_CART,
@@ -3431,36 +4046,43 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     'price': event.productPrice.toString(),
                     'quantity': event.totalQuantity.toString(),
                     'item_variant': '${event.colorOption}-${event.currentSize}',
-                  }
+                  },
                 ].toString(),
               },
             );
-          },
-        );
-      }
-    });
+          });
+        }
+      },
+    );
   }
 
   Future<void> _onGetCurrencyForCountryEvent(
-      GetCurrencyForCountryEvent event, Emitter<HomeState> emit) async {
+    GetCurrencyForCountryEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     final response = await getCurrencyForCountryUseCase(NoParams());
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'GetCurrencyForCountryEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetCurrencyForCountryEvent');
-        add(GetCurrencyForCountryEvent());
-        return;
-      }
-    }, (r) {
-      ErrorManager.resetRetry('GetCurrencyForCountryEvent');
-      emit(state.copyWith(
-        getCurrencyForCountryModel: r,
-      ));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GetCurrencyForCountryEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('GetCurrencyForCountryEvent');
+          add(GetCurrencyForCountryEvent());
+          return;
+        }
+      },
+      (r) {
+        ErrorManager.resetRetry('GetCurrencyForCountryEvent');
+        emit(state.copyWith(getCurrencyForCountryModel: r));
+      },
+    );
   }
 
   FutureOr<void> _onAddCurrentQuantityForCartEvent(
-      AddQuantityForCartEvent event, Emitter<HomeState> emit) async {
+    AddQuantityForCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     Map<String, List<int>> currentQuantity = state.currentQuantityForCart ?? {};
     String key =
         "${event.productId}" + "${event.colorName}" + "${event.currentSize}";
@@ -3468,7 +4090,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       currentQuantity[key] = [event.quantity, event.cartId];
     } else {
       currentQuantity.addAll({
-        key: [event.quantity, event.cartId]
+        key: [event.quantity, event.cartId],
       });
     }
     currentQuantity.removeWhere((key, value) => value[0] == 0);
@@ -3476,125 +4098,176 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onGetNotificationTypeProductEvent(
-      GetNotificationTypeProductEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
+    GetNotificationTypeProductEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         getNotificationTypeProductStatus:
-            GetNotificationTypeProductStatus.loading));
+            GetNotificationTypeProductStatus.loading,
+      ),
+    );
     final response = await getNotificationTypeProductUseCase(NoParams());
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'GetNotificationTypeProductEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetNotificationTypeProductEvent');
-        add(const GetNotificationTypeProductEvent());
-        return;
-      }
-      emit(state.copyWith(
-          getNotificationTypeProductStatus:
-              GetNotificationTypeProductStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('GetNotificationTypeProductEvent');
-      emit(state.copyWith(
-          notificationTypeForProductModel: r,
-          getNotificationTypeProductStatus:
-              GetNotificationTypeProductStatus.success));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GetNotificationTypeProductEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('GetNotificationTypeProductEvent');
+          add(const GetNotificationTypeProductEvent());
+          return;
+        }
+        emit(
+          state.copyWith(
+            getNotificationTypeProductStatus:
+                GetNotificationTypeProductStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetNotificationTypeProductEvent');
+        emit(
+          state.copyWith(
+            notificationTypeForProductModel: r,
+            getNotificationTypeProductStatus:
+                GetNotificationTypeProductStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onConvertItemFromCartToOldCartEvent(
-      ConvertItemFromCartToOldCartEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-      convertItemFromcartToOldCartStatus:
-          ConvertItemFromcartToOldCartStatus.loading,
-    ));
+    ConvertItemFromCartToOldCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        convertItemFromcartToOldCartStatus:
+            ConvertItemFromcartToOldCartStatus.loading,
+      ),
+    );
     final response = await convertItemFromcartToOldCartUsecase(
-        ConvertItemFromcartToOldCartParams(CartId: event.cartId));
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'ConvertItemFromCartToOldCartEvent', l.statusCode)) {
-        add(ConvertItemFromCartToOldCartEvent(cartId: event.cartId));
-        ErrorManager.incrementRetry('ConvertItemFromCartToOldCartEvent');
-        return;
-      }
-      showMessage(l.message,
+      ConvertItemFromcartToOldCartParams(CartId: event.cartId),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'ConvertItemFromCartToOldCartEvent',
+          l.statusCode,
+        )) {
+          add(ConvertItemFromCartToOldCartEvent(cartId: event.cartId));
+          ErrorManager.incrementRetry('ConvertItemFromCartToOldCartEvent');
+          return;
+        }
+        showMessage(
+          l.message,
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
-          hasError: true);
-      emit(state.copyWith(
-          convertItemFromcartToOldCartStatus:
-              ConvertItemFromcartToOldCartStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('ConvertItemFromCartToOldCartEvent');
-      add(const GetCartItemEvent());
-      List<oldCart.OldCart>? oldcartCollection =
-          List.of(state.oldcartCollection ?? []);
-      List<Cart>? cartCollection = List.of(state.cartCollection ?? []);
-      Cart cart = cartCollection.firstWhere(
-        (element) => element.id.toString() == event.cartId,
-        orElse: () => Cart(id: -1),
-      );
-      if (cart.id != -1) {
-        cartCollection.removeWhere(
-          (element) => element.id.toString() == event.cartId,
+          hasError: true,
         );
+        emit(
+          state.copyWith(
+            convertItemFromcartToOldCartStatus:
+                ConvertItemFromcartToOldCartStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('ConvertItemFromCartToOldCartEvent');
+        add(const GetCartItemEvent());
+        List<oldCart.OldCart>? oldcartCollection = List.of(
+          state.oldcartCollection ?? [],
+        );
+        List<Cart>? cartCollection = List.of(state.cartCollection ?? []);
+        Cart cart = cartCollection.firstWhere(
+          (element) => element.id.toString() == event.cartId,
+          orElse: () => Cart(id: -1),
+        );
+        if (cart.id != -1) {
+          cartCollection.removeWhere(
+            (element) => element.id.toString() == event.cartId,
+          );
 
-        oldcartCollection.add(oldCart.OldCart(
-            availableQuantity: cart.availableQuantity?.round(),
-            boutique: cart.boutique,
-            brand: oldCart.Brand(
+          oldcartCollection.add(
+            oldCart.OldCart(
+              availableQuantity: cart.availableQuantity?.round(),
+              boutique: cart.boutique,
+              brand: oldCart.Brand(
                 icon: oldCart.Icon(
-                    filePath: cart.brand?.icon?.filePath,
-                    originalHeight: cart.brand?.icon?.originalHeight,
-                    originalWidth: cart.brand?.icon?.originalWidth),
-                name: cart.name),
-            image: cart.image,
-            cartGroupId: cart.cartGroupId,
-            countOfPieces: cart.countOfPieces,
-            discount: cart.discount,
-            maxAllowedQty: cart.maxAllowedQty,
-            productId: cart.productId,
-            variations: cart.variations,
-            shippingDays: cart.shippingDays,
-            quantity: cart.quantity,
-            thumbnail: cart.thumbnail,
-            id: cart.id,
-            variant: cart.variant,
-            priceOfVariant: cart.price,
-            choices: [
-              oldCart.Choice(
+                  filePath: cart.brand?.icon?.filePath,
+                  originalHeight: cart.brand?.icon?.originalHeight,
+                  originalWidth: cart.brand?.icon?.originalWidth,
+                ),
+                name: cart.name,
+              ),
+              image: cart.image,
+              cartGroupId: cart.cartGroupId,
+              countOfPieces: cart.countOfPieces,
+              discount: cart.discount,
+              maxAllowedQty: cart.maxAllowedQty,
+              productId: cart.productId,
+              variations: cart.variations,
+              shippingDays: cart.shippingDays,
+              quantity: cart.quantity,
+              thumbnail: cart.thumbnail,
+              id: cart.id,
+              variant: cart.variant,
+              priceOfVariant: cart.price,
+              choices: [
+                oldCart.Choice(
                   choice1: ((cart.choices?.isNullOrEmpty) ?? true)
                       ? ""
-                      : cart.choices?[0].choice1)
-            ]));
-      }
-      ErrorManager.resetRetry('ConvertItemFromCartToOldCartEvent');
+                      : cart.choices?[0].choice1,
+                ),
+              ],
+            ),
+          );
+        }
+        ErrorManager.resetRetry('ConvertItemFromCartToOldCartEvent');
 
-      emit(state.copyWith(
-          convertItemFromcartToOldCartStatus:
-              ConvertItemFromcartToOldCartStatus.success,
-          oldCartCollection: oldcartCollection,
-          cartCollection: cartCollection));
-      showMessage(r.message ?? "",
+        emit(
+          state.copyWith(
+            convertItemFromcartToOldCartStatus:
+                ConvertItemFromcartToOldCartStatus.success,
+            oldCartCollection: oldcartCollection,
+            cartCollection: cartCollection,
+          ),
+        );
+        showMessage(
+          r.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
-          showInRelease: true);
-    });
+          showInRelease: true,
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGetPopularSearchItemEvent(
-      GetPopularSearchItemEvent event, Emitter<HomeState> emit) async {
+    GetPopularSearchItemEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     final response = await getPopularSearchItemUseCase(NoParams());
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('getPopularSearchItemEvent', l.statusCode)) {
-        add(const GetPopularSearchItemEvent());
-        ErrorManager.incrementRetry('getPopularSearchItemEvent');
-      }
-    }, (r) {
-      ErrorManager.resetRetry('getPopularSearchItemEvent');
-      List<PopularSearchTerm> popularSearchTerm = [];
-      popularSearchTerm = r.popularSearchTerms ?? [];
-      emit(state.copyWith(popularSearchTerm: popularSearchTerm));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'getPopularSearchItemEvent',
+          l.statusCode,
+        )) {
+          add(const GetPopularSearchItemEvent());
+          ErrorManager.incrementRetry('getPopularSearchItemEvent');
+        }
+      },
+      (r) {
+        ErrorManager.resetRetry('getPopularSearchItemEvent');
+        List<PopularSearchTerm> popularSearchTerm = [];
+        popularSearchTerm = r.popularSearchTerms ?? [];
+        emit(state.copyWith(popularSearchTerm: popularSearchTerm));
+      },
+    );
   }
   /* FutureOr<void> _onGetSearchResultEventEvent(
       GetSearchREsultEvent event, Emitter<HomeState> emit) async {
@@ -3627,7 +4300,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }*/
 
   FutureOr<void> _onAddSearchTextToHistoryEvent(
-      AddSearchTextToHistoryEvent event, Emitter<HomeState> emit) async {
+    AddSearchTextToHistoryEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     List<String> searchHistory = state.searchHistory ?? [];
     if (searchHistory.contains(event.searchTitle)) {
       return;
@@ -3637,7 +4312,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onRemoveSearchTextToHistoryEvent(
-      RemoveSearchTextfromHistoryEvent event, Emitter<HomeState> emit) async {
+    RemoveSearchTextfromHistoryEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     List<String> searchHistory = state.searchHistory ?? [];
     if (event.clearAll) {
       List<String> searchHistory = [];
@@ -3675,12 +4352,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }*/
 
   FutureOr<void> _onAddMultiItemsToCartEvent(
-      AddMultiItemsToCartEvent event, Emitter<HomeState> emit) {
-    List<ImageForAddToCart>? listitemForAddToCart =
-        List.of(state.listitemForAddToCart ?? []);
+    AddMultiItemsToCartEvent event,
+    Emitter<HomeState> emit,
+  ) {
+    List<ImageForAddToCart>? listitemForAddToCart = List.of(
+      state.listitemForAddToCart ?? [],
+    );
     listitemForAddToCart.removeWhere((element) => element.quantity == 0);
     for (var i = 0; i < listitemForAddToCart.length; i++) {
-      add(AddItemToCartEvent(
+      add(
+        AddItemToCartEvent(
           fromCartPage: event.fromCartPage,
           isRedeem: event.isRedeem,
           redeemVariantPrice: event.redeemVariantPrice,
@@ -3697,84 +4378,98 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           choiceOption: listitemForAddToCart[i].choiceOption,
           colorName: listitemForAddToCart[i].colorName!,
           sizeName: listitemForAddToCart[i].choiceName!,
-          quantity: listitemForAddToCart[i].quantity));
-      /////////////////////////////////
-      Future.delayed(
-        const Duration(milliseconds: 300),
-        () {
-          FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.addToCart,
-            executedEventName:
-                AnalyticsButtonsEventNameConst.ADD_TO_CART_BUTTON,
-            extraParams: {
-              'currency': state
-                  .getCurrencyForCountryModel!.data!.currency!.symbol
-                  .toString(),
-              'value': state.getCartShippingItemsModel!.data!.total.toString(),
-              'items': [
-                {
-                  'item_id': event.id.toString(),
-                  'item_name': event.products.name.toString(),
-                  'price': event.products.price.toString(),
-                  'quantity': listitemForAddToCart[i].quantity.toString(),
-                  'brand': event.products.brand?.name.toString(),
-                  'category': event.products.category?.name.toString(),
-                  'count_likes': event.products.countOfLikes.toString(),
-                  'review_count': event.products.reviewsCount.toString(),
-                  'item_variant':
-                      '${listitemForAddToCart[i].colorOption}-${listitemForAddToCart[i].choiceOption}',
-                }
-              ].toString(),
-            },
-          );
-        },
+          quantity: listitemForAddToCart[i].quantity,
+        ),
       );
+      /////////////////////////////////
+      Future.delayed(const Duration(milliseconds: 300), () {
+        FirebaseAnalyticsService.logEventForSession(
+          eventName: AnalyticsEventsConst.addToCart,
+          executedEventName: AnalyticsButtonsEventNameConst.ADD_TO_CART_BUTTON,
+          extraParams: {
+            'currency': state.getCurrencyForCountryModel!.data!.currency!.symbol
+                .toString(),
+            'value': state.getCartShippingItemsModel!.data!.total.toString(),
+            'items': [
+              {
+                'item_id': event.id.toString(),
+                'item_name': event.products.name.toString(),
+                'price': event.products.price.toString(),
+                'quantity': listitemForAddToCart[i].quantity.toString(),
+                'brand': event.products.brand?.name.toString(),
+                'category': event.products.category?.name.toString(),
+                'count_likes': event.products.countOfLikes.toString(),
+                'review_count': event.products.reviewsCount.toString(),
+                'item_variant':
+                    '${listitemForAddToCart[i].colorOption}-${listitemForAddToCart[i].choiceOption}',
+              },
+            ].toString(),
+          },
+        );
+      });
     }
 
     emit(state.copyWith(listitemForAddToCart: []));
   }
 
   FutureOr<void> _onGetAllowedCountriesEvent(
-      GetAllowedCountriesEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-        getAllowedCountriesStatus: GetAllowedCountriesStatus.loading));
+    GetAllowedCountriesEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        getAllowedCountriesStatus: GetAllowedCountriesStatus.loading,
+      ),
+    );
     final response = await getAllowedCountryUseCase(NoParams());
-    response.fold((l) {
-      emit(state.copyWith(
-          getAllowedCountriesStatus: GetAllowedCountriesStatus.failure));
-      if (ErrorManager.shouldRetry('GetAllowCountryEvent', l.statusCode)) {
-        add(GetAllowedCountriesEvent());
-        ErrorManager.incrementRetry('GetAllowCountryEvent');
-      }
-    }, (r) {
-      ErrorManager.resetRetry('GetAllowCountryEvent');
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            getAllowedCountriesStatus: GetAllowedCountriesStatus.failure,
+          ),
+        );
+        if (ErrorManager.shouldRetry('GetAllowCountryEvent', l.statusCode)) {
+          add(GetAllowedCountriesEvent());
+          ErrorManager.incrementRetry('GetAllowCountryEvent');
+        }
+      },
+      (r) {
+        ErrorManager.resetRetry('GetAllowCountryEvent');
 
-      emit(state.copyWith(
-          getAllowedCountriesModel: r,
-          getAllowedCountriesStatus: GetAllowedCountriesStatus.success));
-    });
+        emit(
+          state.copyWith(
+            getAllowedCountriesModel: r,
+            getAllowedCountriesStatus: GetAllowedCountriesStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateListOfItemForAddToCartEvent(
-      UpdateListOfItemForAddToCartEvent event, Emitter<HomeState> emit) async {
+    UpdateListOfItemForAddToCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     if (event.resetTheList) {
       emit(state.copyWith(listitemForAddToCart: []));
       return;
     }
 
     ImageForAddToCart imageForAddToCart = ImageForAddToCart(
-        colorNum: event.imageForAddToCart.colorNum,
-        colorOption: event.imageForAddToCart.colorOption,
-        quantity: event.imageForAddToCart.quantity,
-        countOfPieces: event.imageForAddToCart.countOfPieces,
-        images: event.imageForAddToCart.images,
-        colorName: event.imageForAddToCart.colorName,
-        choiceName: state.currentColorSizeForCart != null
-            ? state.currentColorSizeForCart!["size"]
-            : "",
-        choiceOption: state.currentColorSizeForCart != null
-            ? state.currentColorSizeForCart!["choiceOption"]
-            : "");
+      colorNum: event.imageForAddToCart.colorNum,
+      colorOption: event.imageForAddToCart.colorOption,
+      quantity: event.imageForAddToCart.quantity,
+      countOfPieces: event.imageForAddToCart.countOfPieces,
+      images: event.imageForAddToCart.images,
+      colorName: event.imageForAddToCart.colorName,
+      choiceName: state.currentColorSizeForCart != null
+          ? state.currentColorSizeForCart!["size"]
+          : "",
+      choiceOption: state.currentColorSizeForCart != null
+          ? state.currentColorSizeForCart!["choiceOption"]
+          : "",
+    );
 
     List<ImageForAddToCart>? listitemForAddToCart =
         state.listitemForAddToCart ?? [];
@@ -3793,28 +4488,32 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             element.choiceOption == imageForAddToCart.choiceOption) {
           element.quantity = element.quantity! + 1;
           newImageToAddToCart = ImageForAddToCart(
-              countOfPieces: element.countOfPieces,
-              isDuplicate: true,
-              quantity: 0,
-              choiceOption: element.choiceOption,
-              colorOption: element.colorOption,
-              colorName: element.colorName,
-              choiceName: element.choiceName,
-              images: element.images);
+            countOfPieces: element.countOfPieces,
+            isDuplicate: true,
+            quantity: 0,
+            choiceOption: element.choiceOption,
+            colorOption: element.colorOption,
+            colorName: element.colorName,
+            choiceName: element.choiceName,
+            images: element.images,
+          );
           break;
         } else {
-          if (!listitemForAddToCart.any((element) =>
-              (element.images == imageForAddToCart.images &&
-                  element.colorOption == imageForAddToCart.colorOption &&
-                  element.choiceOption == imageForAddToCart.choiceOption))) {
+          if (!listitemForAddToCart.any(
+            (element) =>
+                (element.images == imageForAddToCart.images &&
+                element.colorOption == imageForAddToCart.colorOption &&
+                element.choiceOption == imageForAddToCart.choiceOption),
+          )) {
             newImageToAddToCart = imageForAddToCart;
           }
         }
       }
-      emit(state.copyWith(listitemForAddToCart: [
-        ...listitemForAddToCart,
-        newImageToAddToCart!
-      ]));
+      emit(
+        state.copyWith(
+          listitemForAddToCart: [...listitemForAddToCart, newImageToAddToCart!],
+        ),
+      );
     } else {
       if (listitemForAddToCart.last.isDuplicate == true) {
         ImageForAddToCart itemLast = listitemForAddToCart.last;
@@ -3826,13 +4525,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 e.choiceOption == itemLast.choiceOption &&
                 e.images == itemLast.images) {
               return ImageForAddToCart(
-                  countOfPieces: e.countOfPieces,
-                  colorOption: itemLast.colorOption,
-                  colorName: itemLast.colorName,
-                  choiceName: itemLast.choiceName,
-                  images: e.images,
-                  quantity: e.quantity! - 1,
-                  choiceOption: itemLast.choiceOption);
+                countOfPieces: e.countOfPieces,
+                colorOption: itemLast.colorOption,
+                colorName: itemLast.colorName,
+                choiceName: itemLast.choiceName,
+                images: e.images,
+                quantity: e.quantity! - 1,
+                choiceOption: itemLast.choiceOption,
+              );
             }
             return e;
           }).toList();
@@ -3846,16 +4546,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onAddOrRemoveLikeForProductEvent(
-      AddOrRemoveLikeForProductEvent event, Emitter<HomeState> emit) async {
+    AddOrRemoveLikeForProductEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     Map<String, GetProductDetailWithoutRelatedProductsModel>
-        cachedProductWithoutRelatedProductsModel =
-        Map.of(state.cachedProductWithoutRelatedProductsModel);
-    GetAuthProductDetailsModel? getAuthProductDetailsModel =
-        state.authProductDetailsModel;
-    if (!cachedProductWithoutRelatedProductsModel
-        .containsKey(event.productId)) {
-      cachedProductWithoutRelatedProductsModel.addAll(
-          {event.productId: GetProductDetailWithoutRelatedProductsModel()});
+    cachedProductWithoutRelatedProductsModel = Map.of(
+      state.cachedProductWithoutRelatedProductsModel,
+    );
+
+    if (!cachedProductWithoutRelatedProductsModel.containsKey(
+      event.productId,
+    )) {
+      cachedProductWithoutRelatedProductsModel.addAll({
+        event.productId: GetProductDetailWithoutRelatedProductsModel(),
+      });
     }
 
     Product? product =
@@ -3869,99 +4573,128 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
     }
 
-    product = product?.copyWith(countOfLikes: countOfLikes);
+    product = product?.copyWith(
+      countOfLikes: countOfLikes,
+      isLiked: event.isFavourite ? true : false,
+    );
     cachedProductWithoutRelatedProductsModel[event.productId] =
-        cachedProductWithoutRelatedProductsModel[event.productId]!
-            .copyWith(data: product);
-    emit(state.copyWith(
-        authProductDetailsModel: getAuthProductDetailsModel?.copyWith(
-            data: getAuthProductDetailsModel.data
-                ?.copyWith(isLiked: event.isFavourite ? true : false)),
+        cachedProductWithoutRelatedProductsModel[event.productId]!.copyWith(
+          data: product,
+        );
+    emit(
+      state.copyWith(
         cachedProductWithoutRelatedProductsModel:
             cachedProductWithoutRelatedProductsModel,
-        addOrRemoveLikeOfProductStatus:
-            AddOrRemoveLikeOfProductStatus.loading));
+        addOrRemoveLikeOfProductStatus: AddOrRemoveLikeOfProductStatus.loading,
+      ),
+    );
 
     final response = event.isFavourite
-        ? await addLikeToProductUsecase(AddLikeToProductParams(
-            productId: event.productId,
-            userId: GetIt.I<PrefsRepository>().myMarketId))
-        : await deleteLikeOfProductUsecase(DeleteLikeOfParams(
-            productId: event.productId,
-            userId: GetIt.I<PrefsRepository>().myMarketId));
+        ? await addLikeToProductUsecase(
+            AddLikeToProductParams(
+              productId: event.productId,
+              userId: GetIt.I<PrefsRepository>().myMarketId,
+            ),
+          )
+        : await deleteLikeOfProductUsecase(
+            DeleteLikeOfParams(
+              productId: event.productId,
+              userId: GetIt.I<PrefsRepository>().myMarketId,
+            ),
+          );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'AddOrRemoveLikeForProductEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('AddOrRemoveLikeForProductEvent');
-        add(AddOrRemoveLikeForProductEvent(
-            productId: event.productId,
-            isFavourite: event.isFavourite,
-            productSlugForTopic: event.productSlugForTopic,
-            productSlug: event.productSlug));
-        return;
-      }
-      Map<String, GetProductDetailWithoutRelatedProductsModel>
-          cachedProductWithoutRelatedProductsModel =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
-      Product? product =
-          cachedProductWithoutRelatedProductsModel[event.productId]?.product;
-      int countOfLikes = product?.countOfLikes ?? 0;
-      if (event.isFavourite) {
-        countOfLikes = countOfLikes - 1;
-      } else {
-        countOfLikes = countOfLikes + 1;
-      }
-      GetAuthProductDetailsModel? getAuthProductDetailsModel =
-          state.authProductDetailsModel;
-      product = product?.copyWith(countOfLikes: countOfLikes);
-      cachedProductWithoutRelatedProductsModel[event.productId] =
-          cachedProductWithoutRelatedProductsModel[event.productId]!
-              .copyWith(data: product);
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'AddOrRemoveLikeForProductEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('AddOrRemoveLikeForProductEvent');
+          add(
+            AddOrRemoveLikeForProductEvent(
+              productId: event.productId,
+              isFavourite: event.isFavourite,
+              productSlugForTopic: event.productSlugForTopic,
+              productSlug: event.productSlug,
+            ),
+          );
+          return;
+        }
+        Map<String, GetProductDetailWithoutRelatedProductsModel>
+        cachedProductWithoutRelatedProductsModel = Map.of(
+          state.cachedProductWithoutRelatedProductsModel,
+        );
+        Product? product =
+            cachedProductWithoutRelatedProductsModel[event.productId]?.product;
+        int countOfLikes = product?.countOfLikes ?? 0;
+        if (event.isFavourite) {
+          countOfLikes = countOfLikes - 1;
+        } else {
+          countOfLikes = countOfLikes + 1;
+        }
 
-      emit(state.copyWith(
-          authProductDetailsModel: getAuthProductDetailsModel?.copyWith(
-              data: getAuthProductDetailsModel.data?.copyWith(
-            isLiked: event.isFavourite ? false : true,
-          )),
-          cachedProductWithoutRelatedProductsModel:
-              cachedProductWithoutRelatedProductsModel,
-          addOrRemoveLikeOfProductStatus:
-              AddOrRemoveLikeOfProductStatus.failure));
-    }, (r) {
-      add(UpdateLikeSocialSharedProductsEvent(
-        productId: event.productId,
-      ));
-      ErrorManager.resetRetry('AddOrRemoveLikeForProductEvent');
-      emit(state.copyWith(
-        addOrRemoveLikeOfProductStatus: AddOrRemoveLikeOfProductStatus.success,
-      ));
-    });
+        product = product?.copyWith(
+          countOfLikes: countOfLikes,
+          isLiked: event.isFavourite ? false : true,
+        );
+        cachedProductWithoutRelatedProductsModel[event.productId] =
+            cachedProductWithoutRelatedProductsModel[event.productId]!.copyWith(
+              data: product,
+            );
+
+        emit(
+          state.copyWith(
+            cachedProductWithoutRelatedProductsModel:
+                cachedProductWithoutRelatedProductsModel,
+            statusCodeOfCommentProcess: l.statusCode.toString(),
+            addOrRemoveLikeOfProductStatus:
+                AddOrRemoveLikeOfProductStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        add(UpdateLikeSocialSharedProductsEvent(productId: event.productId));
+        ErrorManager.resetRetry('AddOrRemoveLikeForProductEvent');
+        emit(
+          state.copyWith(
+            addOrRemoveLikeOfProductStatus:
+                AddOrRemoveLikeOfProductStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onChangeCurrentIndexForUpdatCartEvent(
-      ChangeCurrentIndexForUpdatCartEvent event,
-      Emitter<HomeState> emit) async {
+    ChangeCurrentIndexForUpdatCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(state.copyWith(currentIndexForUpdateCart: event.index));
   }
 
   FutureOr<void> _onAddTimerStartedToHurryUpEvent(
-      AddTimerStartedToHurryUpEvent event, Emitter<HomeState> emit) async {
-    Map<String, int> cartIdsHurryUPTimerStarted =
-        Map.of(state.cartIdsHurryUPTimerStarted);
+    AddTimerStartedToHurryUpEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    Map<String, int> cartIdsHurryUPTimerStarted = Map.of(
+      state.cartIdsHurryUPTimerStarted,
+    );
     if (event.isAddToList) {
       cartIdsHurryUPTimerStarted.addAll({event.cartId: event.timeLeft});
     } else {
-      cartIdsHurryUPTimerStarted
-          .removeWhere((key, value) => key == event.cartId);
+      cartIdsHurryUPTimerStarted.removeWhere(
+        (key, value) => key == event.cartId,
+      );
     }
     emit(
-        state.copyWith(cartIdsHurryUPTimerStarted: cartIdsHurryUPTimerStarted));
+      state.copyWith(cartIdsHurryUPTimerStarted: cartIdsHurryUPTimerStarted),
+    );
   }
 
   FutureOr<void> _onRequestForNotificationWhenProductBecameAvailableEvent(
-      RequestForNotificationWhenProductBecameAvailableEvent event,
-      Emitter<HomeState> emit) async {
+    RequestForNotificationWhenProductBecameAvailableEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     String variant = "";
     if (event.size != "") {
       variant = event.selectedColorName == ''
@@ -3972,14 +4705,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
 
     if (event.subsecribe) {
-      add(SubscribeTopicForNotificationEvent(
+      add(
+        SubscribeTopicForNotificationEvent(
           topic: "product_availability_${event.productId}",
-          variant: variant.replaceAll("_", "-")));
+          variant: variant.replaceAll("_", "-"),
+        ),
+      );
     } else {
-      add(UnSubscribeTopicForNotificationEvent(
-        topic: "product_availability_${event.productId}",
-        variant: variant.replaceAll("_", "-"),
-      ));
+      add(
+        UnSubscribeTopicForNotificationEvent(
+          topic: "product_availability_${event.productId}",
+          variant: variant.replaceAll("_", "-"),
+        ),
+      );
     }
     /*  if (isVariantRequestNotification
         .contains("${event.productId}_${variant}")) {
@@ -4020,153 +4758,213 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onGetAndAddCountViewOfProductEvent(
-      GetAndAddCountViewOfProductEvent event, Emitter<HomeState> emit) async {
+    GetAndAddCountViewOfProductEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     Map<String, GetAndAddCountViewOfProductStatus>
-        getAndAddCountViewOfProductStatus =
-        Map.of(state.getAndAddCountViewOfProductStatus);
+    getAndAddCountViewOfProductStatus = Map.of(
+      state.getAndAddCountViewOfProductStatus,
+    );
     if (getAndAddCountViewOfProductStatus.containsKey(event.productId)) {
       getAndAddCountViewOfProductStatus[event.productId] =
           GetAndAddCountViewOfProductStatus.loading;
     } else {
-      getAndAddCountViewOfProductStatus
-          .addAll({event.productId: GetAndAddCountViewOfProductStatus.loading});
+      getAndAddCountViewOfProductStatus.addAll({
+        event.productId: GetAndAddCountViewOfProductStatus.loading,
+      });
     }
-    emit(state.copyWith(
-        getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus));
+    emit(
+      state.copyWith(
+        getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus,
+      ),
+    );
     final response = await getAndAddCountViewOfProductUsecase(
-        getAndAddCountViewOfProductParams(
-            productId: event.productId,
-            userId: GetIt.I<PrefsRepository>().myMarketId));
-    response.fold((l) {
-      Map<String, GetAndAddCountViewOfProductStatus>
-          getAndAddCountViewOfProductStatus =
-          Map.of(state.getAndAddCountViewOfProductStatus);
+      getAndAddCountViewOfProductParams(
+        productId: event.productId,
+        userId: GetIt.I<PrefsRepository>().myMarketId,
+      ),
+    );
+    response.fold(
+      (l) {
+        Map<String, GetAndAddCountViewOfProductStatus>
+        getAndAddCountViewOfProductStatus = Map.of(
+          state.getAndAddCountViewOfProductStatus,
+        );
 
-      getAndAddCountViewOfProductStatus[event.productId] =
-          GetAndAddCountViewOfProductStatus.failure;
+        getAndAddCountViewOfProductStatus[event.productId] =
+            GetAndAddCountViewOfProductStatus.failure;
 
-      emit(state.copyWith(
-          getAndAddCountViewOfProductStatus:
-              getAndAddCountViewOfProductStatus));
-      emit(state.copyWith(
-          getAndAddCountViewOfProductStatus:
-              getAndAddCountViewOfProductStatus));
-    }, (r) {
-      Map<String, GetAndAddCountViewOfProductStatus>
-          getAndAddCountViewOfProductStatus =
-          Map.of(state.getAndAddCountViewOfProductStatus);
+        emit(
+          state.copyWith(
+            getAndAddCountViewOfProductStatus:
+                getAndAddCountViewOfProductStatus,
+          ),
+        );
+        emit(
+          state.copyWith(
+            getAndAddCountViewOfProductStatus:
+                getAndAddCountViewOfProductStatus,
+          ),
+        );
+      },
+      (r) {
+        /*    Map<String, GetAndAddCountViewOfProductStatus>
+        getAndAddCountViewOfProductStatus = Map.of(
+          state.getAndAddCountViewOfProductStatus,
+        );
 
-      getAndAddCountViewOfProductStatus[event.productId] =
-          GetAndAddCountViewOfProductStatus.success;
+        getAndAddCountViewOfProductStatus[event.productId] =
+            GetAndAddCountViewOfProductStatus.success;
 
-      Map<String, GetProductDetailWithoutRelatedProductsModel>
-          cachedProductWithoutRelatedProductsModel =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
-      try {
-        Product? product =
-            cachedProductWithoutRelatedProductsModel[event.productId]?.product;
-        int countViews = r.viewCount ?? 0;
+        Map<String, GetProductDetailWithoutRelatedProductsModel>
+        cachedProductWithoutRelatedProductsModel = Map.of(
+          state.cachedProductWithoutRelatedProductsModel,
+        );
+        try {
+          Product? product =
+              cachedProductWithoutRelatedProductsModel[event.productId]
+                  ?.product;
+          int countViews = r.viewCount ?? 0;
 
-        product = product?.copyWith(viewsCount: countViews);
-        cachedProductWithoutRelatedProductsModel[event.productId] =
-            cachedProductWithoutRelatedProductsModel[event.productId]!
-                .copyWith(data: product);
-      } catch (e) {}
+          product = product?.copyWith(viewsCount: countViews);
+          cachedProductWithoutRelatedProductsModel[event.productId] =
+              cachedProductWithoutRelatedProductsModel[event.productId]!
+                  .copyWith(data: product);
+        } catch (e) {}
 
-      emit(state.copyWith(
-          cachedProductWithoutRelatedProductsModel:
-              cachedProductWithoutRelatedProductsModel,
-          getAndAddCountViewOfProductStatus:
-              getAndAddCountViewOfProductStatus));
-    });
+        emit(
+          state.copyWith(
+            cachedProductWithoutRelatedProductsModel:
+                cachedProductWithoutRelatedProductsModel,
+            getAndAddCountViewOfProductStatus:
+                getAndAddCountViewOfProductStatus,
+          ),
+        );*/
+      },
+    );
   }
 
   FutureOr<void> _onGetFullProductDetailsEvent(
-      GetFullProductDetailsEvent event, Emitter<HomeState> emit) async {
+    GetFullProductDetailsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     add(FetchAuthProductDetailsEvent(event.productSlug));
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         getFullProductDetailsStatus: GetFullProductDetailsStatus.loading,
-        currentSlugToRefreshFromNotification: event.productSlug));
-    final response =
-        await getFullProductDetailsUseCase(event.productSlug.toString());
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'GetFullProductDetailsEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetFullProductDetailsEvent');
-        add(GetFullProductDetailsEvent(
-            productSlug: event.productSlug,
-            currentColorName: event.currentColorName));
-        return;
-      }
-      emit(state.copyWith(
-          getFullProductDetailsStatus: GetFullProductDetailsStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('GetFullProductDetailsEvent');
-      if (r.productItem?.productId == null) {
-        emit(state.copyWith(
-          productContentForStatusOfOpeningProductDetailsDirectly:
-              Products(isProductNotifiedForUser: false),
-          getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
-        ));
-
-        return;
-      }
-      List<SyncColorImageProduct> syncColorImage =
-          r.productItem?.syncColorImages ?? [];
-      final syncColorImageOrder = {
-        for (var i = 0; i < syncColorImage.length; i++)
-          syncColorImage[i].colorOption: i
-      };
-
-      List<ProductColor> productColor = r.productItem?.colors ?? [];
-// ترتيب syncColorImages حسب ترتيب colors
-      productColor.sort(
-        (a, b) => (syncColorImageOrder[a.option] ?? 999)
-            .compareTo((syncColorImageOrder[b.option] ?? 999)),
-      );
-      if (event.currentColorName != null) {
-        int index = -1;
-        index = productColor.indexWhere(
-          (element) => element.option == event.currentColorName,
-        );
-        if (index != -1) {
-          add(AddCurrentSelectedColorEvent(
-              currentSelectedColor: index, productSlug: event.productSlug));
+        currentSlugToRefreshFromNotification: event.productSlug,
+      ),
+    );
+    final response = await getFullProductDetailsUseCase(
+      event.productSlug.toString(),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'GetFullProductDetailsEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('GetFullProductDetailsEvent');
+          add(
+            GetFullProductDetailsEvent(
+              productSlug: event.productSlug,
+              currentColorName: event.currentColorName,
+            ),
+          );
+          return;
         }
-      }
+        emit(
+          state.copyWith(
+            getFullProductDetailsStatus: GetFullProductDetailsStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetFullProductDetailsEvent');
+        if (r.productItem?.productId == null) {
+          emit(
+            state.copyWith(
+              productContentForStatusOfOpeningProductDetailsDirectly: Products(
+                isProductNotifiedForUser: false,
+              ),
+              getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
+            ),
+          );
 
-      add(GetAndAddCountViewOfProductEvent(
-          productId: r.productItem!.productId.toString()));
-      // add(GetCommentForProductEvent(
-      //    productId: r.productItem!.productId.toString()));
-      add(GetStoryForProductEvent(
-          productId: r.productItem!.productId.toString()));
-      /*  GetIt.I<ChatBloc>().add(GetSharedProductCountEvent(
+          return;
+        }
+        List<SyncColorImageProduct> syncColorImage =
+            r.productItem?.syncColorImages ?? [];
+        final syncColorImageOrder = {
+          for (var i = 0; i < syncColorImage.length; i++)
+            syncColorImage[i].colorOption: i,
+        };
+
+        List<ProductColor> productColor = r.productItem?.colors ?? [];
+        // ترتيب syncColorImages حسب ترتيب colors
+        productColor.sort(
+          (a, b) => (syncColorImageOrder[a.option] ?? 999).compareTo(
+            (syncColorImageOrder[b.option] ?? 999),
+          ),
+        );
+        if (event.currentColorName != null) {
+          int index = -1;
+          index = productColor.indexWhere(
+            (element) => element.option == event.currentColorName,
+          );
+          if (index != -1) {
+            add(
+              AddCurrentSelectedColorEvent(
+                currentSelectedColor: index,
+                productSlug: event.productSlug,
+              ),
+            );
+          }
+        }
+
+        /*  add(
+          GetAndAddCountViewOfProductEvent(
+            productId: r.productItem!.productId.toString(),
+          ),
+        );*/
+        // add(GetCommentForProductEvent(
+        //    productId: r.productItem!.productId.toString()));
+        add(
+          GetStoryForProductEvent(
+            productId: r.productItem!.productId.toString(),
+          ),
+        );
+        /*  GetIt.I<ChatBloc>().add(GetSharedProductCountEvent(
             productId: r.productItem!.productId.toString()));*/
 
-      Map<String, GetProductDetailWithoutRelatedProductsModel> cachedData =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
-      Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
-          productStatus = Map.from(state.productStatus ?? {});
-      productStatus[r.productItem!.productId.toString()] =
-          GetProductDetailWithoutSimilarRelatedProductsStatus.success;
+        Map<String, GetProductDetailWithoutRelatedProductsModel> cachedData =
+            Map.of(state.cachedProductWithoutRelatedProductsModel);
+        Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
+        productStatus = Map.from(state.productStatus ?? {});
+        productStatus[r.productItem!.productId.toString()] =
+            GetProductDetailWithoutSimilarRelatedProductsStatus.success;
 
-      GetProductDetailWithoutRelatedProductsModel?
-          getProductDetailWithoutRelatedProductsModel =
-          r.getProductDetailWithoutRelatedProductsModel?.copyWith(
+        GetProductDetailWithoutRelatedProductsModel?
+        getProductDetailWithoutRelatedProductsModel = r
+            .getProductDetailWithoutRelatedProductsModel
+            ?.copyWith(
               data: r.getProductDetailWithoutRelatedProductsModel?.product
-                  ?.copyWith(slug: event.productSlug, colors: productColor));
-      cachedData.removeWhere(
-          (key, value) => key == r.productItem!.productId.toString());
-      cachedData.addAll({
-        r.productItem!.productId.toString():
-            getProductDetailWithoutRelatedProductsModel!
-      });
-      if (r.productItem!.isRedeem == true) {
-        GetIt.I<PrefsRepository>()
-            .setRedeemDateForProduct(r.productItem!.productId.toString(), "52");
-      }
-      /*PaginationModel<Comment>? getCommentsFromAnalyticsPaginationModel =
+                  ?.copyWith(slug: event.productSlug, colors: productColor),
+            );
+        cachedData.removeWhere(
+          (key, value) => key == r.productItem!.productId.toString(),
+        );
+        cachedData.addAll({
+          r.productItem!.productId.toString():
+              getProductDetailWithoutRelatedProductsModel!,
+        });
+        if (r.productItem!.isRedeem == true) {
+          GetIt.I<PrefsRepository>().setRedeemDateForProduct(
+            r.productItem!.productId.toString(),
+            "52",
+          );
+        }
+        /*PaginationModel<Comment>? getCommentsFromAnalyticsPaginationModel =
           PaginationModel<Comment>(
               paginationStatus: PaginationStatus.success,
               items: r.productItem?.comments ?? [],
@@ -4174,39 +4972,51 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               hasReachedMax: (r.productItem?.comments?.length ?? 0) < 10,
               offset: r.productItem?.commentOffset?.toString());*/
 
-      PaginationModel<FqaComment>? getFqaCommentsPaginationModel =
-          PaginationModel<FqaComment>(
+        PaginationModel<FqaComment>? getFqaCommentsPaginationModel =
+            PaginationModel<FqaComment>(
               paginationStatus: PaginationStatus.success,
               items: r.productItem?.fqaQuestions?.comments ?? [],
               page: 0,
               hasReachedMax:
-                  (r.productItem?.fqaQuestions?.comments?.length ?? 0) < 10,
+                  (r.productItem?.fqaQuestions?.comments?.length ?? 0) < 10 ||
+                  r.productItem?.fqaQuestions?.offset == null ||
+                  r.productItem?.fqaQuestions?.offset == "null",
               total: r.productItem?.fqaQuestions?.total,
-              offset: r.productItem?.fqaQuestions?.offset?.toString());
-      PaginationModel<BuyersComment>? getBuyersCommentsPaginationModel =
-          PaginationModel<BuyersComment>(
+              offset: r.productItem?.fqaQuestions?.offset?.toString(),
+            );
+        PaginationModel<BuyersComment>? getBuyersCommentsPaginationModel =
+            PaginationModel<BuyersComment>(
               paginationStatus: PaginationStatus.success,
               items: r.productItem?.buyersComment?.comments ?? [],
               total: r.productItem?.buyersComment?.total,
               page: 0,
               hasReachedMax:
-                  (r.productItem?.buyersComment?.comments?.length ?? 0) < 10,
-              offset: r.productItem?.buyersComment?.offset?.toString());
-      emit(state.copyWith(
-        productStatus: productStatus,
-        getBuyersCommentsPaginationModel: {
-          "all": getBuyersCommentsPaginationModel
-        },
-        getFqaCommentsPaginationModel: {"all": getFqaCommentsPaginationModel},
-        cachedProductWithoutRelatedProductsModel: cachedData,
-        // getCommentsFromAnalyticsPaginationModel:
-        //     getCommentsFromAnalyticsPaginationModel,
-        productContentForStatusOfOpeningProductDetailsDirectly: r.productItem
-            ?.copyWith(colors: productColor, slug: event.productSlug),
-      ));
+                  (r.productItem?.buyersComment?.comments?.length ?? 0) < 10 ||
+                  r.productItem?.buyersComment?.offset == null ||
+                  r.productItem?.buyersComment?.offset == "null",
+              offset: r.productItem?.buyersComment?.offset?.toString(),
+            );
+        emit(
+          state.copyWith(
+            productStatus: productStatus,
+            getBuyersCommentsPaginationModel: {
+              "all": getBuyersCommentsPaginationModel,
+            },
+            getFqaCommentsPaginationModel: {
+              "all": getFqaCommentsPaginationModel,
+            },
+            cachedProductWithoutRelatedProductsModel: cachedData,
+            // getCommentsFromAnalyticsPaginationModel:
+            //     getCommentsFromAnalyticsPaginationModel,
+            productContentForStatusOfOpeningProductDetailsDirectly: r
+                .productItem
+                ?.copyWith(colors: productColor, slug: event.productSlug),
+          ),
+        );
 
-      add(const ChangeStatusOFGetProductsDetailsToSuccessEvent());
-    });
+        add(const ChangeStatusOFGetProductsDetailsToSuccessEvent());
+      },
+    );
   }
 
   /*FutureOr<void> _onAddCommentEvent(
@@ -4255,25 +5065,39 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 */
   FutureOr<void> _onStoreFcmTokenOfMarketEvent(
-      StoreFcmTokenOfMarketEvent event, Emitter<HomeState> emit) async {
+    StoreFcmTokenOfMarketEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     if (event.userId == -1) {
       return;
     }
     final response = await storeFcmTokenOfMarketUseCase(
-        StoreFcmTokenOfMarketUseCaseParams(
-            fcmToken: event.fcmToken, userId: event.userId));
+      StoreFcmTokenOfMarketUseCaseParams(
+        fcmToken: event.fcmToken,
+        userId: event.userId,
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'StoreFcmTokenOfMarketEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('StoreFcmTokenOfMarketEvent');
-        add(StoreFcmTokenOfMarketEvent(
-            fcmToken: event.fcmToken, userId: event.userId));
-        return;
-      }
-    }, (r) {
-      ErrorManager.resetRetry('StoreFcmTokenOfMarketEvent');
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'StoreFcmTokenOfMarketEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('StoreFcmTokenOfMarketEvent');
+          add(
+            StoreFcmTokenOfMarketEvent(
+              fcmToken: event.fcmToken,
+              userId: event.userId,
+            ),
+          );
+          return;
+        }
+      },
+      (r) {
+        ErrorManager.resetRetry('StoreFcmTokenOfMarketEvent');
+      },
+    );
   }
 
   FutureOr<void> _onCheckAvailabilityProductCartEvent(
@@ -4293,10 +5117,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
-            'CheckAvailabilityProductCartEvent', l.statusCode)) {
-          add(
-            CheckAvailabilityProductCartEvent(),
-          );
+          'CheckAvailabilityProductCartEvent',
+          l.statusCode,
+        )) {
+          add(CheckAvailabilityProductCartEvent());
           ErrorManager.incrementRetry('CheckAvailabilityProductCartEvent');
         }
 
@@ -4329,33 +5153,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     ///////////////////////////
-    emit(
-      state.copyWith(
-        getCartOverviewStatus: GetCartOverviewStatus.loading,
-      ),
-    );
+    emit(state.copyWith(getCartOverviewStatus: GetCartOverviewStatus.loading));
 
     final response = await getCartOverviewUseCase(NoParams());
 
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('GetCartOverviewEvent', l.statusCode)) {
-          add(
-            GetCartOverviewEvent(),
-          );
+          add(GetCartOverviewEvent());
           ErrorManager.incrementRetry('GetCartOverviewEvent');
         }
 
         emit(
-          state.copyWith(
-            getCartOverviewStatus: GetCartOverviewStatus.failure,
-          ),
+          state.copyWith(getCartOverviewStatus: GetCartOverviewStatus.failure),
         );
       },
       (r) {
         List<Cart>? cart = state.getCartShippingItemsModel?.data?.cart;
-        GetCartShippingItemsModel? getCartShippingItemsModel =
-            r.copyWith(data: r.data?.copyWith(cart: cart));
+        GetCartShippingItemsModel? getCartShippingItemsModel = r.copyWith(
+          data: r.data?.copyWith(cart: cart),
+        );
 
         ErrorManager.resetRetry('GetCartOverviewEvent');
 
@@ -4364,8 +5181,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ////////////////////////////
         emit(
           state.copyWith(
-              getCartOverviewStatus: GetCartOverviewStatus.success,
-              getCartShippingItemsModel: getCartShippingItemsModel),
+            getCartOverviewStatus: GetCartOverviewStatus.success,
+            getCartShippingItemsModel: getCartShippingItemsModel,
+          ),
         );
       },
     );
@@ -4377,8 +5195,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   ) async {
     PaginationModel<NotificationItemModel>? getUserNotificationModel =
         !event.getWithPagination
-            ? const PaginationModel.init(page: 1)
-            : state.getUserNotificationModel;
+        ? const PaginationModel.init(page: 1)
+        : state.getUserNotificationModel;
 
     if (getUserNotificationModel == null) {
       (getUserNotificationModel =
@@ -4395,7 +5213,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(
       state.copyWith(
         getUserNotificationModel: getUserNotificationModel.copyWith(
-            paginationStatus: PaginationStatus.loading),
+          paginationStatus: PaginationStatus.loading,
+        ),
       ),
     );
     ///////////////////////////////
@@ -4409,7 +5228,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getUserNotificationModel = state.getUserNotificationModel;
 
         if (ErrorManager.shouldRetry(
-            'GetUserNotificationEvent', l.statusCode)) {
+          'GetUserNotificationEvent',
+          l.statusCode,
+        )) {
           add(
             GetUserNotificationEvent(
               getWithPagination: event.getWithPagination,
@@ -4420,8 +5241,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         emit(
           state.copyWith(
-            getUserNotificationModel: getUserNotificationModel!
-                .copyWith(paginationStatus: PaginationStatus.failure),
+            getUserNotificationModel: getUserNotificationModel!.copyWith(
+              paginationStatus: PaginationStatus.failure,
+            ),
           ),
         );
       },
@@ -4459,18 +5281,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     if (event.changeStatusToInit ?? false) {
-      emit(
-        state.copyWith(updateProfileStatus: UpdateProfileStatus.init),
-      );
+      emit(state.copyWith(updateProfileStatus: UpdateProfileStatus.init));
       return;
     }
     ///////////////////////////
-    emit(
-      state.copyWith(updateProfileStatus: UpdateProfileStatus.loading),
-    );
+    emit(state.copyWith(updateProfileStatus: UpdateProfileStatus.loading));
     ///////////////////////////////
 
-    final response = await updateProfileUseCase(UpdateProfileParams(
+    final response = await updateProfileUseCase(
+      UpdateProfileParams(
         gender: event.gender,
         name: event.name,
         email: event.email,
@@ -4479,7 +5298,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         idToken: event.idToken,
         weight: event.weight,
         alternative_phone: event.alternative_phone,
-        phone: event.phone));
+        phone: event.phone,
+      ),
+    );
 
     response.fold(
       (l) {
@@ -4500,16 +5321,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ErrorManager.incrementRetry('UpdateProfileEvent');
         }
 
-        emit(
-          state.copyWith(updateProfileStatus: UpdateProfileStatus.failure),
-        );
+        emit(state.copyWith(updateProfileStatus: UpdateProfileStatus.failure));
       },
       (r) async {
         prefsRepository.setMyProfilePhoto((r.data?.image ?? "").toString());
-        showMessage(r.message ?? "",
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            showInRelease: true);
+        showMessage(
+          r.message ?? "",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+        );
         ErrorManager.resetRetry('UpdateProfileEvent');
         prefsRepository.setMyMarketName(r.data?.name ?? "");
         prefsRepository.setVerifiedPhone(r.data?.isPhoneVerified == 1);
@@ -4520,11 +5341,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             (event.name != null ||
                 event.image != null ||
                 event.phone != null)) {
-          GetIt.I<ChatBloc>().add(UpdateProfileInChatEvent(
+          GetIt.I<ChatBloc>().add(
+            UpdateProfileInChatEvent(
               userId: prefsRepository.myMarketId.toString(),
               name: r.data?.name ?? "",
               phone: r.data?.phone ?? "",
-              photo: r.data?.image ?? ""));
+              photo: r.data?.image ?? "",
+            ),
+          );
         }
         if ((prefsRepository.storiesToken?.length ?? 0) > 6 &&
             (event.name != null ||
@@ -4532,94 +5356,134 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 event.phone != null)) {
           prefsRepository.setMyStoriesName((r.data?.name ?? 'No Name'));
 
-          GetIt.I<AuthBloc>().add(UpdateStoriesUserEvent(
+          GetIt.I<AuthBloc>().add(
+            UpdateStoriesUserEvent(
               name: r.data?.name ?? "",
               phone: r.data?.phone ?? "",
-              photo: r.data?.image ?? ""));
+              photo: r.data?.image ?? "",
+            ),
+          );
         }
         emit(
           state.copyWith(
-              userInfo: r.data,
-              updateProfileStatus: UpdateProfileStatus.success),
+            userInfo: r.data,
+            updateProfileStatus: UpdateProfileStatus.success,
+          ),
         );
         if (event.fromGuest ?? false) {
-          GetIt.I<AuthBloc>().add(LoginToStoriesEvent(
-            originalUserId: r.data?.id.toString(),
-            otpIdToken: prefsRepository.idToken,
-            name: r.data?.name,
-            phone: r.data?.phone,
-          ));
-          await NotificationProcess().fcmToken(r.data?.phone, r.data?.name,
-              r.data?.id.toString(), prefsRepository.idToken);
+          GetIt.I<AuthBloc>().add(
+            LoginToStoriesEvent(
+              originalUserId: r.data?.id.toString(),
+              otpIdToken: prefsRepository.idToken,
+              name: r.data?.name,
+              phone: r.data?.phone,
+            ),
+          );
+          await NotificationProcess().fcmToken(
+            r.data?.phone,
+            r.data?.name,
+            r.data?.id.toString(),
+            prefsRepository.idToken,
+          );
         }
       },
     );
   }
 
   _onUploadUserPhotoCloudinaryEvent(
-      UploadUserPhotoCloudinaryEvent event, Emitter emit) async {
+    UploadUserPhotoCloudinaryEvent event,
+    Emitter emit,
+  ) async {
     if (event.changeStatusToFailure ?? false) {
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           uploadUserPhotoCloudinaryStatus:
-              UploadUserPhotoCloudinaryStatus.failure));
+              UploadUserPhotoCloudinaryStatus.failure,
+        ),
+      );
 
-      showMessage('${LocaleKeys.your_request_faild.tr()}',
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          hasError: true,
-          showInRelease: true);
+      showMessage(
+        '${LocaleKeys.your_request_faild.tr()}',
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+        hasError: true,
+        showInRelease: true,
+      );
       return;
     }
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         uploadUserPhotoCloudinaryStatus:
-            UploadUserPhotoCloudinaryStatus.loading));
+            UploadUserPhotoCloudinaryStatus.loading,
+      ),
+    );
     final response = await uploadFileCloudinaryUseCase(
-        UpdatePhotoParams(path: "customers/profile", image: event.file));
+      UpdatePhotoParams(path: "customers/profile", image: event.file),
+    );
 
     // Fluttertoast.showToast(msg: 'tosss');
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
-            'UploadUserPhptoCloudinaryEvent', l.statusCode)) {
+          'UploadUserPhptoCloudinaryEvent',
+          l.statusCode,
+        )) {
           ErrorManager.incrementRetry('UploadUserPhptoCloudinaryEvent');
-          add(UploadUserPhotoCloudinaryEvent(
-              event.file, event.changeStatusToFailure));
+          add(
+            UploadUserPhotoCloudinaryEvent(
+              event.file,
+              event.changeStatusToFailure,
+            ),
+          );
         }
       },
       (r) {
         add(UpdateProfileEvent(image: r.data?.subPath));
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             uploadUserPhotoCloudinaryStatus:
-                UploadUserPhotoCloudinaryStatus.success));
+                UploadUserPhotoCloudinaryStatus.success,
+          ),
+        );
         ErrorManager.resetRetry('UploadUserPhptoCloudinaryEvent');
       },
     );
   }
 
   FutureOr<void> _onFetchAuthProductDetailsEvent(
-      FetchAuthProductDetailsEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-      authProductDetailsStatus: AuthProductDetailsStatus.loading,
-      authProductDetailsModel: GetAuthProductDetailsModel(),
-    ));
+    FetchAuthProductDetailsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        authProductDetailsStatus: AuthProductDetailsStatus.loading,
+        authProductDetailsModel: GetAuthProductDetailsModel(),
+      ),
+    );
     final response = await getAuthProductDetailsUseCase(event.productSlug);
     response.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'FetchAuthProductDetailsEvent', failure.statusCode)) {
+          'FetchAuthProductDetailsEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('FetchAuthProductDetailsEvent');
           add(FetchAuthProductDetailsEvent(event.productSlug));
         }
-        emit(state.copyWith(
-          authProductDetailsStatus: AuthProductDetailsStatus.failure,
-        ));
+        emit(
+          state.copyWith(
+            authProductDetailsStatus: AuthProductDetailsStatus.failure,
+          ),
+        );
       },
       (details) {
         ErrorManager.resetRetry('FetchAuthProductDetailsEvent');
-        emit(state.copyWith(
-          authProductDetailsStatus: AuthProductDetailsStatus.success,
-          authProductDetailsModel: details,
-        ));
+        emit(
+          state.copyWith(
+            authProductDetailsStatus: AuthProductDetailsStatus.success,
+            authProductDetailsModel: details,
+          ),
+        );
       },
     );
   }
@@ -4672,10 +5536,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     if (event.getWithPagination &&
-        (state.getFqaCommentsPaginationModel?[event.currentFilter]
+        (state
+                    .getFqaCommentsPaginationModel?[event.currentFilter]
                     ?.paginationStatus ==
                 PaginationStatus.loading ||
-            state.getFqaCommentsPaginationModel?[event.currentFilter]
+            state
+                    .getFqaCommentsPaginationModel?[event.currentFilter]
                     ?.hasReachedMax ==
                 true)) {
       return;
@@ -4685,63 +5551,87 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (getFqaCommentsPaginationModel[event.currentFilter] == null) {
       getFqaCommentsPaginationModel.addAll({
         event.currentFilter: const PaginationModel<FqaComment>(
-            hasReachedMax: false,
-            items: [],
-            page: 0,
-            offset: "",
-            paginationStatus: PaginationStatus.initial,
-            total: 0)
+          hasReachedMax: false,
+          items: [],
+          page: 0,
+          offset: "",
+          paginationStatus: PaginationStatus.initial,
+          total: 0,
+        ),
       });
     }
     List<dynamic> offsetList = [];
     if (event.getWithPagination) {
-      offsetList.add(state
-          .getFqaCommentsPaginationModel?[event.currentFilter]?.offset
-          ?.split('[')
-          .last
-          .split(',')[0]);
       offsetList.add(
-          '"${state.getFqaCommentsPaginationModel?[event.currentFilter]?.offset?.split(',').last.split(']')[0]}"');
+        state.getFqaCommentsPaginationModel?[event.currentFilter]?.offset
+            ?.split('[')
+            .last
+            .split(',')[0],
+      );
+      offsetList.add(
+        '"${state.getFqaCommentsPaginationModel?[event.currentFilter]?.offset?.split(',').last.split(']')[0]}"',
+      );
     }
     getFqaCommentsPaginationModel[event.currentFilter] =
-        getFqaCommentsPaginationModel[event.currentFilter]!
-            .copyWith(paginationStatus: PaginationStatus.loading);
+        getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+          paginationStatus: PaginationStatus.loading,
+        );
 
-    emit(state.copyWith(
-        getFqaCommentsPaginationModel: getFqaCommentsPaginationModel));
+    emit(
+      state.copyWith(
+        getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+      ),
+    );
 
-    final response = await getFqaCommentsUsecase(GetFqaCommentsParams(
+    final response = await getFqaCommentsUsecase(
+      GetFqaCommentsParams(
         filter: event.currentFilter == "all" ? null : event.currentFilter,
         offset: offsetList.toString(),
-        productId: event.productId));
-    response.fold((l) {
-      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
-          Map.of(state.getFqaCommentsPaginationModel ?? {});
-      getFqaCommentsPaginationModel[event.currentFilter] =
-          getFqaCommentsPaginationModel[event.currentFilter]!
-              .copyWith(paginationStatus: PaginationStatus.failure);
-      emit(state.copyWith(
-          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel));
-    }, (r) {
-      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
-          Map.of(state.getFqaCommentsPaginationModel ?? {});
-      getFqaCommentsPaginationModel[event.currentFilter] =
-          getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
-        paginationStatus: PaginationStatus.success,
-        total: r.data?.total,
-        items: event.getWithPagination
-            ? [
-                ...getFqaCommentsPaginationModel[event.currentFilter]?.items ??
-                    [],
-                ...r.data?.fqaComments ?? []
-              ]
-            : [...r.data?.fqaComments ?? []],
-        hasReachedMax: (r.data?.fqaComments?.length ?? 0) < 10,
-        offset: r.data?.offset?.toString(),
-      );
-      emit(state.copyWith(
-          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel));
-    });
+        productId: event.productId,
+      ),
+    );
+    response.fold(
+      (l) {
+        Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+            Map.of(state.getFqaCommentsPaginationModel ?? {});
+        getFqaCommentsPaginationModel[event.currentFilter] =
+            getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+              paginationStatus: PaginationStatus.failure,
+            );
+        emit(
+          state.copyWith(
+            getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+          ),
+        );
+      },
+      (r) {
+        Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+            Map.of(state.getFqaCommentsPaginationModel ?? {});
+        getFqaCommentsPaginationModel[event.currentFilter] =
+            getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+              paginationStatus: PaginationStatus.success,
+              total: r.data?.total,
+              items: event.getWithPagination
+                  ? [
+                      ...getFqaCommentsPaginationModel[event.currentFilter]
+                              ?.items ??
+                          [],
+                      ...r.data?.fqaComments ?? [],
+                    ]
+                  : [...r.data?.fqaComments ?? []],
+              hasReachedMax:
+                  (r.data?.fqaComments?.length ?? 0) < 10 ||
+                  r.data?.offset == null ||
+                  r.data?.offset == "null",
+              offset: r.data?.offset?.toString(),
+            );
+        emit(
+          state.copyWith(
+            getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGetBuyersCommentsEvent(
@@ -4749,354 +5639,621 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     if (event.getWithPagination &&
-        (state.getBuyersCommentsPaginationModel?[event.currentFilter]
+        (state
+                    .getBuyersCommentsPaginationModel?[event.currentFilter]
                     ?.paginationStatus ==
                 PaginationStatus.loading ||
-            state.getBuyersCommentsPaginationModel?[event.currentFilter]
+            state
+                    .getBuyersCommentsPaginationModel?[event.currentFilter]
                     ?.hasReachedMax ==
                 true)) {
       return;
     }
     Map<String, PaginationModel<BuyersComment>>
-        getBuyersCommentsPaginationModel =
-        Map.of(state.getBuyersCommentsPaginationModel ?? {});
+    getBuyersCommentsPaginationModel = Map.of(
+      state.getBuyersCommentsPaginationModel ?? {},
+    );
     if (getBuyersCommentsPaginationModel[event.currentFilter] == null) {
       getBuyersCommentsPaginationModel.addAll({
         event.currentFilter: const PaginationModel<BuyersComment>(
-            hasReachedMax: false,
-            items: [],
-            page: 0,
-            offset: "",
-            paginationStatus: PaginationStatus.initial,
-            total: 0)
+          hasReachedMax: false,
+          items: [],
+          page: 0,
+          offset: "",
+          paginationStatus: PaginationStatus.initial,
+          total: 0,
+        ),
       });
     }
     List<dynamic> offsetList = [];
     if (event.getWithPagination) {
-      offsetList.add(state
-          .getBuyersCommentsPaginationModel?[event.currentFilter]?.offset
-          ?.split('[')
-          .last
-          .split(',')[0]);
       offsetList.add(
-          '"${state.getBuyersCommentsPaginationModel?[event.currentFilter]?.offset?.split(',').last.split(']')[0]}"');
+        state.getBuyersCommentsPaginationModel?[event.currentFilter]?.offset
+            ?.split('[')
+            .last
+            .split(',')[0],
+      );
+      offsetList.add(
+        '"${state.getBuyersCommentsPaginationModel?[event.currentFilter]?.offset?.split(',').last.split(']')[0]}"',
+      );
     }
     getBuyersCommentsPaginationModel[event.currentFilter] =
-        getBuyersCommentsPaginationModel[event.currentFilter]!
-            .copyWith(paginationStatus: PaginationStatus.loading);
-    emit(state.copyWith(
-        getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel));
-    final response = await getBuyerCommentsUsecase(GetBuyersCommentsParams(
+        getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
+          paginationStatus: PaginationStatus.loading,
+        );
+    emit(
+      state.copyWith(
+        getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+      ),
+    );
+    final response = await getBuyerCommentsUsecase(
+      GetBuyersCommentsParams(
         offset: (event.getWithPagination) ? "" : offsetList.toString(),
         filter: event.currentFilter == "all" ? null : event.currentFilter,
-        productId: event.productId));
-    response.fold((l) {
-      Map<String, PaginationModel<BuyersComment>>
-          getBuyersCommentsPaginationModel =
-          Map.of(state.getBuyersCommentsPaginationModel ?? {});
-      getBuyersCommentsPaginationModel[event.currentFilter] =
-          getBuyersCommentsPaginationModel[event.currentFilter]!
-              .copyWith(paginationStatus: PaginationStatus.failure);
-      emit(state.copyWith(
-          getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel));
-    }, (r) {
-      Map<String, PaginationModel<BuyersComment>>
-          getBuyersCommentsPaginationModel =
-          Map.of(state.getBuyersCommentsPaginationModel ?? {});
-      getBuyersCommentsPaginationModel[event.currentFilter] =
-          getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
-        paginationStatus: PaginationStatus.success,
-        total: r.data?.total,
-        items: (event.getWithPagination)
-            ? [
-                ...getBuyersCommentsPaginationModel[event.currentFilter]
-                        ?.items ??
-                    [],
-                ...r.data?.buyersComments ?? []
-              ]
-            : [...r.data?.buyersComments ?? []],
-        hasReachedMax: (r.data?.buyersComments?.length ?? 0) < 10,
-        offset: r.data?.offset?.toString(),
-      );
-      emit(state.copyWith(
-          getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel));
-    });
+        productId: event.productId,
+      ),
+    );
+    response.fold(
+      (l) {
+        Map<String, PaginationModel<BuyersComment>>
+        getBuyersCommentsPaginationModel = Map.of(
+          state.getBuyersCommentsPaginationModel ?? {},
+        );
+        getBuyersCommentsPaginationModel[event.currentFilter] =
+            getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
+              paginationStatus: PaginationStatus.failure,
+            );
+        emit(
+          state.copyWith(
+            getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+          ),
+        );
+      },
+      (r) {
+        Map<String, PaginationModel<BuyersComment>>
+        getBuyersCommentsPaginationModel = Map.of(
+          state.getBuyersCommentsPaginationModel ?? {},
+        );
+        getBuyersCommentsPaginationModel[event.currentFilter] =
+            getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
+              paginationStatus: PaginationStatus.success,
+              total: r.data?.total,
+              items: (event.getWithPagination)
+                  ? [
+                      ...getBuyersCommentsPaginationModel[event.currentFilter]
+                              ?.items ??
+                          [],
+                      ...r.data?.buyersComments ?? [],
+                    ]
+                  : [...r.data?.buyersComments ?? []],
+              hasReachedMax:
+                  (r.data?.buyersComments?.length ?? 0) < 10 ||
+                  r.data?.offset == null ||
+                  r.data?.offset == "null",
+              offset: r.data?.offset?.toString(),
+            );
+        emit(
+          state.copyWith(
+            getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGetOrderRatingEvent(
     GetOrderRatingEvent event,
     Emitter<HomeState> emit,
   ) async {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         getOrderRatingStatus: GetOrderRatingStatus.loading,
-        getOrderRatingComments: []));
-    final response = await getOrderRatingUsecase(getOrderRatingParams(
-        orderDetailIds: event.orderDetailIds, userId: event.userId));
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetOrderRatingEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetOrderRatingEvent');
-        add(GetOrderRatingEvent(
-            orderDetailIds: event.orderDetailIds, userId: event.userId));
-        return;
-      }
-      emit(state.copyWith(getOrderRatingStatus: GetOrderRatingStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('GetOrderRatingEvent');
-      emit(state.copyWith(
-          createCommentRatingStatus: CreateCommentRatingStatus.success,
-          getOrderRatingStatus: GetOrderRatingStatus.success,
-          getOrderRatingComments: r.data?.comments ?? []));
-    });
+        getOrderRatingComments: [],
+      ),
+    );
+    final response = await getOrderRatingUsecase(
+      getOrderRatingParams(
+        orderDetailIds: event.orderDetailIds,
+        userId: event.userId,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetOrderRatingEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetOrderRatingEvent');
+          add(
+            GetOrderRatingEvent(
+              orderDetailIds: event.orderDetailIds,
+              userId: event.userId,
+            ),
+          );
+          return;
+        }
+        emit(
+          state.copyWith(getOrderRatingStatus: GetOrderRatingStatus.failure),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetOrderRatingEvent');
+        emit(
+          state.copyWith(
+            createCommentRatingStatus: CreateCommentRatingStatus.success,
+            getOrderRatingStatus: GetOrderRatingStatus.success,
+            getOrderRatingComments: r.data?.comments ?? [],
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onCreateCommentRatingEvent(
     CreateCommentRatingEvent event,
     Emitter<HomeState> emit,
   ) async {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         updateOrderCommentRatingStatus: UpdateOrderCommentRatingStatus.init,
-        createCommentRatingStatus: CreateCommentRatingStatus.loading));
+        createCommentRatingStatus: CreateCommentRatingStatus.loading,
+      ),
+    );
     final response = await createOrderRatingUseCase(
-        CreateOrderCommentRatingParams(
-            text: event.text,
-            productId: event.productId,
-            ownerId: event.ownerId,
-            ownerType: event.ownerType,
-            variant: event.variant?.replaceAll("_", "-"),
-            rating: event.rating,
-            orderDetailsId: event.orderDetailsId));
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('CreateCommentRatingEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('CreateCommentRatingEvent');
-        add(CreateCommentRatingEvent(
-            text: event.text,
-            productId: event.productId,
-            ownerId: event.ownerId,
-            ownerType: event.ownerType,
-            variant: event.variant?.replaceAll("_", "-"),
-            rating: event.rating,
-            orderDetailsId: event.orderDetailsId));
-        return;
-      }
-      if (l.statusCode == 401) {
-        showMessage(LocaleKeys.please_login_to_add_comment.tr());
-      } else {
-        showMessage(l.message);
-      }
-      emit(state.copyWith(
-          createCommentRatingStatus: CreateCommentRatingStatus.failure,
-          statusCodeOfCommentProcess: l.statusCode.toString()));
-    }, (r) {
-      ErrorManager.resetRetry('CreateCommentRatingEvent');
-      add(UpdateLikeSocialSharedProductsEvent(
-        productId: event.productId ?? "",
-      ));
-      showMessage(r.message ?? "");
-      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
-          Map.of(state.getFqaCommentsPaginationModel ?? {});
-      getFqaCommentsPaginationModel["all"] =
-          getFqaCommentsPaginationModel["all"]!.copyWith(
-        total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) + 1,
-        paginationStatus: PaginationStatus.success,
-        items: [
-          FqaComment(
-              comment: r.data?.text,
-              createdAt: r.data?.createdAt,
-              hasReply: false,
-              variant: r.data?.variant,
-              id: r.data?.commentId,
-              productId: r.data?.productId,
-              customer: CommentCustomer(
-                  id: r.data?.userId,
-                  image: r.data?.userAvatar,
-                  name: r.data?.userName)),
-          ...getFqaCommentsPaginationModel["all"]?.items ?? []
-        ],
-      );
-      emit(state.copyWith(
-          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
-          createCommentRatingStatus: CreateCommentRatingStatus.success));
-    });
+      CreateOrderCommentRatingParams(
+        text: event.text,
+        productId: event.productId,
+        ownerId: event.ownerId,
+        ownerType: event.ownerType,
+        variant: event.variant?.replaceAll("_", "-"),
+        rating: event.rating,
+        orderDetailsId: event.orderDetailsId,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'CreateCommentRatingEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('CreateCommentRatingEvent');
+          add(
+            CreateCommentRatingEvent(
+              text: event.text,
+              productId: event.productId,
+              ownerId: event.ownerId,
+              ownerType: event.ownerType,
+              variant: event.variant?.replaceAll("_", "-"),
+              rating: event.rating,
+              orderDetailsId: event.orderDetailsId,
+            ),
+          );
+          return;
+        }
+        if (l.statusCode == 401) {
+          showMessage(LocaleKeys.please_login_to_add_comment.tr());
+        } else {
+          showMessage(l.message);
+        }
+        emit(
+          state.copyWith(
+            createCommentRatingStatus: CreateCommentRatingStatus.failure,
+            statusCodeOfCommentProcess: l.statusCode.toString(),
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('CreateCommentRatingEvent');
+        add(
+          UpdateLikeSocialSharedProductsEvent(productId: event.productId ?? ""),
+        );
+        showMessage(r.message ?? "");
+        Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+            Map.of(state.getFqaCommentsPaginationModel ?? {});
+        getFqaCommentsPaginationModel["all"] =
+            getFqaCommentsPaginationModel["all"]!.copyWith(
+              total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) + 1,
+              paginationStatus: PaginationStatus.success,
+              items: [
+                FqaComment(
+                  comment: r.data?.text,
+                  createdAt: r.data?.createdAt,
+                  hasReply: false,
+                  variant: r.data?.variant,
+                  id: r.data?.commentId,
+                  productId: r.data?.productId,
+                  customer: CommentCustomer(
+                    id: r.data?.userId,
+                    image: r.data?.userAvatar,
+                    name: r.data?.userName,
+                  ),
+                ),
+                ...getFqaCommentsPaginationModel["all"]?.items ?? [],
+              ],
+            );
+        emit(
+          state.copyWith(
+            getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+            createCommentRatingStatus: CreateCommentRatingStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateCommentRatingEvent(
     UpdateCommentRatingEvent event,
     Emitter<HomeState> emit,
   ) async {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         createCommentRatingStatus: CreateCommentRatingStatus.init,
         tapCommentIndex: event.tapCommentIndex,
-        updateOrderCommentRatingStatus:
-            UpdateOrderCommentRatingStatus.loading));
+        updateOrderCommentRatingStatus: UpdateOrderCommentRatingStatus.loading,
+      ),
+    );
 
     final response = await updateOrderCommentRatingUseCase(
-        UpdateOrderCommentRatingParams(
-            text: event.text,
-            commentId: event.commentId,
-            productId: event.productId,
-            variant: event.variant,
-            ownerId: event.ownerId,
-            ownerType: event.ownerType,
-            rating: event.rating,
-            orderDetailsId: event.orderDetailsId));
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('UpdateCommentRatingEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('UpdateCommentRatingEvent');
-        add(UpdateCommentRatingEvent(
-            text: event.text,
-            commentId: event.commentId,
-            productId: event.productId,
-            variant: event.variant,
-            ownerId: event.ownerId,
-            ownerType: event.ownerType,
-            tapCommentIndex: event.tapCommentIndex,
-            rating: event.rating,
-            orderDetailsId: event.orderDetailsId));
-        return;
-      }
-      if (l.statusCode == 401) {
-        showMessage(LocaleKeys.must_login_to_edit_comment.tr());
-      } else {
-        showMessage(l.message);
-      }
-
-      emit(state.copyWith(
-          updateOrderCommentRatingStatus:
-              UpdateOrderCommentRatingStatus.failure,
-          statusCodeOfCommentProcess: l.statusCode.toString()));
-    }, (r) {
-      ErrorManager.resetRetry('UpdateCommentRatingEvent');
-      add(UpdateLikeSocialSharedProductsEvent(
-        productId: event.productId ?? "",
-      ));
-      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
-          Map.of(state.getFqaCommentsPaginationModel ?? {});
-      Map<String, PaginationModel<BuyersComment>>
-          getBuyersCommentsPaginationModel =
-          Map.of(state.getBuyersCommentsPaginationModel ?? {});
-      showMessage(r.message ?? "");
-      if (event.fromBuyerComments) {
-        List<BuyersComment> buyersCommentItems =
-            getBuyersCommentsPaginationModel["all"]?.items ?? [];
-        int index = buyersCommentItems
-            .indexWhere((element) => element.id == event.commentId);
-        if (index != -1) {
-          BuyersComment buyersComment = buyersCommentItems.removeAt(index);
-          buyersCommentItems.insert(
-              index,
-              buyersComment.copyWith(
-                comment: event.text,
-              ));
+      UpdateOrderCommentRatingParams(
+        text: event.text,
+        commentId: event.commentId,
+        productId: event.productId,
+        variant: event.variant,
+        ownerId: event.ownerId,
+        ownerType: event.ownerType,
+        rating: event.rating,
+        orderDetailsId: event.orderDetailsId,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UpdateCommentRatingEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('UpdateCommentRatingEvent');
+          add(
+            UpdateCommentRatingEvent(
+              text: event.text,
+              commentId: event.commentId,
+              productId: event.productId,
+              currentFilter: event.currentFilter,
+              variant: event.variant,
+              ownerId: event.ownerId,
+              ownerType: event.ownerType,
+              tapCommentIndex: event.tapCommentIndex,
+              rating: event.rating,
+              orderDetailsId: event.orderDetailsId,
+            ),
+          );
+          return;
+        }
+        if (l.statusCode == 401) {
+          showMessage(LocaleKeys.must_login_to_edit_comment.tr());
+        } else {
+          showMessage(l.message);
         }
 
-        getBuyersCommentsPaginationModel["all"] =
-            getBuyersCommentsPaginationModel["all"]!.copyWith(
-                paginationStatus: PaginationStatus.success,
-                items: buyersCommentItems);
-      } else {
-        List<FqaComment> fqaCommentItems =
-            getFqaCommentsPaginationModel["all"]?.items ?? [];
-        int index = fqaCommentItems
-            .indexWhere((element) => element.id == event.commentId);
-        if (index != -1) {
-          FqaComment fqaComment = fqaCommentItems.removeAt(index);
-          fqaCommentItems.insert(
+        emit(
+          state.copyWith(
+            updateOrderCommentRatingStatus:
+                UpdateOrderCommentRatingStatus.failure,
+            statusCodeOfCommentProcess: l.statusCode.toString(),
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('UpdateCommentRatingEvent');
+        add(
+          UpdateLikeSocialSharedProductsEvent(productId: event.productId ?? ""),
+        );
+        Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+            Map.of(state.getFqaCommentsPaginationModel ?? {});
+        Map<String, PaginationModel<BuyersComment>>
+        getBuyersCommentsPaginationModel = Map.of(
+          state.getBuyersCommentsPaginationModel ?? {},
+        );
+        showMessage(r.message ?? "");
+        if (event.fromBuyerComments) {
+          List<BuyersComment> buyersCommentItems =
+              getBuyersCommentsPaginationModel[event.currentFilter]?.items ??
+              [];
+          int index = buyersCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            BuyersComment buyersComment = buyersCommentItems.removeAt(index);
+            buyersCommentItems.insert(
               index,
-              fqaComment.copyWith(
-                comment: event.text,
-              ));
-        }
+              buyersComment.copyWith(comment: event.text),
+            );
+          }
 
-        getFqaCommentsPaginationModel["all"] =
-            getFqaCommentsPaginationModel["all"]!.copyWith(
+          getBuyersCommentsPaginationModel[event.currentFilter] =
+              getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
                 paginationStatus: PaginationStatus.success,
-                items: fqaCommentItems);
-      }
-      emit(state.copyWith(
-          getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
-          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
-          updateOrderCommentRatingStatus:
-              UpdateOrderCommentRatingStatus.success));
-    });
+                items: buyersCommentItems,
+              );
+        } else {
+          List<FqaComment> fqaCommentItems =
+              getFqaCommentsPaginationModel[event.currentFilter]?.items ?? [];
+          int index = fqaCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            FqaComment fqaComment = fqaCommentItems.removeAt(index);
+            fqaCommentItems.insert(
+              index,
+              fqaComment.copyWith(comment: event.text),
+            );
+          }
+
+          getFqaCommentsPaginationModel[event.currentFilter] =
+              getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                items: fqaCommentItems,
+              );
+        }
+        emit(
+          state.copyWith(
+            getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+            getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+            updateOrderCommentRatingStatus:
+                UpdateOrderCommentRatingStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onDeleteCommentRatingEvent(
     DeleteCommentRatingEvent event,
     Emitter<HomeState> emit,
   ) async {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         tapCommentIndex: event.tapCommentIndex,
-        deleteOrderCommentRatingStatus:
-            DeleteOrderCommentRatingStatus.loading));
-    final response =
-        await deleteOrderCommentRatingUseCase(DeleteOrderCommentRatingParams(
-      commentId: event.commentId,
-    ));
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('DeleteCommentRatingEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('DeleteCommentRatingEvent');
-        add(DeleteCommentRatingEvent(
-            commentId: event.commentId,
-            productId: event.productId,
-            tapCommentIndex: event.tapCommentIndex));
-        return;
-      }
-      if (l.statusCode == 401) {
-        showMessage(LocaleKeys.must_login_to_delete_comment.tr());
-      } else {
-        showMessage(l.message);
-      }
-      emit(state.copyWith(
-          deleteOrderCommentRatingStatus:
-              DeleteOrderCommentRatingStatus.failure,
-          statusCodeOfCommentProcess: l.statusCode.toString()));
-    }, (r) {
-      ErrorManager.resetRetry('DeleteCommentRatingEvent');
-      add(UpdateLikeSocialSharedProductsEvent(
-        productId: event.productId ?? "",
-      ));
-      showMessage(r.message ?? "");
-      Map<String, PaginationModel<BuyersComment>>
-          getBuyersCommentsPaginationModel =
-          Map.of(state.getBuyersCommentsPaginationModel ?? {});
-      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
-          Map.of(state.getFqaCommentsPaginationModel ?? {});
-
-      if (event.fromBuyerComments) {
-        List<BuyersComment> buyersCommentItems =
-            getBuyersCommentsPaginationModel["all"]?.items ?? [];
-        int index = buyersCommentItems
-            .indexWhere((element) => element.id == event.commentId);
-        if (index != -1) {
-          buyersCommentItems.removeAt(index);
+        deleteOrderCommentRatingStatus: DeleteOrderCommentRatingStatus.loading,
+      ),
+    );
+    final response = await deleteOrderCommentRatingUseCase(
+      DeleteOrderCommentRatingParams(commentId: event.commentId),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'DeleteCommentRatingEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('DeleteCommentRatingEvent');
+          add(
+            DeleteCommentRatingEvent(
+              commentId: event.commentId,
+              productId: event.productId,
+              currentFilter: event.currentFilter,
+              tapCommentIndex: event.tapCommentIndex,
+            ),
+          );
+          return;
         }
+        if (l.statusCode == 401) {
+          showMessage(LocaleKeys.must_login_to_delete_comment.tr());
+        } else {
+          showMessage(l.message);
+        }
+        emit(
+          state.copyWith(
+            deleteOrderCommentRatingStatus:
+                DeleteOrderCommentRatingStatus.failure,
+            statusCodeOfCommentProcess: l.statusCode.toString(),
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('DeleteCommentRatingEvent');
+        add(
+          UpdateLikeSocialSharedProductsEvent(productId: event.productId ?? ""),
+        );
+        showMessage(r.message ?? "");
+        Map<String, PaginationModel<BuyersComment>>
+        getBuyersCommentsPaginationModel = Map.of(
+          state.getBuyersCommentsPaginationModel ?? {},
+        );
+        Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+            Map.of(state.getFqaCommentsPaginationModel ?? {});
 
-        getBuyersCommentsPaginationModel["all"] =
-            getBuyersCommentsPaginationModel["all"]!.copyWith(
+        if (event.fromBuyerComments) {
+          List<BuyersComment> buyersCommentItems =
+              getBuyersCommentsPaginationModel[event.currentFilter]?.items ??
+              [];
+          int index = buyersCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            buyersCommentItems.removeAt(index);
+          }
+
+          getBuyersCommentsPaginationModel[event.currentFilter] =
+              getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
                 paginationStatus: PaginationStatus.success,
                 total:
-                    (getBuyersCommentsPaginationModel["all"]?.total ?? 0) - 1,
-                items: buyersCommentItems);
-      } else {
-        List<FqaComment> fqaCommentItems =
-            state.getFqaCommentsPaginationModel?["all"]?.items ?? [];
-        int index = fqaCommentItems
-            .indexWhere((element) => element.id == event.commentId);
-        if (index != -1) {
-          fqaCommentItems.removeAt(index);
+                    (getBuyersCommentsPaginationModel[event.currentFilter]
+                            ?.total ??
+                        0) -
+                    1,
+                items: buyersCommentItems,
+              );
+        } else {
+          List<FqaComment> fqaCommentItems =
+              state
+                  .getFqaCommentsPaginationModel?[event.currentFilter]
+                  ?.items ??
+              [];
+          int index = fqaCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            fqaCommentItems.removeAt(index);
+          }
+
+          getFqaCommentsPaginationModel[event.currentFilter] =
+              getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                total:
+                    (getFqaCommentsPaginationModel[event.currentFilter]
+                            ?.total ??
+                        0) -
+                    1,
+                items: fqaCommentItems,
+              );
         }
 
-        getFqaCommentsPaginationModel["all"] =
-            getFqaCommentsPaginationModel["all"]!.copyWith(
-                paginationStatus: PaginationStatus.success,
-                total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) - 1,
-                items: fqaCommentItems);
-      }
+        emit(
+          state.copyWith(
+            getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+            deleteOrderCommentRatingStatus:
+                DeleteOrderCommentRatingStatus.success,
+          ),
+        );
+      },
+    );
+  }
 
-      emit(state.copyWith(
-          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
-          deleteOrderCommentRatingStatus:
-              DeleteOrderCommentRatingStatus.success));
-    });
+  FutureOr<void> _onUpdateLikeCommentEvent(
+    UpdateLikeCommentEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (state.updateLikeCommentRatingStatus ==
+        UpdateLikeCommentRatingStatus.loading) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        tapCommentIndex: event.tapCommentIndex,
+        likeForReplayComment: event.fromReplayComments,
+        updateLikeCommentRatingStatus: UpdateLikeCommentRatingStatus.loading,
+      ),
+    );
+
+    final response = await updateLikeCommentUseCase(
+      UpdateLikeCommentParams(
+        commentId: event.commentId,
+        productId: event.productId,
+        toLike: event.toAddLike,
+        type: event.fromReplayComments ? "seller_reply" : "comment",
+      ),
+    );
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            tapCommentIndex: -1,
+            updateLikeCommentRatingStatus:
+                UpdateLikeCommentRatingStatus.failure,
+            statusCodeOfCommentProcess: l.statusCode.toString(),
+          ),
+        );
+        if (ErrorManager.shouldRetry('UpdateLikeCommentEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('UpdateLikeCommentEvent');
+          add(
+            UpdateLikeCommentEvent(
+              commentId: event.commentId,
+              fromBuyerComments: event.fromBuyerComments,
+              fromReplayComments: event.fromReplayComments,
+              toAddLike: event.toAddLike,
+              productId: event.productId,
+              currentFilter: event.currentFilter,
+              tapCommentIndex: event.tapCommentIndex,
+            ),
+          );
+        }
+
+        if (l.statusCode == 401) {
+          showMessage(LocaleKeys.must_login_to_edit_comment.tr());
+        } else {
+          showMessage(l.message);
+        }
+      },
+      (r) {
+        ErrorManager.resetRetry('UpdateLikeCommentEvent');
+        add(
+          UpdateLikeSocialSharedProductsEvent(productId: event.productId ?? ""),
+        );
+        Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+            Map.of(state.getFqaCommentsPaginationModel ?? {});
+        Map<String, PaginationModel<BuyersComment>>
+        getBuyersCommentsPaginationModel = Map.of(
+          state.getBuyersCommentsPaginationModel ?? {},
+        );
+        showMessage(r.message ?? "");
+        if (event.fromBuyerComments) {
+          List<BuyersComment> buyersCommentItems =
+              getBuyersCommentsPaginationModel[event.currentFilter]?.items ??
+              [];
+          int index = buyersCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            BuyersComment buyersComment = buyersCommentItems.removeAt(index);
+            buyersCommentItems.insert(
+              index,
+              buyersComment.copyWith(
+                isLiked: event.toAddLike,
+                totalLikes: event.toAddLike
+                    ? ((buyersComment.totalLikes ?? 0) + 1)
+                    : ((buyersComment.totalLikes ?? 0) - 1),
+              ),
+            );
+          }
+
+          getBuyersCommentsPaginationModel[event.currentFilter] =
+              getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                items: buyersCommentItems,
+              );
+        } else {
+          List<FqaComment> fqaCommentItems =
+              getFqaCommentsPaginationModel[event.currentFilter]?.items ?? [];
+          int index = fqaCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            FqaComment fqaComment = fqaCommentItems.removeAt(index);
+            fqaCommentItems.insert(
+              index,
+              fqaComment.copyWith(
+                isLiked: event.fromReplayComments
+                    ? fqaComment.isLiked
+                    : event.toAddLike,
+                totalLikes: event.fromReplayComments
+                    ? fqaComment.totalLikes
+                    : event.toAddLike
+                    ? ((fqaComment.totalLikes ?? 0) + 1)
+                    : ((fqaComment.totalLikes ?? 0) - 1),
+                replyIsLiked: !event.fromReplayComments
+                    ? fqaComment.replyIsLiked
+                    : event.toAddLike,
+                replyTotalLikes: !event.fromReplayComments
+                    ? fqaComment.replyTotalLikes
+                    : event.toAddLike
+                    ? ((fqaComment.replyTotalLikes ?? 0) + 1)
+                    : ((fqaComment.replyTotalLikes ?? 0) - 1),
+              ),
+            );
+          }
+
+          getFqaCommentsPaginationModel[event.currentFilter] =
+              getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                items: fqaCommentItems,
+              );
+        }
+        emit(
+          state.copyWith(
+            getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+            getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+            updateLikeCommentRatingStatus:
+                UpdateLikeCommentRatingStatus.success,
+          ),
+        );
+      },
+    );
   }
 }

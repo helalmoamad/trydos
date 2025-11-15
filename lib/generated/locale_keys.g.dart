@@ -142,6 +142,7 @@ abstract class LocaleKeys {
   static const re_mind = 're_mind';
   static const edit = 'edit';
   static const copy = 'copy';
+  static const copied = 'copied';
   static const delete = 'delete';
   static const category = 'category';
   static const forward = 'forward';

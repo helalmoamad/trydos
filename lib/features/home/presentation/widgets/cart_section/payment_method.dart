@@ -64,18 +64,20 @@ class _PaymentMethodState extends State<PaymentMethod> {
   }
 
   void _addItemToPaymentMethods(
-      ValueNotifier<List<String>> paymentMethods, String item) {
+    ValueNotifier<List<String>> paymentMethods,
+    String item,
+  ) {
     Future.delayed(const Duration(milliseconds: 300), () {
       paymentMethods.value = List.from(paymentMethods.value)..add(item);
     });
   }
 
   void _removeItemFromPaymentMethods(
-      ValueNotifier<List<String>> paymentMethods, String item) {
+    ValueNotifier<List<String>> paymentMethods,
+    String item,
+  ) {
     paymentMethods.value = List.from(paymentMethods.value)
-      ..removeWhere(
-        (element) => element == item,
-      );
+      ..removeWhere((element) => element == item);
   }
 
   @override
@@ -93,10 +95,11 @@ class _PaymentMethodState extends State<PaymentMethod> {
               width: 1.sw,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  border: (widget.fromPalceOrder)
-                      ? null
-                      : Border.all(color: const Color(0xff388CFF))),
+                borderRadius: BorderRadius.circular(15),
+                border: (widget.fromPalceOrder)
+                    ? null
+                    : Border.all(color: const Color(0xff388CFF)),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -112,40 +115,37 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         },
                         child: Text(
                           "${LocaleKeys.payment_method.tr()} ",
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xff1D1D1D),
-                              letterSpacing: 0.18,
-                              fontSize: 14.sp,
-                              height: 1.33),
+                          style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: const Color(0xff1D1D1D),
+                            letterSpacing: 0.18,
+                            fontSize: 14.sp,
+                            height: 1.33,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 2,
-                  ),
+                  const SizedBox(height: 2),
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 29.w,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 29.w),
                     child: Text(
                       widget.fromSuccessOrder || widget.fromPalceOrder
                           ? "${LocaleKeys.your_payment_method_about_your_bag.tr()} "
                           : "${LocaleKeys.please_choose_your_payment_method_about_your_bag.tr()} ",
-                      style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: const Color(0xff8D8D8D),
-                          letterSpacing: 0.18,
-                          fontSize: 12,
-                          height: 1.33),
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff8D8D8D),
+                        letterSpacing: 0.18,
+                        fontSize: 12,
+                        height: 1.33,
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 8),
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&
                               (widget.fromPalceOrder)) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.cod)
+                          !widget.availablePaymentMethod.contains(
+                            PaymentMethods.cod,
+                          )
                       ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
@@ -161,19 +161,21 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               return;
                             }
                             if (widget.amount < widget.totalPrice) {
-                              if (_paymentMethods
-                                  .contains(PaymentMethods.cod)) {
+                              if (_paymentMethods.contains(
+                                PaymentMethods.cod,
+                              )) {
                                 _removeItemFromPaymentMethods(
                                   widget.paymentMethods,
                                   PaymentMethods.cod,
                                 );
                               } else {
-                                widget.paymentMethods.value = List.from(
-                                    widget.paymentMethods.value)
-                                  ..removeWhere(
-                                    (element) =>
-                                        element != PaymentMethods.trydosWallet,
-                                  );
+                                widget.paymentMethods.value =
+                                    List.from(widget.paymentMethods.value)
+                                      ..removeWhere(
+                                        (element) =>
+                                            element !=
+                                            PaymentMethods.trydosWallet,
+                                      );
                                 ///////////////
                                 _addItemToPaymentMethods(
                                   widget.paymentMethods,
@@ -197,17 +199,17 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   /////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&
                               (widget.fromPalceOrder)) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.cod)
+                          !widget.availablePaymentMethod.contains(
+                            PaymentMethods.cod,
+                          )
                       ? const SizedBox.shrink()
-                      : const SizedBox(
-                          height: 8,
-                        ),
+                      : const SizedBox(height: 8),
                   /////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
                               widget.fromPalceOrder) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.trydosWallet)
+                          !widget.availablePaymentMethod.contains(
+                            PaymentMethods.trydosWallet,
+                          )
                       ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
@@ -236,21 +238,22 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               context: context,
                               fromSuccessOrder: widget.fromSuccessOrder,
                             ),
-                          )),
+                          ),
+                        ),
                   /////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
                               widget.fromPalceOrder) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.trydosWallet)
+                          !widget.availablePaymentMethod.contains(
+                            PaymentMethods.trydosWallet,
+                          )
                       ? const SizedBox.shrink()
-                      : const SizedBox(
-                          height: 8,
-                        ),
+                      : const SizedBox(height: 8),
                   ////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.card)) &&
                               widget.fromPalceOrder) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.card)
+                          !widget.availablePaymentMethod.contains(
+                            PaymentMethods.card,
+                          )
                       ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
@@ -266,19 +269,21 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               return;
                             }
                             if (widget.amount < widget.totalPrice) {
-                              if (_paymentMethods
-                                  .contains(PaymentMethods.card)) {
+                              if (_paymentMethods.contains(
+                                PaymentMethods.card,
+                              )) {
                                 _removeItemFromPaymentMethods(
                                   widget.paymentMethods,
                                   PaymentMethods.card,
                                 );
                               } else {
-                                widget.paymentMethods.value = List.from(
-                                    widget.paymentMethods.value)
-                                  ..removeWhere(
-                                    (element) =>
-                                        element != PaymentMethods.trydosWallet,
-                                  );
+                                widget.paymentMethods.value =
+                                    List.from(widget.paymentMethods.value)
+                                      ..removeWhere(
+                                        (element) =>
+                                            element !=
+                                            PaymentMethods.trydosWallet,
+                                      );
                                 ///////////////
                                 _addItemToPaymentMethods(
                                   widget.paymentMethods,
@@ -295,23 +300,24 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             svg: AppAssets.creditCards,
                             title: "${LocaleKeys.credit_cards.tr()}",
                             cardWidgets: buildCardPaymentWidget(
-                                fromSuccessOrder: widget.fromSuccessOrder),
+                              fromSuccessOrder: widget.fromSuccessOrder,
+                            ),
                           ),
                         ),
                   ////////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.card)) &&
                               widget.fromPalceOrder) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.card)
+                          !widget.availablePaymentMethod.contains(
+                            PaymentMethods.card,
+                          )
                       ? const SizedBox.shrink()
-                      : SizedBox(
-                          height: 12.h,
-                        ),
+                      : SizedBox(height: 12.h),
                   //////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.crypto)) &&
                               widget.fromPalceOrder) ||
-                          !widget.availablePaymentMethod
-                              .contains(PaymentMethods.crypto)
+                          !widget.availablePaymentMethod.contains(
+                            PaymentMethods.crypto,
+                          )
                       ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () {
@@ -327,19 +333,21 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               return;
                             }
                             if (widget.amount < widget.totalPrice) {
-                              if (_paymentMethods
-                                  .contains(PaymentMethods.crypto)) {
+                              if (_paymentMethods.contains(
+                                PaymentMethods.crypto,
+                              )) {
                                 _removeItemFromPaymentMethods(
                                   widget.paymentMethods,
                                   PaymentMethods.crypto,
                                 );
                               } else {
-                                widget.paymentMethods.value = List.from(
-                                    widget.paymentMethods.value)
-                                  ..removeWhere(
-                                    (element) =>
-                                        element != PaymentMethods.trydosWallet,
-                                  );
+                                widget.paymentMethods.value =
+                                    List.from(widget.paymentMethods.value)
+                                      ..removeWhere(
+                                        (element) =>
+                                            element !=
+                                            PaymentMethods.trydosWallet,
+                                      );
                                 ///////////////
                                 _addItemToPaymentMethods(
                                   widget.paymentMethods,
@@ -356,7 +364,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             svg: AppAssets.cryptoSvg,
                             title: "${LocaleKeys.Crypto.tr()}",
                             cardWidgets: buildCryptoWidget(
-                                fromSuccessOrder: widget.fromSuccessOrder),
+                              fromSuccessOrder: widget.fromSuccessOrder,
+                            ),
                           ),
                         ),
                   ////////////////////////
@@ -384,11 +393,12 @@ class _PaymentMethodState extends State<PaymentMethod> {
       children: [
         Text(
           "${LocaleKeys.total.tr()}  ",
-          style: context.textTheme.bodyMedium?.rr.copyWith(
-              color: const Color(0xffD3D3D3),
-              letterSpacing: 0.18,
-              fontSize: 12,
-              height: 1.33),
+          style: context.textTheme.bodyMedium?.rq.copyWith(
+            color: const Color(0xffD3D3D3),
+            letterSpacing: 0.18,
+            fontSize: 12,
+            height: 1.33,
+          ),
         ),
         Text(
           widget.partialPaymentByWallet > 0
@@ -412,11 +422,12 @@ class _PaymentMethodState extends State<PaymentMethod> {
             children: [
               Text(
                 "${LocaleKeys.shipping_cost.tr()}  ",
-                style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: const Color(0xffD3D3D3),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.33),
+                style: context.textTheme.bodyMedium?.rq.copyWith(
+                  color: const Color(0xffD3D3D3),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.33,
+                ),
               ),
               Text(
                 '${HelperFunctions.formatNumber(number: ((GetIt.I<HomeBloc>().state.getCartShippingItemsModel?.data?.codCost ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1)), isNeedRounding: false)} ${widget.currencySymbol}',
@@ -479,11 +490,12 @@ class _PaymentMethodState extends State<PaymentMethod> {
           fromSuccessOrder
               ? "${LocaleKeys.total.tr()}  "
               : "${LocaleKeys.your_balance.tr()}  ",
-          style: context.textTheme.bodyMedium?.rr.copyWith(
-              color: const Color(0xffD3D3D3),
-              letterSpacing: 0.18,
-              fontSize: 12,
-              height: 1.33),
+          style: context.textTheme.bodyMedium?.rq.copyWith(
+            color: const Color(0xffD3D3D3),
+            letterSpacing: 0.18,
+            fontSize: 12,
+            height: 1.33,
+          ),
         ),
         Text(
           widget.partialPaymentByWallet > 0
@@ -502,30 +514,31 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 buildWhen: (previous, current) =>
                     previous.getCustomerWalletStatus !=
                     current.getCustomerWalletStatus,
-                builder: (context, state) => state.getCustomerWalletStatus ==
+                builder: (context, state) =>
+                    state.getCustomerWalletStatus ==
                         GetCustomerWalletStatus.init
                     ? SizedBox(
                         width: 30,
                         height: 40,
-                        child: TrydosLoader(
-                          size: 17,
-                        ))
+                        child: TrydosLoader(size: 17),
+                      )
                     : InkWell(
                         onTap: () {
                           BlocProvider.of<OrderBloc>(context).add(
                             GetCustomerWalletEvent(
-                                limit: 10,
-                                offset: 1,
-                                statusInitToRefreshAmount: true),
+                              limit: 10,
+                              offset: 1,
+                              statusInitToRefreshAmount: true,
+                            ),
                           );
                         },
                         child: const SizedBox(
-                            width: 30,
-                            height: 40,
-                            child: Icon(
-                              Icons.refresh_sharp,
-                              size: 17,
-                            )))),
+                          width: 30,
+                          height: 40,
+                          child: Icon(Icons.refresh_sharp, size: 17),
+                        ),
+                      ),
+              ),
       ],
     );
   }
@@ -565,10 +578,10 @@ class PaymentMethodCard extends StatelessWidget {
           color: fromSuccessOrder
               ? const Color.fromARGB(255, 255, 255, 255)
               : fromPalceOrder
-                  ? const Color(0xffC4C2C2)
-                  : paymentMethod.contains(currentPaymentMethod)
-                      ? const Color(0xff388CFF)
-                      : const Color(0xffF8F8F8),
+              ? const Color(0xffC4C2C2)
+              : paymentMethod.contains(currentPaymentMethod)
+              ? const Color(0xff388CFF)
+              : const Color(0xffF8F8F8),
         ),
         color: fromSuccessOrder || fromPalceOrder
             ? const Color.fromARGB(255, 255, 255, 255)
@@ -582,7 +595,8 @@ class PaymentMethodCard extends StatelessWidget {
             SvgPicture.asset(
               svg,
               // ignore: deprecated_member_use
-              color: paymentMethod.contains(currentPaymentMethod) &&
+              color:
+                  paymentMethod.contains(currentPaymentMethod) &&
                       !fromSuccessOrder
                   ? const Color(0xff1D1D1D)
                   : null,
@@ -590,13 +604,14 @@ class PaymentMethodCard extends StatelessWidget {
             SizedBox(width: 10.w),
             Text(
               title,
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                  color: paymentMethod.contains(currentPaymentMethod)
-                      ? const Color(0xff1D1D1D)
-                      : const Color(0xffC4C2C2),
-                  letterSpacing: 0.18,
-                  fontSize: 12,
-                  height: 1.33),
+              style: context.textTheme.bodyMedium?.rq.copyWith(
+                color: paymentMethod.contains(currentPaymentMethod)
+                    ? const Color(0xff1D1D1D)
+                    : const Color(0xffC4C2C2),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 1.33,
+              ),
             ),
             //////////////////
             const Spacer(),

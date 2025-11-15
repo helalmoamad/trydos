@@ -88,8 +88,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
       FlutterError.dumpErrorToConsole(error);
     };
     return
-        // ignore: deprecated_member_use
-        WillPopScope(
+    // ignore: deprecated_member_use
+    WillPopScope(
       onWillPop: () async {
         if (Navigator.canPop(context)) {
           if (Navigator.of(context).canPop()) {
@@ -103,7 +103,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         body: BlocListener<HomeBloc, HomeState>(
-          listenWhen: (previous, current) => (previous.checkWithGetCartStatus !=
+          listenWhen: (previous, current) =>
+              (previous.checkWithGetCartStatus !=
                   current.checkWithGetCartStatus &&
               current.checkWithGetCartStatus ==
                   CheckWithGetCartStatus.successForPlaceOrder),
@@ -111,7 +112,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
             if (state.checkWithGetCartStatus ==
                 CheckWithGetCartStatus.successForPlaceOrder) {
               if (!state.cartCollection!.any(
-                (element) => (element.isActive == false ||
+                (element) =>
+                    (element.isActive == false ||
                     element.isCountryRestricted == true ||
                     element.checkAvailability == false),
               )) {
@@ -123,8 +125,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   //////////////
                   payByWallet = 0;
                 } else {
-                  if (widget.paymentMethods.value
-                          .contains(PaymentMethods.trydosWallet) &&
+                  if (widget.paymentMethods.value.contains(
+                        PaymentMethods.trydosWallet,
+                      ) &&
                       widget.paymentMethods.value.length == 2) {
                     paymentMethod = widget.paymentMethods.value.firstWhere(
                       (element) => element != PaymentMethods.trydosWallet,
@@ -140,9 +143,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   payByWallet: payByWallet,
                 );
 
-                BlocProvider.of<OrderBloc>(context).add(
-                  PlaceOrderEvent(placeOrderParams: placeOrderParams),
-                );
+                BlocProvider.of<OrderBloc>(
+                  context,
+                ).add(PlaceOrderEvent(placeOrderParams: placeOrderParams));
               } else {
                 //////////////////////////
                 showWarningMessage(
@@ -156,370 +159,349 @@ class _PlaceOrderState extends State<PlaceOrder> {
             }
           },
           child: BlocListener<OrderBloc, OrderState>(
-              listenWhen: (previous, current) =>
-                  previous.placeOrderStatus != current.placeOrderStatus &&
-                  (current.placeOrderStatus == PlaceOrderStatus.success ||
-                      current.placeOrderStatus == PlaceOrderStatus.unavailable),
-              listener: (context, orderState) {
-                debugPrint('placeOrderStatus:  ${orderState.placeOrderStatus}');
+            listenWhen: (previous, current) =>
+                previous.placeOrderStatus != current.placeOrderStatus &&
+                (current.placeOrderStatus == PlaceOrderStatus.success ||
+                    current.placeOrderStatus == PlaceOrderStatus.unavailable),
+            listener: (context, orderState) {
+              debugPrint('placeOrderStatus:  ${orderState.placeOrderStatus}');
 
-                if (orderState.placeOrderStatus ==
-                    PlaceOrderStatus.unavailable) {
-                  BlocProvider.of<HomeBloc>(context).add(
-                    const GetCartItemEvent(),
-                  );
+              if (orderState.placeOrderStatus == PlaceOrderStatus.unavailable) {
+                BlocProvider.of<HomeBloc>(
+                  context,
+                ).add(const GetCartItemEvent());
 
-                  ////////////////////////////
-                  showWarningMessage(
+                ////////////////////////////
+                showWarningMessage(
+                  context,
+                  "${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
+                );
+                ////////////////////////
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }
+
+              if (orderState.placeOrderStatus == PlaceOrderStatus.success) {
+                List<OrdersGroupDataModel>? data =
+                    orderState.placeOrderModel!.data!;
+
+                debugPrint('The url is : ${data[0].url}');
+
+                if (data[0].url != null) {
+                  HelperFunctions.slidingNavigation(
                     context,
-                    "${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
+                    PaymentWebview(
+                      url: data[0].url!,
+                      cartGroupId: widget.cartGroupId,
+                    ),
                   );
-                  ////////////////////////
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                }
-
-                if (orderState.placeOrderStatus == PlaceOrderStatus.success) {
-                  List<OrdersGroupDataModel>? data =
-                      orderState.placeOrderModel!.data!;
-
-                  debugPrint('The url is : ${data[0].url}');
-
-                  if (data[0].url != null) {
-                    HelperFunctions.slidingNavigation(
-                      context,
-                      PaymentWebview(
-                        url: data[0].url!,
-                        cartGroupId: widget.cartGroupId,
-                      ),
-                    );
-                  } else {
-                    List<Map<String, String>> cartImages = [];
-                    List<Map<String, String>> analyticsItems = [];
-                    double orderAmount = 0;
-                    double partialPaymentByWallet = 0;
-                    /////////////////////////////////////////////////
-                    data.forEach(
-                      (e) {
-                        orderAmount = orderAmount + e.orderAmount!;
-                        partialPaymentByWallet =
-                            partialPaymentByWallet + e.partialPaymentByWallet!;
-                        e.details!.forEach(
-                          (element) {
-                            for (var i = 0; i < (element.qty ?? 0); i++) {
-                              cartImages.add(
-                                {
-                                  "image": element.image ?? '',
-                                  "size": element.variation.isNullOrEmpty
-                                      ? ""
-                                      : element.variation?[0].size ?? "",
-                                  "color": element.variation.isNullOrEmpty
-                                      ? ""
-                                      : element.variation?[0].color ?? ""
-                                },
-                              );
-                              ////////////////////////////
-                              analyticsItems.add(
-                                {
-                                  "item_id": element.productId.toString(),
-                                  "item_name":
-                                      element.productDetails!.name.toString(),
-                                  "item_variant":
-                                      '${element.variation.isNullOrEmpty ? "" : element.variation?[0].color ?? ""}-${element.variation.isNullOrEmpty ? "" : element.variation?[0].size ?? ""}',
-                                },
-                              );
-                            }
-                          },
-                        );
-                      },
-                    );
-                    /////////////////////////
-                    orderAmount = orderAmount * widget.exchangeRate;
-
+                } else {
+                  List<Map<String, String>> cartImages = [];
+                  List<Map<String, String>> analyticsItems = [];
+                  double orderAmount = 0;
+                  double partialPaymentByWallet = 0;
+                  /////////////////////////////////////////////////
+                  data.forEach((e) {
+                    orderAmount = orderAmount + e.orderAmount!;
                     partialPaymentByWallet =
-                        partialPaymentByWallet * widget.exchangeRate;
-                    ////////////////////////////////
-                    CustomerAddressesInfo customerAddressesInfo =
-                        CustomerAddressesInfo(
-                      id: data[0].shippingAddress,
-                      address: data[0].shippingAddressData!.address ?? '',
-                      addressDetail:
-                          data[0].shippingAddressData!.addressDetail ?? '',
-                      contactInfo: ContactInfo(
-                        name: data[0].shippingAddressData!.contactPersonName ??
-                            '',
-                        alternativePhone:
-                            data[0].shippingAddressData!.alternativePhone ?? '',
-                        phone: data[0].shippingAddressData!.phone ?? '',
-                      ),
-                      location: Location(
-                        latitude: data[0].shippingAddressData!.latitude ?? '',
-                        longitude: data[0].shippingAddressData!.longitude ?? '',
-                      ),
-                      regionDetails: RegionDetails(
-                        country: data[0].shippingAddressData!.country ?? '',
-                        province: data[0].shippingAddressData!.province ?? '',
-                        city: data[0].shippingAddressData!.city ?? '',
-                        town: data[0].shippingAddressData!.town ?? '',
-                        street: data[0].shippingAddressData!.street ?? '',
-                        building: data[0].shippingAddressData!.building ?? '',
-                      ),
-                    );
-                    /////////////////////////
-                    widget.paymentMethods.value =
-                        List.from(widget.paymentMethods.value)..clear();
+                        partialPaymentByWallet + e.partialPaymentByWallet!;
+                    e.details!.forEach((element) {
+                      for (var i = 0; i < (element.qty ?? 0); i++) {
+                        cartImages.add({
+                          "image": element.image ?? '',
+                          "size": element.variation.isNullOrEmpty
+                              ? ""
+                              : element.variation?[0].size ?? "",
+                          "color": element.variation.isNullOrEmpty
+                              ? ""
+                              : element.variation?[0].color ?? "",
+                        });
+                        ////////////////////////////
+                        analyticsItems.add({
+                          "item_id": element.productId.toString(),
+                          "item_name": element.productDetails!.name.toString(),
+                          "item_variant":
+                              '${element.variation.isNullOrEmpty ? "" : element.variation?[0].color ?? ""}-${element.variation.isNullOrEmpty ? "" : element.variation?[0].size ?? ""}',
+                        });
+                      }
+                    });
+                  });
+                  /////////////////////////
+                  orderAmount = orderAmount * widget.exchangeRate;
 
-                    String paymentMethod = data[0].paymentMethod?.value ?? '';
+                  partialPaymentByWallet =
+                      partialPaymentByWallet * widget.exchangeRate;
+                  ////////////////////////////////
+                  CustomerAddressesInfo
+                  customerAddressesInfo = CustomerAddressesInfo(
+                    id: data[0].shippingAddress,
+                    address: data[0].shippingAddressData!.address ?? '',
+                    addressDetail:
+                        data[0].shippingAddressData!.addressDetail ?? '',
+                    contactInfo: ContactInfo(
+                      name:
+                          data[0].shippingAddressData!.contactPersonName ?? '',
+                      alternativePhone:
+                          data[0].shippingAddressData!.alternativePhone ?? '',
+                      phone: data[0].shippingAddressData!.phone ?? '',
+                    ),
+                    location: Location(
+                      latitude: data[0].shippingAddressData!.latitude ?? '',
+                      longitude: data[0].shippingAddressData!.longitude ?? '',
+                    ),
+                    regionDetails: RegionDetails(
+                      country: data[0].shippingAddressData!.country ?? '',
+                      province: data[0].shippingAddressData!.province ?? '',
+                      city: data[0].shippingAddressData!.city ?? '',
+                      town: data[0].shippingAddressData!.town ?? '',
+                      street: data[0].shippingAddressData!.street ?? '',
+                      building: data[0].shippingAddressData!.building ?? '',
+                    ),
+                  );
+                  /////////////////////////
+                  widget.paymentMethods.value = List.from(
+                    widget.paymentMethods.value,
+                  )..clear();
 
-                    // if (data[0].paymentMethod == 'trydos_wallet') {
-                    //   paymentMethod = PaymentMethods.trydosWallet;
-                    // } else if (data[0].paymentMethod == 'cash_on_delivery') {
-                    //   paymentMethod = PaymentMethods.cod;
-                    // } else {
-                    //   paymentMethod = data[0].paymentMethod?.value ?? '';
-                    // }
+                  String paymentMethod = data[0].paymentMethod?.value ?? '';
 
-                    widget.paymentMethods.value =
-                        List.from(widget.paymentMethods.value)
-                          ..add(paymentMethod);
+                  // if (data[0].paymentMethod == 'trydos_wallet') {
+                  //   paymentMethod = PaymentMethods.trydosWallet;
+                  // } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                  //   paymentMethod = PaymentMethods.cod;
+                  // } else {
+                  //   paymentMethod = data[0].paymentMethod?.value ?? '';
+                  // }
 
-                    if (partialPaymentByWallet > 0) {
-                      widget.paymentMethods.value =
-                          List.from(widget.paymentMethods.value)
-                            ..add(PaymentMethods.trydosWallet);
-                    }
+                  widget.paymentMethods.value = List.from(
+                    widget.paymentMethods.value,
+                  )..add(paymentMethod);
 
-                    /////////////////////////
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () {
-                        FirebaseAnalyticsService.logEventForSession(
-                          executedEventName:
-                              AnalyticsButtonsEventNameConst.PLACE_ORDER_BUTTON,
-                          eventName: AnalyticsEventsConst.purchase,
-                          extraParams: {
-                            'transaction_id': data[0].transactionRef.toString(),
-                            'value': orderAmount.toString(),
-                            'currency': widget.currencySympole.toString(),
-                            'shipping': data[0].shippingCost.toString(),
-                            'coupon': data[0].couponCode.toString(),
-                            'screen_name': 'PlaceOrderScreen',
-                            'items': analyticsItems.toString(),
-                          },
-                        );
+                  if (partialPaymentByWallet > 0) {
+                    widget.paymentMethods.value = List.from(
+                      widget.paymentMethods.value,
+                    )..add(PaymentMethods.trydosWallet);
+                  }
+
+                  /////////////////////////
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    FirebaseAnalyticsService.logEventForSession(
+                      executedEventName:
+                          AnalyticsButtonsEventNameConst.PLACE_ORDER_BUTTON,
+                      eventName: AnalyticsEventsConst.purchase,
+                      extraParams: {
+                        'transaction_id': data[0].transactionRef.toString(),
+                        'value': orderAmount.toString(),
+                        'currency': widget.currencySympole.toString(),
+                        'shipping': data[0].shippingCost.toString(),
+                        'coupon': data[0].couponCode.toString(),
+                        'screen_name': 'PlaceOrderScreen',
+                        'items': analyticsItems.toString(),
                       },
                     );
+                  });
 
-                    /////////////////////////
-                    HelperFunctions.slidingNavigation(
-                      context,
-                      SuccessfullOrder(
-                        cartImages: cartImages,
-                        currencySympole: widget.currencySympole,
-                        availablePaymentMethod: widget.availablePaymentMethod,
-                        customerAddressesInfo: customerAddressesInfo,
-                        paymentMethods: widget.paymentMethods,
-                        totalPrice: widget.totalPrice,
-                        decimalPointSetting: widget.decimalPointSetting,
-                        orderAmount: orderAmount,
-                        partialPaymentByWallet: partialPaymentByWallet,
-                        orderGroupId: data[0].orderGroupId ?? '',
-                        currencySymbol: widget.currencySymbol,
-                      ),
-                    );
+                  /////////////////////////
+                  HelperFunctions.slidingNavigation(
+                    context,
+                    SuccessfullOrder(
+                      cartImages: cartImages,
+                      currencySympole: widget.currencySympole,
+                      availablePaymentMethod: widget.availablePaymentMethod,
+                      customerAddressesInfo: customerAddressesInfo,
+                      paymentMethods: widget.paymentMethods,
+                      totalPrice: widget.totalPrice,
+                      decimalPointSetting: widget.decimalPointSetting,
+                      orderAmount: orderAmount,
+                      partialPaymentByWallet: partialPaymentByWallet,
+                      orderGroupId: data[0].orderGroupId ?? '',
+                      currencySymbol: widget.currencySymbol,
+                    ),
+                  );
+                }
+              }
+            },
+            child: BlocListener<OrderBloc, OrderState>(
+              listenWhen: (previous, current) =>
+                  previous.getOrdersByCartGroupIDStatus !=
+                      current.getOrdersByCartGroupIDStatus &&
+                  current.getOrdersByCartGroupIDStatus ==
+                      GetOrdersByCartGroupIDStatus.success,
+              listener: (context, state) {
+                debugPrint(
+                  'getOrdersByCartGroupIDStatus:  ${state.getOrdersByCartGroupIDStatus}',
+                );
+
+                if (state.getOrdersByCartGroupIDStatus ==
+                    GetOrdersByCartGroupIDStatus.success) {
+                  List<OrdersGroupDataModel>? data =
+                      state.getOrdersByCartGroupIDModel!.data!;
+
+                  List<Map<String, String>> cartImages = [];
+                  double orderAmount = 0;
+                  double partialPaymentByWallet = 0;
+                  /////////////////////////////////////////////////
+                  data.forEach((e) {
+                    orderAmount = orderAmount + e.orderAmount!;
+                    partialPaymentByWallet =
+                        partialPaymentByWallet + e.partialPaymentByWallet!;
+                    e.details!.forEach((element) {
+                      for (var i = 0; i < (element.qty ?? 0); i++) {
+                        cartImages.add({
+                          "image": element.image ?? '',
+                          "size": element.variation.isNullOrEmpty
+                              ? ""
+                              : element.variation?[0].size ?? "",
+                          "color": element.variation.isNullOrEmpty
+                              ? ""
+                              : element.variation?[0].color ?? "",
+                        });
+                      }
+                    });
+                  });
+                  ////////////////////////////////
+                  orderAmount = orderAmount * widget.exchangeRate;
+
+                  partialPaymentByWallet =
+                      partialPaymentByWallet * widget.exchangeRate;
+                  ////////////////////////////////
+                  CustomerAddressesInfo
+                  customerAddressesInfo = CustomerAddressesInfo(
+                    id: data[0].shippingAddress,
+                    address: data[0].shippingAddressData!.address ?? '',
+                    addressDetail:
+                        data[0].shippingAddressData!.addressDetail ?? '',
+                    contactInfo: ContactInfo(
+                      name:
+                          data[0].shippingAddressData!.contactPersonName ?? '',
+                      alternativePhone:
+                          data[0].shippingAddressData!.alternativePhone ?? '',
+                      phone: data[0].shippingAddressData!.phone ?? '',
+                    ),
+                    location: Location(
+                      latitude: data[0].shippingAddressData!.latitude ?? '',
+                      longitude: data[0].shippingAddressData!.longitude ?? '',
+                    ),
+                    regionDetails: RegionDetails(
+                      country: data[0].shippingAddressData!.country ?? '',
+                      province: data[0].shippingAddressData!.province ?? '',
+                      city: data[0].shippingAddressData!.city ?? '',
+                      town: data[0].shippingAddressData!.town ?? '',
+                      street: data[0].shippingAddressData!.street ?? '',
+                      building: data[0].shippingAddressData!.building ?? '',
+                    ),
+                  );
+                  /////////////////////////
+                  widget.paymentMethods.value = List.from(
+                    widget.paymentMethods.value,
+                  )..clear();
+
+                  String paymentMethod = data[0].paymentMethod?.value ?? '';
+
+                  // if (data[0].paymentMethod == 'trydos_wallet') {
+                  //   paymentMethod = PaymentMethods.trydosWallet;
+                  // } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                  //   paymentMethod = PaymentMethods.cod;
+                  // } else if (data[0].paymentMethod == 'crypto') {
+                  //   paymentMethod = PaymentMethods.crypto;
+                  // }
+
+                  widget.paymentMethods.value = List.from(
+                    widget.paymentMethods.value,
+                  )..add(paymentMethod);
+
+                  if (partialPaymentByWallet > 0) {
+                    widget.paymentMethods.value = List.from(
+                      widget.paymentMethods.value,
+                    )..add(PaymentMethods.trydosWallet);
                   }
+                  /////////////////////////
+                  HelperFunctions.slidingNavigation(
+                    context,
+                    SuccessfullOrder(
+                      cartImages: cartImages,
+                      currencySympole: widget.currencySympole,
+                      availablePaymentMethod: widget.availablePaymentMethod,
+                      customerAddressesInfo: customerAddressesInfo,
+                      paymentMethods: widget.paymentMethods,
+                      totalPrice: widget.totalPrice,
+                      partialPaymentByWallet: partialPaymentByWallet,
+                      decimalPointSetting: widget.decimalPointSetting,
+                      orderAmount: orderAmount,
+                      orderGroupId: data[0].orderGroupId ?? '',
+                      currencySymbol: widget.currencySymbol,
+                    ),
+                  );
                 }
               },
-              child: BlocListener<OrderBloc, OrderState>(
-                listenWhen: (previous, current) =>
+              child: BlocBuilder<OrderBloc, OrderState>(
+                buildWhen: (previous, current) =>
+                    previous.placeOrderStatus != current.placeOrderStatus ||
                     previous.getOrdersByCartGroupIDStatus !=
-                        current.getOrdersByCartGroupIDStatus &&
-                    current.getOrdersByCartGroupIDStatus ==
-                        GetOrdersByCartGroupIDStatus.success,
-                listener: (context, state) {
-                  debugPrint(
-                      'getOrdersByCartGroupIDStatus:  ${state.getOrdersByCartGroupIDStatus}');
-
-                  if (state.getOrdersByCartGroupIDStatus ==
-                      GetOrdersByCartGroupIDStatus.success) {
-                    List<OrdersGroupDataModel>? data =
-                        state.getOrdersByCartGroupIDModel!.data!;
-
-                    List<Map<String, String>> cartImages = [];
-                    double orderAmount = 0;
-                    double partialPaymentByWallet = 0;
-                    /////////////////////////////////////////////////
-                    data.forEach(
-                      (e) {
-                        orderAmount = orderAmount + e.orderAmount!;
-                        partialPaymentByWallet =
-                            partialPaymentByWallet + e.partialPaymentByWallet!;
-                        e.details!.forEach(
-                          (element) {
-                            for (var i = 0; i < (element.qty ?? 0); i++) {
-                              cartImages.add(
-                                {
-                                  "image": element.image ?? '',
-                                  "size": element.variation.isNullOrEmpty
-                                      ? ""
-                                      : element.variation?[0].size ?? "",
-                                  "color": element.variation.isNullOrEmpty
-                                      ? ""
-                                      : element.variation?[0].color ?? "",
-                                },
-                              );
-                            }
-                          },
-                        );
-                      },
-                    );
-                    ////////////////////////////////
-                    orderAmount = orderAmount * widget.exchangeRate;
-
-                    partialPaymentByWallet =
-                        partialPaymentByWallet * widget.exchangeRate;
-                    ////////////////////////////////
-                    CustomerAddressesInfo customerAddressesInfo =
-                        CustomerAddressesInfo(
-                      id: data[0].shippingAddress,
-                      address: data[0].shippingAddressData!.address ?? '',
-                      addressDetail:
-                          data[0].shippingAddressData!.addressDetail ?? '',
-                      contactInfo: ContactInfo(
-                        name: data[0].shippingAddressData!.contactPersonName ??
-                            '',
-                        alternativePhone:
-                            data[0].shippingAddressData!.alternativePhone ?? '',
-                        phone: data[0].shippingAddressData!.phone ?? '',
-                      ),
-                      location: Location(
-                        latitude: data[0].shippingAddressData!.latitude ?? '',
-                        longitude: data[0].shippingAddressData!.longitude ?? '',
-                      ),
-                      regionDetails: RegionDetails(
-                        country: data[0].shippingAddressData!.country ?? '',
-                        province: data[0].shippingAddressData!.province ?? '',
-                        city: data[0].shippingAddressData!.city ?? '',
-                        town: data[0].shippingAddressData!.town ?? '',
-                        street: data[0].shippingAddressData!.street ?? '',
-                        building: data[0].shippingAddressData!.building ?? '',
-                      ),
-                    );
-                    /////////////////////////
-                    widget.paymentMethods.value =
-                        List.from(widget.paymentMethods.value)..clear();
-
-                    String paymentMethod = data[0].paymentMethod?.value ?? '';
-
-                    // if (data[0].paymentMethod == 'trydos_wallet') {
-                    //   paymentMethod = PaymentMethods.trydosWallet;
-                    // } else if (data[0].paymentMethod == 'cash_on_delivery') {
-                    //   paymentMethod = PaymentMethods.cod;
-                    // } else if (data[0].paymentMethod == 'crypto') {
-                    //   paymentMethod = PaymentMethods.crypto;
-                    // }
-
-                    widget.paymentMethods.value =
-                        List.from(widget.paymentMethods.value)
-                          ..add(paymentMethod);
-
-                    if (partialPaymentByWallet > 0) {
-                      widget.paymentMethods.value =
-                          List.from(widget.paymentMethods.value)
-                            ..add(PaymentMethods.trydosWallet);
-                    }
-                    /////////////////////////
-                    HelperFunctions.slidingNavigation(
-                      context,
-                      SuccessfullOrder(
-                        cartImages: cartImages,
-                        currencySympole: widget.currencySympole,
-                        availablePaymentMethod: widget.availablePaymentMethod,
-                        customerAddressesInfo: customerAddressesInfo,
-                        paymentMethods: widget.paymentMethods,
-                        totalPrice: widget.totalPrice,
-                        partialPaymentByWallet: partialPaymentByWallet,
-                        decimalPointSetting: widget.decimalPointSetting,
-                        orderAmount: orderAmount,
-                        orderGroupId: data[0].orderGroupId ?? '',
-                        currencySymbol: widget.currencySymbol,
-                      ),
-                    );
-                  }
-                },
-                child: BlocBuilder<OrderBloc, OrderState>(
-                  buildWhen: (previous, current) =>
-                      previous.placeOrderStatus != current.placeOrderStatus ||
-                      previous.getOrdersByCartGroupIDStatus !=
-                          current.getOrdersByCartGroupIDStatus,
-                  builder: (context, orderState) {
-                    return BlocBuilder<HomeBloc, HomeState>(
-                      buildWhen: (previous, current) =>
-                          previous.checkWithGetCartStatus !=
-                          current.checkWithGetCartStatus,
-                      builder: (context, homeState) {
-                        return Column(
-                          children: [
-                            buildPageHeader(context),
-                            /////////////////////
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  alignment: Alignment.topCenter,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      buildBagItemsWidget(context),
-                                      //////////////////////////////////
-                                      SizedBox(
-                                        height: 12.h,
-                                      ),
-                                      //////////////////////////////////
-                                      buildAddress(context),
-                                      //////////////////////////////////
-                                      PaymentMethod(
-                                        fromSuccessOrder: false,
-                                        amount: widget.walletBalance,
-                                        fromPalceOrder: true,
-                                        paymentMethods: widget.paymentMethods,
-                                        availablePaymentMethod:
-                                            widget.availablePaymentMethod,
-                                        totalPrice: widget.totalPrice,
-                                        decimalPointSetting:
-                                            widget.decimalPointSetting,
-                                        currencySymbol: widget.currencySymbol,
-                                      ),
-                                      /////////////////////////
-                                      SizedBox(
-                                        height: 40.h,
-                                      ),
-                                      //////////////////////////////////
-                                      buildAgreeToPoliciesWidget(),
-                                    ],
-                                  ),
+                        current.getOrdersByCartGroupIDStatus,
+                builder: (context, orderState) {
+                  return BlocBuilder<HomeBloc, HomeState>(
+                    buildWhen: (previous, current) =>
+                        previous.checkWithGetCartStatus !=
+                        current.checkWithGetCartStatus,
+                    builder: (context, homeState) {
+                      return Column(
+                        children: [
+                          buildPageHeader(context),
+                          /////////////////////
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                alignment: Alignment.topCenter,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    buildBagItemsWidget(context),
+                                    //////////////////////////////////
+                                    SizedBox(height: 12.h),
+                                    //////////////////////////////////
+                                    buildAddress(context),
+                                    //////////////////////////////////
+                                    PaymentMethod(
+                                      fromSuccessOrder: false,
+                                      amount: widget.walletBalance,
+                                      fromPalceOrder: true,
+                                      paymentMethods: widget.paymentMethods,
+                                      availablePaymentMethod:
+                                          widget.availablePaymentMethod,
+                                      totalPrice: widget.totalPrice,
+                                      decimalPointSetting:
+                                          widget.decimalPointSetting,
+                                      currencySymbol: widget.currencySymbol,
+                                    ),
+                                    /////////////////////////
+                                    SizedBox(height: 40.h),
+                                    //////////////////////////////////
+                                    buildAgreeToPoliciesWidget(),
+                                  ],
                                 ),
                               ),
                             ),
-                            // //////////////////////////
-                            buildPlaceOrderButton(orderState, homeState)
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
-              )),
+                          ),
+                          // //////////////////////////
+                          buildPlaceOrderButton(orderState, homeState),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget buildPlaceOrderButton(
-    OrderState orderState,
-    HomeState homeState,
-  ) {
+  Widget buildPlaceOrderButton(OrderState orderState, HomeState homeState) {
     return ValueListenableBuilder<bool>(
       valueListenable: agreeToPolicies,
       builder: (context, _agreeToPolicies, _) {
@@ -531,8 +513,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 highlightColor: Colors.grey[100]!,
                 child: Container(
                   height: 60,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     // ignore: deprecated_member_use
@@ -544,57 +528,62 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       children: [
                         Text(
                           LocaleKeys.place_order.tr(),
-                          style: context.textTheme.bodyMedium?.mr.copyWith(
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: const Color(0xffFEFEFE),
                             letterSpacing: 0.18,
                             fontSize: 18,
                             height: 0.8,
                           ),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
+                        SizedBox(height: 10.h),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               '${homeState.cartCollection?.length} ',
-                              style: context.textTheme.bodyMedium?.br.copyWith(
-                                  color: const Color(0xffFEFEFE),
-                                  letterSpacing: 0.18,
-                                  fontSize: 14,
-                                  height: 0.8),
+                              style: context.textTheme.bodyMedium?.bq.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 14,
+                                height: 0.8,
+                              ),
                             ),
                             Text(
                               LocaleKeys.item.tr(),
-                              style: context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: const Color(0xffFEFEFE),
-                                  letterSpacing: 0.18,
-                                  fontSize: 14,
-                                  height: 0.8),
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 14,
+                                height: 0.8,
+                              ),
                             ),
                             Text(
-                              widget.paymentMethods.value
-                                      .contains(PaymentMethods.cod)
+                              widget.paymentMethods.value.contains(
+                                    PaymentMethods.cod,
+                                  )
                                   ? HelperFunctions.formatNumber(
                                       number: widget.totalCashed,
-                                      isNeedRounding: false)
+                                      isNeedRounding: false,
+                                    )
                                   : HelperFunctions.formatNumber(
                                       number: widget.totalPrice,
-                                      isNeedRounding: false),
-                              style: context.textTheme.bodyMedium?.br.copyWith(
-                                  color: const Color(0xffFEFEFE),
-                                  letterSpacing: 0.18,
-                                  fontSize: 14,
-                                  height: 0.8),
+                                      isNeedRounding: false,
+                                    ),
+                              style: context.textTheme.bodyMedium?.bq.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 14,
+                                height: 0.8,
+                              ),
                             ),
                             Text(
                               "${widget.currencySympole}",
-                              style: context.textTheme.bodyMedium?.rr.copyWith(
-                                  color: const Color(0xffFEFEFE),
-                                  letterSpacing: 0.18,
-                                  fontSize: 14,
-                                  height: 0.8),
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 14,
+                                height: 0.8,
+                              ),
                             ),
                           ],
                         ),
@@ -614,7 +603,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       blurRadius: 10,
                       blurStyle: BlurStyle.solid,
                       color: Color(0xffF1F1F1),
-                    )
+                    ),
                   ],
                   color: const Color.fromRGBO(255, 255, 255, 1),
                 ),
@@ -622,83 +611,90 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 child: InkWell(
                   onTap: () {
                     if (_agreeToPolicies) {
-                      BlocProvider.of<HomeBloc>(context).add(
-                        const CheckWithGetCartEvent(isForPlaceOrder: true),
-                      );
+                      BlocProvider.of<HomeBloc>(
+                        context,
+                      ).add(const CheckWithGetCartEvent(isForPlaceOrder: true));
                     }
                   },
                   child: Container(
                     height: 70.h,
                     margin: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: _agreeToPolicies
-                            ? const Color(0xff346BFF)
-                            : const Color(0xffC4C2C2)),
+                      borderRadius: BorderRadius.circular(20),
+                      color: _agreeToPolicies
+                          ? const Color(0xff346BFF)
+                          : const Color(0xffC4C2C2),
+                    ),
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             LocaleKeys.place_order.tr(),
-                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                color: const Color(0xffFEFEFE),
-                                letterSpacing: 0.18,
-                                fontSize: 18,
-                                height: 0.8),
+                            style: context.textTheme.bodyMedium?.mq.copyWith(
+                              color: const Color(0xffFEFEFE),
+                              letterSpacing: 0.18,
+                              fontSize: 18,
+                              height: 0.8,
+                            ),
                           ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
+                          SizedBox(height: 10.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 '${homeState.cartCollection?.length} ',
-                                style: context.textTheme.bodyMedium?.br
+                                style: context.textTheme.bodyMedium?.bq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                               Text(
                                 LocaleKeys.item.tr(),
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                               Text(
-                                widget.paymentMethods.value
-                                        .contains(PaymentMethods.cod)
+                                widget.paymentMethods.value.contains(
+                                      PaymentMethods.cod,
+                                    )
                                     ? HelperFunctions.formatNumber(
                                         number: widget.totalCashed,
-                                        isNeedRounding: false)
+                                        isNeedRounding: false,
+                                      )
                                     : HelperFunctions.formatNumber(
                                         number: widget.totalPrice,
-                                        isNeedRounding: false),
-                                style: context.textTheme.bodyMedium?.br
+                                        isNeedRounding: false,
+                                      ),
+                                style: context.textTheme.bodyMedium?.bq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
-                              const SizedBox(
-                                width: 2,
-                              ),
+                              const SizedBox(width: 2),
                               Text(
                                 "${widget.currencySympole}",
-                                style: context.textTheme.bodyMedium?.rr
+                                style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
+                                      color: const Color(0xffFEFEFE),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 0.8,
+                                    ),
                               ),
                             ],
                           ),
@@ -725,9 +721,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             height: 40.h,
             width: 1.sw,
             decoration: BoxDecoration(
-              border: Border.all(
-                color: const Color(0xff388CFF),
-              ),
+              border: Border.all(color: const Color(0xff388CFF)),
               color: _agreeToPolicies
                   ? const Color(0xffF5FFF8)
                   : const Color(0xffF8F8F8),
@@ -736,50 +730,54 @@ class _PlaceOrderState extends State<PlaceOrder> {
             child: Row(
               children: [
                 SizedBox(width: 29.w),
-                SvgPicture.asset(AppAssets.detectedSvg,
-                    // ignore: deprecated_member_use
-                    color: _agreeToPolicies
-                        ? const Color(0xff388CFF)
-                        : const Color(0xff8E8E8E)),
-                const SizedBox(
-                  width: 20,
+                SvgPicture.asset(
+                  AppAssets.detectedSvg,
+                  // ignore: deprecated_member_use
+                  color: _agreeToPolicies
+                      ? const Color(0xff388CFF)
+                      : const Color(0xff8E8E8E),
                 ),
+                const SizedBox(width: 20),
                 SizedBox(width: 10.w),
                 Text(
                   "${LocaleKeys.i_read_and_agree_to_the.tr()}",
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 12,
+                    height: 1.33,
+                  ),
                 ),
                 Text(
                   " ${LocaleKeys.policies.tr()}",
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                      decoration: TextDecoration.underline,
-                      decorationColor: const Color(0xff388CFF),
-                      color: const Color(0xff388CFF),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    decoration: TextDecoration.underline,
+                    decorationColor: const Color(0xff388CFF),
+                    color: const Color(0xff388CFF),
+                    letterSpacing: 0.18,
+                    fontSize: 12,
+                    height: 1.33,
+                  ),
                 ),
                 Text(
                   " ${LocaleKeys.and.tr()} ",
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 12,
+                    height: 1.33,
+                  ),
                 ),
                 Text(
                   "${LocaleKeys.terms.tr()}",
-                  style: context.textTheme.bodyMedium?.rr.copyWith(
-                      decoration: TextDecoration.underline,
-                      decorationColor: const Color(0xff388CFF),
-                      color: const Color(0xff388CFF),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    decoration: TextDecoration.underline,
+                    decorationColor: const Color(0xff388CFF),
+                    color: const Color(0xff388CFF),
+                    letterSpacing: 0.18,
+                    fontSize: 12,
+                    height: 1.33,
+                  ),
                 ),
               ],
             ),
@@ -800,47 +798,36 @@ class _PlaceOrderState extends State<PlaceOrder> {
             margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  AppAssets.deliveryAddressSvg,
-                  height: 16,
-                ),
-                SizedBox(
-                  width: 7.w,
-                ),
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 16),
+                SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.shipping_delivery_address.tr()} ",
-                  style: context.textTheme.bodyMedium?.ra.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 0.8),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 0.8,
+                  ),
                 ),
-                SizedBox(
-                  width: 5.w,
-                ),
-                SvgPicture.asset(
-                  AppAssets.freeShippingSvg,
-                ),
+                SizedBox(width: 5.w),
+                SvgPicture.asset(AppAssets.freeShippingSvg),
               ],
             ),
           ),
-          SizedBox(
-            height: 5.h,
-          ),
+          SizedBox(height: 5.h),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 35.w),
             child: Text(
               "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} ",
-              style: context.textTheme.bodyMedium?.ra.copyWith(
-                  color: const Color(0xff8D8D8D),
-                  letterSpacing: 0.18,
-                  fontSize: 12,
-                  height: 0.8),
+              style: context.textTheme.bodyMedium?.rq.copyWith(
+                color: const Color(0xff8D8D8D),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 0.8,
+              ),
             ),
           ),
-          SizedBox(
-            height: 12.h,
-          ),
+          SizedBox(height: 12.h),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: addressInfoWithContactInfoCart(
@@ -873,41 +860,37 @@ class _PlaceOrderState extends State<PlaceOrder> {
             height: 20,
             child: Row(
               children: [
-                SvgPicture.asset(
-                  AppAssets.bagsSvg,
-                  height: 20,
-                ),
-                SizedBox(
-                  width: 7.w,
-                ),
+                SvgPicture.asset(AppAssets.bagsSvg, height: 20),
+                SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.your_shopping_bag.tr()} ",
-                  style: context.textTheme.bodyMedium?.ra.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.33,
+                  ),
                 ),
                 Text(
                   "${widget.cartImages.length} item",
-                  style: context.textTheme.bodyMedium?.br.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 13,
-                      height: 1.33),
+                  style: context.textTheme.bodyMedium?.bq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 13,
+                    height: 1.33,
+                  ),
                 ),
               ],
             ),
           ),
           Container(
             margin: EdgeInsets.only(
-                left: (LanguageService.languageCode == "ar") ? 0 : 10,
-                right: (LanguageService.languageCode == "ar") ? 10 : 0),
+              left: (LanguageService.languageCode == "ar") ? 0 : 10,
+              right: (LanguageService.languageCode == "ar") ? 10 : 0,
+            ),
             height: 150,
             child: ListView.separated(
-              separatorBuilder: (context, index) => const SizedBox(
-                width: 5,
-              ),
+              separatorBuilder: (context, index) => const SizedBox(width: 5),
               scrollDirection: Axis.horizontal,
               itemCount: widget.cartImages.length,
               itemBuilder: (context, index) => Container(
@@ -929,25 +912,25 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         radius: 15,
                       ),
                     ),
-                    const SizedBox(
-                      height: 2,
-                    ),
+                    const SizedBox(height: 2),
                     Text(
                       '${widget.cartImages[index]["size"]}',
-                      style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          letterSpacing: 0.18,
-                          fontSize: 10,
-                          height: 1.33),
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 10,
+                        height: 1.33,
+                      ),
                     ),
                     ////////////////////
                     Text(
                       '${widget.cartImages[index]["color"]}',
-                      style: context.textTheme.bodyMedium?.rr.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          letterSpacing: 0.18,
-                          fontSize: 10,
-                          height: 1.33),
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 10,
+                        height: 1.33,
+                      ),
                     ),
                   ],
                 ),
@@ -997,21 +980,20 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   ),
                 ),
                 const Spacer(),
-                SvgPicture.asset(
-                  AppAssets.deliveryAddressSvg,
-                  height: 20,
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 20),
+                SizedBox(width: 5.w),
+                Text(
+                  "${LocaleKeys.shipping_payment.tr()} ",
+                  style: context.textTheme.bodyMedium?.mq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.2,
+                    fontSize: 14,
+                    height: 1.33,
+                  ),
                 ),
                 SizedBox(
-                  width: 5.w,
+                  width: LanguageService.languageCode == "ar" ? 180.w : 140.w,
                 ),
-                Text("${LocaleKeys.shipping_payment.tr()} ",
-                    style: context.textTheme.bodyMedium?.mr.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        letterSpacing: 0.2,
-                        fontSize: 14,
-                        height: 1.33)),
-                SizedBox(
-                    width: LanguageService.languageCode == "ar" ? 180.w : 140.w)
               ],
             ),
           ),

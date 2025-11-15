@@ -9,12 +9,12 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../app/my_text_widget.dart';
 
 class CallStatusWidget extends StatefulWidget {
-  const CallStatusWidget(
-      {Key? key,
-      required this.text,
-      required this.iconUrl,
-      required this.textColor})
-      : super(key: key);
+  const CallStatusWidget({
+    Key? key,
+    required this.text,
+    required this.iconUrl,
+    required this.textColor,
+  }) : super(key: key);
   final String text;
   final String iconUrl;
   final Color textColor;
@@ -36,18 +36,14 @@ class _CallStatusWidgetState extends ThemeState<CallStatusWidget> {
       children: [
         Padding(
           padding: HWEdgeInsetsDirectional.only(start: 15.w),
-          child: SvgPicture.asset(
-            widget.iconUrl,
-            width: 25.sp,
-            height: 25.sp,
-          ),
+          child: SvgPicture.asset(widget.iconUrl, width: 25.sp, height: 25.sp),
         ),
         10.verticalSpace,
         MyTextWidget(
           widget.text,
           textAlign: TextAlign.center,
-          style: textTheme.titleLarge?.lr.copyWith(color: widget.textColor),
-        )
+          style: textTheme.titleLarge?.lq.copyWith(color: widget.textColor),
+        ),
       ],
     );
   }

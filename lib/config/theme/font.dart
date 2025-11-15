@@ -90,7 +90,7 @@ extension FamilyUtils on TextStyle {
 abstract class _FontSize {
   // static double get huge => _hugeFontSize.sp;
 
-//  static const double _hugeFontSize = 77;
+  //  static const double _hugeFontSize = 77;
 
   // static double get heading_01 => _heading_01FontSize.sp;
 
@@ -126,7 +126,7 @@ abstract class _FontSize {
 
   // static double get button => _buttonFontSize.sp;
 
-//  static const double _buttonFontSize = 18;
+  //  static const double _buttonFontSize = 18;
 
   static double get body_01 => _body_01FontSize.sp;
 

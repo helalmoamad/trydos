@@ -1,11 +1,15 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 extension ScopeApi on String {
-//  String noScope() => '$_version/$_cloudinaryName/$this';
+  //  String noScope() => '$_version/$_cloudinaryName/$this';
 }
 
 abstract class WebAppEndPoints {
   static const imageSearchEP = "api/image-search";
+  static const addLikeCommentEP = "public_comment/likes/like";
+  static const addLikeOFProductEP = "products/like";
+  static const removeLikeOFProductEP = "products/unlike";
+  static const removeLikeCommentEP = "public_comment/likes/unlike";
   static const mainCategoriesEP = "api/home/mainCategories";
   static const editSocialProductEP = "api/editSocialProduct";
   static const homeBoutiquesEP = "api/home/boutiques";

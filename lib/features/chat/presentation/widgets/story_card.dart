@@ -23,9 +23,11 @@ import 'chat_widgets/no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StoryCard extends StatelessWidget {
-  const StoryCard(
-      {Key? key, required this.collectionStoryModel, required this.index})
-      : super(key: key);
+  const StoryCard({
+    Key? key,
+    required this.collectionStoryModel,
+    required this.index,
+  }) : super(key: key);
   final CollectionStoryModel collectionStoryModel;
   final int index;
 
@@ -40,35 +42,47 @@ class StoryCard extends StatelessWidget {
         int indexOfInitialStory;
         if (GetIt.I<PrefsRepository>().myStoriesId ==
             collectionStoryModel.stories![0].userId) {
-          indexOfInitialStory = collectionStoryModel.stories!
-              .lastIndexWhere((element) => element.isSeen == false);
-          indexOfInitialStory =
-              indexOfInitialStory == -1 ? 0 : indexOfInitialStory;
+          indexOfInitialStory = collectionStoryModel.stories!.lastIndexWhere(
+            (element) => element.isSeen == false,
+          );
+          indexOfInitialStory = indexOfInitialStory == -1
+              ? 0
+              : indexOfInitialStory;
         } else {
-          indexOfInitialStory =
-              firstWhereNotShowed(collectionStoryModel.stories!);
+          indexOfInitialStory = firstWhereNotShowed(
+            collectionStoryModel.stories!,
+          );
         }
-        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+        GetIt.I<StoryBloc>().add(
+          StorySelectedEvent(
             collectionIndex: index,
             currentPage: index,
-            selectedStoryIndexInCollection: indexOfInitialStory));
+            selectedStoryIndexInCollection: indexOfInitialStory,
+          ),
+        );
 
         pushOverscrollRoute(
-            context: context,
-            child: StoryCollectionPageView(initialPage: index),
-            dragToPopDirection: DragToPopDirection.toBottom,
-            fullscreenDialog: true);
+          context: context,
+          child: StoryCollectionPageView(initialPage: index),
+          dragToPopDirection: DragToPopDirection.toBottom,
+          fullscreenDialog: true,
+        );
       },
       child: SizedBox(
-          height: 80.h,
-          width: 1.sw,
-          child: Stack(
-            children: [
-              Container(
-                padding:
-                    HWEdgeInsets.only(left: 15, right: 10, top: 5, bottom: 5),
-                color: context.colorScheme.white,
-                child: Row(children: [
+        height: 80.h,
+        width: 1.sw,
+        child: Stack(
+          children: [
+            Container(
+              padding: HWEdgeInsets.only(
+                left: 15,
+                right: 10,
+                top: 5,
+                bottom: 5,
+              ),
+              color: context.colorScheme.white,
+              child: Row(
+                children: [
                   CircularStepProgressIndicator(
                     totalSteps: collectionStoryModel.stories!.length,
                     startingAngle: pi,
@@ -79,19 +93,23 @@ class StoryCard extends StatelessWidget {
                               width: 60.r,
                               height: 60.r,
                               radius: 180,
-                              textStyle: context.textTheme.bodyMedium?.br
+                              textStyle: context.textTheme.bodyMedium?.bq
                                   .copyWith(
-                                      color: const Color(0xff6638FF),
-                                      letterSpacing: 0.18,
-                                      height: 1.33),
+                                    color: const Color(0xff6638FF),
+                                    letterSpacing: 0.18,
+                                    height: 1.33,
+                                  ),
                               name: collectionStoryModel.name == null
                                   ? LocaleKeys.uk.tr()
                                   : HelperFunctions.getTheFirstTwoLettersOfName(
-                                      collectionStoryModel.name!))
+                                      collectionStoryModel.name!,
+                                    ),
+                            )
                           : MyCachedNetworkImage(
                               height: 60.r,
                               width: 60.r,
-                              imageUrl: (collectionStoryModel.photoPath
+                              imageUrl:
+                                  (collectionStoryModel.photoPath
                                           .toString()
                                           .contains("cloudinary")
                                       ? collectionStoryModel.photoPath
@@ -117,29 +135,33 @@ class StoryCard extends StatelessWidget {
                       child: Column(
                         children: [
                           Flexible(
-                              child: Row(
-                            children: [
-                              MyTextWidget(
-                                collectionStoryModel.name ??
-                                    LocaleKeys.unknown_user.tr(),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: context.textTheme.bodyMedium?.rr
-                                    .copyWith(
+                            child: Row(
+                              children: [
+                                MyTextWidget(
+                                  collectionStoryModel.name ??
+                                      LocaleKeys.unknown_user.tr(),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: context.textTheme.bodyMedium?.rq
+                                      .copyWith(
                                         height: 1.33,
-                                        color: const Color(0xff505050)),
-                              ),
-                              const Spacer(),
-                            ],
-                          ))
+                                        color: const Color(0xff505050),
+                                      ),
+                                ),
+                                const Spacer(),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ),
-                ]),
-              )
-            ],
-          )),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -136,19 +136,21 @@ class _TextMessageState extends ThemeState<TextMessage> {
       },
       builder: (context, state) {
         print(
-            "object///////////////////////////////////////${widget.userMessagePhoto}/");
+          "object///////////////////////////////////////${widget.userMessagePhoto}/",
+        );
         print(state.currentMessage.contains(widget.messageId));
         return Column(
           key: key,
           children: [
             Padding(
               padding: HWEdgeInsets.only(
-                  right: (widget.isSent || widget.disableMessageAlignment)
-                      ? 25.w
-                      : 0,
-                  left: (widget.isSent || widget.disableMessageAlignment)
-                      ? 0
-                      : 25.w),
+                right: (widget.isSent || widget.disableMessageAlignment)
+                    ? 25.w
+                    : 0,
+                left: (widget.isSent || widget.disableMessageAlignment)
+                    ? 0
+                    : 25.w,
+              ),
               child: SwipeTo(
                 onLeftSwipe: () {
                   if (widget.senderId == widget._prefsRepository.myChatId) {
@@ -156,12 +158,17 @@ class _TextMessageState extends ThemeState<TextMessage> {
                         state.currentMessage.contains(widget.messageId))) {
                       return;
                     }
-                    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                        true, 'text', widget.isSent,
+                    BlocProvider.of<AppBloc>(context).add(
+                      RefreshChatInputField(
+                        true,
+                        'text',
+                        widget.isSent,
                         messageId: widget.messageId,
                         senderParentMessageId: widget.senderId,
                         message: widget.message,
-                        time: widget.createAt));
+                        time: widget.createAt,
+                      ),
+                    );
                   } else {}
                 },
                 iconSize: 0,
@@ -170,20 +177,26 @@ class _TextMessageState extends ThemeState<TextMessage> {
                 onRightSwipe: () {
                   if (widget.senderId == widget._prefsRepository.myChatId) {
                     !widget.isreplay
-                        ? BlocProvider.of<ChatBloc>(context)
-                            .add(ChangeSlop(messageId: widget.messageId))
+                        ? BlocProvider.of<ChatBloc>(
+                            context,
+                          ).add(ChangeSlop(messageId: widget.messageId))
                         : {};
                   } else {
                     if ((state.sendMessageStatus == SendMessageStatus.loading &&
                         state.currentMessage.contains(widget.messageId))) {
                       return;
                     }
-                    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                        true, 'text', widget.isSent,
+                    BlocProvider.of<AppBloc>(context).add(
+                      RefreshChatInputField(
+                        true,
+                        'text',
+                        widget.isSent,
                         messageId: widget.messageId,
                         senderParentMessageId: widget.senderId,
                         message: widget.message,
-                        time: widget.createAt));
+                        time: widget.createAt,
+                      ),
+                    );
                   }
                 },
                 child: Directionality(
@@ -191,23 +204,25 @@ class _TextMessageState extends ThemeState<TextMessage> {
                   child: Row(
                     mainAxisAlignment: widget.disableMessageAlignment
                         ? widget.isSent
-                            ? MainAxisAlignment.start
-                            : MainAxisAlignment.end
+                              ? MainAxisAlignment.start
+                              : MainAxisAlignment.end
                         : widget.isSent
-                            ? MainAxisAlignment.end
-                            : MainAxisAlignment.start,
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
                     children: [
                       Transform.translate(
-                        offset: !(state.isSlpoing &&
-                                state.slopMessageId!
-                                    .contains(widget.messageId) &&
+                        offset:
+                            !(state.isSlpoing &&
+                                state.slopMessageId!.contains(
+                                  widget.messageId,
+                                ) &&
                                 (widget.isReceived || widget.isRead) &&
                                 !widget.isreplay)
                             ? const Offset(0, 0)
                             : widget.senderId ==
-                                    widget._prefsRepository.myChatId
-                                ? Offset(50.w, 0)
-                                : Offset(0.w, 0),
+                                  widget._prefsRepository.myChatId
+                            ? Offset(50.w, 0)
+                            : Offset(0.w, 0),
                         child: Stack(
                           alignment: widget.isSent
                               ? Alignment.centerRight
@@ -216,42 +231,49 @@ class _TextMessageState extends ThemeState<TextMessage> {
                             Container(
                               key: TestVariables.kTestMode
                                   ? Key(
-                                      '${WidgetsKeys.messageCardKey}${widget.index}')
+                                      '${WidgetsKeys.messageCardKey}${widget.index}',
+                                    )
                                   : null,
                               constraints: BoxConstraints(
-                                  minHeight: !widget.withShadow ? 71 : 48),
+                                minHeight: !widget.withShadow ? 71 : 48,
+                              ),
                               decoration: BoxDecoration(
-                                  color: widget.isSent
-                                      ? (widget.sendColor ??
+                                color: widget.isSent
+                                    ? (widget.sendColor ??
                                           const Color(0xffFFF9B4))
-                                      : (widget.receivedColor ??
+                                    : (widget.receivedColor ??
                                           const Color(0xffB4FED9)),
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: widget.withShadow
-                                      ? [
-                                          BoxShadow(
-                                              color: colorScheme.black
-                                                  // ignore: deprecated_member_use
-                                                  .withOpacity(0.05),
-                                              offset: const Offset(0, 3),
-                                              blurRadius: 6)
-                                        ]
-                                      : null),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: widget.withShadow
+                                    ? [
+                                        BoxShadow(
+                                          color: colorScheme.black
+                                              // ignore: deprecated_member_use
+                                              .withOpacity(0.05),
+                                          offset: const Offset(0, 3),
+                                          blurRadius: 6,
+                                        ),
+                                      ]
+                                    : null,
+                              ),
                               child: Padding(
                                 padding: HWEdgeInsets.only(
-                                    left: (widget.isSent ||
-                                            widget.disableMessageAlignment)
-                                        ? 20.w
-                                        : height < 60
-                                            ? 50.w
-                                            : 40.w,
-                                    top: 10,
-                                    right: (widget.isSent ||
-                                            widget.disableMessageAlignment)
-                                        ? height < 60
+                                  left:
+                                      (widget.isSent ||
+                                          widget.disableMessageAlignment)
+                                      ? 20.w
+                                      : height < 60
+                                      ? 50.w
+                                      : 40.w,
+                                  top: 10,
+                                  right:
+                                      (widget.isSent ||
+                                          widget.disableMessageAlignment)
+                                      ? height < 60
                                             ? 50.w
                                             : 40.w
-                                        : 20.w),
+                                      : 20.w,
+                                ),
                                 child: IntrinsicWidth(
                                   child: Column(
                                     crossAxisAlignment: widget.isSent
@@ -259,67 +281,78 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                         : CrossAxisAlignment.end,
                                     children: [
                                       Container(
-                                        constraints:
-                                            BoxConstraints(maxWidth: 310.w),
+                                        constraints: BoxConstraints(
+                                          maxWidth: 310.w,
+                                        ),
                                         child: MyTextWidget(
                                           widget.message,
-                                          style: textTheme.titleLarge?.rr
+                                          style: textTheme.titleLarge?.rq
                                               .copyWith(
-                                                  color: widget.withImageShadow
-                                                      ? const Color(0xff505050)
-                                                      : const Color(0xffC4C2C2),
-                                                  height: 1.43),
+                                                color: widget.withImageShadow
+                                                    ? const Color(0xff505050)
+                                                    : const Color(0xffC4C2C2),
+                                                height: 1.43,
+                                              ),
                                         ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 5),
+                                          vertical: 5,
+                                        ),
                                         child: Row(
                                           children: [
                                             MyTextWidget(
                                               !widget.createAt!.isUtc
-                                                  ? HelperFunctions
-                                                      .getDateInFormat(
-                                                          widget.createAt!)
-                                                  : HelperFunctions
-                                                      .getZonedDateInFormat(
-                                                          widget.createAt!),
-                                              style: textTheme.titleSmall?.rr
+                                                  ? HelperFunctions.getDateInFormat(
+                                                      widget.createAt!,
+                                                    )
+                                                  : HelperFunctions.getZonedDateInFormat(
+                                                      widget.createAt!,
+                                                    ),
+                                              style: textTheme.titleSmall?.rq
                                                   .copyWith(
-                                                      color:
-                                                          widget.withImageShadow
-                                                              ? const Color(
-                                                                  0xff505050)
-                                                              : const Color(
-                                                                  0xffC4C2C2)),
+                                                    color:
+                                                        widget.withImageShadow
+                                                        ? const Color(
+                                                            0xff505050,
+                                                          )
+                                                        : const Color(
+                                                            0xffC4C2C2,
+                                                          ),
+                                                  ),
                                             ),
                                             if (widget.isSent) ...{
                                               10.horizontalSpace,
                                               (state.currentFailedMessage
                                                       .contains(
-                                                          widget.messageId))
+                                                        widget.messageId,
+                                                      ))
                                                   ? Row(
                                                       mainAxisSize:
                                                           MainAxisSize.min,
                                                       children: [
                                                         InkWell(
-                                                            onTap: () {
-                                                              chatBloc.add(ResendMessageEvent(
-                                                                  channelId: widget
-                                                                      .channalId,
-                                                                  messageId: widget
-                                                                      .messageId));
-                                                            },
-                                                            child: Icon(
-                                                              Icons.refresh,
-                                                              size: 27.w,
-                                                            )),
+                                                          onTap: () {
+                                                            chatBloc.add(
+                                                              ResendMessageEvent(
+                                                                channelId: widget
+                                                                    .channalId,
+                                                                messageId: widget
+                                                                    .messageId,
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Icon(
+                                                            Icons.refresh,
+                                                            size: 27.w,
+                                                          ),
+                                                        ),
                                                         Container(
                                                           margin:
                                                               EdgeInsets.only(
-                                                                  left: 5.w),
-                                                          child:
-                                                              SvgPicture.asset(
+                                                                left: 5.w,
+                                                              ),
+                                                          child: SvgPicture.asset(
                                                             AppAssets
                                                                 .messageFailedSvg,
                                                             width: 10.sp,
@@ -329,7 +362,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                       ],
                                                     )
                                                   : Opacity(
-                                                      opacity: !widget
+                                                      opacity:
+                                                          !widget
                                                               .withImageShadow
                                                           ? 0.4
                                                           : 1,
@@ -341,62 +375,59 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                               height: 10.sp,
                                                             )
                                                           : widget.isReceived
-                                                              ? SvgPicture
-                                                                  .asset(
-                                                                  AppAssets
-                                                                      .messageDeliveredArrowSvg,
-                                                                  width: 10.sp,
-                                                                  height: 10.sp,
-                                                                )
-                                                              : (state.currentMessage
-                                                                      .contains(
-                                                                          widget
-                                                                              .messageId))
-                                                                  ? timer
-                                                                      ?
-                                                                      // (state.currentMessage.contains(widget
-                                                                      //         .messageId))
-                                                                      //     ?
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                          AppAssets
-                                                                              .sandClockSvg,
-                                                                          width:
-                                                                              10.sp,
-                                                                          height:
-                                                                              10.sp,
-                                                                        )
-                                                                      // :
-                                                                      // SvgPicture
-                                                                      //     .asset(
-                                                                      //     AppAssets.messageSentArrowSvg,
-                                                                      //     width: 10.sp,
-                                                                      //     height: 10.sp,
-                                                                      //   )
-                                                                      : SvgPicture
-                                                                          .asset(
-                                                                          "",
-                                                                          width:
-                                                                              10.sp,
-                                                                          height:
-                                                                              10.sp,
-                                                                        )
-                                                                  : SvgPicture
-                                                                      .asset(
-                                                                      key: TestVariables
-                                                                              .kTestMode
-                                                                          ? Key(
-                                                                              '${WidgetsKeys.messageSentArrowKey}${widget.index}',
-                                                                            )
-                                                                          : null,
-                                                                      AppAssets
-                                                                          .messageSentArrowSvg,
-                                                                      width:
-                                                                          10.sp,
-                                                                      height:
-                                                                          10.sp,
-                                                                    ),
-                                                    )
+                                                          ? SvgPicture.asset(
+                                                              AppAssets
+                                                                  .messageDeliveredArrowSvg,
+                                                              width: 10.sp,
+                                                              height: 10.sp,
+                                                            )
+                                                          : (state
+                                                                .currentMessage
+                                                                .contains(
+                                                                  widget
+                                                                      .messageId,
+                                                                ))
+                                                          ? timer
+                                                                ?
+                                                                  // (state.currentMessage.contains(widget
+                                                                  //         .messageId))
+                                                                  //     ?
+                                                                  SvgPicture.asset(
+                                                                    AppAssets
+                                                                        .sandClockSvg,
+                                                                    width:
+                                                                        10.sp,
+                                                                    height:
+                                                                        10.sp,
+                                                                  )
+                                                                // :
+                                                                // SvgPicture
+                                                                //     .asset(
+                                                                //     AppAssets.messageSentArrowSvg,
+                                                                //     width: 10.sp,
+                                                                //     height: 10.sp,
+                                                                //   )
+                                                                : SvgPicture.asset(
+                                                                    "",
+                                                                    width:
+                                                                        10.sp,
+                                                                    height:
+                                                                        10.sp,
+                                                                  )
+                                                          : SvgPicture.asset(
+                                                              key:
+                                                                  TestVariables
+                                                                      .kTestMode
+                                                                  ? Key(
+                                                                      '${WidgetsKeys.messageSentArrowKey}${widget.index}',
+                                                                    )
+                                                                  : null,
+                                                              AppAssets
+                                                                  .messageSentArrowSvg,
+                                                              width: 10.sp,
+                                                              height: 10.sp,
+                                                            ),
+                                                    ),
                                             },
                                             if (widget.isForwarded) ...{
                                               10.horizontalSpace,
@@ -409,8 +440,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                 AppAssets.forwardedSvg,
                                                 width: 10.sp,
                                                 height: 10.sp,
-                                              )
-                                            }
+                                              ),
+                                            },
                                           ],
                                         ),
                                       ),
@@ -425,42 +456,46 @@ class _TextMessageState extends ThemeState<TextMessage> {
                             widget.isFirstMessage
                                 ? Transform.translate(
                                     offset: Offset(
-                                        widget.isSent
-                                            ? (widget.withImageShadow
+                                      widget.isSent
+                                          ? (widget.withImageShadow
                                                 ? height < 60
-                                                    ? 10
-                                                    : 20
+                                                      ? 10
+                                                      : 20
                                                 : 15)
-                                            : (widget.withImageShadow
+                                          : (widget.withImageShadow
                                                 ? height < 60
-                                                    ? -10
-                                                    : -20
+                                                      ? -10
+                                                      : -20
                                                 : -15),
-                                        widget.withImageShadow ? 0 : -10),
+                                      widget.withImageShadow ? 0 : -10,
+                                    ),
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
                                         Container(
-                                          width:
-                                              widget.withImageShadow ? 40 : 30,
-                                          height:
-                                              widget.withImageShadow ? 40 : 30,
+                                          width: widget.withImageShadow
+                                              ? 40
+                                              : 30,
+                                          height: widget.withImageShadow
+                                              ? 40
+                                              : 30,
                                           decoration: BoxDecoration(
                                             color: const Color(0xffEBFFF8),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                         ),
                                         widget.userMessagePhoto != null
                                             ? MyCachedNetworkImage(
-                                                imageUrl: (widget
-                                                        .userMessagePhoto
+                                                imageUrl:
+                                                    (widget.userMessagePhoto
                                                         .toString()
                                                         .contains("cloudinary")
                                                     ? widget.userMessagePhoto!
                                                     : ("${dotenv.env['Images_Url']}") +
-                                                        widget
-                                                            .userMessagePhoto!),
+                                                          widget
+                                                              .userMessagePhoto!),
                                                 imageFit: BoxFit.cover,
                                                 radius: 8,
                                                 progressIndicatorBuilderWidget:
@@ -482,26 +517,33 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                     ? 30
                                                     : 20,
                                                 textStyle: context
-                                                    .textTheme.titleMedium?.br
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.bq
                                                     .copyWith(
-                                                        color: const Color(
-                                                            0xff6638FF),
-                                                        letterSpacing: 0.18,
-                                                        height: 1.33),
+                                                      color: const Color(
+                                                        0xff6638FF,
+                                                      ),
+                                                      letterSpacing: 0.18,
+                                                      height: 1.33,
+                                                    ),
                                                 radius: 8,
                                                 withImageShadow:
                                                     widget.withImageShadow,
-                                                name: widget.userMessageName),
+                                                name: widget.userMessageName,
+                                              ),
                                       ],
                                     ),
                                   )
                                 : const SizedBox.shrink(),
                             state.isSlpoing &&
-                                    state.slopMessageId!
-                                        .contains(widget.messageId) &&
+                                    state.slopMessageId!.contains(
+                                      widget.messageId,
+                                    ) &&
                                     !widget.isreplay
                                 ? Transform.translate(
-                                    offset: widget.senderId ==
+                                    offset:
+                                        widget.senderId ==
                                             widget._prefsRepository.myChatId
                                         ? Offset(-120.w, 0)
                                         : const Offset(0, 0),
@@ -534,12 +576,13 @@ class SendRecieveWatchTime extends StatelessWidget {
   final DateTime? receivedAt;
   final DateTime? watchedAt;
 
-  const SendRecieveWatchTime(
-      {super.key,
-      required this.isRead,
-      required this.isReceived,
-      this.receivedAt,
-      required this.watchedAt});
+  const SendRecieveWatchTime({
+    super.key,
+    required this.isRead,
+    required this.isReceived,
+    this.receivedAt,
+    required this.watchedAt,
+  });
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -553,25 +596,31 @@ class SendRecieveWatchTime extends StatelessWidget {
                   ? Row(
                       children: [
                         Container(
-                            width: 24,
-                            height: 14,
-                            child: Text(
-                              !receivedAt!.isUtc
-                                  ? HelperFunctions.getDateInFormat(receivedAt!)
-                                  : HelperFunctions.getZonedDateInFormat(
-                                      receivedAt!),
-                              style: TextStyle(
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.normal,
-                                  color: const Color(0xffC4C2C2)),
-                            )),
+                          width: 24,
+                          height: 14,
+                          child: Text(
+                            !receivedAt!.isUtc
+                                ? HelperFunctions.getDateInFormat(receivedAt!)
+                                : HelperFunctions.getZonedDateInFormat(
+                                    receivedAt!,
+                                  ),
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.normal,
+                              color: const Color(0xffC4C2C2),
+                            ),
+                          ),
+                        ),
                         const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 3.5)),
+                          padding: EdgeInsets.symmetric(horizontal: 3.5),
+                        ),
                         Container(
-                            width: 10,
-                            height: 10,
-                            child: SvgPicture.asset(
-                                AppAssets.messageDeliveredArrowSvg))
+                          width: 10,
+                          height: 10,
+                          child: SvgPicture.asset(
+                            AppAssets.messageDeliveredArrowSvg,
+                          ),
+                        ),
                       ],
                     )
                   : const SizedBox.shrink(),
@@ -580,28 +629,34 @@ class SendRecieveWatchTime extends StatelessWidget {
                   ? Row(
                       children: [
                         Container(
-                            width: 24,
-                            height: 14,
-                            child: Text(
-                                !watchedAt!.isUtc
-                                    ? HelperFunctions.getDateInFormat(
-                                        watchedAt!)
-                                    : HelperFunctions.getZonedDateInFormat(
-                                        watchedAt!),
-                                style: TextStyle(
-                                    fontSize: 10.sp,
-                                    fontWeight: FontWeight.normal,
-                                    color: const Color(0xff505050)))),
+                          width: 24,
+                          height: 14,
+                          child: Text(
+                            !watchedAt!.isUtc
+                                ? HelperFunctions.getDateInFormat(watchedAt!)
+                                : HelperFunctions.getZonedDateInFormat(
+                                    watchedAt!,
+                                  ),
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.normal,
+                              color: const Color(0xff505050),
+                            ),
+                          ),
+                        ),
                         const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 3.5)),
+                          padding: EdgeInsets.symmetric(horizontal: 3.5),
+                        ),
                         Container(
-                            width: 10,
-                            height: 10,
-                            child:
-                                SvgPicture.asset(AppAssets.messageReadArrowSvg))
+                          width: 10,
+                          height: 10,
+                          child: SvgPicture.asset(
+                            AppAssets.messageReadArrowSvg,
+                          ),
+                        ),
                       ],
                     )
-                  : const SizedBox.shrink()
+                  : const SizedBox.shrink(),
             ],
           ),
         ],

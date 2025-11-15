@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset_shadow;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -37,6 +38,7 @@ class MyCachedNetworkImage extends StatefulWidget {
     this.innerShadowYOffset,
     this.withImageShadow = false,
     this.withInnerShadow = false,
+    this.fromBoutique = false,
     required this.height,
     this.fromStory,
     this.circleDimensions,
@@ -58,6 +60,7 @@ class MyCachedNetworkImage extends StatefulWidget {
   final bool withImageShadow;
   final bool withInnerShadow;
   final bool? fromStory;
+  final bool? fromBoutique;
   final ImageWidgetBuilder? imageBuilder;
   final double? circleDimensions;
   final Color? imageColor;
@@ -114,8 +117,10 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
 
     // 🛡️ حماية صور الصفحة الرئيسية
     if (widget.imageSource != null && url.isNotEmpty) {
-      HomePageImageProtector.protectHomePageImage(url,
-          source: widget.imageSource);
+      HomePageImageProtector.protectHomePageImage(
+        url,
+        source: widget.imageSource,
+      );
     }
 
     // 🔧 إصلاح: التحقق النهائي من صحة URL
@@ -140,8 +145,14 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
     return Container(
       key: ValueKey(url),
       alignment: Alignment.center,
+      constraints: BoxConstraints(
+        maxHeight: (widget.fromBoutique ?? false)
+            ? (0.45 * 1.sh)
+            : double.infinity,
+        minHeight: (widget.fromBoutique ?? false) ? (0.10 * 1.sh) : 0,
+      ),
       width: widget.width,
-      height: widget.height,
+      height: (widget.fromBoutique ?? false) ? null : widget.height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(widget.radius),
         boxShadow: widget.withImageShadow
@@ -158,14 +169,16 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
       child: Center(
         child: CachedNetworkImage(
           httpHeaders: {
-            'User-Agent': (kDebugMode ? "developer" : "users") +
+            'User-Agent':
+                (kDebugMode ? "developer" : "users") +
                 'device OS:' +
                 (Platform.isAndroid ? 'Android' : 'IOS') +
                 ' '
                     ', application version: 1.0.0',
-            "Referer": (kDebugMode ? "developer" : "users") +
+            "Referer":
+                (kDebugMode ? "developer" : "users") +
                 'device OS:' +
-                (Platform.isAndroid ? 'Android' : 'IOS')
+                (Platform.isAndroid ? 'Android' : 'IOS'),
           },
           imageUrl: url,
           fit: widget.imageFit,
@@ -173,17 +186,19 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           //  maxWidthDiskCache: widget.width.ceil(),
           color: widget.imageColor,
           cacheManager: CustomCacheManagers(),
-          height: widget.height,
+          height: (widget.fromBoutique ?? false) ? null : widget.height,
           // 🔧 إصلاح: إعادة تفعيل memory cache للأداء الأفضل
-          memCacheHeight:
-              (widget.height * MediaQuery.devicePixelRatioOf(context)).round(),
+          memCacheHeight: (widget.fromBoutique ?? false)
+              ? null
+              : (widget.height * MediaQuery.devicePixelRatioOf(context))
+                    .round(),
 
           placeholder: (context, url) {
             widget.callWhenLoadingImage?.call();
             return _buildSimpleShimmer();
           },
-          memCacheWidth:
-              (widget.width * MediaQuery.devicePixelRatioOf(context)).round(),
+          memCacheWidth: (widget.width * MediaQuery.devicePixelRatioOf(context))
+              .round(),
           // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
           fadeInDuration: const Duration(),
           placeholderFadeInDuration: const Duration(),
@@ -195,7 +210,8 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
 
            
           },*/
-          imageBuilder: widget.imageBuilder ??
+          imageBuilder:
+              widget.imageBuilder ??
               (ctx, image) {
                 if (_isDisposed) return const SizedBox.shrink();
 
@@ -205,14 +221,18 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
                   borderRadius: BorderRadius.circular(widget.radius),
                   child: Container(
                     width: widget.width,
-                    height: widget.height,
+                    height: (widget.fromBoutique ?? false)
+                        ? null
+                        : widget.height,
                     decoration: widget.withInnerShadow
                         ? inset_shadow.BoxDecoration(
                             borderRadius: BorderRadius.circular(widget.radius),
                             boxShadow: [
                               inset_shadow.BoxShadow(
-                                offset:
-                                    Offset(0, widget.innerShadowYOffset ?? 12),
+                                offset: Offset(
+                                  0,
+                                  widget.innerShadowYOffset ?? 12,
+                                ),
                                 blurRadius: 24,
                                 inset: true,
                                 // ignore: deprecated_member_use
@@ -225,7 +245,9 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
                       image: image,
                       fit: widget.imageFit,
                       width: widget.width,
-                      height: widget.height,
+                      height: (widget.fromBoutique ?? false)
+                          ? null
+                          : widget.height,
                       color: widget.imageColor,
                     ),
                   ),
@@ -244,7 +266,8 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
                 // Trigger a new download by changing the URL key slightly (cache-buster)
                 if (mounted) {
                   setState(() {
-                    currentUrl = widget.imageUrl +
+                    currentUrl =
+                        widget.imageUrl +
                         '?retry=${DateTime.now().millisecondsSinceEpoch}';
                   });
                 }
@@ -310,12 +333,14 @@ class CustomCacheManagers extends CacheManager {
   }
 
   CustomCacheManagers._internal()
-      : super(Config(
+    : super(
+        Config(
           key,
           maxNrOfCacheObjects: _getOptimizedCacheSize(),
           stalePeriod: Duration(days: _getOptimizedStalePeriod()),
           // 🔧 إصلاح: إضافة timeout للشبكة
-        ));
+        ),
+      );
 
   /// 🎯 إعدادات كاش بسيطة وفعالة
   static int _getOptimizedCacheSize() {
@@ -338,6 +363,7 @@ String addSuitableWidthAndHeightToImage({
   required String imageUrl,
   double? ordinalHeight,
   double? ordinalWidth,
+  bool? fromBoutique,
   required double width,
   required double height,
 }) {
@@ -353,13 +379,9 @@ String addSuitableWidthAndHeightToImage({
 
   int fHeight = 0;
   int fWidth = 0;
-  if (height > 200 && width > 200) {
-    fWidth = (width * 1.5).toInt();
-    fHeight = (height * 1.5).toInt();
-  } else {
-    fWidth = (width * 1.5).toInt();
-    fHeight = (height * 1.5).toInt();
-  }
+
+  fWidth = (width * 1.5).toInt();
+  fHeight = (height * 1.5).toInt();
 
   List<String> list = imageUrl.split('upload');
   String url = '';
@@ -379,15 +401,18 @@ String addSuitableWidthAndHeightToImage({
   } else {*/
   // 🔧 إصلاح: حالة عدم وجود الأبعاد الأصلية (مثل home page)
   // استخدام استراتيجية ذكية بدلاً من h_ فقط
-
-  if (width > height) {
+  if (fromBoutique ?? false) {
+    url = list[0] + 'upload/w_${fWidth},c_fit,f_auto,q_auto' + list[1];
+  } else if (width > height) {
     // الصورة أعرض من الارتفاع - استخدم العرض
-    url = list[0] +
+    url =
+        list[0] +
         'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_auto,q_auto' +
         list[1];
   } else {
     // الصورة أطول من العرض - استخدم الارتفاع
-    url = list[0] +
+    url =
+        list[0] +
         'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_auto,q_auto' +
         list[1];
   }
