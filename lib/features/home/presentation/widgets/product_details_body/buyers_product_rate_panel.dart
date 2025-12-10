@@ -64,12 +64,15 @@ class BuyersProductRatePanel extends StatelessWidget {
               previous.getFullProductDetailsStatus !=
                   current.getFullProductDetailsStatus,
           builder: (context, state) {
-            productId == ""
-                ? (productId = state
-                      .productContentForStatusOfOpeningProductDetailsDirectly!
-                      .productId
-                      .toString())
-                : (productId = productId);
+            if (state.getFullProductDetailsStatus ==
+                GetFullProductDetailsStatus.success) {
+              productId == ""
+                  ? (productId = state
+                        .productContentForStatusOfOpeningProductDetailsDirectly!
+                        .productId
+                        .toString())
+                  : (productId = productId);
+            }
 
             if (state.cachedProductWithoutRelatedProductsModel[productId] ==
                 null) {
@@ -189,14 +192,36 @@ class BuyersProductRatePanel extends StatelessWidget {
                                 fontSize: 11,
                               ),
                             ),
-                      SvgPicture.asset(AppAssets.goodQualitySvg, width: 14),
-                      MyTextWidget(
-                        ' ${LocaleKeys.overall_good_quality.tr()}  |  ',
-                        style: context.textTheme.titleLarge?.rq.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          fontSize: 11,
-                        ),
-                      ),
+                      state.cachedProductWithoutRelatedProductsModel[productId] !=
+                              null
+                          ? state
+                                        .cachedProductWithoutRelatedProductsModel[productId]!
+                                        .product!
+                                        .goodQualityProduct ??
+                                    false
+                                ? SvgPicture.asset(
+                                    AppAssets.goodQualitySvg,
+                                    width: 14,
+                                  )
+                                : const SizedBox.shrink()
+                          : const SizedBox.shrink(),
+                      state.cachedProductWithoutRelatedProductsModel[productId] !=
+                              null
+                          ? state
+                                        .cachedProductWithoutRelatedProductsModel[productId]!
+                                        .product!
+                                        .goodQualityProduct ??
+                                    false
+                                ? MyTextWidget(
+                                    ' ${LocaleKeys.overall_good_quality.tr()}  |  ',
+                                    style: context.textTheme.titleLarge?.rq
+                                        .copyWith(
+                                          color: const Color(0xff1D1D1D),
+                                          fontSize: 11,
+                                        ),
+                                  )
+                                : const SizedBox.shrink()
+                          : const SizedBox.shrink(),
                       SvgPicture.asset(
                         AppAssets.eyeSvg,
                         width: 14,
@@ -498,13 +523,45 @@ class BuyersProductRatePanel extends StatelessWidget {
                   const SizedBox(height: 10),
                   _buyerReviewSingle(
                     "${LocaleKeys.true_label.tr()} ",
-                    70,
+                    state.cachedProductWithoutRelatedProductsModel[productId] ==
+                            null
+                        ? 0
+                        : state
+                                  .cachedProductWithoutRelatedProductsModel[productId]
+                                  ?.product
+                                  ?.sizeAnalysis
+                                  ?.truePercentage ??
+                              0,
                     context,
                   ),
                   const SizedBox(height: 10),
-                  _buyerReviewSingle(LocaleKeys.small.tr(), 3, context),
+                  _buyerReviewSingle(
+                    LocaleKeys.small.tr(),
+                    state.cachedProductWithoutRelatedProductsModel[productId] ==
+                            null
+                        ? 0
+                        : state
+                                  .cachedProductWithoutRelatedProductsModel[productId]
+                                  ?.product
+                                  ?.sizeAnalysis
+                                  ?.smallPercentage ??
+                              0,
+                    context,
+                  ),
                   const SizedBox(height: 10),
-                  _buyerReviewSingle(LocaleKeys.large.tr(), 1, context),
+                  _buyerReviewSingle(
+                    LocaleKeys.large.tr(),
+                    state.cachedProductWithoutRelatedProductsModel[productId] ==
+                            null
+                        ? 0
+                        : state
+                                  .cachedProductWithoutRelatedProductsModel[productId]
+                                  ?.product
+                                  ?.sizeAnalysis
+                                  ?.largePercentage ??
+                              0,
+                    context,
+                  ),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
@@ -720,15 +777,17 @@ class BuyersProductRatePanel extends StatelessWidget {
                   border: Border.all(color: const Color(0xffD3D3D3)),
                 ),
               ),
-              Container(
-                height: 15,
-                width: (numOfPercent / 100) * 284.w,
-                decoration: BoxDecoration(
-                  color: const Color(0xff1D1D1D),
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: const Color(0xff1D1D1D)),
-                ),
-              ),
+              numOfPercent == 0
+                  ? const SizedBox.shrink()
+                  : Container(
+                      height: 15,
+                      width: (numOfPercent / 100) * 284.w,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff1D1D1D),
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: const Color(0xff1D1D1D)),
+                      ),
+                    ),
             ],
           ),
           const Spacer(),

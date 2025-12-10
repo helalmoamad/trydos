@@ -17,10 +17,7 @@ import '../../enums/status_code_type.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
 
-enum _StatusType {
-  succeed,
-  failed,
-}
+enum _StatusType { succeed, failed }
 
 class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
@@ -41,13 +38,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       );
     }
     _prefsRepository.saveRequestsData(
-        'This From Request   ${options.path}',
-        options.data is! FormData ? options.data : {'data': 'formData'},
-        options.headers,
-        null,
-        options.method,
-        options.queryParameters,
-        options.data is! FormData ? options.data : {'data': 'formData'});
+      'This From Request   ${options.path}',
+      options.data is! FormData ? options.data : {'data': 'formData'},
+      options.headers,
+      null,
+      options.method,
+      options.queryParameters,
+      options.data is! FormData ? options.data : {'data': 'formData'},
+    );
 
     handler.next(options);
   }
@@ -56,7 +54,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
       _StatusType statusType;
-      if (response.statusCode == StatusCode.operationSucceeded.code) {
+      if (response.statusCode == StatusCode.operationSucceeded.code ||
+          response.statusCode == StatusCode.createdSucceeded.code) {
         statusType = _StatusType.succeed;
       } else {
         statusType = _StatusType.failed;
@@ -65,10 +64,12 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
 
       if (statusType == _StatusType.failed) {
         prettyPrinterError(
-            '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
+          '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***',
+        );
       } else {
         prettyPrinterV(
-            '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
+          '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***',
+        );
       }
       prettyPrinterWtf(
         "***|| INFO Response Request $requestRoute ${statusType == _StatusType.succeed ? '✊' : ''} ||***"
@@ -106,40 +107,47 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       //       timeShowing: Toast.LENGTH_LONG);
       // }
       if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
-        showMessage(jsonDecode(err.response.toString())["message"].toString(),
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            hasError: true,
-            showInRelease: true);
+        showMessage(
+          jsonDecode(err.response.toString())["message"].toString(),
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          hasError: true,
+          showInRelease: true,
+        );
       }
       if (err.requestOptions.path.contains("stories/upload_story") ||
           err.requestOptions.path.contains("/djooohujg/upload")) {
         GetIt.I<StoryBloc>().add(const ChangeStatusUploadToFailureEvent());
       }
       if (err.requestOptions.path.contains("storage/storage-upload")) {
-        GetIt.I<HomeBloc>()
-            .add(UploadUserPhotoCloudinaryEvent(File("path"), true));
+        GetIt.I<HomeBloc>().add(
+          UploadUserPhotoCloudinaryEvent(File("path"), true),
+        );
       }
       if (err.requestOptions.path.contains("customer/update-profile")) {
         try {
           String massageJson = jsonDecode(err.response.toString())["message"];
           Map<String, dynamic> messageDecode = jsonDecode(massageJson);
-          showMessage(messageDecode["phone"][0],
-              foreGroundColor: Colors.white,
-              backGroundColor: Colors.black,
-              hasError: true,
-              showInRelease: true);
+          showMessage(
+            messageDecode["phone"][0],
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            hasError: true,
+            showInRelease: true,
+          );
         } catch (e) {}
       }
       if (err.requestOptions.path.contains("order/checkout")) {
         try {
           String massageJson = jsonDecode(err.response.toString())["message"];
           // Map<String, dynamic> messageDecode = jsonDecode(massageJson);
-          showMessage(massageJson,
-              foreGroundColor: Colors.white,
-              backGroundColor: Colors.black,
-              hasError: true,
-              showInRelease: true);
+          showMessage(
+            massageJson,
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            hasError: true,
+            showInRelease: true,
+          );
         } catch (e) {}
       }
 
@@ -148,55 +156,66 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               "The user does not exist.") {
         String? deviceId = await HelperFunctions.getDeviceId();
         Future.delayed(
-            const Duration(seconds: 5),
-            () => GetIt.I<AuthBloc>()
-                .add(RegisterGuestEvent(deviceId: deviceId ?? "")));
+          const Duration(seconds: 5),
+          () => GetIt.I<AuthBloc>().add(
+            RegisterGuestEvent(deviceId: deviceId ?? ""),
+          ),
+        );
       }
 
-      if ((jsonDecode(err.response.toString())["message"]
-                  .toString()
-                  .contains("Unauth") ||
+      if ((jsonDecode(
+                err.response.toString(),
+              )["message"].toString().contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
           (err.requestOptions.path.contains(dotenv.env['STORY_URL']!))) {
         _prefsRepository.setStoriesToken("");
       }
-      if ((jsonDecode(err.response.toString())["message"]
-                  .toString()
-                  .contains("Unauth") ||
+      if ((jsonDecode(
+                err.response.toString(),
+              )["message"].toString().contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
           (err.requestOptions.path.contains(dotenv.env['CHAT_URL']!))) {
         _prefsRepository.setChatToken("");
       }
-      if ((jsonDecode(err.response.toString())["message"]
-                  .toString()
-                  .contains("Unauth") ||
+      if ((jsonDecode(
+                err.response.toString(),
+              )["message"].toString().contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
           (err.requestOptions.path.contains(dotenv.env['COMMENT_TOKEN_URL']!) ||
               err.requestOptions.path.contains(dotenv.env['MARKET_URL']!)) &&
           !(_prefsRepository.isTokenExpired ?? false)) {
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
-            _prefsRepository.isVerifiedPhone ?? false);
+          _prefsRepository.isVerifiedPhone ?? false,
+        );
         String? deviceId = await HelperFunctions.getDeviceId();
         _prefsRepository.setTokenExpired(true);
-        GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+        GetIt.I<AuthBloc>().add(
+          RegisterGuestEvent(
             oldGuestUserId: _prefsRepository.myMarketId.toString(),
-            deviceId: deviceId!));
+            deviceId: deviceId!,
+          ),
+        );
 
         _prefsRepository.setVerifiedPhone(false);
       }
     } catch (e) {}
     try {
-      GetIt.I<HomeBloc>().add(SendErrorToMobileErrorLogEvent(
-          errorExption:
-              jsonDecode(err.response.toString())["message"].toString(),
+      GetIt.I<HomeBloc>().add(
+        SendErrorToMobileErrorLogEvent(
+          errorExption: jsonDecode(
+            err.response.toString(),
+          )["message"].toString(),
           errorPath: "Back End Error",
           urlBackend: err.stackTrace.toString(),
-          messageFromeBackend:
-              jsonDecode(err.response.toString())["message"].toString(),
-          lastForPageHasBeenVisited: LastPagesTracker.lastPages.join(' > ')));
+          messageFromeBackend: jsonDecode(
+            err.response.toString(),
+          )["message"].toString(),
+          lastForPageHasBeenVisited: LastPagesTracker.lastPages.join(' > '),
+        ),
+      );
     } catch (e) {}
 
     if (kDebugMode) {
@@ -210,15 +229,16 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n stackTrace: ${err.stackTrace}",
       );
       _prefsRepository.saveRequestsData(
-          err.requestOptions.path,
-          {'error': err.error.toString()},
-          err.response?.headers.map ?? {},
-          err.response?.statusCode,
-          err.requestOptions.method,
-          err.requestOptions.queryParameters,
-          err.requestOptions.data is FormData
-              ? {'data': 'FormData'}
-              : err.requestOptions.data);
+        err.requestOptions.path,
+        {'error': err.error.toString()},
+        err.response?.headers.map ?? {},
+        err.response?.statusCode,
+        err.requestOptions.method,
+        err.requestOptions.queryParameters,
+        err.requestOptions.data is FormData
+            ? {'data': 'FormData'}
+            : err.requestOptions.data,
+      );
     }
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
     //   "user_id": _prefsRepository.myChatId,

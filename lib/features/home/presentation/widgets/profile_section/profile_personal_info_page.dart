@@ -750,6 +750,16 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                   ],
                             textInputAction: TextInputAction.done,
                             onChange: (val) {
+                              if ((val.length) > 3) {
+                                if (val.startsWith("00")) {
+                                  controller.text = val.replaceAll("00", '');
+                                } else {
+                                  controller.text = val.replaceFirst(
+                                    RegExp(r'0'),
+                                    '',
+                                  );
+                                }
+                              }
                               /* if (val.isNotEmpty) {
                                         /*  displayCountryCode =
                                             val!.replaceAll(' ', '').length >=
@@ -762,9 +772,8 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                         1);*/
                                       }*/
                               Country newCountry = countries.firstWhere(
-                                (element) => '+${val.toLowerCase()}'.startsWith(
-                                  element.dialCode.toLowerCase(),
-                                ),
+                                (element) => '+${controller.text.toLowerCase()}'
+                                    .startsWith(element.dialCode.toLowerCase()),
                                 orElse: () => const Country(
                                   name: '',
                                   flag: '',
@@ -776,7 +785,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               );
                               if (newCountry.code != "") {
                                 String formattedText = _formatNumber(
-                                  val,
+                                  controller.text,
                                   newCountry.dialCode.split("+").toList()[1],
                                 );
                                 controller.value = TextEditingValue(
@@ -795,9 +804,10 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                     spaces;
                               }
 
-                              if (val.length > 0 && isPhone) {
+                              if (controller.text.length > 0 && isPhone) {
                                 widget.visiblePrefixOptional.value = true;
-                              } else if (val.length == 0 && isPhone) {
+                              } else if (controller.text.length == 0 &&
+                                  isPhone) {
                                 widget.visiblePrefixOptional.value = false;
                               }
                               widget.visibleSave.value = true;
@@ -1006,10 +1016,26 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                       ],
                                       textInputAction: TextInputAction.done,
                                       onChange: (val) {
+                                        if ((val.length) > 3) {
+                                          if (val.startsWith("00")) {
+                                            controller.text = val.replaceAll(
+                                              "00",
+                                              '',
+                                            );
+                                          } else {
+                                            controller.text = val.replaceFirst(
+                                              RegExp(r'0'),
+                                              '',
+                                            );
+                                          }
+                                        }
                                         widget.visibleSave.value = true;
-                                        if (val.length > 0 && isPhone) {
+                                        if (controller.text.length > 0 &&
+                                            isPhone) {
                                           widget.visiblePrefix.value = true;
-                                        } else if (val.length == 0 && isPhone) {
+                                        } else if (controller.text.length ==
+                                                0 &&
+                                            isPhone) {
                                           widget.visiblePrefix.value = false;
                                         }
 
@@ -1032,7 +1058,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                             );
                                         if (newCountry.code != "") {
                                           String formattedText = _formatNumber(
-                                            val,
+                                            controller.text,
                                             newCountry.dialCode
                                                 .split("+")
                                                 .toList()[1],

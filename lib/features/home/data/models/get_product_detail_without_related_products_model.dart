@@ -63,7 +63,7 @@ class Product {
   final String? slug;
   final int? availableQuantity;
   final int? leftStock;
-
+  final SizeAnalysis? sizeAnalysis;
   final bool? shippingCostMultiplyWithQuantity;
   final double? shippingCost;
   final BoutiqueForCart? boutique;
@@ -93,6 +93,7 @@ class Product {
   final FqaQuestions? fqaQuestions;
   final List<RecommendationStat>? recommendationStats;
   final List<RatingDetail>? ratingDetails;
+  final bool? goodQualityProduct;
 
   final int? sharedCount;
   //final List<comment_model.Comment>? comments;
@@ -100,6 +101,7 @@ class Product {
   Product({
     this.id,
     this.description,
+    this.goodQualityProduct,
     this.descriptors,
     this.isActive,
     this.isRedeem,
@@ -114,7 +116,7 @@ class Product {
     this.totalRating,
     this.isLiked,
     this.totalViews,
-
+    this.sizeAnalysis,
     this.collectedAfterOrdering,
     this.countOfPieces,
     this.colors,
@@ -166,6 +168,7 @@ class Product {
     //   List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
     bool? hasDiscount,
+    bool? goodQualityProduct,
     bool? hasTax,
     String? priceFormatted,
     bool? isLiked,
@@ -174,7 +177,7 @@ class Product {
     BuyersCommentModel? buyersComment,
     List<RatingDetail>? ratingDetails,
     List<RecommendationStat>? recommendationStats,
-
+    SizeAnalysis? sizeAnalysis,
     FqaQuestions? fqaQuestions,
     double? price,
     double? offerPrice,
@@ -226,10 +229,11 @@ class Product {
     buyersComment: buyersComment ?? this.buyersComment,
     fqaQuestions: fqaQuestions ?? this.fqaQuestions,
     deliveryAt: deliveryAt ?? this.deliveryAt,
+    goodQualityProduct: goodQualityProduct ?? this.goodQualityProduct,
     shippingDays: shippingDays ?? this.shippingDays,
     isLiked: isLiked ?? this.isLiked,
     totalViews: totalViews ?? this.totalViews,
-
+    sizeAnalysis: sizeAnalysis ?? this.sizeAnalysis,
     colors: colors ?? this.colors,
     isRedeem: isRedeem ?? this.isRedeem,
     redeemPrice: redeemPrice ?? this.redeemPrice,
@@ -277,12 +281,16 @@ class Product {
     id: int.tryParse(json["id"].toString()),
     description: json["description"],
     countOfPieces: json["count_of_pieces"],
+    sizeAnalysis: json["size_analysis"] == null
+        ? null
+        : SizeAnalysis.fromJson(json["size_analysis"]),
     commentsCount: json["comments_count"],
     commentOffset: json["comment_offset"],
     seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
     slug: json["slug"],
     shippingCostMultiplyWithQuantity:
         json["shipping_cost_multiply_with_quantity"],
+    goodQualityProduct: json["good_quality_product"],
     shippingCost: double.tryParse(json["shipping_cost"].toString()),
     colors: json["colors"] == null
         ? []
@@ -394,6 +402,7 @@ class Product {
     "seller_id": sellerId,
     "buyers_comment": buyersComment?.toJson(),
     "fqa_questions": fqaQuestions?.toJson(),
+    "good_quality_product": goodQualityProduct,
     "seller": seller?.toJson(),
     "redeem_price": redeemPrice,
 
@@ -411,6 +420,7 @@ class Product {
     "flash_deal_end_date": flashDealEndDate,
     "collected_after_ordering": collectedAfterOrdering,
     "comment_offset": commentOffset,
+    "size_analysis": sizeAnalysis?.toJson(),
     "owner_type": ownerType,
     "owner_id": ownerId,
     "delivery_at": deliveryAt,
@@ -481,16 +491,19 @@ class BuyersCommentModel {
   final List<BuyersComment>? comments;
   final List<dynamic>? offset;
   final int? total;
+  final List<String>? filtersKey;
 
-  BuyersCommentModel({this.comments, this.offset, this.total});
+  BuyersCommentModel({this.comments, this.offset, this.total, this.filtersKey});
 
   BuyersCommentModel copyWith({
     List<BuyersComment>? comments,
     List<dynamic>? offset,
+    List<String>? filtersKey,
     int? total,
   }) => BuyersCommentModel(
     comments: comments ?? this.comments,
     offset: offset ?? this.offset,
+    filtersKey: filtersKey ?? this.filtersKey,
     total: total ?? this.total,
   );
 
@@ -503,6 +516,9 @@ class BuyersCommentModel {
               ),
         offset: json["offset"],
         total: json["total"],
+        filtersKey: json["filters_key"] == null
+            ? []
+            : List<String>.from(json["filters_key"]!.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -511,6 +527,43 @@ class BuyersCommentModel {
         : List<dynamic>.from(comments!.map((x) => x.toJson())),
     "offset": offset,
     "total": total,
+    "filters_key": filtersKey == null
+        ? []
+        : List<dynamic>.from(filtersKey!.map((x) => x)),
+  };
+}
+
+class SizeAnalysis {
+  final int? smallPercentage;
+  final int? largePercentage;
+  final int? truePercentage;
+
+  SizeAnalysis({
+    this.smallPercentage,
+    this.largePercentage,
+    this.truePercentage,
+  });
+
+  SizeAnalysis copyWith({
+    int? smallPercentage,
+    int? largePercentage,
+    int? truePercentage,
+  }) => SizeAnalysis(
+    smallPercentage: smallPercentage ?? this.smallPercentage,
+    largePercentage: largePercentage ?? this.largePercentage,
+    truePercentage: truePercentage ?? this.truePercentage,
+  );
+
+  factory SizeAnalysis.fromJson(Map<String, dynamic> json) => SizeAnalysis(
+    smallPercentage: json["small_percentage"],
+    largePercentage: json["large_percentage"],
+    truePercentage: json["true_percentage"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "small_percentage": smallPercentage,
+    "large_percentage": largePercentage,
+    "true_percentage": truePercentage,
   };
 }
 
@@ -518,15 +571,18 @@ class FqaQuestions {
   final List<FqaComment>? comments;
   final List<dynamic>? offset;
   final int? total;
+  final List<String>? filtersKey;
 
-  FqaQuestions({this.comments, this.offset, this.total});
+  FqaQuestions({this.comments, this.offset, this.total, this.filtersKey});
 
   FqaQuestions copyWith({
     List<FqaComment>? comments,
     List<dynamic>? offset,
     int? total,
+    List<String>? filtersKey,
   }) => FqaQuestions(
     comments: comments ?? this.comments,
+    filtersKey: filtersKey ?? this.filtersKey,
     offset: offset ?? this.offset,
     total: total ?? this.total,
   );
@@ -538,6 +594,9 @@ class FqaQuestions {
             json["comments"]!.map((x) => FqaComment.fromJson(x)),
           ),
     offset: json["offset"],
+    filtersKey: json["filters_key"] == null
+        ? []
+        : List<String>.from(json["filters_key"]!.map((x) => x)),
     total: json["total"],
   );
 
@@ -546,6 +605,9 @@ class FqaQuestions {
         ? []
         : List<dynamic>.from(comments!.map((x) => x.toJson())),
     "offset": offset,
+    "filters_key": filtersKey == null
+        ? []
+        : List<dynamic>.from(filtersKey!.map((x) => x)),
     "total": total,
   };
 }

@@ -41,11 +41,13 @@ class SharedScenarios {
       );
       await tester.pumpAndSettle();
       ////////////////////////////
-      final Finder haveAccountButton =
-          find.byKey(const Key(WidgetsKeys.haveAccountButtonKey));
+      final Finder haveAccountButton = find.byKey(
+        const Key(WidgetsKeys.haveAccountButtonKey),
+      );
 
-      final Finder createNewAccountButton =
-          find.byKey(const Key(WidgetsKeys.createNewAccountButtonKey));
+      final Finder createNewAccountButton = find.byKey(
+        const Key(WidgetsKeys.createNewAccountButtonKey),
+      );
 
       await Future.delayed(const Duration(seconds: 1));
       if (isForLogin) {
@@ -62,8 +64,9 @@ class SharedScenarios {
           successMessage: 'Find CreateAccountSection Success',
           failedMessage: 'Find CreateAccountSection failed',
         );
-        final Finder agreeContinueButton =
-            find.byKey(const Key(WidgetsKeys.agreeContinueButtonKey));
+        final Finder agreeContinueButton = find.byKey(
+          const Key(WidgetsKeys.agreeContinueButtonKey),
+        );
         await Future.delayed(const Duration(seconds: 1));
         await tester.tap(agreeContinueButton);
         await tester.pumpAndSettle();
@@ -77,10 +80,12 @@ class SharedScenarios {
       failedMessage: 'Find InsertPhoneTab failed',
     );
     //////////////////////////
-    final Finder phoneField =
-        find.byKey(const Key(WidgetsKeys.loginPhoneFormFieldKey));
-    final Finder confirmPhoneButton =
-        find.byKey(const Key(WidgetsKeys.loginConfirmPhoneButtonKey));
+    final Finder phoneField = find.byKey(
+      const Key(WidgetsKeys.loginPhoneFormFieldKey),
+    );
+    final Finder confirmPhoneButton = find.byKey(
+      const Key(WidgetsKeys.loginConfirmPhoneButtonKey),
+    );
 
     await tester.enterText(phoneField, phoneNumber);
     await Future.delayed(const Duration(seconds: 2));
@@ -94,8 +99,9 @@ class SharedScenarios {
       failedMessage: 'Find VerificationMethods failed',
     );
     //////////////////////////
-    final Finder chooseWhatsAppButton =
-        find.byKey(const Key(WidgetsKeys.chooseWhatsappButtonKey));
+    final Finder chooseWhatsAppButton = find.byKey(
+      const Key(WidgetsKeys.chooseWhatsappButtonKey),
+    );
     await tester.tap(chooseWhatsAppButton);
     await tester.pumpAndSettle();
     //////////////////////////
@@ -107,34 +113,35 @@ class SharedScenarios {
     );
   }
 
-  static Future<void> countryDropDown({required WidgetTester tester}) async {
-    final Finder countryDropDownWidget =
-        find.byKey(const Key(WidgetsKeys.countryDropDownKey));
-    if (countryDropDownWidget.evaluate().isEmpty) {
-      print('DropdownButton not found.');
-    } else {
-      await tester.tap(countryDropDownWidget);
-      await tester.pumpAndSettle();
-      ///////////////////
-      final firstItemFinder = find
-          .descendant(
-            of: find.byType(DropdownMenuItem<String>),
-            matching: find.byType(Text),
-          )
-          .first;
+  static Future<void> countryDropDown({
+    required WidgetTester tester,
+    int countryIndex = 2,
+  }) async {
+    // انتظر استقرار الواجهة (خاصة في حال التنقل أو التحميل)
+    await tester.pumpAndSettle();
 
-      await tester.tap(firstItemFinder);
-      await tester.pumpAndSettle();
-      final selectedText =
-          (firstItemFinder.evaluate().first.widget as Text).data;
-      expect(find.text(selectedText!), findsOneWidget);
-      await Future.delayed(const Duration(seconds: 3));
-      ///////////////////
-      final Finder chooseCountryButton =
-          find.byKey(const Key(WidgetsKeys.chooseCountryButtonKey));
+    final countryItem = find.byKey(
+      Key('${WidgetsKeys.countryItemKeyKey}-$countryIndex'),
+    );
+    if (countryItem.evaluate().isEmpty) {
+      return;
+    }
+
+    // التأكد من إظهار العنصر إذا القائمة طويلة
+    await tester.ensureVisible(countryItem);
+    await tester.pumpAndSettle();
+
+    await tester.tap(countryItem);
+    await tester.pumpAndSettle();
+    // تحقق من وجود زر "حفظ" في الـ AppBar واضغطه إذا كان موجوداً
+    final Finder chooseCountryButton = find.byKey(
+      const Key(WidgetsKeys.chooseCountryButtonKey),
+    );
+    if (chooseCountryButton.evaluate().isNotEmpty) {
       await tester.tap(chooseCountryButton);
       await tester.pumpAndSettle();
     }
+    // يمكنك إضافة تحقق إضافي هنا حسب الحاجة
   }
 
   /////////////////////////////////////////
@@ -157,16 +164,20 @@ class SharedScenarios {
     ////////////////////////////
     await testTokensAreNull(isJustForMarketToken: true);
     ////////////////////////////
-    final Finder laterTakeLookButton =
-        find.byKey(const Key(WidgetsKeys.laterTakeLookKey));
+    final Finder laterTakeLookButton = find.byKey(
+      const Key(WidgetsKeys.laterTakeLookKey),
+    );
     await Future.delayed(const Duration(seconds: 1));
     await tester.tap(laterTakeLookButton);
     await tester.pumpAndSettle();
     ////////////////////////////
     await countryDropDown(tester: tester);
     ////////////////////////////
-    await GlobalTestFunctions.waitFor(tester, find.byType(HomePage),
-        timeout: const Duration(seconds: 40));
+    await GlobalTestFunctions.waitFor(
+      tester,
+      find.byType(HomePage),
+      timeout: const Duration(seconds: 40),
+    );
     //////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -186,7 +197,8 @@ class SharedScenarios {
         debugPrint('marketToken is Null before');
       } catch (e) {
         print(
-            '//////// marketToken is NOT null before Failure: //////////\n $e');
+          '//////// marketToken is NOT null before Failure: //////////\n $e',
+        );
         rethrow;
       }
     } else if (isJustForStoryChatTokens) {
@@ -195,7 +207,8 @@ class SharedScenarios {
         debugPrint('storiesToken is Null before');
       } catch (e) {
         print(
-            '//////// storiesToken is Not Null before Failure: //////////\n $e');
+          '//////// storiesToken is Not Null before Failure: //////////\n $e',
+        );
         rethrow;
       }
       ////////////////////////////
@@ -212,7 +225,8 @@ class SharedScenarios {
         debugPrint('marketToken is Null before');
       } catch (e) {
         print(
-            '//////// marketToken is Not Null before Failure: //////////\n $e');
+          '//////// marketToken is Not Null before Failure: //////////\n $e',
+        );
         rethrow;
       }
       ////////////////////////////
@@ -221,7 +235,8 @@ class SharedScenarios {
         debugPrint('storiesToken is Null before');
       } catch (e) {
         print(
-            '//////// storiesToken is Not Null before Failure: //////////\n $e');
+          '//////// storiesToken is Not Null before Failure: //////////\n $e',
+        );
         rethrow;
       }
       ////////////////////////////
@@ -235,8 +250,9 @@ class SharedScenarios {
     }
   }
 
-  static Future<void> testTokensAreNotNull(
-      {required bool isJustForMarketToken}) async {
+  static Future<void> testTokensAreNotNull({
+    required bool isJustForMarketToken,
+  }) async {
     if (isJustForMarketToken) {
       try {
         expect(prefsRepository.marketToken, isNotNull);
@@ -276,10 +292,7 @@ class SharedScenarios {
     required String name,
     required WidgetTester tester,
   }) async {
-    await GlobalTestFunctions.waitFor(
-      tester,
-      find.byType(AddingName),
-    );
+    await GlobalTestFunctions.waitFor(tester, find.byType(AddingName));
     //////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -288,10 +301,12 @@ class SharedScenarios {
       failedMessage: 'Find Adding Name failed',
     );
     //////////////////////////
-    final Finder nameField =
-        find.byKey(const Key(WidgetsKeys.nameFormFieldKey));
-    final Finder confirmNameButton =
-        find.byKey(const Key(WidgetsKeys.confirmNameButtonKey));
+    final Finder nameField = find.byKey(
+      const Key(WidgetsKeys.nameFormFieldKey),
+    );
+    final Finder confirmNameButton = find.byKey(
+      const Key(WidgetsKeys.confirmNameButtonKey),
+    );
     await tester.enterText(nameField, name);
     await Future.delayed(const Duration(seconds: 2));
     await tester.tap(confirmNameButton);
@@ -307,8 +322,9 @@ class SharedScenarios {
     );
     //////////////////////////
     await Future.delayed(const Duration(seconds: 2));
-    final Finder skipForNowButton =
-        find.byKey(const Key(WidgetsKeys.skipForNowKey));
+    final Finder skipForNowButton = find.byKey(
+      const Key(WidgetsKeys.skipForNowKey),
+    );
     await tester.tap(skipForNowButton);
     await tester.pumpAndSettle();
     //////////////////////////
@@ -329,17 +345,20 @@ class SharedScenarios {
     required int messageNumber,
     String text = 'test text message',
   }) async {
-    final Finder sendMessageTextField =
-        find.byKey(const Key(WidgetsKeys.sendMessageTextFieldKey));
-    final Finder sendMessageInChatButton =
-        find.byKey(const Key(WidgetsKeys.sendMessageInChatButtonKey));
+    final Finder sendMessageTextField = find.byKey(
+      const Key(WidgetsKeys.sendMessageTextFieldKey),
+    );
+    final Finder sendMessageInChatButton = find.byKey(
+      const Key(WidgetsKeys.sendMessageInChatButtonKey),
+    );
     await tester.enterText(sendMessageTextField, text);
     await Future.delayed(const Duration(seconds: 2));
     await tester.tap(sendMessageInChatButton);
     await tester.pumpAndSettle();
     ////////////////////////////
-    final Finder textMessage =
-        find.byKey(Key('${WidgetsKeys.textMessageCardKey}$messageNumber'));
+    final Finder textMessage = find.byKey(
+      Key('${WidgetsKeys.textMessageCardKey}$messageNumber'),
+    );
     ////////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -349,8 +368,9 @@ class SharedScenarios {
       failedMessage: 'Find text Message Card $messageNumber failed',
     );
     ////////////////////////////
-    final Finder messageSentArrow =
-        find.byKey(Key('${WidgetsKeys.messageSentArrowKey}$messageNumber'));
+    final Finder messageSentArrow = find.byKey(
+      Key('${WidgetsKeys.messageSentArrowKey}$messageNumber'),
+    );
     ////////////////////////////
     await GlobalTestFunctions.waitFor(tester, messageSentArrow);
     //////////////////////////

@@ -1,3 +1,4 @@
+//import 'dart:convert';
 import 'dart:math';
 
 import 'package:country_flags/country_flags.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get_it/get_it.dart';
+//import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -681,7 +683,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SvgPicture.asset(AppAssets.parcodeSvg),
+                        GestureDetector(
+                          // onTap: () => _showShareAccountViaQr(context),
+                          child: SvgPicture.asset(AppAssets.parcodeSvg),
+                        ),
                         const SizedBox(height: 10),
                         Container(
                           height: 20,
@@ -895,4 +900,98 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       },
     );
   }
+
+  /*  void _showShareAccountViaQr(BuildContext context) {
+    if (prefsRepository.isVerifiedPhone == false) {
+      showWarningMessage(context, LocaleKeys.you_must_login_first.tr());
+      return;
+    }
+    final qrPayload = jsonEncode(_buildShareableAccountPayload());
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Padding(
+            padding: EdgeInsets.all(20.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  LocaleKeys.share_account_via_qr_title.tr(),
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xff1D1D1D),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10.h),
+                Text(
+                  LocaleKeys.share_account_via_qr_hint.tr(),
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    fontSize: 13,
+                    color: const Color(0xff8D8D8D),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20.h),
+                Container(
+                  padding: EdgeInsets.all(12.r),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: const Color(0xffF0F0F0)),
+                  ),
+                  child: QrImageView(
+                    data: qrPayload,
+                    size: 220.r,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff1D1D1D),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                    ),
+                    child: Text(
+                      LocaleKeys.cancel.tr(),
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+*/
+  /*Map<String, dynamic> _buildShareableAccountPayload() {
+    return {
+      "idToken": prefsRepository.idToken ?? "",
+      "name": prefsRepository.myMarketName ?? "",
+      "userMarketPhone": prefsRepository.myPhoneNumber ?? "",
+      "userMarketId": prefsRepository.myMarketId ?? "",
+      "userCountryIso": prefsRepository.countryIso ?? "",
+      "userMarketToken": prefsRepository.marketToken ?? "",
+      "language": prefsRepository.language ?? "",
+      "userVerifiedPhone": prefsRepository.isVerifiedPhone ?? "",
+      "userUserChoosedCountryIso": prefsRepository.userChoosedCountryIso ?? "",
+    };
+  }*/
 }

@@ -25,18 +25,14 @@ class UpdateStoriesUserParams {
   String? photo;
   String? name;
 
-  UpdateStoriesUserParams({
-    this.name,
-    this.phone,
-    this.photo,
-    this.otpIdToken,
-  });
+  UpdateStoriesUserParams({this.name, this.phone, this.photo, this.otpIdToken});
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   Map<String, dynamic> get map => {
-        "name": name,
-        "otp_id_token": _prefsRepository.idToken,
-        "mobile_phone": phone,
-        "photo_path":
-            (photo ?? "").contains("/") ? photo?.split("/").last : photo,
-      }..removeWhere((key, value) => key == "");
+    "name": name,
+    "otp_id_token": _prefsRepository.idToken,
+    "mobile_phone": phone,
+    "photo_path":
+        "/customers/profile/" +
+        "${(photo ?? "").contains("/") ? photo?.split("/").last : photo}",
+  }..removeWhere((key, value) => key == "");
 }

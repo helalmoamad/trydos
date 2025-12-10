@@ -32,6 +32,7 @@ import '../../../../../core/utils/theme_state.dart';
 class BuyerSellerChat extends StatefulWidget {
   final String currentVariant;
   final String productId;
+  final String productSlug;
   final String? ownerType;
   final String? ownerId;
   final ValueNotifier<bool>? isVerified;
@@ -41,6 +42,7 @@ class BuyerSellerChat extends StatefulWidget {
     required this.productId,
     required this.isVerified,
     required this.ownerType,
+    required this.productSlug,
     required this.ownerId,
     required this.panelBuyersSeller,
     required this.currentVariant,
@@ -79,6 +81,8 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           ownerId: widget.ownerId,
           ownerType: widget.ownerType,
           text: message,
+          slug: widget.productSlug,
+          images: const [],
         ),
       );
     }
@@ -115,7 +119,8 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           previous.getFullProductDetailsStatus !=
               current.getFullProductDetailsStatus ||
           previous.updateLikeCommentRatingStatus !=
-              current.updateLikeCommentRatingStatus,
+              current.updateLikeCommentRatingStatus ||
+          previous.translateCommentStatus != current.translateCommentStatus,
       builder: (context, state) {
         if (state.getFqaCommentsPaginationModel == null) {
           return const SizedBox.shrink();
@@ -224,121 +229,134 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                             1,
                       ),
                     ),
-              !(GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
-                  ? Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
-                              false)) {
-                            Future.delayed(const Duration(seconds: 1), () {
-                              widget.isVerified?.value = false;
-                              if ((GetIt.I<PrefsRepository>()
-                                      .isVerifiedPhonePeforeExpiredToken ??
+              BlocBuilder<AuthBloc, AuthState>(
+                buildWhen: (previous, current) =>
+                    previous.verifyOtpFromGuestStatus !=
+                    current.verifyOtpFromGuestStatus,
+
+                builder: (context, authState) {
+                  return !(GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
+                      ? Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (!(GetIt.I<PrefsRepository>()
+                                      .isVerifiedPhone ??
                                   false)) {
-                                GetIt.I<AuthBloc>().add(
-                                  SendOtpEvent(
-                                    phone: GetIt.I<PrefsRepository>()
-                                        .myPhoneNumber!,
-                                    isViaWhatsApp: 1,
-                                  ),
-                                );
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  widget.isVerified?.value = false;
+                                  if ((GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhonePeforeExpiredToken ??
+                                      false)) {
+                                    GetIt.I<AuthBloc>().add(
+                                      SendOtpEvent(
+                                        phone: GetIt.I<PrefsRepository>()
+                                            .myPhoneNumber!,
+                                        isViaWhatsApp: 1,
+                                      ),
+                                    );
+                                  }
+                                });
                               }
-                            });
-                          }
-                        },
-                        child: SizedBox(
-                          width: 1.sw,
-                          height: 30,
-                          child: Center(
-                            child: MyTextWidget(
-                              LocaleKeys.please_login_to_add_comment.tr(),
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: Colors.red,
-                                fontSize: 14,
+                            },
+                            child: SizedBox(
+                              width: 1.sw,
+                              height: 30,
+                              child: Center(
+                                child: MyTextWidget(
+                                  LocaleKeys.please_login_to_add_comment.tr(),
+                                  style: context.textTheme.bodyMedium?.rq
+                                      .copyWith(
+                                        color: Colors.red,
+                                        fontSize: 14,
+                                      ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    )
-                  : Container(
-                      height: 40,
-                      width: 1.sw,
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: const Color(0xff513AAF)),
-                      ),
-                      child: TextFormField(
-                        controller: _messageController,
-                        decoration: InputDecoration(
-                          hintText:
-                              '${LocaleKeys.ask_seller_about_product.tr()}',
-                          hintStyle: context.textTheme.titleLarge?.rq.copyWith(
-                            color: const Color(0xffC4C2C2),
-                            fontSize: 11,
+                        )
+                      : Container(
+                          height: 40,
+                          width: 1.sw,
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: const Color(0xff513AAF)),
                           ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 10,
-                          ),
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset(
-                              AppAssets.faqSvg,
-                              width: 16,
-                              height: 16,
-                            ),
-                          ),
-                          suffixIcon:
-                              state.createCommentRatingStatus ==
-                                  CreateCommentRatingStatus.loading
-                              ? TrydosLoader(size: 16)
-                              : _messageController.text.length > 0
-                              ? GestureDetector(
-                                  onTap: () {
-                                    if (_messageController.text
-                                        .trim()
-                                        .isNotEmpty) {
-                                      _sendMessage(
-                                        _messageController.text.trim(),
-                                      );
-                                    }
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.all(8),
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xff513AAF),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
+                          child: TextFormField(
+                            controller: _messageController,
+                            decoration: InputDecoration(
+                              hintText:
+                                  '${LocaleKeys.ask_seller_about_product.tr()}',
+                              hintStyle: context.textTheme.titleLarge?.rq
+                                  .copyWith(
+                                    color: const Color(0xffC4C2C2),
+                                    fontSize: 11,
                                   ),
-                                )
-                              : null,
-                        ),
-                        style: context.textTheme.titleLarge?.rq.copyWith(
-                          color: const Color(0xff1D1D1D),
-                          fontSize: 11,
-                        ),
-                        textAlign: TextAlign.center,
-                        textInputAction: TextInputAction.send,
-                        onChanged: (value) {
-                          setState(() {}); // لإعادة بناء الـ suffix icon
-                        },
-                        onFieldSubmitted: (value) {
-                          if (value.trim().isNotEmpty) {
-                            // إرسال الرسالة
-                            _sendMessage(value.trim());
-                          }
-                        },
-                      ),
-                    ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 10,
+                              ),
+                              prefixIcon: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  AppAssets.faqSvg,
+                                  width: 16,
+                                  height: 16,
+                                ),
+                              ),
+                              suffixIcon:
+                                  state.createCommentRatingStatus ==
+                                      CreateCommentRatingStatus.loading
+                                  ? TrydosLoader(size: 16)
+                                  : _messageController.text.length > 0
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        if (_messageController.text
+                                            .trim()
+                                            .isNotEmpty) {
+                                          _sendMessage(
+                                            _messageController.text.trim(),
+                                          );
+                                        }
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.all(8),
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xff513AAF),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.arrow_forward,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                            style: context.textTheme.titleLarge?.rq.copyWith(
+                              color: const Color(0xff1D1D1D),
+                              fontSize: 11,
+                            ),
+                            textAlign: TextAlign.center,
+                            textInputAction: TextInputAction.send,
+                            onChanged: (value) {
+                              setState(() {}); // لإعادة بناء الـ suffix icon
+                            },
+                            onFieldSubmitted: (value) {
+                              if (value.trim().isNotEmpty) {
+                                // إرسال الرسالة
+                                _sendMessage(value.trim());
+                              }
+                            },
+                          ),
+                        );
+                },
+              ),
             ],
           ),
         );
@@ -362,6 +380,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
             fqaComment: fqaComment,
             index: index,
             state: state,
+            isVerified: widget.isVerified,
           ),
           Container(
             height: 0.5,
@@ -371,6 +390,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           ..._SingelComments(
             answard: true,
             fqaComment: fqaComment,
+            isVerified: widget.isVerified,
             index: index,
             state: state,
           ),
@@ -383,6 +403,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
     required bool answard,
     required FqaComment fqaComment,
     required int index,
+    required ValueNotifier<bool>? isVerified,
     required HomeState state,
   }) {
     void _showEditBottomSheet(BuildContext context, String initialText) {
@@ -482,6 +503,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                   ownerId: widget.ownerId,
                                   ownerType: widget.ownerType,
                                   productId: fqaComment.productId,
+                                  slug: widget.productSlug,
                                   tapCommentIndex: index,
                                   variant: fqaComment.variant,
                                   text: _controller.text,
@@ -631,7 +653,13 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
             ),
       const SizedBox(height: 10),
       MyTextWidget(
-        answard ? (fqaComment.sellerReply ?? "") : (fqaComment.comment ?? ""),
+        answard
+            ? ((fqaComment.isTran ?? false)
+                  ? (fqaComment.sellerReplyTran ?? "")
+                  : fqaComment.sellerReply ?? "")
+            : ((fqaComment.isTran ?? false)
+                  ? (fqaComment.commentTran ?? "")
+                  : fqaComment.comment ?? ""),
         maxLines: 10,
         style: context.textTheme.titleLarge?.rq.copyWith(
           color: const Color(0xff1D1D1D),
@@ -753,215 +781,318 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                       fontSize: 9,
                     ),
                   ),
-            fqaComment.customer?.id != GetIt.I<PrefsRepository>().myMarketId ||
-                    (answard)
+
+            answard
                 ? const SizedBox.shrink()
-                : Flexible(
-                    child: SizedBox(
-                      width: 80,
-                      height: 25,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          state.deleteOrderCommentRatingStatus ==
-                                      DeleteOrderCommentRatingStatus.loading &&
-                                  state.tapCommentIndex == index
-                              ? TrydosLoader(size: 15)
-                              : SizedBox(
-                                  width: 20,
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      final confirmed = await showDialog<bool>(
-                                        context: context,
-                                        barrierColor: Colors.transparent,
-                                        builder: (ctx) => Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
+                : SizedBox(
+                    width: 60.w,
+                    height: 32,
+                    child:
+                        ((state.deleteOrderCommentRatingStatus ==
+                                    DeleteOrderCommentRatingStatus.loading ||
+                                state.updateOrderCommentRatingStatus ==
+                                    UpdateOrderCommentRatingStatus.loading ||
+                                state.translateCommentStatus ==
+                                    TranslateCommentStatus.loading) &&
+                            state.tapCommentIndex == index)
+                        ? TrydosLoader(size: 15)
+                        : SizedBox(
+                            width: 60,
+                            height: 32,
+                            child: PopupMenuButton<String>(
+                              icon: const Icon(
+                                Icons.more_vert,
+                                color: Colors.black87,
+                              ),
+                              onSelected: (value) async {
+                                if (value == 'delete') {
+                                  final confirmed = await showDialog<bool>(
+                                    context: context,
+                                    barrierColor: Colors.transparent,
+                                    builder: (ctx) => Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: Container(
+                                            width: double.infinity,
+                                            margin: EdgeInsets.only(top: 8.h),
+                                            padding: EdgeInsets.all(16.w),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFE2FFF1),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.r),
+                                              border: Border.all(
+                                                color: const Color(0xFF402CDD),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      // ignore: deprecated_member_use
+                                                      .withOpacity(0.1),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
                                             ),
-                                            child: Material(
-                                              color: Colors.transparent,
-                                              child: Container(
-                                                width: double.infinity,
-                                                margin: EdgeInsets.only(
-                                                  top: 8.h,
-                                                ),
-                                                padding: EdgeInsets.all(16.w),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xFFE2FFF1,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        12.r,
-                                                      ),
-                                                  border: Border.all(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                MyTextWidget(
+                                                  LocaleKeys
+                                                      .confirm_delete_comment_title
+                                                      .tr(),
+                                                  style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    fontWeight: FontWeight.w600,
                                                     color: const Color(
-                                                      0xFF402CDD,
+                                                      0xFF1A1A1A,
                                                     ),
                                                   ),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black
-                                                          // ignore: deprecated_member_use
-                                                          .withOpacity(0.1),
-                                                      blurRadius: 8,
-                                                      offset: const Offset(
-                                                        0,
-                                                        2,
-                                                      ),
-                                                    ),
-                                                  ],
                                                 ),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                SizedBox(height: 8.h),
+                                                MyTextWidget(
+                                                  LocaleKeys
+                                                      .confirm_delete_comment_message
+                                                      .tr(),
+                                                  style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: const Color(
+                                                      0xFF666666,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 12.h),
+                                                Row(
                                                   children: [
-                                                    MyTextWidget(
-                                                      LocaleKeys
-                                                          .confirm_delete_comment_title
-                                                          .tr(),
-                                                      style: TextStyle(
-                                                        fontSize: 16.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: const Color(
-                                                          0xFF1A1A1A,
+                                                    Expanded(
+                                                      child: TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.of(
+                                                              ctx,
+                                                            ).pop(false),
+                                                        child: Text(
+                                                          LocaleKeys.cancel
+                                                              .tr(),
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey[600],
+                                                            fontSize: 14,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                    SizedBox(height: 8.h),
-                                                    MyTextWidget(
-                                                      LocaleKeys
-                                                          .confirm_delete_comment_message
-                                                          .tr(),
-                                                      style: TextStyle(
-                                                        fontSize: 14.sp,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: const Color(
-                                                          0xFF666666,
+                                                    const SizedBox(width: 8),
+                                                    Expanded(
+                                                      child: ElevatedButton(
+                                                        onPressed: () =>
+                                                            Navigator.of(
+                                                              ctx,
+                                                            ).pop(true),
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              const Color(
+                                                                0xFF402CDD,
+                                                              ),
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                          ),
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                vertical: 10,
+                                                              ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 12.h),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: TextButton(
-                                                            onPressed: () =>
-                                                                Navigator.of(
-                                                                  ctx,
-                                                                ).pop(false),
-                                                            child: Text(
-                                                              LocaleKeys.cancel
-                                                                  .tr(),
-                                                              style: TextStyle(
+                                                        child: Text(
+                                                          LocaleKeys
+                                                              .confirm_delete
+                                                              .tr(),
+                                                          style:
+                                                              const TextStyle(
                                                                 color: Colors
-                                                                    .grey[600],
+                                                                    .white,
                                                                 fontSize: 14,
                                                               ),
-                                                            ),
-                                                          ),
                                                         ),
-                                                        const SizedBox(
-                                                          width: 8,
-                                                        ),
-                                                        Expanded(
-                                                          child: ElevatedButton(
-                                                            onPressed: () =>
-                                                                Navigator.of(
-                                                                  ctx,
-                                                                ).pop(true),
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor:
-                                                                  const Color(
-                                                                    0xFF402CDD,
-                                                                  ),
-                                                              foregroundColor:
-                                                                  Colors.white,
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius.circular(
-                                                                      12,
-                                                                    ),
-                                                              ),
-                                                              padding:
-                                                                  const EdgeInsets.symmetric(
-                                                                    vertical:
-                                                                        10,
-                                                                  ),
-                                                            ),
-                                                            child: Text(
-                                                              LocaleKeys
-                                                                  .confirm_delete
-                                                                  .tr(),
-                                                              style:
-                                                                  const TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize:
-                                                                        14,
-                                                                  ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
+                                              ],
                                             ),
                                           ),
                                         ),
+                                      ),
+                                    ),
+                                  );
+                                  if (confirmed == true) {
+                                    if (!(GetIt.I<PrefsRepository>()
+                                            .isVerifiedPhone ??
+                                        false)) {
+                                      Future.delayed(
+                                        const Duration(seconds: 1),
+                                        () {
+                                          isVerified?.value = false;
+                                          if ((GetIt.I<PrefsRepository>()
+                                                  .isVerifiedPhonePeforeExpiredToken ??
+                                              false)) {
+                                            GetIt.I<AuthBloc>().add(
+                                              SendOtpEvent(
+                                                phone:
+                                                    GetIt.I<PrefsRepository>()
+                                                        .myPhoneNumber!,
+                                                isViaWhatsApp: 1,
+                                              ),
+                                            );
+                                          }
+                                        },
                                       );
-                                      if (confirmed == true) {
-                                        BlocProvider.of<HomeBloc>(context).add(
-                                          DeleteCommentRatingEvent(
-                                            commentId: fqaComment.id,
-                                            productId: fqaComment.productId,
-                                            tapCommentIndex: index,
+                                      return;
+                                    }
+                                    BlocProvider.of<HomeBloc>(context).add(
+                                      DeleteCommentRatingEvent(
+                                        commentId: fqaComment.id,
+                                        productId: fqaComment.productId,
+                                        tapCommentIndex: index,
+                                      ),
+                                    );
+                                  }
+                                } else if (value == 'edit') {
+                                  if (!(GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhone ??
+                                      false)) {
+                                    Future.delayed(
+                                      const Duration(seconds: 1),
+                                      () {
+                                        isVerified?.value = false;
+                                        if ((GetIt.I<PrefsRepository>()
+                                                .isVerifiedPhonePeforeExpiredToken ??
+                                            false)) {
+                                          GetIt.I<AuthBloc>().add(
+                                            SendOtpEvent(
+                                              phone: GetIt.I<PrefsRepository>()
+                                                  .myPhoneNumber!,
+                                              isViaWhatsApp: 1,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    );
+                                    return;
+                                  }
+                                  _showEditBottomSheet(
+                                    context,
+                                    fqaComment.comment ?? "",
+                                  );
+                                } else if (value == 'translate') {
+                                  if (!(GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhone ??
+                                      false)) {
+                                    Future.delayed(
+                                      const Duration(seconds: 1),
+                                      () {
+                                        isVerified?.value = false;
+                                        if ((GetIt.I<PrefsRepository>()
+                                                .isVerifiedPhonePeforeExpiredToken ??
+                                            false)) {
+                                          GetIt.I<AuthBloc>().add(
+                                            SendOtpEvent(
+                                              phone: GetIt.I<PrefsRepository>()
+                                                  .myPhoneNumber!,
+                                              isViaWhatsApp: 1,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    );
+                                    return;
+                                  }
+                                  BlocProvider.of<HomeBloc>(context).add(
+                                    TranslateCommentEvent(
+                                      commentId: fqaComment.id,
+                                      showOriginal:
+                                          (fqaComment.isTran ?? false),
+                                      tapCommentIndex: index,
+                                      fromSellerComments:
+                                          fqaComment.hasReply ?? false,
+                                    ),
+                                  );
+                                }
+                              },
+                              itemBuilder: (BuildContext context) {
+                                List<PopupMenuEntry<String>> menu = [];
+                                menu.add(
+                                  PopupMenuItem(
+                                    value: 'translate',
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppAssets.languageSvg,
+
+                                          height: 20,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          (fqaComment.isTran ?? false)
+                                              ? LocaleKeys.show_original_version
+                                                    .tr()
+                                              : LocaleKeys.translate.tr(),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                                if (!(fqaComment.customer?.id !=
+                                        GetIt.I<PrefsRepository>().myMarketId ||
+                                    (answard))) {
+                                  menu.add(
+                                    PopupMenuItem(
+                                      value: 'edit',
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.editSvg,
+                                            // ignore: deprecated_member_use
+                                            color: Colors.green,
+                                            height: 20,
                                           ),
-                                        );
-                                      }
-                                    },
-                                    child: SvgPicture.asset(
-                                      AppAssets.deletecartSvg,
-                                      height: 20,
+                                          const SizedBox(width: 6),
+                                          Text(LocaleKeys.edit.tr()),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                          const SizedBox(width: 15),
-                          (fqaComment.hasReply ?? false)
-                              ? const SizedBox.shrink()
-                              : state.updateOrderCommentRatingStatus ==
-                                        UpdateOrderCommentRatingStatus
-                                            .loading &&
-                                    state.tapCommentIndex == index
-                              ? TrydosLoader(size: 15)
-                              : SizedBox(
-                                  width: 20,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      _showEditBottomSheet(
-                                        context,
-                                        fqaComment.comment ?? "",
-                                      );
-                                    },
-                                    child: SvgPicture.asset(
-                                      AppAssets.editSvg,
-                                      // ignore: deprecated_member_use
-                                      color: Colors.green,
-                                      height: 20,
+                                  );
+                                  menu.add(
+                                    PopupMenuItem(
+                                      value: 'delete',
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.deletecartSvg,
+                                            height: 20,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(LocaleKeys.delete.tr()),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                        ],
-                      ),
-                    ),
+                                  );
+                                }
+                                return menu;
+                              },
+                            ),
+                          ),
                   ),
+
             const Spacer(),
             !answard
                 ? const SizedBox.shrink()

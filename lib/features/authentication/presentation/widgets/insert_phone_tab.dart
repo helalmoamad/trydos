@@ -246,10 +246,20 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                       : null,
                   autoFocus: true,
                   onChange: (String? text) {
+                    if ((text?.length ?? 0) > 3 &&
+                        countryChanged.value.code == "") {
+                      if (text!.startsWith("00")) {
+                        form.controllers[0].text = text.replaceAll("00", '');
+                      } else {
+                        form.controllers[0].text = text.replaceFirst(
+                          RegExp(r'0'),
+                          '',
+                        );
+                      }
+                    }
                     Country newCountry = countries.firstWhere(
-                      (element) => '+${text?.toLowerCase()}'.startsWith(
-                        element.dialCode.toLowerCase(),
-                      ),
+                      (element) => '+${form.controllers[0].text.toLowerCase()}'
+                          .startsWith(element.dialCode.toLowerCase()),
                       orElse: () => const Country(
                         name: '',
                         flag: '',
@@ -259,16 +269,23 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                         maxLength: 0,
                       ),
                     );
-                    if (text?.isNotEmpty ?? false) {
+                    if ((form.controllers[0].text.isNotEmpty) &&
+                        newCountry.code != "") {
                       displaySubmit.value =
-                          text!.replaceAll(' ', '').length >=
+                          (form.controllers[0].text
+                                  .replaceAll(' ', '')
+                                  .length) >=
                               (newCountry.minLength +
                                   newCountry.dialCode.length -
                                   3) &&
-                          text.replaceAll(' ', '').length <=
+                          (form.controllers[0].text
+                                  .replaceAll(' ', '')
+                                  .length) <=
                               (newCountry.maxLength +
                                   newCountry.dialCode.length +
                                   3);
+                    } else {
+                      displaySubmit.value = false;
                     }
                     countryChanged.value = newCountry;
                     debugPrint(
@@ -283,9 +300,10 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                   },
                   maxLength: maxLength - 1,
                   prefixIcon: Padding(
-                    padding: HWEdgeInsets.only(left: 20.0, top: 15),
+                    padding: HWEdgeInsets.only(left: 20.0, top: 25),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SvgPicture.asset(AppAssets.phoneCallSvg),
                         10.horizontalSpace,
@@ -309,13 +327,18 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                           },
                         ),
                         10.horizontalSpace,
-                        MyTextWidget(
-                          '+',
-                          style: context.textTheme.bodyMedium?.rq.copyWith(
-                            color: const Color(0xff8E8E8E),
+                        SizedBox(
+                          height: 15.h,
+                          child: MyTextWidget(
+                            '+',
+                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                              height: 0.9,
+                              color: const Color(0xff8E8E8E),
+                            ),
                           ),
                         ),
-                        4.horizontalSpace,
+
+                        2.horizontalSpace,
                       ],
                     ),
                   ),

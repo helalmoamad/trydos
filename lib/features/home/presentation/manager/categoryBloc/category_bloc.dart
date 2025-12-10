@@ -5,8 +5,6 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -31,8 +29,6 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
-import 'package:trydos/features/story/presentation/bloc/story_state.dart';
-
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../main.dart';
@@ -40,7 +36,6 @@ import '../../../../../core/error/error_manager.dart';
 
 import '../../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../../chat/presentation/manager/chat_event.dart';
-import '../../../../story/presentation/bloc/story_bloc.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -325,7 +320,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     BuildContext context,
     int boutiqueItemsCountWithScroll,
   ) {
-    int maxItemsVisible =
+    /* int maxItemsVisible =
         (1.sh -
                 (GetIt.I<StoryBloc>().state.getStoriesStatus !=
                         GetStoriesStatus.success
@@ -333,11 +328,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                     : 0) -
                 50) ~/
             235 +
-        1;
-    int maxItemsVisibleWithScroll = max(
+        1;*/
+    /* int maxItemsVisibleWithScroll = max(
       maxItemsVisible,
       boutiqueItemsCountWithScroll,
-    );
+    );*/
     int boutiqueItemsCount =
         state
             .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
@@ -345,7 +340,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             .length ??
         -1;
 
-    int itemsToPrefetch = min(maxItemsVisibleWithScroll, boutiqueItemsCount);
+    int itemsToPrefetch = min(10, boutiqueItemsCount);
 
     debugPrint(
       '///////// Boutique items To Prefetch : $itemsToPrefetch /////////',
@@ -540,7 +535,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         for (var i = 0; i < r.data!.mainCategories!.length; i++) {
           categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
         }
-        if (event.getWithPrefech) {
+        /* if (event.getWithPrefech) {
           Future.delayed(const Duration(seconds: 10), () {
             for (
               var i = 0;
@@ -562,7 +557,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
               }
             }
           });
-        }
+        }*/
       },
     );
   }

@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-StoreFcmTokenResponseModel storeFcmTokenResponseModelFromJson(String str) => StoreFcmTokenResponseModel.fromJson(json.decode(str));
+StoreFcmTokenResponseModel storeFcmTokenResponseModelFromJson(String str) =>
+    StoreFcmTokenResponseModel.fromJson(json.decode(str));
 
-String storeFcmTokenResponseModelToJson(StoreFcmTokenResponseModel data) => json.encode(data.toJson());
+String storeFcmTokenResponseModelToJson(StoreFcmTokenResponseModel data) =>
+    json.encode(data.toJson());
 
 class StoreFcmTokenResponseModel {
   final bool? isSuccessful;
@@ -25,14 +27,15 @@ class StoreFcmTokenResponseModel {
     this.data,
   });
 
-  factory StoreFcmTokenResponseModel.fromJson(Map<String, dynamic> json) => StoreFcmTokenResponseModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory StoreFcmTokenResponseModel.fromJson(Map<String, dynamic> json) =>
+      StoreFcmTokenResponseModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
     "isSuccessful": isSuccessful,
@@ -45,7 +48,7 @@ class StoreFcmTokenResponseModel {
 }
 
 class Data {
-  final int? id;
+  final String? id;
   final int? userId;
   final String? token;
   final String? authToken;
@@ -62,8 +65,8 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    id: json["id"],
-    userId: json["user_id"],
+    id: json["id"].toString(),
+    userId: int.tryParse(json["user_id"].toString()),
     token: json["token"],
     authToken: json["auth_token"],
     isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],

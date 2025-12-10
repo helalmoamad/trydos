@@ -32,12 +32,13 @@ class OrdersPage extends StatefulWidget {
   final String? groupId;
   final String? orderIdFormNotification;
   final String? parentOrderIdFormNotification;
-  OrdersPage(
-      {super.key,
-      this.parentOrderIdFormNotification,
-      this.groupId,
-      this.orderIdFormNotification,
-      this.fromNotification});
+  OrdersPage({
+    super.key,
+    this.parentOrderIdFormNotification,
+    this.groupId,
+    this.orderIdFormNotification,
+    this.fromNotification,
+  });
 
   @override
   State<OrdersPage> createState() => _OrdersPageState();
@@ -57,9 +58,7 @@ class _OrdersPageState extends State<OrdersPage> {
     orderBloc = BlocProvider.of<OrderBloc>(context);
     orderBloc.add(GetCustomerAddressesEvent());
     if (widget.fromNotification ?? false) {
-      orderBloc.add(
-        GetOrdersEvent(getWithPagination: false, status: ""),
-      );
+      orderBloc.add(GetOrdersEvent(getWithPagination: false, status: ""));
 
       orderBloc.add(
         GetOrdersByOrderGroupIDEvent(orderGroupId: widget.groupId ?? ""),
@@ -108,14 +107,9 @@ class _OrdersPageState extends State<OrdersPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset(
-                      AppAssets.bagsSvg,
-                      width: 23,
-                    ),
+                    SvgPicture.asset(AppAssets.bagsSvg, width: 23),
                     ///////////////////////////
-                    const SizedBox(
-                      width: 4,
-                    ),
+                    const SizedBox(width: 4),
                     ///////////////////////////
                     Text(
                       LocaleKeys.orders.tr(),
@@ -127,9 +121,7 @@ class _OrdersPageState extends State<OrdersPage> {
                       ),
                     ),
                     ///////////////////////////
-                    const SizedBox(
-                      width: 15,
-                    ),
+                    const SizedBox(width: 15),
                     ///////////////////////////
                   ],
                 ),
@@ -139,15 +131,11 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
           body: Column(
             children: [
-              SizedBox(
-                height: 11.h,
-              ),
+              SizedBox(height: 11.h),
               ///////////////////
               buildStatusBar(),
               ///////////////////
-              SizedBox(
-                height: 50.h,
-              ),
+              SizedBox(height: 50.h),
               ///////////////////
               BlocListener<OrderBloc, OrderState>(
                 listenWhen: (p, c) =>
@@ -166,79 +154,92 @@ class _OrdersPageState extends State<OrdersPage> {
                           state.getOrdersByOrderGroupIDModel!.orders ?? [];
 
                       Future.delayed(
-                          const Duration(milliseconds: 50),
-                          () => Navigator.of(context).push(PageRouteBuilder(
-                              pageBuilder: (context, animation,
-                                      secondaryAnimation) =>
-                                  OrderDetails1(
+                        const Duration(milliseconds: 50),
+                        () => Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    OrderDetails1(
                                       currentStatus: currentStatus.value,
                                       orderIdFormNotification:
                                           widget.orderIdFormNotification,
                                       parentOrderIdFormNotification:
                                           widget.parentOrderIdFormNotification,
                                       fromNotification: true,
-                                      orders: order))));
+                                      orders: order,
+                                    ),
+                          ),
+                        ),
+                      );
                     }
                   }
                 },
                 child: BlocBuilder<OrderBloc, OrderState>(
                   buildWhen: (p, c) =>
-                      p.getOrdersModel?[currentStatus.value]
+                      p
+                              .getOrdersModel?[currentStatus.value]
                               ?.paginationStatus !=
-                          c.getOrdersModel?[currentStatus.value]
+                          c
+                              .getOrdersModel?[currentStatus.value]
                               ?.paginationStatus ||
                       p.getOrdersByOrderGroupIDStatus !=
                           c.getOrdersByOrderGroupIDStatus,
                   builder: (context, state) {
                     int itemsCount =
                         state.getOrdersModel?[currentStatus.value] == null
-                            ? 0
-                            : state.getOrdersModel![currentStatus.value]!.items
-                                .length;
+                        ? 0
+                        : state
+                              .getOrdersModel![currentStatus.value]!
+                              .items
+                              .length;
                     List<List<OrderListModel>> items =
                         state.getOrdersModel?[currentStatus.value]?.items ?? [];
                     return (state.getOrdersModel?[currentStatus.value] ==
                                 null ||
                             state.getOrdersByCartGroupIDStatus ==
                                 GetOrdersByOrderGroupIDStatus.loading ||
-                            state.getOrdersModel?[currentStatus.value]
+                            state
+                                    .getOrdersModel?[currentStatus.value]
                                     ?.paginationStatus ==
                                 PaginationStatus.failure ||
-                            ((state.getOrdersModel?[currentStatus.value]
+                            ((state
+                                            .getOrdersModel?[currentStatus
+                                                .value]
                                             ?.paginationStatus ==
                                         PaginationStatus.loading ||
-                                    state.getOrdersModel?[currentStatus.value]
+                                    state
+                                            .getOrdersModel?[currentStatus
+                                                .value]
                                             ?.paginationStatus ==
                                         PaginationStatus.initial) &&
-                                state.getOrdersModel?[currentStatus.value]
-                                        ?.items.length ==
+                                state
+                                        .getOrdersModel?[currentStatus.value]
+                                        ?.items
+                                        .length ==
                                     0))
-                        ? Center(
-                            child: TrydosLoader(),
-                          )
+                        ? Center(child: TrydosLoader())
                         : items.isEmpty
-                            ? Text(
-                                LocaleKeys.there_are_no_orders.tr(),
-                                overflow: TextOverflow.ellipsis,
-                                style:
-                                    context.textTheme.bodyMedium?.rq.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
-                              )
-                            : Expanded(
-                                child: Padding(
-                                  padding: EdgeInsets.only(bottom: 10.h),
-                                  child: ListView.separated(
-                                    controller: ordersScrollController,
-                                    itemCount: itemsCount + 1,
-                                    itemBuilder: (context, index) {
-                                      if (index < itemsCount) {
-                                        return InkWell(
-                                          onTap: () {
-                                            /*  final double dy =
+                        ? Text(
+                            LocaleKeys.there_are_no_orders.tr(),
+                            overflow: TextOverflow.ellipsis,
+                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                              color: const Color(0xff1D1D1D),
+                              letterSpacing: 0.18,
+                              fontSize: 12,
+                              height: 1.3,
+                            ),
+                          )
+                        : Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: 10.h),
+                              child: ListView.separated(
+                                controller: ordersScrollController,
+                                itemCount: itemsCount + 1,
+                                itemBuilder: (context, index) {
+                                  if (index < itemsCount) {
+                                    return InkWell(
+                                      onTap: () {
+                                        /*  final double dy =
                                                             details.localPosition.dy;
                                                         if (dy < 80 &&
                                                             ((items[index]
@@ -251,62 +252,65 @@ class _OrdersPageState extends State<OrdersPage> {
                                                           return;
                                                         }*/
 
-                                            HelperFunctions.slidingNavigation(
-                                              context,
-                                              OrderDetails1(
-                                                  indexGroupe: index,
-                                                  currentStatus:
-                                                      currentStatus.value,
-                                                  orders: items[index]),
-                                            );
-                                          },
-                                          child: buildOrderItemWidget(
-                                            index: index,
-                                            context: context,
-                                            item: items[index],
+                                        HelperFunctions.slidingNavigation(
+                                          context,
+                                          OrderDetails1(
+                                            indexGroupe: index,
+                                            currentStatus: currentStatus.value,
+                                            orders: items[index],
                                           ),
                                         );
-                                      } else {
-                                        if (itemsCount > 4) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10),
-                                            child: state
-                                                    .getOrdersModel![
-                                                        currentStatus.value]!
-                                                    .hasReachedMax
-                                                ? Center(
-                                                    child: Text(
-                                                      LocaleKeys.no_orders_found
-                                                          .tr(),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: context.textTheme
-                                                          .bodyMedium?.bq
-                                                          .copyWith(
+                                      },
+                                      child: buildOrderItemWidget(
+                                        index: index,
+                                        context: context,
+                                        item: items[index],
+                                      ),
+                                    );
+                                  } else {
+                                    if (itemsCount > 4) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 10,
+                                        ),
+                                        child:
+                                            state
+                                                .getOrdersModel![currentStatus
+                                                    .value]!
+                                                .hasReachedMax
+                                            ? Center(
+                                                child: Text(
+                                                  LocaleKeys.no_orders_found
+                                                      .tr(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: context
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.bq
+                                                      .copyWith(
                                                         color: const Color(
-                                                            0xff8D8D8D),
+                                                          0xff8D8D8D,
+                                                        ),
                                                         letterSpacing: 0.18,
                                                         fontSize: 15,
                                                         height: 1.3,
                                                       ),
-                                                    ),
-                                                  )
-                                                : Center(child: TrydosLoader()),
-                                          );
-                                        } else {
-                                          return Container();
-                                        }
-                                      }
-                                    },
-                                    separatorBuilder: (context, index) {
-                                      return SizedBox(
-                                        height: 10.h,
+                                                ),
+                                              )
+                                            : Center(child: TrydosLoader()),
                                       );
-                                    },
-                                  ),
-                                ),
-                              );
+                                    } else {
+                                      return Container();
+                                    }
+                                  }
+                                },
+                                separatorBuilder: (context, index) {
+                                  return SizedBox(height: 10.h);
+                                },
+                              ),
+                            ),
+                          );
                   },
                 ),
               ),
@@ -350,23 +354,34 @@ class _OrdersPageState extends State<OrdersPage> {
               itemsCount: '',
             ),
             ///////////////////
-            const SizedBox(
-              height: 11,
-            ),
+            const SizedBox(height: 11),
             ///////////////////
             BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
                   (previous.getCurrencyForCountryModel !=
-                      current.getCurrencyForCountryModel),
+                  current.getCurrencyForCountryModel),
               builder: (context, state) {
                 String currencySymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
-                        "";
+                    "";
                 double orderAmount = 0;
-                item.forEach((element) => orderAmount = orderAmount +
-                    (element.orderAmount! *
-                        state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!));
+                item.forEach(
+                  (element) => orderAmount =
+                      orderAmount +
+                      (HelperFunctions.truncateToDecimalPlaces(
+                            element.orderAmount!,
+                            state
+                                .getCurrencyForCountryModel!
+                                .data!
+                                .currency!
+                                .decimalDigits!,
+                          ) *
+                          state
+                              .getCurrencyForCountryModel!
+                              .data!
+                              .currency!
+                              .exchangeRate!),
+                );
 
                 return buildInfoWidget(
                   isSecondInfo: true,
@@ -375,31 +390,42 @@ class _OrdersPageState extends State<OrdersPage> {
                   isTextSpan: true,
                   text1: item[0].orderGroupStatus!.label ?? '',
                   text2: '',
-                  svgIcon1: AppAssets.preparingBagSvg,
+                  svgIcon1: item[0].orderGroupStatus?.value == 'canceled'
+                      ? ""
+                      : item[0].orderGroupStatus?.value == 'pending'
+                      ? AppAssets.pendingBagSvg
+                      : item[0].orderGroupStatus?.value == 'preparing'
+                      ? AppAssets.preparingBagSvg
+                      : item[0].orderGroupStatus?.value == 'shipped'
+                      ? AppAssets.shippedAndOutOfDeliveryBagSvg
+                      : AppAssets.delivered_bagSvg,
                   svgIcon2: AppAssets.orderInvoice2Svg,
-                  secondInfoSvgIcon: item[0].orderGroupStatus?.value ==
-                          'shipped'
+                  secondInfoSvgIcon:
+                      item[0].orderGroupStatus?.value == 'shipped'
                       ? AppAssets.shippedBlackSvg
-                      : item[0].orderGroupStatus?.value == 'delivered'
-                          ? AppAssets.deliveredBlackSvg
-                          : item[0].orderGroupStatus?.value == 'pending'
-                              ? AppAssets.pendeingBlackCheck
-                              : item[0].orderGroupStatus?.value == 'canceled'
-                                  ? AppAssets.orderCanselSvg
-                                  : AppAssets.orderPreparingSvg,
+                      : item[0].orderGroupStatus?.value == 'delivered' ||
+                            (item[0].orderGroupStatus?.value ?? "").contains(
+                              "return",
+                            )
+                      ? AppAssets.deliveredBlackSvg
+                      : item[0].orderGroupStatus?.value == 'pending'
+                      ? AppAssets.pendeingBlackCheck
+                      : item[0].orderGroupStatus?.value == 'canceled'
+                      ? AppAssets.orderCanselSvg
+                      : AppAssets.orderPreparingSvg,
                   amount: HelperFunctions.formatNumber(
-                      number: orderAmount, isNeedRounding: false),
+                    number: orderAmount,
+                    isNeedRounding: false,
+                  ),
                   currency: currencySymbol,
                   itemsCount: details.length.toString(),
                 );
               },
             ),
             ///////////////////
-            const SizedBox(
-              height: 11,
-            ),
-            ///////////////////
+            const SizedBox(height: 11),
 
+            ///////////////////
             SizedBox(
               height: 125,
               width: double.infinity,
@@ -408,36 +434,37 @@ class _OrdersPageState extends State<OrdersPage> {
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
                   return ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: InkWell(
-                          onTap: () {
-                            HelperFunctions.slidingNavigation(
-                              context,
-                              OrderDetails1(
-                                  indexGroupe: index,
-                                  orderIdToOpenPackage:
-                                      details[index].orderId.toString(),
-                                  currentStatus: currentStatus.value,
-                                  orders: item),
-                            );
-                          },
-                          child: Container(
-                            color: Colors.white,
-                            child: MyCachedNetworkImage(
-                              imageUrl: details[index].image ?? '',
-                              imageFit: BoxFit.contain,
-                              width: 90,
-                              height: 125,
-                            ),
-                          )));
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(
-                    width: 5,
+                    borderRadius: BorderRadius.circular(15),
+                    child: InkWell(
+                      onTap: () {
+                        HelperFunctions.slidingNavigation(
+                          context,
+                          OrderDetails1(
+                            indexGroupe: index,
+                            orderIdToOpenPackage: details[index].orderId
+                                .toString(),
+                            currentStatus: currentStatus.value,
+                            orders: item,
+                          ),
+                        );
+                      },
+                      child: Container(
+                        color: Colors.white,
+                        child: MyCachedNetworkImage(
+                          imageUrl: details[index].image ?? '',
+                          imageFit: BoxFit.contain,
+                          width: 90,
+                          height: 125,
+                        ),
+                      ),
+                    ),
                   );
                 },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(width: 5);
+                },
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -466,14 +493,11 @@ class _OrdersPageState extends State<OrdersPage> {
           Expanded(
             child: Row(
               children: [
-                SvgPicture.asset(
-                  svgIcon1,
-                  width: 15,
-                ),
+                svgIcon1 == ""
+                    ? const SizedBox.shrink()
+                    : SvgPicture.asset(svgIcon1, width: 15),
                 ///////////////////////////
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5),
                 ///////////////////////////
                 Flexible(
                   child: Text(
@@ -489,16 +513,11 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
                 ////////////////////////////
                 isSecondInfo
-                    ? const SizedBox(
-                        width: 5,
-                      )
+                    ? const SizedBox(width: 5)
                     : const SizedBox.shrink(),
                 ///////////////////
                 isSecondInfo
-                    ? SvgPicture.asset(
-                        secondInfoSvgIcon ?? '',
-                        width: 15,
-                      )
+                    ? SvgPicture.asset(secondInfoSvgIcon ?? '', width: 15)
                     : const SizedBox.shrink(),
               ],
             ),
@@ -508,14 +527,9 @@ class _OrdersPageState extends State<OrdersPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                SvgPicture.asset(
-                  svgIcon2,
-                  width: 15,
-                ),
+                SvgPicture.asset(svgIcon2, width: 15),
                 ///////////////////////////
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5),
                 ///////////////////////////
                 isTextSpan
                     ? Flexible(
@@ -531,24 +545,24 @@ class _OrdersPageState extends State<OrdersPage> {
                             children: [
                               TextSpan(
                                 text: itemsCount,
-                                style:
-                                    context.textTheme.bodyMedium?.bq.copyWith(
-                                  color: const Color(0xff505050),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
+                                style: context.textTheme.bodyMedium?.bq
+                                    .copyWith(
+                                      color: const Color(0xff505050),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
                               ),
                               TextSpan(text: ' ${LocaleKeys.item.tr()} . '),
                               TextSpan(
                                 text: amount,
-                                style:
-                                    context.textTheme.bodyMedium?.bq.copyWith(
-                                  color: const Color(0xff505050),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                ),
+                                style: context.textTheme.bodyMedium?.bq
+                                    .copyWith(
+                                      color: const Color(0xff505050),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3,
+                                    ),
                               ),
                               TextSpan(text: ' $currency'),
                             ],
@@ -580,24 +594,23 @@ class _OrdersPageState extends State<OrdersPage> {
       valueListenable: currentStatus,
       builder: (context, _currentStatus, _) {
         orderBloc.add(
-            SaveCurrentOrederStatusEvent(currentOrderStatus: _currentStatus));
+          SaveCurrentOrederStatusEvent(currentOrderStatus: _currentStatus),
+        );
         return BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getStartingSettingsStatus !=
               current.getStartingSettingsStatus,
           builder: (context, state) {
-            List<String> orderStatuseValue =
-                state.startingSetting!.orderGroupStatuses!
-                    .map(
-                      (e) => e.value ?? '',
-                    )
-                    .toList();
-            List<String> orderStatuseLabel =
-                state.startingSetting!.orderGroupStatuses!
-                    .map(
-                      (e) => e.label ?? '',
-                    )
-                    .toList();
+            List<String> orderStatuseValue = state
+                .startingSetting!
+                .orderGroupStatuses!
+                .map((e) => e.value ?? '')
+                .toList();
+            List<String> orderStatuseLabel = state
+                .startingSetting!
+                .orderGroupStatuses!
+                .map((e) => e.label ?? '')
+                .toList();
             return (state.startingSetting == null)
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 17),
@@ -622,9 +635,7 @@ class _OrdersPageState extends State<OrdersPage> {
                           );
                         },
                         separatorBuilder: (context, index) {
-                          return const SizedBox(
-                            width: 5,
-                          );
+                          return const SizedBox(width: 5);
                         },
                       ),
                     ),
@@ -643,101 +654,91 @@ class _OrdersPageState extends State<OrdersPage> {
                                   width: 25,
                                 )
                               : index == 1
-                                  ? InkWell(
-                                      onTap: () {
-                                        currentStatus.value = '';
-                                        ////////////////////////
-                                        orderBloc.add(
-                                          GetOrdersEvent(
-                                            status: '',
-                                            getWithPagination: false,
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        height: 26,
-                                        width: 34,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffF8F8F8),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: _currentStatus == ''
-                                              ? Border.all(
-                                                  color:
-                                                      const Color(0xff388CFF),
-                                                )
-                                              : Border.all(
-                                                  color:
-                                                      const Color(0xffF8F8F8),
-                                                ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            LocaleKeys.all.tr(),
-                                            style: context
-                                                .textTheme.bodyMedium?.rq
-                                                .copyWith(
-                                              color: const Color(0xff8D8D8D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 12,
-                                              height: 1.3,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : InkWell(
-                                      onTap: () {
-                                        currentStatus.value =
-                                            orderStatuseValue[index - 2];
-                                        ////////////////////////
-                                        orderBloc.add(
-                                          GetOrdersEvent(
-                                            status:
-                                                orderStatuseValue[index - 2],
-                                            getWithPagination: false,
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        height: 26,
-                                        width: 130,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffF8F8F8),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: _currentStatus ==
-                                                  orderStatuseValue[index - 2]
-                                              ? Border.all(
-                                                  color:
-                                                      const Color(0xff388CFF),
-                                                )
-                                              : Border.all(
-                                                  color:
-                                                      const Color(0xffF8F8F8),
-                                                ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            orderStatuseLabel[index - 2],
-                                            overflow: TextOverflow.ellipsis,
-                                            style: context
-                                                .textTheme.bodyMedium?.rq
-                                                .copyWith(
-                                              color: const Color(0xff8D8D8D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 12,
-                                              height: 1.3,
-                                            ),
-                                          ),
-                                        ),
+                              ? InkWell(
+                                  onTap: () {
+                                    currentStatus.value = '';
+                                    ////////////////////////
+                                    orderBloc.add(
+                                      GetOrdersEvent(
+                                        status: '',
+                                        getWithPagination: false,
                                       ),
                                     );
+                                  },
+                                  child: Container(
+                                    height: 26,
+                                    width: 34,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xffF8F8F8),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: _currentStatus == ''
+                                          ? Border.all(
+                                              color: const Color(0xff388CFF),
+                                            )
+                                          : Border.all(
+                                              color: const Color(0xffF8F8F8),
+                                            ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        LocaleKeys.all.tr(),
+                                        style: context.textTheme.bodyMedium?.rq
+                                            .copyWith(
+                                              color: const Color(0xff8D8D8D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 12,
+                                              height: 1.3,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : InkWell(
+                                  onTap: () {
+                                    currentStatus.value =
+                                        orderStatuseValue[index - 2];
+                                    ////////////////////////
+                                    orderBloc.add(
+                                      GetOrdersEvent(
+                                        status: orderStatuseValue[index - 2],
+                                        getWithPagination: false,
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 26,
+                                    width: 130,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xffF8F8F8),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border:
+                                          _currentStatus ==
+                                              orderStatuseValue[index - 2]
+                                          ? Border.all(
+                                              color: const Color(0xff388CFF),
+                                            )
+                                          : Border.all(
+                                              color: const Color(0xffF8F8F8),
+                                            ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        orderStatuseLabel[index - 2],
+                                        overflow: TextOverflow.ellipsis,
+                                        style: context.textTheme.bodyMedium?.rq
+                                            .copyWith(
+                                              color: const Color(0xff8D8D8D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 12,
+                                              height: 1.3,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                );
                         },
                         separatorBuilder: (context, index) {
-                          return const SizedBox(
-                            width: 10,
-                          );
+                          return const SizedBox(width: 10);
                         },
                       ),
                     ),

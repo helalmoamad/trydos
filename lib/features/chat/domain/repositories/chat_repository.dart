@@ -16,17 +16,23 @@ import '../../data/models/upload_file_response_model.dart';
 
 abstract class ChatRepository {
   Future<Either<Failure, ChangeChatPropertyModel>> changeChatProperty(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, CreateUserResponseModel>> createUser(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, UploadFileResponseModel>> uploadFile(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetOrderRecipientIdModel>> getOrderRecipientId(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, bool>> updateProfileInChat(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> shareProductOnApps(Map<String, dynamic> params);
@@ -34,25 +40,32 @@ abstract class ChatRepository {
   Future<Either<Failure, String>> getDateTime();
 
   Future<Either<Failure, Message>> shareProductWithContactsOrChannels(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params);
   Future<Either<Failure, bool>> readAllMessages(Map<String, dynamic> params);
   Future<Either<Failure, bool>> receiveMessage(Map<String, dynamic> params);
   Future<Either<Failure, bool>> deleteChat(Map<String, dynamic> params);
   Future<Either<Failure, MyContactsResponseModel>> getContacts();
   Future<Either<Failure, MyChatsResponseModel>> getChats(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, List<Message>>> getMessagesForChat(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, List<Message>>> getMessagesBetween(
-      Map<String, dynamic> params);
-  Future<Either<Failure, ChatImageDetail>> loadWidthAndHeight(
-      {required File file});
+    Map<String, dynamic> params,
+  );
+  Future<Either<Failure, ChatImageDetail>> loadWidthAndHeight({
+    required File file,
+  });
   Future<Either<Failure, MediaCount>> getMediaCount(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, bool>> SendErrorChatToServer(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, ResultOfSearchTextInChatModel>>
-      searchForMessageTextInChat(Map<String, dynamic> params);
+  searchForMessageTextInChat(Map<String, dynamic> params);
 }

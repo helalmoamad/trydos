@@ -25,32 +25,31 @@ class SendMessageParams {
   final String? parentMessageId;
   final String? messageType;
   final bool? isForward;
-  final double? imageWidth;
+
   final String? orderChatParticipantId;
-  final double? imageHeight;
+  final String? channelId;
+
   final Map<String, dynamic>? extraFields;
 
   SendMessageParams({
     this.receiverUserId,
     this.content,
     this.mediaContent,
+    this.channelId,
     this.parentMessageId,
     this.orderChatParticipantId,
     this.messageType,
     this.isForward,
     this.extraFields,
-    this.imageWidth,
-    this.imageHeight,
   });
   Map<String, dynamic> get map => {
-        "receiver_user_id": receiverUserId,
-        "order_chat_participant_id": orderChatParticipantId,
-        "content": messageType != 'TextMessage' ? mediaContent : content,
-        "parent_message_id": parentMessageId,
-        "message_type": messageType,
-        "is_forward": isForward,
-        "extra_fields": extraFields,
-        "image_original_width": imageWidth,
-        "image_original_Height": imageHeight,
-      };
+    "receiver_user_id": receiverUserId,
+    "order_chat_participant_id": orderChatParticipantId,
+    "content": messageType != 'TextMessage' ? mediaContent : content,
+    "parent_message_id": parentMessageId,
+    "message_type": messageType,
+    "cid": channelId,
+    "is_forward": isForward,
+    "extra_fields": extraFields,
+  };
 }

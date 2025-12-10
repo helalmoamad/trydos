@@ -25,6 +25,7 @@ class WidgetsKeys {
   static const myContactsFloatingActionKey =
       'my_contacts_floating_action_button_key';
   static const boutiqueCardKey = 'boutique_card_key';
+  static const countryItemKeyKey = 'countryItemKey';
   static const productInBoutiqueListKey = 'product_in_boutique_list_key';
   static const contactCardKey = 'contact_card_key';
   static const messageCardKey = 'message_card_key';

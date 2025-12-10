@@ -69,15 +69,16 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   void saveRequestsData(
-      String? url,
-      Map<String, dynamic>? response,
-      Map<String, dynamic>? headers,
-      int? statusCode,
-      String? request,
-      Map<String, dynamic>? query,
-      Map<String, dynamic>? body,
-      {String? error,
-      String? responseTime}) {
+    String? url,
+    Map<String, dynamic>? response,
+    Map<String, dynamic>? headers,
+    int? statusCode,
+    String? request,
+    Map<String, dynamic>? query,
+    Map<String, dynamic>? body, {
+    String? error,
+    String? responseTime,
+  }) {
     Map<String, dynamic> requestAndResponse;
     if (error == null || error == 'null' || error == '') {
       requestAndResponse = {
@@ -88,12 +89,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
         'query': query,
         'body': body,
         'statusCode': statusCode,
-        'response_time': responseTime
+        'response_time': responseTime,
       };
     } else {
-      requestAndResponse = {
-        'flutter_error': error,
-      };
+      requestAndResponse = {'flutter_error': error};
     }
     List<Map<String, dynamic>> previousRequests = getRequestsData();
     if (previousRequests.length == 80) {
@@ -101,15 +100,19 @@ class PrefsRepositoryImpl extends PrefsRepository {
     }
     try {
       previousRequests.add(requestAndResponse);
-      _preferences.setString('requests_json',
-          convert.jsonEncode({'requests_data': previousRequests}));
+      _preferences.setString(
+        'requests_json',
+        convert.jsonEncode({'requests_data': previousRequests}),
+      );
     } catch (e) {}
   }
 
   @override
   clearAllRequests() {
     _preferences.setString(
-        'requests_json', convert.jsonEncode({'requests_data': []}));
+      'requests_json',
+      convert.jsonEncode({'requests_data': []}),
+    );
   }
 
   @override
@@ -119,11 +122,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
       return;
     }
     Map<String, dynamic> data = convert.jsonDecode(requestsJson);
-    var list =
-        List<Map<String, dynamic>>.from(data['requests_data']!.map((x) => x));
+    var list = List<Map<String, dynamic>>.from(
+      data['requests_data']!.map((x) => x),
+    );
     list.remove(request);
     _preferences.setString(
-        'requests_json', convert.jsonEncode({'requests_data': list}));
+      'requests_json',
+      convert.jsonEncode({'requests_data': list}),
+    );
   }
 
   @override
@@ -134,7 +140,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
     }
     Map<String, dynamic> data = convert.jsonDecode(requestsJson);
     return List<Map<String, dynamic>>.from(
-        data['requests_data']!.map((x) => x));
+      data['requests_data']!.map((x) => x),
+    );
   }
 
   @override
@@ -148,11 +155,16 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? get myChatName => _preferences.getString(PrefsKey.chatName);
 
   @override
-  int? get fcmTokenId => _preferences.getInt(PrefsKey.fcmTokenId);
-
+  String? get fcmTokenId => _preferences.getString(PrefsKey.fcmTokenId);
+  /* @override
+  String? get alaaWebForCall => _preferences.getString("alaa");*/
   @override
-  Future<bool> setFcmTokenId(int fcmTokenId) =>
-      _preferences.setInt(PrefsKey.fcmTokenId, fcmTokenId);
+  Future<bool> setFcmTokenId(String fcmTokenId) =>
+      _preferences.setString(PrefsKey.fcmTokenId, fcmTokenId);
+
+  /* @override
+  Future<bool> setAlaaWebForCall(String url) =>
+      _preferences.setString("alaa", url);*/
 
   @override
   Future<bool> setMyChatName(String name) =>
@@ -206,9 +218,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
   bool isAFilePathExist(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
     String path = files.firstWhere(
-        (element) => (element.contains(filePath.split(" ")[0]) &&
-            element.contains('"${chatId}"' + ":")),
-        orElse: () => '');
+      (element) =>
+          (element.contains(filePath.split(" ")[0]) &&
+          element.contains('"${chatId}"' + ":")),
+      orElse: () => '',
+    );
     return path != '';
   }
 
@@ -226,8 +240,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> removeAFilePathExist(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
 
-    files.removeWhere((element) => (element.contains(filePath.split(" ")[0]) &&
-        element.contains('"${chatId}"' + ":")));
+    files.removeWhere(
+      (element) =>
+          (element.contains(filePath.split(" ")[0]) &&
+          element.contains('"${chatId}"' + ":")),
+    );
     return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
 
@@ -504,7 +521,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setUserCountryIsAvailable(int userCountryAvailable) {
     return _preferences.setInt(
-        PrefsKey.userCountryIsAvailable, userCountryAvailable);
+      PrefsKey.userCountryIsAvailable,
+      userCountryAvailable,
+    );
   }
 
   @override
@@ -587,9 +606,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setNotificationTypesFromTerminated(
-      String? notificationTypeFromTerminated) async {
-    return await _preferences.setString(PrefsKey.notificationTypeFromTerminated,
-        notificationTypeFromTerminated ?? "");
+    String? notificationTypeFromTerminated,
+  ) async {
+    return await _preferences.setString(
+      PrefsKey.notificationTypeFromTerminated,
+      notificationTypeFromTerminated ?? "",
+    );
   }
 
   @override
@@ -620,9 +642,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.getBool(PrefsKey.verifiedPhonePeforeExpiredToken);
   @override
   Future<bool> setVerifiedPhonePeforeExpiredToken(
-          bool verifiedPhonePeforeExpiredToken) =>
-      _preferences.setBool(PrefsKey.verifiedPhonePeforeExpiredToken,
-          verifiedPhonePeforeExpiredToken);
+    bool verifiedPhonePeforeExpiredToken,
+  ) => _preferences.setBool(
+    PrefsKey.verifiedPhonePeforeExpiredToken,
+    verifiedPhonePeforeExpiredToken,
+  );
 
   @override
   Future<bool> setTopicThatAlreadySubsecribed(String topic) async {
@@ -662,9 +686,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setRequestNotificationPermission(
-          bool requestNotificationPermission) =>
-      _preferences.setBool(PrefsKey.requestNotificationPermission,
-          requestNotificationPermission);
+    bool requestNotificationPermission,
+  ) => _preferences.setBool(
+    PrefsKey.requestNotificationPermission,
+    requestNotificationPermission,
+  );
 
   @override
   String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key) {
@@ -674,31 +700,41 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
-      String key, String value) {
+    String key,
+    String value,
+  ) {
     setMainCategoryHasPerfechedToRemoveItWhenOpenApp(key);
     return _preferences.setString(key, value);
   }
 
   @override
   Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(String key) {
-    List<String> list = _preferences
-            .getStringList(PrefsKey.mainCatogryForEachBoutiquePrefech) ??
+    List<String> list =
+        _preferences.getStringList(
+          PrefsKey.mainCatogryForEachBoutiquePrefech,
+        ) ??
         [];
     if (!list.contains(key)) {
       list.add(key);
     }
 
     return _preferences.setStringList(
-        PrefsKey.mainCatogryForEachBoutiquePrefech, list);
+      PrefsKey.mainCatogryForEachBoutiquePrefech,
+      list,
+    );
   }
 
   @override
   Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory) {
-    List<String> list = _preferences
-            .getStringList(PrefsKey.mainCatogryForEachBoutiquePrefech) ??
+    List<String> list =
+        _preferences.getStringList(
+          PrefsKey.mainCatogryForEachBoutiquePrefech,
+        ) ??
         [];
-    List<String> newList = _preferences
-            .getStringList(PrefsKey.mainCatogryForEachBoutiquePrefech) ??
+    List<String> newList =
+        _preferences.getStringList(
+          PrefsKey.mainCatogryForEachBoutiquePrefech,
+        ) ??
         [];
     _preferences.remove(PrefsKey.mainCatogryForEachBoutiquePrefech);
     if (allCategory) {
@@ -717,7 +753,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
       }
 
       return _preferences.setStringList(
-          PrefsKey.mainCatogryForEachBoutiquePrefech, newList);
+        PrefsKey.mainCatogryForEachBoutiquePrefech,
+        newList,
+      );
     }
   }
 
@@ -740,7 +778,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(
-      String key, String value) {
+    String key,
+    String value,
+  ) {
     setBoutiqueHasPerfechedToRemoveItWhenOpenApp(key);
     return _preferences.setString(key, value);
   }
@@ -786,11 +826,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> removeFiveFilterHasPerfechedWhenOpenApp() {
     List<String> list =
         _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
-    list.forEach(
-      (element) {
-        _preferences.remove(element);
-      },
-    );
+    list.forEach((element) {
+      _preferences.remove(element);
+    });
 
     return _preferences.remove(PrefsKey.fiveFilterPrefech);
   }
@@ -806,7 +844,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setPrefechForFiveFilterForEachBoutiqueInHomePage(
-      String key, String value) {
+    String key,
+    String value,
+  ) {
     setFiveFilterHasPerfechedToRemoveItWhenOpenApp(key);
     return _preferences.setString(key, value);
   }
@@ -945,21 +985,24 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setRedeemDateForProduct(String productId, String seconds) {
     Map<String, dynamic> map =
         _preferences.getString(PrefsKey.redeemDateForProducts) != null &&
-                _preferences.getString(PrefsKey.redeemDateForProducts) != '"{}"'
-            ? convert.jsonDecode(
-                _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}')
-            : {};
+            _preferences.getString(PrefsKey.redeemDateForProducts) != '"{}"'
+        ? convert.jsonDecode(
+            _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}',
+          )
+        : {};
     if (!map.containsKey(productId)) {
       map.addAll({
-        productId:
-            (DateTime.now().add(Duration(seconds: int.tryParse(seconds) ?? 0)))
-                .toString()
+        productId: (DateTime.now().add(
+          Duration(seconds: int.tryParse(seconds) ?? 0),
+        )).toString(),
       });
     }
     print(map);
 
     return _preferences.setString(
-        PrefsKey.redeemDateForProducts, convert.jsonEncode(map));
+      PrefsKey.redeemDateForProducts,
+      convert.jsonEncode(map),
+    );
   }
 
   @override
@@ -969,7 +1012,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
       return null;
     }
     Map<String, dynamic> map = convert.jsonDecode(
-        _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
+      _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}',
+    );
     return map[productId] != null ? DateTime.tryParse(map[productId]!) : null;
   }
 
@@ -980,16 +1024,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
       return Future.value(true);
     }
     Map<String, dynamic> map = convert.jsonDecode(
-        _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
+      _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}',
+    );
     Map<String, dynamic> afterRemove = convert.jsonDecode(
-        _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}');
+      _preferences.getString(PrefsKey.redeemDateForProducts) ?? '{}',
+    );
     map.forEach((key, value) {
       if (DateTime.parse(value).isBefore(DateTime.now())) {
         afterRemove.remove(key);
       }
     });
     return _preferences.setString(
-        PrefsKey.redeemDateForProducts, convert.jsonEncode(afterRemove));
+      PrefsKey.redeemDateForProducts,
+      convert.jsonEncode(afterRemove),
+    );
   }
 
   @override
@@ -1001,7 +1049,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
       return null;
     }
     Map<String, dynamic> map = convert.jsonDecode(
-        _preferences.getString(PrefsKey.redeemSecondRemainForProducts) ?? '{}');
+      _preferences.getString(PrefsKey.redeemSecondRemainForProducts) ?? '{}',
+    );
     return map[productId] != null
         ? int.tryParse((map[productId] ?? "0").toString())
         : null;
@@ -1017,15 +1066,18 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setRedeemSecondRemainingForProduct(
-      String productId, int secondsLeft) {
-    Map<String, dynamic> map = _preferences
-                    .getString(PrefsKey.redeemSecondRemainForProducts) !=
+    String productId,
+    int secondsLeft,
+  ) {
+    Map<String, dynamic> map =
+        _preferences.getString(PrefsKey.redeemSecondRemainForProducts) !=
                 null &&
             _preferences.getString(PrefsKey.redeemSecondRemainForProducts) !=
                 '"{}"'
         ? convert.jsonDecode(
             _preferences.getString(PrefsKey.redeemSecondRemainForProducts) ??
-                '{}')
+                '{}',
+          )
         : {};
     if (secondsLeft <= 0) {
       map.remove(productId);
@@ -1033,13 +1085,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
       map[productId] = secondsLeft.toString();
     }
     return _preferences.setString(
-        PrefsKey.redeemSecondRemainForProducts, convert.jsonEncode(map));
+      PrefsKey.redeemSecondRemainForProducts,
+      convert.jsonEncode(map),
+    );
   }
 
   @override
   Future<bool> resetAllRedeemTimer() {
     _preferences.setString(
-        PrefsKey.redeemDateForProducts, convert.jsonEncode("{}"));
+      PrefsKey.redeemDateForProducts,
+      convert.jsonEncode("{}"),
+    );
 
     return _preferences.setString(PrefsKey.redeemSecondRemainForProducts, "{}");
   }
@@ -1052,50 +1108,52 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setContactDetails(String? contactDetails) {
     return _preferences.setString(
-        PrefsKey.myContactDetail, contactDetails ?? "");
+      PrefsKey.myContactDetail,
+      contactDetails ?? "",
+    );
   }
 
-// @override
+  // @override
 
-// List<Map<String,dynamic>> get localMessages {
-//   String? messages = _preferences.getString(PrefsKey.messages);
-//   if (messages == null) {
-//     return [];
-//   }
-//   Map<String, dynamic> data = convert.jsonDecode(messages);
-//   return List<Map<String, dynamic>>.from(data['messages']!.map((x) => x));
-// }
+  // List<Map<String,dynamic>> get localMessages {
+  //   String? messages = _preferences.getString(PrefsKey.messages);
+  //   if (messages == null) {
+  //     return [];
+  //   }
+  //   Map<String, dynamic> data = convert.jsonDecode(messages);
+  //   return List<Map<String, dynamic>>.from(data['messages']!.map((x) => x));
+  // }
 
-// @override
-// void saveMessage(Map<String,dynamic> message) {
-//   List<Map<String, dynamic>> messages = localMessages ;
-//   messages.insert(0 , message);
-//   _preferences.setString(
-//       'messages',
-//       convert.jsonEncode({'messages': messages}));
-// }
+  // @override
+  // void saveMessage(Map<String,dynamic> message) {
+  //   List<Map<String, dynamic>> messages = localMessages ;
+  //   messages.insert(0 , message);
+  //   _preferences.setString(
+  //       'messages',
+  //       convert.jsonEncode({'messages': messages}));
+  // }
 
-// @override
-// void clearAllMessages() => _preferences.remove(PrefsKey.messages);
+  // @override
+  // void clearAllMessages() => _preferences.remove(PrefsKey.messages);
 
-// @override
-// User? get user {
-//   final user = _preferences.getString(PrefsKey.user);
-//   if (user == null) {
-//     return null;
-//   }
-//   return User.fromJson(json.decode(user));
-// }
-//
-// @override
-// Future<bool> setUser(User user) async {
-//   if(user.bearerToken != null) {
-//     await _setToken(user.bearerToken!);
-//   }
-//
-//   return _preferences.setString(PrefsKey.user, json.encode(user));
-// }
+  // @override
+  // User? get user {
+  //   final user = _preferences.getString(PrefsKey.user);
+  //   if (user == null) {
+  //     return null;
+  //   }
+  //   return User.fromJson(json.decode(user));
+  // }
+  //
+  // @override
+  // Future<bool> setUser(User user) async {
+  //   if(user.bearerToken != null) {
+  //     await _setToken(user.bearerToken!);
+  //   }
+  //
+  //   return _preferences.setString(PrefsKey.user, json.encode(user));
+  // }
 
-// @override
-// bool get hasUser => user != null;
+  // @override
+  // bool get hasUser => user != null;
 }

@@ -35,9 +35,11 @@ class BuyersCommentsPanel extends StatelessWidget {
     required this.currentFilterForCommend,
     required this.productFirstId,
     required this.isVerified,
+    required this.productSlug,
   });
   final ValueNotifier<String> currentFilterForCommend;
   final PanelController panelController;
+  final String productSlug;
   final ValueNotifier<bool>? isVerified;
   final String productFirstId;
   @override
@@ -79,14 +81,7 @@ class BuyersCommentsPanel extends StatelessWidget {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    List<Map<String, String>> filter = [
-      {LocaleKeys.size.tr(): "size"},
-      {LocaleKeys.quality.tr(): "quality"},
-      {LocaleKeys.color.tr(): "color"},
-      {LocaleKeys.shipping.tr(): "shipping"},
-      {LocaleKeys.complaint.tr(): "complaint"},
-      {LocaleKeys.recommendation.tr(): "recommend"},
-    ];
+    List<String> filter = [];
     return SlidingUpPanel(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(20.0),
@@ -122,14 +117,30 @@ class BuyersCommentsPanel extends StatelessWidget {
                   previous.updateOrderCommentRatingStatus !=
                       current.updateOrderCommentRatingStatus ||
                   previous.updateLikeCommentRatingStatus !=
-                      current.updateLikeCommentRatingStatus,
+                      current.updateLikeCommentRatingStatus ||
+                  previous.translateCommentStatus !=
+                      current.translateCommentStatus,
               builder: (context, state) {
-                productId == ""
-                    ? (productId = state
-                          .productContentForStatusOfOpeningProductDetailsDirectly!
-                          .productId
-                          .toString())
-                    : productId = productId;
+                if (state.getFullProductDetailsStatus ==
+                    GetFullProductDetailsStatus.success) {
+                  productId == ""
+                      ? (productId = state
+                            .productContentForStatusOfOpeningProductDetailsDirectly!
+                            .productId
+                            .toString())
+                      : (productId = productId);
+                }
+
+                filter =
+                    state.cachedProductWithoutRelatedProductsModel[productId] ==
+                        null
+                    ? []
+                    : state
+                              .cachedProductWithoutRelatedProductsModel[productId]
+                              ?.product
+                              ?.fqaQuestions
+                              ?.filtersKey ??
+                          [];
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   height: 1.sh - 70,
@@ -233,13 +244,11 @@ class BuyersCommentsPanel extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) => GestureDetector(
                             onTap: () {
-                              if (_currentFilterForCommend ==
-                                  filter[index].values.first) {
+                              if (_currentFilterForCommend == filter[index]) {
                                 currentFilterForCommend.value = "all";
                                 return;
                               }
-                              currentFilterForCommend.value =
-                                  filter[index].values.first;
+                              currentFilterForCommend.value = filter[index];
                               GetIt.I<HomeBloc>().add(
                                 GetBuyersCommentsEvent(
                                   productId: productId,
@@ -265,15 +274,14 @@ class BuyersCommentsPanel extends StatelessWidget {
                                 color: const Color(0xffF8F8F8),
                                 border: Border.all(
                                   color:
-                                      _currentFilterForCommend ==
-                                          filter[index].values.first
+                                      _currentFilterForCommend == filter[index]
                                       ? Colors.blueAccent
                                       : const Color(0xffF8F8F8),
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: MyTextWidget(
-                                filter[index].keys.first,
+                                filter[index],
                                 style: context.textTheme.titleLarge?.rq
                                     .copyWith(
                                       color: const Color(0xff505050),
@@ -333,6 +341,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                                   )
                                 : _commentWidget(
                                     context,
+                                    productSlug,
                                     state
                                         .getBuyersCommentsPaginationModel![_currentFilterForCommend]!
                                         .items[index],
@@ -362,6 +371,7 @@ class BuyersCommentsPanel extends StatelessWidget {
 
   Widget _commentWidget(
     BuildContext context,
+    String productSlug,
     BuyersComment buyersComment,
     HomeState state,
     int index,
@@ -460,6 +470,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                               BlocProvider.of<HomeBloc>(context).add(
                                 UpdateCommentRatingEvent(
                                   commentId: buyersComment.id,
+                                  slug: productSlug,
                                   fromBuyerComments: true,
                                   currentFilter: currentFilterForCommend.value,
                                   ownerId: state
@@ -517,7 +528,7 @@ class BuyersCommentsPanel extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       width: 388.w,
-      height: 115,
+      height: 120,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
@@ -576,7 +587,9 @@ class BuyersCommentsPanel extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           MyTextWidget(
-            buyersComment.comment ?? "",
+            (buyersComment.isTran ?? false)
+                ? (buyersComment.commentTran ?? "")
+                : buyersComment.comment ?? "",
             maxLines: 10,
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
@@ -626,7 +639,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                           );
                         },
                         child: SizedBox(
-                          width: 30,
+                          width: 25,
                           height: 18,
                           child: SvgPicture.asset(
                             (buyersComment.isLiked ?? false)
@@ -645,223 +658,311 @@ class BuyersCommentsPanel extends StatelessWidget {
                           fontSize: 9,
                         ),
                       ),
-                buyersComment.customer?.id !=
-                        GetIt.I<PrefsRepository>().myMarketId
-                    ? const SizedBox.shrink()
-                    : SizedBox(
-                        width: 80.w,
-                        height: 25,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            state.deleteOrderCommentRatingStatus ==
-                                        DeleteOrderCommentRatingStatus
-                                            .loading &&
-                                    state.tapCommentIndex == index
-                                ? TrydosLoader(size: 15)
-                                : SizedBox(
-                                    width: 20,
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        final confirmed = await showDialog<bool>(
-                                          context: context,
-                                          barrierColor: Colors.transparent,
-                                          builder: (ctx) => Center(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                  ),
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: Container(
-                                                  width: double.infinity,
-                                                  margin: EdgeInsets.only(
-                                                    top: 8.h,
-                                                  ),
-                                                  padding: EdgeInsets.all(16.w),
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(
-                                                      0xFFE2FFF1,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12.r,
-                                                        ),
-                                                    border: Border.all(
-                                                      color: const Color(
-                                                        0xFF402CDD,
-                                                      ),
-                                                    ),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            // ignore: deprecated_member_use
-                                                            .withOpacity(0.1),
-                                                        blurRadius: 8,
-                                                        offset: const Offset(
-                                                          0,
-                                                          2,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      MyTextWidget(
-                                                        LocaleKeys
-                                                            .confirm_delete_comment_title
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 16.sp,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color: const Color(
-                                                            0xFF1A1A1A,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 8.h),
-                                                      MyTextWidget(
-                                                        LocaleKeys
-                                                            .confirm_delete_comment_message
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: const Color(
-                                                            0xFF666666,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 12.h),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.of(
-                                                                    ctx,
-                                                                  ).pop(false),
-                                                              child: Text(
-                                                                LocaleKeys
-                                                                    .cancel
-                                                                    .tr(),
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .grey[600],
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 8,
-                                                          ),
-                                                          Expanded(
-                                                            child: ElevatedButton(
-                                                              onPressed: () =>
-                                                                  Navigator.of(
-                                                                    ctx,
-                                                                  ).pop(true),
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor:
-                                                                    const Color(
-                                                                      0xFF402CDD,
-                                                                    ),
-                                                                foregroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        12,
-                                                                      ),
-                                                                ),
-                                                                padding:
-                                                                    const EdgeInsets.symmetric(
-                                                                      vertical:
-                                                                          10,
-                                                                    ),
-                                                              ),
-                                                              child: Text(
-                                                                LocaleKeys
-                                                                    .confirm_delete
-                                                                    .tr(),
-                                                                style: const TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
+                SizedBox(
+                  width: 40.w,
+                  height: 30,
+                  child:
+                      ((state.deleteOrderCommentRatingStatus ==
+                                  DeleteOrderCommentRatingStatus.loading ||
+                              state.updateOrderCommentRatingStatus ==
+                                  UpdateOrderCommentRatingStatus.loading ||
+                              state.translateCommentStatus ==
+                                  TranslateCommentStatus.loading) &&
+                          state.tapCommentIndex == index)
+                      ? TrydosLoader(size: 15)
+                      : SizedBox(
+                          width: 40,
+                          height: 30,
+                          child: PopupMenuButton<String>(
+                            icon: const Icon(
+                              Icons.more_vert,
+                              color: Colors.black87,
+                            ),
+                            onSelected: (value) async {
+                              if (value == 'delete') {
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  barrierColor: Colors.transparent,
+                                  builder: (ctx) => Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Container(
+                                          width: double.infinity,
+                                          margin: EdgeInsets.only(top: 8.h),
+                                          padding: EdgeInsets.all(16.w),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFE2FFF1),
+                                            borderRadius: BorderRadius.circular(
+                                              12.r,
+                                            ),
+                                            border: Border.all(
+                                              color: const Color(0xFF402CDD),
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    // ignore: deprecated_member_use
+                                                    .withOpacity(0.1),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              MyTextWidget(
+                                                LocaleKeys
+                                                    .confirm_delete_comment_title
+                                                    .tr(),
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: const Color(
+                                                    0xFF1A1A1A,
                                                   ),
                                                 ),
                                               ),
-                                            ),
+                                              SizedBox(height: 8.h),
+                                              MyTextWidget(
+                                                LocaleKeys
+                                                    .confirm_delete_comment_message
+                                                    .tr(),
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: const Color(
+                                                    0xFF666666,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 12.h),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.of(
+                                                            ctx,
+                                                          ).pop(false),
+                                                      child: Text(
+                                                        LocaleKeys.cancel.tr(),
+                                                        style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      onPressed: () =>
+                                                          Navigator.of(
+                                                            ctx,
+                                                          ).pop(true),
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor:
+                                                            const Color(
+                                                              0xFF402CDD,
+                                                            ),
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                12,
+                                                              ),
+                                                        ),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 10,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        LocaleKeys
+                                                            .confirm_delete
+                                                            .tr(),
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                        if (confirmed == true) {
-                                          BlocProvider.of<HomeBloc>(
-                                            context,
-                                          ).add(
-                                            DeleteCommentRatingEvent(
-                                              commentId: buyersComment.id,
-                                              fromBuyerComments: true,
-                                              currentFilter:
-                                                  currentFilterForCommend.value,
-                                              productId:
-                                                  buyersComment.productId,
-                                              tapCommentIndex: index,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                                if (confirmed == true) {
+                                  if (!(GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhone ??
+                                      false)) {
+                                    Future.delayed(
+                                      const Duration(seconds: 1),
+                                      () {
+                                        isVerified?.value = false;
+                                        if ((GetIt.I<PrefsRepository>()
+                                                .isVerifiedPhonePeforeExpiredToken ??
+                                            false)) {
+                                          GetIt.I<AuthBloc>().add(
+                                            SendOtpEvent(
+                                              phone: GetIt.I<PrefsRepository>()
+                                                  .myPhoneNumber!,
+                                              isViaWhatsApp: 1,
                                             ),
                                           );
                                         }
                                       },
-                                      child: SvgPicture.asset(
-                                        AppAssets.deletecartSvg,
+                                    );
+                                    return;
+                                  }
+                                  BlocProvider.of<HomeBloc>(context).add(
+                                    DeleteCommentRatingEvent(
+                                      commentId: buyersComment.id,
+                                      fromBuyerComments: true,
+                                      currentFilter:
+                                          currentFilterForCommend.value,
+                                      productId: buyersComment.productId,
+                                      tapCommentIndex: index,
+                                    ),
+                                  );
+                                }
+                              } else if (value == 'edit') {
+                                if (!(GetIt.I<PrefsRepository>()
+                                        .isVerifiedPhone ??
+                                    false)) {
+                                  Future.delayed(const Duration(seconds: 1), () {
+                                    isVerified?.value = false;
+                                    if ((GetIt.I<PrefsRepository>()
+                                            .isVerifiedPhonePeforeExpiredToken ??
+                                        false)) {
+                                      GetIt.I<AuthBloc>().add(
+                                        SendOtpEvent(
+                                          phone: GetIt.I<PrefsRepository>()
+                                              .myPhoneNumber!,
+                                          isViaWhatsApp: 1,
+                                        ),
+                                      );
+                                    }
+                                  });
+                                  return;
+                                }
+                                _showEditBottomSheet(
+                                  context,
+                                  buyersComment.comment ?? "",
+                                );
+                              } else if (value == 'translate') {
+                                if (!(GetIt.I<PrefsRepository>()
+                                        .isVerifiedPhone ??
+                                    false)) {
+                                  Future.delayed(const Duration(seconds: 1), () {
+                                    isVerified?.value = false;
+                                    if ((GetIt.I<PrefsRepository>()
+                                            .isVerifiedPhonePeforeExpiredToken ??
+                                        false)) {
+                                      GetIt.I<AuthBloc>().add(
+                                        SendOtpEvent(
+                                          phone: GetIt.I<PrefsRepository>()
+                                              .myPhoneNumber!,
+                                          isViaWhatsApp: 1,
+                                        ),
+                                      );
+                                    }
+                                  });
+                                  return;
+                                }
+                                BlocProvider.of<HomeBloc>(context).add(
+                                  TranslateCommentEvent(
+                                    commentId: buyersComment.id,
+                                    fromBuyerComments: true,
+                                    showOriginal:
+                                        (buyersComment.isTran ?? false),
+                                    currentFilter:
+                                        currentFilterForCommend.value,
+                                    tapCommentIndex: index,
+                                  ),
+                                );
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              List<PopupMenuEntry<String>> menu = [];
+                              menu.add(
+                                PopupMenuItem(
+                                  value: 'translate',
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppAssets.languageSvg,
+
                                         height: 20,
                                       ),
-                                    ),
-                                  ),
-                            const SizedBox(width: 15),
-                            state.updateOrderCommentRatingStatus ==
-                                        UpdateOrderCommentRatingStatus
-                                            .loading &&
-                                    state.tapCommentIndex == index
-                                ? TrydosLoader(size: 15)
-                                : SizedBox(
-                                    width: 20,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        _showEditBottomSheet(
-                                          context,
-                                          buyersComment.comment ?? "",
-                                        );
-                                      },
-                                      child: SvgPicture.asset(
-                                        AppAssets.editSvg,
-                                        // ignore: deprecated_member_use
-                                        color: Colors.green,
-                                        height: 20,
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        (buyersComment.isTran ?? false)
+                                            ? LocaleKeys.show_original_version
+                                                  .tr()
+                                            : LocaleKeys.translate.tr(),
                                       ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                              if (buyersComment.customer?.id ==
+                                  GetIt.I<PrefsRepository>().myMarketId) {
+                                menu.add(
+                                  PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppAssets.editSvg,
+                                          // ignore: deprecated_member_use
+                                          color: Colors.green,
+                                          height: 20,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(LocaleKeys.edit.tr()),
+                                      ],
                                     ),
                                   ),
-                          ],
+                                );
+                                menu.add(
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppAssets.deletecartSvg,
+                                          height: 20,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(LocaleKeys.delete.tr()),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+                              return menu;
+                            },
+                          ),
                         ),
-                      ),
+                ),
                 const Spacer(),
                 MyTextWidget(
-                  '${LocaleKeys.true_size.tr()} | ',
+                  '${buyersComment.trueSize ?? false ? "${LocaleKeys.true_size.tr()} | " : ""}',
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     fontSize: 9,
@@ -885,7 +986,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                         ),
                       ),
                 MyTextWidget(
-                  '${LocaleKeys.good_quality.tr()} ',
+                  ' ${(buyersComment.goodQualitycomment ?? false) ? LocaleKeys.good_quality.tr() : ""} ',
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     fontSize: 9,

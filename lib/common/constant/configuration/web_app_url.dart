@@ -10,6 +10,8 @@ abstract class WebAppEndPoints {
   static const addLikeOFProductEP = "products/like";
   static const removeLikeOFProductEP = "products/unlike";
   static const removeLikeCommentEP = "public_comment/likes/unlike";
+  static String translateCommentsToAppLanEP(String commentId) =>
+      "public_comment/comments/${commentId}/translate";
   static const mainCategoriesEP = "api/home/mainCategories";
   static const editSocialProductEP = "api/editSocialProduct";
   static const homeBoutiquesEP = "api/home/boutiques";

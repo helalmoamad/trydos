@@ -1371,12 +1371,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 isVerified: isVerified,
                                 panelBuyersComments: panelBuyersComments,
                                 ownerId: productItem?.ownerId,
+                                productSlug: productItem?.slug ?? "",
                                 ownerType: productItem?.ownerType,
                                 productId: (productItem?.productId).toString(),
                               ),
                               BuyerSellerChat(
                                 panelBuyersSeller: panelBuyersSeller,
                                 isVerified: isVerified,
+                                productSlug: productItem?.slug ?? "",
                                 currentVariant: currentVariantType,
                                 ownerId: productItem?.ownerId,
                                 ownerType: productItem?.ownerType,
@@ -1481,7 +1483,37 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   },
                                 ),
                               },
-                              buyerReview(),
+                              state.cachedProductWithoutRelatedProductsModel[productItem
+                                          ?.productId
+                                          .toString()] ==
+                                      null
+                                  ? const SizedBox.shrink()
+                                  : buyerReview(
+                                      state
+                                              .cachedProductWithoutRelatedProductsModel[productItem
+                                                  ?.productId
+                                                  .toString()]!
+                                              .product
+                                              ?.sizeAnalysis
+                                              ?.largePercentage ??
+                                          0,
+                                      state
+                                              .cachedProductWithoutRelatedProductsModel[productItem
+                                                  ?.productId
+                                                  .toString()]!
+                                              .product
+                                              ?.sizeAnalysis
+                                              ?.smallPercentage ??
+                                          0,
+                                      state
+                                              .cachedProductWithoutRelatedProductsModel[productItem
+                                                  ?.productId
+                                                  .toString()]!
+                                              .product
+                                              ?.sizeAnalysis
+                                              ?.truePercentage ??
+                                          0,
+                                    ),
 
                               /*  BuyersCameraShots(
                                 productItem: productItem!.copyWith(
@@ -1865,7 +1897,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   height: 80, // ارتفاع الـ panel المغلقة
                                   child: ProductDetailsSheetHeader(
                                     redeemVariantPrice:
-                                        (productItem!.redeemPrice ?? 0) *
+                                        HelperFunctions.truncateToDecimalPlaces(
+                                          (productItem!.redeemPrice ?? 0),
+                                          state
+                                              .getCurrencyForCountryModel!
+                                              .data!
+                                              .currency!
+                                              .decimalDigits!,
+                                        ) *
                                         state
                                             .getCurrencyForCountryModel!
                                             .data!
@@ -1902,7 +1941,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                 0) >
                                             0,
                                     redeemPrice:
-                                        (productItem!.redeemPrice ?? 0) *
+                                        HelperFunctions.truncateToDecimalPlaces(
+                                          (productItem!.redeemPrice ?? 0),
+                                          state
+                                              .getCurrencyForCountryModel!
+                                              .data!
+                                              .currency!
+                                              .decimalDigits!,
+                                        ) *
                                         state
                                             .getCurrencyForCountryModel!
                                             .data!
@@ -1911,11 +1957,26 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     currentActiveTab: currentActiveTab,
                                     initOfferPrice:
                                         ((productItem!.flashDealStatus == 1
-                                                    ? productItem!
-                                                              .flashDealPrice ??
-                                                          0
-                                                    : productItem!.offerPrice ??
-                                                          0) *
+                                                    ? HelperFunctions.truncateToDecimalPlaces(
+                                                        (productItem!
+                                                                .flashDealPrice ??
+                                                            0),
+                                                        state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .decimalDigits!,
+                                                      )
+                                                    : HelperFunctions.truncateToDecimalPlaces(
+                                                        (productItem!
+                                                                .offerPrice ??
+                                                            0),
+                                                        state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .decimalDigits!,
+                                                      )) *
                                                 state
                                                     .getCurrencyForCountryModel!
                                                     .data!
@@ -1923,7 +1984,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                     .exchangeRate!)
                                             .toString(),
                                     initPrice:
-                                        ((productItem!.price ?? 0) *
+                                        (HelperFunctions.truncateToDecimalPlaces(
+                                                  (productItem!.price ?? 0),
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .decimalDigits!,
+                                                ) *
                                                 state
                                                     .getCurrencyForCountryModel!
                                                     .data!
@@ -1947,7 +2015,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     addToBagButtonShapeNotifier:
                                         addToBagButtonShapeNotifier,
                                     price:
-                                        ((productItem!.price ?? 0) *
+                                        (HelperFunctions.truncateToDecimalPlaces(
+                                                  (productItem!.price ?? 0),
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .decimalDigits!,
+                                                ) *
                                                 state
                                                     .getCurrencyForCountryModel!
                                                     .data!
@@ -1956,11 +2031,26 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                             .toString(),
                                     offerPrice:
                                         ((productItem!.flashDealStatus == 1
-                                                    ? productItem!
-                                                              .flashDealPrice ??
-                                                          0
-                                                    : productItem!.offerPrice ??
-                                                          0) *
+                                                    ? HelperFunctions.truncateToDecimalPlaces(
+                                                        (productItem!
+                                                                .flashDealPrice ??
+                                                            0),
+                                                        state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .decimalDigits!,
+                                                      )
+                                                    : HelperFunctions.truncateToDecimalPlaces(
+                                                        (productItem!
+                                                                .offerPrice ??
+                                                            0),
+                                                        state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .decimalDigits!,
+                                                      )) *
                                                 state
                                                     .getCurrencyForCountryModel!
                                                     .data!
@@ -2605,10 +2695,18 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
               isVerified: isVerified,
               currentFilterForCommend: currentFilterForCommend,
               panelController: panelBuyersComments,
+              productSlug:
+                  productItem?.slug ??
+                  widget.productSlugForOpeningChatDirectly ??
+                  "",
               productFirstId: (productItem?.productId ?? "").toString(),
             ),
             BuyerSellerPanel(
               isVerified: isVerified,
+              productSlug:
+                  productItem?.slug ??
+                  widget.productSlugForOpeningChatDirectly ??
+                  "",
               currentFilterForCommend: currentFilterForCommend,
               panelController: panelBuyersSeller,
               productFirstId: (productItem?.productId ?? "").toString(),
@@ -3199,7 +3297,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     );
   }
 
-  Widget buyerReview() {
+  Widget buyerReview(
+    int numLargePercent,
+    int numSmallPercent,
+    int numTruePercent,
+  ) {
     return Container(
       width: 1.sw,
       height: 50,
@@ -3222,9 +3324,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buyerReviewSingle(LocaleKeys.true_label.tr(), 70),
-                _buyerReviewSingle(LocaleKeys.small.tr(), 3),
-                _buyerReviewSingle(LocaleKeys.large.tr(), 1),
+                _buyerReviewSingle(LocaleKeys.true_label.tr(), numTruePercent),
+                _buyerReviewSingle(LocaleKeys.small.tr(), numSmallPercent),
+                _buyerReviewSingle(LocaleKeys.large.tr(), numLargePercent),
               ],
             ),
           ),
@@ -3271,15 +3373,17 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                   border: Border.all(color: const Color(0xffD3D3D3)),
                 ),
               ),
-              Container(
-                height: 5,
-                width: (numOfPercent / 100) * 120.w,
-                decoration: BoxDecoration(
-                  color: const Color(0xff1D1D1D),
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: const Color(0xff1D1D1D)),
-                ),
-              ),
+              numOfPercent == 0
+                  ? const SizedBox.shrink()
+                  : Container(
+                      height: 5,
+                      width: (numOfPercent / 100) * 120.w,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff1D1D1D),
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: const Color(0xff1D1D1D)),
+                      ),
+                    ),
             ],
           ),
         ],

@@ -15,7 +15,8 @@ class ShareProductWithContactsOrChannelsUsecase
 
   @override
   Future<Either<Failure, Message>> call(
-      ShareProductWithContactsOrChannelsParams params) {
+    ShareProductWithContactsOrChannelsParams params,
+  ) {
     return repository.shareProductWithContactsOrChannels(params.map);
   }
 }
@@ -26,7 +27,6 @@ class ShareProductWithContactsOrChannelsParams {
   final String productSlug;
   final String productDescription;
   final String productImageUrl;
-  final List<String> channelIds;
   final List<int?> receiverIds;
   final String? productImageWidth;
   final String? productImageHeight;
@@ -37,23 +37,23 @@ class ShareProductWithContactsOrChannelsParams {
     required this.productSlug,
     required this.productDescription,
     required this.productImageUrl,
-    required this.channelIds,
     required this.receiverIds,
     this.productImageWidth,
     this.productImageHeight,
   });
 
   Map<String, dynamic> get map => {
-        'content': [{
-          'product_id': productId,
-          'product_slug': productSlug,
-          'product_description': productDescription,
-          'product_image_url': productImageUrl,
-          'product_image_width': productImageWidth,
-          'product_image_height': productImageHeight,
-          'product_name': productName
-        }],
-        'channel_ids': channelIds,
-        'receiver_ids': receiverIds,
-      };
+    'content': [
+      {
+        'product_id': productId,
+        'product_slug': productSlug,
+        'product_description': productDescription,
+        'product_image_url': productImageUrl,
+        'product_image_width': productImageWidth,
+        'product_image_height': productImageHeight,
+        'product_name': productName,
+      },
+    ],
+    'receiver_ids': receiverIds,
+  };
 }

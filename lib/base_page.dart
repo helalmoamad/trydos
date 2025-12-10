@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert' as convert;
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -13,11 +14,11 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 
 import 'package:easy_localization/easy_localization.dart' as transform;
-import 'package:trydos/features/app/available_countries_list.dart';
+import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
+import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:flutter/services.dart';
-import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
@@ -73,24 +74,22 @@ import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/homeBloc/home_state.dart';
 
 import 'service/firebase_analytics_service/firebase_analytics_service.dart';
+import 'package:trydos/service/language_service.dart';
 
 Widget get logo {
   return Stack(
     alignment: Alignment.bottomCenter,
     children: [
-      SvgPicture.asset(
-        AppAssets.logoTextSvg,
-      ),
+      SvgPicture.asset(AppAssets.logoTextSvg),
       Transform.translate(
-          offset: const Offset(-108, 0),
-          child: SimpleShadow(
-            opacity: 0.2,
-            offset: const Offset(0, 3),
-            sigma: 3,
-            child: SvgPicture.asset(
-              AppAssets.logoActiveSvg,
-            ),
-          ))
+        offset: const Offset(-108, 0),
+        child: SimpleShadow(
+          opacity: 0.2,
+          offset: const Offset(0, 3),
+          sigma: 3,
+          child: SvgPicture.asset(AppAssets.logoActiveSvg),
+        ),
+      ),
     ],
   );
 }
@@ -179,9 +178,13 @@ class BasePage extends StatefulWidget {
   State<BasePage> createState() => _BasePageState();
 }
 
-handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
-    String? orderId, String? orderGroupID, String? parentOrderId,
-    {required Message message}) async {
+handleOpenChatPageFromNotificationInBackground(
+  String? prevMessageId,
+  String? orderId,
+  String? orderGroupID,
+  String? parentOrderId, {
+  required Message message,
+}) async {
   DealWithMessagesStoredFromBackground();
   DealWithChatsToDeleteFromBackground();
   DealWithChatsToEditStoredFromBackground();
@@ -190,51 +193,403 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
   DealWithMessageWatchStatusStoredFromBackground();
   if (orderId != "" && orderGroupID != "") {
     Future.delayed(
-        const Duration(milliseconds: 600),
-        () => navigationToOrderPageForChat(
-            orderGroupID!, orderId!, parentOrderId));
+      const Duration(milliseconds: 600),
+      () =>
+          navigationToOrderPageForChat(orderGroupID!, orderId!, parentOrderId),
+    );
   } else {
-    Future.delayed(const Duration(milliseconds: 600),
-        () => navigationToSinglePageChat(message.channel!));
+    Future.delayed(
+      const Duration(milliseconds: 600),
+      () => navigationToSinglePageChat(message.channel!),
+    );
+  }
+}
+
+extension _CountryRestrictionUI on _BasePageState {
+  Widget _buildCountryRestrictionView(HomeState homestate, bool visible) {
+    final countries = homestate.getAllowedCountriesModel?.data?.countries ?? [];
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _showSaveCountryButton,
+          builder: (context, showSave, _) {
+            return TrydosAppBar(
+              appBarParams: AppBarParams(
+                hasLeading: false,
+                scrolledUnderElevation: 0,
+                backgroundColor: const Color(0x000000),
+                action: _buildCountryAppBarActions(showSave, visible),
+                backIconColor: Colors.black,
+                withShadow: false,
+              ),
+            );
+          },
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInfoBanner(),
+              const SizedBox(height: 20),
+              _buildAvailableCountriesSection(countries),
+              const SizedBox(height: 20),
+              _buildComingSoonSection(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildCountryAppBarActions(bool showSave, bool visible) {
+    final titleStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      color: const Color(0xff1D1D1D),
+      letterSpacing: 0.18,
+      fontSize: 14,
+      height: 1.3,
+    );
+    final saveStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      color: const Color(0xff402CDD),
+      letterSpacing: 0.18,
+      fontSize: 14,
+      height: 1.3,
+    );
+    return [
+      const Spacer(),
+      showSave ? SizedBox(width: 55.w) : const SizedBox.shrink(),
+      Text(LocaleKeys.profile_country.tr(), style: titleStyle),
+      const Spacer(),
+      showSave
+          ? InkWell(
+              key: TestVariables.kTestMode
+                  ? const Key(WidgetsKeys.chooseCountryButtonKey)
+                  : null,
+              onTap: () => _handleCountrySave(visible),
+              child: Container(
+                alignment: Alignment.center,
+                width: 40,
+                height: 20,
+                child: Text(LocaleKeys.save.tr(), style: saveStyle),
+              ),
+            )
+          : const SizedBox.shrink(),
+      showSave
+          ? SizedBox(width: 15.w)
+          : SizedBox(width: LanguageService.languageCode == "ar" ? 40.w : 0),
+    ];
+  }
+
+  Widget _buildInfoBanner() {
+    return Container(
+      height: 50,
+      width: 1.sw,
+      decoration: BoxDecoration(
+        color: const Color(0xffF8F8F8),
+        border: Border.all(color: const Color(0xffD3D3D3)),
+      ),
+      child: Row(
+        children: [
+          SizedBox(width: 10.w),
+          SvgPicture.asset(
+            AppAssets.infoSvg,
+            // ignore: deprecated_member_use
+            color: const Color(0xff402CDD),
+            width: 25.w,
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Text(
+              LocaleKeys.we_operate_in_the_countries.tr(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: const Color(0xff8D8D8D),
+                letterSpacing: 0.18,
+                fontSize: 10.sp,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvailableCountriesSection(List<dynamic> countries) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 15,
+          width: 170,
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SvgPicture.asset(
+                AppAssets.availableCountrySvg,
+                height: 15,
+                // ignore: deprecated_member_use
+                color: const Color(0xff707070),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                LocaleKeys.available_country.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xff404040),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(width: 12),
+              SvgPicture.asset(
+                AppAssets.chatWithQuestionSvg,
+                // ignore: deprecated_member_use
+                color: const Color(0xffD3D3D3),
+                height: 15,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          width: 1.sw,
+          height: 245,
+          child: ValueListenableBuilder<int>(
+            valueListenable: _selectedCountryIndex,
+            builder: (context, selectedIndex, _) {
+              return ListView.separated(
+                itemBuilder: (context, index) {
+                  final dynamic country = countries[index];
+                  final code = (country.iso ?? '').toString();
+                  final name = (country.name ?? '').toString();
+                  return _countryTile(
+                    code: code,
+                    country: name,
+                    index: index,
+                    isAvailable: true,
+                    isSelected: index == selectedIndex,
+                    key: TestVariables.kTestMode
+                        ? Key('${WidgetsKeys.countryItemKeyKey}-$index')
+                        : null,
+                  );
+                },
+                separatorBuilder: (context, _) => const SizedBox(height: 5),
+                itemCount: countries.length,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildComingSoonSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 15,
+          width: 170,
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SvgPicture.asset(
+                AppAssets.availableCountrySvg,
+                height: 15,
+                // ignore: deprecated_member_use
+                color: const Color(0xff707070),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                LocaleKeys.coming_soon_country.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xff404040),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(width: 12),
+              SvgPicture.asset(
+                AppAssets.chatWithQuestionSvg,
+                // ignore: deprecated_member_use
+                color: const Color(0xffD3D3D3),
+                height: 15,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          width: 1.sw,
+          height: 400.h,
+          child: ListView.separated(
+            itemBuilder: (context, index) => _countryTile(
+              code: "TR",
+              country: "Turkiy",
+              index: index,
+              isAvailable: false,
+              isSelected: false,
+            ),
+            separatorBuilder: (context, _) => const SizedBox(height: 5),
+            itemCount: 5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _countryTile({
+    required String code,
+    required String country,
+    required int index,
+    required bool isAvailable,
+    required bool isSelected,
+    Key? key,
+  }) {
+    return InkWell(
+      key: key,
+      onTap: isAvailable ? () => _onCountrySelected(index, code) : null,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 10.w),
+        decoration: BoxDecoration(
+          color: isAvailable && isSelected
+              ? const Color(0xffF8F8F8)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(15.r),
+          border: Border.all(
+            color: isAvailable && isSelected
+                ? const Color(0xff402CDD)
+                : const Color(0xffD3D3D3),
+          ),
+        ),
+        width: 1.sw,
+        height: 53,
+        child: Row(
+          children: [
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 25,
+              height: 25,
+              child: code.toUpperCase() == "SY"
+                  ? SvgPicture.asset(AppAssets.syriaFlagSvg, width: 18.w)
+                  : CountryFlag.fromCountryCode(
+                      code.isEmpty ? 'US' : code,
+                      height: 25,
+                      width: 25,
+                      borderRadius: 4.r,
+                    ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                country,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 14,
+                  height: 1.3,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onCountrySelected(int index, String iso) {
+    _selectedCountryIndex.value = index;
+    if (!_showSaveCountryButton.value) {
+      _showSaveCountryButton.value = true;
+    }
+    if (iso.isNotEmpty) {
+      _prefsRepository.setUserChoosedCountryIso(iso.toLowerCase());
+    }
+  }
+
+  void _handleCountrySave(bool visible) {
+    if (_prefsRepository.userChoosedCountryIso != null) {
+      visibleCountries.value = !visible;
+      _prefsRepository.setUserCountryIsAvailable(1);
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName:
+            AnalyticsButtonsEventNameConst.chooseCountryAndContinueButton,
+        eventName: AnalyticsEventsConst.CLICK,
+        extraParams: {
+          'button_name':
+              AnalyticsButtonsEventNameConst.chooseCountryAndContinueButton,
+        },
+      );
+    } else {
+      showMessage(
+        LocaleKeys.you_have_to_choose_a_country.tr(),
+        backGroundColor: Colors.black,
+        foreGroundColor: Colors.white,
+      );
+    }
   }
 }
 
 navigationToProductDetailsPage(String productId) {}
 
 navigationToSinglePageChat(Chat chat) {
-  GetIt.I<ChatBloc>()
-      .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id));
-  AppBloc appBloc =
-      BlocProvider.of<AppBloc>(navigatorKey.currentState!.context);
+  GetIt.I<ChatBloc>().add(
+    ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id),
+  );
+  AppBloc appBloc = BlocProvider.of<AppBloc>(
+    navigatorKey.currentState!.context,
+  );
   appBloc.add(ChangeBasePage(2));
   User? receiver = chat.channelMembers!
       .firstWhere(
-          (element) => element.userId != GetIt.I<PrefsRepository>().myChatId)
+        (element) => element.userId != GetIt.I<PrefsRepository>().myChatId,
+      )
       .user;
   String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
-          chat.channelName ?? 'No Channel Name'),
+        chat.channelName ?? 'No Channel Name',
+      ),
       fullReceiverName = chat.channelName ?? 'No Channel Name';
   ChannelMember me = chat.channelMembers!.firstWhere(
-      (element) => element.userId == GetIt.I<PrefsRepository>().myChatId);
+    (element) => element.userId == GetIt.I<PrefsRepository>().myChatId,
+  );
   User? sender = me.user;
   String senderName = sender?.name == null
       ? 'UK'
       : HelperFunctions.getTheFirstTwoLettersOfName(sender!.name!);
   //WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  navigatorKey.currentState!.context.go(GRouter
-          .config.applicationRoutes.kSinglePageChatPagePath +
-      '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}');
+  navigatorKey.currentState!.context.go(
+    GRouter.config.applicationRoutes.kSinglePageChatPagePath +
+        '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}',
+  );
   //});
 }
 
 navigationToOrderPageForChat(
-    String orderGroupId, String orderId, String? parentOrderId) {
-  Navigator.of(navigatorKey.currentState!.context).push(PageRouteBuilder(
+  String orderGroupId,
+  String orderId,
+  String? parentOrderId,
+) {
+  Navigator.of(navigatorKey.currentState!.context).push(
+    PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
-          fromNotification: true,
-          groupId: orderGroupId,
-          parentOrderIdFormNotification: parentOrderId,
-          orderIdFormNotification: orderId)));
+        fromNotification: true,
+        groupId: orderGroupId,
+        parentOrderIdFormNotification: parentOrderId,
+        orderIdFormNotification: orderId,
+      ),
+    ),
+  );
 }
 
 void DealWithMessagesStoredFromBackground() async {
@@ -257,8 +612,9 @@ void DealWithChatsToDeleteFromBackground() async {
   if ((ids = GetIt.I<PrefsRepository>().getTheChatsIdsToRemoveFromBackground) !=
       null) {
     for (int i = 0; i < (ids?.length ?? 0); i++) {
-      GetIt.I<ChatBloc>()
-          .add(DeleteChatFromNotificationEvent(channelId: ids![i]));
+      GetIt.I<ChatBloc>().add(
+        DeleteChatFromNotificationEvent(channelId: ids![i]),
+      );
     }
     GetIt.I<PrefsRepository>().removeChatsFromBackground();
   }
@@ -270,8 +626,9 @@ void DealWithChatsToEditStoredFromBackground() async {
   if ((chats = GetIt.I<PrefsRepository>().getTheChatsToEditFromBackground) !=
       null) {
     for (int i = 0; i < (chats?.length ?? 0); i++) {
-      GetIt.I<ChatBloc>()
-          .add(UpdateChannelObjectFromNotificationEvent(chat: chats![i]));
+      GetIt.I<ChatBloc>().add(
+        UpdateChannelObjectFromNotificationEvent(chat: chats![i]),
+      );
     }
     GetIt.I<PrefsRepository>().removeChatToEditFromBackground();
   }
@@ -285,20 +642,24 @@ void DealWithRemovedMessageStoredFromBackground() async {
           GetIt.I<PrefsRepository>().getTheRemovedMessageFromBackground) !=
       null) {
     for (int i = 0; i < (removedMessages?.length ?? 0); i++) {
-      GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
+      GetIt.I<CallsBloc>().add(
+        DeleteMessageNotificationReceivedInCallsEvent(
           channelId: removedMessages![i]['message']["channel_id"],
           messageId: removedMessages[i]['message']["id"],
-          deleteFromBoth: removedMessages[i]['message']["auth_message_status"]
-                  ["delete_for_all"]
+          deleteFromBoth:
+              removedMessages[i]['message']["auth_message_status"]["delete_for_all"]
               ? 1
               : 0,
-          type: !removedMessages[i]['message']["message_type"]["name"]
+          type:
+              !removedMessages[i]['message']["message_type"]["name"]
                   .toString()
                   .contains('Call')
               ? "message"
               : "call",
           deleteFromId:
-              removedMessages[i]['message']["deleted_by_user_id"] ?? 0));
+              removedMessages[i]['message']["deleted_by_user_id"] ?? 0,
+        ),
+      );
     }
     GetIt.I<PrefsRepository>().removeRemovedMessageFromBackground();
   }
@@ -312,11 +673,14 @@ void DealWithMessageWatchStatusStoredFromBackground() async {
           GetIt.I<PrefsRepository>().getTheMessageWatchStatusFromBackground) !=
       null) {
     for (int i = 0; i < (messagesStatus?.length ?? 0); i++) {
-      GetIt.I<ChatBloc>().add(WatchedMessageFromPusherEvent(
+      GetIt.I<ChatBloc>().add(
+        WatchedMessageFromPusherEvent(
           messagesStatus![i]['channel_id'].toString(),
           messagesStatus[i]['auth_user_id'],
           messagesStatus[i]['last_message_id'],
-          DateTime.parse(messagesStatus[i]['watched_at'])));
+          DateTime.parse(messagesStatus[i]['watched_at']),
+        ),
+      );
     }
     GetIt.I<PrefsRepository>().removeMessageWatchStatusFromBackground();
   }
@@ -330,11 +694,14 @@ void DealWithMessageReceivedStatusStoredFromBackground() async {
           .getTheMessageReceivedStatusFromBackground) !=
       null) {
     for (int i = 0; i < (messagesStatus?.length ?? 0); i++) {
-      GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
+      GetIt.I<ChatBloc>().add(
+        ReceiveMessageFromPusherEvent(
           messagesStatus![i]['channel_id'].toString(),
           messagesStatus[i]['auth_user_id'],
           messagesStatus[i]['last_message_id'],
-          DateTime.parse(messagesStatus[i]['received_at'])));
+          DateTime.parse(messagesStatus[i]['received_at']),
+        ),
+      );
     }
     GetIt.I<PrefsRepository>().removeMessageReceivedStatusFromBackground();
   }
@@ -348,6 +715,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   final ValueNotifier<bool> isShowPanelForVerified = ValueNotifier(false);
   late CallsBloc callsBloc;
   ValueNotifier<bool> visibleCountries = ValueNotifier(false);
+  final ValueNotifier<bool> _showSaveCountryButton = ValueNotifier(false);
+  final ValueNotifier<int> _selectedCountryIndex = ValueNotifier(-1);
   final TextEditingController controller = TextEditingController();
 
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -382,6 +751,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     _logoutTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     FirebasePresence.disconnect();
+    _showSaveCountryButton.dispose();
+    _selectedCountryIndex.dispose();
     super.dispose();
   }
 
@@ -421,7 +792,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       Future.delayed(const Duration(seconds: 1), () {
         //  homeBloc.add(GeColorsAndSizesForSearchEvent());
         if ((prefsRepository.marketToken?.length ?? 0) > 10) {
-//homeBloc.add(GetProductsListInCartEvent());
+          //homeBloc.add(GetProductsListInCartEvent());
           homeBloc.add(const GetCartItemEvent());
 
           homeBloc.add(const GetNotificationTypeProductEvent());
@@ -442,7 +813,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       showUpgradeApp = false;
       debugPrint('version gets successfully');
       debugPrint(
-          'android: ${homeBloc.state.startingSetting?.androidMinVersion}');
+        'android: ${homeBloc.state.startingSetting?.androidMinVersion}',
+      );
       debugPrint('ios: ${homeBloc.state.startingSetting?.iosMinVersion}');
       if (applicationVersion <
               (homeBloc.state.startingSetting!.androidMinVersion!) ||
@@ -459,11 +831,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() async {
     _checkUserTimeoutAndStartTimer();
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Color(0xffFFFFFF),
-      statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Color(0xffFFFFFF),
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     super.didChangeDependencies();
   }
 
@@ -483,10 +857,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           _logoutUser();
         } else {
           _logoutTimer?.cancel();
-          _logoutTimer =
-              Timer(Duration(milliseconds: halfHourMs - elapsed), () {
-            _logoutUser();
-          });
+          _logoutTimer = Timer(
+            Duration(milliseconds: halfHourMs - elapsed),
+            () {
+              _logoutUser();
+            },
+          );
         }
       }
     }
@@ -498,16 +874,19 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     clearCustomCashe();
     prefsRepository.setIsFoundDataCashed(false);
     BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
-    BlocProvider.of<HomeBloc>(context).add(SaveUserInfoFromAuthEvent(
+    BlocProvider.of<HomeBloc>(context).add(
+      SaveUserInfoFromAuthEvent(
         userInfo: user.User(
-      alternativePhone: "",
-      email: "",
-      image: "",
-      isPhoneVerified: 0,
-      lastOtpIdToken: "",
-      name: "",
-      phone: "",
-    )));
+          alternativePhone: "",
+          email: "",
+          image: "",
+          isPhoneVerified: 0,
+          lastOtpIdToken: "",
+          name: "",
+          phone: "",
+        ),
+      ),
+    );
     prefsRepository.setVerifiedPhone(false);
     prefsRepository.setPhoneNumber("");
     prefsRepository.setChatToken("");
@@ -522,44 +901,61 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     prefsRepository.setMyProfilePhoto("");
     String? deviceId = await HelperFunctions.getDeviceId();
 
-    BlocProvider.of<AuthBloc>(context)
-        .add(RegisterGuestEvent(deviceId: deviceId ?? ""));
+    BlocProvider.of<AuthBloc>(
+      context,
+    ).add(RegisterGuestEvent(deviceId: deviceId ?? ""));
     HydratedBloc.storage.clear();
     BlocProvider.of<ChatBloc>(context).add(const ClearChatEvent());
 
-    Future.delayed(
-      const Duration(microseconds: 3000),
-      () {
-        GoRouter.of(context).go("/");
-      },
-    );
+    Future.delayed(const Duration(microseconds: 3000), () {
+      GoRouter.of(context).go("/");
+    });
   }
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       print(
-          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////");
+        "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////",
+      );
 
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
-          event)) {
+        event,
+      )) {
         print(
-            "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////");
+          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQcheckIfTheNotifiatedToCha",
+        );
 
-        LocalNotificationService()
-            .showNotificationWithPayload(message: event, fromBackGround: 0);
+        LocalNotificationService().showNotificationWithPayload(
+          message: event,
+          fromBackGround: 0,
+        );
         return;
       }
-      Map<String, dynamic> remoteMessage =
-          convert.jsonDecode(event.data['data']);
-
+      Map<String, dynamic> remoteMessage = convert.jsonDecode(
+        event.data['data'],
+      );
+      print(
+        "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ///....../${remoteMessage}",
+      );
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
         GetIt.I<PrefsRepository>().saveRequestsData(
-            null, null, null, null, null, null, null,
-            error: 'RefuseCall for message ForeGround ${data['message_id']}');
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          error: 'RefuseCall for message ForeGround ${data['message_id']}',
+        );
         if (data['duration_in_seconds']!.toString().contains("-1")) {
-          chatBloc.add(ReceiveMissCallEvent(true,
-              channelId: data['channel_id'].toString()));
+          chatBloc.add(
+            ReceiveMissCallEvent(
+              true,
+              channelId: data['channel_id'].toString(),
+            ),
+          );
           GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
         }
         if ((data['message_id'].toString() !=
@@ -576,65 +972,111 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         }
       } else if (remoteMessage['type'] == 'VideoCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
-            null, null, null, null, null, null, null,
-            error: 'VideoCallEvent ForeGround Message');
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          error: 'VideoCallEvent ForeGround Message',
+        );
         Message? message;
         try {
           message = Message.fromJson(remoteMessage['message']);
-          GetIt.I<CallsBloc>()
-              .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
+          GetIt.I<CallsBloc>().add(
+            UpdateCurrentActiveCallIdEvent(id: message.id.toString()),
+          );
         } catch (e) {
           GetIt.I<PrefsRepository>().saveRequestsData(
-              null, null, null, null, null, null, null,
-              error: 'VideoCallEvent Error ${e.toString()}');
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            error: 'VideoCallEvent Error ${e.toString()}',
+          );
         }
         chatBloc.add(AddChannelToChannels(message: message!));
-        chatBloc.add(ReceiveMessageEvent(
-            message: message, increaseUnReadMessages: false));
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AgoraInAppWebView(
+        chatBloc.add(
+          ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
+        );
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AgoraInAppWebView(
               messageId: message!.id.toString(),
               action: 'receive',
               type: 'video',
               channelId: message.channelId.toString(),
               auth_token: prefsRepository.chatToken!,
-              uId: prefsRepository.myChatId!.toString()),
-        ));
+              uId: prefsRepository.myChatId!.toString(),
+            ),
+          ),
+        );
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
         print(remoteMessage);
         GetIt.I<PrefsRepository>().saveRequestsData(
-            null, null, null, null, null, null, null,
-            error: 'VoiceCallEvent ForeGround Message');
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          error: 'VoiceCallEvent ForeGround Message',
+        );
         Message? message;
         try {
           message = Message.fromJson(remoteMessage['message']);
 
-          GetIt.I<CallsBloc>()
-              .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
+          GetIt.I<CallsBloc>().add(
+            UpdateCurrentActiveCallIdEvent(id: message.id.toString()),
+          );
         } catch (e) {
           GetIt.I<PrefsRepository>().saveRequestsData(
-              null, null, null, null, null, null, null,
-              error: 'VoiceCallEvent Error ${e.toString()}');
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            error: 'VoiceCallEvent Error ${e.toString()}',
+          );
         }
         chatBloc.add(AddChannelToChannels(message: message!));
-        chatBloc.add(ReceiveMessageEvent(
-            message: message, increaseUnReadMessages: false));
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AgoraInAppWebView(
+        chatBloc.add(
+          ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
+        );
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AgoraInAppWebView(
               messageId: message!.id.toString(),
               action: 'receive',
               type: 'voice',
               channelId: message.channelId.toString(),
               auth_token: prefsRepository.chatToken!,
-              uId: prefsRepository.myChatId!.toString()),
-        ));
+              uId: prefsRepository.myChatId!.toString(),
+            ),
+          ),
+        );
       } else if (remoteMessage['type'] == 'AnswerCallEvent') {
         Map<String, dynamic> data = remoteMessage;
         GetIt.I<PrefsRepository>().saveRequestsData(
-            null, null, null, null, null, null, null,
-            error: 'AnswerCallEvent Message');
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          error: 'AnswerCallEvent Message',
+        );
         debugPrint(
-            'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))');
+          'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))',
+        );
         if (data['message_id'].toString() !=
                 GetIt.I<CallsBloc>().state.currentActiveCallId &&
             GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
@@ -649,60 +1091,82 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         callsBloc.add(UserInteractWithCall(rejectIt: false));
       } else if (remoteMessage['type'] == 'ChannelDeletedEvent') {
         Map<String, dynamic> data = remoteMessage;
-        GetIt.I<ChatBloc>()
-            .add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
+        GetIt.I<ChatBloc>().add(
+          DeleteChatFromNotificationEvent(channelId: data['channelId']),
+        );
       } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data = remoteMessage['message'];
-        GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
+        GetIt.I<CallsBloc>().add(
+          DeleteMessageNotificationReceivedInCallsEvent(
             channelId: data["channel_id"],
             messageId: data["id"],
-            deleteFromBoth:
-                data["auth_message_status"]["delete_for_all"] ? 1 : 0,
+            deleteFromBoth: data["auth_message_status"]["delete_for_all"]
+                ? 1
+                : 0,
             type: !data["message_type"]["name"].toString().contains('Call')
                 ? "message"
                 : "call",
-            deleteFromId: data["deleted_by_user_id"] ?? 0));
+            deleteFromId: data["deleted_by_user_id"] ?? 0,
+          ),
+        );
       } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
         Map<String, dynamic> data = remoteMessage;
-        GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(
-            chat: Chat.fromJson(data['channel'])));
+        GetIt.I<ChatBloc>().add(
+          UpdateChannelObjectFromNotificationEvent(
+            chat: Chat.fromJson(data['channel']),
+          ),
+        );
       } else if (remoteMessage['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data = remoteMessage;
-        chatBloc.add(WatchedMessageFromPusherEvent(
-          data['channel_id'].toString(),
-          data['auth_user_id'],
-          data['last_message_id'],
-          DateTime.parse(data['watched_at']),
-        ));
-      } else if (remoteMessage['type'] == 'ChannelReceivedEvent') {
-        Map<String, dynamic> data = remoteMessage;
-        chatBloc.add(ReceiveMessageFromPusherEvent(
+        chatBloc.add(
+          WatchedMessageFromPusherEvent(
             data['channel_id'].toString(),
             data['auth_user_id'],
             data['last_message_id'],
-            DateTime.parse(data['received_at'])));
+            DateTime.parse(data['watched_at']),
+          ),
+        );
+      } else if (remoteMessage['type'] == 'ChannelReceivedEvent') {
+        Map<String, dynamic> data = remoteMessage;
+        chatBloc.add(
+          ReceiveMessageFromPusherEvent(
+            data['channel_id'].toString(),
+            data['auth_user_id'],
+            data['last_message_id'],
+            DateTime.parse(data['received_at']),
+          ),
+        );
       } else {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
         print(
-            "######222222222222222222222222222222222222222#######${event.data['data']}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}");
+          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(0, 100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
+        );
+        print(
+          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
+        );
         chatBloc.add(AddChannelToChannels(message: message));
-        chatBloc.add(ReceiveMessageEvent(
-            message: message, prevMessageId: prevMessageId));
+        chatBloc.add(
+          ReceiveMessageEvent(message: message, prevMessageId: prevMessageId),
+        );
         if (message.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
           chatBloc.add(
-              NotifyThatIReceivedMessageEvent(channelId: message.channelId!));
+            NotifyThatIReceivedMessageEvent(channelId: message.channelId!),
+          );
         }
         if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId !=
                 message.channelId &&
             message.channel!.channelMembers!
                     .firstWhere(
-                        (element) => element.userId == prefsRepository.myChatId)
+                      (element) => element.userId == prefsRepository.myChatId,
+                    )
                     .mute !=
                 1 &&
             message.senderUserId != prefsRepository.myChatId) {
-          LocalNotificationService()
-              .showNotificationWithPayload(message: event, fromBackGround: 0);
+          LocalNotificationService().showNotificationWithPayload(
+            message: event,
+            fromBackGround: 0,
+          );
         }
       }
     });
@@ -727,322 +1191,208 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
       child: BlocListener<ChatBloc, ChatState>(
         listener: (context, chatState) {
-          FirebasePresence.listenToAllChats(
-              [...chatState.chats, ...chatState.pinnedChats]);
+          FirebasePresence.listenToAllChats([
+            ...chatState.chats,
+            ...chatState.pinnedChats,
+          ]);
         },
         listenWhen: (p, c) =>
             p.getChatsStatus != c.getChatsStatus &&
             c.getChatsStatus == GetChatsStatus.success,
         child: BlocListener<HomeBloc, HomeState>(
-            listenWhen: (p, c) =>
-                p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
-                c.getStartingSettingsStatus ==
-                    GetStartingSettingsStatus.success,
-            listener: (context, state) {
-              debugPrint('version gets successfully');
-              debugPrint(
-                  'android: ${state.startingSetting?.androidMinVersion}');
-              debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
-              if (applicationVersion <
-                      state.startingSetting!.androidMinVersion! ||
-                  applicationVersion < state.startingSetting!.iosMinVersion!) {
-                HelperFunctions.showVersionDialog(context);
-              }
-            },
-            child:
-                // ignore: deprecated_member_use
-                WillPopScope(
-                    onWillPop: () async {
-                      // إذا كانت صفحة البحث مفتوحة (currentIndex == 4)
-                      //  print(
-                      //     "FFFFFFFFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDDDDD${appBloc.state.currentIndex}");
-                      if (appBloc.state.currentIndex != 0) {
-                        // إذا كان الكيبورد مفتوح، أغلق الكيبورد فقط
-                        if (MediaQuery.of(context).viewInsets.bottom > 0) {
-                          FocusScope.of(context).unfocus();
-                          return false;
-                        }
+          listenWhen: (p, c) =>
+              p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
+              c.getStartingSettingsStatus == GetStartingSettingsStatus.success,
+          listener: (context, state) {
+            debugPrint('version gets successfully');
+            debugPrint('android: ${state.startingSetting?.androidMinVersion}');
+            debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
+            if (applicationVersion <
+                    state.startingSetting!.androidMinVersion! ||
+                applicationVersion < state.startingSetting!.iosMinVersion!) {
+              HelperFunctions.showVersionDialog(context);
+            }
+          },
+          child:
+              // ignore: deprecated_member_use
+              WillPopScope(
+                onWillPop: () async {
+                  // إذا كانت صفحة البحث مفتوحة (currentIndex == 4)
+                  //  print(
+                  //     "FFFFFFFFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDDDDD${appBloc.state.currentIndex}");
+                  if (appBloc.state.currentIndex != 0) {
+                    // إذا كان الكيبورد مفتوح، أغلق الكيبورد فقط
+                    if (MediaQuery.of(context).viewInsets.bottom > 0) {
+                      FocusScope.of(context).unfocus();
+                      return false;
+                    }
 
-                        // نفذ منطق البحث
-                        controller.clear();
-                        appBloc.add(ChangeBasePage(0));
-                        GetIt.I<BoutiqueBloc>()
-                            .add(ResetAllSelectedAppliedFilterEvent());
-                        appBloc.add(HideBottomNavigationBar(false));
-                        return false;
+                    // نفذ منطق البحث
+                    controller.clear();
+                    appBloc.add(ChangeBasePage(0));
+                    GetIt.I<BoutiqueBloc>().add(
+                      ResetAllSelectedAppliedFilterEvent(),
+                    );
+                    appBloc.add(HideBottomNavigationBar(false));
+                    return false;
+                  }
+
+                  // للصفحات الأخرى، اسمح بالخروج العادي
+                  return true;
+                },
+                child: Scaffold(
+                  backgroundColor: colorScheme.surface,
+                  bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                    buildWhen: (p, c) =>
+                        p.showBars != c.showBars ||
+                        p.hideBottomNavigationBar != c.hideBottomNavigationBar,
+                    builder: (context, state) {
+                      if (state.showBars == true) {
+                        return state.hideBottomNavigationBar
+                            ? const SizedBox.shrink()
+                            : AppBottomNavBar(
+                                isShowPanelForVerified: isShowPanelForVerified,
+                              );
+                      } else {
+                        return const SizedBox.shrink();
                       }
-
-                      // للصفحات الأخرى، اسمح بالخروج العادي
-                      return true;
                     },
-                    child: Scaffold(
-                        backgroundColor: colorScheme.surface,
-                        bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                            buildWhen: (p, c) =>
-                                p.showBars != c.showBars ||
-                                p.hideBottomNavigationBar !=
-                                    c.hideBottomNavigationBar,
-                            builder: (context, state) {
-                              if (state.showBars == true) {
-                                return state.hideBottomNavigationBar
-                                    ? const SizedBox.shrink()
-                                    : AppBottomNavBar(
-                                        isShowPanelForVerified:
-                                            isShowPanelForVerified);
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
-                        body: BlocBuilder<HomeBloc, HomeState>(
-                            buildWhen: (p, c) =>
-                                p.getAllowedCountriesModel !=
-                                    c.getAllowedCountriesModel ||
-                                p.getAllowedCountriesStatus !=
-                                    c.getAllowedCountriesStatus,
-                            builder: (context, homestate) {
-                              return BlocBuilder<AuthBloc, AuthState>(
-                                  buildWhen: (p, c) =>
-                                      p.getCustomerCountryStatus !=
-                                      c.getCustomerCountryStatus,
-                                  builder: (context, authstate) {
-                                    if ((homestate.getAllowedCountriesModel
-                                                ?.data?.countries?.length ??
-                                            0) ==
-                                        0) {
-                                      if (homestate.getAllowedCountriesStatus ==
-                                          GetAllowedCountriesStatus.failure) {
-                                        return Center(
-                                          child: Container(
-                                            width: 200,
-                                            height: 200,
-                                            child: TryAgainWidget(tryAgain: () {
-                                              homeBloc.add(
-                                                  GetAllowedCountriesEvent());
-                                              GetIt.I<StoryBloc>().add(
-                                                  const GetStoryEvent(
-                                                      withPaginition: false));
-                                              GetIt.I<AuthBloc>()
-                                                  .add(GetUserCountryEvent());
-                                              Future.delayed(
-                                                  const Duration(seconds: 3),
-                                                  () => context.go("/"));
-                                            }),
-                                          ),
-                                        );
-                                      }
-                                      return Center(
-                                        child: TrydosLoader(),
+                  ),
+                  body: BlocBuilder<HomeBloc, HomeState>(
+                    buildWhen: (p, c) =>
+                        p.getAllowedCountriesModel !=
+                            c.getAllowedCountriesModel ||
+                        p.getAllowedCountriesStatus !=
+                            c.getAllowedCountriesStatus,
+                    builder: (context, homestate) {
+                      return BlocBuilder<AuthBloc, AuthState>(
+                        buildWhen: (p, c) =>
+                            p.getCustomerCountryStatus !=
+                            c.getCustomerCountryStatus,
+                        builder: (context, authstate) {
+                          if ((homestate
+                                      .getAllowedCountriesModel
+                                      ?.data
+                                      ?.countries
+                                      ?.length ??
+                                  0) ==
+                              0) {
+                            if (homestate.getAllowedCountriesStatus ==
+                                GetAllowedCountriesStatus.failure) {
+                              return Center(
+                                child: Container(
+                                  width: 200,
+                                  height: 200,
+                                  child: TryAgainWidget(
+                                    tryAgain: () {
+                                      homeBloc.add(GetAllowedCountriesEvent());
+                                      GetIt.I<StoryBloc>().add(
+                                        const GetStoryEvent(
+                                          withPaginition: false,
+                                        ),
                                       );
-                                    }
-                                    visibleCountries.value = (homestate
-                                            .getAllowedCountriesModel!
-                                            .data!
-                                            .countries!
-                                            .any((element) {
-                                          return element.iso ==
-                                              (_prefsRepository.countryIso ??
-                                                  "");
-                                        }) ||
-                                        _prefsRepository
-                                                .userCountryIsAvailable ==
-                                            1);
-                                    return ValueListenableBuilder<bool>(
-                                        valueListenable: visibleCountries,
-                                        builder: (context, visible, _) {
-                                          if (visible &&
-                                              !requestMainCategoriesDone) {
-                                            requestMainCategoriesDone = true;
-                                            // homeBloc.add(GetHomeBoutiqesEvent(
-                                            //     getWithPrefetchForBoutiques: true,
-                                            //     categorySlug: "Empty",
-                                            //     offset: "1",
-                                            //     context: context,
-                                            //     getWithPagination: false));
-                                            if (!(prefsRepository
-                                                    .isFoundDataCashed ??
-                                                false)) {
-                                              categoryBloc.add(
-                                                  GetMainCategoriesEvent(
-                                                      context: context));
-                                              GetIt.I<BoutiqueBloc>().add(
-                                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                                      categorySlugs: [],
-                                                      cashedOrginalBoutique:
-                                                          true,
-                                                      boutiqueSlug:
-                                                          "*featured*"));
-                                              GetIt.I<BoutiqueBloc>().add(
-                                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                                      categorySlugs: [],
-                                                      cashedOrginalBoutique:
-                                                          true,
-                                                      boutiqueSlug:
-                                                          "*flashDeal*"));
-                                              GetIt.I<BoutiqueBloc>().add(
-                                                  const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                                      categorySlugs: [],
-                                                      cashedOrginalBoutique:
-                                                          true,
-                                                      boutiqueSlug:
-                                                          "*recommended*"));
-                                            }
+                                      GetIt.I<AuthBloc>().add(
+                                        GetUserCountryEvent(),
+                                      );
+                                      Future.delayed(
+                                        const Duration(seconds: 3),
+                                        () => context.go("/"),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            }
+                            return Center(child: TrydosLoader());
+                          }
+                          visibleCountries.value =
+                              (homestate
+                                  .getAllowedCountriesModel!
+                                  .data!
+                                  .countries!
+                                  .any((element) {
+                                    return element.iso ==
+                                        (_prefsRepository.countryIso ?? "");
+                                  }) ||
+                              _prefsRepository.userCountryIsAvailable == 1);
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: visibleCountries,
+                            builder: (context, visible, _) {
+                              if (visible && !requestMainCategoriesDone) {
+                                requestMainCategoriesDone = true;
+                                // homeBloc.add(GetHomeBoutiqesEvent(
+                                //     getWithPrefetchForBoutiques: true,
+                                //     categorySlug: "Empty",
+                                //     offset: "1",
+                                //     context: context,
+                                //     getWithPagination: false));
+                                if (!(prefsRepository.isFoundDataCashed ??
+                                    false)) {
+                                  categoryBloc.add(
+                                    GetMainCategoriesEvent(context: context),
+                                  );
+                                  GetIt.I<BoutiqueBloc>().add(
+                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                      categorySlugs: [],
+                                      cashedOrginalBoutique: true,
+                                      boutiqueSlug: "*featured*",
+                                    ),
+                                  );
+                                  GetIt.I<BoutiqueBloc>().add(
+                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                      categorySlugs: [],
+                                      cashedOrginalBoutique: true,
+                                      boutiqueSlug: "*flashDeal*",
+                                    ),
+                                  );
+                                  GetIt.I<BoutiqueBloc>().add(
+                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                      categorySlugs: [],
+                                      cashedOrginalBoutique: true,
+                                      boutiqueSlug: "*recommended*",
+                                    ),
+                                  );
+                                }
 
-                                            /* if (prefsRepository.marketToken != null) {
+                                /* if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());
                                       homeBloc.add(GetCartItemEvent());
                                       homeBloc
                                           .add(GetProductsListInCartEvent());
                                     }*/
-                                          }
+                              }
 
-                                          visible
-                                              ? appBloc.add(
-                                                  HideBottomNavigationBar(
-                                                      false))
-                                              : appBloc.add(
-                                                  HideBottomNavigationBar(
-                                                      true));
-                                          return !visible
-                                              ? Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 1.sh / 3),
-                                                  child: Directionality(
-                                                    textDirection:
-                                                        TextDirection.ltr,
-                                                    child: Column(
-                                                      children: [
-                                                        MyTextWidget(
-                                                          LocaleKeys
-                                                              .country_not_available
-                                                              .tr(),
-                                                          style: const TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        MyTextWidget(
-                                                          LocaleKeys
-                                                              .choose_a_country
-                                                              .tr(),
-                                                          style: const TextStyle(
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        Center(
-                                                            child: SizedBox(
-                                                          width: 1.sw,
-                                                          child:
-                                                              AvailableCountriesList(
-                                                            fromHomepage: false,
-                                                            key: TestVariables
-                                                                    .kTestMode
-                                                                ? const Key(
-                                                                    WidgetsKeys
-                                                                        .countryDropDownKey)
-                                                                : null,
-                                                          ),
-                                                        )),
-                                                        const SizedBox(
-                                                            height: 80),
-                                                        ElevatedButton(
-                                                          key: TestVariables
-                                                                  .kTestMode
-                                                              ? const Key(
-                                                                  WidgetsKeys
-                                                                      .chooseCountryButtonKey)
-                                                              : null,
-                                                          onPressed: () {
-                                                            if (_prefsRepository
-                                                                    .userChoosedCountryIso !=
-                                                                null) {
-                                                              visibleCountries
-                                                                      .value =
-                                                                  !visible;
-                                                              _prefsRepository
-                                                                  .setUserCountryIsAvailable(
-                                                                      1);
-                                                              ///////////////////
-
-                                                              FirebaseAnalyticsService
-                                                                  .logEventForSession(
-                                                                executedEventName:
-                                                                    AnalyticsButtonsEventNameConst
-                                                                        .chooseCountryAndContinueButton,
-                                                                eventName:
-                                                                    AnalyticsEventsConst
-                                                                        .CLICK,
-                                                                extraParams: {
-                                                                  'button_name':
-                                                                      AnalyticsButtonsEventNameConst
-                                                                          .chooseCountryAndContinueButton,
-                                                                },
-                                                              );
-                                                            } else {
-                                                              showMessage(
-                                                                  LocaleKeys
-                                                                      .you_have_to_choose_a_country
-                                                                      .tr(),
-                                                                  backGroundColor:
-                                                                      Colors
-                                                                          .black,
-                                                                  foreGroundColor:
-                                                                      Colors
-                                                                          .white);
-                                                            }
-                                                          },
-                                                          child: MyTextWidget(
-                                                              LocaleKeys
-                                                                  .ok_and_continue
-                                                                  .tr()),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                )
-                                              : Stack(
-                                                  alignment:
-                                                      Alignment.topCenter,
-                                                  children: [
-                                                    BlocBuilder<AppBloc,
-                                                        AppState>(
-                                                      buildWhen: (oldState,
-                                                              newState) =>
-                                                          oldState
-                                                              .currentIndex !=
-                                                          newState.currentIndex,
-                                                      builder: (_, state) {
-                                                        return pages![
-                                                            state.currentIndex];
-                                                      },
-                                                    ),
-                                                    BlocBuilder<AppBloc,
-                                                            AppState>(
-                                                        buildWhen: (p, c) =>
-                                                            p.showBars !=
-                                                                c.showBars ||
-                                                            p.hideBottomNavigationBar !=
-                                                                c
-                                                                    .hideBottomNavigationBar ||
-                                                            p.currentIndex !=
-                                                                c.currentIndex,
-                                                        builder:
-                                                            (context, state) {
-                                                          if (state.hideBottomNavigationBar ==
-                                                                  true &&
-                                                              state.currentIndex ==
-                                                                  0) {
-                                                            return const SizedBox
-                                                                .shrink(); /*TrydosAppBar(
+                              visible
+                                  ? appBloc.add(HideBottomNavigationBar(false))
+                                  : appBloc.add(HideBottomNavigationBar(true));
+                              return !visible
+                                  ? _buildCountryRestrictionView(
+                                      homestate,
+                                      visible,
+                                    )
+                                  : Stack(
+                                      alignment: Alignment.topCenter,
+                                      children: [
+                                        BlocBuilder<AppBloc, AppState>(
+                                          buildWhen: (oldState, newState) =>
+                                              oldState.currentIndex !=
+                                              newState.currentIndex,
+                                          builder: (_, state) {
+                                            return pages![state.currentIndex];
+                                          },
+                                        ),
+                                        BlocBuilder<AppBloc, AppState>(
+                                          buildWhen: (p, c) =>
+                                              p.showBars != c.showBars ||
+                                              p.hideBottomNavigationBar !=
+                                                  c.hideBottomNavigationBar ||
+                                              p.currentIndex != c.currentIndex,
+                                          builder: (context, state) {
+                                            if (state.hideBottomNavigationBar ==
+                                                    true &&
+                                                state.currentIndex == 0) {
+                                              return const SizedBox.shrink(); /*TrydosAppBar(
                                                           appBarParams:
                                                               AppBarParams(
                                                                   hasLeading:
@@ -1144,30 +1494,32 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                   withShadow:
                                                                       false),
                                                         );*/
-                                                          } else if (state.showBars ==
-                                                                      true &&
-                                                                  state.currentIndex ==
-                                                                      0 ||
-                                                              state.currentIndex ==
-                                                                  4) {
-                                                            return TabsBar(
-                                                              controller:
-                                                                  controller,
-                                                              buildSearchResult:
-                                                                  buildSearchResult,
-                                                              appearTrendingAndHistory:
-                                                                  appearTrendingAndHistory,
-                                                            );
-                                                          } else {
-                                                            return const SizedBox
-                                                                .shrink();
-                                                          }
-                                                        })
-                                                  ],
-                                                );
-                                        });
-                                  });
-                            })))),
+                                            } else if (state.showBars == true &&
+                                                    state.currentIndex == 0 ||
+                                                state.currentIndex == 4) {
+                                              return TabsBar(
+                                                controller: controller,
+                                                buildSearchResult:
+                                                    buildSearchResult,
+                                                appearTrendingAndHistory:
+                                                    appearTrendingAndHistory,
+                                              );
+                                            } else {
+                                              return const SizedBox.shrink();
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+        ),
       ),
     );
   }

@@ -46,6 +46,7 @@ import 'package:trydos/features/home/data/models/change_order_address_model.dart
 import 'package:trydos/features/home/data/models/color_size_for_product.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/translate_comment_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
@@ -77,30 +78,35 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   Future<Either<Failure, GeColorsAndSizesForSearchModel>>
-      getColorsAndSizesForSearch() {
+  getColorsAndSizesForSearch() {
     return handlingExceptionRequest(
-        tryCall: dataSource.getColorsAndSizesForSearch);
+      tryCall: dataSource.getColorsAndSizesForSearch,
+    );
   }
 
   @override
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getMainCategories(params));
+      tryCall: () => dataSource.getMainCategories(params),
+    );
   }
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
-      updateLikeSocialSharedProducts(Map<String, dynamic> params) {
+  updateLikeSocialSharedProducts(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateLikeSocialSharedProducts(params));
+      tryCall: () => dataSource.updateLikeSocialSharedProducts(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetProductListingWithFiltersModel>>
-      getRecommendedProducts(Map<String, dynamic> params) {
+  getRecommendedProducts(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getRecommendedProducts(params));
+      tryCall: () => dataSource.getRecommendedProducts(params),
+    );
   }
 
   /* @override
@@ -112,63 +118,78 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, order_rating.GetOrderRatingFromAnalyticsModel>>
-      getOrderRating(Map<String, dynamic> params) {
+  getOrderRating(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getOrderRating(params));
+      tryCall: () => dataSource.getOrderRating(params),
+    );
   }
 
   @override
   Future<Either<Failure, CreateFqaCommentsModel>> createOrderCommentRating(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.createOrderCommentRating(params));
+      tryCall: () => dataSource.createOrderCommentRating(params),
+    );
   }
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> deleteOrderCommentRating(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.deleteOrderCommentRating(params));
+      tryCall: () => dataSource.deleteOrderCommentRating(params),
+    );
   }
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> updateOrderCommentRating(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateOrderCommentRating(params));
+      tryCall: () => dataSource.updateOrderCommentRating(params),
+    );
   }
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> updateLikeComment(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateLikeComment(params));
+      tryCall: () => dataSource.updateLikeComment(params),
+    );
   }
 
   @override
   Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
-      String iso) {
+    String iso,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getCountryBoundaryByIso(iso));
+      tryCall: () => dataSource.getCountryBoundaryByIso(iso),
+    );
   }
 
   @override
   Future<Either<Failure, GetFqaCommentsModel>> getFqaComments(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getFqaComments(params));
+      tryCall: () => dataSource.getFqaComments(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetBuyersCommentsModel>> getBuyersComments(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getBuyersComments(params));
+      tryCall: () => dataSource.getBuyersComments(params),
+    );
   }
 
   @override
   Future<Either<Failure, ListOfProductsFoundedInCartModel>>
-      getProductsListInCart() {
+  getProductsListInCart() {
     return handlingExceptionRequest(tryCall: dataSource.getProductsListInCart);
   }
 
@@ -180,156 +201,192 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }*/
   @override
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getHomeBoutiques(params));
+      tryCall: () => dataSource.getHomeBoutiques(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      changeCountryLanguageFornotification(Map<String, dynamic> params) {
+  changeCountryLanguageFornotification(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.changeCountryLanguageFornotification(params));
+      tryCall: () => dataSource.changeCountryLanguageFornotification(params),
+    );
   }
 
   @override
   Future<Either<Failure, UpdateProfileModel>> updateProfile(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateProfile(params));
+      tryCall: () => dataSource.updateProfile(params),
+    );
   }
 
   @override
   Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.uploadUserPhoto(params));
+      tryCall: () => dataSource.uploadUserPhoto(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      unSubscribeTopicFornotification(Map<String, dynamic> params) {
+  unSubscribeTopicFornotification(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.unSubscribeTopicFornotification(params));
+      tryCall: () => dataSource.unSubscribeTopicFornotification(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      subscribeTopicFornotification(Map<String, dynamic> params) {
+  subscribeTopicFornotification(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.subscribeTopicFornotification(params));
+      tryCall: () => dataSource.subscribeTopicFornotification(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateWhatsappNotification(Map<String, dynamic> params) {
+  updateWhatsappNotification(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateWhatsappNotification(params));
+      tryCall: () => dataSource.updateWhatsappNotification(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateFirebaseNotification(Map<String, dynamic> params) {
+  updateFirebaseNotification(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateFirebaseNotification(params));
+      tryCall: () => dataSource.updateFirebaseNotification(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateEmailNotification(Map<String, dynamic> params) {
+  updateEmailNotification(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateEmailNotification(params));
+      tryCall: () => dataSource.updateEmailNotification(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateNotificationFrequency(Map<String, dynamic> params) {
+  updateNotificationFrequency(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateNotificationFrequency(params));
+      tryCall: () => dataSource.updateNotificationFrequency(params),
+    );
   }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      getMyFirebaseSettings() {
+  getMyFirebaseSettings() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getMyFirebaseSettings());
+      tryCall: () => dataSource.getMyFirebaseSettings(),
+    );
   }
 
   @override
   Future<Either<Failure, NotificationTypeForProductModel>>
-      getNotificationTypeForProduct() {
+  getNotificationTypeForProduct() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getNotificationTypeForProduct());
+      tryCall: () => dataSource.getNotificationTypeForProduct(),
+    );
   }
 
   @override
   Future<Either<Failure, GetProvincesByIsoModel>> getProvincesByIso() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getProvincesByIso());
+      tryCall: () => dataSource.getProvincesByIso(),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> sendErrorToMobileErrorLog(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.sendErrorToMobileErrorLog(params));
+      tryCall: () => dataSource.sendErrorToMobileErrorLog(params),
+    );
   }
 
   @override
   Future<Either<Failure, PopularSearchTermsModel>> getPopularSearchTerms() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getPopularSearchTerms());
+      tryCall: () => dataSource.getPopularSearchTerms(),
+    );
   }
 
   @override
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>
-      getProductsWithoutFilters(Map<String, dynamic> params) {
+  getProductsWithoutFilters(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getProductsWithoutFilters(params));
+      tryCall: () => dataSource.getProductsWithoutFilters(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetCountViewOfProductModel>>
-      getAndAddCountViewOfProduct(Map<String, dynamic> params) {
+  getAndAddCountViewOfProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getAndAddCountViewOfProduct(params));
+      tryCall: () => dataSource.getAndAddCountViewOfProduct(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> hideItemsInOldCart(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.hideItemsInOldCart(params));
+      tryCall: () => dataSource.hideItemsInOldCart(params),
+    );
   }
 
   Future<Either<Failure, ConvertItemFromCartToOldCartModel>>
-      convertItemInCartToOldCart(Map<String, dynamic> params) {
+  convertItemInCartToOldCart(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.convertItemInCartToOldCart(params));
+      tryCall: () => dataSource.convertItemInCartToOldCart(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> addLikeOFProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.addLikeOFProduct(params));
+      tryCall: () => dataSource.addLikeOFProduct(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetOldCartModel>> getOldCartItems() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getOldCartItems());
+      tryCall: () => dataSource.getOldCartItems(),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> deleteLikeOFProduct(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.deleteLikeOFProduct(params));
+      tryCall: () => dataSource.deleteLikeOFProduct(params),
+    );
+  }
+
+  Future<Either<Failure, TranslateCommentModel>> translateCommentsToAppLan(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.translateCommentsToAppLan(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
-      getProductDetailWithoutSimilarRelatedProducts(String productSlug) {
+  getProductDetailWithoutSimilarRelatedProducts(String productSlug) {
     return handlingExceptionRequest(
       tryCall: () =>
           dataSource.getProductDetailWithoutRelatedProducts(productSlug),
@@ -338,58 +395,73 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, GetStoryForProductModel>> getStories(
-      String productId) {
+    String productId,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getStories(productId));
+      tryCall: () => dataSource.getStories(productId),
+    );
   }
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> addCustomerAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.addCustomerAddress(params));
+      tryCall: () => dataSource.addCustomerAddress(params),
+    );
   }
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> updateCustomerAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateCustomerAddress(params));
+      tryCall: () => dataSource.updateCustomerAddress(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetListOfCustomerAddressesInfoModel>>
-      getCustomerAddresses() {
+  getCustomerAddresses() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getCustomerAddresses());
+      tryCall: () => dataSource.getCustomerAddresses(),
+    );
   }
 
   @override
   Future<Either<Failure, GetAddressByTextModel>> getAddressByText(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getAddressByText(params));
+      tryCall: () => dataSource.getAddressByText(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetAddressByCoordinatesModel>> getAddressByCoordinates(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getAddressByCoordinates(params));
+      tryCall: () => dataSource.getAddressByCoordinates(params),
+    );
   }
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> deleteCustomerAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.deleteCustomerAddress(params));
+      tryCall: () => dataSource.deleteCustomerAddress(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetProductFiltersModel>> getProductFilters(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getProductFilters(params));
+      tryCall: () => dataSource.getProductFilters(params),
+    );
   }
 
   /* @override
@@ -402,57 +474,68 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getCartShippingItems());
+      tryCall: () => dataSource.getCartShippingItems(),
+    );
   }
 
   @override
   Future<Either<Failure, AddItemToCartModel>> addItemToCart(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.addItemToCart(params));
+      tryCall: () => dataSource.addItemToCart(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetProductListingWithFiltersModel>>
-      getProductsWithFilters(Map<String, dynamic> params) {
+  getProductsWithFilters(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getProductsWithFilters(params));
+      tryCall: () => dataSource.getProductsWithFilters(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetProductListingWithFiltersModel>>
-      getFeaturedProducts(Map<String, dynamic> params) {
+  getFeaturedProducts(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getFeaturedProducts(params));
+      tryCall: () => dataSource.getFeaturedProducts(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.removeItemToCart(params));
+      tryCall: () => dataSource.removeItemToCart(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getCurrencyForCountry());
+      tryCall: () => dataSource.getCurrencyForCountry(),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> setCustomerAddressDefault(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.setCustomerAddressDefault(params));
+      tryCall: () => dataSource.setCustomerAddressDefault(params),
+    );
   }
 
   @override
   Future<Either<Failure, UpdateItemInCartModel>> UpdateItemToCart(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateItemInCart(params));
+      tryCall: () => dataSource.updateItemInCart(params),
+    );
   }
 
-/*@override
+  /*@override
   Future<Either<Failure, GetBrandModel>> getBrand() {
     return handlingExceptionRequest(tryCall: () => dataSource.getBrand());
   }
@@ -471,23 +554,28 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getAllowedCountries());
+      tryCall: () => dataSource.getAllowedCountries(),
+    );
   }
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
-      requestForNotificationWhenProductBecameAvailable(
-          Map<String, dynamic> params) {
+  requestForNotificationWhenProductBecameAvailable(
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource
-            .requestForNotificationWhenProductBecameAvailable(params));
+      tryCall: () =>
+          dataSource.requestForNotificationWhenProductBecameAvailable(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(
-      String productSlug) {
+    String productSlug,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getFullProductDetails(productSlug));
+      tryCall: () => dataSource.getFullProductDetails(productSlug),
+    );
   }
 
   /* @override
@@ -498,23 +586,29 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, OrderCommentModel>> addOrderComment(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.addOrderComment(params));
+      tryCall: () => dataSource.addOrderComment(params),
+    );
   }
 
   @override
   Future<Either<Failure, OrderCommentModel>> updateOrderComment(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateOrderComment(params));
+      tryCall: () => dataSource.updateOrderComment(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> storeFcmTokenOfMarket(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.storeFcmTokenOfMarket(params));
+      tryCall: () => dataSource.storeFcmTokenOfMarket(params),
+    );
   }
 
   @override
@@ -543,9 +637,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     required String orderGroupID,
   }) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.getOrdersByOrderGroupID(
-        orderGroupID: orderGroupID,
-      ),
+      tryCall: () =>
+          dataSource.getOrdersByOrderGroupID(orderGroupID: orderGroupID),
     );
   }
 
@@ -554,15 +647,14 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     required String cartGroupID,
   }) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.getOrdersByCartGroupID(
-        cartGroupID: cartGroupID,
-      ),
+      tryCall: () =>
+          dataSource.getOrdersByCartGroupID(cartGroupID: cartGroupID),
     );
   }
 
   @override
   Future<Either<Failure, CheckAvailabilityProductCartModel>>
-      checkAvailabilityProductCart() {
+  checkAvailabilityProductCart() {
     return handlingExceptionRequest(
       tryCall: () => dataSource.checkAvailabilityProductCart(),
     );
@@ -604,7 +696,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, CancelOrderItemModel>> cancelOrderItem(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.cancelOrderItem(params),
     );
@@ -612,7 +705,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, CancelOrderModel>> cancelOrder(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.cancelOrder(params),
     );
@@ -620,7 +714,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, ChangeOrderAddressModel>> changeOrderAddress(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.changeOrderAddress(params),
     );
@@ -628,7 +723,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, ColorSizeForProductModel>>
-      getProductColorSizeSyncAttribute(String id) {
+  getProductColorSizeSyncAttribute(String id) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getProductColorSizeSyncAttribute(id),
     );
@@ -636,83 +731,102 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> changeOrderItemVariant(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.changeOrderItemVariant(params));
+      tryCall: () => dataSource.changeOrderItemVariant(params),
+    );
   }
 
   @override
   Future<Either<Failure, ReturnReasonsModel>> getReturnReasons() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getReturnReasons());
+      tryCall: () => dataSource.getReturnReasons(),
+    );
   }
 
   @override
   Future<Either<Failure, UploadImagesForReturnProductModel>>
-      uploadImagesForReturnProduct(Map<String, dynamic> params) {
+  uploadImagesForReturnProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.uploadImagesForReturnProduct(params));
+      tryCall: () => dataSource.uploadImagesForReturnProduct(params),
+    );
   }
 
   @override
   Future<Either<Failure, StoreReturnRequestProductModel>>
-      storeReturnRequestProduct(Map<String, dynamic> params) {
+  storeReturnRequestProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.storeReturnRequestProduct(params));
+      tryCall: () => dataSource.storeReturnRequestProduct(params),
+    );
   }
 
   @override
   Future<Either<Failure, UpdateReturnRequestModel>> updateReturnRequestProduct(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateReturnRequestProduct(params));
+      tryCall: () => dataSource.updateReturnRequestProduct(params),
+    );
   }
 
   @override
   Future<Either<Failure, ConfirmCancelReturnRequestModel>> cancelReturnRequest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.cancelReturnRequest(params));
+      tryCall: () => dataSource.cancelReturnRequest(params),
+    );
   }
 
   @override
   Future<Either<Failure, CreateReturnReqestModel>> storeReturnRequest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.storeReturnRequest(params));
+      tryCall: () => dataSource.storeReturnRequest(params),
+    );
   }
 
   @override
   Future<Either<Failure, ConfirmCancelReturnRequestModel>>
-      cancelReturnRequestProduct(Map<String, dynamic> params) {
+  cancelReturnRequestProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.cancelReturnRequestProduct(params));
+      tryCall: () => dataSource.cancelReturnRequestProduct(params),
+    );
   }
 
   @override
   Future<Either<Failure, ConfirmCancelReturnRequestModel>> confirmReturnRequest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.confirmReturnRequest(params));
+      tryCall: () => dataSource.confirmReturnRequest(params),
+    );
   }
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> orderReturnRequestsView(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.orderReturnRequestsView(params));
+      tryCall: () => dataSource.orderReturnRequestsView(params),
+    );
   }
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> searchByImageFromGemini(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.searchByImageFromGemini(params));
+      tryCall: () => dataSource.searchByImageFromGemini(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetOrderReturntDetailsModel>> getOrderReturnDetails(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getOrderReturnDetails(params),
     );
@@ -720,7 +834,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, GetAuthProductDetailsModel>> getAuthProductDetails(
-      String productSlug) {
+    String productSlug,
+  ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getAuthProductDetails(productSlug),
     );

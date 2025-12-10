@@ -676,9 +676,31 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
   /// 🏷️ Brand Icon
   Widget _buildBrandIcon() {
     final brandIcon = widget.productItem.brand?.icon?.filePath;
+    bool isVerified = (widget.productItem.brand?.isVerified ?? 0) > 0;
     if (brandIcon == null) return const SizedBox.shrink();
 
-    return SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15);
+    return SizedBox(
+      width: isVerified ? 55.w : 30.w,
+      height: 15,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: LanguageService.languageCode == "ar"
+            ? [
+                isVerified
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    : const SizedBox.shrink(),
+                SizedBox(width: isVerified ? 5 : 0),
+                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15),
+              ]
+            : [
+                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15),
+                SizedBox(width: isVerified ? 5 : 0),
+                isVerified
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    : const SizedBox.shrink(),
+              ],
+      ),
+    );
   }
 
   /// 📝 Product Name Row
@@ -737,8 +759,14 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
               previous.getCurrencyForCountryModel !=
               current.getCurrencyForCountryModel,
           builder: (context, state) {
-            final price = widget.productItem.price ?? 0;
-            final offerPrice = widget.productItem.offerPrice ?? 0;
+            final price = HelperFunctions.truncateToDecimalPlaces(
+              widget.productItem.price ?? 0,
+              state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+            );
+            final offerPrice = HelperFunctions.truncateToDecimalPlaces(
+              widget.productItem.offerPrice ?? 0,
+              state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+            );
             final exchangeRate =
                 state
                     .getCurrencyForCountryModel

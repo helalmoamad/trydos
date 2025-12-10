@@ -23,88 +23,114 @@ class CallsRemoteDataSource {
     bool isVideo = params['isVideo'];
     PostClient<MakeCallRemoteResponseModel> makeCall =
         PostClient<MakeCallRemoteResponseModel>(
-            requestPrams: RequestConfig<MakeCallRemoteResponseModel>(
-                data: params['data'],
-                endpoint: isVideo
-                    ? ChatEndPoints.videoCallEP
-                    : ChatEndPoints.voiceCallEP,
-                response: ResponseValue<MakeCallRemoteResponseModel>(
-                  fromJson: (response) {
-                    log(response.toString());
-                    return MakeCallRemoteResponseModel.fromJson(response);
-                  },
-                )),
-            serverName: ServerName.chat);
+          requestPrams: RequestConfig<MakeCallRemoteResponseModel>(
+            data: params['data'],
+            endpoint: isVideo
+                ? ChatEndPoints.videoCallEP
+                : ChatEndPoints.voiceCallEP,
+            response: ResponseValue<MakeCallRemoteResponseModel>(
+              fromJson: (response) {
+                log(response.toString());
+                return MakeCallRemoteResponseModel.fromJson(response);
+              },
+            ),
+          ),
+          serverName: ServerName.chat,
+        );
     return makeCall();
   }
 
   Future<bool> makeAnswerCall(String messageId) {
     PostClient<bool> AnswerCall = PostClient<bool>(
-        requestPrams: RequestConfig<bool>(
-            // data: params,
-            endpoint: ChatEndPoints.answer_call(messageId),
-            response: ResponseValue<bool>(returnValueOnSuccess: true)),
-        serverName: ServerName.chat);
+      requestPrams: RequestConfig<bool>(
+        // data: params,
+        endpoint: ChatEndPoints.answer_call(messageId),
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+      serverName: ServerName.chat,
+    );
     return AnswerCall();
   }
 
   Future<bool> makeRingingCall(String ChatId) {
     PostClient<bool> AnswerCall = PostClient<bool>(
-        requestPrams: RequestConfig<bool>(
-            // data: params,
-            endpoint: ChatEndPoints.answer_call(ChatId),
-            response: ResponseValue<bool>(returnValueOnSuccess: true)),
-        serverName: ServerName.chat);
+      requestPrams: RequestConfig<bool>(
+        // data: params,
+        endpoint: ChatEndPoints.answer_call(ChatId),
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+      serverName: ServerName.chat,
+    );
     return AnswerCall();
+  }
+
+  Future<bool> endCall(Map<String, dynamic> params) {
+    PostClient<bool> endCall = PostClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.endCallEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return endCall();
   }
 
   Future<bool> watchedMissedCall() {
     PostClient<bool> watchedMissedCall = PostClient<bool>(
-        requestPrams: RequestConfig<bool>(
-            // data: params,
-            endpoint: ChatEndPoints.watchMissedCall,
-            response: ResponseValue<bool>(returnValueOnSuccess: true)),
-        serverName: ServerName.chat);
+      requestPrams: RequestConfig<bool>(
+        // data: params,
+        endpoint: ChatEndPoints.watchMissedCall,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+      serverName: ServerName.chat,
+    );
     return watchedMissedCall();
   }
 
   Future<GetAgoraTokenResponseModel> getAgoraToken(String ChatId) {
     PostClient<GetAgoraTokenResponseModel> videoCall =
         PostClient<GetAgoraTokenResponseModel>(
-            requestPrams: RequestConfig<GetAgoraTokenResponseModel>(
-                // data: params,
-                endpoint: ChatEndPoints.getAgoraToken(ChatId),
-                response: ResponseValue<GetAgoraTokenResponseModel>(
-                  fromJson: (response) {
-                    return GetAgoraTokenResponseModel.fromJson(response);
-                  },
-                )),
-            serverName: ServerName.chat);
+          requestPrams: RequestConfig<GetAgoraTokenResponseModel>(
+            // data: params,
+            endpoint: ChatEndPoints.getAgoraToken(ChatId),
+            response: ResponseValue<GetAgoraTokenResponseModel>(
+              fromJson: (response) {
+                return GetAgoraTokenResponseModel.fromJson(response);
+              },
+            ),
+          ),
+          serverName: ServerName.chat,
+        );
     return videoCall();
   }
 
   Future<MissedCallCountModel> getMissedCallCount() {
     PostClient<MissedCallCountModel> getMissedCallCount =
         PostClient<MissedCallCountModel>(
-            requestPrams: RequestConfig<MissedCallCountModel>(
-                // data: params,
-                endpoint: ChatEndPoints.missedCallCount,
-                response: ResponseValue<MissedCallCountModel>(
-                  fromJson: (response) {
-                    return MissedCallCountModel.fromJson(response);
-                  },
-                )),
-            serverName: ServerName.chat);
+          requestPrams: RequestConfig<MissedCallCountModel>(
+            // data: params,
+            endpoint: ChatEndPoints.missedCallCount,
+            response: ResponseValue<MissedCallCountModel>(
+              fromJson: (response) {
+                return MissedCallCountModel.fromJson(response);
+              },
+            ),
+          ),
+          serverName: ServerName.chat,
+        );
     return getMissedCallCount();
   }
 
   Future<bool> rejectCall(Map<String, dynamic> params) {
     PostClient<bool> rejectCall = PostClient<bool>(
-        requestPrams: RequestConfig<bool>(
-            endpoint: ChatEndPoints.refuseCall(params['messageId']),
-            data: params['payload'],
-            response: ResponseValue<bool>(returnValueOnSuccess: true)),
-        serverName: ServerName.chat);
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.refuseCall(params['messageId']),
+        data: params['payload'],
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+      serverName: ServerName.chat,
+    );
     return rejectCall();
   }
 
@@ -114,7 +140,8 @@ class CallsRemoteDataSource {
       requestPrams: RequestConfig<MyCallsResponseModel>(
         endpoint: ChatEndPoints.myCallReg,
         response: ResponseValue<MyCallsResponseModel>(
-            fromJson: (response) => MyCallsResponseModel.fromJson(response)),
+          fromJson: (response) => MyCallsResponseModel.fromJson(response),
+        ),
       ),
     );
     return mycalls();

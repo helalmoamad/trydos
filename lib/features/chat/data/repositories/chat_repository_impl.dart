@@ -26,13 +26,15 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   ChatRepositoryImpl(this.dataSource);
 
   @override
-  Future<Either<Failure, ChatImageDetail>> loadWidthAndHeight(
-      {required File file}) async {
+  Future<Either<Failure, ChatImageDetail>> loadWidthAndHeight({
+    required File file,
+  }) async {
     ChatImageDetail result = await dataSource.loadWidthAndHeightForImage(
-        onError: () {
-          // GetIt.I<StoryBloc>().add(LoadFailureEvent());
-        },
-        ImageFile: file);
+      onError: () {
+        // GetIt.I<StoryBloc>().add(LoadFailureEvent());
+      },
+      ImageFile: file,
+    );
     return Right(result);
   }
 
@@ -49,132 +51,163 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, CreateUserResponseModel>> createUser(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.createUser(params));
+      tryCall: () => dataSource.createUser(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> updateProfileInChat(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateProfileInChat(params));
+      tryCall: () => dataSource.updateProfileInChat(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetOrderRecipientIdModel>> getOrderRecipientId(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getOrderRecipientId(params));
+      tryCall: () => dataSource.getOrderRecipientId(params),
+    );
   }
 
   @override
   Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getSharedProductCount(params));
+      tryCall: () => dataSource.getSharedProductCount(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> shareProductOnApps(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     ///todo debug12
-//    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());
+    //    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());
     return handlingExceptionRequest(
-        tryCall: () => dataSource.shareProductOnApps(params));
+      tryCall: () => dataSource.shareProductOnApps(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params) {
     ///todo debug12
-//    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());
+    //    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());
     return handlingExceptionRequest(
-        tryCall: () => dataSource.saveContacts(params));
+      tryCall: () => dataSource.saveContacts(params),
+    );
   }
 
   @override
   Future<Either<Failure, MyChatsResponseModel>> getChats(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(tryCall: () => dataSource.getChats(params));
   }
 
   @override
   Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.sendMessage(params));
+      tryCall: () => dataSource.sendMessage(params),
+    );
   }
 
   @override
   Future<Either<Failure, UploadFileResponseModel>> uploadFile(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.uploadFile(params));
+      tryCall: () => dataSource.uploadFile(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> readAllMessages(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.readAllMessages(params));
+      tryCall: () => dataSource.readAllMessages(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> receiveMessage(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.receiveMessage(params));
+      tryCall: () => dataSource.receiveMessage(params),
+    );
   }
 
   @override
   Future<Either<Failure, ChangeChatPropertyModel>> changeChatProperty(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.changeChatProperty(params));
+      tryCall: () => dataSource.changeChatProperty(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> deleteChat(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.deleteChat(params));
+      tryCall: () => dataSource.deleteChat(params),
+    );
   }
 
   @override
   Future<Either<Failure, List<Message>>> getMessagesForChat(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getMessagesForChat(params));
+      tryCall: () => dataSource.getMessagesForChat(params),
+    );
   }
 
   @override
   Future<Either<Failure, List<Message>>> getMessagesBetween(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getMessagesBetween(params));
+      tryCall: () => dataSource.getMessagesBetween(params),
+    );
   }
 
   @override
   Future<Either<Failure, MediaCount>> getMediaCount(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getMediaCount(params));
+      tryCall: () => dataSource.getMediaCount(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> SendErrorChatToServer(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.sendErrorChatToServer(params));
+      tryCall: () => dataSource.sendErrorChatToServer(params),
+    );
   }
 
   @override
   Future<Either<Failure, Message>> shareProductWithContactsOrChannels(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.shareProductWithContactsOrChannels(params));
+      tryCall: () => dataSource.shareProductWithContactsOrChannels(params),
+    );
   }
 
   @override
   Future<Either<Failure, ResultOfSearchTextInChatModel>>
-      searchForMessageTextInChat(Map<String, dynamic> params) {
+  searchForMessageTextInChat(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.searchForMessageTextInChat(params));
+      tryCall: () => dataSource.searchForMessageTextInChat(params),
+    );
   }
 }

@@ -2903,11 +2903,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         //                                       }
 
                                         return SliverPadding(
-                                          key: TestVariables.kTestMode
-                                              ? const Key(
-                                                  WidgetsKeys.productsListKey,
-                                                )
-                                              : gridViewKeyForRendering,
+                                          key: gridViewKeyForRendering,
                                           padding: const EdgeInsets.only(
                                             top: 10,
                                           ),
@@ -2929,6 +2925,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 int index,
                                               ) {
                                                 return InkWell(
+                                                  key: TestVariables.kTestMode
+                                                      ? Key(
+                                                          '${WidgetsKeys.productsListKey}$index',
+                                                        )
+                                                      : null,
                                                   onTap: () {
                                                     homeBloc.add(
                                                       const ChangeStatusOFGetProductsDetailsToSuccessEvent(
@@ -3949,90 +3950,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildProductList({
-    required List<productListingModel.Products> products,
-    //required Tuple2<int, int> slidingMode,
-  }) {
-    return SliverPadding(
-      key: TestVariables.kTestMode
-          ? const Key(WidgetsKeys.productsListKey)
-          : null,
-      padding: const EdgeInsets.only(top: 10),
-      sliver: SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 200.w / 350,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 15,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          addAutomaticKeepAlives: false,
-          addRepaintBoundaries: false,
-          addSemanticIndexes: false,
-          childCount: products.length,
-          (BuildContext context, int index) {
-            return InkWell(
-              onTap: () {
-                Future.delayed(const Duration(milliseconds: 100)).then((value) {
-                  FirebaseAnalyticsService.logEventForSession(
-                    executedEventName: "viewItem",
-                    eventName: AnalyticsEventsConst.viewItem,
-                    extraParams: {
-                      'item_id': products[index].productId.toString(),
-                      'item_name': products[index].name.toString(),
-                      'price': products[index].price.toString(),
-                      'brand': products[index].brand!.name.toString(),
-                      'category': products[index].categories!
-                          .map((e) => e.id.toString())
-                          .toList()
-                          .toString(),
-                      'count_likes': products[index].countOfLikes.toString(),
-                      'review_count': products[index].reviewsCount.toString(),
-                      'interaction_type': 'view',
-                      'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
-                    },
-                  );
-                });
-                ////////////////////////////
-                /*    FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.buttonClicked,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.chooseProductButton,
-                );*/
-
-                homeBloc.add(
-                  const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                    isStatusInitaial: true,
-                  ),
-                );
-                homeBloc.add(
-                  AddCurrentSelectedColorEvent(
-                    currentSelectedColor: 0,
-                    productSlug: products[index].slug.toString(),
-                  ),
-                );
-                Future.delayed(const Duration(milliseconds: 300), () {
-                  if (!mounted) return;
-
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) =>
-                          ProductDetailsPageNew(productItem: products[index]),
-                    ),
-                  );
-                });
-              },
-              child: _productItem(
-                index: index,
-                //   slidingMode: slidingMode,
-              ),
-            );
-          },
         ),
       ),
     );

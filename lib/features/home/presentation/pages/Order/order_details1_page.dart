@@ -40,6 +40,7 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.
         FetchOrderReturnDetailsEvent,
         ResetAllStatusEvent;
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
+import 'package:trydos/features/home/presentation/pages/Order/order_status.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/star_rating_widget.dart';
@@ -100,6 +101,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<int> indexTapPackage = ValueNotifier(0);
   final ValueNotifier<String?> optionModifyPanel = ValueNotifier(null);
+  final ScrollController singleChildController = ScrollController();
   final ValueNotifier<bool> agreeToPolicies = ValueNotifier(false);
   final ValueNotifier<List<String>> optionCanselOrReturn = ValueNotifier([]);
   List<OrderListModel> orders = [];
@@ -183,6 +185,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
           orders[indexTapPackage.value].orderGroupId ?? "",
         ),
       );
+    } else {
+      orderBloc.add(
+        FetchOrderReturnDetailsEvent(
+          orders[indexTapPackage.value].orderGroupId ?? "",
+          notFound: true,
+        ),
+      );
     }
 
     indexTapAddress.value =
@@ -220,6 +229,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
         orderBloc.add(
           FetchOrderReturnDetailsEvent(
             orders[indexTapPackage.value].orderGroupId ?? "",
+          ),
+        );
+      } else {
+        orderBloc.add(
+          FetchOrderReturnDetailsEvent(
+            orders[indexTapPackage.value].orderGroupId ?? "",
+            notFound: true,
           ),
         );
       }
@@ -422,6 +438,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                 color: Colors.black,
                                 onRefresh: _refreshData,
                                 child: SingleChildScrollView(
+                                  controller: singleChildController,
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   child: Column(
@@ -445,7 +462,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           orders.forEach(
                                             (element) => orderAmount =
                                                 orderAmount +
-                                                (element.orderAmount! *
+                                                (HelperFunctions.truncateToDecimalPlaces(
+                                                      element.orderAmount!,
+                                                      state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .decimalDigits!,
+                                                    ) *
                                                     state
                                                         .getCurrencyForCountryModel!
                                                         .data!
@@ -508,15 +532,6 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                   .orderCanselSvg,
                                                               width: 20,
                                                             )
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'pending'
-                                                          ? SvgPicture.asset(
-                                                              AppAssets
-                                                                  .pendingBagSvg,
-                                                              width: 20,
-                                                            )
                                                           : SvgPicture.asset(
                                                               AppAssets
                                                                   .pendingBagSvg,
@@ -540,15 +555,6 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                   .whiteBagSvg,
                                                               width: 15,
                                                             )
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'preparing'
-                                                          ? SvgPicture.asset(
-                                                              AppAssets
-                                                                  .preparingBagSvg,
-                                                              width: 20,
-                                                            )
                                                           : SvgPicture.asset(
                                                               AppAssets
                                                                   .preparingBagSvg,
@@ -562,32 +568,18 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                   ?.value ==
                                                               'canceled'
                                                           ? const SizedBox.shrink()
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'pending'
+                                                          : ((orders[_indexTapPackage]
+                                                                        .orderGroupStatus
+                                                                        ?.value ==
+                                                                    'pending') ||
+                                                                (orders[_indexTapPackage]
+                                                                        .orderGroupStatus
+                                                                        ?.value ==
+                                                                    'preparing'))
                                                           ? SvgPicture.asset(
                                                               AppAssets
                                                                   .whiteBagSvg,
                                                               width: 15,
-                                                            )
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'preparing'
-                                                          ? SvgPicture.asset(
-                                                              AppAssets
-                                                                  .whiteBagSvg,
-                                                              width: 15,
-                                                            )
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'shipped'
-                                                          ? SvgPicture.asset(
-                                                              AppAssets
-                                                                  .shippedAndOutOfDeliveryBagSvg,
-                                                              width: 20,
                                                             )
                                                           : SvgPicture.asset(
                                                               AppAssets
@@ -602,45 +594,22 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                   ?.value ==
                                                               'canceled'
                                                           ? const SizedBox.shrink()
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'pending'
-                                                          ? SvgPicture.asset(
-                                                              AppAssets
-                                                                  .whiteBagSvg,
-                                                              width: 15,
-                                                            )
-                                                          : orders[_indexTapPackage]
+                                                          : ((orders[_indexTapPackage]
                                                                         .orderGroupStatus
                                                                         ?.value ==
-                                                                    'preparing' ||
-                                                                orders[_indexTapPackage]
+                                                                    'pending') ||
+                                                                (orders[_indexTapPackage]
                                                                         .orderGroupStatus
                                                                         ?.value ==
-                                                                    'canceled'
+                                                                    'preparing') ||
+                                                                (orders[_indexTapPackage]
+                                                                        .orderGroupStatus
+                                                                        ?.value ==
+                                                                    'shipped'))
                                                           ? SvgPicture.asset(
                                                               AppAssets
                                                                   .whiteBagSvg,
                                                               width: 15,
-                                                            )
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'shipped'
-                                                          ? SvgPicture.asset(
-                                                              AppAssets
-                                                                  .whiteBagSvg,
-                                                              width: 15,
-                                                            )
-                                                          : orders[_indexTapPackage]
-                                                                    .orderGroupStatus
-                                                                    ?.value ==
-                                                                'delivered'
-                                                          ? SvgPicture.asset(
-                                                              AppAssets
-                                                                  .delivered_bagSvg,
-                                                              width: 20,
                                                             )
                                                           : SvgPicture.asset(
                                                               AppAssets
@@ -796,7 +765,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             : buildSecondSection(
                                                 context: context,
                                                 expectedDeliveryDate:
-                                                    'Monday 2.Jun | 3 Work Days',
+                                                    'Monday 2.Jun | 3 ${LocaleKeys.work_days.tr()}',
                                                 orderStatus:
                                                     orders[_indexTapPackage]
                                                         .orderStatus
@@ -940,7 +909,6 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                       ),
                                                     );
                                                   }
-
                                                   return;
                                                 } else {
                                                   requestReturnApi = false;
@@ -2472,7 +2440,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         Text(
                           HelperFunctions.formatNumber(
                             number:
-                                (orders[_indexTapPackage].orderAmount! *
+                                (HelperFunctions.truncateToDecimalPlaces(
+                                  orders[_indexTapPackage].orderAmount!,
+                                  homeBloc
+                                      .state
+                                      .getCurrencyForCountryModel!
+                                      .data!
+                                      .currency!
+                                      .decimalDigits!,
+                                ) *
                                 homeBloc
                                     .state
                                     .getCurrencyForCountryModel!
@@ -2585,7 +2561,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   ),
                 ),
                 Text(
-                  "  ${HelperFunctions.formatNumber(number: (((orders[_indexTapPackage].orderAmount ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
+                  "  ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((orders[_indexTapPackage].orderAmount ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.bq.copyWith(
                     color: const Color(0xff8D8D8D),
@@ -3137,8 +3113,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                   Text(
                                     HelperFunctions.formatNumber(
                                       number:
-                                          (orders[_indexTapPackage]
-                                              .orderAmount! *
+                                          (HelperFunctions.truncateToDecimalPlaces(
+                                            orders[_indexTapPackage]
+                                                .orderAmount!,
+                                            homeBloc
+                                                .state
+                                                .getCurrencyForCountryModel!
+                                                .data!
+                                                .currency!
+                                                .decimalDigits!,
+                                          ) *
                                           homeBloc
                                               .state
                                               .getCurrencyForCountryModel!
@@ -3721,7 +3705,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         Text(
                           HelperFunctions.formatNumber(
                             number:
-                                (orders[_indexTapPackage].orderAmount! *
+                                (HelperFunctions.truncateToDecimalPlaces(
+                                  orders[_indexTapPackage].orderAmount!,
+                                  homeBloc
+                                      .state
+                                      .getCurrencyForCountryModel!
+                                      .data!
+                                      .currency!
+                                      .decimalDigits!,
+                                ) *
                                 homeBloc
                                     .state
                                     .getCurrencyForCountryModel!
@@ -4039,54 +4031,85 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 ///////////////////
                 const SizedBox(height: 3),
                 ///////////////////
-                orderStatus == 'delivered'
+                OrderStatusClass.statusOrderIsDelivered(orderStatus)
                     ? SvgPicture.asset(AppAssets.delivered_bagSvg, width: 13)
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SvgPicture.asset(
-                            orderStatus == 'shipped'
-                                ? AppAssets.shippedAndOutOfDeliveryBagSvg
-                                : AppAssets.preparingBagSvg,
-                            width: 13,
-                          ),
+                          OrderStatusClass.statusOrderIsCanceled(orderStatus)
+                              ? const SizedBox.shrink()
+                              : SvgPicture.asset(
+                                  OrderStatusClass.statusOrderIsPending(
+                                        orderStatus,
+                                      )
+                                      ? AppAssets.pendingBagSvg
+                                      : OrderStatusClass.statusOrderIsPreparing(
+                                          orderStatus,
+                                        )
+                                      ? AppAssets.preparingBagSvg
+                                      : OrderStatusClass.statusOrderIsShipped(
+                                          orderStatus,
+                                        )
+                                      ? AppAssets.shippedAndOutOfDeliveryBagSvg
+                                      : AppAssets.delivered_bagSvg,
+                                  width: 13,
+                                ),
                           //////////////////////////
                           const SizedBox(width: 2),
                           //////////////////////////
                           SvgPicture.asset(
-                            orderStatus == 'shipped'
+                            OrderStatusClass.statusOrderIsCanceled(orderStatus)
+                                ? AppAssets.orderCanselSvg
+                                : OrderStatusClass.statusOrderIsShipped(
+                                    orderStatus,
+                                  )
                                 ? AppAssets.shippedBlackSvg
-                                : orderStatus == 'delivered'
-                                ? AppAssets.deliveredBlackSvg
-                                : orderStatus == 'pending'
+                                : OrderStatusClass.statusOrderIsPreparing(
+                                    orderStatus,
+                                  )
+                                ? AppAssets.orderPreparingSvg
+                                : OrderStatusClass.statusOrderIsPending(
+                                    orderStatus,
+                                  )
                                 ? AppAssets.pendeingBlackCheck
-                                : AppAssets.orderPreparingSvg,
+                                : AppAssets.deliveredBlackSvg,
                             width: 13,
                           ),
                         ],
                       ),
                 ///////////////////
                 const SizedBox(height: 2),
+
                 ///////////////////
-                Text(
-                  orderStatus == 'delivered'
-                      ? orderStatusLabel
-                      : (details?[index].variation.isNullOrEmpty ?? false)
-                      ? ''
-                      : details?[index].variation?[0].size ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: context.textTheme.bodyMedium?.rq.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 10,
-                    height: 1.3,
-                  ),
-                ),
+                OrderStatusClass.statusOrderIsDelivered(orderStatus)
+                    ? Text(
+                        LocaleKeys.delivered.tr(),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.3,
+                        ),
+                      )
+                    : Text(
+                        (details?[index].variation.isNullOrEmpty ?? false)
+                            ? ''
+                            : details?[index].variation?[0].color ?? '',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.3,
+                        ),
+                      ),
                 ///////////////////
                 const SizedBox(height: 2),
                 ///////////////////
-                orderStatus == 'delivered'
+                OrderStatusClass.statusOrderIsDelivered(orderStatus)
                     ? BlocListener<HomeBloc, HomeState>(
                         listenWhen: (previous, current) =>
                             previous.createCommentRatingStatus !=
@@ -4194,6 +4217,21 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               )
                                               .starRating ??
                                           0),
+                                      initialImages: (state
+                                          .getOrderRatingComments
+                                          .firstWhere(
+                                            (element) =>
+                                                element.orderDetailsId
+                                                    .toString() ==
+                                                details?[index].id.toString(),
+                                            orElse: () => Comment(
+                                              images: [],
+                                              orderDetailsId: details?[index].id
+                                                  ?.toString(),
+                                              starRating: 0,
+                                            ),
+                                          )
+                                          .images),
                                       initialComment:
                                           (state.getOrderRatingComments
                                               .firstWhere(
@@ -4211,7 +4249,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               )
                                               .comment ??
                                           ""),
-                                      onRatingChanged: (rating, comment) {
+                                      onRatingChanged: (rating, comment, photo) {
                                         if ((state.getOrderRatingComments
                                                     .firstWhere(
                                                       (element) =>
@@ -4261,6 +4299,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               productId: details?[index]
                                                   .productId
                                                   .toString(),
+                                              slug: details?[index].productSlug
+                                                  .toString(),
+                                              images: photo,
                                               variant: details?[index].variant,
                                               rating: rating.toString(),
                                               text: comment,
@@ -4270,6 +4311,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         }
                                         homeBloc.add(
                                           CreateCommentRatingEvent(
+                                            images: photo,
                                             orderDetailsId: details?[index].id
                                                 ?.toString(),
                                             ownerId:
@@ -4281,6 +4323,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             productId: details?[index].productId
                                                 .toString(),
                                             variant: details?[index].variant,
+                                            slug: details?[index].productSlug
+                                                .toString(),
+
                                             rating: rating.toString(),
                                             text: comment,
                                           ),
@@ -4292,9 +4337,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ),
                       )
                     : Text(
-                        (details?[index].variation.isNullOrEmpty ?? false)
+                        orderStatus == 'delivered'
+                            ? orderStatusLabel
+                            : (details?[index].variation.isNullOrEmpty ?? false)
                             ? ''
-                            : details?[index].variation?[0].color ?? '',
+                            : details?[index].variation?[0].size ?? '',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -4442,7 +4489,6 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   "-1")))))
                               ? const SizedBox.shrink()
                               : Container(
-                                  width: 105,
                                   height: 40,
                                   child: BlocListener<ChatBloc, ChatState>(
                                     listenWhen: (previous, current) =>
@@ -4554,9 +4600,24 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           );
                                         }
                                         return Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                          ),
+                                          decoration: const BoxDecoration(
+                                            color: const Color.fromARGB(
+                                              255,
+                                              82,
+                                              139,
+                                              236,
+                                            ),
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(12),
+                                            ),
+                                          ),
                                           alignment: Alignment.center,
-                                          width: 70,
+
                                           height: 30,
+
                                           child: InkWell(
                                             onTap: () {
                                               chatBloc.add(
@@ -4600,7 +4661,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             child: Row(
                                               children: [
                                                 SvgPicture.asset(
-                                                  AppAssets.chatMarkActiveSvg,
+                                                  AppAssets.chatSvg,
                                                   width: 15,
                                                 ),
                                                 const SizedBox(width: 5),
@@ -4614,7 +4675,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                       ?.rq
                                                       .copyWith(
                                                         color: const Color(
-                                                          0xff1D1D1D,
+                                                          0xffFFFFFF,
                                                         ),
                                                         fontSize: 9,
                                                         height: 1.3,
@@ -4678,38 +4739,45 @@ class _OrderDetails1State extends State<OrderDetails1> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                alignment: Alignment.center,
-                width: 290.w,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: const Color(0xff402CDD),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      AppAssets.groupStarsRattingSvg,
-                      // ignore: deprecated_member_use
-                      color: const Color(0xffFFD800),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      LocaleKeys.rate_and_get_money.tr(),
-                      style: context.textTheme.bodyMedium?.mq.copyWith(
-                        fontSize: 14,
-                        height: 1.7,
+              InkWell(
+                onTap: () {
+                  singleChildController.jumpTo(
+                    singleChildController.position.maxScrollExtent,
+                  );
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 290.w,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: const Color(0xff402CDD),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        AppAssets.groupStarsRattingSvg,
+                        // ignore: deprecated_member_use
                         color: const Color(0xffFFD800),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    SvgPicture.asset(
-                      AppAssets.groupStarsRattingSvg,
-                      // ignore: deprecated_member_use
-                      color: const Color(0xffFFD800),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Text(
+                        LocaleKeys.rate_and_get_money.tr(),
+                        style: context.textTheme.bodyMedium?.mq.copyWith(
+                          fontSize: 14,
+                          height: 1.7,
+                          color: const Color(0xffFFD800),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      SvgPicture.asset(
+                        AppAssets.groupStarsRattingSvg,
+                        // ignore: deprecated_member_use
+                        color: const Color(0xffFFD800),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -4819,7 +4887,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
             const SizedBox(height: 4),
             ///////////////////
             Text(
-              LocaleKeys.recipient_contact.tr(),
+              LocaleKeys.phone.tr(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -4893,35 +4961,27 @@ class _OrderDetails1State extends State<OrderDetails1> {
               firstItem: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  orderStatus == 'canceled'
+                  OrderStatusClass.statusOrderIsCanceled(orderStatus)
                       ? SvgPicture.asset(AppAssets.orderCanselSvg, width: 20)
-                      : orderStatus == 'pending'
-                      ? SvgPicture.asset(AppAssets.pendingBagSvg, width: 20)
                       : SvgPicture.asset(AppAssets.pendingBagSvg, width: 15),
                   ////////////////////
                   const SizedBox(width: 3),
                   ///////////////////
-                  orderStatus == 'canceled'
+                  OrderStatusClass.statusOrderIsCanceled(orderStatus)
                       ? const SizedBox.shrink()
-                      : orderStatus == 'pending'
+                      : OrderStatusClass.statusOrderIsPending(orderStatus)
                       ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : orderStatus == 'preparing'
-                      ? SvgPicture.asset(AppAssets.preparingBagSvg, width: 20)
                       : SvgPicture.asset(AppAssets.preparingBagSvg, width: 15),
                   ////////////////////
                   const SizedBox(width: 3),
                   ///////////////////
-                  orderStatus == 'canceled'
+                  OrderStatusClass.statusOrderIsCanceled(orderStatus)
                       ? const SizedBox.shrink()
-                      : orderStatus == 'pending'
+                      : (OrderStatusClass.statusOrderIsPending(orderStatus) ||
+                            OrderStatusClass.statusOrderIsPreparing(
+                              orderStatus,
+                            ))
                       ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : orderStatus == 'preparing'
-                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : orderStatus == 'shipped'
-                      ? SvgPicture.asset(
-                          AppAssets.shippedAndOutOfDeliveryBagSvg,
-                          width: 20,
-                        )
                       : SvgPicture.asset(
                           AppAssets.shippedAndOutOfDeliveryBagSvg,
                           width: 15,
@@ -4929,16 +4989,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   ////////////////////
                   const SizedBox(width: 3),
                   ///////////////////
-                  orderStatus == 'canceled'
+                  OrderStatusClass.statusOrderIsCanceled(orderStatus)
                       ? const SizedBox.shrink()
-                      : orderStatus == 'pending'
+                      : (OrderStatusClass.statusOrderIsPending(orderStatus) ||
+                            OrderStatusClass.statusOrderIsPreparing(
+                              orderStatus,
+                            ) ||
+                            OrderStatusClass.statusOrderIsShipped(orderStatus))
                       ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : orderStatus == 'preparing'
-                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : orderStatus == 'shipped'
-                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : orderStatus == 'delivered'
-                      ? SvgPicture.asset(AppAssets.delivered_bagSvg, width: 20)
                       : SvgPicture.asset(AppAssets.delivered_bagSvg, width: 15),
                 ],
               ),
@@ -4959,7 +5017,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
   }
 
   Widget buildTitleIcons({required String status}) {
-    if (status == 'pending')
+    if (OrderStatusClass.statusOrderIsPending(status))
       return Row(
         children: [
           const SizedBox(width: 5),
@@ -4967,7 +5025,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           SvgPicture.asset(AppAssets.pendingBlueCheckSvg, width: 15),
         ],
       );
-    else if (status == 'preparing')
+    else if (OrderStatusClass.statusOrderIsPreparing(status))
       return Row(
         children: [
           const SizedBox(width: 5),
@@ -4980,7 +5038,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
   }
 
   Widget buildValueIcons({required String status}) {
-    if (status == 'pending')
+    if (OrderStatusClass.statusOrderIsPending(status))
       return Row(
         children: [
           const SizedBox(width: 5),
@@ -4988,7 +5046,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           SvgPicture.asset(AppAssets.pendeingBlackCheck, width: 15),
         ],
       );
-    else if (status == 'preparing')
+    else if (OrderStatusClass.statusOrderIsPreparing(status))
       return Row(
         children: [
           const SizedBox(width: 5),
@@ -5004,7 +5062,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           SvgPicture.asset(AppAssets.preparingGrey2Svg, width: 15),
         ],
       );
-    else if (status == 'shipped')
+    else if (OrderStatusClass.statusOrderIsShipped(status))
       return Row(
         children: [
           const SizedBox(width: 5),
@@ -5020,7 +5078,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           SvgPicture.asset(AppAssets.shippedGrey_2Svg, width: 15),
         ],
       );
-    if (status == 'delivered')
+    else
       return Row(
         children: [
           const SizedBox(width: 5),
@@ -5028,8 +5086,6 @@ class _OrderDetails1State extends State<OrderDetails1> {
           SvgPicture.asset(AppAssets.deliveredBlackSvg, width: 15),
         ],
       );
-    else
-      return const SizedBox.shrink();
   }
 
   Widget buildFirstSection({

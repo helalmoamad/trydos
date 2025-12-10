@@ -16,7 +16,8 @@ class CreateOrderCommentRatingUseCase
 
   @override
   Future<Either<Failure, CreateFqaCommentsModel>> call(
-      CreateOrderCommentRatingParams params) {
+    CreateOrderCommentRatingParams params,
+  ) {
     return repository.createOrderCommentRating(params.map);
   }
 }
@@ -29,7 +30,8 @@ class CreateOrderCommentRatingParams {
   final String? orderDetailsId;
   final String? ownerType;
   final String? ownerId;
-
+  final String? slug;
+  final List<String>? images;
   CreateOrderCommentRatingParams({
     this.text,
     this.productId,
@@ -37,26 +39,29 @@ class CreateOrderCommentRatingParams {
     this.variant,
     this.ownerType,
     this.ownerId,
+    this.images,
+    this.slug,
     this.orderDetailsId,
   });
   Map<String, dynamic> get map => {
-        "text": text,
-        "user_id": GetIt.I<PrefsRepository>().myMarketId,
-        "phone": GetIt.I<PrefsRepository>().myPhoneNumber,
-        "user_avatar": GetIt.I<PrefsRepository>()
-            .myProfilePhoto
-            ?.split("/v1")
-            .toList()
-            .last,
-        "product_id": productId,
-        "user_type": (GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
-            ? "user"
-            : "customer",
-        "user_name": GetIt.I<PrefsRepository>().myMarketName,
-        "variant": variant,
-        "rating": rating,
-        "order_details_id": orderDetailsId,
-        "owner_type": ownerType,
-        "owner_id": ownerId,
-      };
+    "text": text,
+    "user_id": GetIt.I<PrefsRepository>().myMarketId,
+    "slug": slug,
+    "comments_images_customer": images,
+    "phone": GetIt.I<PrefsRepository>().myPhoneNumber,
+    "user_avatar": GetIt.I<PrefsRepository>().myProfilePhoto
+        ?.split("/v1")
+        .toList()
+        .last,
+    "product_id": productId,
+    "user_type": (GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
+        ? "user"
+        : "customer",
+    "user_name": GetIt.I<PrefsRepository>().myMarketName,
+    "variant": variant,
+    "rating": rating,
+    "order_details_id": orderDetailsId,
+    "owner_type": ownerType,
+    "owner_id": ownerId,
+  };
 }

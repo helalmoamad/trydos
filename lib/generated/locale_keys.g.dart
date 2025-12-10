@@ -4,6 +4,8 @@
 
 abstract class LocaleKeys {
   static const information_securely = 'information_securely';
+  static const translate = 'translate';
+  static const work_days = 'work_days';
   static const all_questions_below_from = 'all_questions_below_from';
   static const visitors_not_necessarily_from = 'visitors_not_necessarily_from';
   static const customers_purchased_before_pre_purchase_questions =
@@ -28,6 +30,21 @@ abstract class LocaleKeys {
   static const sending_video = 'sending_video';
   static const gallery = 'gallery';
   static const camera = 'camera';
+  static const camera_permission_required_message =
+      'camera_permission_required_message';
+  static const account_import_success_message =
+      'account_import_success_message';
+  static const qr_invalid_code_message = 'qr_invalid_code_message';
+  static const camera_permission_still_denied =
+      'camera_permission_still_denied';
+  static const qr_login_screen_title = 'qr_login_screen_title';
+  static const qr_processing_message = 'qr_processing_message';
+  static const qr_instruction_message = 'qr_instruction_message';
+  static const qr_permission_overlay_message = 'qr_permission_overlay_message';
+  static const methods_login_scan_qr_option = 'methods_login_scan_qr_option';
+  static const methods_login_phone_option = 'methods_login_phone_option';
+  static const share_account_via_qr_title = 'share_account_via_qr_title';
+  static const share_account_via_qr_hint = 'share_account_via_qr_hint';
   static const choose_photo_or_video_from_gallery_or_camera =
       'choose_photo_or_video_from_gallery_or_camera';
   static const image_preview = 'image_preview';
@@ -36,6 +53,7 @@ abstract class LocaleKeys {
   static const select_image_part = 'select_image_part';
   static const send = 'send';
   static const other = 'other';
+  static const show_original_version = 'show_original_version';
   static const cancel_preview = 'cancel_preview';
   static const welcome_page_description = 'welcome_page_description';
   static const why_we_know_you_label = 'why_we_know_you_label';

@@ -44,6 +44,7 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.d
     show OrderBloc;
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
+import 'package:trydos/features/home/presentation/pages/Order/order_status.dart';
 
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
@@ -381,17 +382,24 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   .currency!
                                                   .symbol ??
                                               "";
-                                          String orderAmount =
-                                              HelperFunctions.formatNumber(
-                                                number:
-                                                    (order!.orderAmount! *
-                                                    state
-                                                        .getCurrencyForCountryModel!
-                                                        .data!
-                                                        .currency!
-                                                        .exchangeRate!),
-                                                isNeedRounding: false,
-                                              );
+                                          String
+                                          orderAmount = HelperFunctions.formatNumber(
+                                            number:
+                                                (HelperFunctions.truncateToDecimalPlaces(
+                                                  order!.orderAmount!,
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .decimalDigits!,
+                                                ) *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!),
+                                            isNeedRounding: false,
+                                          );
 
                                           return RichText(
                                             overflow: TextOverflow.ellipsis,
@@ -501,7 +509,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 const SizedBox(height: 5),
                                                 ///////////////////
                                                 Text(
-                                                  'Monday 2.Jun | 3 Work Days',
+                                                  'Monday 2.Jun | 3 ${LocaleKeys.work_days.tr()}',
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style: context
@@ -548,16 +556,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     'canceled'
                                                                 ? SvgPicture.asset(
                                                                     AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'pending'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .pendingBagSvg,
+                                                                        .orderCanselSvg,
                                                                     width: 20,
                                                                   )
                                                                 : SvgPicture.asset(
@@ -569,16 +568,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             const SizedBox(
                                                               width: 3,
                                                             ),
+
                                                             ///////////////////
                                                             order!
                                                                         .orderGroupStatus
                                                                         ?.value ==
                                                                     'canceled'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
+                                                                ? const SizedBox.shrink()
                                                                 : order!
                                                                           .orderGroupStatus
                                                                           ?.value ==
@@ -587,15 +583,6 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     AppAssets
                                                                         .whiteBagSvg,
                                                                     width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'preparing'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .preparingBagSvg,
-                                                                    width: 20,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
@@ -611,37 +598,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                         .orderGroupStatus
                                                                         ?.value ==
                                                                     'canceled'
+                                                                ? const SizedBox.shrink()
+                                                                : ((order!.orderGroupStatus?.value ==
+                                                                          'pending') ||
+                                                                      (order!
+                                                                              .orderGroupStatus
+                                                                              ?.value ==
+                                                                          'preparing'))
                                                                 ? SvgPicture.asset(
                                                                     AppAssets
                                                                         .whiteBagSvg,
                                                                     width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'pending'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'preparing'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'shipped'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .shippedAndOutOfDeliveryBagSvg,
-                                                                    width: 20,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
@@ -657,53 +624,27 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                         .orderGroupStatus
                                                                         ?.value ==
                                                                     'canceled'
+                                                                ? const SizedBox.shrink()
+                                                                : ((order!.orderGroupStatus?.value ==
+                                                                          'pending') ||
+                                                                      (order!
+                                                                              .orderGroupStatus
+                                                                              ?.value ==
+                                                                          'preparing') ||
+                                                                      (order!
+                                                                              .orderGroupStatus
+                                                                              ?.value ==
+                                                                          'shipped'))
                                                                 ? SvgPicture.asset(
                                                                     AppAssets
                                                                         .whiteBagSvg,
                                                                     width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'pending'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'preparing'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'shipped'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .whiteBagSvg,
-                                                                    width: 15,
-                                                                  )
-                                                                : order!
-                                                                          .orderGroupStatus
-                                                                          ?.value ==
-                                                                      'delivered'
-                                                                ? SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .delivered_bagSvg,
-                                                                    width: 20,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
                                                                         .delivered_bagSvg,
                                                                     width: 15,
                                                                   ),
-                                                            ///////////////////////
                                                           ],
                                                         ),
                                                         ///////////////////
@@ -780,26 +721,30 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             ),
                                                             ///////////////////
                                                             SvgPicture.asset(
-                                                              order!.orderGroupStatus?.value ==
-                                                                      'canceled'
+                                                              (OrderStatusClass.statusOrderIsCanceled(
+                                                                    order!
+                                                                            .orderStatus
+                                                                            ?.value ??
+                                                                        "",
+                                                                  ))
                                                                   ? AppAssets
                                                                         .orderCanselSvg
-                                                                  : order!
-                                                                            .orderGroupStatus
-                                                                            ?.value ==
-                                                                        'shipped'
+                                                                  : (OrderStatusClass.statusOrderIsShipped(
+                                                                      order!.orderStatus?.value ??
+                                                                          "",
+                                                                    ))
                                                                   ? AppAssets
                                                                         .shippedBlackSvg
-                                                                  : order!
-                                                                            .orderStatus
-                                                                            ?.value ==
-                                                                        'delivered'
+                                                                  : (OrderStatusClass.statusOrderIsDelivered(
+                                                                      order!.orderStatus?.value ??
+                                                                          "",
+                                                                    ))
                                                                   ? AppAssets
                                                                         .deliveredBlackSvg
-                                                                  : order!
-                                                                            .orderStatus
-                                                                            ?.value ==
-                                                                        'pending'
+                                                                  : (OrderStatusClass.statusOrderIsPending(
+                                                                      order!.orderStatus?.value ??
+                                                                          "",
+                                                                    ))
                                                                   ? AppAssets
                                                                         .pendeingBlackCheck
                                                                   : AppAssets
@@ -817,13 +762,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       ///////////////////
                                       const SizedBox(height: 12),
                                       ///////////////////
-                                      (order?.returnRequestId != null)
+                                      /*  (order?.returnRequestId != null &&
+                                              (order?.editReturnRequest ??
+                                                  false))
                                           ? Container(
                                               width: double.infinity,
                                               height: 1,
                                               color: const Color(0xffC4C2C2),
                                             )
-                                          : const SizedBox.shrink(),
+                                          : const SizedBox.shrink(),*/
 
                                       ///////////////////
                                       BlocBuilder<OrderBloc, OrderState>(
@@ -839,20 +786,40 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     .orderReturnDetailsStatus,
                                         builder: (context, state) {
                                           returnRequestIdsToCancel = [];
-                                          state
-                                              .getOrdersByOrderGroupIDModel
-                                              ?.orders
-                                              ?.forEach((element) {
-                                                if (element.returnRequestId !=
-                                                    null /* &&
+                                          state.getOrdersByOrderGroupIDModel?.orders?.forEach((
+                                            element,
+                                          ) {
+                                            if (element.editReturnRequest ??
+                                                false
+                                            /* &&
                                                       (element.editReturnRequest ??
-                                                          false)*/ ) {
-                                                  returnRequestIdsToCancel.add(
-                                                    element.returnRequestId ??
-                                                        "",
-                                                  );
-                                                }
-                                              });
+                                                          false)*/
+                                            ) {
+                                              state
+                                                  .orderReturnDetailsModel
+                                                  ?.data
+                                                  ?.returnRequestsData
+                                                  ?.forEach((elements) {
+                                                    elements.orderDetails?.forEach((
+                                                      element,
+                                                    ) {
+                                                      if ((element.alreadyReturn ??
+                                                              false) &&
+                                                          elements
+                                                                  .status
+                                                                  ?.value !=
+                                                              "cancelled") {
+                                                        returnRequestIdsToCancel
+                                                            .add(
+                                                              element
+                                                                  .returnRequestId
+                                                                  .toString(),
+                                                            );
+                                                      }
+                                                    });
+                                                  });
+                                            }
+                                          });
                                           return returnRequestIdsToCancel
                                                   .isEmpty
                                               ? const SizedBox.shrink()
@@ -932,12 +899,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               ?.data
                                               ?.returnRequestsData
                                               ?.forEach((element) {
-                                                if (element.status?.value ==
-                                                        null &&
-                                                    element.status?.name !=
-                                                        null) {
-                                                  element.orderDetails?.forEach(
-                                                    (element) {
+                                                if ((element.status?.value ??
+                                                            "")
+                                                        .contains("draft") ||
+                                                    (element.status?.name ?? "")
+                                                        .contains("draft")) {
+                                                  element.orderDetails?.forEach((
+                                                    element,
+                                                  ) {
+                                                    if (element.alreadyReturn ??
+                                                        false) {
                                                       returnRequestIdsToConfirm
                                                           .add(
                                                             element
@@ -945,8 +916,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                 .toString(),
                                                           );
                                                       appearConfirm = true;
-                                                    },
-                                                  );
+                                                    }
+                                                  });
                                                 }
                                               });
 
@@ -1154,9 +1125,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ? AppAssets.orderCanselSvg
                           : order!.orderGroupStatus?.value == 'shipped'
                           ? AppAssets.shippedBlackSvg
-                          : order!.orderStatus?.value == 'delivered'
+                          : (order!.orderGroupStatus?.value == 'delivered' ||
+                                (order!.orderGroupStatus?.value ?? "").contains(
+                                  "return",
+                                ))
                           ? AppAssets.deliveredBlackSvg
-                          : order!.orderStatus?.value == 'pending'
+                          : order!.orderGroupStatus?.value == 'pending'
                           ? AppAssets.pendeingBlackCheck
                           : AppAssets.orderPreparingSvg,
                       height: 15.h,
@@ -1187,7 +1161,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     Text(
                       HelperFunctions.formatNumber(
                         number:
-                            (order!.orderAmount! *
+                            (HelperFunctions.truncateToDecimalPlaces(
+                              order!.orderAmount!,
+                              homeBloc
+                                  .state
+                                  .getCurrencyForCountryModel!
+                                  .data!
+                                  .currency!
+                                  .decimalDigits!,
+                            ) *
                             homeBloc
                                 .state
                                 .getCurrencyForCountryModel!
@@ -1868,28 +1850,38 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               const SizedBox(width: 12),
                                               ///////////////////
                                               SvgPicture.asset(
-                                                order!.orderStatus?.value ==
-                                                            'canceled' ||
+                                                (OrderStatusClass.statusOrderIsCanceled(
+                                                          order!
+                                                                  .orderStatus
+                                                                  ?.value ??
+                                                              "",
+                                                        )) ||
                                                         (orderListDetailModel
                                                                     .qty ??
                                                                 0) ==
                                                             0
                                                     ? AppAssets.orderCanselSvg
-                                                    : order!
-                                                              .orderStatus
-                                                              ?.value ==
-                                                          'shipped'
+                                                    : (OrderStatusClass.statusOrderIsShipped(
+                                                        order!
+                                                                .orderStatus
+                                                                ?.value ??
+                                                            "",
+                                                      ))
                                                     ? AppAssets.shippedBlackSvg
-                                                    : order!
-                                                              .orderStatus
-                                                              ?.value ==
-                                                          'delivered'
+                                                    : (OrderStatusClass.statusOrderIsDelivered(
+                                                        order!
+                                                                .orderStatus
+                                                                ?.value ??
+                                                            "",
+                                                      ))
                                                     ? AppAssets
                                                           .deliveredBlackSvg
-                                                    : order!
-                                                              .orderStatus
-                                                              ?.value ==
-                                                          'pending'
+                                                    : (OrderStatusClass.statusOrderIsPending(
+                                                        order!
+                                                                .orderStatus
+                                                                ?.value ??
+                                                            "",
+                                                      ))
                                                     ? AppAssets
                                                           .pendeingBlackCheck
                                                     : AppAssets
@@ -1982,7 +1974,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             ? const TextSpan()
                                             : TextSpan(
                                                 text:
-                                                    '${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.price ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
+                                                    '${HelperFunctions.formatNumber(number: ((HelperFunctions.truncateToDecimalPlaces((orderListDetailModel.productDetails?.price ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)) * (homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
                                                 style: context
                                                     .textTheme
                                                     .bodyMedium
@@ -2001,7 +1993,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ////////////////////////////
                                         TextSpan(
                                           text:
-                                              ' ${HelperFunctions.formatNumber(number: ((orderListDetailModel.productDetails?.offerPrice ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
+                                              ' ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((orderListDetailModel.productDetails?.offerPrice ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
                                           style: context
                                               .textTheme
                                               .bodyMedium
@@ -2034,7 +2026,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             ? const TextSpan(text: "")
                                             : TextSpan(
                                                 text:
-                                                    ' ${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                                    ' ${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((((orderListDetailModel.productDetails?.offerPrice ?? 0) * (orderDetail.quantity ?? 0)) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
                                                 style: context
                                                     .textTheme
                                                     .bodyMedium
@@ -2250,7 +2242,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       .tr(),
                                   order?.paymentStatus == "unpaid"
                                       ? ""
-                                      : '${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (((orderListDetailModel.productDetails?.offerPrice ?? 0) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                      : '${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(((orderListDetailModel.productDetails?.offerPrice ?? 0 * (orderDetail.quantity ?? 0)) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
                                   "3 H",
                                   "00:02:19",
                                   ((returnRequestsData!.status?.value?.contains(
@@ -2277,9 +2269,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             ),
                     ),
               const SizedBox(height: 10),
-              ((orderDetail.returnRequestProductId == null ||
-                      order?.returnRequestId == null) /*||
-                        (!(order?.editReturnRequest ?? false))*/ )
+              (!((orderDetail.alreadyReturn ?? false) &&
+                      (returnRequestsData?.status?.value != "cancelled") &&
+                      (order?.orderHasReturnRequest ?? false) &&
+                      (order?.editReturnRequest ?? false)))
                   ? const SizedBox.shrink()
                   : state.cancelReturnRequestProductStatus ==
                             CancelReturnRequestProductStatus.loading ||
@@ -2637,8 +2630,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         orderReturnDetail?.status?.value != "out_for_return"
                     ? const SizedBox.shrink()
                     : Container(
-                        width: 105,
-                        height: 40,
+                        height: 30,
                         child: BlocListener<ChatBloc, ChatState>(
                           listenWhen: (previous, current) =>
                               previous.getOrderRecipientIdStatus !=
@@ -2712,8 +2704,22 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 );
                               }
                               return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                ),
+                                decoration: const BoxDecoration(
+                                  color: const Color.fromARGB(
+                                    255,
+                                    82,
+                                    139,
+                                    236,
+                                  ),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(12),
+                                  ),
+                                ),
                                 alignment: Alignment.center,
-                                width: 70,
+
                                 height: 30,
                                 child: InkWell(
                                   onTap: () {
@@ -2741,17 +2747,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   child: Row(
                                     children: [
                                       SvgPicture.asset(
-                                        AppAssets.chatMarkActiveSvg,
-                                        width: 15,
+                                        AppAssets.chatSvg,
+                                        width: 10,
                                       ),
-                                      const SizedBox(width: 5),
+                                      const SizedBox(width: 1),
                                       Text(
                                         LocaleKeys.chat_with_delivery_person
                                             .tr(),
                                         style: context.textTheme.bodyMedium?.rq
                                             .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              fontSize: 9,
+                                              color: const Color(0xffFFFFFF),
+                                              fontSize: 8,
                                               height: 1.3,
                                               letterSpacing: 0.18,
                                             ),
@@ -3543,11 +3549,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
 
         orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData!
             .forEach((element) {
-              if (element.status?.value == null &&
-                  element.status?.name != null) {
+              if ((element.status?.value ?? "").contains("draft") ||
+                  (element.status?.name ?? "").contains("draft")) {
                 element.orderDetails?.forEach((element) {
                   if (element.returnRequestProductId != null &&
-                      element.returnRequestId != null) {
+                      element.returnRequestId != null &&
+                      (element.alreadyReturn ?? false)) {
                     images.add(element.image ?? "");
                   }
                 });
@@ -4666,14 +4673,24 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               ?.data
                                               ?.returnRequestsData
                                               ?.forEach((element) {
-                                                if ((element.status?.name !=
-                                                        null &&
-                                                    element.status?.value ==
-                                                        null)) {
-                                                  returnRequestIdsToConfirm.add(
-                                                    element.returnRequestId
-                                                        .toString(),
-                                                  );
+                                                if ((element.status?.value ??
+                                                            "")
+                                                        .contains("draft") ||
+                                                    (element.status?.name ?? "")
+                                                        .contains("draft")) {
+                                                  element.orderDetails?.forEach((
+                                                    element,
+                                                  ) {
+                                                    if (element.alreadyReturn ??
+                                                        false) {
+                                                      returnRequestIdsToConfirm
+                                                          .add(
+                                                            element
+                                                                .returnRequestId
+                                                                .toString(),
+                                                          );
+                                                    }
+                                                  });
                                                 }
                                               });
 
@@ -4840,8 +4857,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                     SizedBox(height: 20.h),
                     !(optionModifyPanel.value == "Return_This_Product") ||
-                            (!(returnRequestsData?.status?.name != null &&
-                                returnRequestsData?.status?.value == null))
+                            (!((returnRequestsData?.status?.name ?? "")
+                                    .contains("draft") ||
+                                (returnRequestsData?.status?.value ?? "")
+                                    .contains("draft") ||
+                                (returnRequestsData?.status?.value ?? "")
+                                    .contains("cancel")))
                         ? const SizedBox.shrink()
                         : BlocListener<OrderBloc, OrderState>(
                             listenWhen: (previous, current) =>
@@ -4895,12 +4916,21 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ?.data
                                         ?.returnRequestsData
                                         ?.forEach((element) {
-                                          if ((element.status?.name != null &&
-                                              element.status?.value == null)) {
-                                            returnRequestIdsToConfirm.add(
-                                              element.returnRequestId
-                                                  .toString(),
-                                            );
+                                          if ((element.status?.value ?? "")
+                                                  .contains("draft") ||
+                                              (element.status?.name ?? "")
+                                                  .contains("draft")) {
+                                            element.orderDetails?.forEach((
+                                              element,
+                                            ) {
+                                              if (element.alreadyReturn ??
+                                                  false) {
+                                                returnRequestIdsToConfirm.add(
+                                                  element.returnRequestId
+                                                      .toString(),
+                                                );
+                                              }
+                                            });
                                           }
                                         });
                                     if (!(returnRequestIdsToConfirm.contains(
@@ -6185,9 +6215,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     : order!.orderGroupStatus?.value ==
                                           'shipped'
                                     ? AppAssets.shippedBlackSvg
-                                    : order!.orderStatus?.value == 'delivered'
+                                    : (order!.orderGroupStatus?.value ==
+                                              'delivered' ||
+                                          (order!.orderGroupStatus?.value ?? "")
+                                              .contains("return"))
                                     ? AppAssets.deliveredBlackSvg
-                                    : order!.orderStatus?.value == 'pending'
+                                    : order!.orderGroupStatus?.value ==
+                                          'pending'
                                     ? AppAssets.pendeingBlackCheck
                                     : AppAssets.orderPreparingSvg,
                                 height: 15.h,
@@ -6223,7 +6257,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               Text(
                                 HelperFunctions.formatNumber(
                                   number:
-                                      (order!.orderAmount! *
+                                      (HelperFunctions.truncateToDecimalPlaces(
+                                        order!.orderAmount!,
+                                        homeBloc
+                                            .state
+                                            .getCurrencyForCountryModel!
+                                            .data!
+                                            .currency!
+                                            .decimalDigits!,
+                                      ) *
                                       homeBloc
                                           .state
                                           .getCurrencyForCountryModel!
@@ -7660,16 +7702,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
             ),
           ),
           const SizedBox(height: 5),
-          ((order?.canReturnOrder ?? false) &&
-                  (order!.details?[indexTap.value].qty ?? 0) > 0)
+          ((orderDetail.alreadyReturn ?? false) &&
+                  !(order?.editReturnRequest ?? false))
+              ? const SizedBox.shrink()
+              : ((order?.canReturnOrder ??
+                        false || (order?.editReturnRequest ?? false)) &&
+                    (order!.details?[indexTap.value].qty ?? 0) > 0)
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: optionOfModify(
                     onTap: () {
                       orderBloc.add(const ResetAllStatusEvent());
                       optionModifyPanel.value = "Return_This_Product";
-                      if (orderDetail.returnRequestProductId != null &&
-                          order?.returnRequestId != null) {
+                      if ((orderDetail.alreadyReturn ?? false) &&
+                          (order?.editReturnRequest ?? false) &&
+                          (!(returnRequestsData?.status?.value ?? "").contains(
+                            "cancel",
+                          ))) {
                         //      qtyOfReturnController.text =
                         //    (orderDetails?.quantity ?? "").toString();
                         qtyOfReturnValueNotifier.value =
@@ -7706,7 +7755,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     svg: AppAssets.returnThisProductSvg,
                     image2: "",
                     tiltle:
-                        "${orderDetail.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_this_product.tr()}",
+                        "${orderDetail.returnRequestProductId != null && returnRequestsData?.status?.value != "cancelled" && order?.returnRequestId != null && (order?.editReturnRequest ?? false) ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_this_product.tr()}",
                     body:
                         "${LocaleKeys.return_this_product_in_24_hours_and_back_your_money.tr()}",
                   ),
@@ -7878,9 +7927,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ? AppAssets.orderCanselSvg
                                 : order!.orderGroupStatus?.value == 'shipped'
                                 ? AppAssets.shippedBlackSvg
-                                : order!.orderStatus?.value == 'delivered'
+                                : (order!.orderGroupStatus?.value ==
+                                          'delivered' ||
+                                      (order!.orderGroupStatus?.value ?? "")
+                                          .contains("return"))
                                 ? AppAssets.deliveredBlackSvg
-                                : order!.orderStatus?.value == 'pending'
+                                : order!.orderGroupStatus?.value == 'pending'
                                 ? AppAssets.pendeingBlackCheck
                                 : AppAssets.orderPreparingSvg,
                             height: 15.h,
@@ -7914,7 +7966,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           Text(
                             HelperFunctions.formatNumber(
                               number:
-                                  (order!.orderAmount! *
+                                  (HelperFunctions.truncateToDecimalPlaces(
+                                    order!.orderAmount!,
+                                    homeBloc
+                                        .state
+                                        .getCurrencyForCountryModel!
+                                        .data!
+                                        .currency!
+                                        .decimalDigits!,
+                                  ) *
                                   homeBloc
                                       .state
                                       .getCurrencyForCountryModel!
@@ -8047,7 +8107,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ),
             ),
             Text(
-              "  ${HelperFunctions.formatNumber(number: ((((allOrder ? order!.orderAmount! : order!.details?[indexTap.value].productDetails?.offerPrice ?? 0))) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!) * (order!.details?[indexTap.value].qty ?? 0)), isNeedRounding: false)}",
+              "  ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((((allOrder ? order!.orderAmount! : ((order!.details?[indexTap.value].productDetails?.offerPrice ?? 0) * ((order!.details?[indexTap.value].qty ?? 1).round()))))), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!) * (order!.details?[indexTap.value].qty ?? 0)), isNeedRounding: false)}",
               maxLines: 1,
               style: context.textTheme.bodyMedium?.bq.copyWith(
                 color: const Color(0xff8D8D8D),
@@ -9103,20 +9163,25 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     height: 1.3,
                   ),
                 ),
-                ValueListenableBuilder<double>(
-                  valueListenable: reasonCost,
-                  builder: (context, _reasonCost, _) {
-                    return Text(
-                      order!.paymentStatus == "unpaid"
-                          ? " 0"
-                          : "  ${HelperFunctions.formatNumber(number: ((((order!.details?[indexTap.value].productDetails?.offerPrice ?? 0)) - (_reasonCost)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
-                      maxLines: 1,
-                      style: context.textTheme.bodyMedium?.bq.copyWith(
-                        color: const Color(0xff8D8D8D),
-                        letterSpacing: 0.18,
-                        fontSize: 12.sp,
-                        height: 1.3,
-                      ),
+                ValueListenableBuilder<int>(
+                  valueListenable: qtyOfReturnValueNotifier,
+                  builder: (context, _qtyOfReturnValueNotifier, _) {
+                    return ValueListenableBuilder<double>(
+                      valueListenable: reasonCost,
+                      builder: (context, _reasonCost, _) {
+                        return Text(
+                          order!.paymentStatus == "unpaid"
+                              ? " 0"
+                              : "  ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((((order!.details?[indexTap.value].productDetails?.offerPrice ?? 0) * (_qtyOfReturnValueNotifier)) - (_reasonCost)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)), isNeedRounding: false)}",
+                          maxLines: 1,
+                          style: context.textTheme.bodyMedium?.bq.copyWith(
+                            color: const Color(0xff8D8D8D),
+                            letterSpacing: 0.18,
+                            fontSize: 12.sp,
+                            height: 1.3,
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -9455,7 +9520,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             children: [
                               for (ReturnReasonModel reason in row) ...[
                                 optionReturnOrder(
-                                  "${(reason.reasonAeEn ?? '') + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: ((reason.cost ?? 0) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
+                                  "${(reason.reasonAeEn ?? '') + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((reason.cost ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
                                   reason.id ?? -1, // النص من الـ API
                                   _calculateButtonWidth(
                                     reason.reasonAeEn ?? '',
@@ -9463,11 +9528,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   () {
                                     if (reason.isCostBySystem == 0 &&
                                         ((reason.cost ?? 0) >
-                                            (order
-                                                    ?.details?[indexTap.value]
-                                                    .productDetails
-                                                    ?.offerPrice ??
-                                                0))) {
+                                            ((order
+                                                        ?.details?[indexTap
+                                                            .value]
+                                                        .productDetails
+                                                        ?.offerPrice ??
+                                                    0) *
+                                                (order!
+                                                        .details?[indexTap
+                                                            .value]
+                                                        .qty ??
+                                                    1)))) {
                                       return;
                                     }
                                     if (optionReturn.value == reason.id) {
@@ -9598,6 +9669,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             }
                                                             return Container(
                                                               width: 57,
+
                                                               height: 80,
                                                               margin: EdgeInsets.only(
                                                                 right:
@@ -9613,30 +9685,74 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     ? 0
                                                                     : 5,
                                                               ),
-                                                              child: ClipRRect(
-                                                                borderRadius:
-                                                                    const BorderRadius.all(
-                                                                      Radius.circular(
-                                                                        12,
-                                                                      ),
-                                                                    ),
-                                                                child: MyCachedNetworkImage(
-                                                                  imageUrl:
-                                                                      (_orderPhotos![index]
-                                                                          .toString()
-                                                                          .contains(
+                                                              child: Stack(
+                                                                children: [
+                                                                  ClipRRect(
+                                                                    borderRadius:
+                                                                        const BorderRadius.all(
+                                                                          Radius.circular(
+                                                                            12,
+                                                                          ),
+                                                                        ),
+                                                                    child: MyCachedNetworkImage(
+                                                                      imageUrl:
+                                                                          (_orderPhotos![index].toString().contains(
                                                                             "cloudinary",
                                                                           )
-                                                                      ? _orderPhotos[index]!
-                                                                      : ("${dotenv.env['Images_Url']}") +
-                                                                            "/return_request_products/" +
-                                                                            _orderPhotos[index]!),
-                                                                  imageFit:
-                                                                      BoxFit
-                                                                          .fill,
-                                                                  width: 57,
-                                                                  height: 80,
-                                                                ),
+                                                                          ? _orderPhotos[index]!
+                                                                          : ("${dotenv.env['Images_Url']}") +
+                                                                                "/return_request_products/" +
+                                                                                _orderPhotos[index]!),
+                                                                      imageFit:
+                                                                          BoxFit
+                                                                              .fill,
+                                                                      width: 57,
+                                                                      height:
+                                                                          80,
+                                                                    ),
+                                                                  ),
+                                                                  Positioned(
+                                                                    child: InkWell(
+                                                                      onTap: () {
+                                                                        orderBloc.add(
+                                                                          RemoveImagesForReturnProductEvent(
+                                                                            index,
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                      child: Container(
+                                                                        padding:
+                                                                            const EdgeInsets.all(
+                                                                              2,
+                                                                            ),
+                                                                        width:
+                                                                            15,
+                                                                        height:
+                                                                            15,
+                                                                        decoration: BoxDecoration(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          borderRadius: BorderRadius.circular(
+                                                                            12,
+                                                                          ),
+                                                                        ),
+
+                                                                        child: SvgPicture.asset(
+                                                                          AppAssets
+                                                                              .cancelSvg,
+
+                                                                          // ignore: deprecated_member_use
+                                                                          height:
+                                                                              5,
+                                                                          width:
+                                                                              5,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    right: 0,
+                                                                    top: 0,
+                                                                  ),
+                                                                ],
                                                               ),
                                                             );
                                                           },
@@ -9665,30 +9781,73 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     ? 0
                                                                     : 5,
                                                               ),
-                                                              child: ClipRRect(
-                                                                borderRadius:
-                                                                    const BorderRadius.all(
-                                                                      Radius.circular(
-                                                                        12,
-                                                                      ),
-                                                                    ),
-                                                                child: MyCachedNetworkImage(
-                                                                  imageUrl:
-                                                                      (_orderPhotos![index]
-                                                                          .toString()
-                                                                          .contains(
+                                                              child: Stack(
+                                                                children: [
+                                                                  ClipRRect(
+                                                                    borderRadius:
+                                                                        const BorderRadius.all(
+                                                                          Radius.circular(
+                                                                            12,
+                                                                          ),
+                                                                        ),
+                                                                    child: MyCachedNetworkImage(
+                                                                      imageUrl:
+                                                                          (_orderPhotos![index].toString().contains(
                                                                             "cloudinary",
                                                                           )
-                                                                      ? _orderPhotos[index]!
-                                                                      : ("${dotenv.env['Images_Url']}") +
-                                                                            "/return_request_products/" +
-                                                                            _orderPhotos[index]!),
-                                                                  imageFit:
-                                                                      BoxFit
-                                                                          .fill,
-                                                                  width: 57,
-                                                                  height: 80,
-                                                                ),
+                                                                          ? _orderPhotos[index]!
+                                                                          : ("${dotenv.env['Images_Url']}") +
+                                                                                "/return_request_products/" +
+                                                                                _orderPhotos[index]!),
+                                                                      imageFit:
+                                                                          BoxFit
+                                                                              .fill,
+                                                                      width: 57,
+                                                                      height:
+                                                                          80,
+                                                                    ),
+                                                                  ),
+                                                                  Positioned(
+                                                                    child: InkWell(
+                                                                      onTap: () {
+                                                                        orderBloc.add(
+                                                                          RemoveImagesForReturnProductEvent(
+                                                                            index,
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                      child: Container(
+                                                                        padding:
+                                                                            const EdgeInsets.all(
+                                                                              2,
+                                                                            ),
+                                                                        decoration: BoxDecoration(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          borderRadius: BorderRadius.circular(
+                                                                            12,
+                                                                          ),
+                                                                        ),
+                                                                        width:
+                                                                            15,
+                                                                        height:
+                                                                            15,
+                                                                        child: SvgPicture.asset(
+                                                                          AppAssets
+                                                                              .cancelSvg,
+
+                                                                          // ignore: deprecated_member_use
+                                                                          height:
+                                                                              5,
+                                                                          width:
+                                                                              5,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    right: 0,
+                                                                    top: 0,
+                                                                  ),
+                                                                ],
                                                               ),
                                                             );
                                                           },
@@ -10179,7 +10338,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 ),
                                           ),
                                           child: Text(
-                                            "${orderDetail.returnRequestProductId != null && order?.returnRequestId != null ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_request.tr()}",
+                                            "${(orderDetail.alreadyReturn ?? false) && order?.returnRequestId != null && (order?.editReturnRequest ?? false) ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_request.tr()}",
                                             maxLines: 1,
                                             style: context
                                                 .textTheme

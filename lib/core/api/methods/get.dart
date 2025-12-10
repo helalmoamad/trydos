@@ -68,7 +68,8 @@ class GetClient<T> extends BaseApi<T> {
       log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());
 
-      if (response.statusCode == StatusCode.operationSucceeded.code) {
+      if (response.statusCode == StatusCode.operationSucceeded.code ||
+          response.statusCode == StatusCode.createdSucceeded.code) {
         if (_fromJson == null) {
           return Future.value(_valueOnSuccess);
         }

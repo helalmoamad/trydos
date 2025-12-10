@@ -19,6 +19,22 @@ class GlobalTestFunctions {
     } while (finder.evaluate().isEmpty);
   }
 
+  static Future<void> scrollUntilVisibleWidget(
+    WidgetTester tester,
+    Finder finder,
+  ) async {
+    bool isVisible = false;
+    while (!isVisible) {
+      try {
+        expect(finder, findsOneWidget);
+        isVisible = true;
+      } catch (e) {
+        await tester.drag(finder, const Offset(0, -400));
+      }
+      await tester.pumpAndSettle();
+    }
+  }
+
   //////////////////////////////////////////////////////////////
   static Future<void> findWidget({
     required WidgetTester tester,
@@ -30,8 +46,10 @@ class GlobalTestFunctions {
     required String failedMessage,
   }) async {
     try {
-      expect(widgetType == null ? actual : find.byType(widgetType),
-          findsOneWidget);
+      expect(
+        widgetType == null ? actual : find.byType(widgetType),
+        findsOneWidget,
+      );
       debugPrint(successMessage);
     } catch (e) {
       fail('//////// $failedMessage Failure: //////////\n $e');
@@ -54,7 +72,9 @@ class GlobalTestFunctions {
   }) async {
     try {
       expect(
-          widgetType == null ? actual : find.byType(widgetType), findsNothing);
+        widgetType == null ? actual : find.byType(widgetType),
+        findsNothing,
+      );
       debugPrint(successMessage);
     } catch (e) {
       fail('//////// $failedMessage Failure: //////////\n $e');

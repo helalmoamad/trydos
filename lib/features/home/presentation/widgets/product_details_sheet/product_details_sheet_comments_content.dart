@@ -95,159 +95,173 @@ class _ProductDetailsSheetCommentsContentState
               current.deleteOrderCommentRatingStatus ||
           previous.updateOrderCommentRatingStatus !=
               current.updateOrderCommentRatingStatus ||
+          previous.translateCommentStatus != current.translateCommentStatus ||
           previous.getFqaCommentsPaginationModel?['all']?.paginationStatus !=
               current.getFqaCommentsPaginationModel?['all']?.paginationStatus,
       builder: (context, state) {
         return ScrollConfiguration(
           behavior: const cupertino.CupertinoScrollBehavior(),
-          child: ListView(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            children: [
-              10.verticalSpace,
-              !(prefsRepository.isVerifiedPhone ?? false)
-                  ? Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
-                              false)) {
-                            Future.delayed(const Duration(seconds: 1), () {
-                              widget.isVerified?.value = false;
-                              if ((GetIt.I<PrefsRepository>()
-                                      .isVerifiedPhonePeforeExpiredToken ??
+          child: BlocBuilder<AuthBloc, AuthState>(
+            buildWhen: (previous, current) =>
+                previous.verifyOtpFromGuestStatus !=
+                current.verifyOtpFromGuestStatus,
+
+            builder: (context, authState) {
+              return ListView(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                children: [
+                  10.verticalSpace,
+                  !(prefsRepository.isVerifiedPhone ?? false)
+                      ? Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (!(GetIt.I<PrefsRepository>()
+                                      .isVerifiedPhone ??
                                   false)) {
-                                GetIt.I<AuthBloc>().add(
-                                  SendOtpEvent(
-                                    phone: GetIt.I<PrefsRepository>()
-                                        .myPhoneNumber!,
-                                    isViaWhatsApp: 1,
-                                  ),
-                                );
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  widget.isVerified?.value = false;
+                                  if ((GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhonePeforeExpiredToken ??
+                                      false)) {
+                                    GetIt.I<AuthBloc>().add(
+                                      SendOtpEvent(
+                                        phone: GetIt.I<PrefsRepository>()
+                                            .myPhoneNumber!,
+                                        isViaWhatsApp: 1,
+                                      ),
+                                    );
+                                  }
+                                });
                               }
-                            });
-                          }
-                        },
-                        child: SizedBox(
-                          width: 1.sw,
-                          height: 30,
-                          child: Center(
-                            child: MyTextWidget(
-                              LocaleKeys.please_login_to_add_comment.tr(),
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: Colors.red,
-                                fontSize: 14,
+                            },
+                            child: SizedBox(
+                              width: 1.sw,
+                              height: 30,
+                              child: Center(
+                                child: MyTextWidget(
+                                  LocaleKeys.please_login_to_add_comment.tr(),
+                                  style: context.textTheme.bodyMedium?.rq
+                                      .copyWith(
+                                        color: Colors.red,
+                                        fontSize: 14,
+                                      ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    )
-                  : Container(
-                      height: 65,
-                      decoration: BoxDecoration(
-                        color: const Color(0xffF8F8F8),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      alignment: Alignment.center,
-                      child: cupertino.Directionality(
-                        textDirection: cupertino.TextDirection.ltr,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Padding(
-                            padding: HWEdgeInsets.symmetric(horizontal: 20),
-                            child: AppTextField(
-                              textInputAction: cupertino.TextInputAction.done,
-                              onFieldSubmitted: (val) {
-                                if (addCommentController.text.isEmpty) {
-                                  return;
-                                }
-                                BlocProvider.of<HomeBloc>(context).add(
-                                  CreateCommentRatingEvent(
-                                    productId: widget.productId,
-                                    ownerId: widget.ownerId,
-                                    ownerType: widget.ownerType,
-                                    variant: widget.currentVariant,
-                                    text: val,
-                                  ),
-                                );
-
-                                //////////////////////////////////////////////////////////
-                                // FirebaseAnalyticsService.logEventForSession(
-                                //   eventName:
-                                //       AnalyticsEventsConst.buttonClicked,
-                                //   executedEventName:
-                                //       AnalyticsButtonsEventNameConst
-                                //           .confirmCommentButton,
-                                // );
-
-                                //   addCommentButtonToggleNotifier.value = false;
-
-                                addCommentController.clear();
-                                cupertino.FocusScope.of(context).unfocus();
-                              },
-                              hintText: LocaleKeys.add_comment.tr(),
-                              controller: addCommentController,
-                              suffixIcon: Padding(
-                                padding: HWEdgeInsets.only(
-                                  right: 20.0,
-                                  top: 15,
-                                  bottom: 15,
-                                ),
-                                child: IconButton(
-                                  icon:
-                                      (state.createCommentRatingStatus ==
-                                              CreateCommentRatingStatus
-                                                  .loading) ||
-                                          (state.updateOrderCommentRatingStatus ==
-                                              UpdateOrderCommentRatingStatus
-                                                  .loading)
-                                      ? const Icon(
-                                          Icons.hourglass_bottom_rounded,
-                                          color: Colors.blue,
-                                        )
-                                      : const Icon(
-                                          Icons.send,
-                                          color: Colors.blue,
-                                        ),
-                                  onPressed: () {
-                                    /*    if (addCommentController.text.isEmpty) {
-                                        return;
-                                      }*/
+                        )
+                      : Container(
+                          height: 65,
+                          decoration: BoxDecoration(
+                            color: const Color(0xffF8F8F8),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          alignment: Alignment.center,
+                          child: cupertino.Directionality(
+                            textDirection: cupertino.TextDirection.ltr,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Padding(
+                                padding: HWEdgeInsets.symmetric(horizontal: 20),
+                                child: AppTextField(
+                                  textInputAction:
+                                      cupertino.TextInputAction.done,
+                                  onFieldSubmitted: (val) {
+                                    if (addCommentController.text.isEmpty) {
+                                      return;
+                                    }
                                     BlocProvider.of<HomeBloc>(context).add(
                                       CreateCommentRatingEvent(
                                         productId: widget.productId,
-                                        variant: widget.currentVariant,
+                                        slug: widget.productSlug,
+                                        images: const [],
                                         ownerId: widget.ownerId,
                                         ownerType: widget.ownerType,
-                                        text: addCommentController.text,
+                                        variant: widget.currentVariant,
+                                        text: val,
                                       ),
                                     );
 
                                     //////////////////////////////////////////////////////////
-                                    // FirebaseAnalyticsService
-                                    //     .logEventForSession(
+                                    // FirebaseAnalyticsService.logEventForSession(
                                     //   eventName:
                                     //       AnalyticsEventsConst.buttonClicked,
                                     //   executedEventName:
                                     //       AnalyticsButtonsEventNameConst
                                     //           .confirmCommentButton,
                                     // );
-                                    Future.delayed(
-                                      const Duration(seconds: 2),
-                                      () {
-                                        addCommentController.clear();
-                                        cupertino.FocusScope.of(
-                                          context,
-                                        ).unfocus();
-                                      },
-                                    );
 
-                                    //     addCommentButtonToggleNotifier.value =
-                                    //          false;
+                                    //   addCommentButtonToggleNotifier.value = false;
+
+                                    addCommentController.clear();
+                                    cupertino.FocusScope.of(context).unfocus();
                                   },
-                                  /* child: (state.addCommentStatus ==
+                                  hintText: LocaleKeys.add_comment.tr(),
+                                  controller: addCommentController,
+                                  suffixIcon: Padding(
+                                    padding: HWEdgeInsets.only(
+                                      right: 20.0,
+                                      top: 15,
+                                      bottom: 15,
+                                    ),
+                                    child: IconButton(
+                                      icon:
+                                          (state.createCommentRatingStatus ==
+                                                  CreateCommentRatingStatus
+                                                      .loading) ||
+                                              (state.updateOrderCommentRatingStatus ==
+                                                  UpdateOrderCommentRatingStatus
+                                                      .loading)
+                                          ? const Icon(
+                                              Icons.hourglass_bottom_rounded,
+                                              color: Colors.blue,
+                                            )
+                                          : const Icon(
+                                              Icons.send,
+                                              color: Colors.blue,
+                                            ),
+                                      onPressed: () {
+                                        /*    if (addCommentController.text.isEmpty) {
+                                        return;
+                                      }*/
+                                        BlocProvider.of<HomeBloc>(context).add(
+                                          CreateCommentRatingEvent(
+                                            productId: widget.productId,
+                                            variant: widget.currentVariant,
+                                            slug: widget.productSlug,
+                                            images: const [],
+                                            ownerId: widget.ownerId,
+                                            ownerType: widget.ownerType,
+                                            text: addCommentController.text,
+                                          ),
+                                        );
+
+                                        //////////////////////////////////////////////////////////
+                                        // FirebaseAnalyticsService
+                                        //     .logEventForSession(
+                                        //   eventName:
+                                        //       AnalyticsEventsConst.buttonClicked,
+                                        //   executedEventName:
+                                        //       AnalyticsButtonsEventNameConst
+                                        //           .confirmCommentButton,
+                                        // );
+                                        Future.delayed(
+                                          const Duration(seconds: 2),
+                                          () {
+                                            addCommentController.clear();
+                                            cupertino.FocusScope.of(
+                                              context,
+                                            ).unfocus();
+                                          },
+                                        );
+
+                                        //     addCommentButtonToggleNotifier.value =
+                                        //          false;
+                                      },
+                                      /* child: (state.addCommentStatus ==
                                             AddCommentStatus.loading)
                                         ? cupertino.Container(
                                             width: 25,
@@ -261,131 +275,145 @@ class _ProductDetailsSheetCommentsContentState
                                             width: 10,
                                             height: 10,
                                           ),*/
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
+                  10.verticalSpace,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(AppAssets.chatMarkActiveSvg, height: 20),
+                      const SizedBox(width: 10),
+                      MyTextWidget(
+                        '${LocaleKeys.comment_about_this_product.tr()}',
+                        style: context.textTheme.bodyMedium?.mq.copyWith(
+                          color: const Color(0xff505050),
+                        ),
                       ),
-                    ),
-              10.verticalSpace,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset(AppAssets.chatMarkActiveSvg, height: 20),
-                  const SizedBox(width: 10),
-                  MyTextWidget(
-                    '${LocaleKeys.comment_about_this_product.tr()}',
-                    style: context.textTheme.bodyMedium?.mq.copyWith(
-                      color: const Color(0xff505050),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      controller: widget.scrollController,
+                      itemBuilder: (context, index) {
+                        if (index ==
+                            (state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items
+                                    .length ??
+                                0)) {
+                          return SizedBox(
+                            height: 120,
+                            width: 1.sw,
+                            child:
+                                state
+                                        .getFqaCommentsPaginationModel?['all']
+                                        ?.paginationStatus ==
+                                    PaginationStatus.loading
+                                ? TrydosLoader(size: 24)
+                                : const SizedBox.shrink(),
+                          );
+                        }
+                        return Padding(
+                          padding: HWEdgeInsets.symmetric(vertical: 2),
+                          child: CommentCard(
+                            state: state,
+                            isVerified: widget.isVerified,
+                            productSlug: widget.productSlug,
+                            commentTran:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .commentTran ??
+                                "",
+                            commentHasReply: state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .hasReply,
+                            isTran: state
+                                .getFqaCommentsPaginationModel?['all']
+                                ?.items[index]
+                                .isTran,
+                            userId:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .customer
+                                    ?.id ??
+                                "",
+                            tapIndex: state.tapCommentIndex,
+                            imageUrl:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .customer
+                                    ?.image ??
+                                "",
+                            index: index,
+                            ownerId: widget.ownerId,
+                            ownerType: widget.ownerType,
+                            commentId:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .id ??
+                                "",
+                            currentVariant:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .variant ??
+                                "",
+                            productId:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .productId ??
+                                "",
+                            names:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .customer
+                                    ?.name ??
+                                "",
+                            comment:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .comment ??
+                                "",
+                            date:
+                                state
+                                    .getFqaCommentsPaginationModel?['all']
+                                    ?.items[index]
+                                    .createdAt
+                                    ?.toString() ??
+                                "",
+                          ),
+                        );
+                      },
+                      itemCount:
+                          (state
+                                  .getFqaCommentsPaginationModel?['all']
+                                  ?.items
+                                  .length ??
+                              0) +
+                          1,
+                      physics: const cupertino.ClampingScrollPhysics(),
+                      padding: EdgeInsets.zero,
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  controller: widget.scrollController,
-                  itemBuilder: (context, index) {
-                    if (index ==
-                        (state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items
-                                .length ??
-                            0)) {
-                      return SizedBox(
-                        height: 120,
-                        width: 1.sw,
-                        child:
-                            state
-                                    .getFqaCommentsPaginationModel?['all']
-                                    ?.paginationStatus ==
-                                PaginationStatus.loading
-                            ? TrydosLoader(size: 24)
-                            : const SizedBox.shrink(),
-                      );
-                    }
-                    return Padding(
-                      padding: HWEdgeInsets.symmetric(vertical: 2),
-                      child: CommentCard(
-                        state: state,
-                        commentHasReply: state
-                            .getFqaCommentsPaginationModel?['all']
-                            ?.items[index]
-                            .hasReply,
-                        userId:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .customer
-                                ?.id ??
-                            "",
-                        tapIndex: state.tapCommentIndex,
-                        imageUrl:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .customer
-                                ?.image ??
-                            "",
-                        index: index,
-                        ownerId: widget.ownerId,
-                        ownerType: widget.ownerType,
-                        commentId:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .id ??
-                            "",
-                        currentVariant:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .variant ??
-                            "",
-                        productId:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .productId ??
-                            "",
-                        names:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .customer
-                                ?.name ??
-                            "",
-                        comment:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .comment ??
-                            "",
-                        date:
-                            state
-                                .getFqaCommentsPaginationModel?['all']
-                                ?.items[index]
-                                .createdAt
-                                ?.toString() ??
-                            "",
-                      ),
-                    );
-                  },
-                  itemCount:
-                      (state
-                              .getFqaCommentsPaginationModel?['all']
-                              ?.items
-                              .length ??
-                          0) +
-                      1,
-                  physics: const cupertino.ClampingScrollPhysics(),
-                  padding: EdgeInsets.zero,
-                ),
-              ),
-            ],
+              );
+            },
           ),
         );
       },
@@ -404,7 +432,11 @@ class CommentCard extends StatelessWidget {
   final bool? commentHasReply;
   final String userId;
   final String comment;
+  final String commentTran;
+  final String productSlug;
   final String commentId;
+  final bool? isTran;
+  final ValueNotifier<bool>? isVerified;
   final String currentVariant;
   final String productId;
   final HomeState state;
@@ -415,7 +447,11 @@ class CommentCard extends StatelessWidget {
     required this.commentHasReply,
     required this.tapIndex,
     required this.state,
+    required this.isVerified,
+    required this.isTran,
+    required this.commentTran,
     required this.ownerType,
+    required this.productSlug,
     required this.ownerId,
     required this.userId,
     required this.index,
@@ -526,6 +562,7 @@ class CommentCard extends StatelessWidget {
                                   productId: productId,
                                   ownerId: ownerId,
                                   ownerType: ownerType,
+                                  slug: productSlug,
                                   tapCommentIndex: index,
                                   variant: currentVariant,
                                   text: _controller.text,
@@ -623,7 +660,6 @@ class CommentCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MyTextWidget(
                       extractInitialsAndAppendXXX(names),
@@ -631,227 +667,335 @@ class CommentCard extends StatelessWidget {
                         color: const Color(0xff969696),
                       ),
                     ),
+                    const Spacer(),
                     MyTextWidget(
                       date,
                       style: context.textTheme.titleSmall?.rq.copyWith(
                         color: const Color(0xff969696),
                       ),
                     ),
+
+                    SizedBox(
+                      width: 40.w,
+                      height: 35,
+                      child:
+                          ((state.deleteOrderCommentRatingStatus ==
+                                      DeleteOrderCommentRatingStatus.loading ||
+                                  state.updateOrderCommentRatingStatus ==
+                                      UpdateOrderCommentRatingStatus.loading ||
+                                  state.translateCommentStatus ==
+                                      TranslateCommentStatus.loading) &&
+                              state.tapCommentIndex == index)
+                          ? TrydosLoader(size: 15)
+                          : SizedBox(
+                              width: 40,
+                              height: 35,
+                              child: PopupMenuButton<String>(
+                                icon: const Icon(
+                                  Icons.more_vert,
+                                  color: Colors.black87,
+                                ),
+                                onSelected: (value) async {
+                                  if (value == 'delete') {
+                                    final confirmed = await showDialog<bool>(
+                                      context: context,
+                                      barrierColor: Colors.transparent,
+                                      builder: (ctx) => Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                          ),
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: Container(
+                                              width: double.infinity,
+                                              margin: EdgeInsets.only(top: 8.h),
+                                              padding: EdgeInsets.all(16.w),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFE2FFF1),
+                                                borderRadius:
+                                                    BorderRadius.circular(12.r),
+                                                border: Border.all(
+                                                  color: const Color(
+                                                    0xFF402CDD,
+                                                  ),
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        // ignore: deprecated_member_use
+                                                        .withOpacity(0.1),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  MyTextWidget(
+                                                    LocaleKeys
+                                                        .confirm_delete_comment_title
+                                                        .tr(),
+                                                    style: TextStyle(
+                                                      fontSize: 16.sp,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: const Color(
+                                                        0xFF1A1A1A,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8.h),
+                                                  MyTextWidget(
+                                                    LocaleKeys
+                                                        .confirm_delete_comment_message
+                                                        .tr(),
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: const Color(
+                                                        0xFF666666,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 12.h),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                                ctx,
+                                                              ).pop(false),
+                                                          child: Text(
+                                                            LocaleKeys.cancel
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600],
+                                                              fontSize: 14,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: ElevatedButton(
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                                ctx,
+                                                              ).pop(true),
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                const Color(
+                                                                  0xFF402CDD,
+                                                                ),
+                                                            foregroundColor:
+                                                                Colors.white,
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    12,
+                                                                  ),
+                                                            ),
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  vertical: 10,
+                                                                ),
+                                                          ),
+                                                          child: Text(
+                                                            LocaleKeys
+                                                                .confirm_delete
+                                                                .tr(),
+                                                            style:
+                                                                const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 14,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                    if (confirmed == true) {
+                                      if (!(GetIt.I<PrefsRepository>()
+                                              .isVerifiedPhone ??
+                                          false)) {
+                                        Future.delayed(
+                                          const Duration(seconds: 1),
+                                          () {
+                                            isVerified?.value = false;
+                                            if ((GetIt.I<PrefsRepository>()
+                                                    .isVerifiedPhonePeforeExpiredToken ??
+                                                false)) {
+                                              GetIt.I<AuthBloc>().add(
+                                                SendOtpEvent(
+                                                  phone:
+                                                      GetIt.I<PrefsRepository>()
+                                                          .myPhoneNumber!,
+                                                  isViaWhatsApp: 1,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        );
+                                        return;
+                                      }
+                                      BlocProvider.of<HomeBloc>(context).add(
+                                        DeleteCommentRatingEvent(
+                                          commentId: commentId,
+                                          productId: productId,
+                                          tapCommentIndex: index,
+                                        ),
+                                      );
+                                    }
+                                  } else if (value == 'edit') {
+                                    if (!(GetIt.I<PrefsRepository>()
+                                            .isVerifiedPhone ??
+                                        false)) {
+                                      Future.delayed(
+                                        const Duration(seconds: 1),
+                                        () {
+                                          isVerified?.value = false;
+                                          if ((GetIt.I<PrefsRepository>()
+                                                  .isVerifiedPhonePeforeExpiredToken ??
+                                              false)) {
+                                            GetIt.I<AuthBloc>().add(
+                                              SendOtpEvent(
+                                                phone:
+                                                    GetIt.I<PrefsRepository>()
+                                                        .myPhoneNumber!,
+                                                isViaWhatsApp: 1,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      );
+                                      return;
+                                    }
+                                    _showEditBottomSheet(context, comment);
+                                  } else if (value == 'translate') {
+                                    if (!(GetIt.I<PrefsRepository>()
+                                            .isVerifiedPhone ??
+                                        false)) {
+                                      Future.delayed(
+                                        const Duration(seconds: 1),
+                                        () {
+                                          isVerified?.value = false;
+                                          if ((GetIt.I<PrefsRepository>()
+                                                  .isVerifiedPhonePeforeExpiredToken ??
+                                              false)) {
+                                            GetIt.I<AuthBloc>().add(
+                                              SendOtpEvent(
+                                                phone:
+                                                    GetIt.I<PrefsRepository>()
+                                                        .myPhoneNumber!,
+                                                isViaWhatsApp: 1,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      );
+                                      return;
+                                    }
+                                    BlocProvider.of<HomeBloc>(context).add(
+                                      TranslateCommentEvent(
+                                        commentId: commentId,
+                                        showOriginal: (isTran ?? false),
+                                        tapCommentIndex: index,
+                                      ),
+                                    );
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  List<PopupMenuEntry<String>> menu = [];
+                                  menu.add(
+                                    PopupMenuItem(
+                                      value: 'translate',
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.languageSvg,
+
+                                            height: 20,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            (isTran ?? false)
+                                                ? LocaleKeys
+                                                      .show_original_version
+                                                      .tr()
+                                                : LocaleKeys.translate.tr(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                  if (!(userId !=
+                                          GetIt.I<PrefsRepository>()
+                                              .myMarketId ||
+                                      (commentHasReply ?? false))) {
+                                    menu.add(
+                                      PopupMenuItem(
+                                        value: 'edit',
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              AppAssets.editSvg,
+                                              // ignore: deprecated_member_use
+                                              color: Colors.green,
+                                              height: 20,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(LocaleKeys.edit.tr()),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                    menu.add(
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              AppAssets.deletecartSvg,
+                                              height: 20,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(LocaleKeys.delete.tr()),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return menu;
+                                },
+                              ),
+                            ),
+                    ),
                   ],
                 ),
                 Flexible(
                   child: MyTextWidget(
-                    comment,
+                    (isTran ?? false) ? commentTran : comment,
                     style: context.textTheme.bodySmall?.rq.copyWith(
                       color: const Color(0xff5D5C5D),
                     ),
                     maxLines: 5,
                   ),
                 ),
-                userId != GetIt.I<PrefsRepository>().myMarketId
-                    ? const SizedBox.shrink()
-                    : Flexible(
-                        child: SizedBox(
-                          width: 1.sw,
-                          height: 40,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              state.deleteOrderCommentRatingStatus ==
-                                          DeleteOrderCommentRatingStatus
-                                              .loading &&
-                                      tapIndex == index
-                                  ? TrydosLoader(size: 15)
-                                  : GestureDetector(
-                                      onTap: () async {
-                                        final confirmed = await showDialog<bool>(
-                                          context: context,
-                                          barrierColor: Colors.transparent,
-                                          builder: (ctx) => Center(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                  ),
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: Container(
-                                                  width: double.infinity,
-                                                  margin: EdgeInsets.only(
-                                                    top: 8.h,
-                                                  ),
-                                                  padding: EdgeInsets.all(16.w),
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(
-                                                      0xFFE2FFF1,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12.r,
-                                                        ),
-                                                    border: Border.all(
-                                                      color: const Color(
-                                                        0xFF402CDD,
-                                                      ),
-                                                    ),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            // ignore: deprecated_member_use
-                                                            .withOpacity(0.1),
-                                                        blurRadius: 8,
-                                                        offset: const Offset(
-                                                          0,
-                                                          2,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      MyTextWidget(
-                                                        LocaleKeys
-                                                            .confirm_delete_comment_title
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 16.sp,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color: const Color(
-                                                            0xFF1A1A1A,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 8.h),
-                                                      MyTextWidget(
-                                                        LocaleKeys
-                                                            .confirm_delete_comment_message
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: const Color(
-                                                            0xFF666666,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 12.h),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.of(
-                                                                    ctx,
-                                                                  ).pop(false),
-                                                              child: Text(
-                                                                LocaleKeys
-                                                                    .cancel
-                                                                    .tr(),
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .grey[600],
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 8,
-                                                          ),
-                                                          Expanded(
-                                                            child: ElevatedButton(
-                                                              onPressed: () =>
-                                                                  Navigator.of(
-                                                                    ctx,
-                                                                  ).pop(true),
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor:
-                                                                    const Color(
-                                                                      0xFF402CDD,
-                                                                    ),
-                                                                foregroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        12,
-                                                                      ),
-                                                                ),
-                                                                padding:
-                                                                    const EdgeInsets.symmetric(
-                                                                      vertical:
-                                                                          10,
-                                                                    ),
-                                                              ),
-                                                              child: Text(
-                                                                LocaleKeys
-                                                                    .confirm_delete
-                                                                    .tr(),
-                                                                style: const TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                        if (confirmed == true) {
-                                          BlocProvider.of<HomeBloc>(
-                                            context,
-                                          ).add(
-                                            DeleteCommentRatingEvent(
-                                              commentId: commentId,
-                                              productId: productId,
-                                              tapCommentIndex: index,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: SvgPicture.asset(
-                                        AppAssets.deletecartSvg,
-                                        height: 20,
-                                      ),
-                                    ),
-                              const SizedBox(width: 15),
-                              (commentHasReply ?? false)
-                                  ? const SizedBox.shrink()
-                                  : state.updateOrderCommentRatingStatus ==
-                                            UpdateOrderCommentRatingStatus
-                                                .loading &&
-                                        tapIndex == index
-                                  ? TrydosLoader(size: 15)
-                                  : GestureDetector(
-                                      onTap: () {
-                                        _showEditBottomSheet(context, comment);
-                                      },
-                                      child: SvgPicture.asset(
-                                        AppAssets.editSvg,
-                                        // ignore: deprecated_member_use
-                                        color: Colors.green,
-                                        height: 20,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ),
-                      ),
               ],
             ),
           ),

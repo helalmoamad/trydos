@@ -21,9 +21,7 @@ abstract class OrderEvent extends Equatable {
 class PlaceOrderEvent extends OrderEvent {
   final PlaceOrderParams placeOrderParams;
 
-  PlaceOrderEvent({
-    required this.placeOrderParams,
-  });
+  PlaceOrderEvent({required this.placeOrderParams});
 
   @override
   // TODO: implement props
@@ -33,9 +31,7 @@ class PlaceOrderEvent extends OrderEvent {
 class SaveLastAddress extends OrderEvent {
   final CustomerAddressesInfo lastAddress;
 
-  SaveLastAddress({
-    required this.lastAddress,
-  });
+  SaveLastAddress({required this.lastAddress});
 
   @override
   // TODO: implement props
@@ -63,9 +59,7 @@ class GetOrdersByOrderGroupIDEvent extends OrderEvent {
 class SaveCurrentOrederStatusEvent extends OrderEvent {
   final String currentOrderStatus;
 
-  SaveCurrentOrederStatusEvent({
-    required this.currentOrderStatus,
-  });
+  SaveCurrentOrederStatusEvent({required this.currentOrderStatus});
   @override
   // TODO: implement props
   List<Object?> get props => [currentOrderStatus];
@@ -83,9 +77,7 @@ class ChangeOrderByGroupStatus extends OrderEvent {
 class GetOrdersByCartGroupIDEvent extends OrderEvent {
   final String cartGroupId;
 
-  GetOrdersByCartGroupIDEvent({
-    required this.cartGroupId,
-  });
+  GetOrdersByCartGroupIDEvent({required this.cartGroupId});
 
   @override
   // TODO: implement props
@@ -96,10 +88,11 @@ class GetCustomerWalletEvent extends OrderEvent {
   final int limit;
   final int offset;
   final bool statusInitToRefreshAmount;
-  GetCustomerWalletEvent(
-      {required this.limit,
-      required this.offset,
-      this.statusInitToRefreshAmount = false});
+  GetCustomerWalletEvent({
+    required this.limit,
+    required this.offset,
+    this.statusInitToRefreshAmount = false,
+  });
 
   @override
   // TODO: implement props
@@ -125,8 +118,12 @@ class GetOrdersEvent extends OrderEvent {
 
 class SetCustomerAddressDefaultEvent extends OrderEvent {
   final int? adressId;
+  final int? index;
 
-  const SetCustomerAddressDefaultEvent({required this.adressId});
+  const SetCustomerAddressDefaultEvent({
+    required this.adressId,
+    this.index = -1,
+  });
 
   @override
   // TODO: implement props
@@ -173,8 +170,10 @@ class GetProvincesByIsoEvent extends OrderEvent {
 class EditAdressInfoClassEvent extends OrderEvent {
   final CustomerAddressesInfo? addressInfoClassToSave;
   final int preIdToEdit;
-  const EditAdressInfoClassEvent(
-      {required this.addressInfoClassToSave, required this.preIdToEdit});
+  const EditAdressInfoClassEvent({
+    required this.addressInfoClassToSave,
+    required this.preIdToEdit,
+  });
 
   @override
   // TODO: implement props
@@ -184,8 +183,10 @@ class EditAdressInfoClassEvent extends OrderEvent {
 class GetAddressByCoordinatesEvent extends OrderEvent {
   final double latitude;
   final double longitude;
-  GetAddressByCoordinatesEvent(
-      {required this.longitude, required this.latitude});
+  GetAddressByCoordinatesEvent({
+    required this.longitude,
+    required this.latitude,
+  });
 
   @override
   // TODO: implement props
@@ -225,9 +226,7 @@ class ApplyCouponEvent extends OrderEvent {
 class CancelOrderItemEvent extends OrderEvent {
   final CancelOrderItemParams cancelOrderItemParams;
 
-  CancelOrderItemEvent({
-    required this.cancelOrderItemParams,
-  });
+  CancelOrderItemEvent({required this.cancelOrderItemParams});
 
   @override
   // TODO: implement props
@@ -237,9 +236,7 @@ class CancelOrderItemEvent extends OrderEvent {
 class CancelOrderEvent extends OrderEvent {
   final CancelOrderParams cancelOrderParams;
 
-  CancelOrderEvent({
-    required this.cancelOrderParams,
-  });
+  CancelOrderEvent({required this.cancelOrderParams});
 
   @override
   // TODO: implement props
@@ -249,9 +246,7 @@ class CancelOrderEvent extends OrderEvent {
 class ChangeOrderAddressEvent extends OrderEvent {
   final ChangeOrderAddressParams changeOrderAddressParams;
 
-  ChangeOrderAddressEvent({
-    required this.changeOrderAddressParams,
-  });
+  ChangeOrderAddressEvent({required this.changeOrderAddressParams});
 
   @override
   // TODO: implement props
@@ -261,9 +256,7 @@ class ChangeOrderAddressEvent extends OrderEvent {
 class GetProductColorSizeSyncAttributeEvent extends OrderEvent {
   final String id;
 
-  GetProductColorSizeSyncAttributeEvent({
-    required this.id,
-  });
+  GetProductColorSizeSyncAttributeEvent({required this.id});
 
   @override
   // TODO: implement props
@@ -308,11 +301,12 @@ class StoreReturnRequestProductEvent extends OrderEvent {
   final bool withConfirm;
   final List<String> returnRequestId;
   final String orderGroupId;
-  const StoreReturnRequestProductEvent(
-      {required this.params,
-      required this.withConfirm,
-      required this.returnRequestId,
-      required this.orderGroupId});
+  const StoreReturnRequestProductEvent({
+    required this.params,
+    required this.withConfirm,
+    required this.returnRequestId,
+    required this.orderGroupId,
+  });
 
   @override
   List<Object?> get props => [params];
@@ -324,11 +318,12 @@ class UpdateReturnRequestProductEvent extends OrderEvent {
   final List<String> returnRequestId;
   final String orderGroupId;
 
-  const UpdateReturnRequestProductEvent(
-      {required this.params,
-      required this.withConfirm,
-      required this.returnRequestId,
-      required this.orderGroupId});
+  const UpdateReturnRequestProductEvent({
+    required this.params,
+    required this.withConfirm,
+    required this.returnRequestId,
+    required this.orderGroupId,
+  });
 
   @override
   List<Object?> get props => [params];
@@ -337,8 +332,10 @@ class UpdateReturnRequestProductEvent extends OrderEvent {
 class CancelReturnRequestEvent extends OrderEvent {
   final List<String> returnRequestId;
   final String orderGroupId;
-  const CancelReturnRequestEvent(
-      {required this.returnRequestId, required this.orderGroupId});
+  const CancelReturnRequestEvent({
+    required this.returnRequestId,
+    required this.orderGroupId,
+  });
 
   @override
   List<Object?> get props => [returnRequestId];
@@ -357,10 +354,11 @@ class CancelReturnRequestProductEvent extends OrderEvent {
   final String orderGroupId;
   final CancelReturnRequestProductParams params;
 
-  const CancelReturnRequestProductEvent(
-      {required this.params,
-      required this.returnRequestId,
-      required this.orderGroupId});
+  const CancelReturnRequestProductEvent({
+    required this.params,
+    required this.returnRequestId,
+    required this.orderGroupId,
+  });
 
   @override
   List<Object?> get props => [params];
@@ -369,8 +367,10 @@ class CancelReturnRequestProductEvent extends OrderEvent {
 class StoreReturnRequestEvent extends OrderEvent {
   final ReturnRequestParams params;
   final String orderGroupId;
-  const StoreReturnRequestEvent(
-      {required this.params, required this.orderGroupId});
+  const StoreReturnRequestEvent({
+    required this.params,
+    required this.orderGroupId,
+  });
 
   @override
   List<Object?> get props => [params];
@@ -387,8 +387,10 @@ class ConfirmReturnRequestEvent extends OrderEvent {
   final List<String> returnRequestId;
   final String orderGroupId;
 
-  const ConfirmReturnRequestEvent(
-      {required this.returnRequestId, required this.orderGroupId});
+  const ConfirmReturnRequestEvent({
+    required this.returnRequestId,
+    required this.orderGroupId,
+  });
 
   @override
   List<Object?> get props => [returnRequestId];
@@ -402,6 +404,31 @@ class UploadImagesForReturnProductEvent extends OrderEvent {
   List<Object?> get props => [file];
 }
 
+class UploadImagesToCloudinaryEvent extends OrderEvent {
+  final File file;
+  const UploadImagesToCloudinaryEvent(this.file);
+
+  @override
+  List<Object?> get props => [file];
+}
+
+class RemoveImagesForReturnProductEvent extends OrderEvent {
+  final int index;
+  const RemoveImagesForReturnProductEvent(this.index);
+
+  @override
+  List<Object?> get props => [index];
+}
+
+class RemoveImagesForCommentEvent extends OrderEvent {
+  final int index;
+  final List<String>? initialImages;
+  const RemoveImagesForCommentEvent(this.index, this.initialImages);
+
+  @override
+  List<Object?> get props => [index, initialImages];
+}
+
 class OrderReturnRequestsViewEvent extends OrderEvent {
   final OrderReturnRequestsViewParams params;
 
@@ -413,7 +440,11 @@ class OrderReturnRequestsViewEvent extends OrderEvent {
 
 class FetchOrderReturnDetailsEvent extends OrderEvent {
   final String orderGroupId;
-  const FetchOrderReturnDetailsEvent(this.orderGroupId);
+  final bool notFound;
+  const FetchOrderReturnDetailsEvent(
+    this.orderGroupId, {
+    this.notFound = false,
+  });
 
   @override
   List<Object?> get props => [orderGroupId];

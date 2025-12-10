@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-MyContactsResponseModel myContactsResponseModelFromJson(String str) => MyContactsResponseModel.fromJson(json.decode(str));
+MyContactsResponseModel myContactsResponseModelFromJson(String str) =>
+    MyContactsResponseModel.fromJson(json.decode(str));
 
-String myContactsResponseModelToJson(MyContactsResponseModel data) => json.encode(data.toJson());
+String myContactsResponseModelToJson(MyContactsResponseModel data) =>
+    json.encode(data.toJson());
 
 class MyContactsResponseModel {
   bool? isSuccessful;
@@ -25,14 +27,17 @@ class MyContactsResponseModel {
     this.contacts,
   });
 
-  factory MyContactsResponseModel.fromJson(Map<String, dynamic> json) => MyContactsResponseModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    contacts: json["data"] == null ? [] : List<Contact>.from(json["data"]!.map((x) => Contact.fromJson(x))),
-  );
+  factory MyContactsResponseModel.fromJson(Map<String, dynamic> json) =>
+      MyContactsResponseModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        contacts: json["data"] == null
+            ? []
+            : List<Contact>.from(json["data"]!.map((x) => Contact.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
     "isSuccessful": isSuccessful,
@@ -40,7 +45,9 @@ class MyContactsResponseModel {
     "code": code,
     "message": message,
     "detailed_error": detailedError,
-    "data": contacts == null ? [] : List<dynamic>.from(contacts!.map((x) => x.toJson())),
+    "data": contacts == null
+        ? []
+        : List<dynamic>.from(contacts!.map((x) => x.toJson())),
   };
 }
 
@@ -62,12 +69,14 @@ class Contact {
   });
 
   factory Contact.fromJson(Map<String, dynamic> json) => Contact(
-    id: json["id"],
-    userId: json["user_id"],
+    id: int.tryParse(json["id"].toString()),
+    userId: int.tryParse(json["user_id"].toString()),
     name: json["name"],
     mobilePhone: json["mobile_phone"],
-    contactUserId: json["contact_user_id"],
-    contactUser: json["contact_user"] == null ? null : ContactUser.fromJson(json["contact_user"]),
+    contactUserId: int.tryParse(json["contact_user_id"].toString()),
+    contactUser: json["contact_user"] == null
+        ? null
+        : ContactUser.fromJson(json["contact_user"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -106,11 +115,15 @@ class ContactUser {
   });
 
   factory ContactUser.fromJson(Map<String, dynamic> json) => ContactUser(
-    id: json["id"],
+    id: int.tryParse(json["id"].toString()),
     mobilePhone: json["mobile_phone"],
     photoPath: json["photo_path"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
     deletedAt: json["deleted_at"],
     isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],
     isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"],

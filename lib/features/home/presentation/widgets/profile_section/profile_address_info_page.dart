@@ -87,6 +87,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                           try {
                             orderBloc.add(
                               SetCustomerAddressDefaultEvent(
+                                index: indexTap.value,
                                 adressId: orderBloc
                                     .state
                                     .listOfAddressInfoClassToSave![indexTap

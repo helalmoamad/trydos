@@ -66,8 +66,6 @@ class PlaceOrder extends StatefulWidget {
 }
 
 class _PlaceOrderState extends State<PlaceOrder> {
-  late HomeBloc homeBloc;
-
   final ValueNotifier<bool> agreeToPolicies = ValueNotifier(false);
 
   @override
@@ -227,10 +225,29 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     });
                   });
                   /////////////////////////
-                  orderAmount = orderAmount * widget.exchangeRate;
+                  orderAmount =
+                      HelperFunctions.truncateToDecimalPlaces(
+                        orderAmount,
+                        BlocProvider.of<HomeBloc>(context)
+                            .state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
+                      widget.exchangeRate;
 
                   partialPaymentByWallet =
-                      partialPaymentByWallet * widget.exchangeRate;
+                      HelperFunctions.truncateToDecimalPlaces(
+                        partialPaymentByWallet,
+                        BlocProvider.of<HomeBloc>(context)
+                            .state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
+                      widget.exchangeRate;
                   ////////////////////////////////
                   CustomerAddressesInfo
                   customerAddressesInfo = CustomerAddressesInfo(
@@ -360,10 +377,29 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     });
                   });
                   ////////////////////////////////
-                  orderAmount = orderAmount * widget.exchangeRate;
+                  orderAmount =
+                      HelperFunctions.truncateToDecimalPlaces(
+                        orderAmount,
+                        BlocProvider.of<HomeBloc>(context)
+                            .state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
+                      widget.exchangeRate;
 
                   partialPaymentByWallet =
-                      partialPaymentByWallet * widget.exchangeRate;
+                      HelperFunctions.truncateToDecimalPlaces(
+                        partialPaymentByWallet,
+                        BlocProvider.of<HomeBloc>(context)
+                            .state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
+                      widget.exchangeRate;
                   ////////////////////////////////
                   CustomerAddressesInfo
                   customerAddressesInfo = CustomerAddressesInfo(

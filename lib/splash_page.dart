@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -48,51 +47,68 @@ class _SplashPageState extends State<SplashPage> {
 
     appBloc.add(ChangeTab(-1));
     boutiqueBloc.add(
-        AddCurrentMainCategoryTapedEvent(currentMainCategoryTaped: "Empty"));
+      AddCurrentMainCategoryTapedEvent(currentMainCategoryTaped: "Empty"),
+    );
     GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
-    BlocProvider.of<StoryBloc>(context)
-        .add(const GetStoryEvent(withPaginition: false));
+    BlocProvider.of<StoryBloc>(
+      context,
+    ).add(const GetStoryEvent(withPaginition: false));
     if ((prefsRepository.isFoundDataCashed ?? false)) {
-      boutiqueBloc.add(GetProductsWithFiltersEvent(
+      boutiqueBloc.add(
+        GetProductsWithFiltersEvent(
           boutiqueSlug: "search",
           cashedOrginalBoutique: true,
           fromSearch: true,
-          offset: 1));
-      boutiqueBloc.add(ChangeAppliedFiltersEvent(
-          boutiqueSlug: 'search', resetAppliedFilters: true));
-      boutiqueBloc.add(ChangeSelectedFiltersEvent(
-        resetChoosedFilters: true,
-        fromHomePageSearch: true,
-        boutiqueSlug: 'search',
-      ));
-      if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
+          offset: 1,
+        ),
+      );
+      boutiqueBloc.add(
+        ChangeAppliedFiltersEvent(
+          boutiqueSlug: 'search',
+          resetAppliedFilters: true,
+        ),
+      );
+      boutiqueBloc.add(
+        ChangeSelectedFiltersEvent(
+          resetChoosedFilters: true,
+          fromHomePageSearch: true,
+          boutiqueSlug: 'search',
+        ),
+      );
+      /* if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
           (prefsRepository.myChatName != prefsRepository.myMarketName &&
               !(prefsRepository.myMarketName.isNullOrEmpty))) {
         authBloc.add(
             UpdateChatUserNameEvent(name: prefsRepository.myMarketName ?? ""));
-      }
-      if ((prefsRepository.storiesToken?.length ?? 0) > 10 &&
+      }*/
+      /*  if ((prefsRepository.storiesToken?.length ?? 0) > 10 &&
           (prefsRepository.myStoriesName != prefsRepository.myMarketName &&
               !(prefsRepository.myMarketName.isNullOrEmpty))) {
         authBloc.add(
             UpdateStoriesUserEvent(name: prefsRepository.myMarketName ?? ""));
-      }
+      }*/
       categoryBloc.add(GetMainCategoriesEvent(context: context));
       GetIt.I<BoutiqueBloc>().add(
-          const GetProductWithFiltersWithoutCancelingPreviousEvents(
-              categorySlugs: [],
-              cashedOrginalBoutique: true,
-              boutiqueSlug: "*featured*"));
+        const GetProductWithFiltersWithoutCancelingPreviousEvents(
+          categorySlugs: [],
+          cashedOrginalBoutique: true,
+          boutiqueSlug: "*featured*",
+        ),
+      );
       GetIt.I<BoutiqueBloc>().add(
-          const GetProductWithFiltersWithoutCancelingPreviousEvents(
-              categorySlugs: [],
-              cashedOrginalBoutique: true,
-              boutiqueSlug: "*recommended*"));
+        const GetProductWithFiltersWithoutCancelingPreviousEvents(
+          categorySlugs: [],
+          cashedOrginalBoutique: true,
+          boutiqueSlug: "*recommended*",
+        ),
+      );
       GetIt.I<BoutiqueBloc>().add(
-          const GetProductWithFiltersWithoutCancelingPreviousEvents(
-              categorySlugs: [],
-              cashedOrginalBoutique: true,
-              boutiqueSlug: "*flashDeal*"));
+        const GetProductWithFiltersWithoutCancelingPreviousEvents(
+          categorySlugs: [],
+          cashedOrginalBoutique: true,
+          boutiqueSlug: "*flashDeal*",
+        ),
+      );
 
       Future.delayed(const Duration(seconds: 1), () {
         //  homeBloc.add(GeColorsAndSizesForSearchEvent());
@@ -107,12 +123,17 @@ class _SplashPageState extends State<SplashPage> {
       });
     }
 
-    checkAndNavigationCallingPage(context, fromTerminated: true,
-        whereToNavigationAfterCheck: () {
-      context.go(prefsRepository.marketToken == null
-          ? GRouter.config.applicationRoutes.kRegistrationPage
-          : GRouter.config.applicationRoutes.kBasePage);
-    });
+    checkAndNavigationCallingPage(
+      context,
+      fromTerminated: true,
+      whereToNavigationAfterCheck: () {
+        context.go(
+          prefsRepository.marketToken == null
+              ? GRouter.config.applicationRoutes.kRegistrationPage
+              : GRouter.config.applicationRoutes.kBasePage,
+        );
+      },
+    );
     super.initState();
   }
 
@@ -148,8 +169,9 @@ class _SplashPageState extends State<SplashPage> {
       listenWhen: (p, c) =>
           p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
       child: Scaffold(
-          backgroundColor: context.colorScheme.surface,
-          body: Center(child: logo)),
+        backgroundColor: context.colorScheme.surface,
+        body: Center(child: logo),
+      ),
     );
   }
 }

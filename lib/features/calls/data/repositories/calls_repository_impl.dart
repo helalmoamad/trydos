@@ -18,36 +18,47 @@ class CallsRepositoryImpl extends CallsRepository
   CallsRepositoryImpl(this.dataSource);
 
   @override
-  Future<Either<Failure, MakeCallRemoteResponseModel>> makeCall(
-      {required Map<String, dynamic> params}) {
+  Future<Either<Failure, MakeCallRemoteResponseModel>> makeCall({
+    required Map<String, dynamic> params,
+  }) {
     return handlingExceptionRequest(tryCall: () => dataSource.makeCall(params));
   }
 
   @override
-  Future<Either<Failure, GetAgoraTokenResponseModel>> getAgoraToken(
-      {required String ChatId}) {
+  Future<Either<Failure, GetAgoraTokenResponseModel>> getAgoraToken({
+    required String ChatId,
+  }) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getAgoraToken(ChatId));
+      tryCall: () => dataSource.getAgoraToken(ChatId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, bool>> endCall(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall: () => dataSource.endCall(params));
   }
 
   @override
   Future<Either<Failure, bool>> answerCall(String messageId) {
     // TODO: implement answerCall
     return handlingExceptionRequest(
-        tryCall: () => dataSource.makeAnswerCall(messageId));
+      tryCall: () => dataSource.makeAnswerCall(messageId),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> watchMissedCall() {
     // TODO: implement answerCall
     return handlingExceptionRequest(
-        tryCall: () => dataSource.watchedMissedCall());
+      tryCall: () => dataSource.watchedMissedCall(),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> rejectCall(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.rejectCall(params));
+      tryCall: () => dataSource.rejectCall(params),
+    );
   }
 
   @override
@@ -58,12 +69,14 @@ class CallsRepositoryImpl extends CallsRepository
   @override
   Future<Either<Failure, MissedCallCountModel>> getMissedCallCount() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.getMissedCallCount());
+      tryCall: () => dataSource.getMissedCallCount(),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> deleteMessage(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.deleteMessage(params));
+      tryCall: () => dataSource.deleteMessage(params),
+    );
   }
 }

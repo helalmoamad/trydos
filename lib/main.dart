@@ -144,6 +144,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data = remoteMessage["message"];
+      print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDD${data}");
       if (DateTime.now()
               .difference(
                 HelperFunctions.getZonedDate(
@@ -154,6 +155,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           1) {
         return;
       }
+      print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD//////////D${data}");
       GetIt.I<PrefsRepository>().saveRequestsData(
         null,
         null,
@@ -170,7 +172,57 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
 
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
+        print("CALLKIT EVENT: ${event?.event.toString()}");
+        print("CALLKIT BODY: ${event?.body.toString()}");
+
         switch (event!.event) {
+          case Event.actionCallAccept:
+            {
+              // ✅ معالج قبول المكالمة - فتح التطبيق والانتقال لشاشة المكالمة
+              print(
+                "FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD///*/*** actionCallAccept triggered",
+              );
+              try {
+                print("Event body: ${event.body}");
+                print("Event body type: ${event.body.runtimeType}");
+                print("Extra data: ${event.body['extra']}");
+                print("Extra type: ${event.body['extra'].runtimeType}");
+
+                // ✅ الحصول على بيانات المكالمة من extra - تحويل صحيح للنوع
+                final extraData = event.body['extra'];
+
+                if (extraData != null) {
+                  // تحويل من Map<Object?, Object?> إلى Map<String, dynamic>
+                  final callData = Map<String, dynamic>.from(extraData as Map);
+                  print("Call data from extra: $callData");
+
+                  final channelId = callData['channel_id']?.toString() ?? '';
+                  final messageId = callData['message_id']?.toString() ?? '';
+                  final type = callData['type']?.toString() ?? 'voice';
+
+                  print(
+                    "Extracted: channel=$channelId, message=$messageId, type=$type",
+                  );
+
+                  // تحديث ID المكالمة النشطة
+                  GetIt.I<CallsBloc>().add(
+                    UpdateCurrentActiveCallIdEvent(id: messageId),
+                  );
+
+                  print(
+                    "✅ Call accepted successfully - waiting for app to open",
+                  );
+                } else {
+                  print(
+                    "❌ extraData is null - cannot extract call information",
+                  );
+                }
+              } catch (e, stackTrace) {
+                print("❌ Error in actionCallAccept: $e");
+                print("Stack trace: $stackTrace");
+              }
+            }
+            break;
           case Event.actionCallDecline:
             {
               /*  HttpOverrides.global = MyHttpOverrides();
@@ -328,7 +380,8 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 41;
+int applicationVersion = 51;
+String alaa = "";
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();

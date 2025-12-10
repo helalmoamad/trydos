@@ -33,6 +33,7 @@ import 'package:trydos/features/home/data/models/popular_search_terms_model.dart
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/translate_comment_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
@@ -1177,6 +1178,26 @@ class HomeRemoteDatasource {
       ),
     );
     return addLikeOFProduct();
+  }
+
+  Future<TranslateCommentModel> translateCommentsToAppLan(
+    Map<String, dynamic> params,
+  ) {
+    Map<String, dynamic> param = params;
+    String commentId = param["comment_id"];
+    param.removeWhere((key, value) => key == "comment_id");
+    PostClient<TranslateCommentModel> translateCommentsToAppLan =
+        PostClient<TranslateCommentModel>(
+          serverName: ServerName.get_comment_token,
+          requestPrams: RequestConfig<TranslateCommentModel>(
+            endpoint: WebAppEndPoints.translateCommentsToAppLanEP(commentId),
+            data: param,
+            response: ResponseValue<TranslateCommentModel>(
+              fromJson: (response) => TranslateCommentModel.fromJson(response),
+            ),
+          ),
+        );
+    return translateCommentsToAppLan();
   }
 
   Future<bool> storeFcmTokenOfMarket(Map<String, dynamic> params) {

@@ -4,7 +4,6 @@
   "visitors_not_necessarily_from": "میوانان و بە پێویستی لە",
   "customers_purchased_before_pre_purchase_questions": "کڕیارانی پێشتر بەرهەمەکەیان کڕیوە. ئەمانە پرسیارەکانی پێش کڕینن، و بە ڕاستەوخۆ لەلایەن فرۆشیارەوە وەڵامیان دەدرێتەوە",
   "all_comments_are_genuine_from_customers_who_purchased_and_actually": "هەموو لێدوانەکان ڕاستەقینەن لە کڕیارانی کڕیوە و بەڕاستی",
-
   "shipping_company": "کۆمپانیای گەیاندن",
   "based_on_previous_delivery_statistics_below_to_your_area_we_conclude": "بە پێی ئامارەکانی گەیاندنی پێشوو لە خوارەوە بۆ ناوچەکەت، ئێمە دەستکەوت",
   "that_the_expected_delivery_time_for_your_product_is": "کە کاتی چاوەڕوانی گەیاندن بۆ بەرهەمەکەت",
@@ -19,13 +18,25 @@
   "sending_video": "ناردنی ڤیدیۆ...",
   "gallery": "گەلەری",
   "camera": "کامێرا",
+  "work_days": "ڕۆژانی کار",
+  "camera_permission_required_message": "Nakarin kamera bikeyn bê îzinê. Ji kerema xwe destûrê bide û dîsa biceribîne.",
+  "account_import_success_message": "Daneyên hesab bi serkeftî hatin têxistin",
+  "qr_invalid_code_message": "Ev kod nehate xwendin, ji kerema xwe dîsa biceribîne",
+  "camera_permission_still_denied": "Destûra kamerayê hîn jî asteng e. Dikare li mîhengê çalak bikî û paşê vegerî.",
+  "qr_login_screen_title": "Taranera QR ya hesabê",
+  "qr_processing_message": "Daneyên hesab têne piştrastkirin...",
+  "qr_instruction_message": "Kamerayê ber bi koda QR bike da ku hesab hevdu bikî",
+  "qr_permission_overlay_message": "Ji bo bikaranîna taranera QR destûra kamerayê pêwîst e",
+  "methods_login_scan_qr_option": "Bi tarîna QR ji sepanê Trydos",
+  "methods_login_phone_option": "Bi hejmarê telefonê mobîl",
+  "share_account_via_qr_title": "Hesabê bi QR re parve bike",
+  "share_account_via_qr_hint": "Li ser telefona din kamera-QR veke û vê kodê bixwîne da ku hesab derbas bibe.",
   "choose_photo_or_video_from_gallery_or_camera": "وێنە یان ڤیدیۆ هەڵبژێرە لە گەلەری یان کامێرا",
   "image_preview": "پێشبینی وێنە",
   "image_preview_instructions": "پێشبینی وێنە - ناردن، بڕین یان هەڵوەشاندنەوە",
   "search_image_preview_instructions": "پێشبینی وێنە - گەڕان، بڕین یان هەڵوەشاندنەوە",
   "crop_image": "بڕینی وێنە",
   "select_image_part": "ئەو بەشەی وێنە هەڵبژێرە کە دەتەوێت",
-
   "cancel_preview": "هەڵوەشاندنەوەی پێشبینین",
   "welcome_page_description": "بۆ سودوەرگرتن لە هەموو تایبەتمەندییەکان، تکایە بە هەندێک هەنگاوێکی خاوێن بەشدار ببە",
   "why_we_know_you_label": "بۆچی ناسینەت؟",
@@ -130,6 +141,8 @@
   "category": "هاوپۆل",
   "forward": "ناردنەوە",
   "voice_call_at": "پەیوەندی دەنگ لە کات",
+  "translate": "وەرگێڕان",
+  "show_original_version": "پیشاندانی وەشانی سەرەکی",
   "video_call_at": "پەیوەندی ڤیدیۆ لە کات",
   "photo": "وێنە",
   "file": "پەڕگە",
@@ -261,7 +274,6 @@
   "n_sizes": "قەبارەکان",
   "you_will_get_a": "دەستووردەبێتەوە",
   "refund": "گەڕاندنەوەی پارە",
-
   "product_shipping_delivery": "گەیاندنی بەرهەم و گەیەناندن",
   "failed_to_get_location": "هەڵە لە وەرگرتنی شوێن",
   "at_your_address_in": "لە ناونیشانتدا لە",
@@ -641,7 +653,6 @@
   "actually_received_the_product_through": "بەڕاستی وەرگیراون لە بەرهەمەکە لە ڕێگەی",
   "return_problem_resolved": "کێشەی گەڕاندن چارەسەر کرا.",
   "out_for_return": "لە ڕێگادایە بۆ گەڕاندنەوە",
- 
   "choose_a_country": "وڵاتێک هەڵبژێرە",
   "you_have_to_choose_a_country": "پێویستە وڵاتێک هەڵبژێریت",
   "ok_and_continue": "باشە و بەردەوام بە",
@@ -666,17 +677,17 @@
   "recommend_products": "پێشنیاری بەرهەمەکان",
   "edit_comment_title": "دەستکاری کردنەوەی لێدوان",
   "edit_comment_hint": "دەستکارییەکەت لێرە بنوسە...",
-  "must_login_to_edit_comment": "تکایە بچۆ ژوورەوە بۆ دەستکاری کردنی لێدوان"
-  ,"must_login_to_delete_comment": "تکایە بچۆ ژوورەوە بۆ سڕینەوەی لێدوان"
-  ,"confirm_delete_comment_title": "دڵنیابوونەوەی سڕینەوەی لێدوان"
-  ,"confirm_delete_comment_message": "دڵنیایت دەتەوێت ئەم لێدوانە بسڕیتەوە؟"
-  ,"confirm_delete": "دڵنیابوونەوەی سڕینەوە"
-  ,"delete_comment_success": "لێدوان بە سەرکەوتوویی سڕایەوە"
-  ,"delete_comment_failed": "سڕینەوەی لێدوان سەرکەوتوو نەبوو"
-  ,"edit_comment_success": "لێدوان بە سەرکەوتوویی نوێکرایەوە"
-  ,"edit_comment_failed": "نوێکردنەوەی لێدوان سەرکەوتوو نەبوو",
-  "quality":"کوالێتی",
-  "complaint":"سکاڵا",
+  "must_login_to_edit_comment": "تکایە بچۆ ژوورەوە بۆ دەستکاری کردنی لێدوان",
+  "must_login_to_delete_comment": "تکایە بچۆ ژوورەوە بۆ سڕینەوەی لێدوان",
+  "confirm_delete_comment_title": "دڵنیابوونەوەی سڕینەوەی لێدوان",
+  "confirm_delete_comment_message": "دڵنیایت دەتەوێت ئەم لێدوانە بسڕیتەوە؟",
+  "confirm_delete": "دڵنیابوونەوەی سڕینەوە",
+  "delete_comment_success": "لێدوان بە سەرکەوتوویی سڕایەوە",
+  "delete_comment_failed": "سڕینەوەی لێدوان سەرکەوتوو نەبوو",
+  "edit_comment_success": "لێدوان بە سەرکەوتوویی نوێکرایەوە",
+  "edit_comment_failed": "نوێکردنەوەی لێدوان سەرکەوتوو نەبوو",
+  "quality": "کوالێتی",
+  "complaint": "سکاڵا",
   "recommendation": "پێشنیار",
   "no_commends_found": "هیچ لێدوانێك نەدۆزرایەوە",
   "country_not_available": "وڵات بەردەست نییە",

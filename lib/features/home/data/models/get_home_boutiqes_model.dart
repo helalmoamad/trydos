@@ -16,15 +16,9 @@ class GetHomeBoutiquesModel {
   final String? message;
   final Data? data;
 
-  GetHomeBoutiquesModel({
-    this.message,
-    this.data,
-  });
+  GetHomeBoutiquesModel({this.message, this.data});
 
-  GetHomeBoutiquesModel copyWith({
-    String? message,
-    Data? data,
-  }) =>
+  GetHomeBoutiquesModel copyWith({String? message, Data? data}) =>
       GetHomeBoutiquesModel(
         message: message ?? this.message,
         data: data ?? this.data,
@@ -36,10 +30,7 @@ class GetHomeBoutiquesModel {
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
       );
 
-  Map<String, dynamic> toJson() => {
-        "message": message,
-        "data": data?.toJson(),
-      };
+  Map<String, dynamic> toJson() => {"message": message, "data": data?.toJson()};
 }
 
 class Data {
@@ -48,44 +39,39 @@ class Data {
   final String? offset;
   final List<HomeBoutiques>? boutiques;
 
-  Data({
-    this.total,
-    this.limit,
-    this.offset,
-    this.boutiques,
-  });
+  Data({this.total, this.limit, this.offset, this.boutiques});
 
   Data copyWith({
     int? total,
     int? limit,
     String? offset,
     List<HomeBoutiques>? boutiques,
-  }) =>
-      Data(
-        total: total ?? this.total,
-        limit: limit ?? this.limit,
-        offset: offset ?? this.offset,
-        boutiques: boutiques ?? this.boutiques,
-      );
+  }) => Data(
+    total: total ?? this.total,
+    limit: limit ?? this.limit,
+    offset: offset ?? this.offset,
+    boutiques: boutiques ?? this.boutiques,
+  );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        total: json["total"],
-        limit: json["limit"],
-        offset: json["offset"].toString(),
-        boutiques: json["boutiques"] == null
-            ? []
-            : List<HomeBoutiques>.from(
-                json["boutiques"]!.map((x) => HomeBoutiques.fromJson(x))),
-      );
+    total: json["total"],
+    limit: json["limit"],
+    offset: json["offset"].toString(),
+    boutiques: json["boutiques"] == null
+        ? []
+        : List<HomeBoutiques>.from(
+            json["boutiques"]!.map((x) => HomeBoutiques.fromJson(x)),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "total": total,
-        "limit": limit,
-        "offset": offset.toString(),
-        "boutiques": boutiques == null
-            ? []
-            : List<dynamic>.from(boutiques!.map((x) => x.toJson())),
-      };
+    "total": total,
+    "limit": limit,
+    "offset": offset.toString(),
+    "boutiques": boutiques == null
+        ? []
+        : List<dynamic>.from(boutiques!.map((x) => x.toJson())),
+  };
 }
 
 class HomeBoutiques {
@@ -121,65 +107,69 @@ class HomeBoutiques {
     List<BunnerBoutique>? banners,
     List<MainCategoriesForProductId>? mainCategoriesForProductIds,
     List<ChildCategoriesForProductId>? childCategoriesForProductIds,
-  }) =>
-      HomeBoutiques(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        icon: icon ?? this.icon,
-        slug: slug ?? this.slug,
-        position: position ?? this.position,
-        description: description ?? this.description,
-        banners: banners ?? this.banners,
-        mainCategoriesForProductIds:
-            mainCategoriesForProductIds ?? this.mainCategoriesForProductIds,
-        childCategoriesForProductIds:
-            childCategoriesForProductIds ?? this.childCategoriesForProductIds,
-      );
+  }) => HomeBoutiques(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    icon: icon ?? this.icon,
+    slug: slug ?? this.slug,
+    position: position ?? this.position,
+    description: description ?? this.description,
+    banners: banners ?? this.banners,
+    mainCategoriesForProductIds:
+        mainCategoriesForProductIds ?? this.mainCategoriesForProductIds,
+    childCategoriesForProductIds:
+        childCategoriesForProductIds ?? this.childCategoriesForProductIds,
+  );
 
   factory HomeBoutiques.fromJson(Map<String, dynamic> json) => HomeBoutiques(
-        id: json["id"],
-        name: json["name"],
-        icon:
-            json["icon"] == null ? null : BunnerBoutique.fromJson(json["icon"]),
-        slug: json["slug"],
-        position: json["position"].toString(),
-        description: json["description"],
-        banners: json["banners"] == null
-            ? []
-            : List<BunnerBoutique>.from(
-                json["banners"]!.map((x) => BunnerBoutique.fromJson(x))),
-        mainCategoriesForProductIds: json["mainCategoriesForProductIds"] == null
-            ? []
-            : List<MainCategoriesForProductId>.from(
-                json["mainCategoriesForProductIds"]!
-                    .map((x) => MainCategoriesForProductId.fromJson(x))),
-        childCategoriesForProductIds:
-            json["childCategoriesForProductIds"] == null
-                ? []
-                : List<ChildCategoriesForProductId>.from(
-                    json["childCategoriesForProductIds"]!
-                        .map((x) => ChildCategoriesForProductId.fromJson(x))),
-      );
+    id: json["id"],
+    name: json["name"],
+    icon: json["icon"] == null ? null : BunnerBoutique.fromJson(json["icon"]),
+    slug: json["slug"],
+    position: json["position"].toString(),
+    description: json["description"],
+    banners: json["banners"] == null
+        ? []
+        : List<BunnerBoutique>.from(
+            json["banners"]!.map((x) => BunnerBoutique.fromJson(x)),
+          ),
+    mainCategoriesForProductIds: json["mainCategoriesForProductIds"] == null
+        ? []
+        : List<MainCategoriesForProductId>.from(
+            json["mainCategoriesForProductIds"]!.map(
+              (x) => MainCategoriesForProductId.fromJson(x),
+            ),
+          ),
+    childCategoriesForProductIds: json["childCategoriesForProductIds"] == null
+        ? []
+        : List<ChildCategoriesForProductId>.from(
+            json["childCategoriesForProductIds"]!.map(
+              (x) => ChildCategoriesForProductId.fromJson(x),
+            ),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "icon": icon?.toJson(),
-        "slug": slug,
-        "position": position,
-        "description": description,
-        "banners": banners == null
-            ? []
-            : List<dynamic>.from(banners!.map((x) => x.toJson())),
-        "mainCategoriesForProductIds": mainCategoriesForProductIds == null
-            ? []
-            : List<dynamic>.from(
-                mainCategoriesForProductIds!.map((x) => x.toJson())),
-        "childCategoriesForProductIds": childCategoriesForProductIds == null
-            ? []
-            : List<dynamic>.from(
-                childCategoriesForProductIds!.map((x) => x.toJson())),
-      };
+    "id": id,
+    "name": name,
+    "icon": icon?.toJson(),
+    "slug": slug,
+    "position": position,
+    "description": description,
+    "banners": banners == null
+        ? []
+        : List<dynamic>.from(banners!.map((x) => x.toJson())),
+    "mainCategoriesForProductIds": mainCategoriesForProductIds == null
+        ? []
+        : List<dynamic>.from(
+            mainCategoriesForProductIds!.map((x) => x.toJson()),
+          ),
+    "childCategoriesForProductIds": childCategoriesForProductIds == null
+        ? []
+        : List<dynamic>.from(
+            childCategoriesForProductIds!.map((x) => x.toJson()),
+          ),
+  };
 }
 
 class BunnerBoutique {
@@ -187,40 +177,37 @@ class BunnerBoutique {
   final String? originalWidth;
   final String? originalHeight;
 
-  BunnerBoutique({
-    this.filePath,
-    this.originalWidth,
-    this.originalHeight,
-  });
+  BunnerBoutique({this.filePath, this.originalWidth, this.originalHeight});
 
   BunnerBoutique copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
-  }) =>
-      BunnerBoutique(
-        filePath: filePath ?? this.filePath,
-        originalWidth: originalWidth ?? this.originalWidth,
-        originalHeight: originalHeight ?? this.originalHeight,
-      );
+  }) => BunnerBoutique(
+    filePath: filePath ?? this.filePath,
+    originalWidth: originalWidth ?? this.originalWidth,
+    originalHeight: originalHeight ?? this.originalHeight,
+  );
 
   factory BunnerBoutique.fromJson(Map<String, dynamic> json) => BunnerBoutique(
-        filePath: json["file_path"]?.contains("cloudinary")
-            ? json["file_path"]
-            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
-        originalWidth: (json["original_width"] ?? "")
-            .toString()
-            .replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight: (json["original_height"] ?? "")
-            .toString()
-            .replaceAll(RegExp(r'[^0-9.]'), ''),
-      );
+    filePath: json["file_path"]?.contains("cloudinary")
+        ? json["file_path"]
+        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    originalWidth: (json["original_width"] ?? "").toString().replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    ),
+    originalHeight: (json["original_height"] ?? "").toString().replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "file_path": filePath,
-        "original_width": originalWidth,
-        "original_height": originalHeight,
-      };
+    "file_path": filePath,
+    "original_width": originalWidth,
+    "original_height": originalHeight,
+  };
 }
 
 class ChildCategoriesForProductId {
@@ -250,17 +237,16 @@ class ChildCategoriesForProductId {
     String? productName,
     int? countProducts,
     BunnerBoutique? mostViewedProductThumbnail,
-  }) =>
-      ChildCategoriesForProductId(
-        categoryId: categoryId ?? this.categoryId,
-        categorySlug: categorySlug ?? this.categorySlug,
-        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
-        categoryName: categoryName ?? this.categoryName,
-        productName: productName ?? this.productName,
-        countProducts: countProducts ?? this.countProducts,
-        mostViewedProductThumbnail:
-            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
-      );
+  }) => ChildCategoriesForProductId(
+    categoryId: categoryId ?? this.categoryId,
+    categorySlug: categorySlug ?? this.categorySlug,
+    flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
+    categoryName: categoryName ?? this.categoryName,
+    productName: productName ?? this.productName,
+    countProducts: countProducts ?? this.countProducts,
+    mostViewedProductThumbnail:
+        mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
+  );
 
   factory ChildCategoriesForProductId.fromJson(Map<String, dynamic> json) =>
       ChildCategoriesForProductId(
@@ -272,21 +258,21 @@ class ChildCategoriesForProductId {
             ? null
             : BunnerBoutique.fromJson(json["flat_photo_path"]),
         countProducts: json["num_available_product"],
-        mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] ==
-                null
+        mostViewedProductThumbnail:
+            json["most_viewed_product_thumbnail"] == null
             ? null
             : BunnerBoutique.fromJson(json["most_viewed_product_thumbnail"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": categoryId,
-        "slug": categorySlug,
-        "flat_photo_path": flatPhotoPath?.toJson(),
-        "name": categoryName,
-        "most_viewed_product_name": productName,
-        "num_available_product": countProducts,
-        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
-      };
+    "id": categoryId,
+    "slug": categorySlug,
+    "flat_photo_path": flatPhotoPath?.toJson(),
+    "name": categoryName,
+    "most_viewed_product_name": productName,
+    "num_available_product": countProducts,
+    "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
+  };
 }
 
 class MainCategoriesForProductId {
@@ -296,6 +282,7 @@ class MainCategoriesForProductId {
   final BunnerBoutique? mostViewedProductThumbnail;
   final String? categorySlug;
   final String? categoryName;
+  final bool? isProduct;
   final BunnerBoutique? flatPhotoPath;
 
   MainCategoriesForProductId({
@@ -306,6 +293,7 @@ class MainCategoriesForProductId {
     this.mostViewedProductThumbnail,
     this.categoryName,
     this.flatPhotoPath,
+    this.isProduct,
   });
 
   MainCategoriesForProductId copyWith({
@@ -314,29 +302,31 @@ class MainCategoriesForProductId {
     String? categoryName,
     String? productName,
     int? countProducts,
+    bool? isProduct,
     BunnerBoutique? mostViewedProductThumbnail,
     BunnerBoutique? flatPhotoPath,
-  }) =>
-      MainCategoriesForProductId(
-        categoryId: categoryId ?? this.categoryId,
-        categorySlug: categorySlug ?? this.categorySlug,
-        categoryName: categoryName ?? this.categoryName,
-        productName: productName ?? this.productName,
-        countProducts: countProducts ?? this.countProducts,
-        mostViewedProductThumbnail:
-            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
-        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
-      );
+  }) => MainCategoriesForProductId(
+    categoryId: categoryId ?? this.categoryId,
+    categorySlug: categorySlug ?? this.categorySlug,
+    categoryName: categoryName ?? this.categoryName,
+    productName: productName ?? this.productName,
+    isProduct: isProduct ?? this.isProduct,
+    countProducts: countProducts ?? this.countProducts,
+    mostViewedProductThumbnail:
+        mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
+    flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
+  );
 
   factory MainCategoriesForProductId.fromJson(Map<String, dynamic> json) =>
       MainCategoriesForProductId(
         categoryId: json["id"],
         categorySlug: json["slug"],
+        isProduct: json["is_product"],
         categoryName: json["name"],
         productName: json["most_viewed_product_name"],
         countProducts: json["num_available_product"],
-        mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] ==
-                null
+        mostViewedProductThumbnail:
+            json["most_viewed_product_thumbnail"] == null
             ? null
             : BunnerBoutique.fromJson(json["most_viewed_product_thumbnail"]),
         flatPhotoPath: json["flat_photo_path"] == null
@@ -345,12 +335,13 @@ class MainCategoriesForProductId {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": categoryId,
-        "slug": categorySlug,
-        "name": categoryName,
-        "flat_photo_path": flatPhotoPath?.toJson(),
-        "most_viewed_product_name": productName,
-        "num_available_product": countProducts,
-        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
-      };
+    "id": categoryId,
+    "slug": categorySlug,
+    "name": categoryName,
+    "is_product": isProduct,
+    "flat_photo_path": flatPhotoPath?.toJson(),
+    "most_viewed_product_name": productName,
+    "num_available_product": countProducts,
+    "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
+  };
 }

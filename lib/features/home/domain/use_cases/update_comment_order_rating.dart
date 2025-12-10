@@ -16,7 +16,8 @@ class UpdateOrderCommentRatingUseCase
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> call(
-      UpdateOrderCommentRatingParams params) {
+    UpdateOrderCommentRatingParams params,
+  ) {
     return repository.updateOrderCommentRating(params.map);
   }
 }
@@ -30,6 +31,8 @@ class UpdateOrderCommentRatingParams {
   final String? commentId;
   final String? ownerType;
   final String? ownerId;
+  final String? slug;
+  final List<String>? images;
 
   UpdateOrderCommentRatingParams({
     this.text,
@@ -38,28 +41,31 @@ class UpdateOrderCommentRatingParams {
     this.commentId,
     this.ownerType,
     this.ownerId,
+    this.images,
+    this.slug,
     this.variant,
     this.orderDetailsId,
   });
   Map<String, dynamic> get map => {
-        "id": commentId,
-        "text": text,
-        "user_id": GetIt.I<PrefsRepository>().myMarketId,
-        "phone": GetIt.I<PrefsRepository>().myPhoneNumber,
-        "user_avatar": GetIt.I<PrefsRepository>()
-            .myProfilePhoto
-            ?.split("/v1")
-            .toList()
-            .last,
-        "product_id": productId,
-        "user_type": (GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
-            ? "user"
-            : "customer",
-        "user_name": GetIt.I<PrefsRepository>().myMarketName,
-        "variant": variant,
-        "rating": rating,
-        "order_details_id": orderDetailsId,
-        "owner_type": ownerType,
-        "owner_id": ownerId
-      };
+    "id": commentId,
+    "text": text,
+    "slug": slug,
+    "comments_images_customer": images,
+    "user_id": GetIt.I<PrefsRepository>().myMarketId,
+    "phone": GetIt.I<PrefsRepository>().myPhoneNumber,
+    "user_avatar": GetIt.I<PrefsRepository>().myProfilePhoto
+        ?.split("/v1")
+        .toList()
+        .last,
+    "product_id": productId,
+    "user_type": (GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
+        ? "user"
+        : "customer",
+    "user_name": GetIt.I<PrefsRepository>().myMarketName,
+    "variant": variant,
+    "rating": rating,
+    "order_details_id": orderDetailsId,
+    "owner_type": ownerType,
+    "owner_id": ownerId,
+  };
 }

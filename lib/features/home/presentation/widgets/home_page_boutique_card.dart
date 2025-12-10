@@ -2,6 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
+import 'package:trydos/common/test_utils/widgets_keys.dart' show WidgetsKeys;
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -12,6 +14,7 @@ import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
     as filters;
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -61,6 +64,9 @@ class HomePageBoutiqueCard extends StatelessWidget {
       child: Column(
         children: [
           InkWell(
+            key: TestVariables.kTestMode
+                ? Key('${WidgetsKeys.boutiqueCardKey}*tap*$index')
+                : null,
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onTap: () {
@@ -166,6 +172,28 @@ class HomePageBoutiqueCard extends StatelessWidget {
                         imageSource: 'home_page_boutique_card',
                       ),
                 Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: IgnorePointer(
+                    child: Container(
+                      height: 60.h,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Color.fromARGB(200, 33, 33, 33),
+                            Color.fromARGB(150, 58, 58, 58),
+                            Color.fromARGB(90, 82, 82, 82),
+                            Color.fromARGB(0, 82, 82, 82),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
                   bottom: 6.h,
                   left: LanguageService.rtl ? null : 12,
                   right: !LanguageService.rtl ? null : 12,
@@ -226,153 +254,198 @@ class HomePageBoutiqueCard extends StatelessWidget {
             ),
           ),
 
-          (boutique.mainCategoriesForProductIds!.length) == 0
+          (boutique.mainCategoriesForProductIds!.length) < 2
               ? const SizedBox.shrink()
               : SizedBox(
                   height: 102.h,
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    physics: const ClampingScrollPhysics(),
-                    cacheExtent: 0,
-                    addAutomaticKeepAlives: false,
-                    addRepaintBoundaries: false,
-                    addSemanticIndexes: false,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (boutique.mainCategoriesForProductIds!.length),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        width: 90.w,
-                        height: 90.h,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          // ignore: deprecated_member_use
-                          border: Border.all(
-                            width: 0.5,
-                            color: const Color(0xffD3D3D3),
+                  width: double.infinity,
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      physics: const ClampingScrollPhysics(),
+                      cacheExtent: 0,
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false,
+                      addSemanticIndexes: false,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: (boutique.mainCategoriesForProductIds!.length),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          width: 90.w,
+                          height: 90.h,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
+                            border: Border.all(
+                              width: 0.5,
+                              color: const Color(0xffD3D3D3),
+                            ),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        margin: EdgeInsetsGeometry.only(
-                          top: 5,
-                          right: LanguageService.rtl ? 0 : 10,
-                          left: LanguageService.rtl ? 10 : 0,
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            boutiqueBloc.add(
-                              ChangeAppliedFiltersEvent(
-                                boutiqueSlug: boutique.slug!,
-                                resetAppliedFilters: true,
-                              ),
-                            );
-                            boutiqueBloc.add(
-                              ChangeSelectedFiltersEvent(
-                                boutiqueSlug: boutique.slug!,
-                              ),
-                            );
+                          margin: EdgeInsetsGeometry.only(
+                            top: 5,
+                            right: LanguageService.rtl ? 0 : 10,
+                            left: LanguageService.rtl ? 10 : 0,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              if (boutique
+                                      .mainCategoriesForProductIds![index]
+                                      .isProduct ??
+                                  false) {
+                                BlocProvider.of<HomeBloc>(context).add(
+                                  GetFullProductDetailsEvent(
+                                    productSlug:
+                                        boutique
+                                            .mainCategoriesForProductIds![index]
+                                            .categorySlug ??
+                                        "",
+                                  ),
+                                );
 
-                            boutiqueBloc.add(
-                              ChangeAppliedFiltersEvent(
-                                filtersAppliedByUser: GetProductFiltersModel(
-                                  filters: Filter(
-                                    categories: [
-                                      filters.Category(
-                                        slug: boutique
-                                            .mainCategoriesForProductIds![index]
-                                            .categorySlug,
-                                        name: boutique
-                                            .mainCategoriesForProductIds![index]
-                                            .categoryName,
-                                        id: boutique
-                                            .mainCategoriesForProductIds![index]
-                                            .categoryId,
-                                        isSelected: true,
-                                        flatPhotoPath: CategoryBanner(
-                                          filePath: boutique
+                                Future.delayed(
+                                  const Duration(seconds: 1),
+                                  () => Navigator.of(context).push(
+                                    PageRouteBuilder(
+                                      pageBuilder:
+                                          (
+                                            context,
+                                            animation,
+                                            secondaryAnimation,
+                                          ) => ProductDetailsPageNew(
+                                            productSlugForOpeningChatDirectly:
+                                                boutique
+                                                    .mainCategoriesForProductIds![index]
+                                                    .categorySlug ??
+                                                "",
+                                            productIdForOpeningChatDirectly:
+                                                boutique
+                                                    .mainCategoriesForProductIds![index]
+                                                    .categoryId
+                                                    .toString(),
+                                          ),
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              boutiqueBloc.add(
+                                ChangeAppliedFiltersEvent(
+                                  boutiqueSlug: boutique.slug!,
+                                  resetAppliedFilters: true,
+                                ),
+                              );
+                              boutiqueBloc.add(
+                                ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: boutique.slug!,
+                                ),
+                              );
+
+                              boutiqueBloc.add(
+                                ChangeAppliedFiltersEvent(
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                    filters: Filter(
+                                      categories: [
+                                        filters.Category(
+                                          slug: boutique
                                               .mainCategoriesForProductIds![index]
-                                              .flatPhotoPath
-                                              ?.filePath,
-                                        ),
-                                        mostViewedProductThumbnail: CategoryBanner(
-                                          filePath: boutique
+                                              .categorySlug,
+                                          name: boutique
                                               .mainCategoriesForProductIds![index]
-                                              .mostViewedProductThumbnail
-                                              ?.filePath,
+                                              .categoryName,
+                                          id: boutique
+                                              .mainCategoriesForProductIds![index]
+                                              .categoryId,
+                                          isSelected: true,
+                                          flatPhotoPath: CategoryBanner(
+                                            filePath: boutique
+                                                .mainCategoriesForProductIds![index]
+                                                .flatPhotoPath
+                                                ?.filePath,
+                                          ),
+                                          mostViewedProductThumbnail:
+                                              CategoryBanner(
+                                                filePath: boutique
+                                                    .mainCategoriesForProductIds![index]
+                                                    .mostViewedProductThumbnail
+                                                    ?.filePath,
+                                              ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                  ),
+                                  boutiqueSlug: boutique.slug!,
+                                ),
+                              );
+
+                              boutiqueBloc.add(
+                                GetProductsWithFiltersEvent(
+                                  boutiqueSlug: boutique.slug!,
+                                  fromSearch: false,
+                                  context: context,
+                                  offset: 1,
+                                ),
+                              );
+
+                              homeBloc.add(
+                                const IsChangedVariationWhenQtyZeroEvent(
+                                  isChangedVariationWhenQtyZero: false,
+                                ),
+                              );
+                              boutiqueBloc.add(
+                                AddSizeAndColorFilterinTextToSearchEvent(
+                                  sizeAndColorFilterinTextToSearch: const {},
+                                ),
+                              );
+                              appBloc.add(HideBottomNavigationBar(false));
+                              appBloc.add(ShowOrHideBars(true));
+                              appBloc.add(ChangeIndexForSearch(1));
+
+                              Future.delayed(
+                                const Duration(milliseconds: 300),
+                                () => Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, __, ___) =>
+                                        ProductListingPage(
+                                          isShowPanelForVerified:
+                                              isShowPanelForVerified,
+                                          banner: boutique.banners,
+                                          withSlidingImages: withSlidingImages,
+                                          boutiqueSlug: boutique.slug!,
+                                          boutiqueName: boutique.name,
+                                          boutiqueFirstBanner:
+                                              boutique.banners![0].filePath!,
+                                          boutiqueIcon:
+                                              boutique.icon?.filePath ?? "",
+                                        ),
+
+                                    transitionsBuilder: (_, __, ___, child) =>
+                                        child, // بدون أي حركة
+                                    transitionDuration:
+                                        Duration.zero, // انتقال فوري
+                                    reverseTransitionDuration:
+                                        Duration.zero, // عودة فورية
                                   ),
                                 ),
-                                boutiqueSlug: boutique.slug!,
-                              ),
-                            );
-
-                            boutiqueBloc.add(
-                              GetProductsWithFiltersEvent(
-                                boutiqueSlug: boutique.slug!,
-                                fromSearch: false,
-                                context: context,
-                                offset: 1,
-                              ),
-                            );
-
-                            homeBloc.add(
-                              const IsChangedVariationWhenQtyZeroEvent(
-                                isChangedVariationWhenQtyZero: false,
-                              ),
-                            );
-                            boutiqueBloc.add(
-                              AddSizeAndColorFilterinTextToSearchEvent(
-                                sizeAndColorFilterinTextToSearch: const {},
-                              ),
-                            );
-                            appBloc.add(HideBottomNavigationBar(false));
-                            appBloc.add(ShowOrHideBars(true));
-                            appBloc.add(ChangeIndexForSearch(1));
-
-                            Future.delayed(
-                              const Duration(milliseconds: 300),
-                              () => Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) =>
-                                      ProductListingPage(
-                                        isShowPanelForVerified:
-                                            isShowPanelForVerified,
-                                        banner: boutique.banners,
-                                        withSlidingImages: withSlidingImages,
-                                        boutiqueSlug: boutique.slug!,
-                                        boutiqueName: boutique.name,
-                                        boutiqueFirstBanner:
-                                            boutique.banners![0].filePath!,
-                                        boutiqueIcon:
-                                            boutique.icon?.filePath ?? "",
-                                      ),
-
-                                  transitionsBuilder: (_, __, ___, child) =>
-                                      child, // بدون أي حركة
-                                  transitionDuration:
-                                      Duration.zero, // انتقال فوري
-                                  reverseTransitionDuration:
-                                      Duration.zero, // عودة فورية
-                                ),
-                              ),
-                            );
-                          },
-                          child: MyCachedNetworkImage(
-                            radius: 15.r,
-                            imageUrl: boutique
-                                .mainCategoriesForProductIds![index]
-                                .mostViewedProductThumbnail!
-                                .filePath!,
-                            width: 90.w,
-                            imageFit: BoxFit.contain,
-                            height: 90.h,
+                              );
+                            },
+                            child: MyCachedNetworkImage(
+                              radius: 15.r,
+                              imageUrl: boutique
+                                  .mainCategoriesForProductIds![index]
+                                  .mostViewedProductThumbnail!
+                                  .filePath!,
+                              width: 90.w,
+                              imageFit: BoxFit.contain,
+                              height: 90.h,
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
         ],

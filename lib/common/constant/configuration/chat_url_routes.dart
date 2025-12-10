@@ -26,7 +26,7 @@ extension ScopeApi on String {
       '$_api/${current ? _currentVersion : _previousVersion}/messages/$this';
 
   String oederScope({bool current = false}) =>
-      '$_api/${current ? _currentVersion : _previousVersion}/order-chat-participants/$this';
+      '$_api/${current ? _currentVersion : _previousVersion}/orderChatParticipant/$this';
 
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${current ? _currentVersion : _previousVersion}/firebase_tokens${this != '' ? '/$this' : ''}';
@@ -46,7 +46,8 @@ abstract class ChatEndPoints {
       '${userId}'.usersScope();
   static final saveContactsEP = 'save_contacts'.usersScope();
   static final myCallReg = 'my_calls'.channelsScope();
-  static final getOrderRecipientIdEP = "get-recipient".oederScope();
+  static final getOrderRecipientIdEP = "orderChatParticipant/get-recipient"
+      .channelsScope();
 
   ///! ----< No scope >----
   static final createUserEP = 'create_user'.noScope();
@@ -57,36 +58,38 @@ abstract class ChatEndPoints {
 
   ///! ----< channels ( chats )  >----
   ///
-  static final getMyChatsEP = 'my_channels'.channelsScope(current: true);
-  static final searchForMessageTextInChatEP =
-      'channelSearch'.elasticScope();
+  static final getMyChatsEP = 'my_channels'.channelsScope();
+  static final searchForMessageTextInChatEP = 'channelSearch'.elasticScope();
 
   static final deleteChatEP = 'destroy'.channelsScope();
   static final deleteMessage = 'destroy'.messagesScope();
   static final getDateTime = 'get_date_time'.channelsScope();
-  static final missedCallCount = 'missed_cals_of_user'.messagesScope();
+  static final missedCallCount = 'missed_calls_of_user'.messagesScope();
   static final watchMissedCall = 'wached_all_calls'.messagesScope();
 
   static String readAllMessagesEP(String channelId) =>
       '$channelId/watched'.channelsScope();
   static String getMediaCount(String channelId) =>
-      '$channelId/media_counts'.channelsScope();
+      '$channelId/media'.channelsScope();
+  //static String getMediaCount(String channelId) =>
+  //'$channelId/media_counts'.channelsScope();
 
   static String receiveMessageEP(String channelId) =>
       '$channelId/received'.channelsScope();
 
   ///! ----< channel Members  >----
   ///
-  static final setChatPropertyEP = 'set'.channelMembersScope();
+  static final setChatPropertyEP = 'update'.channelsScope();
+  //static final setChatPropertyEP = 'set'.channelMembersScope();
   static final shareProductOnAppsEP = 'share_product_on_apps'.elasticScope();
 
   ///! ----< messages >----
   ///
   static final sendMessageEP = 'send'.messagesScope();
-  static final getMessagesBetweenEP =
-      'get_all_messages_between_two_messages'.messagesScope();
-  static final shareProductWithChannelsOrContacts =
-      'share_product'.messagesScope();
+  static final getMessagesBetweenEP = 'get_all_messages_between_two_messages'
+      .messagesScope();
+  static final shareProductWithChannelsOrContacts = 'share_product'
+      .messagesScope();
   static String getMessagesForChatEP(String channelId) =>
       'messages_of_channel/$channelId'.messagesScope();
 
@@ -101,6 +104,7 @@ abstract class ChatEndPoints {
   /// }/api/v1/messages/video_call
   static String videoCallEP = 'video_call'.messagesScope();
   static String voiceCallEP = 'voice_call'.messagesScope();
+  static String endCallEP = 'end_call'.messagesScope();
 
   static String answer_call(String messageId) {
     return 'answer_call/$messageId'.messagesScope();
@@ -126,12 +130,8 @@ abstract class ChatEndPoints {
 abstract class ChatUrls {
   static String get baseUrl => _baseUrlDev;
 
-  static String get baseUrlWithHttp => _baseUrlDevWithHttp;
-
   static Uri get baseUri => Uri.parse(_baseUrlDev);
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
-  static String _baseUrlDev = dotenv.env['CHAT_URL']!;
-  static const String _baseUrlDevWithHttp =
-      'http://chating_staging_trydos.trydos.dev';
+  static String _baseUrlDev = dotenv.env['CHAT_NEST_URL']!;
 }

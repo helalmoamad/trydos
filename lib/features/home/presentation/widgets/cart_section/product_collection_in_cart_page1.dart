@@ -17,6 +17,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/countdown_timer_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
@@ -158,8 +159,8 @@ class _ProductCollectionInCartPage1State
                                       .cartCollection?[index]
                                       .haveHurryUpNotifyQty ??
                                   false)
-                        ? 190
-                        : 155,
+                        ? 220
+                        : 185,
                     child: Stack(
                       children: [
                         Positioned(
@@ -1260,8 +1261,15 @@ class _ProductCollectionInCartPage1State
                                                   isOldCart
                                                       ? HelperFunctions.formatNumber(
                                                           number:
-                                                              (oldCartCollection![index]
-                                                                  .priceOfVariant! *
+                                                              (HelperFunctions.truncateToDecimalPlaces(
+                                                                oldCartCollection![index]
+                                                                    .priceOfVariant!,
+                                                                state
+                                                                    .getCurrencyForCountryModel!
+                                                                    .data!
+                                                                    .currency!
+                                                                    .decimalDigits!,
+                                                              ) *
                                                               state
                                                                   .getCurrencyForCountryModel!
                                                                   .data!
@@ -1276,8 +1284,15 @@ class _ProductCollectionInCartPage1State
                                                               2)*/
                                                       : HelperFunctions.formatNumber(
                                                           number:
-                                                              (cartCollection![index]
-                                                                  .price! *
+                                                              (HelperFunctions.truncateToDecimalPlaces(
+                                                                cartCollection![index]
+                                                                    .price!,
+                                                                state
+                                                                    .getCurrencyForCountryModel!
+                                                                    .data!
+                                                                    .currency!
+                                                                    .decimalDigits!,
+                                                              ) *
                                                               state
                                                                   .getCurrencyForCountryModel!
                                                                   .data!
@@ -1326,7 +1341,7 @@ class _ProductCollectionInCartPage1State
                                                             cartCollection[index]
                                                                 .price
                                                       ? ""
-                                                      : "${HelperFunctions.formatNumber(number: (cartCollection[index].offerPrice! * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))
+                                                      : "${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(cartCollection[index].offerPrice!, state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))
                                                         //.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
                                                         } ",
                                                   style: context
@@ -1415,6 +1430,101 @@ class _ProductCollectionInCartPage1State
                                   ],
                                 ),
                               ),
+                              isOldCart
+                                  ? const SizedBox.shrink()
+                                  : InkWell(
+                                      onTap: () {
+                                        homeBloc.add(
+                                          ChangeCurrentIndexForUpdatCartEvent(
+                                            index: index,
+                                          ),
+                                        );
+                                        if (index ==
+                                                    (state.currentIndexForUpdateCart ??
+                                                        0) &&
+                                                (state.convertItemFromcartToOldCartStatus ==
+                                                    ConvertItemFromcartToOldCartStatus
+                                                        .loading) ||
+                                            isOldCart) {
+                                          return;
+                                        }
+
+                                        homeBloc.add(
+                                          ConvertItemFromCartToOldCartEvent(
+                                            cartId: cartCollection![index].id
+                                                .toString(),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          color: const Color.fromARGB(
+                                            255,
+                                            48,
+                                            190,
+                                            255,
+                                          ),
+                                        ),
+                                        alignment: Alignment.center,
+                                        width: isOldCart ? 0 : null,
+                                        height: isOldCart ? 0 : 28,
+                                        child:
+                                            (index ==
+                                                    (state.currentIndexForUpdateCart ??
+                                                        0) &&
+                                                (state.convertItemFromcartToOldCartStatus ==
+                                                    ConvertItemFromcartToOldCartStatus
+                                                        .loading))
+                                            ? TrydosLoader(
+                                                size: 20,
+                                                color: const Color.fromARGB(
+                                                  255,
+                                                  255,
+                                                  255,
+                                                  255,
+                                                ),
+                                              )
+                                            : Row(
+                                                children: [
+                                                  Text(
+                                                    " ${LocaleKeys.delay.tr()}  ",
+                                                    style: context
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.bq
+                                                        .copyWith(
+                                                          fontSize: 12,
+                                                          color:
+                                                              const Color.fromARGB(
+                                                                255,
+                                                                255,
+                                                                255,
+                                                                255,
+                                                              ),
+                                                        ),
+                                                  ),
+                                                  SvgPicture.asset(
+                                                    AppAssets.redeemClockSvg,
+                                                    width: 15,
+                                                    height: 15,
+                                                    // ignore: deprecated_member_use
+                                                    color: const Color.fromARGB(
+                                                      255,
+                                                      255,
+                                                      255,
+                                                      255,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                      ),
+                                    ),
                             ],
                           ),
                           left: LanguageService.languageCode != "ar"
@@ -1454,120 +1564,21 @@ class _ProductCollectionInCartPage1State
                               : null,
                           left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
-                        isOldCart
-                            ? const SizedBox.shrink()
-                            : Positioned(
-                                child: InkWell(
-                                  onTap: () {
-                                    homeBloc.add(
-                                      ChangeCurrentIndexForUpdatCartEvent(
-                                        index: index,
-                                      ),
-                                    );
-                                    if (index ==
-                                                (state.currentIndexForUpdateCart ??
-                                                    0) &&
-                                            (state.convertItemFromcartToOldCartStatus ==
-                                                ConvertItemFromcartToOldCartStatus
-                                                    .loading) ||
-                                        isOldCart) {
-                                      return;
-                                    }
-
-                                    homeBloc.add(
-                                      ConvertItemFromCartToOldCartEvent(
-                                        cartId: cartCollection![index].id
-                                            .toString(),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.amber,
-                                    ),
-                                    alignment: Alignment.center,
-                                    width: isOldCart ? 0 : 50,
-                                    height: isOldCart ? 0 : 30,
-                                    child:
-                                        (index ==
-                                                (state.currentIndexForUpdateCart ??
-                                                    0) &&
-                                            (state.convertItemFromcartToOldCartStatus ==
-                                                ConvertItemFromcartToOldCartStatus
-                                                    .loading))
-                                        ? TrydosLoader(size: 20)
-                                        : Row(
-                                            children: [
-                                              Text(
-                                                " ${LocaleKeys.delay.tr()} ",
-                                                style: context
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.bq
-                                                    .copyWith(
-                                                      fontSize: 12,
-                                                      color:
-                                                          const Color.fromARGB(
-                                                            255,
-                                                            42,
-                                                            39,
-                                                            228,
-                                                          ),
-                                                    ),
-                                              ),
-                                              SvgPicture.asset(
-                                                AppAssets.orderClockSvg,
-                                                width: 15,
-                                                height: 15,
-                                                // ignore: deprecated_member_use
-                                                color: const Color.fromARGB(
-                                                  255,
-                                                  42,
-                                                  39,
-                                                  228,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                  ),
-                                ),
-                                bottom: (state.cartCollection.isNullOrEmpty)
-                                    ? 0
-                                    : (state.cartCollection?[index] == null)
-                                    ? 0
-                                    : (state
-                                                  .cartCollection?[index]
-                                                  .haveHurryUpNotifyTimeLeft ??
-                                              false) ||
-                                          (state
-                                                  .cartCollection?[index]
-                                                  .haveHurryUpNotifyQty ??
-                                              false)
-                                    ? 85
-                                    : 50,
-                                right: LanguageService.languageCode != "ar"
-                                    ? 5
-                                    : null,
-                                left: LanguageService.languageCode != "ar"
-                                    ? null
-                                    : 5,
-                              ),
 
                         //////////////////////
                         Positioned(
                           bottom: -15,
                           child: isOldCart
                               ? Container(
-                                  width: 310,
+                                  width: 342,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     color: const Color(0xffF8F8F8),
                                   ),
                                   margin: const EdgeInsets.only(
                                     bottom: 20,
-                                    left: 20,
-                                    right: 20,
+                                    left: 5,
+                                    right: 5,
                                   ),
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -1762,7 +1773,7 @@ class _ProductCollectionInCartPage1State
                                         SvgPicture.asset(
                                           AppAssets.chatWithQuestionSvg,
                                         ),
-                                        const SizedBox(width: 10),
+                                        const SizedBox(width: 5),
                                       ],
                                     ),
                                   ),
@@ -1930,9 +1941,13 @@ class _ProductCollectionInCartPage1State
                                                   ),
                                                 ),
                                           ),
-                                          Text(
-                                            " ${(state.cartCollection?[index].timeLeftInMinutes ?? 0) ~/ 60}:${(state.cartCollection?[index].timeLeftInMinutes ?? 0) % 60}:00",
-                                            style: context
+                                          CountdownTimerWidget(
+                                            initialMinutes:
+                                                state
+                                                    .cartCollection?[index]
+                                                    .timeLeftInMinutes ??
+                                                0,
+                                            textStyle: context
                                                 .textTheme
                                                 .bodyMedium
                                                 ?.bq

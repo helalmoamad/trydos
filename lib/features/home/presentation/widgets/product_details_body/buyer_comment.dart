@@ -28,7 +28,8 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
         HomeState,
         DeleteOrderCommentRatingStatus,
         UpdateOrderCommentRatingStatus,
-        UpdateLikeCommentRatingStatus;
+        UpdateLikeCommentRatingStatus,
+        TranslateCommentStatus;
 
 import 'package:trydos/features/home/presentation/widgets/product_details_body/star_ratting_product.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -40,11 +41,13 @@ class BuyerComment extends StatefulWidget {
   final String? ownerType;
   final PanelController panelBuyersComments;
   final String? ownerId;
+  final String productSlug;
   final ValueNotifier<bool>? isVerified;
   const BuyerComment({
     super.key,
     required this.productId,
     required this.isVerified,
+    required this.productSlug,
     required this.panelBuyersComments,
     required this.ownerType,
     required this.ownerId,
@@ -94,7 +97,8 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
           previous.updateOrderCommentRatingStatus !=
               current.updateOrderCommentRatingStatus ||
           previous.updateLikeCommentRatingStatus !=
-              current.updateLikeCommentRatingStatus,
+              current.updateLikeCommentRatingStatus ||
+          previous.translateCommentStatus != current.translateCommentStatus,
       builder: (context, state) {
         print(
           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD*******////${state.updateLikeCommentRatingStatus}",
@@ -201,7 +205,9 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                 .getBuyersCommentsPaginationModel!['all']!
                                 .items[index],
                             (index + 1000000),
+                            widget.isVerified,
                             state,
+                            widget.productSlug,
                           );
                   },
                   itemCount:
@@ -348,7 +354,9 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
   Widget _commentWidget(
     BuyersComment buyersComment,
     int index,
+    ValueNotifier<bool>? isVerified,
     HomeState state,
+    String productSlug,
   ) {
     void _showEditBottomSheet(BuildContext context, String initialText) {
       final TextEditingController _controller = TextEditingController(
@@ -447,6 +455,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                   fromBuyerComments: true,
                                   ownerId: widget.ownerId,
                                   ownerType: widget.ownerType,
+                                  slug: productSlug,
                                   productId: buyersComment.productId,
                                   tapCommentIndex: index,
                                   variant: buyersComment.variant,
@@ -547,7 +556,9 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
           ),
           const SizedBox(height: 10),
           MyTextWidget(
-            buyersComment.comment ?? "",
+            (buyersComment.isTran ?? false)
+                ? (buyersComment.commentTran ?? "")
+                : buyersComment.comment ?? "",
             maxLines: 10,
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
@@ -597,7 +608,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                           );
                         },
                         child: SizedBox(
-                          width: 30,
+                          width: 25,
                           height: 18,
                           child: SvgPicture.asset(
                             (buyersComment.isLiked ?? false)
@@ -616,218 +627,292 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                           fontSize: 9,
                         ),
                       ),
-                buyersComment.customer?.id !=
-                        GetIt.I<PrefsRepository>().myMarketId
-                    ? const SizedBox.shrink()
+                ((state.deleteOrderCommentRatingStatus ==
+                                DeleteOrderCommentRatingStatus.loading ||
+                            state.updateOrderCommentRatingStatus ==
+                                UpdateOrderCommentRatingStatus.loading ||
+                            state.translateCommentStatus ==
+                                TranslateCommentStatus.loading) &&
+                        state.tapCommentIndex == index)
+                    ? TrydosLoader(size: 15)
                     : SizedBox(
-                        width: 80.w,
-                        height: 25,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            state.deleteOrderCommentRatingStatus ==
-                                        DeleteOrderCommentRatingStatus
-                                            .loading &&
-                                    state.tapCommentIndex == index
-                                ? TrydosLoader(size: 15)
-                                : SizedBox(
-                                    width: 20,
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        final confirmed = await showDialog<bool>(
-                                          context: context,
-                                          barrierColor: Colors.transparent,
-                                          builder: (ctx) => Center(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                  ),
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: Container(
-                                                  width: double.infinity,
-                                                  margin: EdgeInsets.only(
-                                                    top: 8.h,
-                                                  ),
-                                                  padding: EdgeInsets.all(16.w),
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(
-                                                      0xFFE2FFF1,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12.r,
-                                                        ),
-                                                    border: Border.all(
-                                                      color: const Color(
-                                                        0xFF402CDD,
-                                                      ),
-                                                    ),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            // ignore: deprecated_member_use
-                                                            .withOpacity(0.1),
-                                                        blurRadius: 8,
-                                                        offset: const Offset(
-                                                          0,
-                                                          2,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      MyTextWidget(
-                                                        LocaleKeys
-                                                            .confirm_delete_comment_title
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 16.sp,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color: const Color(
-                                                            0xFF1A1A1A,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 8.h),
-                                                      MyTextWidget(
-                                                        LocaleKeys
-                                                            .confirm_delete_comment_message
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: const Color(
-                                                            0xFF666666,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 12.h),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.of(
-                                                                    ctx,
-                                                                  ).pop(false),
-                                                              child: Text(
-                                                                LocaleKeys
-                                                                    .cancel
-                                                                    .tr(),
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .grey[600],
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 8,
-                                                          ),
-                                                          Expanded(
-                                                            child: ElevatedButton(
-                                                              onPressed: () =>
-                                                                  Navigator.of(
-                                                                    ctx,
-                                                                  ).pop(true),
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor:
-                                                                    const Color(
-                                                                      0xFF402CDD,
-                                                                    ),
-                                                                foregroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        12,
-                                                                      ),
-                                                                ),
-                                                                padding:
-                                                                    const EdgeInsets.symmetric(
-                                                                      vertical:
-                                                                          10,
-                                                                    ),
-                                                              ),
-                                                              child: Text(
-                                                                LocaleKeys
-                                                                    .confirm_delete
-                                                                    .tr(),
-                                                                style: const TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+                        width: 30,
+                        height: 35,
+                        child: PopupMenuButton<String>(
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Colors.black87,
+                          ),
+                          onSelected: (value) async {
+                            if (value == 'delete') {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                barrierColor: Colors.transparent,
+                                builder: (ctx) => Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: Container(
+                                        width: double.infinity,
+                                        margin: EdgeInsets.only(top: 8.h),
+                                        padding: EdgeInsets.all(16.w),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFE2FFF1),
+                                          borderRadius: BorderRadius.circular(
+                                            12.r,
+                                          ),
+                                          border: Border.all(
+                                            color: const Color(0xFF402CDD),
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              // ignore: deprecated_member_use
+                                              color: Colors.black.withOpacity(
+                                                0.1,
+                                              ),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            MyTextWidget(
+                                              LocaleKeys
+                                                  .confirm_delete_comment_title
+                                                  .tr(),
+                                              style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF1A1A1A),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                        if (confirmed == true) {
-                                          BlocProvider.of<HomeBloc>(
-                                            context,
-                                          ).add(
-                                            DeleteCommentRatingEvent(
-                                              commentId: buyersComment.id,
-                                              fromBuyerComments: true,
-                                              productId:
-                                                  buyersComment.productId,
-                                              tapCommentIndex: index,
+                                            SizedBox(height: 8.h),
+                                            MyTextWidget(
+                                              LocaleKeys
+                                                  .confirm_delete_comment_message
+                                                  .tr(),
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w400,
+                                                color: const Color(0xFF666666),
+                                              ),
                                             ),
-                                          );
-                                        }
-                                      },
-                                      child: SvgPicture.asset(
-                                        AppAssets.deletecartSvg,
-                                        height: 20,
+                                            SizedBox(height: 12.h),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(
+                                                          ctx,
+                                                        ).pop(false),
+                                                    child: Text(
+                                                      LocaleKeys.cancel.tr(),
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(
+                                                          ctx,
+                                                        ).pop(true),
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          const Color(
+                                                            0xFF402CDD,
+                                                          ),
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              12,
+                                                            ),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 10,
+                                                          ),
+                                                    ),
+                                                    child: Text(
+                                                      LocaleKeys.confirm_delete
+                                                          .tr(),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                            const SizedBox(width: 15),
-                            state.updateOrderCommentRatingStatus ==
-                                        UpdateOrderCommentRatingStatus
-                                            .loading &&
-                                    state.tapCommentIndex == index
-                                ? TrydosLoader(size: 15)
-                                : SizedBox(
-                                    width: 20,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        _showEditBottomSheet(
-                                          context,
-                                          buyersComment.comment ?? "",
-                                        );
-                                      },
-                                      child: SvgPicture.asset(
+                                ),
+                              );
+                              if (confirmed == true) {
+                                if (!(GetIt.I<PrefsRepository>()
+                                        .isVerifiedPhone ??
+                                    false)) {
+                                  Future.delayed(const Duration(seconds: 1), () {
+                                    isVerified?.value = false;
+                                    if ((GetIt.I<PrefsRepository>()
+                                            .isVerifiedPhonePeforeExpiredToken ??
+                                        false)) {
+                                      GetIt.I<AuthBloc>().add(
+                                        SendOtpEvent(
+                                          phone: GetIt.I<PrefsRepository>()
+                                              .myPhoneNumber!,
+                                          isViaWhatsApp: 1,
+                                        ),
+                                      );
+                                    }
+                                  });
+                                  return;
+                                }
+                                BlocProvider.of<HomeBloc>(context).add(
+                                  DeleteCommentRatingEvent(
+                                    commentId: buyersComment.id,
+                                    fromBuyerComments: true,
+                                    productId: buyersComment.productId,
+                                    tapCommentIndex: index,
+                                  ),
+                                );
+                              }
+                            } else if (value == 'edit') {
+                              if (!(GetIt.I<PrefsRepository>()
+                                      .isVerifiedPhone ??
+                                  false)) {
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  isVerified?.value = false;
+                                  if ((GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhonePeforeExpiredToken ??
+                                      false)) {
+                                    GetIt.I<AuthBloc>().add(
+                                      SendOtpEvent(
+                                        phone: GetIt.I<PrefsRepository>()
+                                            .myPhoneNumber!,
+                                        isViaWhatsApp: 1,
+                                      ),
+                                    );
+                                  }
+                                });
+                                return;
+                              }
+                              _showEditBottomSheet(
+                                context,
+                                buyersComment.comment ?? "",
+                              );
+                            } else if (value == 'translate') {
+                              if (!(GetIt.I<PrefsRepository>()
+                                      .isVerifiedPhone ??
+                                  false)) {
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  isVerified?.value = false;
+                                  if ((GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhonePeforeExpiredToken ??
+                                      false)) {
+                                    GetIt.I<AuthBloc>().add(
+                                      SendOtpEvent(
+                                        phone: GetIt.I<PrefsRepository>()
+                                            .myPhoneNumber!,
+                                        isViaWhatsApp: 1,
+                                      ),
+                                    );
+                                  }
+                                });
+                                return;
+                              }
+                              BlocProvider.of<HomeBloc>(context).add(
+                                TranslateCommentEvent(
+                                  commentId: buyersComment.id,
+                                  showOriginal: (buyersComment.isTran ?? false),
+                                  fromBuyerComments: true,
+                                  tapCommentIndex: index,
+                                ),
+                              );
+                            }
+                          },
+                          itemBuilder: (BuildContext context) {
+                            List<PopupMenuEntry<String>> menu = [];
+                            menu.add(
+                              PopupMenuItem(
+                                value: 'translate',
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      AppAssets.languageSvg,
+
+                                      height: 20,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      (buyersComment.isTran ?? false)
+                                          ? LocaleKeys.show_original_version
+                                                .tr()
+                                          : LocaleKeys.translate.tr(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                            if (buyersComment.customer?.id ==
+                                GetIt.I<PrefsRepository>().myMarketId) {
+                              menu.add(
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
                                         AppAssets.editSvg,
                                         // ignore: deprecated_member_use
                                         color: Colors.green,
                                         height: 20,
                                       ),
-                                    ),
+                                      const SizedBox(width: 6),
+                                      Text(LocaleKeys.edit.tr()),
+                                    ],
                                   ),
-                          ],
+                                ),
+                              );
+                              menu.add(
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppAssets.deletecartSvg,
+                                        height: 20,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(LocaleKeys.delete.tr()),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                            return menu;
+                          },
                         ),
                       ),
+
+                // إذا كان هناك عمليات جارية (لودر الحذف أو التعديل)
                 const Spacer(),
                 StarRatingProductWidget(
                   itemHeight: 13,
@@ -842,7 +927,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   initialRating: (buyersComment.starRating ?? 0).toDouble(),
                 ),
                 MyTextWidget(
-                  ' ${LocaleKeys.good_quality.tr()}  ${LocaleKeys.true_size.tr()}  ',
+                  ' | ${(buyersComment.goodQualitycomment ?? false) ? LocaleKeys.good_quality.tr() : ""} ${(buyersComment.trueSize ?? false) ? "| ${LocaleKeys.true_size.tr()}" : ""} ',
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     fontSize: 9,
@@ -859,7 +944,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                 !(buyersComment.recommendation ?? false)
                     ? const SizedBox.shrink()
                     : MyTextWidget(
-                        '${LocaleKeys.recommend_it.tr()}',
+                        ' ${LocaleKeys.recommend_it.tr()}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
                           fontSize: 9,

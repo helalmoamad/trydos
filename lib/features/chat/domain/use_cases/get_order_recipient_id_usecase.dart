@@ -16,7 +16,8 @@ class GetOrderRecipientIdUseCase
 
   @override
   Future<Either<Failure, GetOrderRecipientIdModel>> call(
-      GetOrderRecipientIdParams params) {
+    GetOrderRecipientIdParams params,
+  ) {
     return repository.getOrderRecipientId(params.map);
   }
 }
@@ -25,12 +26,15 @@ class GetOrderRecipientIdParams {
   final String? orderId;
   final String? parentOrderId;
   final String? originalUserId;
-  const GetOrderRecipientIdParams(
-      {this.orderId, this.originalUserId, this.parentOrderId});
+  const GetOrderRecipientIdParams({
+    this.orderId,
+    this.originalUserId,
+    this.parentOrderId,
+  });
 
   Map<String, dynamic> get map => {
-        'order_id': orderId,
-        'original_user_id': originalUserId,
-        'parent_order_id': parentOrderId,
-      }..removeWhere((key, value) => value == null);
+    'order_id': orderId,
+    'original_user_id': originalUserId,
+    'parent_order_id': parentOrderId,
+  }..removeWhere((key, value) => value == null);
 }

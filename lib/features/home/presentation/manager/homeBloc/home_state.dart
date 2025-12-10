@@ -42,7 +42,7 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
   init,
   loading,
   success,
-  failure
+  failure,
 }
 
 enum GetFullProductDetailsStatus { init, loading, success, failure }
@@ -59,7 +59,7 @@ enum CheckWithGetCartStatus {
   successForCart,
   successForPlaceOrder,
   available,
-  failure
+  failure,
 }
 
 enum GetOLdCartItemsStatus { init, loading, success, failure }
@@ -120,13 +120,15 @@ enum UpdateLikeCommentRatingStatus { init, loading, success, failure }
 
 enum DeleteOrderCommentRatingStatus { init, loading, success, failure }
 
+enum TranslateCommentStatus { init, loading, success, failure }
+
 enum CreateCommentRatingStatus { init, loading, success, failure }
 
 enum CurrentSelectedColorForEveryProductStatus {
   init,
   loading,
   success,
-  failure
+  failure,
 }
 
 enum AuthProductDetailsStatus { init, loading, success, failure }
@@ -145,6 +147,7 @@ class HomeState extends Equatable {
     this.tapCommentIndex = -1,
     this.createCommentRatingStatus = CreateCommentRatingStatus.init,
     this.updateWhatsappNotificationStatus,
+    this.translateCommentStatus = TranslateCommentStatus.init,
     //this.getCommentsFromAnalyticsPaginationModel,
     this.changeSizesForEveryProduct,
     this.getFqaCommentsPaginationModel,
@@ -191,8 +194,8 @@ class HomeState extends Equatable {
     this.selectedCollection,
     this.productContentForStatusOfOpeningProductDetailsDirectly,
     this.cartCollection = const [],
-    //this.idForRequest,
 
+    //this.idForRequest,
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.currentColorSizeForCart,
     this.currentQuantityForCart,
@@ -202,10 +205,9 @@ class HomeState extends Equatable {
     this.getAllowedCountriesModel,
 
     //   this.moveUrlFromElasticToMarketServer = false,
-
     this.cartIdsHurryUPTimerStarted = const {},
     this.listitemForAddToCart,
-//this.getListOfProductsFoundedInCartStatus =
+    //this.getListOfProductsFoundedInCartStatus =
     //    GetListOfProductsFoundedInCartStatus.init,
     this.getCurrencyForCountryModel,
     this.storiesCollections = const [],
@@ -248,10 +250,10 @@ class HomeState extends Equatable {
   });
 
   final GetFirebaseSettingForNotificationStatus?
-      getFirebaseSettingForNotificationStatus;
+  getFirebaseSettingForNotificationStatus;
   final GetCountryBoundaryByIsoStatus? getCountryBoundaryByIsoStatus;
   final FirebaseSettingForNotificationModel?
-      firebaseSettingForNotificationModel;
+  firebaseSettingForNotificationModel;
   final DeleteOrderCommentRatingStatus deleteOrderCommentRatingStatus;
   final UpdateOrderCommentRatingStatus updateOrderCommentRatingStatus;
   final UpdateLikeCommentRatingStatus updateLikeCommentRatingStatus;
@@ -262,7 +264,7 @@ class HomeState extends Equatable {
   //   getCommentsFromAnalyticsPaginationModel;
   final Map<String, PaginationModel<FqaComment>>? getFqaCommentsPaginationModel;
   final Map<String, PaginationModel<BuyersComment>>?
-      getBuyersCommentsPaginationModel;
+  getBuyersCommentsPaginationModel;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   // final GetCommentForProductStatus getCommentForProductStatus;
@@ -280,18 +282,19 @@ class HomeState extends Equatable {
   final bool finishGetAllStory;
   final List<order_rating.Comment> getOrderRatingComments;
   final String? storyLink;
+  final TranslateCommentStatus? translateCommentStatus;
   final String? statusCodeOfCommentProcess;
   final int? selectedCollection;
   final Map<int, int?> currentStoryInEachCollection;
 
   final AddProductIdToSaveRedeemTimerStatus?
-      addProductIdToSaveRedeemTimerStatus;
+  addProductIdToSaveRedeemTimerStatus;
   final CurrentSelectedColorForEveryProductStatus?
-      currentSelectedColorForEveryProductStatus;
+  currentSelectedColorForEveryProductStatus;
   final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus;
   final List<String>? productIdToSaveRedeemTimer;
   final EnableAddToCardAfterChangeVariantZero?
-      enableAddToCardAfterChangeVariantZero;
+  enableAddToCardAfterChangeVariantZero;
 
   final bool isChangedvariationWhenQtyZero;
 
@@ -302,7 +305,7 @@ class HomeState extends Equatable {
 
   final NotificationTypeForProductModel? notificationTypeForProductModel;
   final Map<String, GetAndAddCountViewOfProductStatus>
-      getAndAddCountViewOfProductStatus;
+  getAndAddCountViewOfProductStatus;
   final List<PopularSearchTerm>? popularSearchTerm;
   // final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel;
   final PaginationModel<NotificationItemModel>? getUserNotificationModel;
@@ -335,11 +338,11 @@ class HomeState extends Equatable {
   final Map<String, Map<int, List<List<String>>>> addImagesToProductIdForCart;
   final Map<String, Map<String, String>>? addVariationToCartId;
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
-      productStatus;
+  productStatus;
   final List<cart.Cart>? cartCollection;
 
   final Map<String, int> cartIdsHurryUPTimerStarted;
-//  final GetListOfProductsFoundedInCartStatus
+  //  final GetListOfProductsFoundedInCartStatus
   //  getListOfProductsFoundedInCartStatus;
   final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus;
   final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus;
@@ -348,7 +351,7 @@ class HomeState extends Equatable {
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final Map<String, bool> reRequestProductWithFilters;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
-      getProductDetailWithoutSimilarRelatedProductsStatus;
+  getProductDetailWithoutSimilarRelatedProductsStatus;
 
   final GetFullProductDetailsStatus getFullProductDetailsStatus;
 
@@ -368,7 +371,7 @@ class HomeState extends Equatable {
   final List<String> isVariantRequestNotification;
   final bool? finishLoadingAfterChangedVariationWhenQtyZero;
   final Map<String, PaginationModel<product.Products>>
-      getProductListingPaginationWithoutFiltersModel;
+  getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
   final oldCart.GetOldCartModel? getOldCartModel;
   // final Map<String, GetCommentForProductModel> getCommentForProductModel;
@@ -381,259 +384,262 @@ class HomeState extends Equatable {
 
   final Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
-      cachedProductWithoutRelatedProductsModel;
+  cachedProductWithoutRelatedProductsModel;
   final bool? likeForReplayComment;
   final AuthProductDetailsStatus authProductDetailsStatus;
   final GetAuthProductDetailsModel? authProductDetailsModel;
 
   @override
   List<Object?> get props => [
-        getStartingSettingsStatus,
-        storyLink,
-        currentSelectedColorForEveryProduct,
-        // getListOfProductsFoundedInCartStatus,
-        //  getCommentForProductStatus,
-        // productITemForCart,
-        oldcartCollection,
-        likeForReplayComment,
-        convertItemFromcartToOldCartStatus,
-        getOldCartModel,
+    getStartingSettingsStatus,
+    storyLink,
+    currentSelectedColorForEveryProduct,
+    // getListOfProductsFoundedInCartStatus,
+    //  getCommentForProductStatus,
+    // productITemForCart,
+    oldcartCollection,
+    likeForReplayComment,
+    convertItemFromcartToOldCartStatus,
+    getOldCartModel,
 
-        getOldCartItemsStatus,
-        notificationTypeForProductModel,
-        updateProfileStatus,
-        currentSelectedColorForEveryProductStatus,
-        listitemForAddToCart,
-        getOrderRatingStatus,
-        getAllowedCountriesModel,
-        userInfo,
-        popularSearchTerm,
-        getCurrencyForCountryModel,
-        enableAddToCardAfterChangeVariantZero,
-        cartIdsHurryUPTimerStarted,
-        createCommentRatingStatus,
-        currentSlugToRefreshFromNotification,
-        currentStoryInEachCollection,
-        finishLoadingAfterChangedVariationWhenQtyZero,
-        // getCommentsFromAnalyticsPaginationModel,
-        // addCommentStatus,
-        getFqaCommentsPaginationModel,
-        getBuyersCommentsPaginationModel,
-        getOrderRatingComments,
-        changeSizesForEveryProduct,
-        hideItemInOldCartStatus,
-        // moveUrlFromElasticToMarketServer,
+    getOldCartItemsStatus,
+    notificationTypeForProductModel,
+    updateProfileStatus,
+    currentSelectedColorForEveryProductStatus,
+    listitemForAddToCart,
+    getOrderRatingStatus,
+    getAllowedCountriesModel,
+    userInfo,
+    popularSearchTerm,
+    getCurrencyForCountryModel,
+    enableAddToCardAfterChangeVariantZero,
+    cartIdsHurryUPTimerStarted,
+    createCommentRatingStatus,
+    currentSlugToRefreshFromNotification,
+    currentStoryInEachCollection,
+    finishLoadingAfterChangedVariationWhenQtyZero,
+    // getCommentsFromAnalyticsPaginationModel,
+    // addCommentStatus,
+    getFqaCommentsPaginationModel,
+    getBuyersCommentsPaginationModel,
+    getOrderRatingComments,
+    changeSizesForEveryProduct,
+    hideItemInOldCartStatus,
 
-        updateEmailappNotificationStatus,
-        updateWhatsappNotificationStatus,
-        updateLikeCommentRatingStatus,
+    // moveUrlFromElasticToMarketServer,
+    updateEmailappNotificationStatus,
+    updateWhatsappNotificationStatus,
+    updateLikeCommentRatingStatus,
 
-        getUserNotificationModel,
+    getUserNotificationModel,
 
-        getCartOverviewStatus,
+    getCartOverviewStatus,
 
-        checkAvailabilityProductCartStatus,
-        checkAvailabilityProductCartModel,
+    checkAvailabilityProductCartStatus,
+    checkAvailabilityProductCartModel,
 
-        listOfErrorSendedToMobileErrorLog,
-        uploadUserPhotoCloudinaryStatus,
+    listOfErrorSendedToMobileErrorLog,
+    uploadUserPhotoCloudinaryStatus,
 
-        productContentForStatusOfOpeningProductDetailsDirectly,
+    productContentForStatusOfOpeningProductDetailsDirectly,
 
-        getAndAddCountViewOfProductStatus,
+    getAndAddCountViewOfProductStatus,
 
-        selectedCollection,
-        currentPage,
-        sizesQuantitiesForEachColor,
+    selectedCollection,
+    currentPage,
+    sizesQuantitiesForEachColor,
 
-        searchHistory,
-        addImagesToProductIdForCart,
-        productStatus,
-        cartCollection,
+    searchHistory,
+    addImagesToProductIdForCart,
+    productStatus,
+    cartCollection,
 
-        reRequestTheseProductListingInBoutiques,
-        reRequestProductWithFilters,
-        getProductDetailWithoutSimilarRelatedProductsStatus,
-        getCartItemsStatus,
-        checkWithGetCartStatus,
-        getProductListingStatus,
-        getStoriesForProductStatus,
+    reRequestTheseProductListingInBoutiques,
+    reRequestProductWithFilters,
+    getProductDetailWithoutSimilarRelatedProductsStatus,
+    getCartItemsStatus,
+    checkWithGetCartStatus,
+    getProductListingStatus,
+    getStoriesForProductStatus,
 
-        // storiesForProduct,
-        sizesForEachColor,
-        getFullProductDetailsStatus,
+    // storiesForProduct,
+    sizesForEachColor,
+    getFullProductDetailsStatus,
 
-        getProductListingPaginationWithoutFiltersModel,
-        getCartShippingItemsModel,
-        //    getCommentForProductModel,
+    getProductListingPaginationWithoutFiltersModel,
+    getCartShippingItemsModel,
 
-        addItemInCartStatus,
-        addVariationToCartId,
-        deleteItemInCartStatus,
-        updateItemInCartStatus,
+    //    getCommentForProductModel,
+    addItemInCartStatus,
+    addVariationToCartId,
+    deleteItemInCartStatus,
+    updateItemInCartStatus,
 
-        isVariantRequestNotification,
-        selectedCollection,
+    isVariantRequestNotification,
+    selectedCollection,
 
-        startingSetting,
-        currentIndexForUpdateCart,
-        currentColorSizeForCart,
-        addProductIdToSaveRedeemTimerStatus,
-        isChangedvariationWhenQtyZero,
-        getFirebaseSettingForNotificationStatus,
-        getCountryBoundaryByIsoStatus,
-        storiesCollections,
-        currentQuantityForCart,
-        countryCoordinatesBorders,
-        firebaseSettingForNotificationModel,
-        cachedProductWithoutRelatedProductsModel,
-        addOrRemoveLikeOfProductStatus,
-        productIdToSaveRedeemTimer,
-        tapCommentIndex,
-        getAllowedCountriesStatus,
-        //   geColorsAndSizesForSearchModel
-        authProductDetailsStatus,
-        deleteOrderCommentRatingStatus,
-        updateOrderCommentRatingStatus,
-        authProductDetailsModel,
-        selectedVideoStatus,
-        statusCodeOfCommentProcess,
-        finishGetAllStory,
-        storyOffset,
-        currentHeightWhenAddToBag,
-        getStoryWithPagintionStatusLoading
-      ];
+    startingSetting,
+    currentIndexForUpdateCart,
+    currentColorSizeForCart,
+    addProductIdToSaveRedeemTimerStatus,
+    isChangedvariationWhenQtyZero,
+    getFirebaseSettingForNotificationStatus,
+    getCountryBoundaryByIsoStatus,
+    storiesCollections,
+    currentQuantityForCart,
+    countryCoordinatesBorders,
+    firebaseSettingForNotificationModel,
+    cachedProductWithoutRelatedProductsModel,
+    addOrRemoveLikeOfProductStatus,
+    productIdToSaveRedeemTimer,
+    tapCommentIndex,
+    getAllowedCountriesStatus,
+    //   geColorsAndSizesForSearchModel
+    authProductDetailsStatus,
+    deleteOrderCommentRatingStatus,
+    updateOrderCommentRatingStatus,
+    authProductDetailsModel,
+    selectedVideoStatus,
+    statusCodeOfCommentProcess,
+    finishGetAllStory,
+    translateCommentStatus,
+    storyOffset,
+    currentHeightWhenAddToBag,
+    getStoryWithPagintionStatusLoading,
+  ];
 
-  HomeState copyWith(
-      {final GetStartingSettingsStatus? getStartingSettingsStatus,
-      final GetFirebaseSettingForNotificationStatus?
-          getFirebaseSettingForNotificationStatus,
-      final GetAllowedCountriesStatus? getAllowedCountriesStatus,
-      final DeleteOrderCommentRatingStatus? deleteOrderCommentRatingStatus,
-      final UpdateOrderCommentRatingStatus? updateOrderCommentRatingStatus,
-      final UpdateLikeCommentRatingStatus? updateLikeCommentRatingStatus,
-      final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
-      final FirebaseSettingForNotificationModel?
-          firebaseSettingForNotificationModel,
-      final List<String>? productIdToSaveRedeemTimer,
-      final int? currentHeightWhenAddToBag,
-      final bool? isChangedVariationWhenQtyZero,
-      final bool? finishLoadingAfterChangedVariationWhenQtyZero,
-      final List<CollectionStoryModel>? storiesCollections,
-      final String? statusCodeOfCommentProcess,
-      int? currentPage,
-      SelectedVideoStatus? selectedVideoStatus,
-      final CreateCommentRatingStatus? createCommentRatingStatus,
-      final int? tapCommentIndex,
-      final bool? likeForReplayComment,
-      final GetOrderRatingStatus? getOrderRatingStatus,
-      int? storyOffset,
-      bool? getStoryWithPagintionStatusLoading,
-      final Map<String, PaginationModel<FqaComment>>?
-          getFqaCommentsPaginationModel,
-      final Map<String, PaginationModel<BuyersComment>>?
-          getBuyersCommentsPaginationModel,
-      bool? finishGetAllStory,
-      String? storyLink,
-      int? selectedCollection,
-      Map<int, int?>? currentStoryInEachCollection,
-      final List<geod.LatLng>? countryCoordinatesBorders,
-      final AddProductIdToSaveRedeemTimerStatus?
-          addProductIdToSaveRedeemTimerStatus,
-      final List<order_rating.Comment>? getOrderRatingComments,
-      //final PaginationModel<comment.Comment>?
-      //    getCommentsFromAnalyticsPaginationModel,
-      final EnableAddToCardAfterChangeVariantZero?
-          enableAddToCardAfterChangeVariantZero,
-      final UpdateProfileStatus? updateProfileStatus,
-      final String? currentSlugToRefreshFromNotification,
-      final User? userInfo,
-      final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
-      final PaginationModel<NotificationItemModel>? getUserNotificationModel,
-      final GetCartOverviewStatus? getCartOverviewStatus,
-      // final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel,
-      final CurrentSelectedColorForEveryProductStatus?
-          currentSelectedColorForEveryProductStatus,
-      final Map<String, Map<String, String>>? addVariationToCartId,
-      final CheckAvailabilityProductCartModel?
-          checkAvailabilityProductCartModel,
-      final CheckAvailabilityProductCartStatus?
-          checkAvailabilityProductCartStatus,
-      final AddItemInCartStatus? addItemInCartStatus,
-      final HideItemInOldCartStatus? hideItemInOldCartStatus,
-      final ConvertItemFromcartToOldCartStatus?
-          convertItemFromcartToOldCartStatus,
-      final GetNotificationTypeProductStatus? getNotificationTypeProductStatus,
-      // final bool? moveUrlFromElasticToMarketServer,
-      final UpdateItemInCartStatus? updateItemInCartStatus,
-      final List<String>? listOfErrorSendedToMobileErrorLog,
-      final NotificationTypeForProductModel? notificationTypeForProductModel,
-      //final GetListOfProductsFoundedInCartStatus?
-      //    getListOfProductsFoundedInCartStatus,
-      final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,
-      final Map<String, String>? searchWithOutFilterOffset,
-      final Map<String, GetAndAddCountViewOfProductStatus>?
-          getAndAddCountViewOfProductStatus,
-      final List<PopularSearchTerm>? popularSearchTerm,
-      final List<String>? cartIdsSubsecribedToTopicHurryUP,
-      final Map<String, int>? cartIdsHurryUPTimerStarted,
-      final ChangeSizesForEveryProduct? changeSizesForEveryProduct,
-      // String? idForRequest,
+  HomeState copyWith({
+    final GetStartingSettingsStatus? getStartingSettingsStatus,
+    final GetFirebaseSettingForNotificationStatus?
+    getFirebaseSettingForNotificationStatus,
+    final GetAllowedCountriesStatus? getAllowedCountriesStatus,
+    final TranslateCommentStatus? translateCommentStatus,
+    final DeleteOrderCommentRatingStatus? deleteOrderCommentRatingStatus,
+    final UpdateOrderCommentRatingStatus? updateOrderCommentRatingStatus,
+    final UpdateLikeCommentRatingStatus? updateLikeCommentRatingStatus,
+    final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
+    final FirebaseSettingForNotificationModel?
+    firebaseSettingForNotificationModel,
+    final List<String>? productIdToSaveRedeemTimer,
+    final int? currentHeightWhenAddToBag,
+    final bool? isChangedVariationWhenQtyZero,
+    final bool? finishLoadingAfterChangedVariationWhenQtyZero,
+    final List<CollectionStoryModel>? storiesCollections,
+    final String? statusCodeOfCommentProcess,
+    int? currentPage,
+    SelectedVideoStatus? selectedVideoStatus,
+    final CreateCommentRatingStatus? createCommentRatingStatus,
+    final int? tapCommentIndex,
+    final bool? likeForReplayComment,
+    final GetOrderRatingStatus? getOrderRatingStatus,
+    int? storyOffset,
+    bool? getStoryWithPagintionStatusLoading,
+    final Map<String, PaginationModel<FqaComment>>?
+    getFqaCommentsPaginationModel,
+    final Map<String, PaginationModel<BuyersComment>>?
+    getBuyersCommentsPaginationModel,
+    bool? finishGetAllStory,
+    String? storyLink,
+    int? selectedCollection,
+    Map<int, int?>? currentStoryInEachCollection,
+    final List<geod.LatLng>? countryCoordinatesBorders,
+    final AddProductIdToSaveRedeemTimerStatus?
+    addProductIdToSaveRedeemTimerStatus,
+    final List<order_rating.Comment>? getOrderRatingComments,
+    //final PaginationModel<comment.Comment>?
+    //    getCommentsFromAnalyticsPaginationModel,
+    final EnableAddToCardAfterChangeVariantZero?
+    enableAddToCardAfterChangeVariantZero,
+    final UpdateProfileStatus? updateProfileStatus,
+    final String? currentSlugToRefreshFromNotification,
+    final User? userInfo,
+    final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
+    final PaginationModel<NotificationItemModel>? getUserNotificationModel,
+    final GetCartOverviewStatus? getCartOverviewStatus,
+    // final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel,
+    final CurrentSelectedColorForEveryProductStatus?
+    currentSelectedColorForEveryProductStatus,
+    final Map<String, Map<String, String>>? addVariationToCartId,
+    final CheckAvailabilityProductCartModel? checkAvailabilityProductCartModel,
+    final CheckAvailabilityProductCartStatus?
+    checkAvailabilityProductCartStatus,
+    final AddItemInCartStatus? addItemInCartStatus,
+    final HideItemInOldCartStatus? hideItemInOldCartStatus,
+    final ConvertItemFromcartToOldCartStatus?
+    convertItemFromcartToOldCartStatus,
+    final GetNotificationTypeProductStatus? getNotificationTypeProductStatus,
+    // final bool? moveUrlFromElasticToMarketServer,
+    final UpdateItemInCartStatus? updateItemInCartStatus,
+    final List<String>? listOfErrorSendedToMobileErrorLog,
+    final NotificationTypeForProductModel? notificationTypeForProductModel,
+    //final GetListOfProductsFoundedInCartStatus?
+    //    getListOfProductsFoundedInCartStatus,
+    final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,
+    final Map<String, String>? searchWithOutFilterOffset,
+    final Map<String, GetAndAddCountViewOfProductStatus>?
+    getAndAddCountViewOfProductStatus,
+    final List<PopularSearchTerm>? popularSearchTerm,
+    final List<String>? cartIdsSubsecribedToTopicHurryUP,
+    final Map<String, int>? cartIdsHurryUPTimerStarted,
+    final ChangeSizesForEveryProduct? changeSizesForEveryProduct,
 
-      Map<String, Map<int, List<List<String>>>>? addImagesToProductIdForCart,
-      final List<ImageForAddToCart>? listitemForAddToCart,
-      final GetAllowedCountriesModel? getAllowedCountriesModel,
-      //final GetCommentForProductStatus? getCommentForProductStatus,
-      final AddOrRemoveLikeOfProductStatus? addOrRemoveLikeOfProductStatus,
-      final GetCartItemsStatus? getCartItemsStatus,
-      final CheckWithGetCartStatus? checkWithGetCartStatus,
-      final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus,
-      final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus,
-      final GetOLdCartItemsStatus? getOldCartItemsStatus,
-      // final AddCommentStatus? addCommentStatus,
-      final Products? productContentForStatusOfOpeningProductDetailsDirectly,
-      List<String>? sizesForEachColor,
-      List<int>? sizesQuantitiesForEachColor,
-      List<String>? colorsForEachProduct,
-      List<int>? colorsQuantitiesForProduct,
-      List<String>? isVariantRequestNotification,
-      int? currentIndexForUpdateCart,
-      List<String>? searchHistory,
-      Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
-          productStatus,
-      Map<String, List<int>>? currentQuantityForCart,
-      List<cart.Cart>? cartCollection,
-      List<oldCart.OldCart>? oldCartCollection,
-      Map<String, String>? currentColorSizeForCart,
-      //final Map<String, product.Products>? productITemForCart,
-      final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
-      final oldCart.GetOldCartModel? getOldCartModel,
-      final Map<String, bool>? reRequestTheseProductListingInBoutiques,
-      final Map<String, bool>? reRequestProductWithFilters,
-      final StartingSetting? startingSetting,
-      final GetCurrencyForCountryModel? getCurrencyForCountryModel,
-      final Map<String, GetProductDetailWithoutRelatedProductsModel>?
-          cachedProductWithoutRelatedProductsModel,
-      GetStoriesForProductStatus? getStoriesForProductStatus,
-      GetFullProductDetailsStatus? getFullProductDetailsStatus,
-      final GetProductDetailWithoutSimilarRelatedProductsStatus?
-          getProductDetailWithoutSimilarRelatedProductsStatus,
-      final DeleteItemInCartStatus? deleteItemInCartStatus,
-      final Map<String, int>? currentSelectedColorForEveryProduct,
+    // String? idForRequest,
+    Map<String, Map<int, List<List<String>>>>? addImagesToProductIdForCart,
+    final List<ImageForAddToCart>? listitemForAddToCart,
+    final GetAllowedCountriesModel? getAllowedCountriesModel,
+    //final GetCommentForProductStatus? getCommentForProductStatus,
+    final AddOrRemoveLikeOfProductStatus? addOrRemoveLikeOfProductStatus,
+    final GetCartItemsStatus? getCartItemsStatus,
+    final CheckWithGetCartStatus? checkWithGetCartStatus,
+    final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus,
+    final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus,
+    final GetOLdCartItemsStatus? getOldCartItemsStatus,
+    // final AddCommentStatus? addCommentStatus,
+    final Products? productContentForStatusOfOpeningProductDetailsDirectly,
+    List<String>? sizesForEachColor,
+    List<int>? sizesQuantitiesForEachColor,
+    List<String>? colorsForEachProduct,
+    List<int>? colorsQuantitiesForProduct,
+    List<String>? isVariantRequestNotification,
+    int? currentIndexForUpdateCart,
+    List<String>? searchHistory,
+    Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
+    productStatus,
+    Map<String, List<int>>? currentQuantityForCart,
+    List<cart.Cart>? cartCollection,
+    List<oldCart.OldCart>? oldCartCollection,
+    Map<String, String>? currentColorSizeForCart,
+    //final Map<String, product.Products>? productITemForCart,
+    final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
+    final oldCart.GetOldCartModel? getOldCartModel,
+    final Map<String, bool>? reRequestTheseProductListingInBoutiques,
+    final Map<String, bool>? reRequestProductWithFilters,
+    final StartingSetting? startingSetting,
+    final GetCurrencyForCountryModel? getCurrencyForCountryModel,
+    final Map<String, GetProductDetailWithoutRelatedProductsModel>?
+    cachedProductWithoutRelatedProductsModel,
+    GetStoriesForProductStatus? getStoriesForProductStatus,
+    GetFullProductDetailsStatus? getFullProductDetailsStatus,
+    final GetProductDetailWithoutSimilarRelatedProductsStatus?
+    getProductDetailWithoutSimilarRelatedProductsStatus,
+    final DeleteItemInCartStatus? deleteItemInCartStatus,
+    final Map<String, int>? currentSelectedColorForEveryProduct,
 
-      //List<Story>? storiesForProduct,
-      final Map<String, PaginationModel<product.Products>>?
-          getProductListingPaginationWithoutFiltersModel,
-      //final Map<String, GetCommentForProductModel>? getCommentForProductModel,
-      AuthProductDetailsStatus? authProductDetailsStatus,
-      GetAuthProductDetailsModel? authProductDetailsModel}) {
+    //List<Story>? storiesForProduct,
+    final Map<String, PaginationModel<product.Products>>?
+    getProductListingPaginationWithoutFiltersModel,
+    //final Map<String, GetCommentForProductModel>? getCommentForProductModel,
+    AuthProductDetailsStatus? authProductDetailsStatus,
+    GetAuthProductDetailsModel? authProductDetailsModel,
+  }) {
     return HomeState(
-      getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus ??
+      getAndAddCountViewOfProductStatus:
+          getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,
 
       enableAddToCardAfterChangeVariantZero:
           enableAddToCardAfterChangeVariantZero ??
-              this.enableAddToCardAfterChangeVariantZero,
+          this.enableAddToCardAfterChangeVariantZero,
       updateOrderCommentRatingStatus:
           updateOrderCommentRatingStatus ?? this.updateOrderCommentRatingStatus,
       updateLikeCommentRatingStatus:
@@ -643,9 +649,12 @@ class HomeState extends Equatable {
           deleteOrderCommentRatingStatus ?? this.deleteOrderCommentRatingStatus,
       addVariationToCartId: addVariationToCartId ?? this.addVariationToCartId,
       updateProfileStatus: updateProfileStatus ?? this.updateProfileStatus,
-      uploadUserPhotoCloudinaryStatus: uploadUserPhotoCloudinaryStatus ??
+      uploadUserPhotoCloudinaryStatus:
+          uploadUserPhotoCloudinaryStatus ??
           this.uploadUserPhotoCloudinaryStatus,
       userInfo: userInfo ?? this.userInfo,
+      translateCommentStatus:
+          translateCommentStatus ?? this.translateCommentStatus,
       createCommentRatingStatus:
           createCommentRatingStatus ?? this.createCommentRatingStatus,
       statusCodeOfCommentProcess:
@@ -654,7 +663,7 @@ class HomeState extends Equatable {
           getCoutryBoundaryByIsoStatus ?? this.getCountryBoundaryByIsoStatus,
       currentSlugToRefreshFromNotification:
           currentSlugToRefreshFromNotification ??
-              this.currentSlugToRefreshFromNotification,
+          this.currentSlugToRefreshFromNotification,
       tapCommentIndex: tapCommentIndex ?? this.tapCommentIndex,
       selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
       getOrderRatingStatus: getOrderRatingStatus ?? this.getOrderRatingStatus,
@@ -666,7 +675,8 @@ class HomeState extends Equatable {
       finishGetAllStory: finishGetAllStory ?? this.finishGetAllStory,
       getOrderRatingComments:
           getOrderRatingComments ?? this.getOrderRatingComments,
-      getStoryWithPagintionStatusLoading: getStoryWithPagintionStatusLoading ??
+      getStoryWithPagintionStatusLoading:
+          getStoryWithPagintionStatusLoading ??
           this.getStoryWithPagintionStatusLoading,
       currentStoryInEachCollection:
           currentStoryInEachCollection ?? this.currentStoryInEachCollection,
@@ -675,7 +685,8 @@ class HomeState extends Equatable {
           productIdToSaveRedeemTimer ?? this.productIdToSaveRedeemTimer,
       getFqaCommentsPaginationModel:
           getFqaCommentsPaginationModel ?? this.getFqaCommentsPaginationModel,
-      getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel ??
+      getBuyersCommentsPaginationModel:
+          getBuyersCommentsPaginationModel ??
           this.getBuyersCommentsPaginationModel,
       countryCoordinatesBorders:
           countryCoordinatesBorders ?? this.countryCoordinatesBorders,
@@ -687,7 +698,7 @@ class HomeState extends Equatable {
 
       addProductIdToSaveRedeemTimerStatus:
           addProductIdToSaveRedeemTimerStatus ??
-              this.addProductIdToSaveRedeemTimerStatus,
+          this.addProductIdToSaveRedeemTimerStatus,
       getAllowedCountriesStatus:
           getAllowedCountriesStatus ?? this.getAllowedCountriesStatus,
       //  geColorsAndSizesForSearchModel:
@@ -696,7 +707,7 @@ class HomeState extends Equatable {
       //    getCommentForProductModel ?? this.getCommentForProductModel,
       getFirebaseSettingForNotificationStatus:
           getFirebaseSettingForNotificationStatus ??
-              this.getFirebaseSettingForNotificationStatus,
+          this.getFirebaseSettingForNotificationStatus,
       updateItemInCartStatus:
           updateItemInCartStatus ?? this.updateItemInCartStatus,
       colorsForEachProduct: colorsForEachProduct ?? this.colorsForEachProduct,
@@ -704,20 +715,22 @@ class HomeState extends Equatable {
           colorsQuantitiesForProduct ?? this.colorsQuantitiesForEachProduct,
       currentSelectedColorForEveryProductStatus:
           currentSelectedColorForEveryProductStatus ??
-              this.currentSelectedColorForEveryProductStatus,
+          this.currentSelectedColorForEveryProductStatus,
 
-      notificationTypeForProductModel: notificationTypeForProductModel ??
+      notificationTypeForProductModel:
+          notificationTypeForProductModel ??
           this.notificationTypeForProductModel,
       firebaseSettingForNotificationModel:
           firebaseSettingForNotificationModel ??
-              this.firebaseSettingForNotificationModel,
+          this.firebaseSettingForNotificationModel,
       isChangedvariationWhenQtyZero:
           isChangedVariationWhenQtyZero ?? this.isChangedvariationWhenQtyZero,
 
       changeSizesForEveryProduct:
           changeSizesForEveryProduct ?? this.changeSizesForEveryProduct,
 
-      getNotificationTypeProductStatus: getNotificationTypeProductStatus ??
+      getNotificationTypeProductStatus:
+          getNotificationTypeProductStatus ??
           this.getNotificationTypeProductStatus,
 
       currentIndexForUpdateCart:
@@ -728,19 +741,23 @@ class HomeState extends Equatable {
       getCartOverviewStatus:
           getCartOverviewStatus ?? this.getCartOverviewStatus,
 
-      checkAvailabilityProductCartModel: checkAvailabilityProductCartModel ??
+      checkAvailabilityProductCartModel:
+          checkAvailabilityProductCartModel ??
           this.checkAvailabilityProductCartModel,
-      checkAvailabilityProductCartStatus: checkAvailabilityProductCartStatus ??
+      checkAvailabilityProductCartStatus:
+          checkAvailabilityProductCartStatus ??
           this.checkAvailabilityProductCartStatus,
       finishLoadingAfterChangedVariationWhenQtyZero:
           finishLoadingAfterChangedVariationWhenQtyZero ??
-              this.finishLoadingAfterChangedVariationWhenQtyZero,
+          this.finishLoadingAfterChangedVariationWhenQtyZero,
       addOrRemoveLikeOfProductStatus:
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
-      convertItemFromcartToOldCartStatus: convertItemFromcartToOldCartStatus ??
+      convertItemFromcartToOldCartStatus:
+          convertItemFromcartToOldCartStatus ??
           this.convertItemFromcartToOldCartStatus,
       popularSearchTerm: popularSearchTerm ?? this.popularSearchTerm,
-      listOfErrorSendedToMobileErrorLog: listOfErrorSendedToMobileErrorLog ??
+      listOfErrorSendedToMobileErrorLog:
+          listOfErrorSendedToMobileErrorLog ??
           this.listOfErrorSendedToMobileErrorLog,
       //   moveUrlFromElasticToMarketServer: moveUrlFromElasticToMarketServer ??
       //     this.moveUrlFromElasticToMarketServer,
@@ -749,8 +766,8 @@ class HomeState extends Equatable {
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
       sizesQuantitiesForEachColor:
           sizesQuantitiesForEachColor ?? this.sizesQuantitiesForEachColor,
-      //  addCommentStatus: addCommentStatus ?? this.addCommentStatus,
 
+      //  addCommentStatus: addCommentStatus ?? this.addCommentStatus,
       isVariantRequestNotification:
           isVariantRequestNotification ?? this.isVariantRequestNotification,
 
@@ -764,7 +781,7 @@ class HomeState extends Equatable {
       //      this.getListOfProductsFoundedInCartStatus,
       productContentForStatusOfOpeningProductDetailsDirectly:
           productContentForStatusOfOpeningProductDetailsDirectly ??
-              this.productContentForStatusOfOpeningProductDetailsDirectly,
+          this.productContentForStatusOfOpeningProductDetailsDirectly,
 
       listitemForAddToCart: listitemForAddToCart ?? this.listitemForAddToCart,
       addImagesToProductIdForCart:
@@ -797,17 +814,16 @@ class HomeState extends Equatable {
 
       //getCommentForProductStatus:
       //   getCommentForProductStatus ?? this.getCommentForProductStatus,
-
       currentSelectedColorForEveryProduct:
           currentSelectedColorForEveryProduct ??
-              this.currentSelectedColorForEveryProduct,
+          this.currentSelectedColorForEveryProduct,
       getCartItemsStatus: getCartItemsStatus ?? this.getCartItemsStatus,
       checkWithGetCartStatus:
           checkWithGetCartStatus ?? this.checkWithGetCartStatus,
 
       reRequestTheseProductListingInBoutiques:
           reRequestTheseProductListingInBoutiques ??
-              this.reRequestTheseProductListingInBoutiques,
+          this.reRequestTheseProductListingInBoutiques,
       reRequestProductWithFilters:
           reRequestProductWithFilters ?? this.reRequestProductWithFilters,
       getStoriesForProductStatus:
@@ -815,7 +831,7 @@ class HomeState extends Equatable {
 
       getProductDetailWithoutSimilarRelatedProductsStatus:
           getProductDetailWithoutSimilarRelatedProductsStatus ??
-              this.getProductDetailWithoutSimilarRelatedProductsStatus,
+          this.getProductDetailWithoutSimilarRelatedProductsStatus,
       getStartingSettingsStatus:
           getStartingSettingsStatus ?? this.getStartingSettingsStatus,
 
@@ -823,14 +839,16 @@ class HomeState extends Equatable {
 
       getProductListingPaginationWithoutFiltersModel:
           getProductListingPaginationWithoutFiltersModel ??
-              this.getProductListingPaginationWithoutFiltersModel,
-      updateEmailappNotificationStatus: updateEmailappNotificationStatus ??
+          this.getProductListingPaginationWithoutFiltersModel,
+      updateEmailappNotificationStatus:
+          updateEmailappNotificationStatus ??
           this.updateEmailappNotificationStatus,
-      updateWhatsappNotificationStatus: updateWhatsappNotificationStatus ??
+      updateWhatsappNotificationStatus:
+          updateWhatsappNotificationStatus ??
           this.updateWhatsappNotificationStatus,
       cachedProductWithoutRelatedProductsModel:
           cachedProductWithoutRelatedProductsModel ??
-              this.cachedProductWithoutRelatedProductsModel,
+          this.cachedProductWithoutRelatedProductsModel,
       deleteItemInCartStatus:
           deleteItemInCartStatus ?? this.deleteItemInCartStatus,
 

@@ -204,7 +204,8 @@ class _ProductDetailsSheetBottomBarNewState
           previous.deleteOrderCommentRatingStatus !=
               current.deleteOrderCommentRatingStatus ||
           previous.updateOrderCommentRatingStatus !=
-              current.updateOrderCommentRatingStatus,
+              current.updateOrderCommentRatingStatus ||
+          previous.translateCommentStatus != current.translateCommentStatus,
       builder: (context, state) {
         if (state.statusCodeOfCommentProcess == "401" &&
             (state.updateOrderCommentRatingStatus ==
@@ -244,7 +245,10 @@ class _ProductDetailsSheetBottomBarNewState
           }
         });
         totalPrice =
-            totalPrice *
+            HelperFunctions.truncateToDecimalPlaces(
+              totalPrice,
+              state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+            ) *
             state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
         List<Map<String, List<List<String>>>> allCart = [];
 
@@ -483,7 +487,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             ),
                                                       ),
                                                       Text(
-                                                        "${HelperFunctions.formatNumber(number: (widget.redeemVariantPrice * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))} ",
+                                                        "${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(widget.redeemVariantPrice, homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))} ",
                                                         style: context
                                                             .textTheme
                                                             .bodyMedium

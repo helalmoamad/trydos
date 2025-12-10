@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -174,8 +174,8 @@ class _TabsBarState extends State<TabsBar> {
     isRecordeForSearchWithMic.value = false;
   }
 
-  final ScrollController scrollController = ScrollController();
-  Timer? categoryDebounce;
+  //final ScrollController scrollController = ScrollController();
+  // Timer? categoryDebounce;
   @override
   void initState() {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
@@ -198,10 +198,10 @@ class _TabsBarState extends State<TabsBar> {
         ?.forEach((element) {
           categorySlugs.add(element.slug!);
         });
-    if (categoryDebounce?.isActive ?? false) {
+    /*if (categoryDebounce?.isActive ?? false) {
       categoryDebounce!.cancel();
-    }
-    categoryDebounce = Timer(const Duration(milliseconds: 600), () {
+    }*/
+    /* categoryDebounce = Timer(const Duration(milliseconds: 600), () {
       scrollController.addListener(() {
         if (categorySlugs.isEmpty) {
           categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories
@@ -238,7 +238,7 @@ class _TabsBarState extends State<TabsBar> {
           }
         }
       });
-    });
+    });*/
 
     widget.appearTrendingAndHistory.value = true;
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -885,7 +885,7 @@ class _TabsBarState extends State<TabsBar> {
                           width: 1.sw - 40,
                           height: 80,
                           child: ListView.builder(
-                            controller: scrollController,
+                            //controller: scrollController,
                             padding: const EdgeInsets.only(right: 15),
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.mainCategoriesTabKey)

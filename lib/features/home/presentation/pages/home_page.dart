@@ -16,7 +16,6 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -246,20 +245,20 @@ class _HomePageState extends State<HomePage> {
             boutiqueSlug: 'search',
           ),
         );
-        if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
+        /*  if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
             (prefsRepository.myChatName != prefsRepository.myMarketName &&
                 !(prefsRepository.myMarketName.isNullOrEmpty))) {
           authBloc.add(
             UpdateChatUserNameEvent(name: prefsRepository.myMarketName ?? ""),
           );
-        }
-        if ((prefsRepository.storiesToken?.length ?? 0) > 10 &&
+        }*/
+        /*if ((prefsRepository.storiesToken?.length ?? 0) > 10 &&
             (prefsRepository.myStoriesName != prefsRepository.myMarketName &&
                 !(prefsRepository.myMarketName.isNullOrEmpty))) {
           authBloc.add(
             UpdateStoriesUserEvent(name: prefsRepository.myMarketName ?? ""),
           );
-        }
+        }*/
       });
     }
     // تحميل بيانات البحث في الخلفية
@@ -383,12 +382,8 @@ class _HomePageState extends State<HomePage> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    bool _isLoading = false;
 
     Future<void> _refreshData() async {
-      setState(() {
-        _isLoading = true; // بدء التحميل
-      });
       GetIt.I<BoutiqueBloc>().add(
         const GetProductWithFiltersWithoutCancelingPreviousEvents(
           categorySlugs: [],
@@ -419,10 +414,6 @@ class _HomePageState extends State<HomePage> {
 
       // 🚀 إزالة التأخير المصطنع - دع البيانات تحدد سرعة التحميل!
       // await Future.delayed(Duration(seconds: 4)); // ❌ تم حذف التأخير المصطنع
-
-      setState(() {
-        _isLoading = false; // إنهاء التحميل
-      });
     }
 
     return Padding(
@@ -638,9 +629,6 @@ class _HomePageState extends State<HomePage> {
 
             ///////////////////////////
             CustomScrollView(
-              cacheExtent: 300,
-
-              // قيمة ثابتة فعالة لجميع الأجهزة
               key: TestVariables.kTestMode
                   ? const Key(WidgetsKeys.homepageScrollKey)
                   : null,
@@ -652,37 +640,23 @@ class _HomePageState extends State<HomePage> {
               //     const ScrollBehavior().copyWith(overscroll: false),
               slivers: [
                 // 🚨 عرض مؤشر التحميل فقط في البداية
-                SliverToBoxAdapter(
-                  child: _isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        ) // إظهار مؤشر التحميل
-                      : const SizedBox.shrink(),
-                ),
 
-                // 🚀 جميع الأقسام تظهر فوراً - تحميل كامل فوري
-                SliverToBoxAdapter(child: 100.verticalSpace),
-
-                // 📖 القصص - يظهر فوراً
-                SliverToBoxAdapter(child: storySection(currentLocale, context)),
-
-                // 🏆 المنتجات المميزة - يظهر فوراً (نسخة محسنة)
-                SliverToBoxAdapter(
-                  child: FeatureProductsWidget(
-                    finishRedeem: finishRedeem,
-                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                  ),
-                ),
-
-                SliverToBoxAdapter(child: 10.verticalSpace),
-
-                // 🔥 العروض الخاطفة - يظهر فوراً
-                SliverToBoxAdapter(
-                  child: FlashDealProductsWidget(
-                    finishRedeem: finishRedeem,
-                    productIsFlashDeal: productIsFlashDeal,
-                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                  ),
+                // 🏗️ بعد التعديل: اجمعهم في SliverList واحدة
+                SliverList(
+                  delegate: SliverChildListDelegate.fixed([
+                    75.verticalSpace, // المسافة في الأعلى
+                    storySection(currentLocale, context),
+                    FeatureProductsWidget(
+                      finishRedeem: finishRedeem,
+                      tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                    ),
+                    10.verticalSpace,
+                    FlashDealProductsWidget(
+                      finishRedeem: finishRedeem,
+                      productIsFlashDeal: productIsFlashDeal,
+                      tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                    ),
+                  ]),
                 ),
 
                 BlocBuilder<AppBloc, AppState>(
@@ -736,8 +710,6 @@ class _HomePageState extends State<HomePage> {
                                     0) ==
                                 0) {
                           return sliverListSeparated(
-                            addAutomaticKeepAlives: false,
-
                             addSemanticIndexes: false,
 
                             key: TestVariables.kTestMode
@@ -815,9 +787,6 @@ class _HomePageState extends State<HomePage> {
                           );
                         }
                         return sliverListSeparated(
-                          addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false,
-                          addSemanticIndexes: false,
                           key: TestVariables.kTestMode
                               ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
                               : reRenderingListViewKey[currentSlug],

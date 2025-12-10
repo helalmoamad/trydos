@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset_shadow;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -145,12 +144,12 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
     return Container(
       key: ValueKey(url),
       alignment: Alignment.center,
-      constraints: BoxConstraints(
-        maxHeight: (widget.fromBoutique ?? false)
-            ? (0.45 * 1.sh)
+      /*constraints: BoxConstraints(
+      maxHeight: (widget.fromBoutique ?? false)
+            ? (0.40 * 1.sh)
             : double.infinity,
         minHeight: (widget.fromBoutique ?? false) ? (0.10 * 1.sh) : 0,
-      ),
+      ),*/
       width: widget.width,
       height: (widget.fromBoutique ?? false) ? null : widget.height,
       decoration: BoxDecoration(

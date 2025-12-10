@@ -70,7 +70,7 @@ class _ProductListingLightSliderState
 
   // Data
   late final List<productListingModel.SyncColorImageProduct>
-      _colorImages; // may be empty
+  _colorImages; // may be empty
   late final List<String> _fallbackImages; // product images when no colors
 
   // State
@@ -83,25 +83,31 @@ class _ProductListingLightSliderState
 
     _colorImages = (widget.productItem.syncColorImages ?? [])
       ..removeWhere((e) => e.images.isNullOrEmpty);
-    _fallbackImages =
-        (widget.productItem.images ?? []).map((e) => e.filePath!).toList();
+    _fallbackImages = (widget.productItem.images ?? [])
+        .map((e) => e.filePath!)
+        .toList();
 
     _imagesController = PageController();
     _colorsController = ScrollController()..addListener(_onColorBarScroll);
 
     // اختَر الفهرس الأول كلون افتراضي إن وجد
     if (_colorImages.isNotEmpty) {
-      BlocProvider.of<HomeBloc>(context).add(AddCurrentSelectedColorEvent(
+      BlocProvider.of<HomeBloc>(context).add(
+        AddCurrentSelectedColorEvent(
           currentSelectedColor: 0,
-          productSlug: widget.productItem.slug.toString()));
+          productSlug: widget.productItem.slug.toString(),
+        ),
+      );
     }
   }
 
   void _onColorBarScroll() {
     if (_colorImages.isEmpty) return;
     // itemExtent = 40, we add half extent for rounding
-    final newIdx = ((_colorsController.offset + 20) ~/ 40)
-        .clamp(0, _colorImages.length - 1);
+    final newIdx = ((_colorsController.offset + 20) ~/ 40).clamp(
+      0,
+      _colorImages.length - 1,
+    );
     if (newIdx != _currentColorIdx) {
       _onSelectColor(newIdx);
     }
@@ -233,14 +239,16 @@ class _ProductListingLightSliderState
       width: 200,
       child: PageView(
         children: three
-            .map((e) => ProductListingImageWidget(
-                  key: ValueKey(e),
-                  width: 170.w,
-                  height: height,
-                  circleShape: false,
-                  innerShadowYOffset: 3,
-                  imageUrl: e,
-                ))
+            .map(
+              (e) => ProductListingImageWidget(
+                key: ValueKey(e),
+                width: 170.w,
+                height: height,
+                circleShape: false,
+                innerShadowYOffset: 3,
+                imageUrl: e,
+              ),
+            )
             .toList(),
       ),
     );
@@ -269,8 +277,9 @@ class _ProductListingLightSliderState
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                    color: selected ? Colors.red : Colors.grey.shade400,
-                    width: 0.5),
+                  color: selected ? Colors.red : Colors.grey.shade400,
+                  width: 0.5,
+                ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -295,9 +304,12 @@ class _ProductListingLightSliderState
 
     final int realIdx = idx % (widget.productItem.syncColorImages?.length ?? 1);
     widget.currentChosenColor.value = realIdx;
-    BlocProvider.of<HomeBloc>(context).add(AddCurrentSelectedColorEvent(
+    BlocProvider.of<HomeBloc>(context).add(
+      AddCurrentSelectedColorEvent(
         currentSelectedColor: realIdx,
-        productSlug: widget.productItem.slug.toString()));
+        productSlug: widget.productItem.slug.toString(),
+      ),
+    );
   }
 
   Widget _buildColorName() {
@@ -305,14 +317,17 @@ class _ProductListingLightSliderState
     final colorsList = widget.productItem.colors ?? [];
     final int hex = colorsList.isEmpty
         ? 0xff000000
-        : int.parse(colorsList[_currentColorIdx % colorsList.length]
-            .color!
-            .substring(1));
+        : int.parse(
+            colorsList[_currentColorIdx % colorsList.length].color!.substring(
+              1,
+            ),
+          );
 
-    return MyTextWidget(name,
-        textAlign: TextAlign.center,
-        style:
-            textTheme.titleMedium?.mq.copyWith(color: Color(0xff000000 | hex)));
+    return MyTextWidget(
+      name,
+      textAlign: TextAlign.center,
+      style: textTheme.titleMedium?.mq.copyWith(color: Color(0xff000000 | hex)),
+    );
   }
 
   List<String> _getCurrentColorImages() {
@@ -368,8 +383,9 @@ class _ProductListingLightSliderState
                     widget.productItem.name ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: textTheme.titleSmall?.rq
-                        .copyWith(color: const Color(0xff3c3c3c)),
+                    style: textTheme.titleSmall?.rq.copyWith(
+                      color: const Color(0xff3c3c3c),
+                    ),
                   ),
                 ),
               ],
@@ -389,10 +405,20 @@ class _ProductListingLightSliderState
           buildWhen: (p, c) =>
               p.getCurrencyForCountryModel != c.getCurrencyForCountryModel,
           builder: (context, state) {
-            final price = widget.productItem.price ?? 0;
-            final offerPrice = widget.productItem.offerPrice ?? 0;
-            final rate = state
-                    .getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
+            final price = HelperFunctions.truncateToDecimalPlaces(
+              widget.productItem.price ?? 0,
+              state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+            );
+            final offerPrice = HelperFunctions.truncateToDecimalPlaces(
+              widget.productItem.offerPrice ?? 0,
+              state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+            );
+            final rate =
+                state
+                    .getCurrencyForCountryModel
+                    ?.data
+                    ?.currency
+                    ?.exchangeRate ??
                 1;
             return Directionality(
               textDirection: LanguageService.languageCode == 'ar'
@@ -401,27 +427,34 @@ class _ProductListingLightSliderState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Row(children: [
-                    MyTextWidget(
-                      HelperFunctions.formatNumber(number: price * rate),
-                      style: textTheme.titleMedium?.lq.copyWith(
-                        color: const Color(0xff3c3c3c),
-                        decoration: TextDecoration.lineThrough,
+                  Row(
+                    children: [
+                      MyTextWidget(
+                        HelperFunctions.formatNumber(number: price * rate),
+                        style: textTheme.titleMedium?.lq.copyWith(
+                          color: const Color(0xff3c3c3c),
+                          decoration: TextDecoration.lineThrough,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 2),
-                    MyTextWidget(
-                      HelperFunctions.formatNumber(number: offerPrice * rate),
-                      style: textTheme.titleMedium?.bq
-                          .copyWith(color: const Color(0xff3c3c3c)),
-                    ),
-                    const SizedBox(width: 2),
-                    MyTextWidget(
-                        state.getCurrencyForCountryModel?.data?.currency
+                      const SizedBox(width: 2),
+                      MyTextWidget(
+                        HelperFunctions.formatNumber(number: offerPrice * rate),
+                        style: textTheme.titleMedium?.bq.copyWith(
+                          color: const Color(0xff3c3c3c),
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      MyTextWidget(
+                        state
+                                .getCurrencyForCountryModel
+                                ?.data
+                                ?.currency
                                 ?.symbol ??
                             '',
-                        style: const TextStyle(fontSize: 10)),
-                  ]),
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
                   InkWell(
                     onTap: _onBuyPressed,
                     child: Container(
@@ -430,12 +463,18 @@ class _ProductListingLightSliderState
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(
                         children: [
-                          MyTextWidget(LocaleKeys.buy.tr(),
-                              style: textTheme.titleSmall?.lq
-                                  .copyWith(color: const Color(0xff414141))),
+                          MyTextWidget(
+                            LocaleKeys.buy.tr(),
+                            style: textTheme.titleSmall?.lq.copyWith(
+                              color: const Color(0xff414141),
+                            ),
+                          ),
                           const SizedBox(width: 2),
-                          SvgPicture.asset(AppAssets.bagSvg,
-                              height: 15, width: 15),
+                          SvgPicture.asset(
+                            AppAssets.bagSvg,
+                            height: 15,
+                            width: 15,
+                          ),
                         ],
                       ),
                     ),
@@ -451,8 +490,10 @@ class _ProductListingLightSliderState
 
   void _onBuyPressed() {
     BlocProvider.of<HomeBloc>(context).add(
-        const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-            isStatusInitaial: true));
+      const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+        isStatusInitaial: true,
+      ),
+    );
     widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
     Future.delayed(const Duration(milliseconds: 600), () {
       widget.tapIndexToAddProductToCart.value = widget.itemIndex;

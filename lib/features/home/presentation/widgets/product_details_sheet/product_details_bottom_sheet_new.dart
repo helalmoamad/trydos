@@ -1106,7 +1106,15 @@ class _ProductDetailsBottomSheetNewState
                               MyTextWidget(
                                 HelperFunctions.formatNumber(
                                   number: double.parse(
-                                    (widget.productItem.price! *
+                                    (HelperFunctions.truncateToDecimalPlaces(
+                                              (widget.productItem.price ?? 0),
+                                              homeBloc
+                                                  .state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .decimalDigits!,
+                                            ) *
                                             homeBloc
                                                 .state
                                                 .getCurrencyForCountryModel!
@@ -1179,7 +1187,18 @@ class _ProductDetailsBottomSheetNewState
                                                           .currency!
                                                           .exchangeRate!)
                                                   .toString()
-                                            : (widget.productItem.offerPrice! *
+                                            : (HelperFunctions.truncateToDecimalPlaces(
+                                                        (widget
+                                                                .productItem
+                                                                .offerPrice ??
+                                                            0),
+                                                        homeBloc
+                                                            .state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .decimalDigits!,
+                                                      ) *
                                                       homeBloc
                                                           .state
                                                           .getCurrencyForCountryModel!
@@ -1225,7 +1244,15 @@ class _ProductDetailsBottomSheetNewState
                                   ? MyTextWidget(
                                       HelperFunctions.formatNumber(
                                         number:
-                                            widget.redeemVariantPrice *
+                                            HelperFunctions.truncateToDecimalPlaces(
+                                              (widget.redeemVariantPrice),
+                                              homeBloc
+                                                  .state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .decimalDigits!,
+                                            ) *
                                             homeBloc
                                                 .state
                                                 .getCurrencyForCountryModel!
@@ -1421,12 +1448,19 @@ class _ProductDetailsBottomSheetNewState
                                 imageFit: BoxFit.contain,
                                 innerShadowYOffset: 1,
                                 imageUrl:
-                                    widget
-                                        .productItem
-                                        .syncColorImages?[index]
-                                        .images?[0]
-                                        .filePath ??
-                                    '',
+                                    (widget
+                                            .productItem
+                                            .syncColorImages?[index]
+                                            .images
+                                            ?.isNotEmpty ??
+                                        false)
+                                    ? widget
+                                              .productItem
+                                              .syncColorImages![index]
+                                              .images![0]
+                                              .filePath ??
+                                          ''
+                                    : '',
                                 radius: 6,
                                 width: 50,
                                 height: 73.h,
@@ -1434,13 +1468,22 @@ class _ProductDetailsBottomSheetNewState
                             ),
                           ),
                           const Spacer(),
-                          (widget
-                                      .productItem
-                                      .syncColorImages?[index]
-                                      .colorTrend ??
-                                  false)
+                          ((widget.initOfferPrice) >
+                                      (widget.productItem.offerPrice ?? 0) &&
+                                  (index ==
+                                      ((state.currentSelectedColorForEveryProduct[widget
+                                                  .productItem
+                                                  .slug
+                                                  .toString()] ==
+                                              null)
+                                          ? 0
+                                          : state
+                                                .currentSelectedColorForEveryProduct[widget
+                                                .productItem
+                                                .slug
+                                                .toString()])))
                               ? MyTextWidget(
-                                  "${LocaleKeys.get.tr()} 15%",
+                                  "${LocaleKeys.get.tr()} ${(((widget.initOfferPrice - (widget.productItem.offerPrice ?? 0)) / widget.initOfferPrice) * 100).toStringAsFixed(1)}%",
                                   style: context.textTheme.titleLarge?.bq
                                       .copyWith(
                                         color: const Color(0xff513AAF),
@@ -1471,7 +1514,10 @@ class _ProductDetailsBottomSheetNewState
                 : const SizedBox(height: 10),
             (sizesForEachProduct.length != 0)
                 ? const SizedBox.shrink()
-                : (colorsQuantityForEachProduct[tapIndex] < 11 &&
+                : colorsQuantityForEachProduct.isEmpty
+                ? const SizedBox.shrink()
+                : (tapIndex < colorsQuantityForEachProduct.length &&
+                      colorsQuantityForEachProduct[tapIndex] < 11 &&
                       (!widget.collectedAfterOrdering))
                 ? MyTextWidget(
                     "${LocaleKeys.last.tr()} ${colorsQuantityForEachProduct[tapIndex]}",
@@ -1914,15 +1960,36 @@ class _ProductDetailsBottomSheetNewState
           productId: widget.productItem.productId ?? 0,
           currentVariant: widget.currentVariant,
           redeemVariantPrice:
-              widget.redeemVariantPrice *
+              HelperFunctions.truncateToDecimalPlaces(
+                widget.redeemVariantPrice,
+                state
+                    .getCurrencyForCountryModel!
+                    .data!
+                    .currency!
+                    .decimalDigits!,
+              ) *
               state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!,
           isRedeem: widget.isRedeem,
           redeemPrice:
-              widget.redeemPrice *
+              HelperFunctions.truncateToDecimalPlaces(
+                widget.redeemPrice,
+                state
+                    .getCurrencyForCountryModel!
+                    .data!
+                    .currency!
+                    .decimalDigits!,
+              ) *
               state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!,
           currentActiveTab: widget.currentActiveTab,
           initOfferPrice:
-              (widget.initOfferPrice *
+              (HelperFunctions.truncateToDecimalPlaces(
+                        widget.initOfferPrice,
+                        state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
                       state
                           .getCurrencyForCountryModel!
                           .data!
@@ -1930,7 +1997,14 @@ class _ProductDetailsBottomSheetNewState
                           .exchangeRate!)
                   .toString(),
           initPrice:
-              (widget.initPrice *
+              (HelperFunctions.truncateToDecimalPlaces(
+                        widget.initPrice,
+                        state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
                       state
                           .getCurrencyForCountryModel!
                           .data!
@@ -1943,7 +2017,14 @@ class _ProductDetailsBottomSheetNewState
               state.getCurrencyForCountryModel!.data!.currency!.symbol ?? "",
           addToBagButtonShapeNotifier: widget.addToBagButtonShapeNotifier,
           price:
-              (widget.productItem.price! *
+              (HelperFunctions.truncateToDecimalPlaces(
+                        widget.productItem.price!,
+                        state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
                       state
                           .getCurrencyForCountryModel!
                           .data!
@@ -1951,7 +2032,14 @@ class _ProductDetailsBottomSheetNewState
                           .exchangeRate!)
                   .toString(),
           offerPrice:
-              (widget.productItem.offerPrice! *
+              (HelperFunctions.truncateToDecimalPlaces(
+                        widget.productItem.offerPrice!,
+                        state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
                       state
                           .getCurrencyForCountryModel!
                           .data!

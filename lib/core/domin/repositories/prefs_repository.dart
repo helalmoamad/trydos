@@ -8,11 +8,12 @@ abstract class PrefsRepository {
   String? get storiesToken;
   String? get countryIso;
   String? get userChoosedCountryIso;
-  int? get fcmTokenId;
+  String? get fcmTokenId;
   String? get serverTime;
   int? get myChatId;
 
   int? get myStoriesId;
+  //String? get alaaWebForCall;
   int? get userCountryIsAvailable;
 
   String? get myMarketId;
@@ -64,6 +65,7 @@ abstract class PrefsRepository {
   String? get idToken;
   int? get getdurtion;
   Future<bool> setContactDetails(String contactDetails);
+  //Future<bool> setAlaaWebForCall(String url);
   String? getPrefechOfMainCategoryInHomePage();
   Future<bool> setPrefechOfMainCategoryInHomePage(String value);
   Future<bool> removeMainCategoryWhenOpenApp();
@@ -71,12 +73,16 @@ abstract class PrefsRepository {
 
   String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key);
   Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
-      String key, String value);
+    String key,
+    String value,
+  );
   Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory);
   Future<bool> setIsFoundDataCashed(bool isFoundDataCashed);
   Future<bool> setRedeemDateForProduct(String productId, String seconds);
   Future<bool> setRedeemSecondRemainingForProduct(
-      String productId, int secondsLeft);
+    String productId,
+    int secondsLeft,
+  );
   DateTime? getRedeemDateForProduct(String productId);
   int? getRedeemSecondRemainingForProduct(String productId);
   Future<bool> removeRedeemDateForAnyProductFinished();
@@ -85,27 +91,34 @@ abstract class PrefsRepository {
   Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(String key);
   String? getPrefechOfProductsForEachBoutiqueInHomePage(String key);
   Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(
-      String key, String value);
+    String key,
+    String value,
+  );
   Future<bool> setBoutiqueHasPerfechedToRemoveItWhenOpenApp(String key);
   Future<bool> removeBoutiqueHasPerfechedWhenOpenApp(bool allBoutique);
   List<String>? getFiveFilterForEachBoutiqueHasPrefechInHomePage();
   String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key);
   Future<bool> setPrefechForFiveFilterForEachBoutiqueInHomePage(
-      String key, String value);
+    String key,
+    String value,
+  );
   Future<bool> setFiveFilterHasPerfechedToRemoveItWhenOpenApp(String key);
   Future<bool> removeFiveFilterHasPerfechedWhenOpenApp();
 
   Future<bool> setVerifiedPhone(bool verifiedPhone);
   Future<bool> setRequestNotificationPermission(
-      bool requestNotificationPermission);
+    bool requestNotificationPermission,
+  );
   Future<bool> setVerifiedPhonePeforeExpiredToken(
-      bool verifiedPhonePeforeExpiredToken);
+    bool verifiedPhonePeforeExpiredToken,
+  );
   Future<bool> setTokenExpired(bool tokenExpired);
   Future<bool> setTimerForOtpRunning(bool isRunning);
   Future<bool> setDuration(int duration);
   Future<bool> setLanguage(String? language);
   Future<bool> setNotificationTypesFromTerminated(
-      String? notificationTypeFromTerminated);
+    String? notificationTypeFromTerminated,
+  );
   Future<bool> setCountryIso(String? countryIso);
   Future<bool> setImageUrlHasPrefeched(String? url);
   Future<bool> setUserChoosedCountryIso(String? countryIso);
@@ -138,7 +151,7 @@ abstract class PrefsRepository {
 
   Future<bool> setPhoneNumber(String phoneNumber);
   Future<bool> setIdToken(String idToken);
-  Future<void> setFcmTokenId(int fcmTokenId);
+  Future<void> setFcmTokenId(String fcmTokenId);
 
   Future<bool> setMyChatId(int id);
 
@@ -217,15 +230,16 @@ abstract class PrefsRepository {
   bool get registeredToChat;
 
   void saveRequestsData(
-      String? url,
-      Map<String, dynamic>? response,
-      Map<String, dynamic>? headers,
-      int? statusCode,
-      String? request,
-      Map<String, dynamic>? query,
-      Map<String, dynamic>? body,
-      {String? error,
-      String? responseTime});
+    String? url,
+    Map<String, dynamic>? response,
+    Map<String, dynamic>? headers,
+    int? statusCode,
+    String? request,
+    Map<String, dynamic>? query,
+    Map<String, dynamic>? body, {
+    String? error,
+    String? responseTime,
+  });
 
   void clearAllRequests();
 

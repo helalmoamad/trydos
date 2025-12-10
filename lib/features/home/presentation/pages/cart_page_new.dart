@@ -357,16 +357,39 @@ class _CartPageState extends State<CartPage> {
             maxShippingDay = 0;
 
             totlalPrice =
-                (state.getCartShippingItemsModel?.data?.total ?? 0) *
+                HelperFunctions.truncateToDecimalPlaces(
+                  (state.getCartShippingItemsModel?.data?.total ?? 0),
+                  state
+                      .getCurrencyForCountryModel!
+                      .data!
+                      .currency!
+                      .decimalDigits!,
+                ) *
                 state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
 
             totlalPriceWithoutShipping =
-                (state.getCartShippingItemsModel?.data?.subTotal ?? 0) *
+                HelperFunctions.truncateToDecimalPlaces(
+                  (state.getCartShippingItemsModel?.data?.subTotal ?? 0),
+                  state
+                      .getCurrencyForCountryModel!
+                      .data!
+                      .currency!
+                      .decimalDigits!,
+                ) *
                 state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
-
+            print(
+              "totlalPriceWithoutShipping ${state.getCartShippingItemsModel?.data?.productsDiscount}",
+            );
             totlalDiscount =
-                ((state.getCartShippingItemsModel?.data?.productsDiscount ?? 0)
-                    .abs()) *
+                HelperFunctions.truncateToDecimalPlaces(
+                  (state.getCartShippingItemsModel?.data?.productsDiscount ?? 0)
+                      .abs(),
+                  state
+                      .getCurrencyForCountryModel!
+                      .data!
+                      .currency!
+                      .decimalDigits!,
+                ) *
                 state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
 
             priceSymbol =
@@ -1589,7 +1612,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
                                                                                     ),*/
                                                                           Text(
-                                                                            " ${HelperFunctions.formatNumber(number: ((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)}  ",
+                                                                            " ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0), state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)}  ",
                                                                             style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                               fontSize: 13.sp,
                                                                               color: const Color(

@@ -200,7 +200,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setLogInToChat(false);
       },
       (r) {
-        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
         _prefsRepository.setLogInToChat(true);
         ErrorManager.resetRetry('LoginToChatEvent');
         final id = r.data!.id;
@@ -222,7 +221,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyChatName(name ?? 'No Name');
           _prefsRepository.setMyChatPhoto(photo);
         }
-
+        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
         NotificationProcess().fcmToken(null, null, null, null);
 
         apisMustNotToRequest.remove('GetChatsEvent');
@@ -850,8 +849,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (r) {
         //  GetIt.I<HomeBloc>().add(UpdateProfileEvent(name: event.name));
-        add(UpdateChatUserNameEvent(name: event.name ?? ""));
-        add(UpdateStoriesUserEvent(name: event.name ?? ""));
+        // add(UpdateChatUserNameEvent(name: event.name ?? ""));
+        //  add(UpdateStoriesUserEvent(name: event.name ?? ""));
         ErrorManager.resetRetry('UpdateNameEvent');
         emit(state.copyWith(updateNameStatus: UpdateNameStatus.success));
       },
@@ -884,6 +883,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           _prefsRepository.setMyStoriesName(userInfo.name!);
         }
+        if (userInfo.image != null && userInfo.image != "") {
+          _prefsRepository.setMyProfilePhoto(
+            userInfo.image!.contains("cloudinary")
+                ? userInfo.image
+                : ("${dotenv.env['Images_Url']}" + userInfo.image!),
+          );
+          _prefsRepository.setMyChatPhoto(
+            userInfo.image!.contains("cloudinary")
+                ? userInfo.image
+                : ("${dotenv.env['Images_Url']}" + userInfo.image!),
+          );
+        }
+
         _prefsRepository.setMyMarketId(userInfo.id.toString());
 
         _prefsRepository.setPhoneNumber((userInfo.phone).toString());

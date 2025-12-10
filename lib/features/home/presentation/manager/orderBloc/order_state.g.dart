@@ -140,6 +140,12 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
         json['uploadImagesForReturnProductStatus'],
       ) ??
       UploadImagesForReturnProductStatus.init,
+  uploadImagesToCloudinaryStatus:
+      $enumDecodeNullable(
+        _$UploadImagesToCloudinaryStatusEnumMap,
+        json['uploadImagesToCloudinaryStatus'],
+      ) ??
+      UploadImagesToCloudinaryStatus.init,
   getAddressByTextStatus:
       $enumDecodeNullable(
         _$GetAddressByTextStatusEnumMap,
@@ -159,6 +165,11 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
         ),
   imagesForReturn:
       (json['imagesForReturn'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  imagesForComment:
+      (json['imagesForComment'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
       const [],
@@ -307,6 +318,7 @@ Map<String, dynamic> _$OrderStateToJson(
   'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
   'provincesByIso': instance.provincesByIso,
   'imagesForReturn': instance.imagesForReturn,
+  'imagesForComment': instance.imagesForComment,
   'orderTotalSize': instance.orderTotalSize,
   'currentOrederStatus': instance.currentOrederStatus,
   'applyCouponStatus': _$ApplyCouponStatusEnumMap[instance.applyCouponStatus],
@@ -332,6 +344,9 @@ Map<String, dynamic> _$OrderStateToJson(
   'uploadImagesForReturnProductStatus':
       _$UploadImagesForReturnProductStatusEnumMap[instance
           .uploadImagesForReturnProductStatus]!,
+  'uploadImagesToCloudinaryStatus':
+      _$UploadImagesToCloudinaryStatusEnumMap[instance
+          .uploadImagesToCloudinaryStatus]!,
   'storeReturnRequestProductStatus':
       _$StoreReturnRequestProductStatusEnumMap[instance
           .storeReturnRequestProductStatus],
@@ -442,6 +457,13 @@ const _$UploadImagesForReturnProductStatusEnumMap = {
   UploadImagesForReturnProductStatus.loading: 'loading',
   UploadImagesForReturnProductStatus.success: 'success',
   UploadImagesForReturnProductStatus.failure: 'failure',
+};
+
+const _$UploadImagesToCloudinaryStatusEnumMap = {
+  UploadImagesToCloudinaryStatus.init: 'init',
+  UploadImagesToCloudinaryStatus.loading: 'loading',
+  UploadImagesToCloudinaryStatus.success: 'success',
+  UploadImagesToCloudinaryStatus.failure: 'failure',
 };
 
 const _$GetAddressByTextStatusEnumMap = {

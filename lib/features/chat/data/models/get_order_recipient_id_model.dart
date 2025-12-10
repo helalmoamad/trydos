@@ -36,15 +36,14 @@ class GetOrderRecipientIdModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      GetOrderRecipientIdModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => GetOrderRecipientIdModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory GetOrderRecipientIdModel.fromJson(Map<String, dynamic> json) =>
       GetOrderRecipientIdModel(
@@ -57,13 +56,13 @@ class GetOrderRecipientIdModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
@@ -71,40 +70,35 @@ class Data {
   final ChatParticipant? chatParticipant;
   final Chat? chat;
 
-  Data({
-    this.recipient,
-    this.chat,
-    this.chatParticipant,
-  });
+  Data({this.recipient, this.chat, this.chatParticipant});
 
   Data copyWith({
     Recipient? recipient,
     Chat? chat,
     ChatParticipant? chatParticipant,
-  }) =>
-      Data(
-        chat: chat ?? this.chat,
-        recipient: recipient ?? this.recipient,
-        chatParticipant: chatParticipant ?? this.chatParticipant,
-      );
+  }) => Data(
+    chat: chat ?? this.chat,
+    recipient: recipient ?? this.recipient,
+    chatParticipant: chatParticipant ?? this.chatParticipant,
+  );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        recipient: json["recipient"] == null
-            ? null
-            : Recipient.fromJson(json["recipient"]),
-        chatParticipant: json["chat_participant"] == null
-            ? null
-            : ChatParticipant.fromJson(json["chat_participant"]),
-        chat: (json["channel"] == null || json["channel"] == {})
-            ? null
-            : Chat.fromJson(json["channel"]),
-      );
+    recipient: json["recipient"] == null
+        ? null
+        : Recipient.fromJson(json["recipient"]),
+    chatParticipant: json["chat_participant"] == null
+        ? null
+        : ChatParticipant.fromJson(json["chat_participant"]),
+    chat: (json["channel"] == null || json["channel"] == {})
+        ? null
+        : Chat.fromJson(json["channel"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "recipient": recipient?.toJson(),
-        "chat_participant": chatParticipant?.toJson(),
-        "channel": chat?.toJson(),
-      };
+    "recipient": recipient?.toJson(),
+    "chat_participant": chatParticipant?.toJson(),
+    "channel": chat?.toJson(),
+  };
 }
 
 class ChatParticipant {
@@ -131,22 +125,21 @@ class ChatParticipant {
     int? orderId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) =>
-      ChatParticipant(
-        id: id ?? this.id,
-        deliveryUserId: deliveryUserId ?? this.deliveryUserId,
-        originalUserId: originalUserId ?? this.originalUserId,
-        orderId: orderId ?? this.orderId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => ChatParticipant(
+    id: id ?? this.id,
+    deliveryUserId: deliveryUserId ?? this.deliveryUserId,
+    originalUserId: originalUserId ?? this.originalUserId,
+    orderId: orderId ?? this.orderId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   factory ChatParticipant.fromJson(Map<String, dynamic> json) =>
       ChatParticipant(
-        id: json["id"],
-        deliveryUserId: json["delivery_user_id"],
-        originalUserId: json["original_user_id"],
-        orderId: json["order_id"],
+        id: int.tryParse(json["id"].toString()),
+        deliveryUserId: int.tryParse(json["delivery_user_id"].toString()),
+        originalUserId: int.tryParse(json["original_user_id"].toString()),
+        orderId: int.tryParse(json["order_id"].toString()),
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -156,34 +149,24 @@ class ChatParticipant {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "delivery_user_id": deliveryUserId,
-        "original_user_id": originalUserId,
-        "order_id": orderId,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-      };
+    "id": id,
+    "delivery_user_id": deliveryUserId,
+    "original_user_id": originalUserId,
+    "order_id": orderId,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+  };
 }
 
 class Recipient {
   final int? id;
 
-  Recipient({
-    this.id,
-  });
+  Recipient({this.id});
 
-  Recipient copyWith({
-    int? id,
-  }) =>
-      Recipient(
-        id: id ?? this.id,
-      );
+  Recipient copyWith({int? id}) => Recipient(id: id ?? this.id);
 
-  factory Recipient.fromJson(Map<String, dynamic> json) => Recipient(
-        id: json["id"],
-      );
+  factory Recipient.fromJson(Map<String, dynamic> json) =>
+      Recipient(id: int.tryParse(json["id"].toString()));
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-      };
+  Map<String, dynamic> toJson() => {"id": id};
 }

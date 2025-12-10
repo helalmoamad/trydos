@@ -1,4 +1,4 @@
-import 'package:country_flags/country_flags.dart';
+/*import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -57,17 +58,20 @@ class _AvailableCountriesListState extends State<AvailableCountriesList> {
           final name = country.name ?? '';
 
           return InkWell(
+            key: Key('${WidgetsKeys.countryItemKeyKey}-$index'),
             onTap: () async {
               final chosenIso = (country.iso ?? '').toLowerCase();
               _prefsRepository.setUserChoosedCountryIso(chosenIso);
               setState(() => _selectedIndex = index);
               if (widget.fromHomepage) {
                 _prefsRepository.setUserCountryIsAvailable(1);
-                BlocProvider.of<HomeBloc>(context)
-                    .add(const ClearAllAppCashEvent());
+                BlocProvider.of<HomeBloc>(
+                  context,
+                ).add(const ClearAllAppCashEvent());
                 _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
-                _prefsRepository
-                    .removeMainCategoryHasPerfechedWhenOpenApp(true);
+                _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(
+                  true,
+                );
                 _prefsRepository.removeFiveFilterHasPerfechedWhenOpenApp();
                 BlocProvider.of<HomeBloc>(context).add(
                   ChangeCountryLanguageForNotificationEvent(
@@ -97,18 +101,17 @@ class _AvailableCountriesListState extends State<AvailableCountriesList> {
                 children: [
                   SizedBox(width: 10.w),
                   SizedBox(
-                      width: 25,
-                      height: 25,
-                      child: code.toUpperCase() == "SY"
-                          ? SvgPicture.asset(
-                              AppAssets.syriaFlagSvg,
-                            )
-                          : CountryFlag.fromCountryCode(
-                              (code.isEmpty ? 'US' : code).toUpperCase(),
-                              height: 25,
-                              width: 25,
-                              borderRadius: 4.r,
-                            )),
+                    width: 25,
+                    height: 25,
+                    child: code.toUpperCase() == "SY"
+                        ? SvgPicture.asset(AppAssets.syriaFlagSvg)
+                        : CountryFlag.fromCountryCode(
+                            (code.isEmpty ? 'US' : code).toUpperCase(),
+                            height: 25,
+                            width: 25,
+                            borderRadius: 4.r,
+                          ),
+                  ),
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
@@ -134,3 +137,4 @@ class _AvailableCountriesListState extends State<AvailableCountriesList> {
     );
   }
 }
+*/

@@ -247,9 +247,31 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
 
   Widget _buildBrandIcon() {
     final brandIcon = widget.productItem.brand?.icon?.filePath;
+    bool isVerified = (widget.productItem.brand?.isVerified ?? 0) > 0;
     if (brandIcon == null) return const SizedBox.shrink();
 
-    return SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15);
+    return SizedBox(
+      width: isVerified ? 55.w : 30.w,
+      height: 15,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: LanguageService.languageCode == "ar"
+            ? [
+                isVerified
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    : const SizedBox.shrink(),
+                SizedBox(width: isVerified ? 5 : 0),
+                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 11),
+              ]
+            : [
+                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15),
+                SizedBox(width: isVerified ? 5 : 0),
+                isVerified
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    : const SizedBox.shrink(),
+              ],
+      ),
+    );
   }
 
   /// 📝 Product Name Row
@@ -351,7 +373,16 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                           children: [
                             MyTextWidget(
                               HelperFunctions.formatNumber(
-                                number: (price * exchangeRate),
+                                number:
+                                    (HelperFunctions.truncateToDecimalPlaces(
+                                      price,
+                                      state
+                                          .getCurrencyForCountryModel!
+                                          .data!
+                                          .currency!
+                                          .decimalDigits!,
+                                    ) *
+                                    exchangeRate),
                               ),
                               /* .toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
@@ -367,7 +398,16 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                             const SizedBox(width: 2),
                             MyTextWidget(
                               HelperFunctions.formatNumber(
-                                number: (offerPrice * exchangeRate),
+                                number:
+                                    (HelperFunctions.truncateToDecimalPlaces(
+                                      offerPrice,
+                                      state
+                                          .getCurrencyForCountryModel!
+                                          .data!
+                                          .currency!
+                                          .decimalDigits!,
+                                    ) *
+                                    exchangeRate),
                               ),
                               /*.toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
@@ -491,7 +531,16 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                 isRedeem
                     ? MyTextWidget(
                         HelperFunctions.formatNumber(
-                          number: redeemPrice * exchangeRate,
+                          number:
+                              HelperFunctions.truncateToDecimalPlaces(
+                                redeemPrice,
+                                state
+                                    .getCurrencyForCountryModel!
+                                    .data!
+                                    .currency!
+                                    .decimalDigits!,
+                              ) *
+                              exchangeRate,
                         ),
                         //      .toStringAsFixed(widget.decimalPoint),
                         style: textTheme.headlineMedium?.bq.copyWith(

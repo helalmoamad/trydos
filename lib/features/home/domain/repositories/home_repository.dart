@@ -28,6 +28,7 @@ import 'package:trydos/features/home/data/models/popular_search_terms_model.dart
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/confirm_return_request_model.dart';
+import 'package:trydos/features/home/data/models/translate_comment_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
@@ -59,128 +60,158 @@ abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem();
   // Future<Either<Failure, GetBrandModel>> getBrand();
-//Future<Either<Failure, GetCategoryModel>> getCategory();
+  //Future<Either<Failure, GetCategoryModel>> getCategory();
 
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   // Future<Either<Failure, GetIsLikedOFProductModel>> getIsLikedOFProduct(
-//      Map<String, dynamic> params);
+  //      Map<String, dynamic> params);
   Future<Either<Failure, bool>> addLikeOFProduct(Map<String, dynamic> params);
   Future<Either<Failure, bool>> deleteLikeOFProduct(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetProductFiltersModel>> getProductFilters(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, bool>> sendErrorToMobileErrorLog(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
+
+  Future<Either<Failure, TranslateCommentModel>> translateCommentsToAppLan(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetProductListingWithFiltersModel>>
-      getRecommendedProducts(Map<String, dynamic> params);
+  getRecommendedProducts(Map<String, dynamic> params);
   /* Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, order_rating.GetOrderRatingFromAnalyticsModel>>
-      getOrderRating(Map<String, dynamic> params);
+  getOrderRating(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateWhatsappNotification(Map<String, dynamic> params);
-//  Future<Either<Failure, comment.GetCommentsFromAnalyticsModel>>
-//      getCommentsFromAnalytics(Map<String, dynamic> params);
+  updateWhatsappNotification(Map<String, dynamic> params);
+  //  Future<Either<Failure, comment.GetCommentsFromAnalyticsModel>>
+  //      getCommentsFromAnalytics(Map<String, dynamic> params);
   Future<Either<Failure, UpdateProfileModel>> updateProfile(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateFirebaseNotification(Map<String, dynamic> params);
+  updateFirebaseNotification(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateEmailNotification(Map<String, dynamic> params);
+  updateEmailNotification(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      updateNotificationFrequency(Map<String, dynamic> params);
+  updateNotificationFrequency(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      changeCountryLanguageFornotification(Map<String, dynamic> params);
+  changeCountryLanguageFornotification(Map<String, dynamic> params);
   Future<Either<Failure, CreateFqaCommentsModel>> createOrderCommentRating(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ResponseOnlyMessageModel>> deleteOrderCommentRating(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ResponseOnlyMessageModel>> updateOrderCommentRating(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ResponseOnlyMessageModel>> updateLikeComment(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      unSubscribeTopicFornotification(Map<String, dynamic> params);
+  unSubscribeTopicFornotification(Map<String, dynamic> params);
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
-      updateLikeSocialSharedProducts(Map<String, dynamic> params);
+  updateLikeSocialSharedProducts(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      subscribeTopicFornotification(Map<String, dynamic> params);
+  subscribeTopicFornotification(Map<String, dynamic> params);
   Future<Either<Failure, GetFqaCommentsModel>> getFqaComments(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetBuyersCommentsModel>> getBuyersComments(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
-      getMyFirebaseSettings();
+  getMyFirebaseSettings();
   Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
-      String iso);
+    String iso,
+  );
   Future<Either<Failure, NotificationTypeForProductModel>>
-      getNotificationTypeForProduct();
+  getNotificationTypeForProduct();
 
   Future<Either<Failure, GeColorsAndSizesForSearchModel>>
-      getColorsAndSizesForSearch();
+  getColorsAndSizesForSearch();
   Future<Either<Failure, ListOfProductsFoundedInCartModel>>
-      getProductsListInCart();
+  getProductsListInCart();
   Future<Either<Failure, bool>> storeFcmTokenOfMarket(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, PopularSearchTermsModel>> getPopularSearchTerms();
   Future<Either<Failure, GetListOfCustomerAddressesInfoModel>>
-      getCustomerAddresses();
+  getCustomerAddresses();
   Future<Either<Failure, GetProvincesByIsoModel>> getProvincesByIso();
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries();
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>
-      getProductsWithoutFilters(Map<String, dynamic> params);
+  getProductsWithoutFilters(Map<String, dynamic> params);
   Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetProductListingWithFiltersModel>>
-      getProductsWithFilters(Map<String, dynamic> params);
+  getProductsWithFilters(Map<String, dynamic> params);
   Future<Either<Failure, GetProductListingWithFiltersModel>>
-      getFeaturedProducts(Map<String, dynamic> params);
+  getFeaturedProducts(Map<String, dynamic> params);
   Future<Either<Failure, ResponseOnlyMessageModel>> addCustomerAddress(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetAddressByTextModel>> getAddressByText(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetAddressByCoordinatesModel>> getAddressByCoordinates(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ResponseOnlyMessageModel>> updateCustomerAddress(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ResponseOnlyMessageModel>> deleteCustomerAddress(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
-      getProductDetailWithoutSimilarRelatedProducts(String productSlug);
+  getProductDetailWithoutSimilarRelatedProducts(String productSlug);
   Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(
-      String productSlug);
+    String productSlug,
+  );
   // Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
   //     String productId);
   Future<Either<Failure, AddItemToCartModel>> addItemToCart(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetOldCartModel>> getOldCartItems();
 
   Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry();
   Future<Either<Failure, UpdateItemInCartModel>> UpdateItemToCart(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetCountViewOfProductModel>>
-      getAndAddCountViewOfProduct(Map<String, dynamic> params);
+  getAndAddCountViewOfProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> hideItemsInOldCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> setCustomerAddressDefault(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ConvertItemFromCartToOldCartModel>>
-      convertItemInCartToOldCart(Map<String, dynamic> params);
+  convertItemInCartToOldCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
   //Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
   Future<Either<Failure, OrderCommentModel>> addOrderComment(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, OrderCommentModel>> updateOrderComment(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
-      requestForNotificationWhenProductBecameAvailable(
-          Map<String, dynamic> params);
+  requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params);
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> changeOrderItemVariant(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
     required int limit,
@@ -201,11 +232,9 @@ abstract class HomeRepository {
   });
 
   Future<Either<Failure, CheckAvailabilityProductCartModel>>
-      checkAvailabilityProductCart();
+  checkAvailabilityProductCart();
 
-  Future<Either<Failure, ApplyCouponModel>> applyCoupon({
-    required String code,
-  });
+  Future<Either<Failure, ApplyCouponModel>> applyCoupon({required String code});
 
   Future<Either<Failure, GetCartShippingItemsModel>> getCartOverview();
 
@@ -213,51 +242,63 @@ abstract class HomeRepository {
     required int page,
   });
 
-  Future<Either<Failure, OrderModel>> getOrders(
-      {required Map<String, dynamic> params});
+  Future<Either<Failure, OrderModel>> getOrders({
+    required Map<String, dynamic> params,
+  });
 
   Future<Either<Failure, CancelOrderItemModel>> cancelOrderItem(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, CancelOrderModel>> cancelOrder(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, ChangeOrderAddressModel>> changeOrderAddress(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, ColorSizeForProductModel>>
-      getProductColorSizeSyncAttribute(String id);
+  getProductColorSizeSyncAttribute(String id);
 
   Future<Either<Failure, ReturnReasonsModel>> getReturnReasons();
 
   Future<Either<Failure, UploadImagesForReturnProductModel>>
-      uploadImagesForReturnProduct(Map<String, dynamic> params);
+  uploadImagesForReturnProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, StoreReturnRequestProductModel>>
-      storeReturnRequestProduct(Map<String, dynamic> params);
+  storeReturnRequestProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, UpdateReturnRequestModel>> updateReturnRequestProduct(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, ConfirmCancelReturnRequestModel>> cancelReturnRequest(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, ConfirmCancelReturnRequestModel>>
-      cancelReturnRequestProduct(Map<String, dynamic> params);
+  cancelReturnRequestProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, CreateReturnReqestModel>> storeReturnRequest(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ConfirmCancelReturnRequestModel>> confirmReturnRequest(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> orderReturnRequestsView(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> searchByImageFromGemini(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, GetOrderReturntDetailsModel>> getOrderReturnDetails(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetAuthProductDetailsModel>> getAuthProductDetails(
-      String productSlug);
+    String productSlug,
+  );
 }

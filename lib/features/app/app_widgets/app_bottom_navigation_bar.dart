@@ -594,6 +594,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     'flutter errors',
                                                   ),
                                                 ),
+
                                                 TextButton(
                                                   onPressed: () {
                                                     Navigator.push(
@@ -608,6 +609,20 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     'add user info',
                                                   ),
                                                 ),
+                                                /*TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            const AddCallUrl(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const MyTextWidget(
+                                                    'Add Call URl',
+                                                  ),
+                                                ),*/
                                                 /*  TextButton(
                                                       onPressed: () {
                                                         Navigator.push(

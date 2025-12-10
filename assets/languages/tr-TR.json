@@ -4,7 +4,6 @@
   "visitors_not_necessarily_from": "Ziyaretçiler ve Mutlaka Şunlardan Değil",
   "customers_purchased_before_pre_purchase_questions": "Daha Önce Ürünü Satın Alan Müşteriler. Bunlar Satın Alma Öncesi Sorulardır ve Doğrudan Satıcı Tarafından Cevaplanır",
   "all_comments_are_genuine_from_customers_who_purchased_and_actually": "Tüm Yorumlar Satın Alan ve Gerçekten Müşterilerden Gelen Orijinal Yorumlardır",
-
   "shipping_company": "Kargo Şirketi",
   "based_on_previous_delivery_statistics_below_to_your_area_we_conclude": "Bölgenizdeki Önceki Teslimat İstatistiklerine Dayanarak Sonuçlandırıyoruz",
   "that_the_expected_delivery_time_for_your_product_is": "Ürününüzün Beklenen Teslimat Süresi",
@@ -19,6 +18,20 @@
   "sending_video": "video gönderiliyor...",
   "gallery": "galeri",
   "camera": "kamera",
+  "out_for_return": "İade Edildi",
+  "work_days": "iş günleri",
+  "camera_permission_required_message": "İzin olmadan kamerayı açamayız. Lütfen erişime izin verip tekrar deneyin.",
+  "account_import_success_message": "Hesap verileri başarıyla içe aktarıldı",
+  "qr_invalid_code_message": "Bu kod okunamadı, lütfen tekrar deneyin",
+  "camera_permission_still_denied": "Kamera izni hâlâ reddedildi. Ayarlardan etkinleştirip geri dönebilirsiniz.",
+  "qr_login_screen_title": "Hesap QR Tarayıcı",
+  "qr_processing_message": "Hesap verileri doğrulanıyor...",
+  "qr_instruction_message": "Hesabı eşitlemek için kamerayı QR koda yöneltin",
+  "qr_permission_overlay_message": "QR tarayıcıyı kullanmak için kamera izni gereklidir",
+  "methods_login_scan_qr_option": "Trydos uygulamasından QR tara",
+  "methods_login_phone_option": "Mobil telefon numarasıyla",
+  "share_account_via_qr_title": "Hesabı QR ile paylaş",
+  "share_account_via_qr_hint": "Bu kodu okuması için diğer telefonda QR kamerayı aç ve hesabı aktar.",
   "choose_photo_or_video_from_gallery_or_camera": "galeriden veya kameradan fotoğraf veya video seçin",
   "image_preview": "Resim Önizleme",
   "image_preview_instructions": "Resim Önizleme - Gönder, kırp veya iptal et",
@@ -130,6 +143,8 @@
   "category": "Kategori",
   "forward": "İlet",
   "voice_call_at": "Sesli Arama Zamanı",
+  "translate": "Çevir",
+  "show_original_version": "Orijinal sürümü göster",
   "video_call_at": "Görüntülü Arama Zamanı",
   "photo": "Fotoğraf",
   "file": "Dosya",
@@ -238,7 +253,6 @@
   "notify_me_when_quantity_is_available": "Miktar mevcut olduğunda beni bilin",
   "we_will_inform_you_when_a": "Bir",
   "quantity_is_available": "Miktar mevcut",
-
   "add": "Ekle",
   "bag": "Çanta",
   "comment_about_this_product": "Bu Ürün Hakkında Yorum",
@@ -568,90 +582,89 @@
   "download_timeout": "İndirme zaman aşımı",
   "retry_download": "İndirmeyi yeniden dene",
   "image_not_available": "Resim mevcut değil",
-  "luck": "şans!"
-  ,"add_to_bag_within": "Şu sürede sepete ekle"
-  ,"seconds": "saniye"
-  ,"about_change_request_product": "Ürün Değişiklik Talebi Hakkında"
-  ,"to_qty": "Miktara ?"
-  ,"otp_error_try_again_later": "Bir hata oluştu, süre bitince tekrar deneyin"
-  ,"info_message": "Bilgi Mesajı"
-  ,"chat_with_delivery_person": "Teslimatçı ile sohbet"
-  ,"add_comment_for_rating": "Değerlendirmeniz için yorum ekleyin"
-  ,"write_your_comment_here": "Yorumunuzu buraya yazın..."
-  ,"rate_and_get_money": "Değerlendir ve Para Kazan"
-  ,"rating_section_description": "Aldığınız ürünlere verdiğiniz doğru puanlar, kaliteyi artırmamıza ve diğer müşterilerin alışverişine yardımcı olur."
-  ,"please_login_to_add_comment": "Yorum eklemek için lütfen giriş yapın"
-  ,"return_pieces_hint": "İade etmek istediğiniz parça sayısını girin"
-  , "i_want_returm_more_products":"Gecikme Onayı. Daha Fazla Ürün İade Etmek İstiyorum",
-  "cost": "Maliyet"
-  ,"confirm_return_request": "İade Talebini Onayla"
-  ,"cancel_return_request": "İade Talebini İptal Et"
-  ,"edit_return_request": "İade Talebini Düzenle"
-  ,"i_agree_return": "Kabul Ediyorum & İade Ediyorum"
-  ,"canceled_status_short": "İptal",
+  "luck": "şans!",
+  "add_to_bag_within": "Şu sürede sepete ekle",
+  "seconds": "saniye",
+  "about_change_request_product": "Ürün Değişiklik Talebi Hakkında",
+  "to_qty": "Miktara ?",
+  "otp_error_try_again_later": "Bir hata oluştu, süre bitince tekrar deneyin",
+  "info_message": "Bilgi Mesajı",
+  "chat_with_delivery_person": "Teslimatçı ile sohbet",
+  "add_comment_for_rating": "Değerlendirmeniz için yorum ekleyin",
+  "write_your_comment_here": "Yorumunuzu buraya yazın...",
+  "rate_and_get_money": "Değerlendir ve Para Kazan",
+  "rating_section_description": "Aldığınız ürünlere verdiğiniz doğru puanlar, kaliteyi artırmamıza ve diğer müşterilerin alışverişine yardımcı olur.",
+  "please_login_to_add_comment": "Yorum eklemek için lütfen giriş yapın",
+  "return_pieces_hint": "İade etmek istediğiniz parça sayısını girin",
+  "i_want_returm_more_products": "Gecikme Onayı. Daha Fazla Ürün İade Etmek İstiyorum",
+  "cost": "Maliyet",
+  "confirm_return_request": "İade Talebini Onayla",
+  "cancel_return_request": "İade Talebini İptal Et",
+  "edit_return_request": "İade Talebini Düzenle",
+  "i_agree_return": "Kabul Ediyorum & İade Ediyorum",
+  "canceled_status_short": "İptal",
   "video_file_not_supported": "Video dosyası desteklenmiyor",
   "new_update_available": "Yeni Güncelleme Mevcut",
   "newer_version_available_message": "Uygulamanın daha yeni bir sürümü mevcut, lütfen şimdi güncelleyin.",
-  "update_now": "Şimdi Güncelle"
-  ,"only_this_piece": "Sadece Bu Parça"
-  ,"quick_video": "Hızlı video"
-  ,"buyers_comment": "Alıcı Yorumu"
-  ,"faq_buyer_seller": "SSS Alıcı & Satıcı"
-  ,"buyers_reviews_on_product_sizing": "Ürün Bedenleri Hakkında Alıcı Yorumları"
-  ,"true_size": "Tam Beden"
-  ,"true_label": "Doğru"
-  ,"small": "Küçük"
-  ,"large": "Büyük"
-  ,"standard": "Standart"
-  ,"ask_seller_about_product": "Bu Ürün Hakkında Satıcıya Sorunuzu Sorun…"
-  ,"buyer": "Alıcı"
-  ,"recommend_it": "Öneriyor"
-  ,"dont_recommend_it": "Önermiyor"
-  ,"color_available": "Mevcut Renkler"
-  ,"size_available": "Mevcut Bedenler"
-  ,"answered": "Cevaplandı"
-  ,"get_a": "Alın"
-  ,"get_the_amount_back": "Tutarı Geri Alın"
-  ,"n_buyer_rate": "Alıcı Puanı"
-  ,"good_quality": "İyi Kalite"
-  ,"recommend_it_by": "Şunun Tarafından Öneriliyor"
-  ,"made_in": "Menşei"
-  ,"today_shipping": "Bugün Kargo"
-  ,"if_buy_before": "Eğer Önce Alırsanız"
- 
-  ,"today_shipping_short": "Bugün Kargo"
-  ,"selected_color": "Seçilen Renk"
-  ,"get": "Al"
-  ,"select_your_required_size": "Gerekli Bedeninizi Seçin"
-  ,"only": "Sadece"
-  ,"added": "Eklendi"
-  ,"to_your_bag": "Çantana"
-  ,"today_shipping_if_buy_before": "Ve bugün kargo, eğer önce alırsan"
-  ,"add_more_to_bag": "Daha fazla çantaya ekle"
-  ,"delivery_worker": "Teslimat Görevlisi"
-  ,"recommend_products": "Önerilen Ürünler",
+  "update_now": "Şimdi Güncelle",
+  "only_this_piece": "Sadece Bu Parça",
+  "quick_video": "Hızlı video",
+  "buyers_comment": "Alıcı Yorumu",
+  "faq_buyer_seller": "SSS Alıcı & Satıcı",
+  "buyers_reviews_on_product_sizing": "Ürün Bedenleri Hakkında Alıcı Yorumları",
+  "true_size": "Tam Beden",
+  "true_label": "Doğru",
+  "small": "Küçük",
+  "large": "Büyük",
+  "standard": "Standart",
+  "ask_seller_about_product": "Bu Ürün Hakkında Satıcıya Sorunuzu Sorun…",
+  "buyer": "Alıcı",
+  "recommend_it": "Öneriyor",
+  "dont_recommend_it": "Önermiyor",
+  "color_available": "Mevcut Renkler",
+  "size_available": "Mevcut Bedenler",
+  "answered": "Cevaplandı",
+  "get_a": "Alın",
+  "get_the_amount_back": "Tutarı Geri Alın",
+  "n_buyer_rate": "Alıcı Puanı",
+  "good_quality": "İyi Kalite",
+  "recommend_it_by": "Şunun Tarafından Öneriliyor",
+  "made_in": "Menşei",
+  "today_shipping": "Bugün Kargo",
+  "if_buy_before": "Eğer Önce Alırsanız",
+  "today_shipping_short": "Bugün Kargo",
+  "selected_color": "Seçilen Renk",
+  "get": "Al",
+  "select_your_required_size": "Gerekli Bedeninizi Seçin",
+  "only": "Sadece",
+  "added": "Eklendi",
+  "to_your_bag": "Çantana",
+  "today_shipping_if_buy_before": "Ve bugün kargo, eğer önce alırsan",
+  "add_more_to_bag": "Daha fazla çantaya ekle",
+  "delivery_worker": "Teslimat Görevlisi",
+  "recommend_products": "Önerilen Ürünler",
   "edit_comment_title": "Yorumu Düzenle",
-  "edit_comment_hint": "Düzenlemeyi buraya yaz..."
-  ,"must_login_to_edit_comment": "Yorumu düzenlemek için lütfen giriş yapın"
-  ,"must_login_to_delete_comment": "Yorumu silmek için lütfen giriş yapın"
-  ,"confirm_delete_comment_title": "Yorumu Silmeyi Onayla"
-  ,"confirm_delete_comment_message": "Bu yorumu silmek istediğinizden emin misiniz?"
-  ,"confirm_delete": "Silmeyi Onayla"
-  ,"delete_comment_success": "Yorum başarıyla silindi"
-  ,"delete_comment_failed": "Yorum silinemedi"
-  ,"edit_comment_success": "Yorum başarıyla güncellendi"
-  ,"edit_comment_failed": "Yorum güncellenemedi"
-  ,"quality": "Kalite",
-  "complaint": "Şikayet"
-  ,"recommendation": "Tavsiye"
-  ,"no_commends_found": "Yorum bulunamadı"
-  ,"choose_a_country": "Bir ülke seçin"
-  ,"country_not_available": "Ülke mevcut değil"
-  ,"expected_shipping_delivery_date": "Beklenen kargo ve teslimat tarihi"
-  ,"work_days_at_your_address_in": "Adresinizdeki iş günleri"
-  ,"after_receiving_product_return_without_conditions": "Ürünü aldıktan sonra koşulsuz iade edebilirsiniz"
-  ,"or_reasons_with_complete_ease_and": "veya nedenlerle tam kolaylıkla ve"
-  ,"pack": "Paket"
-  ,"dear": "Sevgili"
-  ,"product": "Ürün"
+  "edit_comment_hint": "Düzenlemeyi buraya yaz...",
+  "must_login_to_edit_comment": "Yorumu düzenlemek için lütfen giriş yapın",
+  "must_login_to_delete_comment": "Yorumu silmek için lütfen giriş yapın",
+  "confirm_delete_comment_title": "Yorumu Silmeyi Onayla",
+  "confirm_delete_comment_message": "Bu yorumu silmek istediğinizden emin misiniz?",
+  "confirm_delete": "Silmeyi Onayla",
+  "delete_comment_success": "Yorum başarıyla silindi",
+  "delete_comment_failed": "Yorum silinemedi",
+  "edit_comment_success": "Yorum başarıyla güncellendi",
+  "edit_comment_failed": "Yorum güncellenemedi",
+  "quality": "Kalite",
+  "complaint": "Şikayet",
+  "recommendation": "Tavsiye",
+  "no_commends_found": "Yorum bulunamadı",
+  "choose_a_country": "Bir ülke seçin",
+  "country_not_available": "Ülke mevcut değil",
+  "expected_shipping_delivery_date": "Beklenen kargo ve teslimat tarihi",
+  "work_days_at_your_address_in": "Adresinizdeki iş günleri",
+  "after_receiving_product_return_without_conditions": "Ürünü aldıktan sonra koşulsuz iade edebilirsiniz",
+  "or_reasons_with_complete_ease_and": "veya nedenlerle tam kolaylıkla ve",
+  "pack": "Paket",
+  "dear": "Sevgili",
+  "product": "Ürün"
 }

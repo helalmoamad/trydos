@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -37,8 +38,9 @@ class HelperFunctions {
     final color = theme == ThemeMode.dark
         ? const Color(0xFF191C1D)
         : const Color(0xFFFBFDFD);
-    final brightness =
-        theme == ThemeMode.light ? Brightness.dark : Brightness.light;
+    final brightness = theme == ThemeMode.light
+        ? Brightness.dark
+        : Brightness.light;
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -62,7 +64,9 @@ class HelperFunctions {
         uri,
         mode: LaunchMode.externalApplication,
         webViewConfiguration: const WebViewConfiguration(
-            enableDomStorage: false, enableJavaScript: false),
+          enableDomStorage: false,
+          enableJavaScript: false,
+        ),
       );
     } else {
       throw Exception('Unable to launch url');
@@ -87,10 +91,7 @@ class HelperFunctions {
   static Future<bool> urlLauncherBrowser(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      return await launchUrl(
-        uri,
-        mode: LaunchMode.inAppWebView,
-      );
+      return await launchUrl(uri, mode: LaunchMode.inAppWebView);
     } else {
       throw Exception('Unable to launch url');
     }
@@ -157,20 +158,19 @@ class HelperFunctions {
         const end = Offset.zero;
         const curve = Curves.ease;
 
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
+        return SlideTransition(position: animation.drive(tween), child: child);
       },
     );
   }
 
   static Future<List<Map<String, dynamic>>> getContactsFromDevice() async {
-    final PermissionStatus permissionStatus =
-        await Permission.contacts.request();
+    final PermissionStatus permissionStatus = await Permission.contacts
+        .request();
     List<Contact> contacts = [];
 
     if (permissionStatus == PermissionStatus.granted) {
@@ -195,7 +195,8 @@ class HelperFunctions {
     }
 
     print(
-        "📱 جهات الاتصال مع أرقام: ${myContacts.length}   ${contacts.length}");
+      "📱 جهات الاتصال مع أرقام: ${myContacts.length}   ${contacts.length}",
+    );
 
     String myPhoneNumber = '${GetIt.I<PrefsRepository>().myPhoneNumber ?? ""}';
     if (!(myPhoneNumber.startsWith("+"))) {
@@ -205,8 +206,10 @@ class HelperFunctions {
     print("📏 طول رقم المستخدم: ${myPhoneNumber.length}");
 
     String dialCode = countries
-        .firstWhere((element) => myPhoneNumber.startsWith(element.dialCode),
-            orElse: () => defaultCountry)
+        .firstWhere(
+          (element) => myPhoneNumber.startsWith(element.dialCode),
+          orElse: () => defaultCountry,
+        )
         .dialCode;
 
     print("🏳️ رمز الدولة: $dialCode");
@@ -262,9 +265,11 @@ class HelperFunctions {
       print("🧹 تنظيف الرقم: ${e.phones.first.number} -> $cleanNumber");
 
       if (!cleanNumber.contains('+')) {
-        int countryIndex = countries.indexWhere((element) =>
-            element.dialCode.length > 1 &&
-            cleanNumber.startsWith(element.dialCode.substring(1)));
+        int countryIndex = countries.indexWhere(
+          (element) =>
+              element.dialCode.length > 1 &&
+              cleanNumber.startsWith(element.dialCode.substring(1)),
+        );
         if (countryIndex == -1) {
           formattedNumber = dialCode + cleanNumber;
           print("➕ إضافة رمز الدولة: $cleanNumber -> $formattedNumber");
@@ -306,7 +311,8 @@ class HelperFunctions {
   }
 
   static Future<List<AssetEntity>?> myMultiAssetPicker(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     return AssetPicker.pickAssets(
       context,
       pickerConfig: const AssetPickerConfig(
@@ -344,8 +350,8 @@ class HelperFunctions {
     return name.split(' ').length == 2
         ? name.split(' ')[0][0] + name.split(' ')[1][0]
         : name.split(' ').first.length > 1
-            ? (name.split(' ')[0][0] + name.split(' ')[0][1])
-            : name.split(' ').first;
+        ? (name.split(' ')[0][0] + name.split(' ')[0][1])
+        : name.split(' ').first;
   }
 
   static Future<File?> pickDocumentFile() async {
@@ -405,8 +411,9 @@ class HelperFunctions {
   }
 
   static String getTimeInFormat(Duration duration) {
-    String? hours =
-        duration.inHours > 0 ? twoDigits(duration.inHours.remainder(60)) : null;
+    String? hours = duration.inHours > 0
+        ? twoDigits(duration.inHours.remainder(60))
+        : null;
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return '${hours ?? ''}$minutes:$seconds';
@@ -635,10 +642,7 @@ class HelperFunctions {
     }
   }
 
-  static slidingNavigation(
-    BuildContext context,
-    Widget page,
-  ) {
+  static slidingNavigation(BuildContext context, Widget page) {
     Navigator.push(
       context,
       PageRouteBuilder(
@@ -667,8 +671,10 @@ class HelperFunctions {
     // ));
   }
 
-  static void showDescriptionForProductDetails(
-      {required BuildContext context, bool withIcon = false}) {
+  static void showDescriptionForProductDetails({
+    required BuildContext context,
+    bool withIcon = false,
+  }) {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xffF4F4F4),
@@ -699,33 +705,29 @@ class HelperFunctions {
                           width: 20,
                           height: 20,
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5),
                         MyTextWidget(
                           'Suitable Occasions',
                           style: context.textTheme.displayMedium?.mq.copyWith(
-                              color: const Color(0xff8D8D8D),
-                              fontSize: 15.sp,
-                              height: 1.26),
+                            color: const Color(0xff8D8D8D),
+                            fontSize: 15.sp,
+                            height: 1.26,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 10),
                     Column(
                       children: [
                         MyTextWidget(
                           'According To The Opinions Of Our Fashion Team, The Appropriate Occasions For This Product Have Been Identified Based On Long Experience. We Provide An Opinion Only And Opinions May Differ From One Person To Another. So It Is Suitable For',
                           style: context.textTheme.titleLarge?.rq.copyWith(
-                              height: 1.23,
-                              color: const Color(0xff8D8D8D),
-                              fontSize: 13.sp),
+                            height: 1.23,
+                            color: const Color(0xff8D8D8D),
+                            fontSize: 13.sp,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        const SizedBox(height: 10),
                         SizedBox(
                           height: 16,
                           child: ListView.separated(
@@ -741,13 +743,15 @@ class HelperFunctions {
                                       '97%',
                                       style: context.textTheme.titleLarge?.rq
                                           .copyWith(
-                                              height: 1.23,
-                                              color: const Color(0xff505050),
-                                              fontSize: 13.sp),
+                                            height: 1.23,
+                                            color: const Color(0xff505050),
+                                            fontSize: 13.sp,
+                                          ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
+                                        horizontal: 5,
+                                      ),
                                       child: SvgPicture.asset(
                                         AppAssets.polyesterSvg,
                                         width: 15,
@@ -759,31 +763,35 @@ class HelperFunctions {
                                     'Casual',
                                     style: context.textTheme.titleLarge?.rq
                                         .copyWith(
-                                            height: 1.23,
-                                            color: const Color(0xff8D8D8D),
-                                            fontSize: 13.sp),
-                                  )
+                                          height: 1.23,
+                                          color: const Color(0xff8D8D8D),
+                                          fontSize: 13.sp,
+                                        ),
+                                  ),
                                 ],
                               );
                             },
                             separatorBuilder: (context, index) {
                               return Container(
                                 margin: const EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 1.5),
+                                  horizontal: 5,
+                                  vertical: 1.5,
+                                ),
                                 width: 1,
                                 decoration: BoxDecoration(
-                                    color: const Color(0xff8D8D8D),
-                                    borderRadius: BorderRadius.circular(2)),
+                                  color: const Color(0xff8D8D8D),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
                               );
                             },
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const Spacer()
+              const Spacer(),
             ],
           ),
         );
@@ -791,10 +799,18 @@ class HelperFunctions {
     );
   }
 
-  static String formatNumber(
-      {required double number, bool isNeedRounding = true}) {
+  static double truncateToDecimalPlaces(double number, int decimalPlaces) {
+    double mod = pow(10.0, decimalPlaces).toDouble();
+    return (number * mod).ceilToDouble() / mod;
+  }
+
+  static String formatNumber({
+    required double number,
+    bool isNeedRounding = true,
+  }) {
     var formate = NumberFormat("0.######", "en_US");
-    String iso = (_prefsRepository.userCountryIsAvailable == 1
+    String iso =
+        (_prefsRepository.userCountryIsAvailable == 1
             ? _prefsRepository.userChoosedCountryIso
             : _prefsRepository.countryIso) ??
         "";
@@ -828,12 +844,12 @@ class HelperFunctions {
 
     String thousand =
         (LanguageService.languageCode != "ar" || LanguageService.isKurdish)
-            ? 'K'
-            : 'أ';
+        ? 'K'
+        : 'أ';
     String million =
         (LanguageService.languageCode != "ar" || LanguageService.isKurdish)
-            ? 'M'
-            : 'م';
+        ? 'M'
+        : 'م';
     //if (iso == 'SY') {
     if (number >= 1e5 && number < 1e6) {
       String? result;
@@ -841,9 +857,9 @@ class HelperFunctions {
         result = ((((number.ceil()) / 1000).ceil())).toString();
       } else {
         result = (((number) / 1000).ceil()).toStringAsFixed(
-            (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
-                    2)
-                .round());
+          (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)
+              .round(),
+        );
       }
 
       return '${formate.format(double.tryParse(result))}$thousand';
@@ -854,21 +870,23 @@ class HelperFunctions {
         return number.ceil().toString();
       }
       return number.toStringAsFixed(
-          (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)
-              .round());
+        (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)
+            .round(),
+      );
 
       //'1$thousand';
     } else {
       String? result;
       if (iso == 'SY') {
-        result =
-            (((((number.ceil())) / 1000).ceil()) / 1000).toStringAsFixed(3);
+        result = (((((number.ceil())) / 1000).ceil()) / 1000).toStringAsFixed(
+          3,
+        );
       } else {
         result = (((((number.ceil())) / 1000).ceil()) / 1000).toStringAsFixed(
-            (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
-                        2)
-                    .round() +
-                3);
+          (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)
+                  .round() +
+              3,
+        );
       }
 
       if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
@@ -923,12 +941,13 @@ class HelperFunctions {
     DateTime dTime = dateTime.isUtc ? dateTime : dateTime.toLocal();
 
     final now = DateTime.now();
-    final isToday = dTime.year == now.year &&
+    final isToday =
+        dTime.year == now.year &&
         dTime.month == now.month &&
         dTime.day == now.day;
 
-    final timeFormatted = DateFormat('HH:mm:ss').format(dTime);
+    final timeFormatted = DateFormat('HH:mm:ss', "en_US").format(dTime);
 
-    return '${isToday ? '${LocaleKeys.today.tr()}' : DateFormat('yyyy-MM-dd').format(dTime)} | $timeFormatted';
+    return '${isToday ? '${LocaleKeys.today.tr()}' : DateFormat('yyyy-MM-dd', "en_US").format(dTime)} | $timeFormatted';
   }
 }

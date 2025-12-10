@@ -23,16 +23,19 @@ import '../models/my_chats_response_model.dart';
 
 @injectable
 class ChatRemoteDataSource {
+  //GetClient
   Future<MyContactsResponseModel> getContacts() {
-    GetClient<MyContactsResponseModel> getContacts =
-        GetClient<MyContactsResponseModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<MyContactsResponseModel>(
-        endpoint: ChatEndPoints.getMyContactsEP,
-        response: ResponseValue<MyContactsResponseModel>(
-            fromJson: (response) => MyContactsResponseModel.fromJson(response)),
-      ),
-    );
+    PostClient<MyContactsResponseModel> getContacts =
+        PostClient<MyContactsResponseModel>(
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<MyContactsResponseModel>(
+            endpoint: ChatEndPoints.getMyContactsEP,
+            response: ResponseValue<MyContactsResponseModel>(
+              fromJson: (response) =>
+                  MyContactsResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return getContacts();
   }
 
@@ -72,13 +75,15 @@ class ChatRemoteDataSource {
     return receiveMessage();
   }
 
+  //GetClient
   Future<String> getDateTime() {
-    GetClient<String> getDateTime = GetClient<String>(
+    PostClient<String> getDateTime = PostClient<String>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<String>(
         endpoint: ChatEndPoints.getDateTime,
-        response:
-            ResponseValue<String>(fromJson: (response) => response["data"]),
+        response: ResponseValue<String>(
+          fromJson: (response) => response["data"],
+        ),
       ),
     );
     return getDateTime();
@@ -87,48 +92,56 @@ class ChatRemoteDataSource {
   Future<MyChatsResponseModel> getChats(Map<String, dynamic> params) {
     PostClient<MyChatsResponseModel> getChats =
         PostClient<MyChatsResponseModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<MyChatsResponseModel>(
-        endpoint: ChatEndPoints.getMyChatsEP,
-        queryParameters: params,
-        response: ResponseValue<MyChatsResponseModel>(fromJson: (response) {
-          return MyChatsResponseModel.fromJson(response);
-//return MyChatsResponseModel();
-        }),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<MyChatsResponseModel>(
+            endpoint: ChatEndPoints.getMyChatsEP,
+            queryParameters: params,
+            response: ResponseValue<MyChatsResponseModel>(
+              fromJson: (response) {
+                return MyChatsResponseModel.fromJson(response);
+                //return MyChatsResponseModel();
+              },
+            ),
+          ),
+        );
     return getChats();
   }
 
   Future<GetOrderRecipientIdModel> getOrderRecipientId(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<GetOrderRecipientIdModel> getOrderRecipientId =
         PostClient<GetOrderRecipientIdModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<GetOrderRecipientIdModel>(
-        endpoint: ChatEndPoints.getOrderRecipientIdEP,
-        queryParameters: params,
-        response: ResponseValue<GetOrderRecipientIdModel>(fromJson: (response) {
-          return GetOrderRecipientIdModel.fromJson(response);
-//return MyChatsResponseModel();
-        }),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<GetOrderRecipientIdModel>(
+            endpoint: ChatEndPoints.getOrderRecipientIdEP,
+            data: params,
+            response: ResponseValue<GetOrderRecipientIdModel>(
+              fromJson: (response) {
+                return GetOrderRecipientIdModel.fromJson(response);
+                //return MyChatsResponseModel();
+              },
+            ),
+          ),
+        );
     return getOrderRecipientId();
   }
 
   Future<ChangeChatPropertyModel> changeChatProperty(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ChangeChatPropertyModel> changeChatProperty =
         PostClient<ChangeChatPropertyModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<ChangeChatPropertyModel>(
-        endpoint: ChatEndPoints.setChatPropertyEP,
-        data: params,
-        response: ResponseValue<ChangeChatPropertyModel>(
-            fromJson: (response) => ChangeChatPropertyModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<ChangeChatPropertyModel>(
+            endpoint: ChatEndPoints.setChatPropertyEP,
+            data: params,
+            response: ResponseValue<ChangeChatPropertyModel>(
+              fromJson: (response) =>
+                  ChangeChatPropertyModel.fromJson(response),
+            ),
+          ),
+        );
     return changeChatProperty();
   }
 
@@ -139,8 +152,10 @@ class ChatRemoteDataSource {
         endpoint: ChatEndPoints.getMessagesForChatEP(params['params']),
         data: params['data'],
         response: ResponseValue<List<Message>>(
-            fromJson: (response) => List<Message>.from(
-                response["data"]!.map((x) => Message.fromJson(x)))),
+          fromJson: (response) => List<Message>.from(
+            response["data"]!.map((x) => Message.fromJson(x)),
+          ),
+        ),
       ),
     );
     return getMessagesForChat();
@@ -155,8 +170,10 @@ class ChatRemoteDataSource {
         receiveTimeout: const Duration(minutes: 2),
         sendTimeout: const Duration(minutes: 2),
         response: ResponseValue<List<Message>>(
-            fromJson: (response) => List<Message>.from(
-                response["data"]!.map((x) => Message.fromJson(x)))),
+          fromJson: (response) => List<Message>.from(
+            response["data"]!.map((x) => Message.fromJson(x)),
+          ),
+        ),
       ),
     );
     return getMessagesBetween();
@@ -165,16 +182,18 @@ class ChatRemoteDataSource {
   Future<UploadFileResponseModel> uploadFile(Map<String, dynamic> params) {
     PostClient<UploadFileResponseModel> uploadFile =
         PostClient<UploadFileResponseModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<UploadFileResponseModel>(
-        endpoint: ChatEndPoints.uploadFileEP,
-        data: params['data'],
-        receiveTimeout: const Duration(minutes: 5),
-        sendTimeout: const Duration(minutes: 5),
-        response: ResponseValue<UploadFileResponseModel>(
-            fromJson: (response) => UploadFileResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<UploadFileResponseModel>(
+            endpoint: ChatEndPoints.uploadFileEP,
+            data: params['data'],
+            receiveTimeout: const Duration(minutes: 5),
+            sendTimeout: const Duration(minutes: 5),
+            response: ResponseValue<UploadFileResponseModel>(
+              fromJson: (response) =>
+                  UploadFileResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return uploadFile();
   }
 
@@ -211,40 +230,45 @@ class ChatRemoteDataSource {
         endpoint: ChatEndPoints.sendMessageEP,
         data: params,
         response: ResponseValue<Message>(
-            fromJson: (response) => Message.fromJson(response['data'])),
+          fromJson: (response) => Message.fromJson(response['data']),
+        ),
       ),
     );
     return sendMessage();
   }
 
   Future<Message> shareProductWithContactsOrChannels(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<Message> shareProductWithContactsOrChannels =
         PostClient<Message>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<Message>(
-        receiveTimeout: const Duration(minutes: 1),
-        sendTimeout: const Duration(minutes: 1),
-        endpoint: ChatEndPoints.shareProductWithChannelsOrContacts,
-        data: params,
-        response: ResponseValue<Message>(
-            fromJson: (response) => Message.fromJson(response['data'])),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<Message>(
+            receiveTimeout: const Duration(minutes: 1),
+            sendTimeout: const Duration(minutes: 1),
+            endpoint: ChatEndPoints.shareProductWithChannelsOrContacts,
+            data: params,
+            response: ResponseValue<Message>(
+              fromJson: (response) => Message.fromJson(response['data'][0]),
+            ),
+          ),
+        );
     return shareProductWithContactsOrChannels();
   }
 
   Future<CreateUserResponseModel> createUser(Map<String, dynamic> params) {
     PostClient<CreateUserResponseModel> createUser =
         PostClient<CreateUserResponseModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<CreateUserResponseModel>(
-        endpoint: ChatEndPoints.createUserEP,
-        data: params,
-        response: ResponseValue<CreateUserResponseModel>(
-            fromJson: (response) => CreateUserResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<CreateUserResponseModel>(
+            endpoint: ChatEndPoints.createUserEP,
+            data: params,
+            response: ResponseValue<CreateUserResponseModel>(
+              fromJson: (response) =>
+                  CreateUserResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return createUser();
   }
 
@@ -260,8 +284,10 @@ class ChatRemoteDataSource {
     return shareProductOnApps();
   }
 
-  Future<ChatImageDetail> loadWidthAndHeightForImage(
-      {required File ImageFile, Function? onError}) async {
+  Future<ChatImageDetail> loadWidthAndHeightForImage({
+    required File ImageFile,
+    Function? onError,
+  }) async {
     Completer<ChatImageDetail> completer = Completer<ChatImageDetail>();
 
     completer = Completer<ChatImageDetail>();
@@ -270,23 +296,22 @@ class ChatRemoteDataSource {
     try {
       image.image
           .resolve(const ImageConfiguration())
-          .addListener(ImageStreamListener(
-            (
-              ImageInfo imageInfo,
-              bool _,
-            ) {
-              final dimensions = ChatImageDetail(
-                width: imageInfo.image.width,
-                height: imageInfo.image.height,
-              );
-              if (completer.isCompleted == false) {
-                completer.complete(dimensions);
-              }
-            },
-            onError: (exception, stackTrace) {
-              if (onError != null) onError();
-            },
-          ));
+          .addListener(
+            ImageStreamListener(
+              (ImageInfo imageInfo, bool _) {
+                final dimensions = ChatImageDetail(
+                  width: imageInfo.image.width,
+                  height: imageInfo.image.height,
+                );
+                if (completer.isCompleted == false) {
+                  completer.complete(dimensions);
+                }
+              },
+              onError: (exception, stackTrace) {
+                if (onError != null) onError();
+              },
+            ),
+          );
     } catch (e) {
       // GetIt.I<StoryBloc>().add(LoadFailureEvent());
     }
@@ -299,25 +324,28 @@ class ChatRemoteDataSource {
       requestPrams: RequestConfig<MediaCount>(
         endpoint: ChatEndPoints.getMediaCount(params["id"]),
         response: ResponseValue<MediaCount>(
-            fromJson: (response) => MediaCount.fromJson(response)),
+          fromJson: (response) => MediaCount.fromJson(response),
+        ),
       ),
     );
     return receiveMessage();
   }
 
   Future<GetSharedProductCountModel> getSharedProductCount(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     print("/////////////////////////////////////////////////${params["id"]}");
     GetClient<GetSharedProductCountModel> getSharedProductCount =
         GetClient<GetSharedProductCountModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<GetSharedProductCountModel>(
-        endpoint: ChatEndPoints.getSharedProductCount(params["id"]),
-        response: ResponseValue<GetSharedProductCountModel>(
-            fromJson: (response) =>
-                GetSharedProductCountModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<GetSharedProductCountModel>(
+            endpoint: ChatEndPoints.getSharedProductCount(params["id"]),
+            response: ResponseValue<GetSharedProductCountModel>(
+              fromJson: (response) =>
+                  GetSharedProductCountModel.fromJson(response),
+            ),
+          ),
+        );
     return getSharedProductCount();
   }
 
@@ -325,28 +353,31 @@ class ChatRemoteDataSource {
     PostClient<bool> sendErrorChatToServer = PostClient<bool>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<bool>(
-          endpoint: ChatEndPoints.sendErrorChatToServer,
-          data: params,
-          response: ResponseValue<bool>(returnValueOnSuccess: true)),
+        endpoint: ChatEndPoints.sendErrorChatToServer,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
     );
     return sendErrorChatToServer();
   }
 
   Future<ResultOfSearchTextInChatModel> searchForMessageTextInChat(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<ResultOfSearchTextInChatModel> searchForMessageTextInChat =
         PostClient<ResultOfSearchTextInChatModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<ResultOfSearchTextInChatModel>(
-        receiveTimeout: const Duration(minutes: 1),
-        sendTimeout: const Duration(minutes: 1),
-        endpoint: ChatEndPoints.searchForMessageTextInChatEP,
-        data: params,
-        response: ResponseValue<ResultOfSearchTextInChatModel>(
-            fromJson: (response) =>
-                ResultOfSearchTextInChatModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<ResultOfSearchTextInChatModel>(
+            receiveTimeout: const Duration(minutes: 1),
+            sendTimeout: const Duration(minutes: 1),
+            endpoint: ChatEndPoints.searchForMessageTextInChatEP,
+            data: params,
+            response: ResponseValue<ResultOfSearchTextInChatModel>(
+              fromJson: (response) =>
+                  ResultOfSearchTextInChatModel.fromJson(response),
+            ),
+          ),
+        );
     return searchForMessageTextInChat();
   }
 }

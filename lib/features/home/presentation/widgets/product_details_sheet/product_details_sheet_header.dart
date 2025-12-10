@@ -173,7 +173,14 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       (currentTab == 3
                                   ? ((offPriceInCart > 0 &&
                                             (!(widget.isRedeem)))
-                                        ? (offPriceInCart *
+                                        ? (HelperFunctions.truncateToDecimalPlaces(
+                                                    offPriceInCart,
+                                                    state
+                                                        .getCurrencyForCountryModel!
+                                                        .data!
+                                                        .currency!
+                                                        .decimalDigits!,
+                                                  ) *
                                                   state
                                                       .getCurrencyForCountryModel!
                                                       .data!
@@ -208,7 +215,14 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                           number: double.parse(
                             currentTab == 3
                                 ? ((offPriceInCart > 0 && (!(widget.isRedeem)))
-                                      ? (offPriceInCart *
+                                      ? (HelperFunctions.truncateToDecimalPlaces(
+                                                  offPriceInCart,
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .decimalDigits!,
+                                                ) *
                                                 state
                                                     .getCurrencyForCountryModel!
                                                     .data!

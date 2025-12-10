@@ -9,17 +9,19 @@ import '../../data/models/missed_call_count.dart';
 abstract class CallsRepository {
   Future<Either<Failure, bool>> rejectCall(Map<String, dynamic> params);
 
-  Future<Either<Failure, MakeCallRemoteResponseModel>> makeCall(
-      {required Map<String, dynamic> params});
+  Future<Either<Failure, MakeCallRemoteResponseModel>> makeCall({
+    required Map<String, dynamic> params,
+  });
 
   Future<Either<Failure, bool>> answerCall(String messageId);
 
   Future<Either<Failure, bool>> watchMissedCall();
 
   Future<Either<Failure, MyCallsResponseModel>> getmycalls();
-
-  Future<Either<Failure, GetAgoraTokenResponseModel>> getAgoraToken(
-      {required String ChatId});
+  Future<Either<Failure, bool>> endCall(Map<String, dynamic> params);
+  Future<Either<Failure, GetAgoraTokenResponseModel>> getAgoraToken({
+    required String ChatId,
+  });
 
   Future<Either<Failure, bool>> deleteMessage(Map<String, dynamic> params);
   Future<Either<Failure, MissedCallCountModel>> getMissedCallCount();

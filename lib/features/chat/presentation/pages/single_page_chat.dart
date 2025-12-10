@@ -130,13 +130,20 @@ class _SinglePageChatState extends State<SinglePageChat> {
   List<String> searchResults = [];
 
   int indexForEveryTextInSearchResult = 0;
-  void playSound() async {
-    await _audioPlayer.play(
-      AssetSource(
-        Platform.isIOS ? 'audio/Whatsapp_Tone.m4r' : 'audio/Whatsapp_Tone.mp3',
-      ),
-      volume: 1,
-    );
+  Future<void> playSound() async {
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(
+        AssetSource(
+          Platform.isIOS
+              ? 'audio/Whatsapp_Tone.m4r'
+              : 'audio/Whatsapp_Tone.mp3',
+        ),
+        volume: 1,
+      );
+    } catch (e) {
+      print('Error playing sound: $e');
+    }
   }
 
   @override

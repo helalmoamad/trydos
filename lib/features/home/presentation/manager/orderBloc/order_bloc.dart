@@ -67,13 +67,14 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final ApplyCouponUsecase applyCouponUsecase;
   final GetProvincesByIsoUseCase getProvincesByIsoUseCase;
   final GetProductColorSizeSyncAttributeUseCase
-      getProductColorSizeSyncAttributeUseCase;
+  getProductColorSizeSyncAttributeUseCase;
   final ConfirmReturnRequestUseCase confirmReturnRequestUseCase;
   final OrderReturnRequestsViewUseCase orderReturnRequestsViewUseCase;
   final ChangeOrderItemVariantUsecase changeOrderItemVariantUsecase;
   // final AddOrderCommentUseCase addOrderCommentUseCase;
   // final UpdateOrderCommentUseCase updateOrderCommentUseCase;
   final GetReturnReasonsUseCase getReturnReasonsUseCase;
+
   final StoreReturnRequestProductUseCase storeReturnRequestProductUseCase;
   final CancelReturnRequestUseCase cancelReturnRequestUseCase;
   final CancelReturnRequestProductUseCase cancelReturnRequestProductUseCase;
@@ -114,87 +115,45 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     this.updateReturnRequestProductUseCase,
     this.orderReturnDetailsUseCase,
   ) : super(const OrderState()) {
-    on<PlaceOrderEvent>(
-      _onPlaceOrderEvent,
-    );
-    on<GetOrdersByOrderGroupIDEvent>(
-      _onGetOrdersByOrderGroupIDEvent,
-    );
+    on<PlaceOrderEvent>(_onPlaceOrderEvent);
+    on<GetOrdersByOrderGroupIDEvent>(_onGetOrdersByOrderGroupIDEvent);
 
-    on<SaveLastAddress>(
-      _onSaveLastAddress,
-    );
-
-    on<ResetAllStatusEvent>(
-      _onResetAllStatusEvent,
-    );
-    on<GetOrdersByCartGroupIDEvent>(
-      _onGetOrdersByCartGroupIDEvent,
-    );
+    on<SaveLastAddress>(_onSaveLastAddress);
+    on<UploadImagesToCloudinaryEvent>(_onUploadImagesToCloudinaryEvent);
+    on<ResetAllStatusEvent>(_onResetAllStatusEvent);
+    on<GetOrdersByCartGroupIDEvent>(_onGetOrdersByCartGroupIDEvent);
     on<UploadImagesForReturnProductEvent>(_onUploadImagesForReturnProductEvent);
+    on<RemoveImagesForReturnProductEvent>(_onRemoveImagesForReturnProductEvent);
+    on<RemoveImagesForCommentEvent>(_onRemoveImagesForCommentEvent);
     on<OrderReturnRequestsViewEvent>(_onOrderReturnRequestsViewEvent);
-    on<ConfirmReturnRequestEvent>(
-      _onConfirmReturnRequestEvent,
-    );
-    on<SaveCurrentOrederStatusEvent>(
-      _onSaveCurrentOrederStatusEvent,
-    );
-    on<GetCustomerWalletEvent>(
-      _onGetCustomerWalletEvent,
-    );
+    on<ConfirmReturnRequestEvent>(_onConfirmReturnRequestEvent);
+    on<SaveCurrentOrederStatusEvent>(_onSaveCurrentOrederStatusEvent);
+    on<GetCustomerWalletEvent>(_onGetCustomerWalletEvent);
     on<UpdateReturnRequestProductEvent>(_onUpdateReturnRequestProductEvent);
-    on<GetProvincesByIsoEvent>(
-      _onGetProvincesByIsoEvent,
-    );
+    on<GetProvincesByIsoEvent>(_onGetProvincesByIsoEvent);
     on<StoreReturnRequestEvent>(_onStoreReturnRequestEvent);
-    on<GetOrdersEvent>(
-      _onGetOrdersEvent,
-    );
-    on<ChangeOrderByGroupStatus>(
-      _onChangeOrderByGroupStatus,
-    );
+    on<GetOrdersEvent>(_onGetOrdersEvent);
+    on<ChangeOrderByGroupStatus>(_onChangeOrderByGroupStatus);
 
     on<SetCustomerAddressDefaultEvent>(
       _onSetCustomerAddressDefaultEvent,
       transformer: restartable(),
     );
-    on<GetCustomerAddressesEvent>(
-      _onGetCustomerAddressesEvent,
-    );
-    on<DeleteAdressInfoClassEvent>(
-      _onDeleteAdressInfoClassEvent,
-    );
-    on<AddAddressInfoClassEvent>(
-      _onAddAddressInfoClassEvent,
-    );
-    on<EditAdressInfoClassEvent>(
-      _onEditAdressInfoClassEvent,
-    );
-    on<GetAddressByCoordinatesEvent>(
-      _onGetAddressByCoordinatesEvent,
-    );
+    on<GetCustomerAddressesEvent>(_onGetCustomerAddressesEvent);
+    on<DeleteAdressInfoClassEvent>(_onDeleteAdressInfoClassEvent);
+    on<AddAddressInfoClassEvent>(_onAddAddressInfoClassEvent);
+    on<EditAdressInfoClassEvent>(_onEditAdressInfoClassEvent);
+    on<GetAddressByCoordinatesEvent>(_onGetAddressByCoordinatesEvent);
     on<GetAddressByTextEvent>(
       _onGetAddressByTextEvent,
       transformer: restartable(),
     );
-    on<SetCurrentAddressChoosedEvent>(
-      _onSetCurrentAddressChoosedEvent,
-    );
-    on<ApplyCouponEvent>(
-      _onApplyCouponEvent,
-    );
-    on<CancelOrderItemEvent>(
-      _onCancelOrderItemEvent,
-    );
-    on<StoreImagesForUpdateReturnEvent>(
-      _onStoreImagesForUpdateReturnEvent,
-    );
-    on<CancelOrderEvent>(
-      _onCancelOrderEvent,
-    );
-    on<ChangeOrderAddressEvent>(
-      _onChangeOrderAddressEvent,
-    );
+    on<SetCurrentAddressChoosedEvent>(_onSetCurrentAddressChoosedEvent);
+    on<ApplyCouponEvent>(_onApplyCouponEvent);
+    on<CancelOrderItemEvent>(_onCancelOrderItemEvent);
+    on<StoreImagesForUpdateReturnEvent>(_onStoreImagesForUpdateReturnEvent);
+    on<CancelOrderEvent>(_onCancelOrderEvent);
+    on<ChangeOrderAddressEvent>(_onChangeOrderAddressEvent);
     on<GetProductColorSizeSyncAttributeEvent>(
       _onGetProductColorSizeSyncAttributeEvent,
     );
@@ -208,6 +167,95 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<FetchOrderReturnDetailsEvent>(
       _onFetchOrderReturnDetailsEvent,
       transformer: restartable(),
+    );
+  }
+  FutureOr<void> _onRemoveImagesForReturnProductEvent(
+    RemoveImagesForReturnProductEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        uploadImagesForReturnProductStatus:
+            UploadImagesForReturnProductStatus.init,
+      ),
+    );
+    List<String> imagesForReturn = List.of(state.imagesForReturn ?? []);
+
+    imagesForReturn.removeAt(event.index);
+    await Future.delayed(const Duration(milliseconds: 300));
+    emit(
+      state.copyWith(
+        uploadImagesForReturnProductStatus:
+            UploadImagesForReturnProductStatus.success,
+        imagesForReturn: imagesForReturn,
+      ),
+    );
+  }
+
+  FutureOr<void> _onRemoveImagesForCommentEvent(
+    RemoveImagesForCommentEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        uploadImagesToCloudinaryStatus: UploadImagesToCloudinaryStatus.init,
+      ),
+    );
+    List<String> imagesForComment = List.of(state.imagesForComment ?? []);
+    if (event.initialImages?.isNotEmpty ?? false) {
+      imagesForComment.clear();
+      imagesForComment.addAll(event.initialImages ?? []);
+    } else if (event.index == -1) {
+      imagesForComment.clear();
+    } else {
+      imagesForComment.removeAt(event.index);
+    }
+
+    await Future.delayed(const Duration(milliseconds: 300));
+    emit(
+      state.copyWith(
+        uploadImagesToCloudinaryStatus: UploadImagesToCloudinaryStatus.success,
+        imagesForComment: imagesForComment,
+      ),
+    );
+  }
+
+  FutureOr<void> _onUploadImagesToCloudinaryEvent(
+    UploadImagesToCloudinaryEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        uploadImagesToCloudinaryStatus: UploadImagesToCloudinaryStatus.loading,
+      ),
+    );
+    final response = await uploadImagesProductReturnUseCase(
+      UpdateImagesForReturnProductParams(
+        path: "rating_orders/",
+        image: event.file,
+      ),
+    );
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            uploadImagesToCloudinaryStatus:
+                UploadImagesToCloudinaryStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        List<String> imagesForComment = List.of(state.imagesForComment ?? []);
+        imagesForComment.add(r.data?.subPath ?? "");
+        emit(
+          state.copyWith(
+            imagesForComment: imagesForComment,
+            uploadImagesToCloudinaryStatus:
+                UploadImagesToCloudinaryStatus.success,
+          ),
+        );
+      },
     );
   }
 
@@ -240,13 +288,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             prefsRepository.getNotificationIdsToRemoveAfterplaceOrder ?? [];
         getNotificationIdsToRemoveAfterplaceOrder.forEach((element) {
           try {
-            LocalNotificationService.localNotificationPlugin
-                .cancel(int.tryParse(element) ?? 0);
+            LocalNotificationService.localNotificationPlugin.cancel(
+              int.tryParse(element) ?? 0,
+            );
           } catch (e) {}
         });
         prefsRepository.removeNotificationIdsToRemoveAfterplaceOrder();
-        emit(state.copyWith(
-            placeOrderStatus: PlaceOrderStatus.success, placeOrderModel: r));
+        emit(
+          state.copyWith(
+            placeOrderStatus: PlaceOrderStatus.success,
+            placeOrderModel: r,
+          ),
+        );
       },
     );
   }
@@ -255,21 +308,29 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetOrdersByOrderGroupIDEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         getOrdersByOrderGroupIDStatus: event.firstOpenPage
             ? GetOrdersByOrderGroupIDStatus.init
-            : GetOrdersByOrderGroupIDStatus.loading));
+            : GetOrdersByOrderGroupIDStatus.loading,
+      ),
+    );
     final response = await getOrdersByOrderGroupIDUsecase(event.orderGroupId);
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
-            'GetOrdersByOrderGroupIDEvent', l.statusCode)) {
+          'GetOrdersByOrderGroupIDEvent',
+          l.statusCode,
+        )) {
           ErrorManager.incrementRetry('GetOrdersByOrderGroupIDEvent');
           add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
         }
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             getOrdersByOrderGroupIDStatus:
-                GetOrdersByOrderGroupIDStatus.failure));
+                GetOrdersByOrderGroupIDStatus.failure,
+          ),
+        );
       },
       (r) {
         ErrorManager.resetRetry('GetOrdersByOrderGroupIDEvent');
@@ -280,17 +341,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         List<List<OrderListModel>> listOrder =
             getOrdersModel[event.status]?.items ?? [];
         int index = listOrder.indexWhere(
-            (element) => element[0].orderGroupId == event.orderGroupId);
+          (element) => element[0].orderGroupId == event.orderGroupId,
+        );
         if (index != -1) {
           listOrder[index] = r.orders ?? [];
           getOrdersModel[event.status] = PaginationModel<List<OrderListModel>>(
-              page: 1,
-              items: listOrder,
-              paginationStatus:
-                  getOrdersModel[event.status]?.paginationStatus ??
-                      PaginationStatus.success,
-              hasReachedMax:
-                  getOrdersModel[event.status]?.hasReachedMax ?? false);
+            page: 1,
+            items: listOrder,
+            paginationStatus:
+                getOrdersModel[event.status]?.paginationStatus ??
+                PaginationStatus.success,
+            hasReachedMax: getOrdersModel[event.status]?.hasReachedMax ?? false,
+          );
         }
         /* if (event.fromNotification) {
           bool canFetchReturnDetails = false;
@@ -307,99 +369,154 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             ));
           }
         }*/
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             getOrdersByOrderGroupIDStatus:
                 GetOrdersByOrderGroupIDStatus.success,
             getOrdersModel: getOrdersModel,
-            getOrdersByOrderGroupIDModel: r));
+            getOrdersByOrderGroupIDModel: r,
+          ),
+        );
       },
     );
   }
 
   _onCancelReturnRequestEvent(
-      CancelReturnRequestEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
-        cancelReturnRequestStatus: CancelReturnRequestStatus.loading));
+    CancelReturnRequestEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        cancelReturnRequestStatus: CancelReturnRequestStatus.loading,
+      ),
+    );
     final response = await cancelReturnRequestUseCase(
-        CancelReturnRequestParams(returnRequestId: event.returnRequestId));
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('CancelReturnRequestEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('CancelReturnRequestEvent');
-        add(CancelReturnRequestEvent(
-            returnRequestId: event.returnRequestId,
-            orderGroupId: event.orderGroupId));
-        return;
-      }
-      showMessage(l.message, hasError: true);
-      emit(state.copyWith(
-          cancelReturnRequestStatus: CancelReturnRequestStatus.failure));
-    }, (r) {
-      add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
-      showMessage(r.message ?? '');
-      ErrorManager.resetRetry('CancelReturnRequestEvent');
-      emit(state.copyWith(
-          orderReturnDetailsModel:
-              GetOrderReturntDetailsModel(data: Data(returnRequestsData: [])),
-          cancelReturnRequestStatus: CancelReturnRequestStatus.success));
-    });
+      CancelReturnRequestParams(returnRequestId: event.returnRequestId),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'CancelReturnRequestEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('CancelReturnRequestEvent');
+          add(
+            CancelReturnRequestEvent(
+              returnRequestId: event.returnRequestId,
+              orderGroupId: event.orderGroupId,
+            ),
+          );
+          return;
+        }
+        showMessage(l.message, hasError: true);
+        emit(
+          state.copyWith(
+            cancelReturnRequestStatus: CancelReturnRequestStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        add(FetchOrderReturnDetailsEvent(event.orderGroupId));
+        add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
+        showMessage(r.message ?? '');
+        ErrorManager.resetRetry('CancelReturnRequestEvent');
+        emit(
+          state.copyWith(
+            orderReturnDetailsModel: GetOrderReturntDetailsModel(
+              data: Data(returnRequestsData: []),
+            ),
+            cancelReturnRequestStatus: CancelReturnRequestStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   _onCancelReturnRequestProductEvent(
-      CancelReturnRequestProductEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
+    CancelReturnRequestProductEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         cancelReturnRequestProductStatus:
-            CancelReturnRequestProductStatus.loading));
+            CancelReturnRequestProductStatus.loading,
+      ),
+    );
     final response = await cancelReturnRequestProductUseCase(event.params);
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'CancelReturnRequestProductEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('CancelReturnRequestProductEvent');
-        add(CancelReturnRequestProductEvent(
-            orderGroupId: event.orderGroupId,
-            params: event.params,
-            returnRequestId: event.returnRequestId));
-        return;
-      }
-      showMessage(l.message, hasError: true);
-      emit(state.copyWith(
-          cancelReturnRequestProductStatus:
-              CancelReturnRequestProductStatus.failure));
-    }, (r) {
-      add(FetchOrderReturnDetailsEvent(event.orderGroupId));
-      showMessage(r.message ?? '');
-      ErrorManager.resetRetry('CancelReturnRequestProductEvent');
-      emit(state.copyWith(
-          cancelReturnRequestProductStatus:
-              CancelReturnRequestProductStatus.success));
-    });
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'CancelReturnRequestProductEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('CancelReturnRequestProductEvent');
+          add(
+            CancelReturnRequestProductEvent(
+              orderGroupId: event.orderGroupId,
+              params: event.params,
+              returnRequestId: event.returnRequestId,
+            ),
+          );
+          return;
+        }
+        showMessage(l.message, hasError: true);
+        emit(
+          state.copyWith(
+            cancelReturnRequestProductStatus:
+                CancelReturnRequestProductStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        add(FetchOrderReturnDetailsEvent(event.orderGroupId));
+        showMessage(r.message ?? '');
+        ErrorManager.resetRetry('CancelReturnRequestProductEvent');
+        emit(
+          state.copyWith(
+            cancelReturnRequestProductStatus:
+                CancelReturnRequestProductStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGetOrdersByCartGroupIDEvent(
     GetOrdersByCartGroupIDEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(state.copyWith(
-        getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.loading));
+    emit(
+      state.copyWith(
+        getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.loading,
+      ),
+    );
     final response = await getOrdersByCartGroupIDUsecase(event.cartGroupId);
     response.fold(
       (l) {
         if (l.statusCode != 400 &&
             ErrorManager.shouldRetry(
-                'GetOrdersByCartGroupIDEvent', l.statusCode)) {
+              'GetOrdersByCartGroupIDEvent',
+              l.statusCode,
+            )) {
           ErrorManager.incrementRetry('GetOrdersByCartGroupIDEvent');
           add(GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId));
         }
-        emit(state.copyWith(
-            getOrdersByCartGroupIDStatus:
-                GetOrdersByCartGroupIDStatus.failure));
+        emit(
+          state.copyWith(
+            getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.failure,
+          ),
+        );
       },
       (r) {
         ErrorManager.resetRetry('GetOrdersByCartGroupIDEvent');
         debugPrint('GetOrdersByCartGroupIDEvent success');
         debugPrint('orders length :  r.data!.length}');
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.success,
-            getOrdersByCartGroupIDModel: r));
+            getOrdersByCartGroupIDModel: r,
+          ),
+        );
       },
     );
   }
@@ -435,7 +552,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ResetAllStatusEvent event,
     Emitter<OrderState> emit,
   ) {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         cancelReturnRequestProductStatus: CancelReturnRequestProductStatus.init,
         cancelReturnRequestStatus: CancelReturnRequestStatus.init,
         cancelOrderStatus: CancelOrderStatus.init,
@@ -446,7 +564,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         storeReturnRequestProductStatus: StoreReturnRequestProductStatus.init,
         orderReturnDetailsStatus: OrderReturnDetailsStatus.init,
         updateReturnRequestProductStatus: UpdateReturnRequestProductStatus.init,
-        storeReturnRequestStatus: StoreReturnRequestStatus.init));
+        storeReturnRequestStatus: StoreReturnRequestStatus.init,
+      ),
+    );
   }
 
   FutureOr<void> _onGetCustomerWalletEvent(
@@ -454,14 +574,19 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     if (event.statusInitToRefreshAmount) {
-      emit(state.copyWith(
-          getCustomerWalletStatus: GetCustomerWalletStatus.init));
+      emit(
+        state.copyWith(getCustomerWalletStatus: GetCustomerWalletStatus.init),
+      );
     } else {
-      emit(state.copyWith(
-          getCustomerWalletStatus: GetCustomerWalletStatus.loading));
+      emit(
+        state.copyWith(
+          getCustomerWalletStatus: GetCustomerWalletStatus.loading,
+        ),
+      );
     }
-    final response = await getCustomerWalletUseCase
-        .call(CustomerWalletParams(limit: event.limit, offset: event.offset));
+    final response = await getCustomerWalletUseCase.call(
+      CustomerWalletParams(limit: event.limit, offset: event.offset),
+    );
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('GetCustomerWalletEvent', l.statusCode)) {
@@ -469,14 +594,20 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           add(GetCustomerWalletEvent(limit: event.limit, offset: event.offset));
           return;
         }
-        emit(state.copyWith(
-            getCustomerWalletStatus: GetCustomerWalletStatus.failure));
+        emit(
+          state.copyWith(
+            getCustomerWalletStatus: GetCustomerWalletStatus.failure,
+          ),
+        );
       },
       (r) {
         ErrorManager.resetRetry('GetCustomerWalletEvent');
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             getCustomerWalletStatus: GetCustomerWalletStatus.success,
-            customerWalletModel: r));
+            customerWalletModel: r,
+          ),
+        );
       },
     );
   }
@@ -486,11 +617,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     ///////////////////////////
-    emit(
-      state.copyWith(
-        lastAdressInfoClassToSave: event.lastAddress,
-      ),
-    );
+    emit(state.copyWith(lastAdressInfoClassToSave: event.lastAddress));
   }
 
   FutureOr<void> _onSaveCurrentOrederStatusEvent(
@@ -498,11 +625,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     ///////////////////////////
-    emit(
-      state.copyWith(
-        currentOrederStatus: event.currentOrderStatus,
-      ),
-    );
+    emit(state.copyWith(currentOrederStatus: event.currentOrderStatus));
   }
 
   FutureOr<void> _onChangeOrderByGroupStatus(
@@ -530,21 +653,25 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           getOrdersModel?[event.status]?.items ?? [];
       listOrder[event.index] = event.orders;
       getOrdersModel?[event.status] = PaginationModel<List<OrderListModel>>(
-          page: 1,
-          items: listOrder,
-          paginationStatus: getOrdersModel[event.status]?.paginationStatus ??
-              PaginationStatus.loading,
-          hasReachedMax: getOrdersModel[event.status]?.hasReachedMax ?? false);
+        page: 1,
+        items: listOrder,
+        paginationStatus:
+            getOrdersModel[event.status]?.paginationStatus ??
+            PaginationStatus.loading,
+        hasReachedMax: getOrdersModel[event.status]?.hasReachedMax ?? false,
+      );
 
       emit(state.copyWith(getOrdersModel: getOrdersModel));
 
       await Future.delayed(const Duration(seconds: 1));
       getOrdersModel?[event.status] = PaginationModel<List<OrderListModel>>(
-          page: 1,
-          items: listOrder,
-          paginationStatus: getOrdersModel[event.status]?.paginationStatus ??
-              PaginationStatus.success,
-          hasReachedMax: getOrdersModel[event.status]?.hasReachedMax ?? false);
+        page: 1,
+        items: listOrder,
+        paginationStatus:
+            getOrdersModel[event.status]?.paginationStatus ??
+            PaginationStatus.success,
+        hasReachedMax: getOrdersModel[event.status]?.hasReachedMax ?? false,
+      );
 
       emit(state.copyWith(getOrdersModel: getOrdersModel));
       return;
@@ -563,20 +690,25 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       return;
     }
 
-    emit(state.copyWith(getOrdersModel: getOrdersModel.map(
-      (key, value) {
-        if (key == event.status) {
-          return MapEntry(
-              key, value.copyWith(paginationStatus: PaginationStatus.loading));
-        } else {
-          return MapEntry(key, value);
-        }
-      },
-    )));
+    emit(
+      state.copyWith(
+        getOrdersModel: getOrdersModel.map((key, value) {
+          if (key == event.status) {
+            return MapEntry(
+              key,
+              value.copyWith(paginationStatus: PaginationStatus.loading),
+            );
+          } else {
+            return MapEntry(key, value);
+          }
+        }),
+      ),
+    );
 
     GetOrdersParams params = GetOrdersParams(
-      offset:
-          event.getWithPagination ? getOrdersModel[event.status]?.page ?? 1 : 1,
+      offset: event.getWithPagination
+          ? getOrdersModel[event.status]?.page ?? 1
+          : 1,
       status: event.status,
     );
 
@@ -588,21 +720,27 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
         if (ErrorManager.shouldRetry('GetOrdersEvent', l.statusCode)) {
           ErrorManager.incrementRetry('GetOrdersEvent');
-          add(GetOrdersEvent(
-            status: event.status,
-            getWithPagination: event.getWithPagination,
-          ));
+          add(
+            GetOrdersEvent(
+              status: event.status,
+              getWithPagination: event.getWithPagination,
+            ),
+          );
           return; // لا تحدث الحالة
         }
 
-        emit(state.copyWith(getOrdersModel: getOrdersModel?.map(
-          (key, value) {
-            if (key == event.status)
-              return MapEntry(key,
-                  value.copyWith(paginationStatus: PaginationStatus.failure));
-            return MapEntry(key, value);
-          },
-        )));
+        emit(
+          state.copyWith(
+            getOrdersModel: getOrdersModel?.map((key, value) {
+              if (key == event.status)
+                return MapEntry(
+                  key,
+                  value.copyWith(paginationStatus: PaginationStatus.failure),
+                );
+              return MapEntry(key, value);
+            }),
+          ),
+        );
       },
       (r) {
         getOrdersModel = state.getOrdersModel;
@@ -626,31 +764,29 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           }
         }
         final List<String> orderNewAdded = [];
-        ordersFromApi.forEach(
-          (element) {
-            if (!(duplicatesOrderGroupIds.contains(element.orderGroupId))) {
-              newOrders.add(ordersFromApi.where(
-                (elements) {
-                  return elements.orderGroupId == element.orderGroupId;
-                },
-              ).toList());
-            }
-            if (duplicatesOrderGroupIds.contains(element.orderGroupId) &&
-                (!(orderNewAdded.contains(element.orderGroupId)))) {
-              orderNewAdded.add(element.orderGroupId ?? "");
-              newOrders.add(ordersFromApi.where(
-                (elements) {
-                  return elements.orderGroupId == element.orderGroupId;
-                },
-              ).toList());
-            }
-          },
-        );
+        ordersFromApi.forEach((element) {
+          if (!(duplicatesOrderGroupIds.contains(element.orderGroupId))) {
+            newOrders.add(
+              ordersFromApi.where((elements) {
+                return elements.orderGroupId == element.orderGroupId;
+              }).toList(),
+            );
+          }
+          if (duplicatesOrderGroupIds.contains(element.orderGroupId) &&
+              (!(orderNewAdded.contains(element.orderGroupId)))) {
+            orderNewAdded.add(element.orderGroupId ?? "");
+            newOrders.add(
+              ordersFromApi.where((elements) {
+                return elements.orderGroupId == element.orderGroupId;
+              }).toList(),
+            );
+          }
+        });
 
-        emit(state.copyWith(
-          orderTotalSize: r.data?.total ?? 0,
-          getOrdersModel: getOrdersModel?.map(
-            (key, value) {
+        emit(
+          state.copyWith(
+            orderTotalSize: r.data?.total ?? 0,
+            getOrdersModel: getOrdersModel?.map((key, value) {
               if (key == event.status) {
                 return MapEntry(
                   key,
@@ -669,9 +805,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
               } else {
                 return MapEntry(key, value);
               }
-            },
+            }),
           ),
-        ));
+        );
       },
     );
   }
@@ -680,271 +816,373 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     SetCustomerAddressDefaultEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         setCustomerAddressDefaultStatus:
-            SetCustomerAddressDefaultStatus.loading));
+            SetCustomerAddressDefaultStatus.loading,
+      ),
+    );
     final response = await setCustomerAddressDefaultUseCase(
-        SetCustomerAddressDefaultParams(addressId: event.adressId ?? 0));
+      SetCustomerAddressDefaultParams(addressId: event.adressId ?? 0),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry(
-          'SetCustomerAddressDefaultEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('SetCustomerAddressDefaultEvent');
-        add(SetCustomerAddressDefaultEvent(adressId: event.adressId));
-        return;
-      }
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'SetCustomerAddressDefaultEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('SetCustomerAddressDefaultEvent');
+          add(SetCustomerAddressDefaultEvent(adressId: event.adressId));
+          return;
+        }
 
-      emit(state.copyWith(
-          setCustomerAddressDefaultStatus:
-              SetCustomerAddressDefaultStatus.failure));
-    }, (r) async {
-      GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
-      ErrorManager.resetRetry('SetCustomerAddressDefaultEvent');
+        emit(
+          state.copyWith(
+            setCustomerAddressDefaultStatus:
+                SetCustomerAddressDefaultStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
+        ErrorManager.resetRetry('SetCustomerAddressDefaultEvent');
 
-      emit(state.copyWith(
-          setCustomerAddressDefaultStatus:
-              SetCustomerAddressDefaultStatus.success));
-    });
+        emit(
+          state.copyWith(
+            currentAddressChoosed: event.index == -1
+                ? state.currentAddressChoosed
+                : event.index,
+            setCustomerAddressDefaultStatus:
+                SetCustomerAddressDefaultStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGetCustomerAddressesEvent(
     GetCustomerAddressesEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(state.copyWith(
-        getCustomerAddressesStatus: GetCustomerAddressesStatus.loading));
+    emit(
+      state.copyWith(
+        getCustomerAddressesStatus: GetCustomerAddressesStatus.loading,
+      ),
+    );
     final response = await getCustomerAddressesUseCase(NoParams());
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('getCustomerAddresses', l.statusCode)) {
-        ErrorManager.incrementRetry('getCustomerAddresses');
-        add(GetCustomerAddressesEvent());
-      }
-
-      emit(state.copyWith(
-          getCustomerAddressesStatus: GetCustomerAddressesStatus.failure));
-    }, (r) async {
-      ErrorManager.resetRetry('getCustomerAddresses');
-      List<CustomerAddressesInfo>? listOfAdressInfoClassToSave = [];
-      listOfAdressInfoClassToSave = [...r.data!];
-      int currentAddressChoosed = 0;
-      for (var i = 0; i < (r.data?.length ?? 0); i++) {
-        if (r.data?[i].isDefault == 1) {
-          currentAddressChoosed = i;
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('getCustomerAddresses', l.statusCode)) {
+          ErrorManager.incrementRetry('getCustomerAddresses');
+          add(GetCustomerAddressesEvent());
         }
-      }
-      if ((r.data?.length ?? 0) > 0 && (event.setDefault ?? false)) {
-        add(SetCustomerAddressDefaultEvent(
-            adressId: r.data?[currentAddressChoosed].id));
-      }
 
-      emit(state.copyWith(
-        currentAddressChoosed: currentAddressChoosed,
-        listOfAdressInfoClassToSave: List.of(listOfAdressInfoClassToSave),
-        getCustomerAddressesStatus: GetCustomerAddressesStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getCustomerAddressesStatus: GetCustomerAddressesStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('getCustomerAddresses');
+        List<CustomerAddressesInfo>? listOfAdressInfoClassToSave = [];
+        listOfAdressInfoClassToSave = [...r.data!];
+        int currentAddressChoosed = 0;
+        for (var i = 0; i < (r.data?.length ?? 0); i++) {
+          if (r.data?[i].isDefault == 1) {
+            currentAddressChoosed = i;
+          }
+        }
+        if ((r.data?.length ?? 0) > 0 && (event.setDefault ?? false)) {
+          add(
+            SetCustomerAddressDefaultEvent(
+              adressId: r.data?[currentAddressChoosed].id,
+            ),
+          );
+        }
+
+        emit(
+          state.copyWith(
+            currentAddressChoosed: currentAddressChoosed,
+            listOfAdressInfoClassToSave: List.of(listOfAdressInfoClassToSave),
+            getCustomerAddressesStatus: GetCustomerAddressesStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onDeleteAdressInfoClassEvent(
     DeleteAdressInfoClassEvent event,
     Emitter<OrderState> emit,
   ) async {
-    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-        List.of(state.listOfAddressInfoClassToSave ?? []);
-    int index = listOfAddressInfoClassToSave
-        .indexWhere((element) => element.id == event.adressInfoClassId);
+    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave = List.of(
+      state.listOfAddressInfoClassToSave ?? [],
+    );
+    int index = listOfAddressInfoClassToSave.indexWhere(
+      (element) => element.id == event.adressInfoClassId,
+    );
     CustomerAddressesInfo preCustomerAddress =
         listOfAddressInfoClassToSave[index];
 
-    listOfAddressInfoClassToSave
-        .removeWhere((element) => element.id == event.adressInfoClassId);
-    emit(state.copyWith(
+    listOfAddressInfoClassToSave.removeWhere(
+      (element) => element.id == event.adressInfoClassId,
+    );
+    emit(
+      state.copyWith(
         listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-        removeAddressToOrderStatus: RemoveAddressToOrderStatus.loading));
+        removeAddressToOrderStatus: RemoveAddressToOrderStatus.loading,
+      ),
+    );
     final response = await deleteCustomerAddressUseCase(
-        DeleteCustomerAddressParams(addressId: event.adressInfoClassId ?? 0));
+      DeleteCustomerAddressParams(addressId: event.adressInfoClassId ?? 0),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('deleteCustomerAddress', l.statusCode)) {
-        ErrorManager.incrementRetry('deleteCustomerAddress');
-        add(DeleteAdressInfoClassEvent(
-            adressInfoClassId: event.adressInfoClassId));
-        return; // لا تعرض رسالة ولا تحدث الحالة
-      }
-      // فقط بعد انتهاء المحاولات
-      showMessage(l.message,
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('deleteCustomerAddress', l.statusCode)) {
+          ErrorManager.incrementRetry('deleteCustomerAddress');
+          add(
+            DeleteAdressInfoClassEvent(
+              adressInfoClassId: event.adressInfoClassId,
+            ),
+          );
+          return; // لا تعرض رسالة ولا تحدث الحالة
+        }
+        // فقط بعد انتهاء المحاولات
+        showMessage(
+          l.message,
           foreGroundColor: Colors.white,
           hasError: true,
           backGroundColor: Colors.black,
-          showInRelease: true);
-      final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-          List.of(state.listOfAddressInfoClassToSave ?? []);
-      listOfAddressInfoClassToSave.insert(index, preCustomerAddress);
-      emit(state.copyWith(
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-          removeAddressToOrderStatus: RemoveAddressToOrderStatus.failure));
-    }, (r) async {
-      add(GetCustomerAddressesEvent());
-      showMessage(r.message ?? "",
+          showInRelease: true,
+        );
+        final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
+            List.of(state.listOfAddressInfoClassToSave ?? []);
+        listOfAddressInfoClassToSave.insert(index, preCustomerAddress);
+        emit(
+          state.copyWith(
+            listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
+            removeAddressToOrderStatus: RemoveAddressToOrderStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        add(GetCustomerAddressesEvent());
+        showMessage(
+          r.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
-          showInRelease: true);
-      ErrorManager.resetRetry('deleteCustomerAddress');
+          showInRelease: true,
+        );
+        ErrorManager.resetRetry('deleteCustomerAddress');
 
-      emit(state.copyWith(
-          removeAddressToOrderStatus: RemoveAddressToOrderStatus.success,
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
-    });
+        emit(
+          state.copyWith(
+            removeAddressToOrderStatus: RemoveAddressToOrderStatus.success,
+            listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onAddAddressInfoClassEvent(
     AddAddressInfoClassEvent event,
     Emitter<OrderState> emit,
   ) async {
-    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-        List.of(state.listOfAddressInfoClassToSave ?? []);
+    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave = List.of(
+      state.listOfAddressInfoClassToSave ?? [],
+    );
     CustomerAddressesInfo adressInfoClassToSave = event.addressInfoClassToSave!;
     listOfAddressInfoClassToSave.insert(0, adressInfoClassToSave);
-    emit(state.copyWith(
-      listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-      addAddressToOrderStatus: AddAddressToOrderStatus.loading,
-    ));
+    emit(
+      state.copyWith(
+        listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
+        addAddressToOrderStatus: AddAddressToOrderStatus.loading,
+      ),
+    );
 
-    final response = await addCustomerAddressUseCase(AddCustomerAddressParams(
-      iso: (prefsRepository.userCountryIsAvailable == 1
-              ? prefsRepository.userChoosedCountryIso
-              : prefsRepository.countryIso) ??
-          "",
-      address: event.addressInfoClassToSave?.address ?? "",
-      addressDetail: event.addressInfoClassToSave?.addressDetail ?? "",
-      country: event.addressInfoClassToSave?.regionDetails?.country ?? "",
-      city: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
-      street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
-      zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
-      phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
-      alternativePhone:
-          event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
-      latitude: event.addressInfoClassToSave?.location?.latitude ?? "",
-      longitude: event.addressInfoClassToSave?.location?.longitude ?? "",
-      province: event.addressInfoClassToSave?.regionDetails?.province ?? "",
-      building: event.addressInfoClassToSave?.regionDetails?.building ?? "",
-      contactPersonName: event.addressInfoClassToSave?.contactInfo?.name ?? "",
-    ));
+    final response = await addCustomerAddressUseCase(
+      AddCustomerAddressParams(
+        iso:
+            (prefsRepository.userCountryIsAvailable == 1
+                ? prefsRepository.userChoosedCountryIso
+                : prefsRepository.countryIso) ??
+            "",
+        address: event.addressInfoClassToSave?.address ?? "",
+        addressDetail: event.addressInfoClassToSave?.addressDetail ?? "",
+        country: event.addressInfoClassToSave?.regionDetails?.country ?? "",
+        city: event.addressInfoClassToSave?.regionDetails?.city ?? "",
+        district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
+        town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
+        street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
+        zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
+        phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
+        alternativePhone:
+            event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
+        latitude: event.addressInfoClassToSave?.location?.latitude ?? "",
+        longitude: event.addressInfoClassToSave?.location?.longitude ?? "",
+        province: event.addressInfoClassToSave?.regionDetails?.province ?? "",
+        building: event.addressInfoClassToSave?.regionDetails?.building ?? "",
+        contactPersonName:
+            event.addressInfoClassToSave?.contactInfo?.name ?? "",
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('addCustomerAddress', l.statusCode)) {
-        ErrorManager.incrementRetry('addCustomerAddress');
-        add(AddAddressInfoClassEvent(
-            addressInfoClassToSave: event.addressInfoClassToSave));
-        return; // لا تعرض رسالة ولا تحدث الحالة
-      }
-      // فقط بعد انتهاء المحاولات
-      showMessage(l.message,
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('addCustomerAddress', l.statusCode)) {
+          ErrorManager.incrementRetry('addCustomerAddress');
+          add(
+            AddAddressInfoClassEvent(
+              addressInfoClassToSave: event.addressInfoClassToSave,
+            ),
+          );
+          return; // لا تعرض رسالة ولا تحدث الحالة
+        }
+        // فقط بعد انتهاء المحاولات
+        showMessage(
+          l.message,
           foreGroundColor: Colors.white,
           hasError: true,
           backGroundColor: Colors.black,
-          showInRelease: true);
-      final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-          List.of(state.listOfAddressInfoClassToSave ?? []);
-      listOfAddressInfoClassToSave.removeAt(0);
-      emit(state.copyWith(
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-          addAddressToOrderStatus: AddAddressToOrderStatus.failure));
-    }, (r) async {
-      GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
-      add(GetCustomerAddressesEvent());
-      showMessage(r.message ?? "",
+          showInRelease: true,
+        );
+        final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
+            List.of(state.listOfAddressInfoClassToSave ?? []);
+        listOfAddressInfoClassToSave.removeAt(0);
+        emit(
+          state.copyWith(
+            listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
+            addAddressToOrderStatus: AddAddressToOrderStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
+        add(GetCustomerAddressesEvent());
+        showMessage(
+          r.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
-          showInRelease: true);
-      ErrorManager.resetRetry('addCustomerAddress');
+          showInRelease: true,
+        );
+        ErrorManager.resetRetry('addCustomerAddress');
 
-      emit(state.copyWith(
-          lastAdressInfoClassToSave: CustomerAddressesInfo(),
-          addAddressToOrderStatus: AddAddressToOrderStatus.success,
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
-    });
+        emit(
+          state.copyWith(
+            lastAdressInfoClassToSave: CustomerAddressesInfo(),
+            addAddressToOrderStatus: AddAddressToOrderStatus.success,
+            listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onEditAdressInfoClassEvent(
     EditAdressInfoClassEvent event,
     Emitter<OrderState> emit,
   ) async {
-    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-        List.of(state.listOfAddressInfoClassToSave ?? []);
+    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave = List.of(
+      state.listOfAddressInfoClassToSave ?? [],
+    );
 
-    int index = listOfAddressInfoClassToSave
-        .indexWhere((element) => element.id == event.preIdToEdit);
+    int index = listOfAddressInfoClassToSave.indexWhere(
+      (element) => element.id == event.preIdToEdit,
+    );
     CustomerAddressesInfo preCustomerAddresses =
         listOfAddressInfoClassToSave[index];
-    listOfAddressInfoClassToSave
-        .removeWhere((element) => element.id == event.preIdToEdit);
+    listOfAddressInfoClassToSave.removeWhere(
+      (element) => element.id == event.preIdToEdit,
+    );
 
     listOfAddressInfoClassToSave.insert(index, event.addressInfoClassToSave!);
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-        editAddressToOrderStatus: EditAddressToOrderStatus.loading));
-    final response =
-        await updateCustomerAddressUseCase(UpdateCustomerAddressParams(
-      iso: (prefsRepository.userCountryIsAvailable == 1
-              ? prefsRepository.userChoosedCountryIso
-              : prefsRepository.countryIso) ??
-          "",
-      id: event.preIdToEdit,
-      address: event.addressInfoClassToSave?.address ?? "",
-      addressDetail: event.addressInfoClassToSave?.addressDetail ?? "",
-      country: event.addressInfoClassToSave?.regionDetails?.country ?? "",
-      city: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
-      street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
-      zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
-      phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
-      alternativePhone:
-          event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
-      latitude: event.addressInfoClassToSave?.location?.latitude ?? "",
-      longitude: event.addressInfoClassToSave?.location?.longitude ?? "",
-      province: event.addressInfoClassToSave?.regionDetails?.province ?? "",
-      building: event.addressInfoClassToSave?.regionDetails?.building ?? "",
-      contactPersonName: event.addressInfoClassToSave?.contactInfo?.name ?? "",
-    ));
+        editAddressToOrderStatus: EditAddressToOrderStatus.loading,
+      ),
+    );
+    final response = await updateCustomerAddressUseCase(
+      UpdateCustomerAddressParams(
+        iso:
+            (prefsRepository.userCountryIsAvailable == 1
+                ? prefsRepository.userChoosedCountryIso
+                : prefsRepository.countryIso) ??
+            "",
+        id: event.preIdToEdit,
+        address: event.addressInfoClassToSave?.address ?? "",
+        addressDetail: event.addressInfoClassToSave?.addressDetail ?? "",
+        country: event.addressInfoClassToSave?.regionDetails?.country ?? "",
+        city: event.addressInfoClassToSave?.regionDetails?.city ?? "",
+        district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
+        town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
+        street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
+        zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
+        phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
+        alternativePhone:
+            event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
+        latitude: event.addressInfoClassToSave?.location?.latitude ?? "",
+        longitude: event.addressInfoClassToSave?.location?.longitude ?? "",
+        province: event.addressInfoClassToSave?.regionDetails?.province ?? "",
+        building: event.addressInfoClassToSave?.regionDetails?.building ?? "",
+        contactPersonName:
+            event.addressInfoClassToSave?.contactInfo?.name ?? "",
+      ),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('updateCustomerAddress', l.statusCode)) {
-        ErrorManager.incrementRetry('updateCustomerAddress');
-        add(EditAdressInfoClassEvent(
-          addressInfoClassToSave: event.addressInfoClassToSave,
-          preIdToEdit: event.preIdToEdit,
-        ));
-        return; // لا تعرض رسالة ولا تحدث الحالة
-      }
-      // فقط بعد انتهاء المحاولات
-      showMessage(l.message,
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('updateCustomerAddress', l.statusCode)) {
+          ErrorManager.incrementRetry('updateCustomerAddress');
+          add(
+            EditAdressInfoClassEvent(
+              addressInfoClassToSave: event.addressInfoClassToSave,
+              preIdToEdit: event.preIdToEdit,
+            ),
+          );
+          return; // لا تعرض رسالة ولا تحدث الحالة
+        }
+        // فقط بعد انتهاء المحاولات
+        showMessage(
+          l.message,
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           hasError: true,
-          showInRelease: true);
-      final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-          List.of(state.listOfAddressInfoClassToSave ?? []);
-      listOfAddressInfoClassToSave.insert(index, preCustomerAddresses);
-      emit(state.copyWith(
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-          editAddressToOrderStatus: EditAddressToOrderStatus.failure));
-    }, (r) async {
-      add(GetCustomerAddressesEvent());
-      showMessage(r.message ?? "",
+          showInRelease: true,
+        );
+        final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
+            List.of(state.listOfAddressInfoClassToSave ?? []);
+        listOfAddressInfoClassToSave.insert(index, preCustomerAddresses);
+        emit(
+          state.copyWith(
+            listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
+            editAddressToOrderStatus: EditAddressToOrderStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        add(GetCustomerAddressesEvent());
+        showMessage(
+          r.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
-          showInRelease: true);
-      ErrorManager.resetRetry('updateCustomerAddress');
+          showInRelease: true,
+        );
+        ErrorManager.resetRetry('updateCustomerAddress');
 
-      emit(state.copyWith(
-          editAddressToOrderStatus: EditAddressToOrderStatus.success,
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
-    });
+        emit(
+          state.copyWith(
+            editAddressToOrderStatus: EditAddressToOrderStatus.success,
+            listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGetAddressByCoordinatesEvent(
@@ -971,7 +1209,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
-            'GetAddressByCoordinatesEvent', l.statusCode)) {
+          'GetAddressByCoordinatesEvent',
+          l.statusCode,
+        )) {
           ErrorManager.incrementRetry('GetAddressByCoordinatesEvent');
         }
         emit(
@@ -985,20 +1225,20 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         ErrorManager.resetRetry('GetAddressByCoordinatesEvent');
         emit(
           state.copyWith(
-              getAddressByCoordinatesStatus:
-                  GetAddressByCoordinatesStatus.success,
-              getAddressByCoordinatesModel: r),
+            getAddressByCoordinatesStatus:
+                GetAddressByCoordinatesStatus.success,
+            getAddressByCoordinatesModel: r,
+          ),
         );
       },
     );
-    await Future.delayed(
-      const Duration(seconds: 5),
-      () {
-        emit(state.copyWith(
+    await Future.delayed(const Duration(seconds: 5), () {
+      emit(
+        state.copyWith(
           getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.failure,
-        ));
-      },
-    );
+        ),
+      );
+    });
   }
 
   FutureOr<void> _onGetAddressByTextEvent(
@@ -1006,30 +1246,43 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     emit(
-        state.copyWith(getAddressByTextStatus: GetAddressByTextStatus.loading));
+      state.copyWith(getAddressByTextStatus: GetAddressByTextStatus.loading),
+    );
     if (event.reset) {
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           getAddressByTextStatus: GetAddressByTextStatus.success,
-          resultSearch: []));
+          resultSearch: [],
+        ),
+      );
       return;
     }
     final response = await getAddressByTextUsecase(
-        GetAddressByTextParams(query: event.query));
+      GetAddressByTextParams(query: event.query),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetAddressByTextEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetAddressByTextEvent');
-      }
-      emit(state.copyWith(
-          getAddressByTextStatus: GetAddressByTextStatus.failure));
-    }, (r) {
-      ErrorManager.resetRetry('GetAddressByTextEvent');
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetAddressByTextEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetAddressByTextEvent');
+        }
+        emit(
+          state.copyWith(
+            getAddressByTextStatus: GetAddressByTextStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetAddressByTextEvent');
 
-      emit(state.copyWith(
-        resultSearch: r.results,
-        getAddressByTextStatus: GetAddressByTextStatus.success,
-      ));
-    });
+        emit(
+          state.copyWith(
+            resultSearch: r.results,
+            getAddressByTextStatus: GetAddressByTextStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _onSetCurrentAddressChoosedEvent(
@@ -1060,9 +1313,12 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         var data = r.data;
 
         if (data!.status == 0) {
-          emit(state.copyWith(
+          emit(
+            state.copyWith(
               applyCouponStatus: ApplyCouponStatus.failure,
-              applyCouponModel: r));
+              applyCouponModel: r,
+            ),
+          );
           showMessage(
             r.message ?? 'invalid',
             foreGroundColor: Colors.white,
@@ -1071,9 +1327,12 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           );
         } else {
           debugPrint('ApplyCouponEvent success');
-          emit(state.copyWith(
+          emit(
+            state.copyWith(
               applyCouponStatus: ApplyCouponStatus.success,
-              applyCouponModel: r));
+              applyCouponModel: r,
+            ),
+          );
           showMessage(
             r.message ?? 'Success',
             foreGroundColor: Colors.white,
@@ -1095,13 +1354,17 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       (l) {
         if (ErrorManager.shouldRetry('CancelOrderItemEvent', l.statusCode)) {
           ErrorManager.incrementRetry('CancelOrderItemEvent');
-          add(CancelOrderItemEvent(
-              cancelOrderItemParams: event.cancelOrderItemParams));
+          add(
+            CancelOrderItemEvent(
+              cancelOrderItemParams: event.cancelOrderItemParams,
+            ),
+          );
           return; // لا تعرض رسالة ولا تحدث الحالة
         }
         // فقط بعد انتهاء المحاولات
-        emit(state.copyWith(
-            cancelOrderItemStatus: CancelOrderItemStatus.failure));
+        emit(
+          state.copyWith(cancelOrderItemStatus: CancelOrderItemStatus.failure),
+        );
         showMessage(
           l.message,
           foreGroundColor: Colors.white,
@@ -1118,8 +1381,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           backGroundColor: Colors.black,
           showInRelease: true,
         );
-        emit(state.copyWith(
-            cancelOrderItemStatus: CancelOrderItemStatus.success));
+        emit(
+          state.copyWith(cancelOrderItemStatus: CancelOrderItemStatus.success),
+        );
       },
     );
   }
@@ -1158,21 +1422,31 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ChangeOrderAddressEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(state.copyWith(
-        changeOrderAddressStatus: ChangeOrderAddressStatus.loading));
-    final response =
-        await changeOrderAddressUsecase(event.changeOrderAddressParams);
+    emit(
+      state.copyWith(
+        changeOrderAddressStatus: ChangeOrderAddressStatus.loading,
+      ),
+    );
+    final response = await changeOrderAddressUsecase(
+      event.changeOrderAddressParams,
+    );
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('ChangeOrderAddressEvent', l.statusCode)) {
           ErrorManager.incrementRetry('ChangeOrderAddressEvent');
-          add(ChangeOrderAddressEvent(
-              changeOrderAddressParams: event.changeOrderAddressParams));
+          add(
+            ChangeOrderAddressEvent(
+              changeOrderAddressParams: event.changeOrderAddressParams,
+            ),
+          );
           return; // لا تعرض رسالة ولا تحدث الحالة
         }
         // فقط بعد انتهاء المحاولات
-        emit(state.copyWith(
-            changeOrderAddressStatus: ChangeOrderAddressStatus.failure));
+        emit(
+          state.copyWith(
+            changeOrderAddressStatus: ChangeOrderAddressStatus.failure,
+          ),
+        );
         showMessage(
           l.message,
           foreGroundColor: Colors.white,
@@ -1189,8 +1463,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           backGroundColor: Colors.black,
           showInRelease: true,
         );
-        emit(state.copyWith(
-            changeOrderAddressStatus: ChangeOrderAddressStatus.success));
+        emit(
+          state.copyWith(
+            changeOrderAddressStatus: ChangeOrderAddressStatus.success,
+          ),
+        );
       },
     );
   }
@@ -1199,52 +1476,71 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetProductColorSizeSyncAttributeEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         getProductColorSizeSyncAttributeStatus:
-            GetProductColorSizeSyncAttributeStatus.loading));
+            GetProductColorSizeSyncAttributeStatus.loading,
+      ),
+    );
     final response = await getProductColorSizeSyncAttributeUseCase(event.id);
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
-            'GetProductColorSizeSyncAttributeEvent', l.statusCode)) {
+          'GetProductColorSizeSyncAttributeEvent',
+          l.statusCode,
+        )) {
           ErrorManager.incrementRetry('GetProductColorSizeSyncAttributeEvent');
           add(GetProductColorSizeSyncAttributeEvent(id: event.id));
           return; // لا تعرض رسالة ولا تحدث الحالة
         }
         // فقط بعد انتهاء المحاولات
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             getProductColorSizeSyncAttributeStatus:
-                GetProductColorSizeSyncAttributeStatus.failure));
+                GetProductColorSizeSyncAttributeStatus.failure,
+          ),
+        );
       },
       (r) async {
         ErrorManager.resetRetry('GetProductColorSizeSyncAttributeEvent');
         debugPrint('GetProductColorSizeSyncAttributeStatus success');
-        emit(state.copyWith(
-          getProductColorSizeSyncAttributeStatus:
-              GetProductColorSizeSyncAttributeStatus.success,
-          colorSizeForProductModel: r,
-        ));
+        emit(
+          state.copyWith(
+            getProductColorSizeSyncAttributeStatus:
+                GetProductColorSizeSyncAttributeStatus.success,
+            colorSizeForProductModel: r,
+          ),
+        );
       },
     );
   }
 
   Future<void> _onChangeOrderItemVariantEvent(
-      ChangeOrderItemVariantEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
-        changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.loading));
+    ChangeOrderItemVariantEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.loading,
+      ),
+    );
     final result = await changeOrderItemVariantUsecase(event.params);
     result.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'ChangeOrderItemVariantEvent', failure.statusCode)) {
+          'ChangeOrderItemVariantEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('ChangeOrderItemVariantEvent');
           add(ChangeOrderItemVariantEvent(params: event.params));
           return; // لا تعرض رسالة ولا تحدث الحالة
         }
         // فقط بعد انتهاء المحاولات
-        emit(state.copyWith(
-            changeOrderItemVariantStatus:
-                ChangeOrderItemVariantStatus.failure));
+        emit(
+          state.copyWith(
+            changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.failure,
+          ),
+        );
         showMessage(failure.message, hasError: true);
       },
       (response) {
@@ -1255,9 +1551,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           backGroundColor: Colors.black,
           showInRelease: true,
         );
-        emit(state.copyWith(
-            changeOrderItemVariantStatus:
-                ChangeOrderItemVariantStatus.success));
+        emit(
+          state.copyWith(
+            changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.success,
+          ),
+        );
       },
     );
   }
@@ -1325,119 +1623,168 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   }
 */
   Future<void> _onGetReturnReasonsEvent(
-      GetReturnReasonsEvent event, Emitter<OrderState> emit) async {
+    GetReturnReasonsEvent event,
+    Emitter<OrderState> emit,
+  ) async {
     emit(
-        state.copyWith(getReturnReasonsStatus: GetReturnReasonsStatus.loading));
+      state.copyWith(getReturnReasonsStatus: GetReturnReasonsStatus.loading),
+    );
     final result = await getReturnReasonsUseCase(NoParams());
     result.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'GetReturnReasonsEvent', failure.statusCode)) {
+          'GetReturnReasonsEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('GetReturnReasonsEvent');
           add(const GetReturnReasonsEvent());
           return;
         }
-        emit(state.copyWith(
-            getReturnReasonsStatus: GetReturnReasonsStatus.failure));
+        emit(
+          state.copyWith(
+            getReturnReasonsStatus: GetReturnReasonsStatus.failure,
+          ),
+        );
       },
       (response) {
         ErrorManager.resetRetry('GetReturnReasonsEvent');
-        emit(state.copyWith(
-          getReturnReasonsStatus: GetReturnReasonsStatus.success,
-          returnReasonsModel: response,
-        ));
+        emit(
+          state.copyWith(
+            getReturnReasonsStatus: GetReturnReasonsStatus.success,
+            returnReasonsModel: response,
+          ),
+        );
       },
     );
   }
 
   Future<void> _onStoreReturnRequestProductEvent(
-      StoreReturnRequestProductEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
+    StoreReturnRequestProductEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         storeReturnRequestProductStatus:
-            StoreReturnRequestProductStatus.loading));
+            StoreReturnRequestProductStatus.loading,
+      ),
+    );
     final result = await storeReturnRequestProductUseCase(event.params);
     result.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'StoreReturnRequestProductEvent', failure.statusCode)) {
+          'StoreReturnRequestProductEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('StoreReturnRequestProductEvent');
-          add(StoreReturnRequestProductEvent(
+          add(
+            StoreReturnRequestProductEvent(
               orderGroupId: event.orderGroupId,
               params: event.params,
               withConfirm: event.withConfirm,
-              returnRequestId: event.returnRequestId));
+              returnRequestId: event.returnRequestId,
+            ),
+          );
           return;
         }
         showMessage(failure.message, hasError: true);
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             storeReturnRequestProductStatus:
-                StoreReturnRequestProductStatus.failure));
+                StoreReturnRequestProductStatus.failure,
+          ),
+        );
       },
       (response) {
         ErrorManager.resetRetry('StoreReturnRequestProductEvent');
         if (event.withConfirm) {
           showMessage(response.message ?? "");
-          add(ConfirmReturnRequestEvent(
-            orderGroupId: event.orderGroupId,
-            returnRequestId: event.returnRequestId,
-          ));
+          add(
+            ConfirmReturnRequestEvent(
+              orderGroupId: event.orderGroupId,
+              returnRequestId: event.returnRequestId,
+            ),
+          );
         } else {
           add(FetchOrderReturnDetailsEvent(event.orderGroupId));
           showMessage(response.message ?? "");
         }
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             storeReturnRequestProductStatus:
-                StoreReturnRequestProductStatus.success));
+                StoreReturnRequestProductStatus.success,
+          ),
+        );
       },
     );
   }
 
   //////////////////////////////////////////////////////////
   Future<void> _onUpdateReturnRequestProductEvent(
-      UpdateReturnRequestProductEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
+    UpdateReturnRequestProductEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         updateReturnRequestProductStatus:
-            UpdateReturnRequestProductStatus.loading));
+            UpdateReturnRequestProductStatus.loading,
+      ),
+    );
     final result = await updateReturnRequestProductUseCase(event.params);
     result.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'UpdateReturnRequestProductEvent', failure.statusCode)) {
+          'UpdateReturnRequestProductEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('UpdateReturnRequestProductEvent');
-          add(UpdateReturnRequestProductEvent(
+          add(
+            UpdateReturnRequestProductEvent(
               orderGroupId: event.orderGroupId,
               params: event.params,
               withConfirm: event.withConfirm,
-              returnRequestId: event.returnRequestId));
+              returnRequestId: event.returnRequestId,
+            ),
+          );
           return;
         }
         showMessage(failure.message, hasError: true);
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             updateReturnRequestProductStatus:
-                UpdateReturnRequestProductStatus.failure));
+                UpdateReturnRequestProductStatus.failure,
+          ),
+        );
       },
       (response) {
         ErrorManager.resetRetry('UpdateReturnRequestProductEvent');
         if (event.withConfirm) {
-          add(ConfirmReturnRequestEvent(
-            orderGroupId: event.orderGroupId,
-            returnRequestId: event.returnRequestId,
-          ));
+          add(
+            ConfirmReturnRequestEvent(
+              orderGroupId: event.orderGroupId,
+              returnRequestId: event.returnRequestId,
+            ),
+          );
         } else {
           add(FetchOrderReturnDetailsEvent(event.orderGroupId));
           showMessage(response.message ?? "");
         }
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             updateReturnRequestProductStatus:
-                UpdateReturnRequestProductStatus.success));
+                UpdateReturnRequestProductStatus.success,
+          ),
+        );
       },
     );
   }
 
   ///
   Future<void> _onStoreReturnRequestEvent(
-      StoreReturnRequestEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
+    StoreReturnRequestEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         cancelReturnRequestProductStatus: CancelReturnRequestProductStatus.init,
         cancelReturnRequestStatus: CancelReturnRequestStatus.init,
         confirmReturnRequestStatus: ConfirmReturnRequestStatus.init,
@@ -1446,25 +1793,39 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         storeReturnRequestProductStatus: StoreReturnRequestProductStatus.init,
         orderReturnDetailsStatus: OrderReturnDetailsStatus.init,
         updateReturnRequestProductStatus: UpdateReturnRequestProductStatus.init,
-        storeReturnRequestStatus: StoreReturnRequestStatus.loading));
+        storeReturnRequestStatus: StoreReturnRequestStatus.loading,
+      ),
+    );
     final result = await storeReturnRequestUseCase(event.params);
     result.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'StoreReturnRequestEvent', failure.statusCode)) {
+          'StoreReturnRequestEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('StoreReturnRequestEvent');
-          add(StoreReturnRequestEvent(
-              params: event.params, orderGroupId: event.orderGroupId));
+          add(
+            StoreReturnRequestEvent(
+              params: event.params,
+              orderGroupId: event.orderGroupId,
+            ),
+          );
           return;
         }
-        emit(state.copyWith(
-            storeReturnRequestStatus: StoreReturnRequestStatus.failure));
+        emit(
+          state.copyWith(
+            storeReturnRequestStatus: StoreReturnRequestStatus.failure,
+          ),
+        );
       },
       (response) {
         add(FetchOrderReturnDetailsEvent(event.orderGroupId));
         ErrorManager.resetRetry('StoreReturnRequestEvent');
-        emit(state.copyWith(
-            storeReturnRequestStatus: StoreReturnRequestStatus.success));
+        emit(
+          state.copyWith(
+            storeReturnRequestStatus: StoreReturnRequestStatus.success,
+          ),
+        );
       },
     );
   }
@@ -1490,6 +1851,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           orderReturnDetailsStatus: OrderReturnDetailsStatus.init,
           updateReturnRequestProductStatus:
               UpdateReturnRequestProductStatus.init,
+          uploadImagesToCloudinaryStatus: UploadImagesToCloudinaryStatus.init,
+          uploadImagesForReturnProductStatus:
+              UploadImagesForReturnProductStatus.init,
           applyCouponStatus: ApplyCouponStatus.init,
           cancelOrderItemStatus: CancelOrderItemStatus.init,
           cancelOrderStatus: CancelOrderStatus.init,
@@ -1499,51 +1863,81 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
   //////////////////////////////////////////////////////////
   Future<void> _onOrderReturnRequestsViewEvent(
-      OrderReturnRequestsViewEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
-        orderReturnRequestsViewStatus: OrderReturnRequestsViewStatus.loading));
+    OrderReturnRequestsViewEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        orderReturnRequestsViewStatus: OrderReturnRequestsViewStatus.loading,
+      ),
+    );
     final result = await orderReturnRequestsViewUseCase(event.params);
     result.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'OrderReturnRequestsViewEvent', failure.statusCode)) {
+          'OrderReturnRequestsViewEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('OrderReturnRequestsViewEvent');
           add(OrderReturnRequestsViewEvent(params: event.params));
           return;
         }
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             orderReturnRequestsViewStatus:
-                OrderReturnRequestsViewStatus.failure));
+                OrderReturnRequestsViewStatus.failure,
+          ),
+        );
       },
       (response) {
         ErrorManager.resetRetry('OrderReturnRequestsViewEvent');
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             orderReturnRequestsViewStatus:
-                OrderReturnRequestsViewStatus.success));
+                OrderReturnRequestsViewStatus.success,
+          ),
+        );
       },
     );
   }
 
   FutureOr<void> _onUploadImagesForReturnProductEvent(
-      UploadImagesForReturnProductEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
+    UploadImagesForReturnProductEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         uploadImagesForReturnProductStatus:
-            UploadImagesForReturnProductStatus.loading));
+            UploadImagesForReturnProductStatus.loading,
+      ),
+    );
     final result = await uploadImagesProductReturnUseCase(
-        UpdateImagesForReturnProductParams(
-            path: "return_request_products/", image: event.file));
-    result.fold((failure) {
-      emit(state.copyWith(
-          uploadImagesForReturnProductStatus:
-              UploadImagesForReturnProductStatus.failure));
-    }, (response) {
-      List<String> imagesForReturns = List.of(state.imagesForReturn ?? []);
-      imagesForReturns.add(response.data?.subPath ?? "");
-      emit(state.copyWith(
-          imagesForReturn: imagesForReturns,
-          uploadImagesForReturnProductStatus:
-              UploadImagesForReturnProductStatus.success));
-    });
+      UpdateImagesForReturnProductParams(
+        path: "return_request_products/",
+        image: event.file,
+      ),
+    );
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            uploadImagesForReturnProductStatus:
+                UploadImagesForReturnProductStatus.failure,
+          ),
+        );
+      },
+      (response) {
+        List<String> imagesForReturns = List.of(state.imagesForReturn ?? []);
+        imagesForReturns.add(response.data?.subPath ?? "");
+        emit(
+          state.copyWith(
+            imagesForReturn: imagesForReturns,
+            uploadImagesForReturnProductStatus:
+                UploadImagesForReturnProductStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   ///
@@ -1551,72 +1945,113 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   ///
   /// //////////////////////////////////////////////////////////
   Future<void> _onConfirmReturnRequestEvent(
-      ConfirmReturnRequestEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
-        confirmReturnRequestStatus: ConfirmReturnRequestStatus.loading));
+    ConfirmReturnRequestEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        confirmReturnRequestStatus: ConfirmReturnRequestStatus.loading,
+      ),
+    );
     final result = await confirmReturnRequestUseCase(
-        ConfirmReturnRequestParams(returnRequestId: event.returnRequestId));
+      ConfirmReturnRequestParams(returnRequestId: event.returnRequestId),
+    );
     result.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'ConfirmReturnRequestEvent', failure.statusCode)) {
+          'ConfirmReturnRequestEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('ConfirmReturnRequestEvent');
-          add(ConfirmReturnRequestEvent(
+          add(
+            ConfirmReturnRequestEvent(
               orderGroupId: event.orderGroupId,
-              returnRequestId: event.returnRequestId));
+              returnRequestId: event.returnRequestId,
+            ),
+          );
           return;
         }
         showMessage(failure.message, hasError: true);
-        emit(state.copyWith(
-            confirmReturnRequestStatus: ConfirmReturnRequestStatus.failure));
+        emit(
+          state.copyWith(
+            confirmReturnRequestStatus: ConfirmReturnRequestStatus.failure,
+          ),
+        );
       },
       (response) {
         add(FetchOrderReturnDetailsEvent(event.orderGroupId));
         add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
         showMessage(response.message ?? "");
         ErrorManager.resetRetry('ConfirmReturnRequestEvent');
-        emit(state.copyWith(
-            confirmReturnRequestStatus: ConfirmReturnRequestStatus.success));
+        emit(
+          state.copyWith(
+            confirmReturnRequestStatus: ConfirmReturnRequestStatus.success,
+          ),
+        );
       },
     );
   }
 
   ///
   FutureOr<void> _onFetchOrderReturnDetailsEvent(
-      FetchOrderReturnDetailsEvent event, Emitter<OrderState> emit) async {
-    emit(state.copyWith(
-      orderReturnDetailsStatus: OrderReturnDetailsStatus.loading,
-      orderReturnDetailsModel:
-          GetOrderReturntDetailsModel(data: Data(returnRequestsData: [])),
-    ));
+    FetchOrderReturnDetailsEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    if (event.notFound) {
+      emit(
+        state.copyWith(
+          orderReturnDetailsStatus: OrderReturnDetailsStatus.success,
+          orderReturnDetailsModel: GetOrderReturntDetailsModel(
+            data: Data(returnRequestsData: []),
+          ),
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        orderReturnDetailsStatus: OrderReturnDetailsStatus.loading,
+        orderReturnDetailsModel: GetOrderReturntDetailsModel(
+          data: Data(returnRequestsData: []),
+        ),
+      ),
+    );
     final response = await orderReturnDetailsUseCase(
-        GetOrderReturntDetailsParams(
-            orderGroupId: event.orderGroupId.toString()));
+      GetOrderReturntDetailsParams(orderGroupId: event.orderGroupId.toString()),
+    );
     response.fold(
       (failure) {
         if (ErrorManager.shouldRetry(
-            'FetchOrderReturnDetailsEvent', failure.statusCode)) {
+          'FetchOrderReturnDetailsEvent',
+          failure.statusCode,
+        )) {
           ErrorManager.incrementRetry('FetchOrderReturnDetailsEvent');
           add(FetchOrderReturnDetailsEvent(event.orderGroupId));
 
           return;
         }
         if (failure.statusCode == 400) {
-          emit(state.copyWith(
-            orderReturnDetailsStatus: OrderReturnDetailsStatus.failure,
-          ));
+          emit(
+            state.copyWith(
+              orderReturnDetailsStatus: OrderReturnDetailsStatus.failure,
+            ),
+          );
           return;
         }
-        emit(state.copyWith(
-          orderReturnDetailsStatus: OrderReturnDetailsStatus.failure,
-        ));
+        emit(
+          state.copyWith(
+            orderReturnDetailsStatus: OrderReturnDetailsStatus.failure,
+          ),
+        );
       },
       (details) {
         ErrorManager.resetRetry('FetchOrderReturnDetailsEvent');
-        emit(state.copyWith(
-          orderReturnDetailsStatus: OrderReturnDetailsStatus.success,
-          orderReturnDetailsModel: details,
-        ));
+        emit(
+          state.copyWith(
+            orderReturnDetailsStatus: OrderReturnDetailsStatus.success,
+            orderReturnDetailsModel: details,
+          ),
+        );
       },
     );
   }

@@ -63,6 +63,7 @@ import 'package:trydos/features/home/domain/use_cases/request_for_notification_w
 import 'package:trydos/features/home/domain/use_cases/send_error_to_mobile_error_log.dart';
 import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/subscribe_topic_for_notification_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/translate_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/un_subscribe_topic_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_comment_order_rating.dart';
 import 'package:trydos/features/home/domain/use_cases/update_email_notification_usecase.dart';
@@ -167,6 +168,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.checkAvailabilityProductCartUsecase,
     this.getCartOverviewUseCase,
+    this.translateCommentUsecase,
     this.getUserNotificationUseCase,
   ) : super(const HomeState()) {
     on<HomeEvent>((event, emit) {});
@@ -337,6 +339,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetUserNotificationEvent>(_onGetUserNotificationEvent);
     on<DeleteCommentRatingEvent>(_onDeleteCommentRatingEvent);
     on<UpdateCommentRatingEvent>(_onUpdateCommentRatingEvent);
+    on<TranslateCommentEvent>(_onTranslateCommentEvent);
     on<GetFqaCommentsEvent>(_onGetFqaCommentsEvent, transformer: restartable());
     on<GetBuyersCommentsEvent>(
       _onGetBuyersCommentsEvent,
@@ -355,6 +358,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetAuthProductDetailsUseCase getAuthProductDetailsUseCase;
   final UpdateLikeCommentUseCase updateLikeCommentUseCase;
   final GetCartItemUseCase getCartItemUseCase;
+  final TranslateCommentUsecase translateCommentUsecase;
   final GetFqaCommentsUsecase getFqaCommentsUsecase;
   final GetBuyerCommentsUsecase getBuyerCommentsUsecase;
   final GetCartOverviewUseCase getCartOverviewUseCase;
@@ -2063,6 +2067,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.init,
           getStartingSettingsStatus: GetStartingSettingsStatus.init,
+          translateCommentStatus: TranslateCommentStatus.init,
           checkAvailabilityProductCartStatus:
               CheckAvailabilityProductCartStatus.init,
           checkWithGetCartStatus: CheckWithGetCartStatus.init,
@@ -2478,13 +2483,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         oldCarts?.forEach((element) {
           oldCartCollection.add(element);
         });
-        state.cartCollection?.forEach((element) {
+
+        state.cartCollection?.forEach((elements) {
           oldCartCollection.removeWhere(
             (element) =>
-                element.variant == element.variant &&
-                element.productId == element.productId,
+                elements.variant == element.variant &&
+                elements.productId == element.productId,
           );
         });
+
         //Map<String, Products> productITemForCart =
         //    Map.of(state.productITemForCart);
 
@@ -2570,7 +2577,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         event.errorPath +
         event.messageFromeBackend +
         event.urlBackend;
-    if (event.errorExption.contains("RenderFlex overflowed")) {
+    if (event.errorExption.contains("RenderFlex") ||
+        (event.errorExption.toString().contains(
+          "https://res.cloudinary.com",
+        )) ||
+        (event.errorExption.toString().contains("SocketException"))) {
       return;
     }
     if (listOfErrorSendedToMobileErrorLog.contains(key)) {
@@ -2595,6 +2606,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         lastApiRequest = requests.last;
       }
     }
+
     final userInfo = {
       "flutterVersion": applicationVersion,
       "deviceInfo": await HelperFunctions.getDeviceId(),
@@ -3359,13 +3371,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             ),
           );
         }
-        product = product?.copyWith(
-          availableQuantity: product.availableQuantity! + 1,
-        );
-        cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
-            cachedProductWithoutRelatedProductsModel[event.productId
-                    .toString()]!
-                .copyWith(data: product!);
+        if (!event.fromCartPage) {
+          product = product?.copyWith(
+            availableQuantity: product.availableQuantity! + 1,
+          );
+          cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
+              cachedProductWithoutRelatedProductsModel[event.productId
+                      .toString()]!
+                  .copyWith(data: product!);
+        }
         Map<String, Map<String, String>> addVariationToCartId = Map.of(
           state.addVariationToCartId ?? {},
         );
@@ -3914,14 +3928,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               ),
             );
           }
-          product = product?.copyWith(
-            availableQuantity:
-                ((product.availableQuantity)! - (event.newQuantity)).round(),
-          );
-          cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
-              cachedProductWithoutRelatedProductsModel[event.productId
-                      .toString()]!
-                  .copyWith(data: product!);
+          if (!event.fromCartPage) {
+            product = product?.copyWith(
+              availableQuantity:
+                  ((product.availableQuantity)! - (event.newQuantity)).round(),
+            );
+            cachedProductWithoutRelatedProductsModel[event.productId
+                    .toString()] =
+                cachedProductWithoutRelatedProductsModel[event.productId
+                        .toString()]!
+                    .copyWith(data: product!);
+          }
 
           Map<String, Map<int, List<List<String>>>>
           addImagesToProductIdForCart = Map.from(
@@ -4851,6 +4868,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     add(FetchAuthProductDetailsEvent(event.productSlug));
     emit(
       state.copyWith(
+        productContentForStatusOfOpeningProductDetailsDirectly: Products(
+          isProductNotifiedForUser: false,
+        ),
         getFullProductDetailsStatus: GetFullProductDetailsStatus.loading,
         currentSlugToRefreshFromNotification: event.productSlug,
       ),
@@ -5801,6 +5821,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         text: event.text,
         productId: event.productId,
         ownerId: event.ownerId,
+        images: event.images,
+        slug: event.slug,
         ownerType: event.ownerType,
         variant: event.variant?.replaceAll("_", "-"),
         rating: event.rating,
@@ -5820,6 +5842,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               productId: event.productId,
               ownerId: event.ownerId,
               ownerType: event.ownerType,
+              images: event.images,
+              slug: event.slug,
               variant: event.variant?.replaceAll("_", "-"),
               rating: event.rating,
               orderDetailsId: event.orderDetailsId,
@@ -5898,6 +5922,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         variant: event.variant,
         ownerId: event.ownerId,
         ownerType: event.ownerType,
+        images: event.images,
+        slug: event.slug,
         rating: event.rating,
         orderDetailsId: event.orderDetailsId,
       ),
@@ -5915,6 +5941,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               commentId: event.commentId,
               productId: event.productId,
               currentFilter: event.currentFilter,
+              images: event.images,
+              slug: event.slug,
               variant: event.variant,
               ownerId: event.ownerId,
               ownerType: event.ownerType,
@@ -5962,7 +5990,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             BuyersComment buyersComment = buyersCommentItems.removeAt(index);
             buyersCommentItems.insert(
               index,
-              buyersComment.copyWith(comment: event.text),
+              buyersComment.copyWith(comment: event.text, isTran: false),
             );
           }
 
@@ -5981,7 +6009,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             FqaComment fqaComment = fqaCommentItems.removeAt(index);
             fqaCommentItems.insert(
               index,
-              fqaComment.copyWith(comment: event.text),
+              fqaComment.copyWith(comment: event.text, isTran: false),
             );
           }
 
@@ -6253,6 +6281,178 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 UpdateLikeCommentRatingStatus.success,
           ),
         );
+      },
+    );
+  }
+
+  FutureOr<void> _onTranslateCommentEvent(
+    TranslateCommentEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        translateCommentStatus: TranslateCommentStatus.loading,
+        tapCommentIndex: event.tapCommentIndex,
+      ),
+    );
+
+    if (event.showOriginal ?? false) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+          Map.of(state.getFqaCommentsPaginationModel ?? {});
+      Map<String, PaginationModel<BuyersComment>>
+      getBuyersCommentsPaginationModel = Map.of(
+        state.getBuyersCommentsPaginationModel ?? {},
+      );
+
+      if (event.fromBuyerComments) {
+        List<BuyersComment> buyersCommentItems =
+            getBuyersCommentsPaginationModel[event.currentFilter]?.items ?? [];
+        int index = buyersCommentItems.indexWhere(
+          (element) => element.id == event.commentId,
+        );
+        if (index != -1) {
+          BuyersComment buyersComment = buyersCommentItems.removeAt(index);
+          buyersCommentItems.insert(
+            index,
+            buyersComment.copyWith(isTran: false),
+          );
+        }
+
+        getBuyersCommentsPaginationModel[event.currentFilter] =
+            getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
+              paginationStatus: PaginationStatus.success,
+              items: buyersCommentItems,
+            );
+      } else {
+        List<FqaComment> fqaCommentItems =
+            getFqaCommentsPaginationModel[event.currentFilter]?.items ?? [];
+        int index = fqaCommentItems.indexWhere(
+          (element) => element.id == event.commentId,
+        );
+        if (index != -1) {
+          FqaComment fqaComment = fqaCommentItems.removeAt(index);
+          fqaCommentItems.insert(index, fqaComment.copyWith(isTran: false));
+        }
+
+        getFqaCommentsPaginationModel[event.currentFilter] =
+            getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+              paginationStatus: PaginationStatus.success,
+              items: fqaCommentItems,
+            );
+      }
+      emit(
+        state.copyWith(
+          getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+          getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+          translateCommentStatus: TranslateCommentStatus.success,
+        ),
+      );
+
+      return;
+    }
+    final response = await translateCommentUsecase(
+      TranslateCommentParam(
+        commentId: event.commentId,
+        isSeller: event.fromSellerComments,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (l.statusCode == 401) {
+          showMessage(LocaleKeys.must_login_to_edit_comment.tr());
+        } else {
+          showMessage(l.message);
+        }
+
+        emit(
+          state.copyWith(
+            translateCommentStatus: TranslateCommentStatus.failure,
+            statusCodeOfCommentProcess: l.statusCode.toString(),
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('TranslateCommentEvent');
+        print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${event.fromSellerComments}           ${r.translatedText}",
+        );
+        Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
+            Map.of(state.getFqaCommentsPaginationModel ?? {});
+        Map<String, PaginationModel<BuyersComment>>
+        getBuyersCommentsPaginationModel = Map.of(
+          state.getBuyersCommentsPaginationModel ?? {},
+        );
+
+        if (event.fromBuyerComments) {
+          List<BuyersComment> buyersCommentItems =
+              getBuyersCommentsPaginationModel[event.currentFilter]?.items ??
+              [];
+          int index = buyersCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            BuyersComment buyersComment = buyersCommentItems.removeAt(index);
+            buyersCommentItems.insert(
+              index,
+              buyersComment.copyWith(
+                commentTran: r.translatedText,
+                isTran: true,
+              ),
+            );
+          }
+
+          getBuyersCommentsPaginationModel[event.currentFilter] =
+              getBuyersCommentsPaginationModel[event.currentFilter]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                items: buyersCommentItems,
+              );
+        } else {
+          List<FqaComment> fqaCommentItems =
+              getFqaCommentsPaginationModel[event.currentFilter]?.items ?? [];
+          int index = fqaCommentItems.indexWhere(
+            (element) => element.id == event.commentId,
+          );
+          if (index != -1) {
+            FqaComment fqaComment = fqaCommentItems.removeAt(index);
+            fqaCommentItems.insert(
+              index,
+              fqaComment.copyWith(
+                commentTran: !event.fromSellerComments
+                    ? r.translatedText
+                    : fqaComment.commentTran,
+                isTran: true,
+                sellerReplyTran: event.fromSellerComments
+                    ? r.translatedText
+                    : fqaComment.sellerReplyTran,
+              ),
+            );
+          }
+
+          getFqaCommentsPaginationModel[event.currentFilter] =
+              getFqaCommentsPaginationModel[event.currentFilter]!.copyWith(
+                paginationStatus: PaginationStatus.success,
+                items: fqaCommentItems,
+              );
+        }
+        emit(
+          state.copyWith(
+            getBuyersCommentsPaginationModel: getBuyersCommentsPaginationModel,
+            getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,
+            translateCommentStatus: TranslateCommentStatus.success,
+          ),
+        );
+        if (event.fromSellerComments) {
+          add(
+            TranslateCommentEvent(
+              commentId: event.commentId,
+              showOriginal: event.showOriginal,
+              currentFilter: event.currentFilter,
+              fromBuyerComments: event.fromBuyerComments,
+              tapCommentIndex: event.tapCommentIndex,
+            ),
+          );
+        }
       },
     );
   }

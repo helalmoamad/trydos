@@ -28,18 +28,21 @@ class TrydosApplication extends StatefulWidget {
   State<TrydosApplication> createState() => _TrydosApplicationState();
 }
 
-final ValueNotifier<bool> denySlidingBackForSlidingUpPanels =
-    ValueNotifier(false);
+final ValueNotifier<bool> denySlidingBackForSlidingUpPanels = ValueNotifier(
+  false,
+);
 
 class _TrydosApplicationState extends State<TrydosApplication>
     with WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: colorScheme.white,
-      statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: colorScheme.white,
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     super.didChangeDependencies();
   }
 
@@ -72,18 +75,27 @@ class _TrydosApplicationState extends State<TrydosApplication>
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: error.toString(),
+      );
     };
     return ScreenUtilInit(
       designSize: kDesignSize,
       minTextAdapt: true,
       builder: (context, child) {
         return LocalizationService(
-          child: ServiceProvider(
-            child: Builder(
-              builder: (context) {
-                return ValueListenableBuilder<bool>(
+          child: SafeArea(
+            top: false,
+            child: ServiceProvider(
+              child: Builder(
+                builder: (context) {
+                  return ValueListenableBuilder<bool>(
                     valueListenable: denySlidingBackForSlidingUpPanels,
                     child: MaterialApp.router(
                       debugShowCheckedModeBanner: false,
@@ -107,12 +119,15 @@ class _TrydosApplicationState extends State<TrydosApplication>
                     ),
                     builder: (context, deny, child) {
                       return BackGestureWidthTheme(
-                        backGestureWidth:
-                            BackGestureWidth.fraction(deny ? 0 : 1),
+                        backGestureWidth: BackGestureWidth.fraction(
+                          deny ? 0 : 1,
+                        ),
                         child: child!,
                       );
-                    });
-              },
+                    },
+                  );
+                },
+              ),
             ),
           ),
         );

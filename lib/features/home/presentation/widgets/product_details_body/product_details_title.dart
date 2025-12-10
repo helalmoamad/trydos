@@ -56,22 +56,26 @@ class ProductDetailsTitle extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  brand != null
-                      ? brand!.icon != null
-                            ? brand!.icon!.filePath != null
-                                  ? SvgNetworkWidget(
+              child: brand != null
+                  ? brand!.icon != null
+                        ? brand!.icon!.filePath != null
+                              ? Row(
+                                  children: [
+                                    SvgNetworkWidget(
                                       svgUrl: brand!.icon!.filePath!,
                                       height: 18,
-                                    )
-                                  : const SizedBox.shrink()
-                            : const SizedBox.shrink()
-                      : const SizedBox.shrink(),
-                  const SizedBox(width: 10),
-                  SvgPicture.asset(AppAssets.productVerifySvg),
-                ],
-              ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    (brand!.isVerified ?? 0) == 1
+                                        ? SvgPicture.asset(
+                                            AppAssets.productVerifySvg,
+                                          )
+                                        : const SizedBox.shrink(),
+                                  ],
+                                )
+                              : const SizedBox.shrink()
+                        : const SizedBox.shrink()
+                  : const SizedBox.shrink(),
             ),
             const SizedBox(height: 10),
             Padding(

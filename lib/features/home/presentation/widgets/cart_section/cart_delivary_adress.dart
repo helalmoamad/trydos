@@ -223,8 +223,15 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       [];
 
                   double totalCashed =
-                      (homeState.getCartShippingItemsModel?.data?.totalCash ??
-                          0) *
+                      HelperFunctions.truncateToDecimalPlaces(
+                        (homeState.getCartShippingItemsModel?.data?.totalCash ??
+                            0),
+                        homeState
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
                       homeState
                           .getCurrencyForCountryModel!
                           .data!
@@ -232,7 +239,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                           .exchangeRate!;
 
                   double totalPrice =
-                      (homeState.getCartShippingItemsModel?.data?.total ?? 0) *
+                      HelperFunctions.truncateToDecimalPlaces(
+                        (homeState.getCartShippingItemsModel?.data?.total ?? 0),
+                        homeState
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      ) *
                       homeState
                           .getCurrencyForCountryModel!
                           .data!
@@ -243,11 +257,18 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   }
 
                   double couponDiscount =
-                      homeState
-                          .getCartShippingItemsModel
-                          ?.data
-                          ?.couponDiscount ??
-                      0;
+                      HelperFunctions.truncateToDecimalPlaces(
+                        (homeState
+                                .getCartShippingItemsModel
+                                ?.data
+                                ?.couponDiscount ??
+                            0),
+                        homeState
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits!,
+                      );
 
                   String couponCode =
                       homeState.getCartShippingItemsModel?.data?.couponCode ??
@@ -491,6 +512,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                           adressId: orderState
                                               .listOfAddressInfoClassToSave![_indexTap]
                                               .id,
+                                          index: _indexTap,
                                         ),
                                       );
                                     },

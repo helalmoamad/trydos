@@ -21,14 +21,18 @@ class StorySelectedEvent extends HomeEvent {
   final int collectionIndex;
   final int selectedStoryIndexInCollection;
   final int currentPage;
-  const StorySelectedEvent(
-      {required this.collectionIndex,
-      required this.selectedStoryIndexInCollection,
-      required this.currentPage});
+  const StorySelectedEvent({
+    required this.collectionIndex,
+    required this.selectedStoryIndexInCollection,
+    required this.currentPage,
+  });
 
   @override
-  List<Object?> get props =>
-      [collectionIndex, selectedStoryIndexInCollection, currentPage];
+  List<Object?> get props => [
+    collectionIndex,
+    selectedStoryIndexInCollection,
+    currentPage,
+  ];
 }
 
 class GetCoutryBoundaryByIsoEvent extends HomeEvent {
@@ -52,8 +56,10 @@ class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
   final String productSlug;
 
-  const AddCurrentSelectedColorEvent(
-      {required this.currentSelectedColor, required this.productSlug});
+  const AddCurrentSelectedColorEvent({
+    required this.currentSelectedColor,
+    required this.productSlug,
+  });
 
   @override
   // TODO: implement props
@@ -63,8 +69,9 @@ class AddCurrentSelectedColorEvent extends HomeEvent {
 class AddCurrentHeightWhenAddToBagEvent extends HomeEvent {
   final int currentHeightWhenAddToBag;
 
-  const AddCurrentHeightWhenAddToBagEvent(
-      {required this.currentHeightWhenAddToBag});
+  const AddCurrentHeightWhenAddToBagEvent({
+    required this.currentHeightWhenAddToBag,
+  });
 
   @override
   // TODO: implement props
@@ -76,10 +83,11 @@ class IncreaseCountShareOfProductEvent extends HomeEvent {
   final String socialMediaName;
   final Products product;
 
-  const IncreaseCountShareOfProductEvent(
-      {required this.productId,
-      required this.socialMediaName,
-      required this.product});
+  const IncreaseCountShareOfProductEvent({
+    required this.productId,
+    required this.socialMediaName,
+    required this.product,
+  });
 
   @override
   // TODO: implement props
@@ -98,8 +106,10 @@ class IncreaseCountShareOfProductEvent extends HomeEvent {
 class ChangeCountryLanguageForNotificationEvent extends HomeEvent {
   final String country;
   final String languageCode;
-  const ChangeCountryLanguageForNotificationEvent(
-      {required this.languageCode, required this.country});
+  const ChangeCountryLanguageForNotificationEvent({
+    required this.languageCode,
+    required this.country,
+  });
 
   @override
   // TODO: implement props
@@ -119,8 +129,10 @@ class SubscribeTopicForNotificationEvent extends HomeEvent {
 class UnSubscribeTopicForNotificationEvent extends HomeEvent {
   final String topic;
   final String? variant;
-  const UnSubscribeTopicForNotificationEvent(
-      {required this.topic, this.variant});
+  const UnSubscribeTopicForNotificationEvent({
+    required this.topic,
+    this.variant,
+  });
 
   @override
   // TODO: implement props
@@ -180,10 +192,11 @@ class AddTimerStartedToHurryUpEvent extends HomeEvent {
   final String cartId;
   final int timeLeft;
 
-  const AddTimerStartedToHurryUpEvent(
-      {required this.cartId,
-      required this.isAddToList,
-      required this.timeLeft});
+  const AddTimerStartedToHurryUpEvent({
+    required this.cartId,
+    required this.isAddToList,
+    required this.timeLeft,
+  });
 
   @override
   // TODO: implement props
@@ -224,12 +237,12 @@ class SendErrorToMobileErrorLogEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [
-        errorExption,
-        errorPath,
-        urlBackend,
-        messageFromeBackend,
-        lastForPageHasBeenVisited,
-      ];
+    errorExption,
+    errorPath,
+    urlBackend,
+    messageFromeBackend,
+    lastForPageHasBeenVisited,
+  ];
 }
 
 /*class GetProductsListInCartEvent extends HomeEvent {
@@ -254,8 +267,10 @@ class StoreFcmTokenOfMarketEvent extends HomeEvent {
   final int userId;
   final String fcmToken;
 
-  const StoreFcmTokenOfMarketEvent(
-      {required this.userId, required this.fcmToken});
+  const StoreFcmTokenOfMarketEvent({
+    required this.userId,
+    required this.fcmToken,
+  });
 
   @override
   // TODO: implement props
@@ -267,11 +282,12 @@ class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
   final String? productSlug;
   final String? currentColorOption;
   final bool? fromListingPage;
-  const GetProductDatailsWithoutRelatedProductsEvent(
-      {this.productId,
-      this.productSlug,
-      this.currentColorOption,
-      this.fromListingPage});
+  const GetProductDatailsWithoutRelatedProductsEvent({
+    this.productId,
+    this.productSlug,
+    this.currentColorOption,
+    this.fromListingPage,
+  });
 
   @override
   // TODO: implement props
@@ -281,8 +297,10 @@ class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
 class GetFullProductDetailsEvent extends HomeEvent {
   final String productSlug;
   final String? currentColorName;
-  const GetFullProductDetailsEvent(
-      {required this.productSlug, this.currentColorName});
+  const GetFullProductDetailsEvent({
+    required this.productSlug,
+    this.currentColorName,
+  });
 
   @override
   // TODO: implement props
@@ -392,18 +410,19 @@ class UpdateProfileEvent extends HomeEvent {
   final String? gender;
   final bool? fromGuest;
 
-  UpdateProfileEvent(
-      {this.name,
-      this.email,
-      this.idToken,
-      this.fromGuest,
-      this.gender,
-      this.changeStatusToInit,
-      this.image,
-      this.tall,
-      this.weight,
-      this.alternative_phone,
-      this.phone});
+  UpdateProfileEvent({
+    this.name,
+    this.email,
+    this.idToken,
+    this.fromGuest,
+    this.gender,
+    this.changeStatusToInit,
+    this.image,
+    this.tall,
+    this.weight,
+    this.alternative_phone,
+    this.phone,
+  });
   @override
   // TODO: implement props
   List<Object?> get props => [];
@@ -425,23 +444,30 @@ class RequestForNotificationWhenProductBecameAvailableEvent extends HomeEvent {
   final String selectedColorName;
   final bool subsecribe;
   RequestForNotificationWhenProductBecameAvailableEvent(
-      this.productId,
-      this.notificationTypeId,
-      this.size,
-      this.selectedColorName,
-      this.subsecribe);
+    this.productId,
+    this.notificationTypeId,
+    this.size,
+    this.selectedColorName,
+    this.subsecribe,
+  );
 
   @override
-  List<Object?> get props =>
-      [productId, notificationTypeId, size, selectedColorName];
+  List<Object?> get props => [
+    productId,
+    notificationTypeId,
+    size,
+    selectedColorName,
+  ];
 }
 
 class AddSizesForColorsEvent extends HomeEvent {
   final String currentColorName;
   final List<Variation>? variation;
 
-  const AddSizesForColorsEvent(
-      {required this.currentColorName, required this.variation});
+  const AddSizesForColorsEvent({
+    required this.currentColorName,
+    required this.variation,
+  });
 
   @override
   List<Object?> get props => [currentColorName];
@@ -465,9 +491,10 @@ class CheckWithGetCartEvent extends HomeEvent {
 class IsChangedVariationWhenQtyZeroEvent extends HomeEvent {
   final bool isChangedVariationWhenQtyZero;
   final bool finishLoadingAfterChangedVariationWhenQtyZero;
-  const IsChangedVariationWhenQtyZeroEvent(
-      {required this.isChangedVariationWhenQtyZero,
-      this.finishLoadingAfterChangedVariationWhenQtyZero = true});
+  const IsChangedVariationWhenQtyZeroEvent({
+    required this.isChangedVariationWhenQtyZero,
+    this.finishLoadingAfterChangedVariationWhenQtyZero = true,
+  });
 
   @override
   List<Object?> get props => [isChangedVariationWhenQtyZero];
@@ -477,8 +504,11 @@ class ChangeStatusOFGetProductsDetailsToSuccessEvent extends HomeEvent {
   final bool? isStatusInitaial;
   final int? index;
   final String? productSlug;
-  const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-      {this.isStatusInitaial, this.index, this.productSlug});
+  const ChangeStatusOFGetProductsDetailsToSuccessEvent({
+    this.isStatusInitaial,
+    this.index,
+    this.productSlug,
+  });
 
   @override
   List<Object?> get props => [];
@@ -517,24 +547,25 @@ class AddItemToCartEvent extends HomeEvent {
   final Products products;
   final String productSlugForTopic;
 
-  AddItemToCartEvent(
-      {this.quantity,
-      required this.fromCartPage,
-      this.boutiqueIcon,
-      this.finishAddAllTheItems = true,
-      this.boutiqueId,
-      required this.isRedeem,
-      required this.redeemVariantPrice,
-      required this.colorName,
-      required this.sizeName,
-      required this.maxAllowed,
-      required this.image,
-      required this.productSlugForTopic,
-      required this.countOfPieces,
-      required this.colorOption,
-      this.color,
-      this.choiceOption,
-      required this.products});
+  AddItemToCartEvent({
+    this.quantity,
+    required this.fromCartPage,
+    this.boutiqueIcon,
+    this.finishAddAllTheItems = true,
+    this.boutiqueId,
+    required this.isRedeem,
+    required this.redeemVariantPrice,
+    required this.colorName,
+    required this.sizeName,
+    required this.maxAllowed,
+    required this.image,
+    required this.productSlugForTopic,
+    required this.countOfPieces,
+    required this.colorOption,
+    this.color,
+    this.choiceOption,
+    required this.products,
+  });
 
   @override
   List<Object?> get props => [];
@@ -572,10 +603,7 @@ class AddCurrentColorSizeEvent extends HomeEvent {
   final String? choice_1;
   final String? choiceOption;
 
-  AddCurrentColorSizeEvent({
-    this.choice_1,
-    this.choiceOption,
-  });
+  AddCurrentColorSizeEvent({this.choice_1, this.choiceOption});
 
   @override
   List<Object?> get props => [choice_1, choiceOption];
@@ -680,12 +708,13 @@ class AddQuantityForCartEvent extends HomeEvent {
   final int cartId;
   final String colorName;
 
-  AddQuantityForCartEvent(
-      {required this.quantity,
-      required this.productId,
-      required this.currentSize,
-      required this.cartId,
-      required this.colorName});
+  AddQuantityForCartEvent({
+    required this.quantity,
+    required this.productId,
+    required this.currentSize,
+    required this.cartId,
+    required this.colorName,
+  });
 
   @override
   List<Object?> get props => [];
@@ -694,9 +723,7 @@ class AddQuantityForCartEvent extends HomeEvent {
 class AddSearchTextToHistoryEvent extends HomeEvent {
   final String searchTitle;
 
-  AddSearchTextToHistoryEvent({
-    required this.searchTitle,
-  });
+  AddSearchTextToHistoryEvent({required this.searchTitle});
 
   @override
   List<Object?> get props => [];
@@ -726,10 +753,11 @@ class GetFqaCommentsEvent extends HomeEvent {
   final String? productId;
   final String currentFilter;
   final bool getWithPagination;
-  GetFqaCommentsEvent(
-      {this.productId,
-      this.currentFilter = "all",
-      this.getWithPagination = false});
+  GetFqaCommentsEvent({
+    this.productId,
+    this.currentFilter = "all",
+    this.getWithPagination = false,
+  });
   @override
   List<Object?> get props => [productId, getWithPagination, currentFilter];
 }
@@ -738,10 +766,11 @@ class GetBuyersCommentsEvent extends HomeEvent {
   final String? productId;
   final String currentFilter;
   final bool getWithPagination;
-  GetBuyersCommentsEvent(
-      {this.productId,
-      this.currentFilter = "all",
-      this.getWithPagination = false});
+  GetBuyersCommentsEvent({
+    this.productId,
+    this.currentFilter = "all",
+    this.getWithPagination = false,
+  });
   @override
   List<Object?> get props => [productId, getWithPagination, currentFilter];
 }
@@ -752,19 +781,33 @@ class CreateCommentRatingEvent extends HomeEvent {
   final String? rating;
   final String? variant;
   final String? ownerType;
+  final List<String>? images;
+  final String? slug;
   final String? ownerId;
   final String? orderDetailsId;
-  CreateCommentRatingEvent(
-      {this.productId,
-      this.text,
-      this.rating,
-      this.ownerType,
-      this.ownerId,
-      this.orderDetailsId,
-      this.variant});
+  CreateCommentRatingEvent({
+    this.productId,
+    this.text,
+    this.rating,
+    this.slug,
+    this.images,
+    this.ownerType,
+    this.ownerId,
+    this.orderDetailsId,
+    this.variant,
+  });
   @override
-  List<Object?> get props =>
-      [productId, text, rating, orderDetailsId, variant, ownerType, ownerId];
+  List<Object?> get props => [
+    productId,
+    text,
+    rating,
+    orderDetailsId,
+    images,
+    variant,
+    slug,
+    ownerType,
+    ownerId,
+  ];
 }
 
 class UpdateCommentRatingEvent extends HomeEvent {
@@ -772,6 +815,8 @@ class UpdateCommentRatingEvent extends HomeEvent {
   final String? productId;
   final String? rating;
   final String? variant;
+  final List<String>? images;
+  final String? slug;
   final String? orderDetailsId;
   final String? commentId;
   final String? ownerType;
@@ -779,32 +824,64 @@ class UpdateCommentRatingEvent extends HomeEvent {
   final int? tapCommentIndex;
   final String currentFilter;
   final bool fromBuyerComments;
-  UpdateCommentRatingEvent(
-      {this.productId,
-      this.text,
-      this.ownerType,
-      this.currentFilter = "all",
-      this.fromBuyerComments = false,
-      this.ownerId,
-      this.rating,
-      this.tapCommentIndex,
-      this.orderDetailsId,
-      this.commentId,
-      this.variant});
+  UpdateCommentRatingEvent({
+    this.productId,
+    this.text,
+    this.ownerType,
+    this.slug,
+    this.images,
+    this.currentFilter = "all",
+    this.fromBuyerComments = false,
+    this.ownerId,
+    this.rating,
+    this.tapCommentIndex,
+    this.orderDetailsId,
+    this.commentId,
+    this.variant,
+  });
   @override
   List<Object?> get props => [
-        productId,
-        text,
-        rating,
-        fromBuyerComments,
-        ownerType,
-        currentFilter,
-        ownerId,
-        orderDetailsId,
-        variant,
-        commentId,
-        tapCommentIndex
-      ];
+    productId,
+    text,
+    rating,
+
+    fromBuyerComments,
+    ownerType,
+    currentFilter,
+    ownerId,
+    orderDetailsId,
+    images,
+    variant,
+    slug,
+    commentId,
+    tapCommentIndex,
+  ];
+}
+
+class TranslateCommentEvent extends HomeEvent {
+  final String? commentId;
+  final String currentFilter;
+  final int? tapCommentIndex;
+  final bool fromSellerComments;
+  final bool? showOriginal;
+  final bool fromBuyerComments;
+  TranslateCommentEvent({
+    this.fromSellerComments = false,
+    this.commentId,
+    this.showOriginal = false,
+    this.tapCommentIndex,
+    this.currentFilter = "all",
+    this.fromBuyerComments = false,
+  });
+  @override
+  List<Object?> get props => [
+    fromSellerComments,
+    commentId,
+    showOriginal,
+    currentFilter,
+    tapCommentIndex,
+    fromBuyerComments,
+  ];
 }
 
 class DeleteCommentRatingEvent extends HomeEvent {
@@ -821,8 +898,13 @@ class DeleteCommentRatingEvent extends HomeEvent {
     this.commentId,
   });
   @override
-  List<Object?> get props =>
-      [commentId, productId, tapCommentIndex, fromBuyerComments, currentFilter];
+  List<Object?> get props => [
+    commentId,
+    productId,
+    tapCommentIndex,
+    fromBuyerComments,
+    currentFilter,
+  ];
 }
 
 class UpdateLikeCommentEvent extends HomeEvent {
@@ -844,14 +926,14 @@ class UpdateLikeCommentEvent extends HomeEvent {
   });
   @override
   List<Object?> get props => [
-        commentId,
-        productId,
-        tapCommentIndex,
-        currentFilter,
-        fromBuyerComments,
-        fromReplayComments,
-        toAddLike
-      ];
+    commentId,
+    productId,
+    tapCommentIndex,
+    currentFilter,
+    fromBuyerComments,
+    fromReplayComments,
+    toAddLike,
+  ];
 }
 
 class GetOrderRatingEvent extends HomeEvent {
@@ -866,8 +948,10 @@ class RemoveSearchTextfromHistoryEvent extends HomeEvent {
   final String searchTitle;
   final bool clearAll;
 
-  RemoveSearchTextfromHistoryEvent(
-      {required this.searchTitle, required this.clearAll});
+  RemoveSearchTextfromHistoryEvent({
+    required this.searchTitle,
+    required this.clearAll,
+  });
 
   @override
   List<Object?> get props => [];
@@ -934,11 +1018,12 @@ class AddOrRemoveLikeForProductEvent extends HomeEvent {
   final String productId;
   final String productSlugForTopic;
   final String productSlug;
-  AddOrRemoveLikeForProductEvent(
-      {required this.isFavourite,
-      required this.productId,
-      required this.productSlugForTopic,
-      required this.productSlug});
+  AddOrRemoveLikeForProductEvent({
+    required this.isFavourite,
+    required this.productId,
+    required this.productSlugForTopic,
+    required this.productSlug,
+  });
   @override
   List<Object?> get props => [isFavourite, productId];
 }

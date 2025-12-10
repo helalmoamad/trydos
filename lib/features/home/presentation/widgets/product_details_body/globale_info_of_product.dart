@@ -122,10 +122,13 @@ class GlobaleInfoProduct extends StatelessWidget {
                         ),
                       )
                     :*/
-                (state
-                                .cachedProductWithoutRelatedProductsModel[productId]!
-                                .product !=
+                (state.cachedProductWithoutRelatedProductsModel[productId] ==
                             null
+                        ? true
+                        : state
+                                  .cachedProductWithoutRelatedProductsModel[productId]!
+                                  .product !=
+                              null
                         ? state
                                   .cachedProductWithoutRelatedProductsModel[productId]!
                                   .product!
@@ -174,16 +177,34 @@ class GlobaleInfoProduct extends StatelessWidget {
                           ),
                         ],
                       ),
-                SvgPicture.asset(AppAssets.goodQualitySvg),
+                state.cachedProductWithoutRelatedProductsModel[productId] !=
+                        null
+                    ? state
+                                  .cachedProductWithoutRelatedProductsModel[productId]!
+                                  .product!
+                                  .goodQualityProduct ??
+                              false
+                          ? SvgPicture.asset(AppAssets.goodQualitySvg)
+                          : const SizedBox.shrink()
+                    : const SizedBox.shrink(),
                 const SizedBox(width: 2),
-                MyTextWidget(
-                  "${LocaleKeys.good_quality.tr()} | ",
-                  style: context.textTheme.titleMedium?.rq.copyWith(
-                    height: 1.4,
-                    color: const Color(0xff1D1D1D),
-                    fontSize: 9,
-                  ),
-                ),
+                state.cachedProductWithoutRelatedProductsModel[productId] !=
+                        null
+                    ? state
+                                  .cachedProductWithoutRelatedProductsModel[productId]!
+                                  .product!
+                                  .goodQualityProduct ??
+                              false
+                          ? MyTextWidget(
+                              "${LocaleKeys.good_quality.tr()} | ",
+                              style: context.textTheme.titleMedium?.rq.copyWith(
+                                height: 1.4,
+                                color: const Color(0xff1D1D1D),
+                                fontSize: 9,
+                              ),
+                            )
+                          : const SizedBox.shrink()
+                    : const SizedBox.shrink(),
                 state
                             .cachedProductWithoutRelatedProductsModel[productId]
                             ?.product
